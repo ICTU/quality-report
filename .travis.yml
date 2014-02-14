@@ -1,0 +1,4 @@
+language: python
+install: 
+  - pip install xmlrunner
+script: python/run_unittests.py
