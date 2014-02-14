@@ -1,0 +1,35 @@
+# Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Run the unit tests for the quality report software.
+# This script assumes it runs in a Jenkins job.
+# It expects a WORKSPACE environment variable that contains the location
+# of the job's workspace folder.
+
+PYENV_HOME=$WORKSPACE/.pyenv/
+
+# Delete previously built virtualenv
+if [ -d $PYENV_HOME ]; then
+    rm -rf $PYENV_HOME
+fi
+
+# Create virtualenv and install necessary packages
+virtualenv --no-site-packages $PYENV_HOME
+. $PYENV_HOME/bin/activate
+pip install --quiet xmlrunner coverage simplejson BeautifulSoup
+
+cd quality-report/python
+python -m coverage run --branch run_unittests.py discover -s unittests -p "*_tests.py"
+python -m coverage html --omit "*site-packages*"
+python -m coverage xml --omit "*site-packages*"
