@@ -1,4 +1,4 @@
 language: python
 install: 
   - pip install xmlrunner
-script: python python/run_unittests.py
+script: python python/run_unittests.py discover -s python/unittests -p "*_tests.py"
