@@ -52,7 +52,7 @@ class Jira(url_opener.UrlOpener):
                 'parentIssueId=%(parent_issue_id)d' % parameters
         return new_task_url
     
-    def tasks(self, kpi_id, recent_only=False):
+    def tasks(self, kpi_id, recent_only=False, weeks_recent=3):
         ''' Return a list of open issues that refer to the kpi id. '''
         def browse_url(issue):
             ''' Return a url that points to the issue. '''
@@ -68,7 +68,7 @@ class Jira(url_opener.UrlOpener):
                 date_time_string = issue['fields']['updated']
                 updated = utils.parse_iso_date_time(date_time_string)
                 age = datetime.datetime.now() - updated
-                return age < datetime.timedelta(weeks=3) # FIXME: magic constant
+                return age < datetime.timedelta(weeks=weeks_recent)
             else:
                 return True
         
