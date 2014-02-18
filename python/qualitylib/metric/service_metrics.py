@@ -165,4 +165,3 @@ class ServiceResponseTimesThisMonth(ServiceResponseTimes):
     @classmethod
     def _date_in_period(cls):
         return cls._today()
-

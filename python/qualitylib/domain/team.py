@@ -23,8 +23,8 @@ class Team(MeasurableObject):
     def __init__(self, name, short_name=None, streets=None, is_scrum_team=False,
                  is_support_team=False, birt_id=None, release_archives=None,
                  technical_debt_targets=None, days_per_sprint=21):
-        super(Team, self).__init__(technical_debt_targets=\
-                                   technical_debt_targets)
+        super(Team, self).__init__( \
+            technical_debt_targets=technical_debt_targets)
         self.__name = name
         if short_name:
             assert len(short_name) == 2

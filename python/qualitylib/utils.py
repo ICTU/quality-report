@@ -157,7 +157,7 @@ def month_ago(date=None, day_correction=0):
     try:
         return date.replace(year=year, month=month, day=day)
     except ValueError:
-        return month_ago(date, day_correction+1)
+        return month_ago(date, day_correction + 1)
 
 
 def last_day_of_month(date):

@@ -42,8 +42,8 @@ class Product(MeasurableObject):
             kpi_responsibility: dictionary of metric classes mapped to lists
                                 of teams responsible for the product/metric
                                 combination. '''
-        super(Product, self).__init__(technical_debt_targets=\
-                                      technical_debt_targets)
+        super(Product, self).__init__( \
+            technical_debt_targets=technical_debt_targets)
         self.__project = project
         self.__short_name = short_name
         self.__sonar_id = sonar_id

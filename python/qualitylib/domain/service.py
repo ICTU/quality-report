@@ -23,8 +23,8 @@ class Service(MeasurableObject):
     def __init__(self, project, short_name, name, javamelody_id='', 
                  nagios_server_id='', nagios=None, dependencies=None,
                  technical_debt_targets=None):
-        super(Service, self).__init__(technical_debt_targets=\
-                                      technical_debt_targets)
+        super(Service, self).__init__( \
+            technical_debt_targets=technical_debt_targets)
         self.__project = project
         self.__short_name = short_name
         self.__name = name

@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<testsuite errors="0" failures="0" name="domain.project_tests.ProjectResourcesTest-20140214134912" tests="19" time="0.017">
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_birt" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_build_server" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_default_resources" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_emma" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_emma_only_for_trunk" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_jacoco" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_jacoco_only_for_trunk" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_javamelody" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_jira" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_nagios" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_performance_report" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_release_archive" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_release_candidates" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_repositories" time="0.002"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_repository" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_sonar" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_trello_actions" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_trello_risk_log" time="0.001"/>
+	<testcase classname="domain.project_tests.ProjectResourcesTest" name="test_wiki" time="0.001"/>
+	<system-out>
+<![CDATA[]]>	</system-out>
+	<system-err>
+<![CDATA[WARNING:root:No pom retriever defined.
+WARNING:root:No pom retriever defined.
+ERROR:root:Couldn't find Missing product:1.1
+ERROR:root:Error formatting dummy
+WARNING:root:Could not open failing file
+WARNING:root:Couldn't read http://jenkins/job/job-a/lastStableBuild/: HTTP Error None: None
+ERROR:root:Couldn't parse http://jenkins/job/job-a/lastStableBuild/
+WARNING:root:Couldn't open raise/pom.xml: HTTP Error None: None
+ERROR:root:Error parsing http://sonar/
+ERROR:root:Shell command failed: Command 'command' returned non-zero exit status -1
+WARNING:root:Shell command failed: Command 'command' returned non-zero exit status -1
+WARNING:root:Couldn't get cards from Trello board: <urlopen error https://api.trello.com/1/board/object_id/cards?key=appkey&token=token>
+ERROR:root:Could not find missing in wiki
+WARNING:root:Couldn't remove folder: OSError
+]]>	</system-err>
+</testsuite>

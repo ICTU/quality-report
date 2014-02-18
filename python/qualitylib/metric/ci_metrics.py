@@ -225,8 +225,8 @@ class ServerAvailability(NagiosMetricMixin, HigherPercentageIsBetterMetric):
         ''' Add number of servers per group to the parameters. '''
         # pylint: disable=protected-access
         parameters = super(ServerAvailability, self)._parameters()
-        parameters.update(dict(number_of_servers_per_group=\
-                               self.__number_of_servers_per_group()))
+        parameters.update(dict( \
+            number_of_servers_per_group=self.__number_of_servers_per_group()))
         return parameters
 
     def _numerator(self):
