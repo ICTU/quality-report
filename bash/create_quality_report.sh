@@ -20,6 +20,9 @@
 # It expects a PROJECT environment variable that contains the name of the
 # project to create the quality report for.
 
+if [[ "$WORKSPACE" == "" ]]; then
+    WORKSPACE="."
+fi
 PYENV_HOME=$WORKSPACE/.pyenv/
 
 # Delete previously built virtualenv
@@ -27,10 +30,12 @@ if [ -d $PYENV_HOME ]; then
     rm -rf $PYENV_HOME
 fi
 
-# Create virtualenv and install necessary packages
-virtualenv --no-site-packages $PYENV_HOME
+# Create virtualenv and activate it 
+virtualenv $PYENV_HOME
 . $PYENV_HOME/bin/activate
-pip install --quiet simplejson import_file argparse BeautifulSoup
+
+# Install required packages
+pip install --quiet -r quality-report/python/requirements.txt 
 
 # Create the quality report
 python quality-report/python/retrieve_kpis.py --project $PROJECT/project_definition.py --html tmp.html --json $PROJECT/history.json --dot dependency.dot --log INFO
@@ -46,3 +51,8 @@ chmod a+r quality-report/js/*.js
 chmod a+x quality-report/css
 chmod a+r quality-report/css/*.css
 svn commit -m "Updated history from Jenkins." $PROJECT
+
+# Deactivate virtualenv and remove it
+deactivate
+rm -rf $PYENV_HOME
+

@@ -17,19 +17,30 @@
 # It expects a WORKSPACE environment variable that contains the location
 # of the job's workspace folder.
 
+if [[ "$WORKSPACE" == "" ]]; then
+    WORKSPACE="."
+fi 
 PYENV_HOME=$WORKSPACE/.pyenv/
 
-# Delete previously built virtualenv
+# Delete previously built virtualenv, if any
 if [ -d $PYENV_HOME ]; then
     rm -rf $PYENV_HOME
 fi
 
-# Create virtualenv and install necessary packages
-virtualenv --no-site-packages $PYENV_HOME
+# Create virtualenv and activate it
+virtualenv $PYENV_HOME
 . $PYENV_HOME/bin/activate
-pip install --quiet xmlrunner coverage simplejson BeautifulSoup
-
 cd quality-report/python
+
+# Install the required packages
+pip install --quiet -r requirements.txt
+
+# Run unit tests and create coverage report
 python -m coverage run --branch run_unittests.py discover -s unittests -p "*_tests.py"
 python -m coverage html --omit "*site-packages*"
 python -m coverage xml --omit "*site-packages*"
+
+# Deactivate and remove virtualenv
+cd ../..
+deactivate
+rm -rf $PYENV_HOME
