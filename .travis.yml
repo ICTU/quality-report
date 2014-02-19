@@ -1,4 +1,3 @@
 language: python
-install: 
-  - pip install xmlrunner simplejson BeautifulSoup
+install: "pip install -r python/requirements.txt"
 script: python python/run_unittests.py discover -s python/unittests -p "*_tests.py"
