@@ -31,6 +31,9 @@ How to add a new project to the quality system.
 
    project = Project('New Project', jira=JIRA, history=HISTORY, wiki=WIKI)
 
+   The doc/example_project_definitions folder contains a number of project 
+   definition examples.
+
 2. Add the project definition file to version control. For example: 
    $ svn add quality-data/new_project/project_definition.py
    
