@@ -19,7 +19,6 @@
   <properties>
     <sonar.language>py</sonar.language>
     <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>
-    <sonar.exclusions>file:**/thirdparty/**</sonar.exclusions>
     <sonar.python.pylint>/usr/local/bin/pylint</sonar.python.pylint>
     <sonar.python.pylint_config>.pylintrc</sonar.python.pylint_config>
     <sonar.python.coverage.reportPath>coverage.xml</sonar.python.coverage.reportPath>
