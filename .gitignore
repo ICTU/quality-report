@@ -1,1 +1,11 @@
+# Ignore subversion folder:
+.svn
+
+# Ignore python byte-compiled files:
 *.pyc
+
+# Ignore generated coverage and test reports:
+coverage.xml
+python/.coverage
+python/htmlcov
+python/test-reports
