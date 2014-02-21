@@ -16,9 +16,16 @@ limitations under the License.
 
 # Run the unit tests. 
 
+import StringIO
+import logging
 import unittest
 import xmlrunner
 
 
 if __name__ == '__main__':  # pragma: no branch
+    # Make sure log messages are not shown on stdout/stderr. We can't simpy
+    # increase the log level since some unit tests expect logging  to happen.
+    logging.getLogger().addHandler(logging.StreamHandler(StringIO.StringIO()))
+    # Run the unit test with the XML test runner so that the test output
+    # can be processed by Sonar.
     unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
