@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import report, domain
+from qualitylib import report, domain, metric
 
 
 class FakeMetric(object):
@@ -193,7 +193,7 @@ class FakeSonar(object):  # pylint: disable=too-few-public-methods
         ''' Return the Sonar url. '''
         return 'http://sonar'
     
-    
+
 class QualityReportTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the quality report class. '''
@@ -259,3 +259,195 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         self.failUnless(('Sonar', FakeSonar.url()) in 
                          quality_report.project_resources())
+
+
+class FakeBirt(object):
+    ''' Fake a Birt instance. '''
+    @staticmethod
+    def planned_velocity(birt_id):  # pylint: disable=unused-argument
+        ''' Return the planned velocity of the team with the specified birt 
+            id. '''
+        return 5
+    
+    @staticmethod
+    def has_test_design(birt_id):  # pylint: disable=unused-argument
+        ''' Return whether the product with the specified birt id has a test
+            design. '''
+        return True
+    
+    
+class FakeJira(object):  # pylint: disable=too-few-public-methods
+    ''' Fake Jira. '''
+    @staticmethod
+    def has_open_bugs_query():
+        ''' Return whether Jira has a query to report the number of open bug
+            reports. '''
+        return True
+    
+    has_open_security_bugs_query = has_blocking_test_issues_query = \
+        has_open_bugs_query
+
+       
+class QualityReportMetricsTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the quality report class that test whether the right
+        metrics are added. '''
+    
+    @staticmethod
+    def __create_report(project_kwargs, team_kwargs, product_kwargs,
+                        number_of_teams=1):
+        ''' Create the quality report. '''
+        # pylint: disable=W0142
+        project = domain.Project('organization', 'project', **project_kwargs)
+        for index in range(number_of_teams):
+            team = domain.Team('Team %d' % index, **team_kwargs)
+            project.add_team(team)
+        if product_kwargs:
+            jsf_kwargs = product_kwargs.pop('jsf', dict())
+            jsf = domain.Product(project, **jsf_kwargs)
+            product_kwargs['jsf'] = jsf
+            product = domain.Product(project, **product_kwargs)
+            project.add_product(product)
+        quality_report = report.QualityReport(project)
+        quality_report.sections()  # Make sure the report is created
+        return quality_report
+    
+    def __assert_metric(self, metric_class, project_kwargs=None, 
+                                team_kwargs=None, product_kwargs=None,
+                                number_of_teams=1, include=True):
+        ''' Check that the metric class is included in the report. '''
+        quality_report = self.__create_report(project_kwargs or dict(), 
+                                              team_kwargs or dict(),
+                                              product_kwargs or dict(), 
+                                              number_of_teams)
+        included = metric_class in [each_metric.__class__ for each_metric \
+                                    in quality_report.metrics()]
+        self.failUnless(included if include else not included)
+    
+    def test_team_progress(self):
+        ''' Test that the team progress metric is added if possible. '''
+        self.__assert_metric(metric.TeamProgress, 
+                             project_kwargs=dict(birt=FakeBirt()),
+                             team_kwargs=dict(birt_id='team'))
+    
+    def test_release_age(self):
+        ''' Test that the release age metric is added if possible. '''
+        self.__assert_metric(metric.ReleaseAge, dict(), 
+                             team_kwargs=dict(release_archives=['Archive']))
+        
+    def test_art_stability(self):
+        ''' Test that the ART stability metric is added if possible. '''
+        self.__assert_metric(metric.ARTStability,  
+                             team_kwargs=dict(streets=['Street']))
+
+    def test_server_availability(self):
+        ''' Test that the server availability metric is added if possible. '''
+        self.__assert_metric(metric.ServerAvailability, 
+                             project_kwargs=dict(nagios='Nagios'), 
+                             team_kwargs=dict(is_support_team=True))
+
+    def test_team_spirit(self):
+        ''' Test that the team spirit metric is added if possible. '''
+        self.__assert_metric(metric.TeamSpirit, 
+                             project_kwargs=dict(wiki='Wiki'))
+
+    def test_failing_ci_jobs_team(self):
+        ''' Test that the failing CI jobs metric per team is added if 
+            possible. '''
+        self.__assert_metric(metric.FailingCIJobs, number_of_teams=2)
+
+    def test_unused_ci_jobs_team(self):
+        ''' Test that the unused CI jobs metric per team is added if possible. '''
+        self.__assert_metric(metric.UnusedCIJobs, number_of_teams=2)
+
+    def test_failing_unittests(self):
+        ''' Test that the failing unit tests metric is added if possible. '''
+        self.__assert_metric(metric.FailingUnittests, 
+                             product_kwargs=dict(unittest_sonar_id='id'))
+
+    def test_unittest_coverage(self):
+        ''' Test that the unit test coverage metric is added if possible. '''
+        self.__assert_metric(metric.UnittestCoverage, 
+                             product_kwargs=dict(unittest_sonar_id='id'))
+
+    def test_art_coverage(self):
+        ''' Test that the ART coverage metric is added if possible. '''
+        self.__assert_metric(metric.ARTCoverage, 
+                             product_kwargs=dict(art_coverage_emma_id='emma'))
+
+    def test_reviewed_and_approved_us(self):
+        ''' Test that the reviewed and approved user stories metric is added
+            if possible. '''
+        self.__assert_metric(metric.ReviewedAndApprovedUserStories,
+                             project_kwargs=dict(birt=FakeBirt()),
+                             product_kwargs=dict(birt_id='birt'))
+
+    def test_no_reviewed_approved_us(self):
+        ''' Test that the reviewed and approved user stories metric is not added
+            when the product is a not a trunk version. '''
+        self.__assert_metric(metric.ReviewedAndApprovedUserStories,
+                             project_kwargs=dict(birt=FakeBirt()),
+                             product_kwargs=dict(birt_id='birt',
+                                                 product_version='1.1'), 
+                             include=False)
+
+    def test_jsf_duplication(self):
+        ''' Test that the jsf duplication metric is added if possible. '''
+        self.__assert_metric(metric.JsfDuplication,
+                             product_kwargs=dict(sonar_id='id'))
+
+    def test_response_times(self):
+        ''' Test that the response times metric is added if possible. '''
+        self.__assert_metric(metric.ResponseTimes,
+                             product_kwargs=dict(performancetest_id='id'))
+
+    def test_open_bugs(self):
+        ''' Test that the open bugs metric is added if possible. '''
+        self.__assert_metric(metric.OpenBugs, 
+                             project_kwargs=dict(jira=FakeJira()))
+
+    def test_open_security_bugs(self):
+        ''' Test that the open security bugs metric is added if possible. '''
+        self.__assert_metric(metric.OpenSecurityBugs, 
+                             project_kwargs=dict(jira=FakeJira()))
+
+    def test_blocking_test_issues(self):
+        ''' Test that the blocking test issues metric is added if possible. '''
+        self.__assert_metric(metric.BlockingTestIssues, 
+                             project_kwargs=dict(jira=FakeJira()))
+
+    def test_failing_ci_jobs(self):
+        ''' Test that the failing CI jobs metric is added if possible. '''
+        self.__assert_metric(metric.FailingCIJobs, 
+                             project_kwargs=dict(build_server='Jenkins'))
+
+    def test_unused_ci_jobs(self):
+        ''' Test that the unused CI jobs metric is added if possible. '''
+        self.__assert_metric(metric.UnusedCIJobs, 
+                             project_kwargs=dict(build_server='Jenkins'))
+
+    def test_assigned_ci_jobs(self):
+        ''' Test that the (un)assigned CI jobs metric is added if possible. '''
+        self.__assert_metric(metric.AssignedCIJobs, 
+                             project_kwargs=dict(build_server='Jenkins'), 
+                             number_of_teams=2)
+
+    def test_action_activity(self):
+        ''' Test that the action activity metric is added if possible. '''
+        self.__assert_metric(metric.ActionActivity, 
+                             project_kwargs=dict(trello_actions_board='Trello'))
+
+    def test_action_age(self):
+        ''' Test that the action age metric is added if possible. '''
+        self.__assert_metric(metric.ActionAge, 
+                             project_kwargs=dict(trello_actions_board='Trello'))
+
+    def test_risk_log(self):
+        ''' Test that the risk log metric is added if possible. '''
+        self.__assert_metric(metric.RiskLog, 
+                             project_kwargs=dict(trello_risklog_board='Trello'))
+
+    def test_unmerged_branches(self):
+        ''' Test that the unmerged branches metric is added if possible. '''
+        self.__assert_metric(metric.UnmergedBranches, 
+                             product_kwargs=dict(svn_path='svn'))

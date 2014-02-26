@@ -61,7 +61,7 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_streets(self):
         ''' Test that a team has no streets. '''
         self.failIf(self.__team.streets())
-
+        
     def test_default_birt_id(self):
         ''' Test the default Birt id. '''
         self.failIf(self.__team.birt_id())
