@@ -236,10 +236,10 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
             have to be automated. '''
         return self.__test_design_metric(product, table_nr=3, column_nr=2)
     
-    def nr_manual_ltcs(self, product):
+    def nr_manual_ltcs(self, product, version='trunk'):
         ''' Return the number of logical test cases for the product that are
             executed manually. '''
-        return self.__test_design_metric(product, table_nr=3, column_nr=7)
+        return len(self.__manual_test_dates(product, version))
     
     def nr_manual_ltcs_too_old(self, product, version, target):
         ''' Return the number of manual logical test cases that have not been

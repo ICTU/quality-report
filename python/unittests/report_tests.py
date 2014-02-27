@@ -384,7 +384,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_no_reviewed_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is not added
-            when the product is a not a trunk version. '''
+            when the product is not a trunk version. '''
         self.__assert_metric(metric.ReviewedAndApprovedUserStories,
                              project_kwargs=dict(birt=FakeBirt()),
                              product_kwargs=dict(birt_id='birt',

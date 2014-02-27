@@ -230,6 +230,7 @@ MANUAL_TEST_EXECUTION_HTML = '''
 </table>
 '''
 
+
 class BirtUnderTest(Birt):
     ''' Override the soup method to return a fixed HTML fragment. '''
     html = ''
@@ -340,15 +341,15 @@ class BirtTest(unittest.TestCase):
         
     def test_nr_manual_ltcs(self):
         ''' Test that the number of manual logical test cases is correct. '''
-        self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(5, self.__birt.nr_manual_ltcs('bulk'))
+        self.__birt.html = MANUAL_TEST_EXECUTION_HTML
+        self.assertEqual(2, self.__birt.nr_manual_ltcs('bulk'))
         
     def test_nr_manual_ltcs_too_old(self):
         ''' Test that the number of manual logical test cases that have not
             been tested recently is correct. '''
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         self.assertEqual(2, self.__birt.nr_manual_ltcs_too_old('bulk', 
-                                                                'trunk', 14))
+                                                               'trunk', 14))
         
     def test_no_date_manual_tests(self):
         ''' Test that the date of the last manual test execution is correct. '''
@@ -382,15 +383,15 @@ class BirtSprintProgressReportTest(unittest.TestCase):
     def test_actual_velocity(self):
         ''' Test that the actual velocity is the number of points realized
             per day so far. '''
-        self.assertEqual(20/14., self.__birt.actual_velocity('birt_id'))
+        self.assertEqual(20 / 14., self.__birt.actual_velocity('birt_id'))
 
     def test_planned_velocity(self):
         ''' Test that the planned velocity is correct. '''
-        self.assertEqual(23.5/15, self.__birt.planned_velocity('birt_id'))
+        self.assertEqual(23.5 / 15, self.__birt.planned_velocity('birt_id'))
         
     def test_required_velocity(self):
         ''' Test that the required velocity is correct. '''
-        self.assertEqual(3.5/2, self.__birt.required_velocity('birt_id'))
+        self.assertEqual(3.5 / 2, self.__birt.required_velocity('birt_id'))
 
     def test_days_in_sprint_no_end_date(self):
         ''' Test that the days in the sprint is zero when the end date is

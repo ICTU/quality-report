@@ -111,7 +111,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         # pylint: disable=protected-access
         parameters = super(ManualLogicalTestCases, self)._parameters()
         parameters['nr_manual_ltcs'] = \
-            self._birt.nr_manual_ltcs(self._birt_id())
+            self._birt.nr_manual_ltcs(self._birt_id(), self.__version())
         parameters['nr_manual_ltcs_too_old'] = \
             self._birt.nr_manual_ltcs_too_old(self._birt_id(), self.__version(),
                                               self.target())

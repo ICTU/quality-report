@@ -45,7 +45,8 @@ class FakeBirt(object):
         return self.date_of_last_manual_tests
     
     @staticmethod
-    def nr_manual_ltcs(birt_id):  # pylint: disable=unused-argument
+    def nr_manual_ltcs(birt_id, version='trunk'):
+        # pylint: disable=unused-argument
         ''' Return the number of manual logical test cases. '''
         return 10
     
@@ -113,7 +114,7 @@ class AutomatedLogicalTestCasesTest(unittest.TestCase):
     def test_value(self):
         ''' Test that the value of the metric is the percentage of user stories 
             that has enough logical test cases as reported by Birt. '''
-        self.assertEqual(100*20/25., self.__metric.value())
+        self.assertEqual(100 * 20 / 25., self.__metric.value())
 
     def test_url(self):
         ''' Test the url is correct. '''
