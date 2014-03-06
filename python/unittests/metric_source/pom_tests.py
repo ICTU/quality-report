@@ -30,7 +30,7 @@ ONE_DEPENDENCY = MINIMAL_POM + '''
     </dependency>'''
 ONE_PROPERTY = '''
     <properties>
-        <version>2.0</version>
+        <version>2.0 </version><!-- Spaces should be ignored -->
     </properties>
     <dependency>
         <artifactid>artifact_id</artifactid>
@@ -46,7 +46,6 @@ RECURSIVE_PROPERTY = '''
         <artifactid>artifact_id</artifactid>
         <version>${version}</version>
     </dependency>'''
-
 
 
 class PomUnderTest(Pom):

@@ -118,12 +118,12 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
         if properties_tags:
             for property_tag in properties_tags[0]:
                 try:
-                    properties[property_tag.name] = property_tag.string
+                    properties[property_tag.name] = property_tag.string.strip()
                 except AttributeError:
                     pass  # Whitespace or Comment
         try:
             properties['project.version'] = properties['version'] = \
-                pom_soup('version')[0].string
+                pom_soup('version')[0].string.strip()
         except IndexError:
             pass  # Ignore, deprecated way of referring to version
         cls.__resolve_properties(properties)
