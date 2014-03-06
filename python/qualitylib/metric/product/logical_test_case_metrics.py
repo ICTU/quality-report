@@ -118,6 +118,6 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return parameters
 
     def __version(self):
-        ''' Return the birt id and the version number for the product this
-            metric is reporting on. '''
+        ''' Return the version number for the product this metric is reporting 
+            on. '''
         return self._subject.product_version() or 'trunk'
