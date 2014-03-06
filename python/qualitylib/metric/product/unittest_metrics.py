@@ -17,9 +17,24 @@ limitations under the License.
 from qualitylib.domain import HigherIsBetterMetric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, TEST_QUALITY
+
+
+class UnittestMetricMixin(SonarDashboardMetricMixin):
+    # pylint: disable=too-few-public-methods
+    ''' Mixin class for Sonar metrics about unit test. '''
     
+    def _parameters(self):
+        ''' Add the number of unit tests to the parameters for the report. ''' 
+        # pylint: disable=protected-access
+        parameters = super(UnittestMetricMixin, self)._parameters()
+        parameters['tests'] = self._sonar.unittests(self._sonar_id())
+        return parameters
+
+    def _sonar_id(self):
+        return self._subject.unittests()
+   
     
-class FailingUnittests(SonarDashboardMetricMixin, LowerIsBetterMetric):
+class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of unit tests that fail. '''
     
@@ -41,18 +56,13 @@ class FailingUnittests(SonarDashboardMetricMixin, LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingUnittests, self)._parameters()
-        nr_unittests = self._sonar.unittests(self._sonar_id())
-        parameters['tests'] = nr_unittests
-        parameters['passed_tests'] = nr_unittests - self.value()
+        parameters['passed_tests'] = parameters['tests'] - self.value()
         return parameters
     
-    def _sonar_id(self):
-        return self._subject.unittests()
-
     
-class UnittestCoverage(SonarDashboardMetricMixin, HigherIsBetterMetric):
+class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the coverage of unittests for a product. '''
+    ''' Metric for measuring the coverage of unit tests for a product. '''
 
     norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
         'door unittests. Lager dan %(low_target)d%% is rood.'
@@ -65,12 +75,3 @@ class UnittestCoverage(SonarDashboardMetricMixin, HigherIsBetterMetric):
 
     def value(self):
         return round(self._sonar.line_coverage(self._sonar_id()))
-
-    def _sonar_id(self):
-        return self._subject.unittests()
-
-    def _parameters(self):
-        # pylint: disable=protected-access
-        parameters = super(UnittestCoverage, self)._parameters()
-        parameters['tests'] = self._sonar.unittests(self._sonar_id())
-        return parameters
