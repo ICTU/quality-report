@@ -143,6 +143,8 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
         self.__test_design_url = birt_report_url + 'test_design.rptdesign'
         self.__manual_test_execution_url = birt_report_url + \
             'manual_test_execution_report.rptdesign&application=%s&version=%s'
+        self.__page_performance_url = birt_report_url + \
+            'perf.rptdesign&application=%s&version=%s'
         self.__whats_missing_url = birt_report_url + \
             'whats_missing.rptdesign&application=%s'
         sprint_progress_url = birt_report_url + \
@@ -178,6 +180,11 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
     def whats_missing_url(self, product):
         ''' Return the What's missing report url for the product. '''
         return self.__whats_missing_url % product
+    
+    def page_performance_url(self, product, version):
+        ''' Return the page performance report url for the product and 
+            version. '''
+        return self.__page_performance_url % (product, version)
 
     # Misc
 
@@ -235,6 +242,23 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
         ''' Return the number of logical test cases for the product that
             have to be automated. '''
         return self.__test_design_metric(product, table_nr=3, column_nr=2)
+    
+    def nr_performance_pages(self, product, version):
+        ''' Return the number of pages reported in the performance report. '''
+        return len(self.__performance_pages(product, version))
+    
+    def nr_slow_performance_pages(self, product, version):
+        ''' Return the number of pages reported in the performance report that
+            load too slow on average. '''
+        rows = self.__performance_pages(product, version)
+        too_slow = [row for row in rows if 'style' in dict(row('td')[1].attrs)]
+        return len(too_slow)
+    
+    def __performance_pages(self, product, version):
+        ''' Return the rows with page performance numbers. '''
+        soup = self.soup(self.page_performance_url(product, version))
+        inner_table = soup('table')[0]('table')[0]
+        return inner_table('tr')[1:]  # Skip header row
     
     def nr_manual_ltcs(self, product, version='trunk'):
         ''' Return the number of logical test cases for the product that are

@@ -277,6 +277,13 @@ class QualityReport(object):
                 metrics.append(metric.UnmergedBranches(subject=art,
                     subversion=self.__project.subversion(), 
                     **self.__metric_sources))
+        if art and product.product_version() and self.__project.birt():
+            # Only add the ART performance if we're reporting on a released 
+            # version because the Birt report has data per version of the 
+            # product.
+            metrics.append(metric.ARTPerformance(subject=product, 
+                                                 birt=self.__project.birt(),
+                                                 **self.__metric_sources))
         if product.jsf():
             metrics.extend(self.__jsf_metrics(product.jsf()))
         if product.svn_path() and not product.product_version():

@@ -231,6 +231,91 @@ MANUAL_TEST_EXECUTION_HTML = '''
 '''
 
 
+PERFORMANCE_MEASUREMENT_HTML = '''
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>BIRT Report Viewer</title>
+    </head>
+    <body class="style_0">
+        <table>
+            <tr>
+                <td valign="top">
+                    <table class="style_1" id="__bookmark_1">
+                        <tr valign="top" align="center">
+                            <th class="style_3">
+                                <div>Pagina</div>
+                            </th>
+                            <th class="style_4">
+                                <div>Gemiddelde laadtijd</div>
+                            </th>
+                            <th class="style_5">
+                                <div>Maximum laadtijd</div>
+                            </th>
+                        </tr>
+                        <tr class="style_6" valign="top" id="__TOC_0">
+                            <td class="style_3">
+                                <div>/gir-hh/</div>
+                            </td>
+                            <td class="style_4">
+                                <div style=" text-align:right;">622</div>
+                            </td>
+                            <td class="style_5">
+                                <div style=" text-align:right;">1056</div>
+                            </td>
+                        </tr>
+                        <tr class="style_6" valign="top" id="__TOC_1">
+                            <td class="style_3">
+                                <div>/gir-hh/documenten/overzicht.jsf</div>
+                            </td>
+                            <td class="style_4">
+                                <div style=" text-align:right;">905</div>
+                            </td>
+                            <td class="style_5">
+                                <div style=" text-align:right;">1013</div>
+                            </td>
+                        </tr>
+                        <tr class="style_6" valign="top" id="__TOC_2">
+                            <td class="style_3">
+                                <div>/gir-hh/fout/error.jsf</div>
+                            </td>
+                            <td class="style_4">
+                                <div style=" text-align:right;">425</div>
+                            </td>
+                            <td class="style_5">
+                                <div style=" text-align:right;">556</div>
+                            </td>
+                        </tr>
+                        <tr class="style_6" valign="top" id="__TOC_18">
+                            <td class="style_3">
+                                <div>/gir-hh/handhaving/overzicht/handhavenoverzicht.jsf</div>
+                            </td>
+                            <td class="style_4" style=" color: rgb(255, 255, 255); background-color: rgb(255, 0, 0);">
+                                <div style=" text-align:right;">1147</div>
+                            </td>
+                            <td class="style_5">
+                                <div style=" text-align:right;">2714</div>
+                            </td>
+                        </tr>
+                        <tr class="style_9" style=" height: 0.133in;" valign="top">
+                            <td class="style_3"></td>
+                            <td class="style_4"></td>
+                            <td class="style_5"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style=" overflow:hidden;">4 mrt. 2014 12:39</div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+'''
+
+
 class BirtUnderTest(Birt):
     ''' Override the soup method to return a fixed HTML fragment. '''
     html = ''
@@ -362,6 +447,18 @@ class BirtTest(unittest.TestCase):
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         date = self.__birt.date_of_last_manual_test('bulk')
         self.assertEqual(datetime.datetime(2013, 3, 19), date)
+        
+    def test_nr_performance_pages(self):
+        ''' Test that the number of pages can be retrieved. '''
+        self.__birt.html = PERFORMANCE_MEASUREMENT_HTML
+        self.assertEqual(5, self.__birt.nr_performance_pages('bulk', '1.0'))
+        
+    def test_nr_slow_pages(self):
+        ''' Test that the number of pages that are too slow on average can be
+            retrieved. '''
+        self.__birt.html = PERFORMANCE_MEASUREMENT_HTML
+        self.assertEqual(1, self.__birt.nr_slow_performance_pages('bulk', 
+                                                                  '1.0'))
         
 
 class BirtSprintProgressReportUnderTest(SprintProgressReport):

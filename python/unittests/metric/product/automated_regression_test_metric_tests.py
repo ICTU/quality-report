@@ -66,6 +66,11 @@ class FakeSubject(object):
     def art_coverage_jacoco(self):
         ''' Return the JaCoCo id of the subject. '''
         return self.__jacoco_id 
+    
+    @staticmethod
+    def birt_id():
+        ''' Return the Birt id of the subject. '''
+        return 'birt_id'
 
 
 class ARTCoverageJacocoTest(unittest.TestCase):
@@ -117,4 +122,54 @@ class ARTCoverageEmmaTest(unittest.TestCase):
         ''' Test that the report is correct. '''
         self.failUnless(self.__metric.report().startswith('FakeSubject ART ' \
                                                           'coverage is 98%'))
-        
+
+
+class FakeBirt(object):
+    ''' Fake a Birt instance. '''
+    @staticmethod
+    def nr_performance_pages(product, version):
+        ''' Return the number of pages. '''
+        # pylint: disable=unused-argument
+        return 10
+    
+    @staticmethod
+    def nr_slow_performance_pages(product, version):
+        ''' Return the number of slow pages. '''
+        # pylint: disable=unused-argument
+        return 3
+    
+    @staticmethod
+    def page_performance_url(product, version):
+        ''' Return the url for the page performance report. '''
+        return 'http://birt/performance/%s/%s' % (product, version)
+    
+
+class ARTPerformanceTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the ART coverage metric. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__subject = FakeSubject()
+        self.__birt = FakeBirt()
+        self.__metric = metric.ARTPerformance(subject=self.__subject, 
+                                              birt=self.__birt, wiki=None, 
+                                              history=None)
+
+    def test_value(self):
+        ''' Test that value of the metric equals the percentage too slow pages
+            as reported by Birt. '''
+        expected = self.__birt.nr_slow_performance_pages('product', 
+                                                         'version') / \
+            float(self.__birt.nr_performance_pages('product', 'version')) * 100
+        self.assertEqual(expected, self.__metric.value())
+
+    def test_url(self):
+        ''' Test that the url correctly points to the Birt report. '''
+        self.assertEqual({'Birt': self.__birt.page_performance_url('birt_id', 
+                                                                   'trunk')},
+                         self.__metric.url())
+
+    def test_report(self):
+        ''' Test that the report for the metric is correct. '''
+        self.assertEqual('30% (3 van de 10) van de paginas van FakeSubject ' \
+                         'laadt te langzaam bij het uitvoeren van de ART.', 
+                         self.__metric.report())

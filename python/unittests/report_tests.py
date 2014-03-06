@@ -304,8 +304,8 @@ class QualityReportMetricsTest(unittest.TestCase):
             project.add_team(team)
         if product_kwargs:
             jsf_kwargs = product_kwargs.pop('jsf', dict())
-            jsf = domain.Product(project, **jsf_kwargs)
-            product_kwargs['jsf'] = jsf
+            product_kwargs['jsf'] = domain.Product(project, **jsf_kwargs)
+            product_kwargs['art'] = domain.Product(project)
             product = domain.Product(project, **product_kwargs)
             project.add_product(product)
         quality_report = report.QualityReport(project)
@@ -357,7 +357,8 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.FailingCIJobs, number_of_teams=2)
 
     def test_unused_ci_jobs_team(self):
-        ''' Test that the unused CI jobs metric per team is added if possible. '''
+        ''' Test that the unused CI jobs metric per team is added if 
+            possible. '''
         self.__assert_metric(metric.UnusedCIJobs, number_of_teams=2)
 
     def test_failing_unittests(self):
@@ -451,3 +452,19 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the unmerged branches metric is added if possible. '''
         self.__assert_metric(metric.UnmergedBranches, 
                              product_kwargs=dict(svn_path='svn'))
+        
+    def test_no_art_performance(self):
+        ''' Test that the ART performance metric is not added for a trunk
+            version. '''
+        self.__assert_metric(metric.ARTPerformance,
+                             product_kwargs=dict(birt_id='birt'),
+                             project_kwargs=dict(birt=FakeBirt()),
+                             include=False)
+
+    def test_art_performance(self):
+        ''' Test that the ART performance metric is not added for a trunk
+            version. '''
+        self.__assert_metric(metric.ARTPerformance,
+                             product_kwargs=dict(birt_id='birt',
+                                                 product_version='1.1'),
+                             project_kwargs=dict(birt=FakeBirt()))

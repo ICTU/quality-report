@@ -14,8 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.domain import HigherIsBetterMetric
-from qualitylib.metric.quality_attributes import TEST_COVERAGE
+from qualitylib.domain import HigherIsBetterMetric, \
+   LowerPercentageIsBetterMetric
+from qualitylib.metric.metric_source_mixin import BirtMetricMixin
+from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE
 import datetime
 
     
@@ -83,3 +85,33 @@ class ARTCoverage(HigherIsBetterMetric):
         else:
             jacoco_id = self._subject.art_coverage_jacoco()
             return self.__jacoco.coverage_date(jacoco_id)
+
+
+class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
+    ''' Metric for measuring the percentage of pages that loads too slow 
+        during running an automated regression test. '''
+    norm_template = 'Maximaal %(target)d%% van de paginas heeft een ' \
+        'gemiddelde laadtijd hoger dan het maximum. ' \
+        'Meer dan %(low_target)d%% is rood.'
+    template = '%(value)d%% (%(numerator)d van de %(denominator)d) van de ' \
+        'paginas van %(name)s laadt te langzaam bij het uitvoeren van de ART.' 
+    target_value = 25
+    low_target_value = 50
+    quality_attribute = PERFORMANCE
+    
+    def _denominator(self):
+        return self._birt.nr_performance_pages(self._birt_id(), 
+                                               self.__version())
+
+    def _numerator(self):
+        return self._birt.nr_slow_performance_pages(self._birt_id(), 
+                                                    self.__version())
+
+    def url(self):
+        return dict(Birt=self._birt.page_performance_url(self._birt_id(),
+                                                         self.__version()))
+
+    def __version(self):
+        ''' Return the version number for the product this metric is reporting 
+            on. '''
+        return self._subject.product_version() or 'trunk'
