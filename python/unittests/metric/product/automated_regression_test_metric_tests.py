@@ -81,8 +81,7 @@ class ARTCoverageJacocoTest(unittest.TestCase):
         self.__subject = FakeSubject(jacoco_id='jacoco_id')
         self.__subject.version = '1.1'
         self.__metric = metric.ARTCoverage(subject=self.__subject, 
-                                           jacoco=self.__jacoco, wiki=None, 
-                                           history=None)
+                                           jacoco=self.__jacoco, history=None)
         
     def test_value(self):
         ''' Test that value of the metric equals the coverage as reported by
@@ -106,8 +105,7 @@ class ARTCoverageEmmaTest(unittest.TestCase):
         self.__subject = FakeSubject(emma_id='emma_id')
         self.__emma = FakeEmma()
         self.__metric = metric.ARTCoverage(subject=self.__subject, 
-                                           emma=self.__emma, wiki=None, 
-                                           history=None)
+                                           emma=self.__emma, history=None)
 
     def test_value(self):
         ''' Test that value of the metric equals the coverage as reported by
@@ -151,8 +149,7 @@ class ARTPerformanceTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__birt = FakeBirt()
         self.__metric = metric.ARTPerformance(subject=self.__subject, 
-                                              birt=self.__birt, wiki=None, 
-                                              history=None)
+                                              birt=self.__birt, history=None)
 
     def test_value(self):
         ''' Test that value of the metric equals the percentage too slow pages

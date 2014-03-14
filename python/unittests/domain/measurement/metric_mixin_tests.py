@@ -15,8 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib import domain
-from unittests.domain.measurement.fake import FakeWiki, FakeHistory, \
-    FakeSubject
+from unittests.domain.measurement.fake import FakeHistory, FakeSubject
 import unittest   
 
 
@@ -30,7 +29,7 @@ class DummyMetric(domain.Metric):
 
 class MetaMetricUnderTest(domain.MetaMetricMixin, 
                           domain.HigherPercentageIsBetterMetric):
-    # pylint: disable=too-many-public-methods
+    # pylint: disable=too-few-public-methods
     ''' Use MetaMetricMixin to create a concrete meta metric that can be 
         tested. '''
     pass
@@ -41,10 +40,8 @@ class MetaMetricMixinTest(unittest.TestCase):
     ''' Test case for meta metric mixin class. '''
         
     def setUp(self):  # pylint: disable=invalid-name
-        subject = [DummyMetric(FakeSubject(), wiki=FakeWiki(), 
-                               history=FakeHistory())]
-        self._metric = MetaMetricUnderTest(subject, wiki=FakeWiki(), 
-                                           history=FakeHistory())
+        subject = [DummyMetric(FakeSubject(), history=FakeHistory())]
+        self._metric = MetaMetricUnderTest(subject, history=FakeHistory())
         
     def test_value(self):
         ''' Test  the value of the metric. '''

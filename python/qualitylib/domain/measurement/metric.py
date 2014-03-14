@@ -21,6 +21,14 @@ import logging
 import datetime
 
 
+class NoWiki(object):  # pylint: disable=too-few-public-methods
+    ''' Null Wiki object. '''
+    @staticmethod
+    def comment(metric_id):  # pylint: disable=unused-argument
+        ''' Return the comment for the specified metric. '''
+        return ''
+    
+    
 class Metric(object):
     ''' Base class for metrics. '''
 
@@ -40,7 +48,7 @@ class Metric(object):
                 self._subject.responsible_teams(self.__class__)
         else:
             self.__responsible_teams = []
-        self._wiki = metric_sources.pop('wiki')
+        self._wiki = metric_sources.pop('wiki', NoWiki())
         self.__history = metric_sources.pop('history')
         self.__tasks = metric_sources.pop('tasks', None)
         assert metric_sources == {}

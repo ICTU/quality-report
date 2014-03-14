@@ -45,6 +45,8 @@ class SectionHeader(object):
 class Section(object):
     ''' Section within a report. '''
 
+    ORDERED_STATUS_COLORS = ('red', 'yellow', 'grey', 'green', 'perfect')
+
     def __init__(self, header, metrics, history=None, product=None, 
                  service=None):
         self.__header = header
@@ -82,7 +84,7 @@ class Section(object):
     def color(self):
         ''' Return the color of this section. '''
         metric_statuses = set(each_metric.status() for each_metric in self)
-        for status_color in ('red', 'yellow', 'grey', 'green', 'perfect'):
+        for status_color in self.ORDERED_STATUS_COLORS:  # pragma: no branch
             if status_color in metric_statuses:
                 color = status_color
                 break

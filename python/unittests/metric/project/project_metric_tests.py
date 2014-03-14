@@ -72,7 +72,7 @@ class RiskLogTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__metric = metric.RiskLog(trello_risklog_board=FakeBoard(),
-                                       wiki=None, history=None)
+                                       history=None)
 
     def test_url(self):
         ''' Test that the url of the metric uses the url of the risk log 
@@ -91,7 +91,7 @@ class UnreachableRiskLogTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__metric = metric.RiskLog(trello_risklog_board=UnreachableBoard(),
-                                       wiki=None, history=None)
+                                       history=None)
 
     def test_url(self):
         ''' Test that the url of the metric uses the url of the risk log 
@@ -111,7 +111,7 @@ class ActionActivityTest(unittest.TestCase):
     ''' Unit tests for the action activity metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionActivity(wiki=None, history=None,
+        self.__metric = metric.ActionActivity(history=None,
                                               trello_actions_board=FakeBoard())
         
     def test_value(self):
@@ -129,7 +129,7 @@ class UnreachableActionActivityTest(unittest.TestCase):
         unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionActivity(wiki=None, history=None,
+        self.__metric = metric.ActionActivity(history=None,
                                 trello_actions_board=UnreachableBoard())
         
     def test_value(self):
@@ -147,7 +147,7 @@ class ActionAgeTest(unittest.TestCase):
     ''' Unit tests for the action age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionAge(wiki=None, history=None,
+        self.__metric = metric.ActionAge(history=None,
                                          trello_actions_board=FakeBoard())
         
     def test_value(self):
@@ -172,7 +172,7 @@ class UnreachableActionAgeTest(unittest.TestCase):
     ''' Unit tests for the action age metric when Trello is unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionAge(wiki=None, history=None,
+        self.__metric = metric.ActionAge(history=None,
                                 trello_actions_board=UnreachableBoard())
 
     def test_value(self):
@@ -240,7 +240,7 @@ class ReleaseAgeTest(unittest.TestCase):
     ''' Unit tests for the release age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ReleaseAge(wiki=None, history=None,
+        self.__metric = metric.ReleaseAge(history=None,
                                           release_archive=FakeArchive())
         
     def test_value(self):
@@ -263,7 +263,7 @@ class OpenBugsTest(unittest.TestCase):
     ''' Unit tests for the number of open bugs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.OpenBugs(wiki=None, history=None,
+        self.__metric = metric.OpenBugs(history=None,
                                         jira=FakeJira())
         
     def test_value(self):
@@ -281,7 +281,7 @@ class OpenSecurityBugsTest(unittest.TestCase):
     ''' Unit tests for the number of open security bugs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.OpenSecurityBugs(wiki=None, history=None,
+        self.__metric = metric.OpenSecurityBugs(history=None,
                                                 jira=FakeJira())
         
     def test_value(self):
@@ -300,7 +300,7 @@ class BlockingTestIssuesTest(unittest.TestCase):
     ''' Unit tests for the number of blocking test issues metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.BlockingTestIssues(wiki=None, history=None,
+        self.__metric = metric.BlockingTestIssues(history=None,
                                                   jira=FakeJira())
         
     def test_value(self):

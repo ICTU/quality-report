@@ -73,8 +73,7 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         sonar = FakeSonar(line_coverage=89)
         self._metric = metric.FailingUnittests(subject=FakeSubject(),
-                                               sonar=sonar, wiki=None,
-                                            history=None)
+                                               sonar=sonar, history=None)
     
     def test_value(self):
         ''' Test that the value of the metric equals the line coverage 
@@ -93,8 +92,7 @@ class UnittestCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         sonar = FakeSonar(line_coverage=89)
         self._metric = metric.UnittestCoverage(subject=FakeSubject(),
-                                               sonar=sonar, wiki=None,
-                                               history=None)
+                                               sonar=sonar, history=None)
     
     def test_value(self):
         ''' Test that the value of the metric equals the line coverage 

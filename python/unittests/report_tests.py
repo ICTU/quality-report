@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
+import datetime
 import unittest
 from qualitylib import report, domain, metric
 
@@ -208,10 +209,23 @@ class QualityReportTest(unittest.TestCase):
             project. '''
         self.failUnless(self.__project.name() in self.__report.title())
         
+    def test_str_returns_title(self):
+        ''' Test that casting the report to a string returns the title. '''
+        self.assertEqual(str(self.__report), self.__report.title())
+        
+    def test_report_date_is_now(self):
+        ''' Test that the report date is now. '''
+        self.failUnless(datetime.datetime.now() - self.__report.date() < \
+                        datetime.timedelta(seconds=10))
+        
     def test_sections(self):
         ''' Test that the report has one section, the meta metrics, by 
             default. '''
         self.assertEqual(1, len(self.__report.sections()))
+        
+    def test_sections_twice(self):
+        ''' Test that the sections are cached. '''
+        self.failUnless(self.__report.sections() is self.__report.sections())
         
     def test_product(self):
         ''' Test that the report has three sections when we add a product:
@@ -229,8 +243,18 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         section = quality_report.get_product_section(product.name(), 
                                                      product.product_version())
-        self.assertEqual(product, section.product()) 
-                         
+        self.assertEqual(product, section.product())
+        
+    def test_get_product_section_twice(self):
+        ''' Test that the product section is cached. '''
+        product = domain.Product(self.__project, 'FP', 'sonar.id')
+        self.__project.add_product(product)
+        name, version = product.name(), product.product_version()
+        quality_report = report.QualityReport(self.__project)
+        section1 = quality_report.get_product_section(name, version)
+        section2 = quality_report.get_product_section(name, version)
+        self.failUnless(section1 is section2)
+                              
     def test_service(self):
         ''' Test that the report has two sections when we add a service:
             one for the service itself and one for meta metrics. '''
@@ -247,18 +271,65 @@ class QualityReportTest(unittest.TestCase):
         section = quality_report.get_service_section(service)
         self.assertEqual(service, section.service())
         
+    def test_get_service_section_twice(self):
+        ''' Test that the service section is cached. '''
+        service = domain.Service(self.__project, 'S1', 'Service 1')
+        self.__project.add_service(service)
+        quality_report = report.QualityReport(self.__project)
+        section1 = quality_report.get_service_section(service)
+        section2 = quality_report.get_service_section(service)
+        self.failUnless(section1 is section2)
+        
+    def test_get_meta_section(self):
+        ''' Test that the report has no meta section by default. '''
+        self.failIf(self.__report.get_meta_section())
+        
+    def test_dashboard(self):
+        ''' Test that the report has an empty dashboard by default. '''
+        self.assertEqual(([], []), self.__report.dashboard())
+        
     def test_team(self):
         ''' Test that the report has 2 sections when we add a team. '''
         team = domain.Team('Team')
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(2, len(quality_report.sections()))
-
+        
+    def test_teams(self):
+        ''' Test that the report returns the team. '''
+        team = domain.Team('Team')
+        self.__project.add_team(team)
+        quality_report = report.QualityReport(self.__project)
+        self.assertEqual([team], quality_report.teams())
+        
+    def test_products(self):
+        ''' Test that the report returns the products. '''
+        product = domain.Product(self.__project, 'FP', 'sonar.id')
+        self.__project.add_product(product)
+        quality_report = report.QualityReport(self.__project)
+        self.assertEqual([product], quality_report.products())
+        
+    def test_services(self):
+        ''' Test that the report returns the services. '''
+        service = domain.Service(self.__project, 'S1', 'Service 1')
+        self.__project.add_service(service)
+        quality_report = report.QualityReport(self.__project)
+        self.assertEqual([service], quality_report.services())
+        
     def test_resources(self):
         ''' Test that the report has project resources. '''
         quality_report = report.QualityReport(self.__project)
         self.failUnless(('Sonar', FakeSonar.url()) in 
                          quality_report.project_resources())
+
+    def test_get_product(self):
+        ''' Test that a product can be retrieved by version number. '''
+        product = domain.Product(self.__project, 'FP', 'sonar.id')
+        product.set_product_version('1.1')
+        self.__project.add_product(product)
+        quality_report = report.QualityReport(self.__project)
+        self.assertEqual(product, quality_report.get_product('sonar.id', 
+                                                               '1.1'))
 
 
 class FakeBirt(object):
@@ -295,7 +366,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs,
-                        number_of_teams=1):
+                        service_kwargs, number_of_teams=1):
         ''' Create the quality report. '''
         # pylint: disable=W0142
         project = domain.Project('organization', 'project', **project_kwargs)
@@ -305,20 +376,26 @@ class QualityReportMetricsTest(unittest.TestCase):
         if product_kwargs:
             jsf_kwargs = product_kwargs.pop('jsf', dict())
             product_kwargs['jsf'] = domain.Product(project, **jsf_kwargs)
-            product_kwargs['art'] = domain.Product(project)
+            art_kwargs = product_kwargs.pop('art', dict())
+            product_kwargs['art'] = domain.Product(project, **art_kwargs)
             product = domain.Product(project, **product_kwargs)
             project.add_product(product)
+        if service_kwargs:
+            service = domain.Service(project, **service_kwargs)
+            project.add_service(service)
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
     
     def __assert_metric(self, metric_class, project_kwargs=None, 
                                 team_kwargs=None, product_kwargs=None,
-                                number_of_teams=1, include=True):
+                                service_kwargs=None, number_of_teams=1, 
+                                include=True):
         ''' Check that the metric class is included in the report. '''
         quality_report = self.__create_report(project_kwargs or dict(), 
                                               team_kwargs or dict(),
                                               product_kwargs or dict(), 
+                                              service_kwargs or dict(),
                                               number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric \
                                     in quality_report.metrics()]
@@ -375,6 +452,12 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the ART coverage metric is added if possible. '''
         self.__assert_metric(metric.ARTCoverage, 
                              product_kwargs=dict(art_coverage_emma_id='emma'))
+        
+    def test_art_coverage_via_art(self):
+        ''' Test that the ART coverage metric is added if the ART product
+            has the coverage report. '''
+        self.__assert_metric(metric.ARTCoverage, 
+             product_kwargs=dict(art=dict(art_coverage_emma_id='emma')))
 
     def test_reviewed_and_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is added
@@ -453,6 +536,11 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.UnmergedBranches, 
                              product_kwargs=dict(svn_path='svn'))
         
+    def test_art_unmerged_branches(self):
+        ''' Test that the unmerged branches metric is added for the ART. '''
+        self.__assert_metric(metric.UnmergedBranches, 
+                             product_kwargs=dict(art=dict(svn_path='svn')))
+        
     def test_no_art_performance(self):
         ''' Test that the ART performance metric is not added for a trunk
             version. '''
@@ -468,3 +556,28 @@ class QualityReportMetricsTest(unittest.TestCase):
                              product_kwargs=dict(birt_id='birt',
                                                  product_version='1.1'),
                              project_kwargs=dict(birt=FakeBirt()))
+    
+    def test_service_availability_last_month(self):
+        ''' Test that the service availability metric is added if possible. '''
+        self.__assert_metric(metric.ServiceAvailabilityLastMonth, 
+                             project_kwargs=dict(nagios='nagios'),
+                             service_kwargs=dict(short_name='S1', name='S1'))
+
+    def test_service_availability_this_month(self):
+        ''' Test that the service availability metric is added if possible. '''
+        self.__assert_metric(metric.ServiceAvailabilityThisMonth, 
+                             project_kwargs=dict(nagios='nagios'),
+                             service_kwargs=dict(short_name='S1', name='S1'))
+
+    def test_service_reponse_times_last_month(self):
+        ''' Test that the service response times metric is added if possible. '''
+        self.__assert_metric(metric.ServiceResponseTimesLastMonth, 
+                             project_kwargs=dict(javamelody='javamelody'),
+                             service_kwargs=dict(short_name='S1', name='S1'))
+
+    def test_service_reponse_times_this_month(self):
+        ''' Test that the service response times metric is added if 
+            possible. '''
+        self.__assert_metric(metric.ServiceResponseTimesThisMonth, 
+                             project_kwargs=dict(javamelody='javamelody'),
+                             service_kwargs=dict(short_name='S1', name='S1'))

@@ -109,7 +109,7 @@ class AutomatedLogicalTestCasesTest(unittest.TestCase):
         self.__birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__metric = metric.AutomatedLogicalTestCases( \
-            subject=self.__subject, birt=self.__birt, wiki=None, history=None)
+            subject=self.__subject, birt=self.__birt, history=None)
         
     def test_value(self):
         ''' Test that the value of the metric is the percentage of user stories 
@@ -129,7 +129,7 @@ class ReviewedAndApprovedLogicalTestCasesTest(unittest.TestCase):
         birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__metric = metric.ReviewedAndApprovedLogicalTestCases( \
-            subject=self.__subject, birt=birt, wiki=None, history=None)
+            subject=self.__subject, birt=birt, history=None)
         
     def test_value(self):
         ''' Test that the value of the metric is the percentage of approved
@@ -148,7 +148,7 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.__birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__metric = metric.ManualLogicalTestCases( \
-            subject=self.__subject, birt=self.__birt, wiki=None, history=None)
+            subject=self.__subject, birt=self.__birt, history=None)
         
     def test_value(self):
         ''' Test that the value of the metric is the number of days ago that

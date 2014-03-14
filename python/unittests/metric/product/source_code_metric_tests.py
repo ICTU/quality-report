@@ -85,8 +85,7 @@ class CommentedLOCTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
         self._metric = metric.CommentedLOC(subject=self.__subject,  
-                                           sonar=FakeSonar(), wiki=None, 
-                                           history=None)
+                                           sonar=FakeSonar(), history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
@@ -106,7 +105,7 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self._metric = metric.CyclomaticComplexity(subject=FakeSubject(),  
                                                     sonar=FakeSonar(), 
-                                                    wiki=None, history=None)
+                                                    history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
@@ -127,7 +126,7 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self._metric = metric.LongMethods(subject=FakeSubject(),  
                                           sonar=FakeSonar(), 
-                                          wiki=None, history=None)
+                                          history=None)
 
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
@@ -148,8 +147,7 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     
     def setUp(self):  # pylint: disable=invalid-name
         self._metric = metric.ManyParameters(subject=FakeSubject(),  
-                                             sonar=FakeSonar(), 
-                                             wiki=None, history=None)
+                                             sonar=FakeSonar(), history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 

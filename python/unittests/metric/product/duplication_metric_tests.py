@@ -54,8 +54,7 @@ class DuplicationTest(unittest.TestCase):
     
     def setUp(self):  # pylint: disable=invalid-name
         self._metric = metric.Duplication(subject=FakeSubject(),  
-                                          sonar=FakeSonar(), 
-                                          wiki=None, history=None)
+                                          sonar=FakeSonar(), history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 

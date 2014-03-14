@@ -62,8 +62,7 @@ class ProductLOCTest(unittest.TestCase):
     
     def setUp(self):  # pylint: disable=invalid-name
         self._metric = metric.ProductLOC(subject=FakeSubject(), 
-                                         sonar=FakeSonar(),
-                                         wiki=None, history=None)
+                                         sonar=FakeSonar(), history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the NCLOC returned by
@@ -84,7 +83,7 @@ class TotalLOCTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__metric = metric.TotalLOC(subject=[self.__subject, 
                                                  self.__subject], 
-                                        sonar=FakeSonar(), wiki=None, 
+                                        sonar=FakeSonar(),
                                         history=FakeHistory())
         
     def test_value(self):

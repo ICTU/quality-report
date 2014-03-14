@@ -67,7 +67,7 @@ class ViolationsTestMixin(object):
         sonar = FakeSonar(critical_violations=self.__nr_violations, 
                           major_violations=self.__nr_violations)
         self._metric = self.metric_class(subject=self.__subject, 
-                                         sonar=sonar, wiki=None, history=None)
+                                         sonar=sonar, history=None)
 
     def test_numerical_value(self):
         ''' Test that the numerical value of the metric equals the the
@@ -103,8 +103,7 @@ class ViolationsTestMixin(object):
             the number of critical violations is zero. '''
         sonar = FakeSonar(critical_violations=0, major_violations=0)
         violations = metric.CriticalViolations(subject=self.__subject, 
-                                               sonar=sonar, wiki=None, 
-                                               history=None)
+                                               sonar=sonar, history=None)
         self.assertEqual('perfect', violations.status())
 
     def test_url(self):

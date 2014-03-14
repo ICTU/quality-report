@@ -72,8 +72,7 @@ class ServiceAvailabilityTestsMixin(object):
     def setUp(self):  # pylint: disable=invalid-name
         ''' Create the text fixture. '''
         self._metric = self.metric_class(subject=FakeSubject(), 
-                                         nagios=FakeNagios(), wiki=None, 
-                                         history=None)
+                                         nagios=FakeNagios(), history=None)
     
     def set_today(self, year, month, day):
         ''' Fake the current date. '''
@@ -135,7 +134,7 @@ class ServiceResponseTimesTestsMixin(object):
         ''' Create the text fixture. '''
         self.__javamelody = FakeJavaMelody()
         self._metric = self.metric_class(subject=FakeSubject(),
-            javamelody=self.__javamelody, wiki=None, history=None)
+            javamelody=self.__javamelody, history=None)
     
     def set_today(self, year, month, day):
         ''' Fake the current date. '''

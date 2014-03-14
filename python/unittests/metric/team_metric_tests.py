@@ -77,8 +77,7 @@ class TeamProgressTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = domain.Team('ABC')
         self.__metric = metric.TeamProgress(subject=self.__subject, 
-                                            birt=FakeBirt(), 
-                                            wiki=None, history=None)
+                                            birt=FakeBirt(), history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the required velocity. '''

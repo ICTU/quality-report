@@ -80,7 +80,7 @@ class DependencyQualityTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__metric = metric.DependencyQuality(subject=self.__subject, 
                                                  report=FakeReport(),
-                                                 wiki=None, history=None)
+                                                 history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
@@ -112,7 +112,7 @@ class CyclicDependenciesTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self._metric = metric.CyclicDependencies(subject=self.__subject,  
                                                  sonar=FakeSonar(), 
-                                                 wiki=None, history=None)
+                                                 history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the number of cyclic 

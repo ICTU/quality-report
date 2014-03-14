@@ -94,7 +94,7 @@ class ResponseTimesTestsMixin(object):
             queries_violating_wished_reponsetime=self.expected_wish_violations)
         self._metric = metric.ResponseTimes( \
             subject=FakeSubject(self.product_version),  
-            performance_report=report, wiki=None, history=None)
+            performance_report=report, history=None)
              
     def test_value(self):
         ''' Test that the value of the metric equals None since it is not
@@ -141,8 +141,7 @@ class ResponseTimesTestsMixin(object):
                 return datetime.datetime.min
         
         rt_metric = metric.ResponseTimes(subject=FakeSubject(),  
-            performance_report=MissingPerformanceReport(), wiki=None, 
-            history=None)
+            performance_report=MissingPerformanceReport(), history=None)
         self.failUnless(rt_metric.report().startswith('Er is geen ' \
             'performancetestrapport voor'))
 

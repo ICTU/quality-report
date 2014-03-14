@@ -58,7 +58,7 @@ class UnmergedBranchesTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__metric = metric.UnmergedBranches(subject=self.__subject,
                                                 subversion=self.__subversion,  
-                                                wiki=None, history=None)
+                                                history=None)
         
     def test_value(self):
         ''' Test that the value of the metric equals the number of unmerged 

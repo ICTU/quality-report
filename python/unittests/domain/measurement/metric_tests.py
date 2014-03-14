@@ -45,8 +45,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
         self.__fake_tasks = FakeTasks()
-        self.__metric = MetricUnderTest(self.__subject, wiki=FakeWiki(), 
-                                        history=FakeHistory(), 
+        self.__metric = MetricUnderTest(self.__subject, history=FakeHistory(), 
                                         tasks=self.__fake_tasks)
     
     def test_stable_id(self):
@@ -58,7 +57,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the stable id doesn't include the subject if the 
             subject is a list. '''
         self.assertEqual('Metric', 
-                         domain.Metric([], wiki=None, history=None).stable_id())
+                         domain.Metric([], history=None).stable_id())
         
     def test_set_id_string(self):
         ''' Test that the id string can be changed. '''
@@ -175,8 +174,8 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_passed_responsible_teams(self):
         ''' Test that the metric can be initialized with responsible teams. '''
-        self.assertEqual('Teams', MetricUnderTest(wiki=None, 
-            history=None, responsible_teams='Teams').responsible_teams())
+        self.assertEqual('Teams', MetricUnderTest(history=None, 
+                         responsible_teams='Teams').responsible_teams())
         
     def test_subject_responsible_teams(self):
         ''' Test that the responsible teams for the metric equal those of the
@@ -184,8 +183,8 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         # pylint: disable=attribute-defined-outside-init
         subject = FakeSubject()
         subject.responsible_teams = lambda metric: 'Teams'
-        self.assertEqual('Teams', MetricUnderTest(subject, wiki=None, 
-                         history=None).responsible_teams())
+        self.assertEqual('Teams', MetricUnderTest(subject, 
+                                  history=None).responsible_teams())
 
     def test_default_comment(self):
         ''' Test that the metric has no comment by default. '''
@@ -244,7 +243,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_no_task_urls_without_issue_manager(self):
         ''' Test that the metric has no task urls when there's no issue 
             manager. '''
-        self.assertEqual({}, MetricUnderTest(self.__subject, wiki=FakeWiki(), 
+        self.assertEqual({}, MetricUnderTest(self.__subject,
                                              history=FakeHistory()).task_urls())
 
     def test_no_task_urls(self):
@@ -291,7 +290,6 @@ class LowerIsBetterMetricTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
         self.__metric = LowerIsBetterMetricUnderTest(self.__subject, 
-                                                     wiki=FakeWiki(), 
                                                      history=FakeHistory())
 
     def test_default_status(self):
@@ -314,7 +312,6 @@ class HigherIsBetterMetricTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
         self.__metric = HigherIsBetterMetricUnderTest(self.__subject, 
-                                                      wiki=FakeWiki(), 
                                                       history=FakeHistory())
 
     def test_default_status(self):
@@ -354,7 +351,7 @@ class PercentageMetricTestCase(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
         self._metric = self.metric_under_test_class()(self.__subject, 
-            wiki=FakeWiki(), history=FakeHistory())
+            history=FakeHistory())
         
     @staticmethod
     def metric_under_test_class():

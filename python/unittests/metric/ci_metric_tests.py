@@ -69,7 +69,7 @@ class FailingCIJobsCommonTestsMixin(object):
         ''' Create the text fixture. '''
         self._metric = metric.FailingCIJobs(subject=self.subject, 
                                             jenkins=FakeJenkins(), 
-                                            wiki=None, history=None)
+                                            history=None)
         
     def test_value(self):
         ''' Test that the value equals the number of failing jobs. '''
@@ -115,7 +115,7 @@ class UnusedCIJobsCommonTestsMixin(object):
         ''' Create the text fixture. '''
         self._metric = metric.UnusedCIJobs(subject=self.subject, 
                                             jenkins=FakeJenkins(), 
-                                            wiki=None, history=None)
+                                            history=None)
         
     def test_value(self):
         ''' Test that the value equals the number of failing jobs. '''
@@ -154,13 +154,12 @@ class UnusedCIJobsWithTeamTest(UnusedCIJobsCommonTestsMixin,
 
          
 class ARTStabilityTest(unittest.TestCase):
-     # pylint: disable=too-many-public-methods
+    # pylint: disable=too-many-public-methods
     ''' Unit tests for the ARTstability metric. '''
     
     def setUp(self):  # pylint: disable=invalid-name
         self.__metric = metric.ARTStability(subject=domain.Street('a', 'b'), 
-                                            jenkins=FakeJenkins(), 
-                                            wiki=None, history=None)
+                                            jenkins=FakeJenkins(), history=None)
         
     def test_value_stable(self):
         ''' Test that the value of the metric equals the list of unstable ARTs
@@ -241,7 +240,7 @@ class ServerAvailabilityTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__metric = metric.ServerAvailability(subject=FakeSubject(), 
                                                   nagios=FakeNagios(),
-                                                  wiki=None, history=None)
+                                                  history=None)
         
     def test_value(self):
         ''' Test that the availability is reported correctly. '''
@@ -265,7 +264,7 @@ class AssignedCIJobsTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__metric = metric.AssignedCIJobs(subject=FakeSubject(), 
                                               jenkins=FakeJenkins(),
-                                              wiki=None, history=None)
+                                              history=None)
         
     def test_value(self):
         ''' Test that the availability is reported correctly. '''

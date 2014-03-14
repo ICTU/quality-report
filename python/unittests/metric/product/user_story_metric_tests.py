@@ -60,7 +60,7 @@ class ReviewedAndApprovedUserStoriesTest(unittest.TestCase):
         birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__metric = metric.ReviewedAndApprovedUserStories( \
-            subject=self.__subject, birt=birt, wiki=None, history=None)
+            subject=self.__subject, birt=birt, history=None)
         
     def test_value(self):
         ''' Test that the value of the metric is the percentage of approved
@@ -80,12 +80,12 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
         self.__birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__metric = metric.UserStoriesWithEnoughLogicalTestCases( \
-            subject=self.__subject, birt=self.__birt, wiki=None, history=None)
+            subject=self.__subject, birt=self.__birt, history=None)
         
     def test_value(self):
         ''' Test that the value of the metric is the percentage of user stories 
             that has enough logical test cases as reported by Birt. '''
-        self.assertEqual(100*23/25., self.__metric.value())
+        self.assertEqual(100 * 23 / 25., self.__metric.value())
 
     def test_url(self):
         ''' Test the url is correct. '''

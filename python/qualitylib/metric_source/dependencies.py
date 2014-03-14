@@ -29,7 +29,7 @@ class Dependencies(object):
                 
     def load(self):
         ''' Load the contents of the database from disk. '''
-        with self.__file(self.__filename) as db_file:
+        with self.__file(self.__filename) as db_file:  # pragma: no branch
             try:
                 return eval(db_file.read())
             except SyntaxError:
