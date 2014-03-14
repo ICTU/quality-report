@@ -88,13 +88,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         self.__remove_old_analyses(sonar_analyses_to_keep)
 
     def __analyse_product(self, product):
-        ''' Run Sonar on the product, and unittests if any. '''
-
-        def is_separate_project(name):
-            ''' Return whether the name is of a separate sonar unittest
-                project. '''
-            return name.endswith(':ut') or ':ut:' in name
-
+        ''' Run Sonar on the product, and unit tests if any. '''
         if not product.sonar_id():
             return
         if not self.__analysis_exists(product):
@@ -105,7 +99,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                          '(dependency of %s)', product.name(), 
                          product.product_version() or 'trunk', users or 'none')
             self.__checkout_code_and_run_sonar(product)
-        if product.unittests() and is_separate_project(product.unittests()) \
+        if product.unittests() and product.unittests() != product.sonar_id() \
             and not self.__analysis_exists(product.unittests()):
             # Need to run Sonar again for the unit test coverage:
             self.__checkout_code_and_run_sonar(product, unittests=True)
@@ -115,8 +109,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     @utils.memoized
     def __analysis_exists(self, product):
-        ''' Return whether a Sonar analysis for this product already
-            exists. '''
+        ''' Return whether a Sonar analysis for this product already exists. '''
         sonar_id = '"%s"' % str(product)
         result = sonar_id in str(self.soup(self.__sonar_url + 'api/resources'))
         logging.info('Sonar analysis for %s %s', sonar_id,
