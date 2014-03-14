@@ -47,7 +47,7 @@ class Section(object):
 
     ORDERED_STATUS_COLORS = ('red', 'yellow', 'grey', 'green', 'perfect')
 
-    def __init__(self, header, metrics, history=None, product=None, 
+    def __init__(self, header, metrics, history=None, product=None,
                  service=None):
         self.__header = header
         self.__metrics = metrics
@@ -93,7 +93,7 @@ class Section(object):
         if color == 'perfect':
             color = 'green'
         return color
-         
+
     def has_history(self):
         ''' Return whether this section has history collected. '''
         return self.id_prefix() == 'MM'
@@ -110,7 +110,7 @@ class Section(object):
         ''' Return whether this section describes a trunk version of a
             product. '''
         return self.product() and not self.product().product_version()
-    
+
     def service(self):
         ''' Return the service this section is about. '''
         return self.__service
@@ -149,7 +149,7 @@ class QualityReport(object):
     def project_resources(self):
         ''' Return the project resources. '''
         return self.__project.project_resources()
-    
+
     @staticmethod
     def date():
         ''' Return the date and time the quality report was generated. '''
@@ -184,13 +184,13 @@ class QualityReport(object):
         if product_key not in self.__product_sections:
             self.sections()  # Create the sections
         return self.__product_sections[product_key]
-    
+
     def get_service_section(self, service):
         ''' Return the section for a specific service. '''
         if service not in self.__service_sections:
             self.sections()  # Create the sections
         return self.__service_sections[service]
-    
+
     def get_meta_section(self):
         ''' Return the section with the meta metrics. '''
         return self.__meta_section
@@ -298,7 +298,7 @@ class QualityReport(object):
                                      'Product ' + product.name(),
                                      self.latest_product_version(product)),
                        metrics, product=product)
-        
+
     def __service_section(self, service):
         ''' Return the section for the service. '''
         metrics = []
@@ -424,7 +424,7 @@ class QualityReport(object):
         return [metric.ResponseTimes(product, 
                 performance_report=self.__project.performance_report(),
                 **self.__metric_sources)]
-        
+
     def __management_metrics(self):
         ''' Return a list of management metrics for the project. '''
         metrics = []
@@ -441,7 +441,7 @@ class QualityReport(object):
                                           trello_risklog_board=risklog,
                                           **self.__metric_sources))
         return metrics
-    
+
     def __build_server_metrics(self):
         ''' Return a list of build server hygiene related metrics. '''
         metrics = []
@@ -458,7 +458,7 @@ class QualityReport(object):
                                                      jenkins=jenkins,
                                                      **self.__metric_sources))
         return metrics
-    
+
     def __bugs_metrics(self):
         ''' Return a list of bug related metrics for the project. '''
         metrics = []
