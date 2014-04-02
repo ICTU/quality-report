@@ -38,13 +38,18 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     quality_attribute = PROGRESS
     target_factor = 1.25
     low_target_factor = 1.5
-    
+
     def __init__(self, *args, **kwargs):
         super(TeamProgress, self).__init__(*args, **kwargs)
         birt_team_id = self._subject.birt_id()
         planned_velocity = self._birt.planned_velocity(birt_team_id)
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
+
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(TeamProgress, cls).can_be_measured(team, project) and \
+            team.birt_id() and team.is_scrum_team()
 
     def value(self):
         birt_team_id = self._subject.birt_id()
@@ -85,9 +90,18 @@ class TeamSpirit(Metric):
     old_age = datetime.timedelta(hours=7 * 24)
     max_old_age = datetime.timedelta(hours=14 * 24)
     quality_attribute = SPIRIT
-    
+
+    def __init__(self, *args, **kwargs):
+        super(TeamSpirit, self).__init__(*args, **kwargs)
+        self.__wiki = self._project.wiki()
+
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(TeamSpirit, cls).can_be_measured(team, project) and \
+            project.wiki()
+
     def value(self):
-        return self._wiki.team_spirit(self._subject) or '?'
+        return self.__wiki.team_spirit(self._subject) or '?'
 
     def numerical_value(self):
         return self.numerical_value_map[self.value()]
@@ -103,7 +117,7 @@ class TeamSpirit(Metric):
         return self.numerical_value() < max(self.numerical_value_map.values())
 
     def _date(self):
-        return self._wiki.date_of_last_team_spirit_measurement(self._subject)
+        return self.__wiki.date_of_last_team_spirit_measurement(self._subject)
 
     def url(self):
-        return dict(Wiki=self._wiki.url())
+        return dict(Wiki=self.__wiki.url())

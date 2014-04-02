@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric
+from qualitylib import metric, domain
 
 
 class FakeSubversion(object):
@@ -29,44 +29,51 @@ class FakeSubversion(object):
     def branches(*args):
         ''' Return the branches for a product. '''
         return ['branch1', 'branch2', 'ignored branch']
-    
-    
+
+
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
-        
+
+    def __init__(self, version=None):
+        self.__version = version
+
     def __repr__(self):
         return 'FakeSubject'
-           
+
+    def product_version(self):
+        ''' Return the fake version. '''
+        return self.__version
+
     @staticmethod
     def svn_path():
         ''' Return the Subversion path of the subject. '''
         return 'http://svn/trunk'
-           
+
     @staticmethod
     def branches_to_ignore():
         ''' Return the branches to ignore when checking for unmerged 
             branches. '''
         return ['ignored branch']
-    
-        
+
+
 class UnmergedBranchesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the unmerged branches metric. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__subversion = FakeSubversion()
+        project = domain.Project(subversion=self.__subversion)
         self.__subject = FakeSubject()
         self.__metric = metric.UnmergedBranches(subject=self.__subject,
-                                                subversion=self.__subversion,  
-                                                history=None)
-        
+                                                project=project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the number of unmerged 
             branches reported by Subversion. '''
         self.assertEqual(len(self.__subversion.unmerged_branches()) - 
                          len(self.__subject.branches_to_ignore()), 
                          self.__metric.value())
-                
+
     def test_report(self):
         ''' Test that the report is correct. '''
         self.assertEqual('1 van de 3 branches van FakeSubject hebben ' \
@@ -77,11 +84,11 @@ class UnmergedBranchesTest(unittest.TestCase):
         ''' Test that the unmerged branches are listed. '''
         self.assertEqual({'branch2: 1 ongemergde revisie(s)': 
                           'http://svn/branches/branch2'}, self.__metric.url())
-        
+
     def test_url_label(self):
         ''' Test that the label for the urls is correct. '''
         self.assertEqual('Niet gemergde branches', self.__metric.url_label())
-        
+
     def test_comment_urls(self):
         ''' Test that the comment urls include a link to ignored branches. '''
         self.assertEqual({'ignored branch': 
@@ -92,3 +99,15 @@ class UnmergedBranchesTest(unittest.TestCase):
         ''' Test the label for the comment urls. '''
         self.assertEqual('Genegeerde branches', 
                          self.__metric.comment_url_label())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can only be measured if the product is under
+            version control and is the trunk version. '''
+        self.failUnless(metric.UnmergedBranches.can_be_measured(self.__subject,
+                                                                None))
+
+    def test_cant_be_measured(self):
+        ''' Test that the metric can not be measured if the product is 
+            a trunk version. '''
+        self.failIf(metric.UnmergedBranches.can_be_measured(FakeSubject('1.1'),
+                                                            None))

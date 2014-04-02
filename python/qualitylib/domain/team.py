@@ -54,7 +54,7 @@ class Team(MeasurableObject):
     def streets(self):
         ''' Return the development streets that the team uses. '''
         return self.__streets
-    
+
     def release_archives(self):
         ''' Return the release archives of the team. '''
         return self.__release_archives

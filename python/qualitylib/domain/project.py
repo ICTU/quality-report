@@ -29,7 +29,8 @@ class Project(object):
                  trello_actions_board=None, performance_report=None, 
                  release_candidates=None, release_archives=None, 
                  javamelody=None, jira=None, subversion=None, pom=None,
-                 maven_binary='mvn', java_home=None, dependencies_db=None):
+                 maven_binary='mvn', java_home=None, dependencies_db=None,
+                 tasks=None):
         self.__organization = organization
         self.__name = name
         missing = MissingMetricSource()
@@ -48,6 +49,7 @@ class Project(object):
         self.__release_archives = release_archives or missing
         self.__javamelody = javamelody or missing
         self.__jira = jira or missing
+        self.__tasks = tasks or jira or missing
         self.__subversion = subversion or missing
         self.__pom = pom or missing
         self.__maven_binary = maven_binary
@@ -62,7 +64,7 @@ class Project(object):
     def organization(self):
         ''' Return the name of the organization. '''
         return self.__organization
-    
+
     def name(self):
         ''' Return the name of the project. '''
         return self.__name
@@ -70,23 +72,23 @@ class Project(object):
     def performance_report(self):
         ''' Return the performance report of the project. '''
         return self.__performance_report
-    
+
     def release_candidates(self):
         ''' Return the release candidates file of the project. '''
         return self.__release_candidates
-    
+
     def release_archives(self):
         ''' Return the release archives of the project. '''
         return self.__release_archives
-    
+
     def sonar(self):
         ''' Return the Sonar instance of the project. '''
         return self.__sonar
-    
+
     def maven_binary(self):
         ''' Return the Maven binary the project uses. '''
         return self.__maven_binary
-    
+
     def java_home(self):
         ''' Return the JAVA_HOME environment variable the project uses. '''
         return self.__java_home
@@ -106,7 +108,7 @@ class Project(object):
     def history(self):
         ''' Return the history of the project. '''
         return self.__history
-    
+
     def dependency_db(self):
         ''' Return the database with cached dependencies of the project. '''
         return self.__dependencies_db
@@ -122,7 +124,7 @@ class Project(object):
     def jacoco(self):
         ''' Return the JaCoCo coverage report(s) for the project. '''
         return self.__jacoco
-    
+
     def trello_risklog_board(self):
         ''' Return the Trello risklog board for the project. '''
         return self.__trello_risklog_board
@@ -134,19 +136,23 @@ class Project(object):
     def javamelody(self):
         ''' Return the JavaMelody instance for the project. '''
         return self.__javamelody
-    
+
     def jira(self):
         ''' Return the Jira instance for the project. '''
         return self.__jira
-    
+
+    def tasks(self):
+        ''' Return the task manager for the project. '''
+        return self.__tasks
+
     def subversion(self):
         ''' Return the Subversion repository of the project. '''
         return self.__subversion
-    
+
     def pom(self):
         ''' Return the Pom retriever for the project. '''
         return self.__pom
-    
+
     def add_product(self, product):
         ''' Add a product to the project. '''
         self.__products.append(product)
@@ -185,7 +191,7 @@ class Project(object):
         for product in self.products():
             result.update(product.dependencies(recursive=True))
         return result
-    
+
     def analyse_products(self):
         ''' Make sure all products/versions in the project are analyzed. '''
         if self.sonar():
@@ -194,11 +200,11 @@ class Project(object):
     def services(self):
         ''' Return the services of the project. '''
         return self.__services
-    
+
     def add_service(self, service):
         ''' Add a service to the project. '''
         self.__services.append(service)
-    
+
     def add_team(self, team, responsible=False):
         ''' Add a team to the project. '''
         self.__teams.append(team)
@@ -208,11 +214,11 @@ class Project(object):
     def teams(self):
         ''' Return the teams that work on the project. '''
         return self.__teams
-    
-    def responsible_teams(self):
+
+    def responsible_teams(self, metric_class=None):
         ''' Return the teams that are responsible for the products. '''
         return self.__responsible_teams
-    
+
     def set_dashboard(self, dashboard_columns, dashboard_rows):
         ''' Set the dashboard layout for the project. '''
         self.__dashboard = (dashboard_columns, dashboard_rows)
@@ -220,7 +226,7 @@ class Project(object):
     def dashboard(self):
         ''' Return the dashboard layout for the project. '''
         return self.__dashboard
-    
+
     def project_resources(self):
         ''' Return all resources of the project. '''
         resources = []

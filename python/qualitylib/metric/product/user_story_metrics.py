@@ -33,6 +33,11 @@ class ReviewedAndApprovedUserStories(BirtTestDesignMetricMixin,
     low_target_value = 75
     quality_attribute = DOC_QUALITY
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(ReviewedAndApprovedUserStories, cls).\
+            can_be_measured(product, project) and not product.product_version()
+
     def _numerator(self):
         return self._birt.approved_user_stories(self._birt_id())
 
@@ -53,6 +58,11 @@ class UserStoriesWithEnoughLogicalTestCases(BirtTestDesignMetricMixin,
     target_value = 95
     low_target_value = 75
     quality_attribute = TEST_COVERAGE
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(UserStoriesWithEnoughLogicalTestCases, cls).\
+            can_be_measured(product, project) and not product.product_version()
 
     def _numerator(self):
         return self._birt.nr_user_stories_with_sufficient_ltcs(self._birt_id())

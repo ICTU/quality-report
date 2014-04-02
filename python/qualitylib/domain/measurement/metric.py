@@ -15,20 +15,13 @@ limitations under the License.
 '''
 
 from qualitylib import utils
+from qualitylib.domain.team import Team
 from qualitylib.domain.quality_attribute import QualityAttribute
 from qualitylib.domain.measurement import metric_mixin
 import logging
 import datetime
 
 
-class NoWiki(object):  # pylint: disable=too-few-public-methods
-    ''' Null Wiki object. '''
-    @staticmethod
-    def comment(metric_id):  # pylint: disable=unused-argument
-        ''' Return the comment for the specified metric. '''
-        return ''
-    
-    
 class Metric(object):
     ''' Base class for metrics. '''
 
@@ -38,7 +31,15 @@ class Metric(object):
     max_old_age = datetime.timedelta.max
     quality_attribute = QualityAttribute('', '')
 
-    def __init__(self, subject=None, responsible_teams=None, **metric_sources):
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        # pylint: disable=unused-argument
+        ''' Return whether this metric can be measured for the specified
+            subject, i.e. whether the necessary metric sources are 
+            available. '''
+        return bool(subject)
+
+    def __init__(self, subject=None, responsible_teams=None, project=None):
         self._subject = subject
         self.__id_string = self.stable_id()
         if responsible_teams:
@@ -46,12 +47,14 @@ class Metric(object):
         elif self._subject and hasattr(self._subject, 'responsible_teams'):
             self.__responsible_teams = \
                 self._subject.responsible_teams(self.__class__)
+        elif isinstance(subject, Team):
+            self.__responsible_teams = [subject]
         else:
             self.__responsible_teams = []
-        self._wiki = metric_sources.pop('wiki', NoWiki())
-        self.__history = metric_sources.pop('history')
-        self.__tasks = metric_sources.pop('tasks', None)
-        assert metric_sources == {}
+        self._project = project
+        self._wiki = self._project.wiki()
+        self.__history = self._project.history()
+        self.__tasks = self._project.tasks()
 
     def stable_id(self):
         ''' Return an id that doesn't depend on numbering/order of KPI's. '''
@@ -112,7 +115,7 @@ class Metric(object):
             return 'perfect'
         else:
             return 'green'
-        
+
     def status_start_date(self):
         ''' Return since when the metric has the current status. '''
         return self.__history.status_start_date(self.stable_id(), self.status())
@@ -219,7 +222,7 @@ class Metric(object):
             wiki. '''
         return self.__technical_debt_comment() or \
                self._wiki.comment(self.id_string()) or ''
-    
+
     @staticmethod
     def comment_url_label():
         ''' Return the label for the comment urls. '''
@@ -241,7 +244,7 @@ class Metric(object):
         elif self.comment():
             urls['Wiki'] = self._wiki.comment_url()
         return urls
-    
+
     def task_urls(self):
         ''' Return the urls for any tasks defined for this metric. '''
         urls = {}
@@ -256,11 +259,11 @@ class Metric(object):
             elif self.status() not in ('green', 'perfect'):
                 urls['Maak taak'] = self.__tasks.new_task_url(self.id_string())
         return urls
-    
+
     def has_tasks(self, recent_only=False):
         ''' Return whether the metric has any corrective actions defined. '''
         return bool(self.__tasks.tasks(self.id_string(), recent_only))
-    
+
     def recent_history(self):
         ''' Return a list of recent values of the metric, to be used in e.g.
             a spark line graph. '''
@@ -295,8 +298,8 @@ class Metric(object):
         try:
             return self._subject.product_version_type()
         except AttributeError:
-            return 'no_product'    
-    
+            return 'no_product'
+
 
 class LowerIsBetterMetric(Metric):
     # pylint: disable=abstract-class-little-used
@@ -358,7 +361,7 @@ class LowerPercentageIsBetterMetric(metric_mixin.PercentageMixin,
     ''' Metric measured as a percentage with lower values being better. '''
 
     zero_divided_by_zero_is_zero = True
-    
+
     def _numerator(self):
         raise NotImplementedError  # pragma: no cover
 
@@ -381,7 +384,7 @@ class HigherPercentageIsBetterMetric(metric_mixin.PercentageMixin,
 
     perfect_value = 100
     zero_divided_by_zero_is_zero = False
-    
+
     def _numerator(self):
         raise NotImplementedError  # pragma: no cover
 

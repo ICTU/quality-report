@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric
+from qualitylib import metric, domain
 from qualitylib.report import Section
 
 
@@ -71,17 +71,18 @@ class FakeReport(object):
     def get_product(product, version):  # pylint: disable=unused-argument
         ''' Return the specified product. '''
         return FakeSubject()
-      
+
 
 class DependencyQualityTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the dependency quality metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
+        project = domain.Project()
         self.__metric = metric.DependencyQuality(subject=self.__subject, 
                                                  report=FakeReport(),
-                                                 history=None)
-        
+                                                 project=project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
             dependencies without red metrics. '''
@@ -102,18 +103,18 @@ class DependencyQualityTest(unittest.TestCase):
         ''' Test that the url label is correct. '''
         self.assertEqual('Componenten die "rode" metrieken hebben',
                          self.__metric.url_label())
-        
+
 
 class CyclicDependenciesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the cyclic dependencies metric. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        self._metric = metric.CyclicDependencies(subject=self.__subject,  
-                                                 sonar=FakeSonar(), 
-                                                 history=None)
-        
+        project = domain.Project(sonar=FakeSonar())
+        self._metric = metric.CyclicDependencies(subject=self.__subject,
+                                                 project=project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the number of cyclic 
             dependencies between packages. '''
@@ -123,4 +124,3 @@ class CyclicDependenciesTest(unittest.TestCase):
         ''' Test that the url is correct. '''
         self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), 
                          self._metric.url())
-  

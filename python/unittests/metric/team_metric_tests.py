@@ -18,7 +18,7 @@ from qualitylib import metric, domain
 import datetime
 import unittest
 
-    
+
 class FakeSubject(object):  # pylint:disable=too-few-public-methods
     ''' Fake subject (team). ''' 
     def __str__(self):
@@ -28,57 +28,58 @@ class FakeSubject(object):  # pylint:disable=too-few-public-methods
 class FakeBirt(object):
     ''' Fake Birt so we can return fake velocity information. '''
     # pylint: disable=unused-argument
-      
+
     @staticmethod
     def planned_velocity(birt_id):
         ''' Return the planned velocity of the team. '''
         return 1
-    
+
     @staticmethod
     def actual_velocity(birt_id):
         ''' Return the actual velocity of the team so far. '''
         return 0.5
-    
+
     @staticmethod
     def required_velocity(birt_id):
         ''' Return the required velocity of the team. '''
         return 2
-    
+
     @staticmethod
     def nr_points_planned(birt_id):
         ''' Return the number of points planned for the sprint. '''
         return 20
-    
+
     @staticmethod
     def nr_points_realized(birt_id):
         ''' Return the number of points realized so far. '''
         return 10
-    
+
     @staticmethod
     def days_in_sprint(birt_id):
         ''' Return the number of working days in the sprint. '''
         return 20
-    
+
     @staticmethod
     def day_in_sprint(birt_id):
         ''' Return the current day in the sprint. '''
         return 10
-    
+
     @staticmethod
     def sprint_progress_url(birt_id):
         ''' Return the url of the sprint progress report. '''
         return 'http://birt/report/'
-    
-    
+
+
 class TeamProgressTest(unittest.TestCase):
-     # pylint: disable=too-many-public-methods
+    # pylint: disable=too-many-public-methods
     ''' Unit tests for the team progress metric. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = domain.Team('ABC')
-        self.__metric = metric.TeamProgress(subject=self.__subject, 
-                                            birt=FakeBirt(), history=None)
-        
+        self.__team = domain.Team('ABC', birt_id='abc', is_scrum_team=True)
+        self.__project = domain.Project(birt=FakeBirt())
+        self.__metric = metric.TeamProgress(subject=self.__team, 
+                                            project=self.__project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the required velocity. '''
         self.assertEqual(2, self.__metric.value())
@@ -96,6 +97,29 @@ class TeamProgressTest(unittest.TestCase):
         ''' Test that the url of the metric is the url of the Birt report. '''
         self.assertEqual(dict(Birt='http://birt/report/'), self.__metric.url())
 
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured if the project has Birt and
+            the team has a Birt id. '''
+        self.failUnless(metric.TeamProgress.can_be_measured(self.__team,
+                                                            self.__project))
+
+    def test_can_only_be_measured_for_scrum_teams(self):
+        ''' Test that the metric cannot be measured if the team is not a Scrum
+            team. '''
+        team = domain.Team('ABC', birt_id='abc')
+        self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
+
+    def test_cant_be_measured_without_birt_id(self):
+        ''' Test that the metric cannot be measured if the team has no Birt 
+            id. '''
+        team = domain.Team('Team', is_scrum_team=True)
+        self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
+
+    def test_cant_be_measured_without_birt(self):
+        ''' Test that the metric cannot be measured without Birt. '''
+        project = domain.Project()
+        self.failIf(metric.TeamProgress.can_be_measured(self.__team, project))
+
 
 class FakeWiki(object):
     ''' Fake a wiki metric source. '''
@@ -103,28 +127,30 @@ class FakeWiki(object):
     def team_spirit(*args):
         ''' Return a fake team spirit. '''
         return ':-)'
-    
+
     @staticmethod  # pylint: disable=unused-argument
     def date_of_last_team_spirit_measurement(*args):  
         # pylint: disable=invalid-name
         ''' Return a fake date. '''
         return datetime.datetime.now()
-    
+
     @staticmethod
     def url():
         ''' Return a fake url. '''
         return 'http://wiki'
-    
+
 
 class TeamSpiritTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the ARTstability metric. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
+        self.__team = FakeSubject()
         self.__wiki = FakeWiki()
-        self.__metric = metric.TeamSpirit(subject=FakeSubject(), 
-                                          wiki=self.__wiki, history=None)
-        
+        self.__project = domain.Project(wiki=self.__wiki)
+        self.__metric = metric.TeamSpirit(subject=self.__team, 
+                                          project=self.__project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the team spirit reported
             by the wiki. '''
@@ -134,15 +160,25 @@ class TeamSpiritTest(unittest.TestCase):
     def test_numerical_value(self):
         ''' Test that the smiley is translated into an integer. '''
         self.assertEqual(2, self.__metric.numerical_value())
-    
+
     def test_y_axis_range(self):
         ''' Test that the y axis range is 0-2. '''
         self.assertEqual((0, 2), self.__metric.y_axis_range())
-        
+
     def test_status(self):
         ''' Test that the status is perfect. '''
         self.assertEqual('perfect', self.__metric.status())
-        
+
     def test_url(self):
         ''' Test that the metric url uses the wiki url. '''
         self.assertEqual(dict(Wiki=FakeWiki().url()), self.__metric.url())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured if the project has a Wiki. '''
+        self.failUnless(metric.TeamSpirit.can_be_measured(self.__team,
+                                                          self.__project))
+
+    def test_cant_be_measured_without_wiki(self):
+        ''' Test that the metric cannot be measured without a Wiki. '''
+        project = domain.Project()
+        self.failIf(metric.TeamSpirit.can_be_measured(self.__team, project))

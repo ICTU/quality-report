@@ -19,3 +19,8 @@ Prerequisites for running the quality system.
 1. Python 2.7 - http://python.org
 2. Virtual env and pip for Python.
 3. GraphViz - http://www.graphviz.org
+
+Installing the software
+===
+
+$ cd python; python setup.py install

@@ -30,6 +30,11 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     low_target_value = 100000
     quality_attribute = SIZE
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(ProductLOC, cls).can_be_measured(product, project) and \
+            product.sonar_id()
+
     def value(self):
         return self._sonar.ncloc(self._sonar_id())
 

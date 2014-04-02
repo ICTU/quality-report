@@ -119,12 +119,29 @@ class Section(object):
 class QualityReport(object):
     ''' Quality report on a project. '''
 
+    TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests, 
+                                    metric.UnittestCoverage, metric.ARTCoverage)
+    TEST_DESIGN_METRIC_CLASSES = (metric.ReviewedAndApprovedUserStories,
+                                  metric.ReviewedAndApprovedLogicalTestCases,
+                                  metric.UserStoriesWithEnoughLogicalTestCases,
+                                  metric.AutomatedLogicalTestCases,
+                                  metric.ManualLogicalTestCases)
+    JAVA_METRIC_CLASSES = (metric.CriticalViolations, metric.MajorViolations,
+                           metric.CyclomaticComplexity, 
+                           metric.CyclicDependencies, metric.JavaDuplication,
+                           metric.ProductLOC, metric.LongMethods,
+                           metric.ManyParameters, metric.CommentedLOC)
+    PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes, metric.ARTPerformance)
+    MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, 
+                                 metric.RiskLog)
+    BUILD_SERVER_METRIC_CLASSES = (metric.ProjectFailingCIJobs,
+                                   metric.ProjectUnusedCIJobs,
+                                   metric.AssignedCIJobs)
+    BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
+                           metric.BlockingTestIssues)
+
     def __init__(self, project):
         self.__project = project
-        # All metrics need these sources:
-        self.__metric_sources = dict(history=project.history(),
-                                     wiki=project.wiki(),
-                                     tasks=project.jira())
         self.__title = 'Kwaliteitsrapportage %s/%s' % (project.organization(), 
                                                        project.name())
         self.__products = sorted(project.products(),
@@ -210,7 +227,7 @@ class QualityReport(object):
     def products(self):
         ''' Return the products we report on. '''
         return self.__products
-    
+
     def services(self):
         ''' Return the services we report on. '''
         return self.__services
@@ -232,12 +249,15 @@ class QualityReport(object):
             return self.__project.sonar().version(product.sonar_id())
         else:
             return ''
-        
+
     def __process_section(self):
         ''' Return the process section. '''
-        metrics = self.__management_metrics() + \
-                  self.__build_server_metrics() + \
-                  self.__bugs_metrics()
+        metrics = []
+        for metric_class in self.MANAGEMENT_METRIC_CLASSES + \
+                            self.BUILD_SERVER_METRIC_CLASSES + \
+                            self.BUGS_METRIC_CLASSES:
+            if metric_class.can_be_measured(self.__project, self.__project):
+                metrics.append(metric_class(project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'),
                        metrics) if metrics else None
@@ -247,10 +267,9 @@ class QualityReport(object):
         metrics = [metric.TotalLOC([product for product in self.__products \
                                      if not product.product_version() and \
                                      product.sonar_id()],
-                                    sonar=self.__project.sonar(),
-                                    **self.__metric_sources)]
+                                    project=self.__project)]
         metrics.append(metric.DependencyQuality(report=self,
-                                                **self.__metric_sources))
+                                                project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'),
                        metrics)
@@ -258,41 +277,27 @@ class QualityReport(object):
     def __product_section(self, product):
         ''' Return the section for the product. '''
         metrics = []
-        metrics.extend(self.__test_coverage_metrics(product))
-        if product.has_test_design():
-            metrics.extend(self.__testdesign_metrics(product))
-        if product.sonar_id():
-            metrics.extend(self.__java_metrics(product))
-        if product.performance_test():
-            metrics.extend(self.__performance_metrics(product))
+        for metric_class in self.TEST_COVERAGE_METRIC_CLASSES + \
+                            self.TEST_DESIGN_METRIC_CLASSES + \
+                            self.JAVA_METRIC_CLASSES + \
+                            self.PERFORMANCE_METRIC_CLASSES:
+            if metric_class.can_be_measured(product, self.__project):
+                metrics.append(metric_class(product, project=self.__project))
         art = product.art()
-        if art and not product.product_version():
+        if art and not art.product_version():
             # Only add the ART if we're reporting on the trunk version
             # because we currently can only report on the trunk version of the
             # ART.
             metrics.extend(self.__java_metrics(art))
-            if art.has_art_coverage():
-                metrics.append(metric.ARTCoverage(art,
-                    emma=self.__project.emma(), jacoco=self.__project.jacoco(),
-                    **self.__metric_sources))
-            if art.svn_path():
-                metrics.append(metric.UnmergedBranches(subject=art,
-                    subversion=self.__project.subversion(), 
-                    **self.__metric_sources))
-        if art and product.product_version() and self.__project.birt():
-            # Only add the ART performance if we're reporting on a released 
-            # version because the Birt report has data per version of the 
-            # product.
-            metrics.append(metric.ARTPerformance(subject=product, 
-                                                 birt=self.__project.birt(),
-                                                 **self.__metric_sources))
-        if product.jsf():
-            metrics.extend(self.__jsf_metrics(product.jsf()))
-        if product.svn_path() and not product.product_version():
-            # Only report on unmerged branches for the trunk version.
-            metrics.append(metric.UnmergedBranches(subject=product,
-                subversion=self.__project.subversion(), 
-                **self.__metric_sources))
+            if metric.ARTCoverage.can_be_measured(art, self.__project):
+                metrics.append(metric.ARTCoverage(art, project=self.__project))
+        if metric.UnmergedBranches.can_be_measured(art, self.__project):
+            metrics.append(metric.UnmergedBranches(subject=art,
+                                                   project=self.__project))
+        metrics.extend(self.__jsf_metrics(product))
+        if metric.UnmergedBranches.can_be_measured(product, self.__project):
+            metrics.append(metric.UnmergedBranches(product,
+                                                   project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(),
                                      'Product ' + product.name(),
@@ -302,18 +307,16 @@ class QualityReport(object):
     def __service_section(self, service):
         ''' Return the section for the service. '''
         metrics = []
-        nagios = service.nagios() or self.__project.nagios()
-        if nagios:
+        if service.nagios() or self.__project.nagios():
             metrics.append(metric.ServiceAvailabilityLastMonth(subject=service,
-                           nagios=nagios, **self.__metric_sources))
+                           project=self.__project))
             metrics.append(metric.ServiceAvailabilityThisMonth(subject=service,
-                           nagios=nagios, **self.__metric_sources))
-        javamelody = self.__project.javamelody()
-        if javamelody:
+                           project=self.__project))
+        if self.__project.javamelody():
             metrics.append(metric.ServiceResponseTimesLastMonth(subject=service,
-                               javamelody=javamelody, **self.__metric_sources))
+                           project=self.__project))
             metrics.append(metric.ServiceResponseTimesThisMonth(subject=service,
-                               javamelody=javamelody, **self.__metric_sources))
+                           project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(service.short_name(), 
                                      'Dienst ' + service.name()),
@@ -322,34 +325,22 @@ class QualityReport(object):
     def __team_section(self, team):
         ''' Return a report section for the team. '''
         metrics = []
-        if team.birt_id():
+        if metric.TeamProgress.can_be_measured(team, self.__project):
             metrics.append(metric.TeamProgress(team, responsible_teams=[team],
-                                               birt=self.__project.birt(),
-                                               **self.__metric_sources))
-        for release_archive in team.release_archives():
-            metrics.append(metric.ReleaseAge(team, responsible_teams=[team],
-                                             release_archive=release_archive,
-                                             **self.__metric_sources))
-        jenkins = self.__project.build_server()
+                                               project=self.__project))
+        if metric.ReleaseAge.can_be_measured(team, self.__project):
+            for release_archive in team.release_archives():
+                metrics.append(metric.ReleaseAge(responsible_teams=[team],
+                                                 release_archive=release_archive,
+                                                 project=self.__project))
         for street in team.streets():
             metrics.append(metric.ARTStability(street,
                                                responsible_teams=[team],
-                                               jenkins=jenkins,
-                                               **self.__metric_sources))
-        nagios = self.__project.nagios()
-        if team.is_support_team() and nagios:
-            metrics.append(metric.ServerAvailability(responsible_teams=[team],
-                nagios=nagios, **self.__metric_sources))
-        if self.__project.wiki():
-            metrics.append(metric.TeamSpirit(team, responsible_teams=[team],
-                                             **self.__metric_sources))
-        if len(self.__teams) > 1:
-            metrics.append(metric.FailingCIJobs(team, responsible_teams=[team],
-                                                jenkins=jenkins,
-                                                **self.__metric_sources))
-            metrics.append(metric.UnusedCIJobs(team, responsible_teams=[team],
-                                               jenkins=jenkins,
-                                               **self.__metric_sources))
+                                               project=self.__project))
+        for metric_class in (metric.ServerAvailability, metric.TeamSpirit,
+                             metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs):
+            if metric_class.can_be_measured(team, self.__project):
+                metrics.append(metric_class(team, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(team.short_name(), 'Team ' + str(team)),
                        metrics)
@@ -361,118 +352,27 @@ class QualityReport(object):
             metrics.extend(section.metrics())
         meta_metric_classes = (metric.GreenMetaMetric, metric.RedMetaMetric,
                                metric.YellowMetaMetric, metric.GreyMetaMetric)
-        meta_metrics = [meta_metric_class(metrics, **self.__metric_sources) \
+        meta_metrics = [meta_metric_class(metrics, project=self.__project) \
                         for meta_metric_class in meta_metric_classes]
         self.__metrics.extend(meta_metrics)
         return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,
                        history=self.__project.history())
 
-    def __test_coverage_metrics(self, product):
-        ''' Return a list of test coverage metrics for the product. '''
-        metrics = []
-        if product.unittests():
-            sonar = self.__project.sonar()
-            metrics.append(metric.FailingUnittests(product, sonar=sonar,
-                                                   **self.__metric_sources))
-            metrics.append(metric.UnittestCoverage(product, sonar=sonar,
-                                                   **self.__metric_sources))
-        if product.has_art_coverage():
-            metrics.append(metric.ARTCoverage(product,
-                                              emma=self.__project.emma(),
-                                              jacoco=self.__project.jacoco(),
-                                              **self.__metric_sources))
-        return metrics
-
-    def __testdesign_metrics(self, product):
-        ''' Return a list of test design metrics for the product. '''
-        metric_classes = []
-        if not product.product_version():
-            metric_classes.extend(\
-                [metric.ReviewedAndApprovedUserStories,
-                 metric.ReviewedAndApprovedLogicalTestCases,
-                 metric.UserStoriesWithEnoughLogicalTestCases,
-                 metric.AutomatedLogicalTestCases])
-        metric_classes.append(metric.ManualLogicalTestCases)
-        metrics = []
-        for metric_class in metric_classes:
-            metrics.append(metric_class(product, birt=self.__project.birt(),
-                                        **self.__metric_sources))
-        return metrics
-
     def __jsf_metrics(self, product):
         ''' Return a list of JSF metrics for the (JSF) product. '''
         metrics = []
-        for metric_class in (metric.JsfDuplication, metric.ProductLOC):
-            metrics.append(metric_class(product, sonar=self.__project.sonar(),
-                                        **self.__metric_sources))
+        if metric.JsfDuplication.can_be_measured(product, self.__project):
+            metrics.append(metric.JsfDuplication(product.jsf(), 
+                                                 project=self.__project))
+        if metric.ProductLOC.can_be_measured(product.jsf(), self.__project):
+            metrics.append(metric.ProductLOC(product.jsf(), 
+                                             project=self.__project))
         return metrics
 
     def __java_metrics(self, product):
         ''' Return a list of Java metrics for the (Java) product. '''
         metrics = []
-        for metric_class in (metric.CriticalViolations, metric.MajorViolations,
-                             metric.CyclomaticComplexity, 
-                             metric.CyclicDependencies, metric.JavaDuplication,
-                             metric.ProductLOC, metric.LongMethods,
-                             metric.ManyParameters, metric.CommentedLOC):
-            metrics.append(metric_class(product, sonar=self.__project.sonar(), 
-                                        **self.__metric_sources))
-        return metrics
-
-    def __performance_metrics(self, product):
-        ''' Return a list of performance metrics for the product. '''
-        return [metric.ResponseTimes(product, 
-                performance_report=self.__project.performance_report(),
-                **self.__metric_sources)]
-
-    def __management_metrics(self):
-        ''' Return a list of management metrics for the project. '''
-        metrics = []
-        actions = self.__project.trello_actions_board()
-        if actions:
-            for action_metric_class in (metric.ActionActivity,
-                                        metric.ActionAge):
-                metrics.append(action_metric_class(responsible_teams=[],
-                                                   trello_actions_board=actions,
-                                                   **self.__metric_sources))
-        risklog = self.__project.trello_risklog_board()
-        if risklog:
-            metrics.append(metric.RiskLog(responsible_teams=[],
-                                          trello_risklog_board=risklog,
-                                          **self.__metric_sources))
-        return metrics
-
-    def __build_server_metrics(self):
-        ''' Return a list of build server hygiene related metrics. '''
-        metrics = []
-        jenkins = self.__project.build_server()
-        if jenkins:
-            metrics.append(metric.FailingCIJobs(responsible_teams=self.__teams,
-                                                jenkins=jenkins,
-                                                **self.__metric_sources))
-            metrics.append(metric.UnusedCIJobs(responsible_teams=self.__teams,
-                                               jenkins=jenkins,
-                                               **self.__metric_sources))
-            if len(self.__teams) > 1:
-                metrics.append(metric.AssignedCIJobs(responsible_teams=[],
-                                                     jenkins=jenkins,
-                                                     **self.__metric_sources))
-        return metrics
-
-    def __bugs_metrics(self):
-        ''' Return a list of bug related metrics for the project. '''
-        metrics = []
-        jira = self.__project.jira()
-        if jira:
-            if jira.has_open_bugs_query():
-                metrics.append(metric.OpenBugs(responsible_teams=[],
-                                               jira=jira, 
-                                               **self.__metric_sources))
-            if jira.has_open_security_bugs_query():
-                metrics.append(metric.OpenSecurityBugs(responsible_teams=[],
-                                                       jira=jira,
-                                                       **self.__metric_sources))
-            if jira.has_blocking_test_issues_query():
-                metrics.append(metric.BlockingTestIssues(responsible_teams=[],
-                               jira=jira, **self.__metric_sources))
+        for metric_class in self.JAVA_METRIC_CLASSES:
+            if metric_class.can_be_measured(product, self.__project):
+                metrics.append(metric_class(product, project=self.__project))
         return metrics

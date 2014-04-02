@@ -22,7 +22,7 @@ from qualitylib.metric.quality_attributes import CODE_QUALITY
 class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of unmerged branches. '''
-    
+
     norm_template = 'Geen branches die ongemergde code hebben.'
     perfect_template = 'Geen van de %(nr_branches)d branches van %(name)s ' \
         'heeft revisies die niet met de trunk zijn gemerged.'
@@ -31,20 +31,27 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     quality_attribute = CODE_QUALITY
     target_value = 0
     low_target_value = 1
-    
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        ''' Unmerged branches can only be measured for trunk versions of 
+            products that are under version control. '''
+        return super(UnmergedBranches, cls).can_be_measured(product, project) \
+            and product.svn_path() and not product.product_version()
+
     def value(self):
         return len(self.__unmerged_branches())
-    
+
     def url(self):
         return self.__branch_and_nr_revs_urls(self.__unmerged_branches())
 
     def url_label(self):
         return 'Niet gemergde branches'
-    
+
     @staticmethod
     def comment_url_label():
         return 'Genegeerde branches'
-    
+
     def comment_urls(self):
         return self.__branch_urls(self._subject.branches_to_ignore())
 
@@ -52,7 +59,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         # pylint: disable=protected-access
         return self.perfect_template if self._is_perfect() else \
             super(UnmergedBranches, self)._get_template()
-            
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(UnmergedBranches, self)._parameters()
@@ -67,7 +74,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
             label = '%s: %d ongemergde revisie(s)' % (branch, nr_revisions) 
             urls[label] = svn_path + 'branches/' + branch
         return urls
-        
+
     def __branch_urls(self, branches):
         ''' Return a list of branch urls. '''
         urls = dict()
@@ -75,11 +82,11 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         for branch in branches:
             urls[branch] = svn_path + 'branches/' + branch
         return urls
-        
+
     def __branches(self):
         ''' Return a list of branches for the product. '''
         return self._subversion.branches(self.__svn_path())
-        
+
     def __unmerged_branches(self):
         ''' Return a dictionary of unmerged branch names and the number of 
             unmerged revisions for each branch. '''
@@ -90,10 +97,10 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
             if branch in branches_to_ignore:
                 del unmerged_branches[branch]
         return unmerged_branches
-        
+
     def __svn_path(self):
         ''' Return the Subversion path for the product. '''
         svn_path = self._subject.svn_path()
         # This metric only makes sense for trunk versions:
-        assert svn_path.endswith('trunk')  
+        assert svn_path.endswith('trunk')
         return svn_path[:-len('trunk')]

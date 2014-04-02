@@ -25,7 +25,7 @@ import urllib2
 
 class UnknownAge(object):  # pylint: disable=too-few-public-methods
     ''' Fake age that is larger than any concrete age. '''
-    
+
     def __gt__(self, other):
         return True
 
@@ -48,7 +48,7 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self.__job_api_url = self.__job_url + self.api_postfix
         self.__jobs_api_url = jenkins_url + self.jobs_api_postfix
-        
+
     def url(self):
         ''' Return the base url for the Jenkins server. '''
         return self.__jenkins_url
@@ -75,7 +75,7 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
                 failing_job_description += ' (%s dagen)' % age.days
             urls[failing_job_description] = failing_job['url']
         return urls
-    
+
     def unused_jobs_url(self, *teams):
         ''' Return the urls for the unused Jenkin jobs. '''
         urls = {}
@@ -85,7 +85,7 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
             unused_job_description += ' (%s dagen)' % age.days
             urls[unused_job_description] = unused_job['url']
         return urls
-            
+
     def unassigned_jobs_url(self):
         ''' Return the urls for the unassigned Jenkins jobs. '''
         return dict([(job['name'], job['url']) \
@@ -94,12 +94,13 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __failing_jobs(self, *teams):
         ''' Return the Jenkins jobs that are failing. '''
-        
+
         def grace_time(job):
             ''' Return the grace time for the job. '''
             # Don't consider projects to have failed until their last successful
             # build was longer ago than the grace time.
-            match = re.search(r'\[gracedays=(\d)\]', job['description'].lower())
+            description = job['description'] or ''
+            match = re.search(r'\[gracedays=(\d)\]', description.lower())
             days = int(match.group(1)) if match else 1
             return datetime.timedelta(days=days)
 
@@ -169,11 +170,11 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
                 art_description = art + ' (%s dagen)' % age.days
                 unstable[art_description] = self.__job_url % art
         return unstable
-    
+
     def __age_of_last_completed_build(self, job):
         ''' Return the age of the last completed build of the job. '''
         return self.__build_age(self.__last_completed_build_url % job['name'])
-    
+
     def __age_of_last_stable_build(self, job):
         ''' Return the age of the last stable build of the job. '''
         return self.__build_age(self.__last_stable_build_url % job['name'])
@@ -205,7 +206,7 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
         ''' Get the build date and time from the soup. '''
         title = str(soup('h1')[0])
         return title.split('(')[1].split(')')[0]
-        
+
     @staticmethod
     def __parse_build_date(datetime_text):
         ''' Parse the build date and time text. '''

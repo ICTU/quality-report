@@ -17,17 +17,17 @@ limitations under the License.
 
 class MissingMetricSource(object):  # pylint: disable=too-few-public-methods
     ''' Class that represents a missing metric source. '''
-    
+
     def __getattr__(self, attribute):
         return self.__default_method
-    
+
     @staticmethod  # pylint: disable=unused-argument
     def __default_method(*args, **kwargs):
         ''' Do nothing and return nothing for any method called. '''
         return
-    
+
     def __nonzero__(self):
         return False
-    
+
     def __getitem__(self, index):
         raise StopIteration

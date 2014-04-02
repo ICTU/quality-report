@@ -36,6 +36,11 @@ class ReviewedAndApprovedLogicalTestCases(BirtTestDesignMetricMixin,
     low_target_value = 75
     quality_attribute = DOC_QUALITY
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(ReviewedAndApprovedLogicalTestCases, cls).\
+            can_be_measured(product, project) and not product.product_version()
+
     def _numerator(self):
         return self._birt.approved_ltcs(self._birt_id())
 
@@ -58,6 +63,12 @@ class AutomatedLogicalTestCases(BirtTestDesignMetricMixin,
     low_target_value = 75
     quality_attribute = TEST_COVERAGE
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(AutomatedLogicalTestCases, cls).can_be_measured(product,
+                                                                     project) \
+            and not product.product_version()
+
     def _numerator(self):
         return self._birt.nr_automated_ltcs(self._birt_id())
 
@@ -78,12 +89,18 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         'handmatige logische testgevallen van %(name)s zijn te lang geleden '\
         '(%(value)d dag(en), op %(date)s) uitgevoerd.'
     quality_attribute = TEST_COVERAGE
-    
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(ManualLogicalTestCases, cls).can_be_measured(product,
+                                                                  project) and \
+            product.responsible_teams() 
+
     def target(self):
         teams = self._subject.responsible_teams()
         sprint_length = min([team.days_per_sprint() for team in teams])
         return sprint_length
-    
+
     def low_target(self):
         return self.target() + 7
 

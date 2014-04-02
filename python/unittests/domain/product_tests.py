@@ -16,7 +16,7 @@ limitations under the License.
 
 from qualitylib import domain
 import unittest
-    
+
 
 class FakeBirt(object):  # pylint: disable=too-few-public-methods
     ''' Fake Birt so we can return whether a product has a test design. '''
@@ -254,7 +254,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product = domain.Product(domain.Project(), 
                                  responsible_teams=['Team'])
         self.assertEqual(['Team'], product.responsible_teams())
-        
+
     def test_project_responsible_teams(self):
         ''' Test that the project's responsible teams are used if no
             responsible teams have been set for the product. '''
@@ -262,11 +262,11 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         project.add_team('Team', responsible=True)
         product = domain.Product(project)
         self.assertEqual(['Team'], product.responsible_teams())
-        
+
     def test_default_jsf(self):
         ''' Test that products have no jsf component by default. '''
         self.failIf(self.__product.jsf())
-        
+
     def test_jsf(self):
         ''' Test that the jsf component can be retrieved. '''
         jsf = domain.Product(self.__project)
@@ -279,3 +279,20 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product = domain.Product(self.__project, jsf=jsf)
         product.set_product_version('1.1')
         self.assertEqual('1.1', product.jsf().product_version())
+
+    def test_default_art(self):
+        ''' Test that products have no automated regression test by default. '''
+        self.failIf(self.__product.art())
+
+    def test_art(self):
+        ''' Test that the automated regression test can be retrieved. '''
+        art = domain.Product(self.__project)
+        self.assertEqual(art, domain.Product(self.__project, art=art).art())
+
+    def test_art_has_product_version(self):
+        ''' Test that the automated regression test has the same version as the
+            product it belongs to. '''
+        art = domain.Product(self.__project)
+        product = domain.Product(self.__project, art=art)
+        product.set_product_version('1.1')
+        self.assertEqual('1.1', product.art().product_version())

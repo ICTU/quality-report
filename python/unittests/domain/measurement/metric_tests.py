@@ -28,52 +28,53 @@ class MetricUnderTest(domain.Metric):
     def __init__(self, *args, **kwargs):
         self.date = None
         super(MetricUnderTest, self).__init__(*args, **kwargs)
-        
+
     def value(self):
         return 0
-    
+
     def _date(self):
         if self.date:
             return self.date
-        else:   
+        else:
             return super(MetricUnderTest, self)._date()  # pylint: disable=protected-access, line-too-long
-    
-    
+
+
 class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     ''' Test case for the Metric domain class. '''
-    
+
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
         self.__fake_tasks = FakeTasks()
-        self.__metric = MetricUnderTest(self.__subject, history=FakeHistory(), 
-                                        tasks=self.__fake_tasks)
-    
+        project = domain.Project(history=FakeHistory(), tasks=self.__fake_tasks)
+        self.__metric = MetricUnderTest(self.__subject, project=project)
+
     def test_stable_id(self):
         ''' Test that the metric has a stable id. '''
         self.assertEqual('MetricUnderTestFakeSubject', 
                          self.__metric.stable_id())
-        
+
     def test_stable_id_mutable_subject(self):
         ''' Test that the stable id doesn't include the subject if the 
             subject is a list. '''
         self.assertEqual('Metric', 
-                         domain.Metric([], history=None).stable_id())
-        
+                         domain.Metric([], 
+                                       project=domain.Project()).stable_id())
+
     def test_set_id_string(self):
         ''' Test that the id string can be changed. '''
         self.__metric.set_id_string('id string')
         self.assertEqual('id string', self.__metric.id_string())
-        
+
     def test_default_status(self):
         ''' Test that the default status is green. '''
         self.assertEqual('green', self.__metric.status())
-        
+
     def test_yellow_when_never_measured(self):
         ''' Test that the status is yellow when the metric has never been
             measured. '''
         self.__metric.old_age = datetime.timedelta(days=1)
         self.assertEqual('yellow', self.__metric.status())
-        
+
     def test_yellow_when_old(self):
         ''' Test that the status is yellow when the last measurement was
             too long ago. '''
@@ -87,7 +88,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             measured. '''
         self.__metric.max_old_age = datetime.timedelta(days=1)
         self.assertEqual('red', self.__metric.status())
-        
+
     def test_red_when_old(self):
         ''' Test that the status is red when the last measurement was too long
             ago. '''
@@ -95,22 +96,22 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__metric.date = datetime.datetime.now() - \
                              datetime.timedelta(hours=25)
         self.assertEqual('red', self.__metric.status())
-        
+
     def test_perfect_status(self):
         ''' Test that the status is perfect when the value equals the perfect
             target. '''
         self.__metric.perfect_value = 0
         self.assertEqual('perfect', self.__metric.status())
-        
+
     def test_default_report(self):
         ''' Test the default report. '''
         self.assertEqual('Subclass responsibility', self.__metric.report())
-        
+
     def test_report_with_long_subject(self):
         ''' Test that the subject is abbreviated when long. '''
         self.assertEqual('Subclass responsibility', 
                          self.__metric.report(max_subject_length=1))
-        
+
     def test_default_norm(self):
         ''' Test the default norm. '''
         self.assertEqual('Subclass responsibility', self.__metric.norm())
@@ -122,11 +123,11 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_url_label(self):
         ''' Test that the metric has no default url label. '''
         self.failIf(self.__metric.url_label())
-        
+
     def test_default_tasks(self):
         ''' Test that the metric has no tasks by default. '''
         self.failIf(self.__metric.has_tasks())
-        
+
     def test_recent_history(self):
         ''' Test that the metric has no history by default. '''
         self.failIf(self.__metric.recent_history())
@@ -134,18 +135,18 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_y_axis_range(self):
         ''' Test that the default y axis range is 0-100. '''
         self.assertEqual((0, 100), self.__metric.y_axis_range())
-        
+
     def test_y_axis_range(self):
         ''' Test that the y axis range depends on the history. '''
         FakeHistory.values = [1, 4, 5, 2]
         self.assertEqual((0, 5), self.__metric.y_axis_range())
-        
+
     def test_y_axis_range_negatives(self):
         '''' Test that the y axis range is 0-100 when the maximum historic
              value is zero or lower. '''
         FakeHistory.values = [0]
         self.assertEqual((0, 100), self.__metric.y_axis_range())
-        
+
     def test_default_target(self):
         ''' Test that the default target is a subclass responsibility. '''
         self.assertEqual('Subclass responsibility', self.__metric.target())
@@ -160,7 +161,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_low_target(self):
         ''' Test that the default low target is a subclass responsibility. '''
         self.assertEqual('Subclass responsibility', self.__metric.low_target())
-        
+
     def test_subject_low_target(self):
         ''' Test that the metric gets the low target value from the subject if
             it has one. '''
@@ -174,30 +175,31 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_passed_responsible_teams(self):
         ''' Test that the metric can be initialized with responsible teams. '''
-        self.assertEqual('Teams', MetricUnderTest(history=None, 
+        self.assertEqual('Teams', MetricUnderTest(project=domain.Project(), 
                          responsible_teams='Teams').responsible_teams())
-        
+
     def test_subject_responsible_teams(self):
         ''' Test that the responsible teams for the metric equal those of the
             subject if it has responsible teams. '''
         # pylint: disable=attribute-defined-outside-init
         subject = FakeSubject()
         subject.responsible_teams = lambda metric: 'Teams'
+        project = domain.Project()
         self.assertEqual('Teams', MetricUnderTest(subject, 
-                                  history=None).responsible_teams())
+                                  project=project).responsible_teams())
 
     def test_default_comment(self):
         ''' Test that the metric has no comment by default. '''
         self.assertEqual('', self.__metric.comment())
-        
+
     def test_default_comment_urls(self):
         ''' Test that the metric has no comment urls by default. '''
         self.assertEqual({}, self.__metric.comment_urls())
-        
+
     def test_default_comment_url_label(self):
         ''' Test that the metric has no comment url label by default. '''
         self.failIf(self.__metric.comment_url_label())
-        
+
     def test_comment_technical_debt(self):
         ''' Test that the metric gets the comment from the subject when the
             subject has a reduced technical debt target. '''
@@ -215,20 +217,20 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__subject.technical_debt_target = lambda metric: \
             domain.TechnicalDebtTarget(10, 'Comment')
         self.failIf(self.__metric.comment_urls())
-        
+
     def test_comment_from_wiki_url(self):
         ''' Test that the comment urls include a link to the Wiki if the Wiki
             has a comment on the metric. '''
         wiki = FakeWiki('Comment')
-        metric = MetricUnderTest(self.__subject, wiki=wiki, 
-                                 history=FakeHistory())
+        project = domain.Project(history=FakeHistory(), wiki=wiki)
+        metric = MetricUnderTest(self.__subject, project=project)
         self.assertEqual(dict(Wiki=wiki.comment_url()), metric.comment_urls())
 
     def test_numerical_value(self):
         ''' Test that the numerical value is the value by default. '''
         self.assertEqual(self.__metric.numerical_value(), 
                          self.__metric.value())
-        
+
     def test_status_start_date(self):
         ''' Test that the metric gets the start date of the status from the 
             history. '''
@@ -243,13 +245,14 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_no_task_urls_without_issue_manager(self):
         ''' Test that the metric has no task urls when there's no issue 
             manager. '''
+        project = domain.Project(history=FakeHistory())
         self.assertEqual({}, MetricUnderTest(self.__subject,
-                                             history=FakeHistory()).task_urls())
+                                             project=project).task_urls())
 
     def test_no_task_urls(self):
         ''' Test that the metric has no task urls by default. '''
         self.assertEqual({}, self.__metric.task_urls())
-        
+
     def test_one_task_url(self):
         ''' Test that the metric has a task url when the issue manager reports
             so. '''
@@ -264,16 +267,24 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.assertEqual({'Correctieve actie': 'http://url1',
                           'Correctieve actie 1': 'http://url2'}, 
                          self.__metric.task_urls())
-        
+
     def test_new_task_url(self):
         ''' Test that the metric task url include a new task link when the
             metric is below target and has no existing tasks. '''
         self.__metric.max_old_age = datetime.timedelta(days=1)
         self.__metric.date = datetime.datetime.now() - \
-                             datetime.timedelta(hours=25)        
-        self.assertEqual({'Maak taak': FakeTasks.new_task_url()}, 
+                             datetime.timedelta(hours=25)
+        self.assertEqual({'Maak taak': FakeTasks.new_task_url()},
                           self.__metric.task_urls())
-        
+
+    def test_metric_can_be_measured(self):
+        ''' Test that a metric can be measured if given a subject. '''
+        self.failUnless(domain.Metric.can_be_measured(FakeSubject(), None))
+
+    def test_metric_cant_be_measured(self):
+        ''' Test that a metric cannot be measured if not given a subject. '''
+        self.failIf(domain.Metric.can_be_measured(None, None))
+
 
 class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
@@ -281,16 +292,17 @@ class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
         needed for running the unit tests. '''
     def value(self):
         return 0
-    
+
 
 class LowerIsBetterMetricTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Test case for the LowerIsBetterMetric domain class. '''
-    
+
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
+        project = domain.Project(history=FakeHistory())
         self.__metric = LowerIsBetterMetricUnderTest(self.__subject, 
-                                                     history=FakeHistory())
+                                                     project=project)
 
     def test_default_status(self):
         ''' Test that the default status is perfect. '''
@@ -308,16 +320,17 @@ class HigherIsBetterMetricUnderTest(domain.HigherIsBetterMetric):
 class HigherIsBetterMetricTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Test case for the HigherIsBetterMetric domain class. '''
-    
+
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
+        project = domain.Project(history=FakeHistory())
         self.__metric = HigherIsBetterMetricUnderTest(self.__subject, 
-                                                      history=FakeHistory())
+                                                      project=project)
 
     def test_default_status(self):
         ''' Test that the default status is red. '''
         self.assertEqual('red', self.__metric.status())
-        
+
     def test_technical_debt(self):
         ''' Test that the status is grey when the current value is accepted
             technical debt. '''
@@ -347,23 +360,24 @@ class LowerPercentageIsBetterMetricUnderTest( \
 class PercentageMetricTestCase(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Test case for percentage metrics. '''
-        
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        self._metric = self.metric_under_test_class()(self.__subject, 
-            history=FakeHistory())
-        
+        project = domain.Project(history=FakeHistory())
+        self._metric = self.metric_under_test_class()(self.__subject,
+                                                      project=project)
+
     @staticmethod
     def metric_under_test_class():
         ''' Return the metric class to be tested. '''
         raise NotImplementedError  # pragma: no cover
-        
+
     def set_metric_value(self, numerator, denominator):
         ''' Set the metric value by means of the numerator and denominator. '''
         # pylint: disable=attribute-defined-outside-init
         self._metric.numerator = numerator
         self._metric.denominator = denominator
-        
+
         
 class LowerPercentageIsBetterMetricTest(PercentageMetricTestCase):  
     # pylint: disable=too-many-public-methods

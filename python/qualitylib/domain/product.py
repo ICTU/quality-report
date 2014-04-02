@@ -200,7 +200,12 @@ class Product(MeasurableObject):
 
     def art(self):
         ''' Return a product that represents the ART of this product. '''
-        return self.__art
+        if self.__art:
+            art = copy.copy(self.__art)
+            art.set_product_version(self.product_version())
+            return art
+        else:
+            return None
 
     def is_art(self):
         ''' Return whether this product is an ART or not. '''
@@ -214,7 +219,7 @@ class Product(MeasurableObject):
     def art_coverage_emma(self):
         ''' Return the Emma id of the coverage project. '''
         return self.__art_coverage_emma_id
-    
+
     def art_coverage_jacoco(self):
         ''' Return the JaCoCo id of the coverage project. '''
         return self.__art_coverage_jacoco_id

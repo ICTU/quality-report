@@ -57,7 +57,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                          'latest version.', product.name(), latest_version)
                 self.__project.add_product_with_version(product.name(),
                                                         latest_version)
-                
+
     def __add_release_candidates_of_products(self):
         ''' Add the versions of the products that are scheduled to be released 
             to operations. '''

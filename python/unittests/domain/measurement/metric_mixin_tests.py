@@ -16,7 +16,7 @@ limitations under the License.
 
 from qualitylib import domain
 from unittests.domain.measurement.fake import FakeHistory, FakeSubject
-import unittest   
+import unittest
 
 
 class DummyMetric(domain.Metric):
@@ -38,11 +38,12 @@ class MetaMetricUnderTest(domain.MetaMetricMixin,
 class MetaMetricMixinTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Test case for meta metric mixin class. '''
-        
+
     def setUp(self):  # pylint: disable=invalid-name
-        subject = [DummyMetric(FakeSubject(), history=FakeHistory())]
-        self._metric = MetaMetricUnderTest(subject, history=FakeHistory())
-        
+        project = domain.Project(history=FakeHistory())
+        subject = [DummyMetric(FakeSubject(), project=project)]
+        self._metric = MetaMetricUnderTest(subject, project=project)
+
     def test_value(self):
-        ''' Test  the value of the metric. '''
+        ''' Test the value of the metric. '''
         self.assertEqual(0, self._metric.value())

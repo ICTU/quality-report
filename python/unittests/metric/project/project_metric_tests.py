@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import metric, utils
+from qualitylib import metric, utils, domain
 from qualitylib.metric_source import TrelloUnreachableException
 
 
@@ -59,30 +59,42 @@ class UnreachableBoard(object):
     def nr_of_over_due_or_inactive_cards():  # pylint: disable=invalid-name
         ''' Fake that Trello is down. '''
         raise TrelloUnreachableException
-    
+
     @staticmethod
     def over_due_or_inactive_cards_url():
         ''' Fake that Trello is down. '''
         raise TrelloUnreachableException
-    
+
 
 class RiskLogTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
-    ''' Unit tests for therisk log metric. '''
+    ''' Unit tests for the risk log metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.RiskLog(trello_risklog_board=FakeBoard(),
-                                       history=None)
+        self.__project = domain.Project(trello_risklog_board=FakeBoard())
+        self.__metric = metric.RiskLog(project=self.__project)
 
     def test_url(self):
         ''' Test that the url of the metric uses the url of the risk log 
             board. '''
         self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
-        
+
     def test_value(self):
         ''' Test that the value is the number of days since the last 
             update. '''
         self.assertEqual(0, self.__metric.value())
+
+    def test_can_be_measured(self):
+        ''' Test that the risk log can be measured if there is a Trello 
+            board. '''
+        self.failUnless(metric.RiskLog.can_be_measured(self.__project, 
+                                                       self.__project))
+
+    def test_cant_be_measured_without_risklog(self):
+        ''' Test that the risk log can't be measured if there is no Trello 
+            board. '''
+        project = domain.Project()
+        self.failIf(metric.RiskLog.can_be_measured(project, project))
 
 
 class UnreachableRiskLogTest(unittest.TestCase):
@@ -90,15 +102,14 @@ class UnreachableRiskLogTest(unittest.TestCase):
     ''' Unit tests for the risk log metric when Trello is unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.RiskLog(trello_risklog_board=UnreachableBoard(),
-                                       history=None)
+        project = domain.Project(trello_risklog_board=UnreachableBoard())
+        self.__metric = metric.RiskLog(project=project)
 
     def test_url(self):
         ''' Test that the url of the metric uses the url of the risk log 
             board. '''
-        self.assertEqual(dict(Trello='http://trello.com'),
-                         self.__metric.url())
-        
+        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+
     def test_value(self):
         ''' Test that the value is the number of days since the last 
             update. '''
@@ -111,16 +122,28 @@ class ActionActivityTest(unittest.TestCase):
     ''' Unit tests for the action activity metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionActivity(history=None,
-                                              trello_actions_board=FakeBoard())
-        
+        self.__project = domain.Project(trello_actions_board=FakeBoard())
+        self.__metric = metric.ActionActivity(project=self.__project)
+
     def test_value(self):
         ''' Test that the board has been updated today. '''
         self.assertEqual(0, self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that url of the metric is equal to the url of the board. '''
         self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has a 
+            action list. '''
+        self.failUnless(metric.ActionActivity.can_be_measured(self.__project, 
+                                                              self.__project))
+
+    def test_cant_be_measured(self):
+        ''' Test that the metric can not be measured when the project has no 
+            action list. '''
+        project = domain.Project()
+        self.failIf(metric.ActionActivity.can_be_measured(project, project))
 
 
 class UnreachableActionActivityTest(unittest.TestCase):
@@ -129,14 +152,14 @@ class UnreachableActionActivityTest(unittest.TestCase):
         unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionActivity(history=None,
-                                trello_actions_board=UnreachableBoard())
+        project = domain.Project(trello_actions_board=UnreachableBoard())
+        self.__metric = metric.ActionActivity(project=project)
         
     def test_value(self):
         ''' Test that the board has been updated today. '''
         days = (datetime.datetime.now() - datetime.datetime(1, 1, 1)).days
         self.assertEqual(days, self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that url of the metric is equal to the url of the board. '''
         self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
@@ -147,24 +170,36 @@ class ActionAgeTest(unittest.TestCase):
     ''' Unit tests for the action age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionAge(history=None,
-                                         trello_actions_board=FakeBoard())
-        
+        self.__project = domain.Project(trello_actions_board=FakeBoard())
+        self.__metric = metric.ActionAge(project=self.__project)
+
     def test_value(self):
         ''' Test that the metric value equals the number of over due or 
             inactive cards. '''
         self.assertEqual(FakeBoard().nr_of_over_due_or_inactive_cards(), 
                          self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that url of the metric is equal to the url for the over due
             or inactive cards. '''
         self.assertEqual(FakeBoard().over_due_or_inactive_cards_url(), 
                          self.__metric.url())
-        
+
     def test_url_label(self):
         ''' Test that the metric has a url label. '''
         self.failUnless(self.__metric.url_label())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has a 
+            action list. '''
+        self.failUnless(metric.ActionAge.can_be_measured(self.__project, 
+                                                         self.__project))
+
+    def test_cant_be_measured(self):
+        ''' Test that the metric can not be measured when the project has no 
+            action list. '''
+        project = domain.Project()
+        self.failIf(metric.ActionAge.can_be_measured(project, project))
 
 
 class UnreachableActionAgeTest(unittest.TestCase):
@@ -172,13 +207,13 @@ class UnreachableActionAgeTest(unittest.TestCase):
     ''' Unit tests for the action age metric when Trello is unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ActionAge(history=None,
-                                trello_actions_board=UnreachableBoard())
+        project = domain.Project(trello_actions_board=UnreachableBoard())
+        self.__metric = metric.ActionAge(project=project)
 
     def test_value(self):
         ''' Test that the value indicates a problem. '''
         self.assertEqual(-1, self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that url of the metric is equal to the url of the board. '''
         self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
@@ -200,30 +235,45 @@ class FakeArchive(object):
     def name():
         ''' Return a fake name. '''
         return 'ABC'
-    
-    
+
+
 class FakeJira(object):
     ''' Fake Jira. '''
-    @staticmethod
-    def nr_open_bugs_url():
-        ''' Return a fake url for the nr of open bugs query. '''
-        return 'http://openbugs/'
-    
-    @staticmethod
-    def nr_blocking_test_issues_url():
-        ''' Return a fake url for the number of blocking test issues query. '''
-        return 'http://blockingissues/'
-    
+    def __init__(self, has_queries=True):
+        self.__has_queries = has_queries
+
+    def has_open_bugs_query(self):
+        ''' Return whether Jira has an open bugs query. '''
+        return self.__has_queries
+
     @staticmethod
     def nr_open_bugs():
         ''' Return a fake number of open bugs. '''
         return 7
 
     @staticmethod
+    def nr_open_bugs_url():
+        ''' Return a fake url for the nr of open bugs query. '''
+        return 'http://openbugs/'
+
+    def has_blocking_test_issues_query(self):
+        ''' Return whether Jira has an blocking test issues query. '''
+        return self.__has_queries
+
+    @staticmethod
     def nr_blocking_test_issues():
         ''' Return a fake number of blocking test issues. '''
         return 5
-        
+
+    @staticmethod
+    def nr_blocking_test_issues_url():
+        ''' Return a fake url for the number of blocking test issues query. '''
+        return 'http://blockingissues/'
+
+    def has_open_security_bugs_query(self):
+        ''' Return whether Jira has an open security bugs query. '''
+        return self.__has_queries
+
     @staticmethod
     def nr_open_security_bugs():
         ''' Return a fake number of open security bugs. '''
@@ -233,47 +283,79 @@ class FakeJira(object):
     def nr_open_security_bugs_url():
         ''' Return a fake url for the nr of open security bugs query. '''
         return 'http://opensecuritybugs/'
-    
+
 
 class ReleaseAgeTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the release age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.ReleaseAge(history=None,
-                                          release_archive=FakeArchive())
-        
+        project = domain.Project()
+        self.__metric = metric.ReleaseAge(release_archive=FakeArchive(),
+                                          project=project)
+
     def test_value(self):
         ''' Test that the value is correct. '''
         self.assertEqual(0, self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual({'Release-archief ABC': 'http://archive'}, 
                          self.__metric.url())
-        
+
     def test_report(self):
         ''' Test that the report is correct. '''
         self.assertEqual('De laatste ABC-release is 0 dag(en) oud.', 
                          self.__metric.report())
-        
-        
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured if the team has release
+            archives. '''
+        team = domain.Team('Team', release_archives=['Archive'])
+        project = domain.Project()
+        self.failUnless(metric.ReleaseAge.can_be_measured(team, project))
+
+    def test_cant_be_measured_without_release_archive(self):
+        ''' Test that the metric cannot be measured if the team has no
+            release archives. '''
+        team = domain.Team('Team')
+        project = domain.Project()
+        self.failIf(metric.ReleaseAge.can_be_measured(team, project))
+
+
 class OpenBugsTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the number of open bugs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.OpenBugs(history=None,
-                                        jira=FakeJira())
-        
+        self.__project = domain.Project(jira=FakeJira())
+        self.__metric = metric.OpenBugs(project=self.__project)
+
     def test_value(self):
         ''' Test that the value is correct. '''
         self.assertEqual(FakeJira.nr_open_bugs(), self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that the url is correct. '''
-        self.assertEqual({'Jira': FakeJira.nr_open_bugs_url()}, 
+        self.assertEqual({'Jira': FakeJira.nr_open_bugs_url()},
                          self.__metric.url())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has Jira,
+            and Jira has an open bugs query. '''
+        self.failUnless(metric.OpenBugs.can_be_measured(self.__project,
+                                                        self.__project))
+
+    def test_cant_be_measured_without_jira(self):
+        ''' Test that the metric cannot be measured without Jira. '''
+        project = domain.Project()
+        self.failIf(metric.OpenBugs.can_be_measured(self.__project, project))
+
+    def test_cant_be_measured_without_open_bugs_query(self):
+        ''' Test that the metric cannot be measured without an open bugs query 
+            in Jira. '''
+        project = domain.Project(jira=FakeJira(has_queries=False))
+        self.failIf(metric.OpenBugs.can_be_measured(self.__project, project))
 
 
 class OpenSecurityBugsTest(unittest.TestCase):
@@ -281,18 +363,38 @@ class OpenSecurityBugsTest(unittest.TestCase):
     ''' Unit tests for the number of open security bugs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.OpenSecurityBugs(history=None,
-                                                jira=FakeJira())
-        
+        self.__project = domain.Project(jira=FakeJira())
+        self.__metric = metric.OpenSecurityBugs(project=self.__project)
+
     def test_value(self):
         ''' Test that the value is correct. '''
-        self.assertEqual(FakeJira.nr_open_security_bugs(), 
+        self.assertEqual(FakeJira.nr_open_security_bugs(),
                          self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that the url is correct. '''
-        self.assertEqual({'Jira': FakeJira.nr_open_security_bugs_url()}, 
+        self.assertEqual({'Jira': FakeJira.nr_open_security_bugs_url()},
                          self.__metric.url())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has Jira,
+            and Jira has an open bugs query. '''
+        self.failUnless(metric.OpenSecurityBugs.can_be_measured(self.__project,
+                                                                self.__project))
+
+    def test_cant_be_measured_without_jira(self):
+        ''' Test that the metric cannot be measured without Jira. '''
+        project = domain.Project()
+        self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project, 
+                                                            project))
+
+    def test_cant_be_measured_without_open_bugs_query(self):
+        ''' Test that the metric cannot be measured without an open bugs query 
+            in Jira. '''
+        jira = FakeJira(has_queries=False)
+        project = domain.Project(jira=jira)
+        self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project, 
+                                                            project))
 
 
 class BlockingTestIssuesTest(unittest.TestCase):
@@ -300,22 +402,42 @@ class BlockingTestIssuesTest(unittest.TestCase):
     ''' Unit tests for the number of blocking test issues metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__metric = metric.BlockingTestIssues(history=None,
-                                                  jira=FakeJira())
-        
+        self.__project = domain.Project(jira=FakeJira())
+        self.__metric = metric.BlockingTestIssues(project=self.__project)
+
     def test_value(self):
         ''' Test that the value is correct. '''
-        self.assertEqual(FakeJira.nr_blocking_test_issues(), 
+        self.assertEqual(FakeJira.nr_blocking_test_issues(),
                          self.__metric.value())
-        
+
     def test_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual({'Jira': FakeJira.nr_blocking_test_issues_url()}, 
                          self.__metric.url())
-        
+
     def test_report(self):
         ''' Test that the report is correct. '''
         month = utils.format_month(utils.month_ago())
         self.assertEqual('Het aantal geopende blokkerende testbevindingen in '\
                          'de vorige maand (%s) was 5.' % month, 
                          self.__metric.report())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has Jira,
+            and Jira has an blocking test issues query. '''
+        self.failUnless(metric.BlockingTestIssues.can_be_measured( \
+                        self.__project, self.__project))
+
+    def test_cant_be_measured_without_jira(self):
+        ''' Test that the metric cannot be measured without Jira. '''
+        project = domain.Project()
+        self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project, 
+                                                              project))
+
+    def test_cant_be_measured_without_open_bugs_query(self):
+        ''' Test that the metric cannot be measured without an open bugs query 
+            in Jira. '''
+        jira = FakeJira(has_queries=False)
+        project = domain.Project(jira=jira)
+        self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project, 
+                                                              project))

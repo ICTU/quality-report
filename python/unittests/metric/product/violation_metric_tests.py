@@ -60,14 +60,15 @@ class FakeSubject(object):
 class ViolationsTestMixin(object):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Violations metric classes. '''
-        
+
     def setUp(self):  # pylint: disable=invalid-name,missing-docstring
         self.__nr_violations = 51
         self.__subject = FakeSubject()
         sonar = FakeSonar(critical_violations=self.__nr_violations, 
                           major_violations=self.__nr_violations)
+        project = domain.Project(sonar=sonar)
         self._metric = self.metric_class(subject=self.__subject, 
-                                         sonar=sonar, history=None)
+                                         project=project)
 
     def test_numerical_value(self):
         ''' Test that the numerical value of the metric equals the the
@@ -91,31 +92,32 @@ class ViolationsTestMixin(object):
         self.__subject.technical_debt_target = lambda *args: \
             domain.TechnicalDebtTarget(51, 'Comment')
         self.assertEqual('grey', self._metric.status())
- 
+
     def test_report(self):
         ''' Test that the report is correct. '''
         self.assertEqual('FakeSubject heeft %d %s violations.' % \
                          (self.__nr_violations, self.violation_type), 
                          self._metric.report())
-        
+
     def test_is_perfect(self):
         ''' Test that the metric is perfect when both the number of major and 
             the number of critical violations is zero. '''
         sonar = FakeSonar(critical_violations=0, major_violations=0)
+        project = domain.Project(sonar=sonar)
         violations = metric.CriticalViolations(subject=self.__subject, 
-                                               sonar=sonar, history=None)
+                                               project=project)
         self.assertEqual('perfect', violations.status())
 
     def test_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), 
                          self._metric.url())
-        
+
 
 class CriticalViolationsTest(ViolationsTestMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the CriticalViolations metric class. '''
-     
+
     metric_class = metric.CriticalViolations
     violation_type = 'critical'
 

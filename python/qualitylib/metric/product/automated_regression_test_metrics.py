@@ -20,7 +20,7 @@ from qualitylib.metric.metric_source_mixin import BirtMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE
 import datetime
 
-    
+
 class ARTCoverage(HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the coverage of automated regression tests (ART)
@@ -37,9 +37,9 @@ class ARTCoverage(HigherIsBetterMetric):
     quality_attribute = TEST_COVERAGE
 
     def __init__(self, *args, **kwargs):
-        self.__emma = kwargs.pop('emma', None)
-        self.__jacoco = kwargs.pop('jacoco', None)
         super(ARTCoverage, self).__init__(*args, **kwargs)
+        self.__emma = self._project.emma()
+        self.__jacoco = self._project.jacoco()
         if not self._subject.product_version():
             # Trunk version, ART coverage measurement should not be too old.
             self.old_age = datetime.timedelta(hours=3 * 24)
@@ -48,6 +48,12 @@ class ARTCoverage(HigherIsBetterMetric):
                 'wordt gedekt door geautomatiseerde functionele tests en de ' \
                 'coverage meting is niet ouder dan %(old_age)s. Minder dan ' \
                 '%(low_target)d%% of meting ouder dan %(max_old_age)s is rood.'
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(ARTCoverage, cls).can_be_measured(subject, project) and \
+            (project.jacoco() and subject.art_coverage_jacoco()) or \
+            (project.emma() and subject.art_coverage_emma())
 
     def value(self):
         return self.__coverage()
@@ -69,7 +75,7 @@ class ARTCoverage(HigherIsBetterMetric):
         return urls
 
     def __coverage(self):
-        ''' Return the coverage from Emma. '''
+        ''' Return the coverage from Emma or Jacoco. '''
         emma_id = self._subject.art_coverage_emma()
         if emma_id:
             return self.__emma.coverage(emma_id)
@@ -78,7 +84,8 @@ class ARTCoverage(HigherIsBetterMetric):
             return self.__jacoco.coverage(jacoco_id)
 
     def _date(self):
-        ''' Return the date of the last coverage measurement from Emma. '''
+        ''' Return the date of the last coverage measurement from Emma or 
+            Jacoco. '''
         emma_id = self._subject.art_coverage_emma()
         if emma_id:
             return self.__emma.coverage_date(emma_id)
@@ -98,7 +105,12 @@ class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
     target_value = 25
     low_target_value = 50
     quality_attribute = PERFORMANCE
-    
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(ARTPerformance, cls).can_be_measured(product, project) \
+            and product.product_version() and product.art() and project.birt()
+
     def _denominator(self):
         return self._birt.nr_performance_pages(self._birt_id(), 
                                                self.__version())

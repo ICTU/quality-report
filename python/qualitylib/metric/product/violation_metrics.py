@@ -27,37 +27,42 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
     template = '%(name)s heeft %(value)d %(violation_type)s violations.'
     quality_attribute = CODE_QUALITY
     violation_type = 'Subclass responsibility'
-    
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(Violations, cls).can_be_measured(product, project) and \
+            product.sonar_id()
+
     def value(self):
         raise NotImplementedError  # pragma: no cover
-    
+
     def target(self):
         return self.__adapt_target_for_art(super(Violations, self).target())
-    
+
     def low_target(self):
         return self.__adapt_target_for_art(super(Violations, self).low_target())
-    
+
     def __adapt_target_for_art(self, value):
         ''' Return a lower (low) target value for ARTs. '''
         return 2 * value if self._subject.is_art() else value
-    
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(Violations, self)._parameters()
         parameters['violation_type'] = self.violation_type
         return parameters
-    
-    
+
+
 class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of critical violations reported by 
         Sonar. '''
     violation_type = 'critical'
     target_value = 0
     low_target_value = 1
-            
+
     def value(self):
         return self._sonar.critical_violations(self._sonar_id())
-    
+
 
 class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of major violations reported by 
@@ -65,6 +70,6 @@ class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
     violation_type = 'major'
     target_value = 25
     low_target_value = 50
-            
+
     def value(self):
         return self._sonar.major_violations(self._sonar_id())

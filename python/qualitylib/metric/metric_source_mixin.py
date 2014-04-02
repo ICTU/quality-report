@@ -20,17 +20,24 @@ limitations under the License.
 class SonarMetricMixin(object):
     ''' Mixin class for metrics that use Sonar. '''
     def __init__(self, *args, **kwargs):
-        self._sonar = kwargs.pop('sonar')
         super(SonarMetricMixin, self).__init__(*args, **kwargs)
+        self._sonar = self._project.sonar()
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        ''' Return whether the metric can be measured. The metric can be
+            measured when the project has Sonar. '''
+        return super(SonarMetricMixin, cls).can_be_measured(product, project) \
+            and project.sonar()
 
     def url(self):
         ''' Return the url to Sonar. '''
         return dict(Sonar=self._sonar_url())
-    
+
     def _sonar_url(self):
         ''' Return the Sonar url to use for the metric url. '''
         return self._sonar.url()
-    
+
     def _sonar_id(self):
         ''' Return the id of the subject in Sonar. '''
         return self._subject.sonar_id()
@@ -53,23 +60,46 @@ class SonarViolationsMetricMixin(SonarMetricMixin):
 class JenkinsMetricMixin(object):
     ''' Mixin class for metrics that use Jenkins. '''
     def __init__(self, *args, **kwargs):
-        self._jenkins = kwargs.pop('jenkins')
         super(JenkinsMetricMixin, self).__init__(*args, **kwargs)
-        
+        self._jenkins = self._project.build_server()
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        ''' Metrics that use the build server can be measured when the project 
+             has a build server. '''
+        return super(JenkinsMetricMixin, cls).can_be_measured(subject,
+                                                              project) \
+            and project.build_server()
+
 
 class BirtMetricMixin(object):
     ''' Mixin class for metrics that use Birt. '''
     def __init__(self, *args, **kwargs):
-        self._birt = kwargs.pop('birt')
         super(BirtMetricMixin, self).__init__(*args, **kwargs)
+        self._birt = self._project.birt()
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        ''' Metrics that use Birt can be measured when the project has Birt
+            and the product has a Birt id so it can be found in Birt 
+            reports. '''
+        return super(BirtMetricMixin, cls).can_be_measured(product, project) \
+            and project.birt() and product.birt_id()
 
     def _birt_id(self):
         ''' Return the id of the subject in Birt. '''
         return self._subject.birt_id()
 
-        
+
 class BirtTestDesignMetricMixin(BirtMetricMixin):
     ''' Mixin class for metrics that use the Birt test design report. '''
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(BirtTestDesignMetricMixin, cls).can_be_measured(product, 
+                                                                     project) \
+            and project.birt().has_test_design(product.birt_id())
+
     def url(self):
         ''' Return the url for the What's Missing report instead of the 
             Birt test design report since the What's Missing report allows
@@ -80,26 +110,40 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
 class NagiosMetricMixin(object):
     ''' Mixin class for metrics that use Nagios. '''
     def __init__(self, *args, **kwargs):
-        self._nagios = kwargs.pop('nagios')
         super(NagiosMetricMixin, self).__init__(*args, **kwargs)
-        
+        self._nagios = self._project.nagios()
+
 
 class TrelloActionsBoardMetricMixin(object):
     ''' Mixin class for metrics that use Trello for an actions board. '''
     def __init__(self, *args, **kwargs):
-        self._trello_actions_board = kwargs.pop('trello_actions_board')
         super(TrelloActionsBoardMetricMixin, self).__init__(*args, **kwargs)
+        self._trello_actions_board = self._project.trello_actions_board()
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        ''' Metrics that use the Trello actions board can be measured when
+            the project has a Trello actions board. '''
+        return super(TrelloActionsBoardMetricMixin, 
+                     cls).can_be_measured(subject, project) \
+            and project.trello_actions_board()
 
 
 class JiraMetricMixin(object):
     ''' Mixin class for metrics that use Jira. '''
     def __init__(self, *args, **kwargs):
-        self._jira = kwargs.pop('jira')
         super(JiraMetricMixin, self).__init__(*args, **kwargs)
+        self._jira = self._project.jira()
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        ''' Metrics that use Jira can be measured when the project has Jira. '''
+        return super(JiraMetricMixin, cls).can_be_measured(subject, project) \
+            and project.jira()
 
 
 class SubversionMetricMixin(object):
     ''' Mixin class for metrics that use Subversion. '''
     def __init__(self, *args, **kwargs):
-        self._subversion = kwargs.pop('subversion')
         super(SubversionMetricMixin, self).__init__(*args, **kwargs)
+        self._subversion = self._project.subversion()

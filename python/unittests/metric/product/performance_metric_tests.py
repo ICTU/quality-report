@@ -16,13 +16,13 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import metric
+from qualitylib import metric, domain
 
-    
+
 class FakePerformanceReport(object):
     ''' Fake a JMeter performance report. '''
     # pylint: disable=unused-argument, invalid-name
-    
+
     def __init__(self, queries=0, queries_violating_max_responsetime=0,
                  queries_violating_wished_reponsetime=0):
         self.__queries = queries
@@ -59,27 +59,28 @@ class FakePerformanceReport(object):
     def date(*args):
         ''' Return the report date. '''
         return datetime.datetime.now()
-    
-          
+
+
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
-    
-    def __init__(self, version=''):
+
+    def __init__(self, version='', 
+                 performance_report_id='performance report id'):
         self.__version = version
-                   
+        self.__performance_report_id = performance_report_id
+        
     def product_version(self):
         ''' Return the version of the subject. '''
         return self.__version
-    
-    @staticmethod
-    def performance_test():
+
+    def performance_test(self):
         ''' Return the performance report id of the subject. '''
-        return 'performance report id'
-       
-        
+        return self.__performance_report_id
+
+
 class ResponseTimesTestsMixin(object):
     ''' Unit tests for the response times metric. '''
-    
+
     expected_queries = 'Subclass responsibility'
     expected_max_violations = 'Subclass responsibility'
     expected_wish_violations = 'Subclass responsibility'
@@ -89,29 +90,41 @@ class ResponseTimesTestsMixin(object):
 
     def setUp(self):  # pylint: disable=invalid-name
         ''' Test fixture. '''
+        self.__subject = FakeSubject(self.product_version)
         report = FakePerformanceReport(queries=10, 
             queries_violating_max_responsetime=self.expected_max_violations,
             queries_violating_wished_reponsetime=self.expected_wish_violations)
-        self._metric = metric.ResponseTimes( \
-            subject=FakeSubject(self.product_version),  
-            performance_report=report, history=None)
-             
+        project = domain.Project(performance_report=report)
+        self._metric = metric.ResponseTimes(subject=self.__subject,
+                                            project=project)
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured. '''
+        self.failUnless(metric.ResponseTimes.can_be_measured(self.__subject,
+                                                             None))
+
+    def test_cant_be_measured(self):
+        ''' Test that the metric can't be measured without performance 
+            report. '''
+        subject = FakeSubject(performance_report_id=None)
+        self.failIf(metric.ResponseTimes.can_be_measured(subject, None))
+
     def test_value(self):
         ''' Test that the value of the metric equals None since it is not
             used. '''
         self.assertEqual(None, self._metric.value())
-        
+
     def test_numerical_value(self):
         ''' Test that the numerical value of the metric equals to number of
             queries that are below the wished and maximal response times. '''
         self.assertEqual(self.expected_max_violations + \
                          self.expected_wish_violations, 
                          self._metric.numerical_value())
-        
+
     def test_status(self):
         ''' Test the status of the KPI. '''
         self.assertEqual(self.expected_status, self._metric.status())
-        
+
     def test_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual({'Wekelijkse performancemeting (1/2)': 
@@ -119,14 +132,14 @@ class ResponseTimesTestsMixin(object):
                           'Wekelijkse performancemeting (2/2)': 
                           'http://report2'}, 
                          self._metric.url())
-        
+
     def test_report(self):
         ''' Test the report is correct. '''
         self.failUnless(self._metric.report().startswith(self.expected_report))
-        
+
     def test_missing_performance_report(self):
         ''' Test the metric report when the performance report is missing. '''
-        
+
         class MissingPerformanceReport(object):
             # pylint: disable-msg=too-few-public-methods
             ''' Fake a missing performance report. '''
@@ -134,14 +147,15 @@ class ResponseTimesTestsMixin(object):
             def exists(*args):
                 ''' Return whether the report exists. '''
                 return False
-            
+
             @staticmethod  # pylint: disable-msg=unused-argument
             def date(*args):
                 ''' Return the date of the report. '''
                 return datetime.datetime.min
-        
+
+        project = domain.Project(performance_report=MissingPerformanceReport())
         rt_metric = metric.ResponseTimes(subject=FakeSubject(),  
-            performance_report=MissingPerformanceReport(), history=None)
+                                         project=project)
         self.failUnless(rt_metric.report().startswith('Er is geen ' \
             'performancetestrapport voor'))
 
@@ -160,7 +174,8 @@ class BadResponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
         '%d queries draaien niet in 90%% van de gevallen binnen de gewenste ' \
         'responsetijd (meting ' % (expected_max_violations, expected_queries,
                                    expected_wish_violations, expected_queries)
-       
+
+
 class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the response times metric with perfect response 

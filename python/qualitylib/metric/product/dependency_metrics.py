@@ -32,6 +32,12 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     low_target_value = 10
     quality_attribute = CODE_QUALITY
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(CyclicDependencies, cls).can_be_measured(product,
+                                                              project) and \
+            product.sonar_id()
+
     def value(self):
         return self._sonar.package_cycles(self._sonar_id())
 
@@ -47,17 +53,17 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
     target_value = 10
     low_target_value = 20
     quality_attribute = CODE_QUALITY
-    
+
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')
         super(DependencyQuality, self).__init__(*args, **kwargs)
-        
+
     def _numerator(self):
         return self.__dependency_colors().count('red')
-            
+
     def _denominator(self):
         return len(self.__dependency_colors())
-        
+
     @utils.memoized
     def __dependency_colors(self):
         ''' Return the colors of all dependencies in the project. '''
@@ -68,10 +74,10 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
                 color = self.__report.get_product_section(*dependency).color()
                 colors.append(color)
         return colors
-    
+
     def url_label(self):
         return 'Componenten die "rode" metrieken hebben'
-    
+
     def url(self):
         # pylint: disable=star-args
         urls = dict()
@@ -80,7 +86,7 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
                 product = self.__report.get_product(*dependency)
                 urls['%s:%s' % dependency] = HTMLFormatter.product_url(product)
         return urls
-            
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(DependencyQuality, self)._parameters()

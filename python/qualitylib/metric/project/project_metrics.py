@@ -36,10 +36,15 @@ class RiskLog(LowerIsBetterMetric):
     target_value = 14
     low_target_value = 28
     quality_attribute = PROJECT_MANAGEMENT
-    
+
     def __init__(self, *args, **kwargs):
-        self.__trello_risklog_board = kwargs.pop('trello_risklog_board')
         super(RiskLog, self).__init__(*args, **kwargs)
+        self.__trello_risklog_board = self._project.trello_risklog_board()
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(RiskLog, cls).can_be_measured(subject, project) and \
+            project.trello_risklog_board()
 
     def value(self):
         return (datetime.datetime.now() - self._date()).days
@@ -119,28 +124,33 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 
 class ReleaseAge(LowerIsBetterMetric):
     ''' Metric for measuring the age of the last release. '''
-    
+
     norm_template = 'De laatste release is niet ouder dan %(target)d ' \
         'dagen. Ouder dan %(low_target)d dagen is rood.'
     template = 'De laatste %(archive_name)s-release is %(value)d dag(en) oud.'
     target_value = 3 * 7
     low_target_value = 4 * 7
     quality_attribute = PROGRESS
-    
+
     def __init__(self, *args, **kwargs):
         self.__release_archive = kwargs.pop('release_archive')
         super(ReleaseAge, self).__init__(*args, **kwargs)
 
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(ReleaseAge, cls).can_be_measured(team, project) and \
+            team.release_archives()
+
     def value(self):
         return (datetime.datetime.now() - self._date()).days
-    
+
     def _date(self):
         return self.__release_archive.date_of_most_recent_file()
-        
+
     def url(self):
         return {'Release-archief %s' % self.__release_archive.name(): 
                 self.__release_archive.url()}
-        
+
     def _parameters(self):  
         # pylint: disable=protected-access
         parameters = super(ReleaseAge, self)._parameters()
@@ -150,24 +160,29 @@ class ReleaseAge(LowerIsBetterMetric):
 
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of open bug reports. '''
-    
+
     norm_template = 'Het aantal open bug reports is minder dan %(target)d. ' \
        'Meer dan %(low_target)d is rood.'
     template = 'Het aantal open bug reports is %(value)d.'
     target_value = 50
     low_target_value = 100
     quality_attribute = PROGRESS
-    
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(OpenBugs, cls).can_be_measured(subject, project) and \
+            project.jira().has_open_bugs_query()
+
     def value(self):
         return self._jira.nr_open_bugs()
-    
+
     def url(self):
         return {'Jira': self._jira.nr_open_bugs_url()}
-    
-    
+
+
 class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of open security bugs. '''
-    
+
     norm_template = 'Het aantal beveiliging bug reports dat meer dan een ' \
         'sprint open staat is minder dan %(target)d. Meer dan %(low_target)d ' \
         'is rood.'
@@ -177,17 +192,23 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     low_target_value = 3
     quality_attribute = SECURITY
 
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(OpenSecurityBugs, cls).can_be_measured(subject, 
+                                                            project) and \
+            project.jira().has_open_security_bugs_query()
+
     def value(self):
         return self._jira.nr_open_security_bugs()
-    
+
     def url(self):
         return {'Jira': self._jira.nr_open_security_bugs_url()}
-    
+
 
 class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of blocking test issues opened the
         previous month. '''
-    
+
     norm_template = 'Het aantal geopende blokkerende testbevindingen is ' \
         'maximaal %(target)d. Meer dan %(low_target)d is rood.'
     template = 'Het aantal geopende blokkerende testbevindingen in de vorige ' \
@@ -195,13 +216,19 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 1
     quality_attribute = TEST_QUALITY
-    
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(BlockingTestIssues, cls).can_be_measured(subject, 
+                                                              project) and \
+            project.jira().has_blocking_test_issues_query()
+
     def value(self):
         return self._jira.nr_blocking_test_issues()
-    
+
     def url(self):
         return {'Jira': self._jira.nr_blocking_test_issues_url()}
-    
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(BlockingTestIssues, self)._parameters()

@@ -103,32 +103,60 @@ class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingCIJobs, self)._parameters()
-        parameters['responsible_team'] = self.__responsible_team_text()
+        parameters['responsible_team'] = self._responsible_team_text()
         parameters['number_of_jobs'] = self.__number_of_jobs()
         return parameters
 
     def value(self):
-        return len(self._jenkins.failing_jobs_url(*self.__teams()))
+        return len(self._jenkins.failing_jobs_url(*self._teams()))
 
     def url(self):
-        return self._jenkins.failing_jobs_url(*self.__teams())
+        return self._jenkins.failing_jobs_url(*self._teams())
 
     def url_label(self):
         return 'Falende jobs'
 
-    def __responsible_team_text(self):
-        ''' Return a text fragment to describe which team is responsible. '''
-        return ' waarvoor team %s verantwoordelijk is' % self._subject \
-            if self._subject else ''
-    
     def __number_of_jobs(self):
         ''' Return the total number of jobs that the teams are responsible
             for. '''
-        return self._jenkins.number_of_jobs(*self.__teams())
+        return self._jenkins.number_of_jobs(*self._teams())
 
-    def __teams(self):
+    def _teams(self):
         ''' Return the teams to pass to Jenkins. '''
-        return (self._subject,) if self._subject else self.responsible_teams()
+        raise NotImplementedError  # pragma: no cover
+
+    def _responsible_team_text(self):
+        ''' Return a text fragment to describe which team is responsible. '''
+        raise NotImplementedError  # pragma: no cover
+
+
+class TeamFailingCIJobs(FailingCIJobs):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of continuous integration jobs
+        that fail that a specific team is responsible for. '''
+
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(TeamFailingCIJobs, cls).can_be_measured(team, project) \
+            and len(project.teams()) > 1
+
+    def _teams(self):
+        return (self._subject,)
+
+    def _responsible_team_text(self):
+        return ' waarvoor team %s verantwoordelijk is' % self._subject
+
+
+class ProjectFailingCIJobs(FailingCIJobs):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of continuous integration jobs in a
+        project that fail. '''
+
+    def _teams(self):
+        return self.responsible_teams()
+
+    def _responsible_team_text(self):
+        return ''
 
 
 class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
@@ -149,7 +177,7 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(UnusedCIJobs, self)._parameters()
-        parameters['responsible_team'] = self.__responsible_team_text()
+        parameters['responsible_team'] = self._responsible_team_text()
         parameters['number_of_jobs'] = self.__number_of_jobs()
         return parameters
 
@@ -162,11 +190,10 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     def url_label(self):
         return 'Ongebruikte jobs'
 
-    def __responsible_team_text(self):
+    def _responsible_team_text(self):
         ''' Return a text fragment to describe which team is responsible. '''
-        return ' waarvoor team %s verantwoordelijk is' % self._subject \
-            if self._subject else ''
-    
+        raise NotImplementedError  # pragma: no cover
+
     def __number_of_jobs(self):
         ''' Return the total number of jobs that the teams are responsible
             for. '''
@@ -175,8 +202,31 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     def __teams(self):
         ''' Return the teams to pass to Jenkins. '''
         return (self._subject,) if self._subject else self.responsible_teams()
-            
-            
+
+
+class ProjectUnusedCIJobs(UnusedCIJobs):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of continuous integration jobs
+        that are not used. '''
+
+    def _responsible_team_text(self):
+        return ''
+
+
+class TeamUnusedCIJobs(UnusedCIJobs):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of continuous integration jobs
+        that are not used and for which a specific team is responsible. '''
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(TeamUnusedCIJobs, cls).can_be_measured(subject, project) \
+            and len(project.teams()) > 1
+
+    def _responsible_team_text(self):
+        return ' waarvoor team %s verantwoordelijk is' % self._subject 
+
+
 class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the percentage of continuous integration jobs
@@ -192,6 +242,11 @@ class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
     target_value = 95
     low_target_value = 90
     quality_attribute = ENVIRONMENT_QUALITY
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        return super(AssignedCIJobs, cls).can_be_measured(subject, project) \
+            and len(project.teams()) > 1
 
     def _numerator(self):
         return self._jenkins.number_of_assigned_jobs()
@@ -220,7 +275,12 @@ class ServerAvailability(NagiosMetricMixin, HigherPercentageIsBetterMetric):
     target_value = 99
     low_target_value = 90
     quality_attribute = ENVIRONMENT_QUALITY
-    
+
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(ServerAvailability, cls).can_be_measured(team, project) \
+            and team.is_support_team() and project.nagios()
+
     def _parameters(self):
         ''' Add number of servers per group to the parameters. '''
         # pylint: disable=protected-access

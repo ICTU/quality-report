@@ -43,6 +43,11 @@ class JavaDuplication(Duplication):
     target_value = 0
     low_target_value = 5
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(JavaDuplication, cls).can_be_measured(product, project) \
+            and product.sonar_id()
+
 
 class JsfDuplication(Duplication):
     # pylint: disable=too-many-public-methods, too-many-ancestors
@@ -50,3 +55,8 @@ class JsfDuplication(Duplication):
         JSF code. '''
     target_value = 10
     low_target_value = 20
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(JsfDuplication, cls).can_be_measured(product, project) \
+            and product.jsf() and product.jsf().sonar_id()

@@ -49,8 +49,8 @@ class ResponseTimes(Metric):
     quality_attribute = PERFORMANCE
 
     def __init__(self, *args, **kwargs):
-        self.__performance_report = kwargs.pop('performance_report')
         super(ResponseTimes, self).__init__(*args, **kwargs)
+        self.__performance_report = self._project.performance_report()
         if not self._subject.product_version():
             self.old_age = datetime.timedelta(hours=7 * 24)
             self.max_old_age = datetime.timedelta(hours=14 * 24)
@@ -60,6 +60,13 @@ class ResponseTimes(Metric):
                 '%(old_age)s. Als een of meer queries de maximum ' \
                 'responsetijd overschrijden of als de meting ouder is dan ' \
                 '%(max_old_age)s, is de score rood, anders geel.'
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        ''' The performance can be measured when the product has a performance
+            report. '''
+        return super(ResponseTimes, cls).can_be_measured(subject, project) and \
+            subject.performance_test()
 
     def value(self):
         return None  # We use max_violations and wish_violations as value

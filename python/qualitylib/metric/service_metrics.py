@@ -31,7 +31,7 @@ class ServiceAvailability(NagiosMetricMixin, HigherIsBetterMetric):
     low_target_value = 98
     quality_attribute = AVAILABILITY
     time_period_nagios = 'Subclass responsibility'
-    
+
     def value(self):
         return self._nagios.service_availability(self.__nagios_server_id(),
                                         time_period=self.time_period_nagios)
@@ -39,25 +39,25 @@ class ServiceAvailability(NagiosMetricMixin, HigherIsBetterMetric):
     def url(self):
         return dict(Nagios=self._nagios.service_availability_url( \
                                         time_period=self.time_period_nagios))
-    
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(ServiceAvailability, self)._parameters()
         parameters['time_period_description'] = \
             self.time_period_description().lower()
         return parameters
-    
+
     @classmethod
     def time_period_description(cls):
         ''' Return a human readable form of the time period that this metric
             is reporting on. '''
         raise NotImplementedError  # pragma: no cover
-    
+
     @staticmethod
     def _today():
         ''' Return the current date. Overrideable for unit test purposes. '''
         return datetime.date.today()
-    
+
     def __nagios_server_id(self):
         ''' Return the Nagios id of the server. '''
         return self._subject.nagios_server_id()
@@ -66,22 +66,22 @@ class ServiceAvailability(NagiosMetricMixin, HigherIsBetterMetric):
 class ServiceAvailabilityLastMonth(ServiceAvailability):
     ''' Metric for measuring the availability of a service last month. '''
     time_period_nagios = 'lastmonth'
-    
+
     @classmethod
     def time_period_description(cls):
         return 'was vorige maand (%s)' % \
             utils.format_month(utils.month_ago(cls._today()))
 
-    
+
 class ServiceAvailabilityThisMonth(ServiceAvailability):
     ''' Metric for measuring the availability of a service this month. '''
     time_period_nagios = 'thismonth'
-    
+
     @classmethod
     def time_period_description(cls):
         return 'is deze maand (%s)' % utils.format_month(cls._today())
-    
-        
+
+
 class ServiceResponseTimes(LowerIsBetterMetric):
     ''' Metric for measuring the response times of a service. '''
     norm_template = 'De maximale gemiddelde responstijd is lager dan ' \
@@ -93,9 +93,9 @@ class ServiceResponseTimes(LowerIsBetterMetric):
     quality_attribute = PERFORMANCE
 
     def __init__(self, *args, **kwargs):
-        self.__javamelody = kwargs.pop('javamelody')
         super(ServiceResponseTimes, self).__init__(*args, **kwargs)
-        
+        self.__javamelody = self._project.javamelody()
+
     def value(self):
         start, end = self.__period()
         mean_request_times = self.__javamelody.mean_request_times( \
@@ -105,25 +105,25 @@ class ServiceResponseTimes(LowerIsBetterMetric):
     def url(self):
         return dict(JavaMelody=self.__javamelody.url(self.__javamelody_id(), 
                                                      *self.__period()))
-    
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(ServiceResponseTimes, self)._parameters()
         parameters['time_period_description'] = \
             self.time_period_description().lower()
         return parameters
-    
+
     @classmethod
     def time_period_description(cls):
         ''' Return a human readable form of the time period that this metric
             is reporting on. '''
         raise NotImplementedError  # pragma: no cover
-        
+
     @staticmethod
     def _today():
         ''' Return the current date. Overrideable for unit test purposes. '''
         return datetime.date.today()
-    
+
     @classmethod
     def __period(cls):
         ''' Return the reporting period to pass to JavaMelody. '''
@@ -131,25 +131,25 @@ class ServiceResponseTimes(LowerIsBetterMetric):
         start = date.replace(day=1)        
         end = date.replace(day=utils.last_day_of_month(date))
         return start, end
-    
+
     @classmethod
     def _date_in_period(cls):
         ''' Return a date in the period (month) this metric is reporting on. '''
         raise NotImplementedError  # pragma: no cover
-        
+
     def __javamelody_id(self):
         ''' Return the JavaMelody id of the product we're reporting on. '''
         return self._subject.java_melody()
-    
-            
+
+
 class ServiceResponseTimesLastMonth(ServiceResponseTimes):
     ''' Metric for measuring the response times of a service last month. '''
-    
+
     @classmethod
     def time_period_description(cls):
         return 'was vorige maand (%s)' % \
             utils.format_month(utils.month_ago(cls._today()))
-            
+
     @classmethod
     def _date_in_period(cls):
         return utils.month_ago(cls._today())
@@ -157,11 +157,11 @@ class ServiceResponseTimesLastMonth(ServiceResponseTimes):
 
 class ServiceResponseTimesThisMonth(ServiceResponseTimes):
     ''' Metric for measuring the response times of a service this month. '''
-    
+
     @classmethod
     def time_period_description(cls):
         return 'is deze maand (%s)' % utils.format_month(cls._today())
-    
+
     @classmethod
     def _date_in_period(cls):
         return cls._today()

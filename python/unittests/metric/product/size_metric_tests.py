@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric
+from qualitylib import metric, domain
 
 
 class FakeSonar(object):
@@ -27,9 +27,9 @@ class FakeSonar(object):
     def dashboard_url(*args):  
         ''' Return a fake dashboard url. '''
         return 'http://sonar'
-    
+
     url = dashboard_url
-    
+
     @staticmethod
     def ncloc(*args):
         ''' Return the number of non-comment LOC. '''
@@ -38,7 +38,7 @@ class FakeSonar(object):
 
 class FakeSubject(object):  # pylint: disable=too-few-public-methods
     ''' Provide for a fake subject. '''
-    
+
     def __repr__(self):
         return 'FakeSubject'
 
@@ -46,7 +46,7 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
     def sonar_id():
         ''' Return the Sonar id of the subject. '''
         return ''
-    
+
 
 class FakeHistory(object):  # pylint: disable=too-few-public-methods
     ''' Fake the history for testing purposes. '''
@@ -59,11 +59,11 @@ class FakeHistory(object):  # pylint: disable=too-few-public-methods
 class ProductLOCTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the product LOC metric. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
-        self._metric = metric.ProductLOC(subject=FakeSubject(), 
-                                         sonar=FakeSonar(), history=None)
-        
+        project = domain.Project(sonar=FakeSonar())
+        self._metric = metric.ProductLOC(subject=FakeSubject(), project=project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the NCLOC returned by
             Sonar. '''
@@ -78,14 +78,14 @@ class ProductLOCTest(unittest.TestCase):
 class TotalLOCTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the total LOC metric. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        self.__metric = metric.TotalLOC(subject=[self.__subject, 
-                                                 self.__subject], 
-                                        sonar=FakeSonar(),
-                                        history=FakeHistory())
-        
+        project = domain.Project(sonar=FakeSonar(), history=FakeHistory())
+        self.__metric = metric.TotalLOC(subject=[self.__subject,
+                                                 self.__subject],
+                                        project=project)
+
     def test_value(self):
         ''' Test that the value of the metric equals the sum of the NCLOC 
             returned by Sonar. '''
@@ -94,7 +94,7 @@ class TotalLOCTest(unittest.TestCase):
     def test_url(self):
         ''' Test that the url refers to Sonar. '''
         self.assertEqual(dict(Sonar=FakeSonar().url()), self.__metric.url())
-       
+
     def test_recent_history(self):
         ''' Test that the recent history substracts the minimum value of 
             each value so that more data can be plotted. '''

@@ -205,7 +205,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_build_server(self):
         ''' Test that build server is in the project resources. '''
         self.failUnless(('Build server', FakeResource().url()) in 
-            domain.Project('Organization' ,'Project name', 
+            domain.Project('Organization', 'Project name',
                            build_server=FakeResource()).project_resources())
 
     def test_sonar(self):
@@ -228,7 +228,7 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(trello_risklog_board=FakeResource())
         self.failUnless(('Trello risico log', FakeResource().url()) in
                          project.project_resources())
-        
+
     def test_trello_actions(self):
         ''' Test that the Trello actions board is in the project resources. '''
         project = self.project(trello_actions_board=FakeResource())

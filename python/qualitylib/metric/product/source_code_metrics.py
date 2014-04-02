@@ -33,6 +33,11 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     low_target_value = 5
     quality_attribute = CODE_QUALITY
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(CommentedLOC, cls).can_be_measured(product, project) and \
+            product.sonar_id()
+
     def _numerator(self):
         return self._sonar.commented_loc(self._sonar_id())
 
@@ -52,15 +57,21 @@ class MethodQualityMetric(SonarViolationsMetricMixin,
         '%(denominator)d) van %(name)s heeft %(attribute)s.'
     attribute = 'Subclass responsibility'
     target_value = 0
-    low_target_value = 5    
+    low_target_value = 5
     quality_attribute = CODE_QUALITY
-    
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(MethodQualityMetric, cls).can_be_measured(product, 
+                                                               project) and \
+            product.sonar_id()
+
     def _numerator(self):
         raise NotImplementedError  # pragma: no cover
 
     def _denominator(self):
         return self._sonar.methods(self._sonar_id())
-    
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(MethodQualityMetric, self)._parameters()
@@ -72,7 +83,7 @@ class CyclomaticComplexity(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
     ''' Return the percentage of method whose cyclomatic complexity is too
         high. '''
-    
+
     attribute = 'een cyclomatische complexiteit van 10 of hoger'
 
     def _numerator(self):
@@ -82,7 +93,7 @@ class CyclomaticComplexity(MethodQualityMetric):
 class LongMethods(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
     ''' Metric for measuring the percentage of methods that is too long. '''
-    
+
     attribute = 'een lengte van meer dan 20 NCSS ' \
                 '(Non-Comment Source Statements)'
 
