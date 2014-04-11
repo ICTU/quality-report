@@ -55,7 +55,7 @@ class JSONFormatter(base_formatter.Formatter):
         except TypeError:
             logging.error('Error formatting %s', kpi.stable_id())
             raise
-            
+
     @staticmethod
     def postfix():
         ''' Return a JSON formatted version of the report postfix. '''

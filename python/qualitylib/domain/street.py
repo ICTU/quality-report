@@ -17,7 +17,7 @@ limitations under the License.
 
 class Street(object):
     ''' Class representing a development or test street. '''
-    
+
     def __init__(self, name, job_regexp, target_art_stability=3, 
                  low_target_art_stability=7, perfect_art_stability=1):
         self.__name = name
@@ -25,26 +25,26 @@ class Street(object):
         self.__target_art_stability = target_art_stability
         self.__low_target_art_stability = low_target_art_stability
         self.__perfect_art_stability = perfect_art_stability
-        
+
     def name(self):
         ''' Return the name of the street. '''
         return self.__name
-    
+
     def regexp(self):
         ''' Return the regular expression that describes the CI-jobs of the
             street. '''
         return self.__job_regexp
-    
+
     def target_art_stability(self):
         ''' Return after how many days not succeeding we consider an ART to
             be unstable. '''
         return self.__target_art_stability
-    
+
     def low_target_art_stability(self):
         ''' Return after how many days not succeeding we consider an ART to
             be very unstable. '''
         return self.__low_target_art_stability
-        
+
     def perfect_art_stability(self):
         ''' Return after how many days not succeeding we consider an ART to
             be not perfectly stable. '''

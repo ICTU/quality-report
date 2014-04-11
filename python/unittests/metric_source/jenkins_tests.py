@@ -106,7 +106,7 @@ class JenkinsTest(unittest.TestCase):
         self.assertEqual({'job1': 'http://url'}, 
                          self.__jenkins.failing_jobs_url())
 
-    def test_failing_jobs_ur_no_description(self):
+    def test_failing_jobs_url_no_description(self):
         ''' Test that the failing jobs url works if there are jobs without
             description. '''
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\

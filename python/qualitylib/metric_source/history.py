@@ -46,13 +46,13 @@ class History(object):
         ''' Remove detail data from old history records. '''
         self.__clean_old_details()
         self.__deduplicate_history()
-        
+
     def status_start_date(self, metric_id, current_status, 
                           now=datetime.datetime.now):
         ''' Return the start date of the current status of the metric. '''
         last_status, date = self.__last_status(metric_id)
         return date if last_status == current_status else now()
-        
+
     def __last_status(self, metric_id):
         ''' Return the last recorded status of the metric and the date that
             the metric first had that status. '''
@@ -67,7 +67,7 @@ class History(object):
             return last_status, date
         else:
             return '', datetime.datetime.min
-        
+
     @utils.memoized
     def __historic_values(self, recent_only=True):
         ''' Return only the historic values from the history file. '''
@@ -83,7 +83,7 @@ class History(object):
                 values_only_measurement[metric_id] = value
             value_only_measurements.append(values_only_measurement)
         return value_only_measurements
-    
+
     @utils.memoized
     def __eval_history(self, recent_only=True):
         ''' Load and eval measurements from the history file. '''
