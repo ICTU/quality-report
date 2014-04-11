@@ -29,6 +29,9 @@ def parse():
     parser.add_argument('--dot',
                         help='write product dependency graph to the given '
                              'dot file')
+    parser.add_argument('--report',
+                        help='folder to write the HTML report and accompanying '
+                             'files to')
     parser.add_argument('--log', default="WARNING",
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
                                  'CRITICAL'],
@@ -36,6 +39,6 @@ def parse():
     args = parser.parse_args()
     if not args.project:
         parser.error('Need a project definition file.')
-    if not args.html and not args.json and not args.dot:
-        parser.error('Need at least one of --html, --json, and --dot')
+    if not args.html and not args.json and not args.dot and not args.report:
+        parser.error('Need at least one of --report, --html, --json, and --dot')
     return args

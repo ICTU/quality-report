@@ -23,6 +23,8 @@ from qualitylib import formatting, commandlineargs, report, metric_source, log
 import import_file
 import codecs
 import logging
+import os
+import pkg_resources
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -30,7 +32,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __init__(self, project_module):
         self.__project = project_module.PROJECT
 
-    def create_report(self, json_filename, html_filename, dot_filename):
+    def create_report(self, report_dir, json_filename, html_filename, 
+                      dot_filename):
         ''' Create, format, and write the quality report. '''
         self.__add_latest_release_of_products()
         self.__add_release_candidates_of_products()
@@ -45,6 +48,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             if filename:
                 self.__format_and_write_report(quality_report, formatter_class,
                                                filename, mode, encoding)
+        if report_dir:
+            self.__format_and_write_html_report(quality_report, report_dir)
         if json_filename:
             metric_source.History(json_filename).clean_history()
 
@@ -68,7 +73,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                          'release candidate.', product.name(), 
                          release_candidate)
                 self.__project.add_product_with_version(product.name(),
-                                                        release_candidate)  
+                                                        release_candidate)
 
     def __add_dependencies(self):
         ''' Add product versions that other products depend on. '''
@@ -77,15 +82,57 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                          'dependency.', name, version)
             self.__project.add_product_with_version(name, version)
 
-    @staticmethod
-    def __format_and_write_report(quality_report, report_formatter,
+    def __format_and_write_html_report(self, quality_report, report_dir):
+        ''' Format the quality report to HTML and write the files in the report
+            folder. '''
+        self.__create_dir(report_dir)
+        tmp_filename = os.path.join(report_dir, 'tmp.html')
+        self.__format_and_write_report(quality_report, formatting.HTMLFormatter,
+                                       tmp_filename, 'w', 'utf-8')
+        html_filename = os.path.join(report_dir, 'index.html')
+        os.rename(tmp_filename, html_filename)
+        dot_filename = os.path.join(report_dir, 'dependency.dot')
+        self.__format_and_write_report(quality_report, formatting.DotFormatter,
+                                       dot_filename, 'w', 'ascii')
+        svg_filename = os.path.join(report_dir, 'dependency.svg')
+        os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
+        for filename in (html_filename, svg_filename):
+            os.system('chmod a+r %s' % filename)
+        resource_manager = pkg_resources.ResourceManager()
+        formatting_module = formatting.html_formatter.__name__
+        for resource_type, encoding in (('css', 'utf-8'), ('img', None), 
+                                        ('js', 'utf-8')):
+            resource_dir = os.path.join(report_dir, resource_type)
+            self.__create_dir(resource_dir)
+            for resource in resource_manager.resource_listdir(formatting_module,
+                                                              resource_type):
+                filename = os.path.join(resource_dir, resource)
+                contents = resource_manager.resource_string(formatting_module,
+                                                resource_type + '/' + resource)
+                self.__write_file(contents, filename, 'w', encoding)
+
+    @classmethod
+    def __format_and_write_report(cls, quality_report, report_formatter,
                                   filename, mode, encoding):
         ''' Format the report using the formatter and write it to the specified
             file. '''
         formatted_report = report_formatter().process(quality_report)
+        cls.__write_file(formatted_report, filename, mode, encoding)
+
+    @staticmethod
+    def __write_file(contents, filename, mode, encoding):
+        ''' Write the contents to the specified file. '''
         output_file = codecs.open(filename, mode, encoding)
-        output_file.write(formatted_report)
+        output_file.write(contents)
         output_file.close()
+        os.system('chmod a+r %s' % filename)
+
+    @staticmethod
+    def __create_dir(dir_name):
+        ''' Create a directory and make it accessible. '''
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+        os.system('chmod a+x %s' % dir_name)
 
 
 if __name__ == '__main__':
@@ -93,5 +140,5 @@ if __name__ == '__main__':
     args = commandlineargs.parse()
     log.init_logging(args.log)
     project_definition_module = import_file.import_file(args.project)
-    Reporter(project_definition_module).create_report(args.json, args.html, 
-                                                      args.dot)
+    Reporter(project_definition_module).create_report(args.report, args.json, 
+                                                      args.html, args.dot)
