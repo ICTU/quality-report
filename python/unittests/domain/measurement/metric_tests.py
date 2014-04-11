@@ -139,13 +139,13 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_y_axis_range(self):
         ''' Test that the y axis range depends on the history. '''
         FakeHistory.values = [1, 4, 5, 2]
-        self.assertEqual((0, 5), self.__metric.y_axis_range())
+        self.assertEqual((1, 5), self.__metric.y_axis_range())
 
-    def test_y_axis_range_negatives(self):
-        '''' Test that the y axis range is 0-100 when the maximum historic
-             value is zero or lower. '''
+    def test_y_axis_range_zero(self):
+        '''' Test that the y axis range is -1, 1 when the minimum and maximum 
+             historic values are zero. '''
         FakeHistory.values = [0]
-        self.assertEqual((0, 100), self.__metric.y_axis_range())
+        self.assertEqual((-1, 1), self.__metric.y_axis_range())
 
     def test_default_target(self):
         ''' Test that the default target is a subclass responsibility. '''

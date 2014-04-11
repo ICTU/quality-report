@@ -279,11 +279,13 @@ class Metric(object):
     def y_axis_range(self):
         ''' Return a two-tuple (min, max) for use in graphs. '''
         history = self.recent_history()
-        if history:
-            maximum = max(history)
-            if maximum > 0:
-                return 0, maximum
-        return 0, 100
+        if not history:
+            return 0, 100
+        minimum, maximum = min(history), max(history)
+        if minimum == maximum:
+            return minimum - 1, maximum + 1
+        else:
+            return minimum, maximum
 
     def responsible_teams(self):
         ''' Return the list of teams that are responsible for this metric. '''
