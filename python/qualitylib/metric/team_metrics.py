@@ -23,11 +23,11 @@ from qualitylib.metric.quality_attributes import PROGRESS, SPIRIT
 class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the progress of a team. '''
 
+    name = 'Team voortgang'
     norm_template = 'De vereiste velocity om het sprintdoel te halen is ' \
         'lager dan of gelijk aan %(target_factor).1f maal de geplande ' \
-        'velocity van %(planned_velocity).1f punt per dag. Als de velocity ' \
-        'die nodig is om het sprintdoel te halen hoger wordt dan ' \
-        '%(low_target_factor).1f maal %(planned_velocity).1f punt per dag ' \
+        'velocity. Als de velocity die nodig is om het sprintdoel te halen ' \
+        'hoger wordt dan %(low_target_factor).1f maal de geplande velocity ' \
         'is deze KPI rood.'
     template = 'Team %(name)s heeft een velocity van %(value).1f punt per ' \
         'dag nodig om het sprintdoel van de huidige sprint (%(sprint_goal).1f '\
@@ -39,17 +39,24 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     target_factor = 1.25
     low_target_factor = 1.5
 
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(TeamProgress, cls).can_be_measured(team, project) and \
+            team.birt_id() and team.is_scrum_team()
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(TeamProgress, cls).norm_template_default_values()
+        values['target_factor'] = cls.target_factor
+        values['low_target_factor'] = cls.low_target_factor
+        return values
+
     def __init__(self, *args, **kwargs):
         super(TeamProgress, self).__init__(*args, **kwargs)
         birt_team_id = self._subject.birt_id()
         planned_velocity = self._birt.planned_velocity(birt_team_id)
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
-
-    @classmethod
-    def can_be_measured(cls, team, project):
-        return super(TeamProgress, cls).can_be_measured(team, project) and \
-            team.birt_id() and team.is_scrum_team()
 
     def value(self):
         birt_team_id = self._subject.birt_id()
@@ -79,6 +86,7 @@ class TeamSpirit(Metric):
     ''' Metric for measuring the spirit of a specific team. The team simply
         picks a smiley. '''
 
+    name = 'Team stemming'
     norm_template = 'Er is geen vaste norm; de stemming wordt door de ' \
         'kwaliteitsmanager periodiek bij de teams gepeild. De teams kiezen ' \
         'daarbij zelf een smiley.'

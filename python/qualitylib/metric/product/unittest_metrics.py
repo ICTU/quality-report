@@ -46,6 +46,7 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of unit tests that fail. '''
 
+    name = 'Falende unit testen'
     norm_template = 'Alle unittests slagen.'
     perfect_template = '%(passed_tests)d van de %(tests)d unittests slagen. '
     template = '%(value)d van de %(tests)d unittests falen.'
@@ -72,6 +73,7 @@ class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the coverage of unit tests for a product. '''
 
+    name = 'Unit test broncode dekking'
     norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
         'door unittests. Lager dan %(low_target)d%% is rood.'
     template = '%(name)s unittest coverage is %(value)d%% (%(tests)d ' \

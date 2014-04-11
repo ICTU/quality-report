@@ -26,6 +26,7 @@ class ARTCoverage(HigherIsBetterMetric):
     ''' Metric for measuring the coverage of automated regression tests (ART)
         for a product. '''
 
+    name = 'Automatic regression test coverage'
     norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
            'door geautomatiseerde functionele tests. ' \
            'Minder dan %(low_target)d%% is rood.'
@@ -97,6 +98,8 @@ class ARTCoverage(HigherIsBetterMetric):
 class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
     ''' Metric for measuring the percentage of pages that loads too slow 
         during running an automated regression test. '''
+
+    name = 'Automatic regression test performance'
     norm_template = 'Maximaal %(target)d%% van de paginas heeft een ' \
         'gemiddelde laadtijd hoger dan het maximum. ' \
         'Meer dan %(low_target)d%% is rood.'

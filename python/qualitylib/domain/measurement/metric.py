@@ -25,7 +25,7 @@ import datetime
 class Metric(object):
     ''' Base class for metrics. '''
 
-    norm_template = target_value = low_target_value = perfect_value = \
+    name = norm_template = target_value = low_target_value = perfect_value = \
         template = 'Subclass responsibility'
     old_age = datetime.timedelta.max
     max_old_age = datetime.timedelta.max
@@ -38,6 +38,11 @@ class Metric(object):
             subject, i.e. whether the necessary metric sources are 
             available. '''
         return bool(subject)
+
+    @classmethod
+    def norm_template_default_values(cls):
+        ''' Return the default values for parameters in the norm template. '''
+        return dict(target=cls.target_value, low_target=cls.low_target_value)
 
     def __init__(self, subject=None, responsible_teams=None, project=None):
         self._subject = subject

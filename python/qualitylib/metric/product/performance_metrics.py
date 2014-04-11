@@ -24,6 +24,7 @@ class ResponseTimes(Metric):
     ''' Metric for measuring reponsetimes as determined in the performance
         tests. '''
 
+    name = 'Responsetijden'
     norm_template = 'Geen van de performancetestqueries ' \
         'overschrijdt de gewenste responsetijd. Als een of meer queries de ' \
         'maximum responsetijd overschrijden is de score rood, anders geel.'

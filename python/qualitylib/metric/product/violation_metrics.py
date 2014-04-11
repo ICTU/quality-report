@@ -33,6 +33,12 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return super(Violations, cls).can_be_measured(product, project) and \
             product.sonar_id()
 
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(Violations, cls).norm_template_default_values()
+        values['violation_type'] = cls.violation_type
+        return values
+
     def value(self):
         raise NotImplementedError  # pragma: no cover
 
@@ -56,6 +62,8 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
 class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of critical violations reported by 
         Sonar. '''
+
+    name = 'Critical violations'
     violation_type = 'critical'
     target_value = 0
     low_target_value = 1
@@ -67,6 +75,8 @@ class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
 class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of major violations reported by 
         Sonar. '''
+
+    name = 'Major violations'
     violation_type = 'major'
     target_value = 25
     low_target_value = 50

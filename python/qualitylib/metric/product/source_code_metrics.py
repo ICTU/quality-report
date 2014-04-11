@@ -25,6 +25,7 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     ''' Metric for measuring the percentage of lines of code that are commented
         out. '''
 
+    name = 'Uitgecommentarieerde broncode'
     norm_template = 'Maximaal %(target)d%% van de regels code is ' \
         'uitgecommentarieerd. Meer dan %(low_target)d%% is rood.'
     template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \
@@ -66,6 +67,12 @@ class MethodQualityMetric(SonarViolationsMetricMixin,
                                                                project) and \
             product.sonar_id()
 
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(MethodQualityMetric, cls).norm_template_default_values()
+        values['attribute'] = cls.attribute
+        return values
+
     def _numerator(self):
         raise NotImplementedError  # pragma: no cover
 
@@ -84,6 +91,7 @@ class CyclomaticComplexity(MethodQualityMetric):
     ''' Return the percentage of method whose cyclomatic complexity is too
         high. '''
 
+    name = 'Cyclomatische complexiteit'
     attribute = 'een cyclomatische complexiteit van 10 of hoger'
 
     def _numerator(self):
@@ -94,6 +102,7 @@ class LongMethods(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
     ''' Metric for measuring the percentage of methods that is too long. '''
 
+    name = 'Lange methoden'
     attribute = 'een lengte van meer dan 20 NCSS ' \
                 '(Non-Comment Source Statements)'
 
@@ -106,6 +115,7 @@ class ManyParameters(MethodQualityMetric):
     ''' Metric for measuring the percentage of methods that have too many
         parameters. '''
 
+    name = 'Methoden met te veel parameters'
     attribute = 'meer dan 5 parameters'
 
     def _numerator(self):

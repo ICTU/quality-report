@@ -25,6 +25,7 @@ class ReviewedAndApprovedUserStories(BirtTestDesignMetricMixin,
     ''' Metric for measuring the percentage of user stories that have been
         reviewed and approved. '''
 
+    name = 'Goedkeuring user stories'
     norm_template = 'Minimaal %(target)d%% van de user stories is gereviewd ' \
         'en goedgekeurd. Lager dan %(low_target)d%% is rood.'
     template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \
@@ -51,6 +52,7 @@ class UserStoriesWithEnoughLogicalTestCases(BirtTestDesignMetricMixin,
     ''' Metric for measuring the percentage of user stories that has sufficient
         logical test cases. '''
 
+    name = 'Voldoende logische testgevallen per user story'
     norm_template = 'Minimaal %(target)d%% van de user stories heeft ' \
         'voldoende logische testgevallen. Lager dan %(low_target)d%% is rood.'
     template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \

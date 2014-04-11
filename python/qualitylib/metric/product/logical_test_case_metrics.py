@@ -28,6 +28,7 @@ class ReviewedAndApprovedLogicalTestCases(BirtTestDesignMetricMixin,
     ''' Metric for measuring the percentage of logical test cases that has
         been reviewed and approved. '''
 
+    name = 'Goedkeuring van logische testgevallen'
     norm_template = 'Minimaal %(target)d%% van de logische testgevallen is ' \
         'gereviewd en goedgekeurd. Lager dan %(low_target)d%% is rood.'
     template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \
@@ -54,6 +55,7 @@ class AutomatedLogicalTestCases(BirtTestDesignMetricMixin,
     ''' Metric for measuring the percentage of logical test cases that should
         be automated that has actually been automated. '''
 
+    name = 'Automatisering van logische testgevallen'
     norm_template = 'Minimaal %(target)d%% van de te automatiseren logische ' \
         'testgevallen is opgenomen in de ART. ' \
         'Lager dan %(low_target)d%% is rood.'
@@ -81,6 +83,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the how long ago the manual logical test cases
         have been tested. '''
 
+    name = 'Uitvoering van handmatige logische testgevallen'
     norm_template = 'Alle handmatige logische testgevallen zijn minstens ' \
         'eenmaal uitgevoerd. In geval van trunk versies geldt bovendien dat ' \
         'ze minder dan %(target)d dagen geleden moeten zijn uitgevoerd. ' \
@@ -88,6 +91,8 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     template = '%(nr_manual_ltcs_too_old)d van de %(nr_manual_ltcs)d ' \
         'handmatige logische testgevallen van %(name)s zijn te lang geleden '\
         '(%(value)d dag(en), op %(date)s) uitgevoerd.'
+    target_value = 21
+    low_target_value = 28
     quality_attribute = TEST_COVERAGE
 
     @classmethod

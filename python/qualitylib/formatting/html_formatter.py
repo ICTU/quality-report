@@ -19,6 +19,7 @@ from qualitylib.formatting import base_formatter
 import datetime
 import os
 import re
+import pkg_resources
 
 
 class HTMLFormatter(base_formatter.Formatter):
@@ -52,6 +53,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['team_filter_menu'] = self.__team_filter_menu(report)
         parameters['dashboard'] = self.__dashboard(report)
         parameters['project_resources'] = self.__project_resources(report)
+        parameters['metric_classes'] = self.__metric_classes(report)
         parameters['history'] = self.__trend_data(report.get_meta_section())
 
         metrics = []
@@ -70,7 +72,11 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Read and return a HTML fragment from the html folder. '''
         module_path = os.path.dirname(os.path.abspath(__file__))
         filename = module_path + '/../../../html/%s.html' % name
-        return file(filename).read()
+        try:
+            return file(filename).read()
+        except IOError:
+            return pkg_resources.ResourceManager().\
+                resource_string(__name__, 'html/%s.html' % name)
 
     def section(self, report, section):
         ''' Return a HTML formatted version of the section. '''
@@ -260,7 +266,7 @@ class HTMLFormatter(base_formatter.Formatter):
             or more links to the kpi source(s) if available. '''
         return cls.__format_text_with_links(kpi.report(), kpi.url(), 
                                             kpi.url_label())
-        
+
     @staticmethod
     def __kpi_status(kpi):
         ''' Return the status of the kpi, including corrective actions. '''
@@ -268,7 +274,7 @@ class HTMLFormatter(base_formatter.Formatter):
         if status in ('red', 'yellow') and kpi.has_tasks():
             status += '_with_action'
         return status
-    
+
     @classmethod
     def __format_kpi_tasks(cls, kpi):
         ''' Return a HTML formatted version of the kpi action(s). '''
@@ -294,7 +300,7 @@ class HTMLFormatter(base_formatter.Formatter):
             text = '%(text)s [%(url_label)s%(links)s]' % dict(text=text,
                 url_label=url_label, links=sep.join(sorted(links)))
         return text
-   
+
     @staticmethod
     def __format_subtitle(subtitle):
         ''' Return a HTML formatted subtitle. '''        
@@ -335,7 +341,7 @@ class HTMLFormatter(base_formatter.Formatter):
             result += '<p>%s %s: %s</p>\n' % (product_label, link_text,
                                               ', '.join(links))
         return result
-    
+
     @classmethod
     def __format_product_meta_data(cls, product):
         ''' Return a HTML formatted paragraph with meta data about the 
@@ -350,7 +356,7 @@ class HTMLFormatter(base_formatter.Formatter):
         if product.is_release_candidate():
             result += '<p>%s is een releasekandidaat.</p>\n' % product_label
         return result
-    
+
     @classmethod
     def __format_product_link(cls, report, product_name, product_version):
         ''' Return a HTML formatted product link. '''
@@ -399,7 +405,7 @@ class HTMLFormatter(base_formatter.Formatter):
             dashboard += tr_indent + '</tr>\n'
         dashboard += table_indent + '</table>'
         return dashboard
-    
+
     @staticmethod
     def __project_resources(report):
         ''' Return a HTML version of the project resources. '''
@@ -411,6 +417,20 @@ class HTMLFormatter(base_formatter.Formatter):
             parameters = dict(name=name, url_text=url_text)
             result.append('<li>%(name)s: %(url_text)s</li>' % parameters)
         result.append('</ul>')
+        return '\n'.join(result)
+
+    @staticmethod
+    def __metric_classes(report):
+        ''' Return a HTML table of the metrics the software can measure. '''
+        result = []
+        result.append('<table>')
+        result.append('<tr><th>KPI</th><th>Norm</th></tr>')
+        for metric_class in report.metric_classes():
+            name = metric_class.name
+            norm = metric_class.norm_template % \
+                metric_class.norm_template_default_values()
+            result.append('<tr><td>%s</td><td>%s</td></tr>' % (name, norm))
+        result.append('</table>')
         return '\n'.join(result)
 
     @staticmethod

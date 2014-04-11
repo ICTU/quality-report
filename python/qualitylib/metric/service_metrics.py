@@ -23,6 +23,8 @@ import datetime
 
 class ServiceAvailability(NagiosMetricMixin, HigherIsBetterMetric):
     ''' Metric for measuring the availability of a service. '''
+
+    name = 'Service beschikbaarheid'
     norm_template = 'De beschikbaarheid van de dienst is minimaal ' \
         '%(target)d%%. Lager dan %(low_target)d%% is rood.'
     template = 'De beschikbaarheid van de dienst %(name)s ' \
@@ -31,6 +33,13 @@ class ServiceAvailability(NagiosMetricMixin, HigherIsBetterMetric):
     low_target_value = 98
     quality_attribute = AVAILABILITY
     time_period_nagios = 'Subclass responsibility'
+
+    @classmethod
+    def can_be_measured(cls, service, project):
+        return super(ServiceAvailability, cls).can_be_measured(service, 
+                                                               project) and \
+            service.nagios_server_id() and \
+            (service.nagios() or project.nagios())
 
     def value(self):
         return self._nagios.service_availability(self.__nagios_server_id(),
@@ -65,6 +74,8 @@ class ServiceAvailability(NagiosMetricMixin, HigherIsBetterMetric):
 
 class ServiceAvailabilityLastMonth(ServiceAvailability):
     ''' Metric for measuring the availability of a service last month. '''
+
+    name = '%s vorige maand' % ServiceAvailability.name
     time_period_nagios = 'lastmonth'
 
     @classmethod
@@ -75,6 +86,8 @@ class ServiceAvailabilityLastMonth(ServiceAvailability):
 
 class ServiceAvailabilityThisMonth(ServiceAvailability):
     ''' Metric for measuring the availability of a service this month. '''
+
+    name = '%s deze maand' % ServiceAvailability.name
     time_period_nagios = 'thismonth'
 
     @classmethod
@@ -84,6 +97,8 @@ class ServiceAvailabilityThisMonth(ServiceAvailability):
 
 class ServiceResponseTimes(LowerIsBetterMetric):
     ''' Metric for measuring the response times of a service. '''
+
+    name = 'Service responstijden'
     norm_template = 'De maximale gemiddelde responstijd is lager dan ' \
         '%(target)d ms. Hoger dan %(low_target)d ms is rood.'
     template = 'De maximale gemiddelde responstijd van de dienst %(name)s ' \
@@ -91,6 +106,12 @@ class ServiceResponseTimes(LowerIsBetterMetric):
     target_value = 2000  # milliseconds
     low_target_value = 3000  # milliseconds
     quality_attribute = PERFORMANCE
+
+    @classmethod
+    def can_be_measured(cls, service, project):
+        return super(ServiceResponseTimes, cls).can_be_measured(service,
+                                                                project) and \
+            project.javamelody() and service.java_melody()
 
     def __init__(self, *args, **kwargs):
         super(ServiceResponseTimes, self).__init__(*args, **kwargs)
@@ -145,6 +166,8 @@ class ServiceResponseTimes(LowerIsBetterMetric):
 class ServiceResponseTimesLastMonth(ServiceResponseTimes):
     ''' Metric for measuring the response times of a service last month. '''
 
+    name = '%s vorige maand' % ServiceResponseTimes.name
+
     @classmethod
     def time_period_description(cls):
         return 'was vorige maand (%s)' % \
@@ -157,6 +180,8 @@ class ServiceResponseTimesLastMonth(ServiceResponseTimes):
 
 class ServiceResponseTimesThisMonth(ServiceResponseTimes):
     ''' Metric for measuring the response times of a service this month. '''
+
+    name = '%s deze maand' % ServiceResponseTimes.name
 
     @classmethod
     def time_period_description(cls):

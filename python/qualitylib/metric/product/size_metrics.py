@@ -24,6 +24,7 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the size (in number of lines of code) of a
         product. '''
 
+    name = 'Component omvang'
     norm_template = 'Maximaal %(target)d regels (Java) code.'
     template = '%(name)s heeft %(value)d regels code.'
     target_value = 50000
@@ -43,6 +44,7 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the total size (in number of lines of code) of
         several products. '''
 
+    name = 'Totale omvang'
     norm_template = 'Maximaal %(target)d regels (Java) code. Meer dan ' \
         '%(low_target)s regels (Java) code (herbouwtijd 30 jaar) is rood.'
     template = 'Het totaal aantal LOC voor alle producten is %(value)d ' \

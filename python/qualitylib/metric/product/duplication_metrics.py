@@ -40,6 +40,8 @@ class JavaDuplication(Duplication):
     # pylint: disable=too-many-public-methods, too-many-ancestors
     ''' Metric for measuring the percentage of duplicated lines of code in 
         Java code. '''
+
+    name = 'Duplicatie van Java broncode'
     target_value = 0
     low_target_value = 5
 
@@ -53,6 +55,8 @@ class JsfDuplication(Duplication):
     # pylint: disable=too-many-public-methods, too-many-ancestors
     ''' Metric for measuring the percentage of duplicated lines of code in 
         JSF code. '''
+
+    name = 'Duplicatie van JSF broncode'
     target_value = 10
     low_target_value = 20
 

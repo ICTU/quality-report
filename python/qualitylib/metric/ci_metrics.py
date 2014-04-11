@@ -29,6 +29,7 @@ class ARTStability(JenkinsMetricMixin, Metric):
     ''' Metric for measuring the stability of an ART. An ART is considered to
         be unstable if it hasn't succeeded for multiple days. '''
 
+    name = 'Stabiliteit van automatische regressietest'
     norm_template = 'Alle regressietesten en integratietesten hebben de ' \
         'laatste %(target)d dagen minimaal eenmaal succesvol gedraaid. Rood ' \
         'als er testen meer dan %(low_target)d dagen niet succesvol ' \
@@ -38,18 +39,20 @@ class ARTStability(JenkinsMetricMixin, Metric):
     below_target_template = '%(value)d ARTs hebben de ' \
         'afgelopen %(target)d dagen niet succesvol gedraaid in de ' \
         '"%(street)s"-straat.'
+    target_value = 3
+    low_target_value = 7
     quality_attribute = TEST_QUALITY
-    
+
     def target(self):
         return self._subject.target_art_stability()
-    
+
     def low_target(self):
         return self._subject.low_target_art_stability()
 
     def value(self, days=0):  # pylint: disable=W0221
         return len(self._jenkins.unstable_arts_url(self.__street_regexp(), 
                                                    days=days or self.target()))
-    
+
     def numerical_value(self):
         return self.value(days=self.target())
 
@@ -135,10 +138,19 @@ class TeamFailingCIJobs(FailingCIJobs):
     ''' Metric for measuring the number of continuous integration jobs
         that fail that a specific team is responsible for. '''
 
+    name = 'Falende CI-jobs van een team'
+
     @classmethod
     def can_be_measured(cls, team, project):
         return super(TeamFailingCIJobs, cls).can_be_measured(team, project) \
             and len(project.teams()) > 1
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(TeamFailingCIJobs, cls).norm_template_default_values()
+        values['responsible_team'] = ' waarvoor een specifiek team ' \
+            'verantwoordelijk is'
+        return values
 
     def _teams(self):
         return (self._subject,)
@@ -151,6 +163,14 @@ class ProjectFailingCIJobs(FailingCIJobs):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of continuous integration jobs in a
         project that fail. '''
+
+    name = 'Falende CI-jobs'
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(ProjectFailingCIJobs, cls).norm_template_default_values()
+        values['responsible_team'] = ''
+        return values
 
     def _teams(self):
         return self.responsible_teams()
@@ -209,6 +229,14 @@ class ProjectUnusedCIJobs(UnusedCIJobs):
     ''' Metric for measuring the number of continuous integration jobs
         that are not used. '''
 
+    name = 'Ongebruikte CI-jobs'
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(ProjectUnusedCIJobs, cls).norm_template_default_values()
+        values['responsible_team'] = ''
+        return values
+
     def _responsible_team_text(self):
         return ''
 
@@ -218,10 +246,19 @@ class TeamUnusedCIJobs(UnusedCIJobs):
     ''' Metric for measuring the number of continuous integration jobs
         that are not used and for which a specific team is responsible. '''
 
+    name = 'Ongebruikte CI-jobs van een team'
+
     @classmethod
     def can_be_measured(cls, subject, project):
         return super(TeamUnusedCIJobs, cls).can_be_measured(subject, project) \
             and len(project.teams()) > 1
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(TeamUnusedCIJobs, cls).norm_template_default_values()
+        values['responsible_team'] = ' waarvoor een specifiek team ' \
+            'verantwoordelijk is'
+        return values
 
     def _responsible_team_text(self):
         return ' waarvoor team %s verantwoordelijk is' % self._subject 
@@ -233,6 +270,7 @@ class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
         that is assigned to a team. Assign a job to a team by putting 
         "[RESPONSIBLE=<team name>]" in the description of the job. '''
 
+    name = 'Toegewezen CI-jobs'
     norm_template = 'Minimaal %(target)d%% van de CI-jobs is toegewezen aan ' \
         'een team. Minder dan %(low_target)d%% is rood. Wijs een CI-job toe ' \
         'aan een team door "[RESPONSIBLE=teamnaam]" in de beschrijving ' \
@@ -266,6 +304,7 @@ class ServerAvailability(NagiosMetricMixin, HigherPercentageIsBetterMetric):
     ''' Metric for measuring the percentage of servers in the development
         streets that are sufficiently available. '''
 
+    name = 'Server beschikbaarheid'
     norm_template = 'Minimaal %(target)d%% van de servers, m.u.v. Selenium ' \
         'slaves, is minimaal 99%% beschikbaar per week. ' \
         'Lager dan 90%% is rood.'

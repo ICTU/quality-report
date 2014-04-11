@@ -28,6 +28,7 @@ class RiskLog(LowerIsBetterMetric):
     ''' Metric for measuring the number of days since the risk log was last
         updated. '''
 
+    name = 'Actualiteit risico log'
     norm_template = 'Het risicolog wordt minimaal een keer per %(target)d ' \
         'dagen bijgewerkt. Meer dan %(low_target)d dagen niet bijgewerkt is ' \
         'rood.'
@@ -67,6 +68,7 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of days since the actions were last
         updated. '''
 
+    name = 'Actualiteit actielijst'
     norm_template = 'De actie- en besluitenlijst wordt minimaal een keer ' \
         'per %(target)d dagen bijgewerkt. Meer dan %(low_target)d dagen ' \
         'niet bijgewerkt is rood.'
@@ -96,6 +98,7 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the age of individual actions. '''
 
+    name = 'Tijdigheid acties'
     norm_template = 'Geen van de acties en besluiten in de actie- en ' \
         'besluitenlijst is te laat of te lang (14 dagen) niet bijgewerkt.' \
         'Meer dan %(low_target)d acties te laat of te lang niet bijgewerkt ' \
@@ -125,6 +128,7 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 class ReleaseAge(LowerIsBetterMetric):
     ''' Metric for measuring the age of the last release. '''
 
+    name = 'Release leeftijd'
     norm_template = 'De laatste release is niet ouder dan %(target)d ' \
         'dagen. Ouder dan %(low_target)d dagen is rood.'
     template = 'De laatste %(archive_name)s-release is %(value)d dag(en) oud.'
@@ -161,6 +165,7 @@ class ReleaseAge(LowerIsBetterMetric):
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of open bug reports. '''
 
+    name = 'Open bugreports'
     norm_template = 'Het aantal open bug reports is minder dan %(target)d. ' \
        'Meer dan %(low_target)d is rood.'
     template = 'Het aantal open bug reports is %(value)d.'
@@ -183,6 +188,7 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
 class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of open security bugs. '''
 
+    name = 'Open beveiligingsbugreports'
     norm_template = 'Het aantal beveiliging bug reports dat meer dan een ' \
         'sprint open staat is minder dan %(target)d. Meer dan %(low_target)d ' \
         'is rood.'
@@ -209,6 +215,7 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of blocking test issues opened the
         previous month. '''
 
+    name = 'Aantal blokkerende testbevindingen'
     norm_template = 'Het aantal geopende blokkerende testbevindingen is ' \
         'maximaal %(target)d. Meer dan %(low_target)d is rood.'
     template = 'Het aantal geopende blokkerende testbevindingen in de vorige ' \

@@ -139,6 +139,23 @@ class QualityReport(object):
                                    metric.AssignedCIJobs)
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
                            metric.BlockingTestIssues)
+    SERVICE_METRIC_CLASSES = (metric.ServiceAvailabilityLastMonth,
+                              metric.ServiceAvailabilityThisMonth,
+                              metric.ServiceResponseTimesLastMonth,
+                              metric.ServiceResponseTimesThisMonth)
+
+    @classmethod
+    def metric_classes(cls):
+        ''' Return a list of metric classes that the report can measure. '''
+        return cls.TEST_COVERAGE_METRIC_CLASSES + \
+            cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
+            cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
+            cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
+            cls.SERVICE_METRIC_CLASSES + (metric.TotalLOC, 
+            metric.DependencyQuality, metric.UnmergedBranches, 
+            metric.TeamProgress, metric.ReleaseAge, metric.ARTStability,
+            metric.ServerAvailability, metric.TeamSpirit,
+            metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs)
 
     def __init__(self, project):
         self.__project = project

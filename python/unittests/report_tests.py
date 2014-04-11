@@ -705,3 +705,8 @@ class QualityReportMetricsTest(unittest.TestCase):
                              project_kwargs=dict(sonar=FakeSonar()),
                              product_kwargs=dict(short_name='dummy'),
                              include=False)
+
+    def test_metric_classes(self):
+        ''' Test that the report gives a list of metric classes. '''
+        self.failUnless(metric.ARTCoverage in \
+                        report.QualityReport.metric_classes())

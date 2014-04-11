@@ -25,6 +25,7 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Return the number of cyclic dependencies between packages. '''
 
+    name = 'Cyclische afhankelijkheden'
     norm_template = 'Maximaal %(target)d cyclische afhankelijkheden tussen ' \
         'packages. Meer dan 10 is rood.'
     template = '%(name)s heeft %(value)d cyclische afhankelijkheden.'
@@ -45,6 +46,8 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
 class DependencyQuality(LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the quality of the dependencies of the project. '''
+
+    name = 'Kwaliteit van afhankelijkheden'
     norm_template = 'Maximaal %(target)d%% van de afhankelijkheden tussen ' \
         'componenten is naar componenten die "rode" metrieken hebben. ' \
         'Meer dan %(low_target)d%% is rood.'

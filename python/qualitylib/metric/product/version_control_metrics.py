@@ -23,6 +23,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of unmerged branches. '''
 
+    name = 'Ongemergde branches'
     norm_template = 'Geen branches die ongemergde code hebben.'
     perfect_template = 'Geen van de %(nr_branches)d branches van %(name)s ' \
         'heeft revisies die niet met de trunk zijn gemerged.'
