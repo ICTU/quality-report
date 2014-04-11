@@ -324,16 +324,10 @@ class QualityReport(object):
     def __service_section(self, service):
         ''' Return the section for the service. '''
         metrics = []
-        if service.nagios() or self.__project.nagios():
-            metrics.append(metric.ServiceAvailabilityLastMonth(subject=service,
-                           project=self.__project))
-            metrics.append(metric.ServiceAvailabilityThisMonth(subject=service,
-                           project=self.__project))
-        if self.__project.javamelody():
-            metrics.append(metric.ServiceResponseTimesLastMonth(subject=service,
-                           project=self.__project))
-            metrics.append(metric.ServiceResponseTimesThisMonth(subject=service,
-                           project=self.__project))
+        for metric_class in self.SERVICE_METRIC_CLASSES:
+            if metric_class.can_be_measured(service, self.__project):
+                metrics.append(metric_class(subject=service,
+                                            project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(service.short_name(), 
                                      'Dienst ' + service.name()),

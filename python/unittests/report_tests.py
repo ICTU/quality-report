@@ -584,29 +584,33 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_service_availability_last_month(self):
         ''' Test that the service availability metric is added if possible. '''
-        self.__assert_metric(metric.ServiceAvailabilityLastMonth, 
+        self.__assert_metric(metric.ServiceAvailabilityLastMonth,
                              project_kwargs=dict(nagios='nagios'),
-                             service_kwargs=dict(short_name='S1', name='S1'))
+                             service_kwargs=dict(short_name='S1', name='S1',
+                                                 nagios_server_id='id'))
 
     def test_service_availability_this_month(self):
         ''' Test that the service availability metric is added if possible. '''
-        self.__assert_metric(metric.ServiceAvailabilityThisMonth, 
+        self.__assert_metric(metric.ServiceAvailabilityThisMonth,
                              project_kwargs=dict(nagios='nagios'),
-                             service_kwargs=dict(short_name='S1', name='S1'))
+                             service_kwargs=dict(short_name='S1', name='S1',
+                                                 nagios_server_id='id'))
 
     def test_service_reponse_times_last_month(self):
         ''' Test that the service response times metric is added if 
             possible. '''
         self.__assert_metric(metric.ServiceResponseTimesLastMonth, 
                              project_kwargs=dict(javamelody='javamelody'),
-                             service_kwargs=dict(short_name='S1', name='S1'))
+                             service_kwargs=dict(short_name='S1', name='S1',
+                                                 javamelody_id='id'))
 
     def test_service_reponse_times_this_month(self):
         ''' Test that the service response times metric is added if 
             possible. '''
         self.__assert_metric(metric.ServiceResponseTimesThisMonth, 
                              project_kwargs=dict(javamelody='javamelody'),
-                             service_kwargs=dict(short_name='S1', name='S1'))
+                             service_kwargs=dict(short_name='S1', name='S1',
+                                                 javamelody_id='id'))
 
     def test_critical_violations(self):
         ''' Test that the critical violations metric is added if possible. '''
