@@ -208,7 +208,7 @@ def has_curl():
 download_file_curl.viable = has_curl
 
 def download_file_wget(url, target):
-    cmd = ['wget', url, '--quiet', '--output-document', target]
+    cmd = ['wget', url, '--no-check-certificate', '--output-document', target]
     _clean_check(cmd, target)
 
 def has_wget():
