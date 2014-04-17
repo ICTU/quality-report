@@ -44,7 +44,7 @@ class Team(MeasurableObject):
         return self.__name
 
     def id_string(self):
-        ''' Return a id string for the team. '''
+        ''' Return an id string for the team. '''
         return self.__name.lower().replace(' ', '_')
 
     def short_name(self):
