@@ -26,9 +26,17 @@ class Street(object):
         self.__low_target_art_stability = low_target_art_stability
         self.__perfect_art_stability = perfect_art_stability
 
+    def __str__(self):
+        ''' Return the id string of the street. '''
+        return self.id_string()
+
     def name(self):
         ''' Return the name of the street. '''
         return self.__name
+
+    def id_string(self):
+        ''' Return an id string for the street. '''
+        return self.__name.lower().replace(' ', '_')
 
     def regexp(self):
         ''' Return the regular expression that describes the CI-jobs of the
