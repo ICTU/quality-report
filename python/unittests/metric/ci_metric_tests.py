@@ -103,6 +103,12 @@ class ProjectFailingCIJobsTest(FailingCIJobsCommonTestsMixin,
             project.add_team(team, responsible=True)
         self.failIf(metric.ProjectFailingCIJobs.can_be_measured(team, project))
 
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.ProjectFailingCIJobs.norm_template % \
+                    metric.ProjectFailingCIJobs.norm_template_default_values())
+
 
 class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -141,6 +147,12 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
             team = domain.Team('Team %d' % index)
             project.add_team(team, responsible=True)
         self.failIf(metric.TeamFailingCIJobs.can_be_measured(team, project))
+
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.TeamFailingCIJobs.norm_template % \
+                        metric.TeamFailingCIJobs.norm_template_default_values())
 
 
 class UnusedCIJobsCommonTestsMixin(object):
@@ -202,6 +214,12 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
         self.failIf(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
                                                             project))
 
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.TeamUnusedCIJobs.norm_template % \
+                    metric.TeamUnusedCIJobs.norm_template_default_values())
+
 
 class ProjectUnusedCIJobs(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -225,6 +243,12 @@ class ProjectUnusedCIJobs(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
         project = domain.Project()
         self.failIf(metric.ProjectUnusedCIJobs.can_be_measured(project, 
                                                                project))
+
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.ProjectUnusedCIJobs.norm_template % \
+                    metric.ProjectUnusedCIJobs.norm_template_default_values())
 
 
 class ARTStabilityTest(unittest.TestCase):

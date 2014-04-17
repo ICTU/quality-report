@@ -120,6 +120,12 @@ class TeamProgressTest(unittest.TestCase):
         project = domain.Project()
         self.failIf(metric.TeamProgress.can_be_measured(self.__team, project))
 
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.TeamProgress.norm_template % \
+                        metric.TeamProgress.norm_template_default_values())
+
 
 class FakeWiki(object):
     ''' Fake a wiki metric source. '''

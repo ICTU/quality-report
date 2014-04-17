@@ -25,32 +25,32 @@ class FakeSonar(object):
     def __init__(self, critical_violations=0, major_violations=0):
         self.__critical_violations = critical_violations
         self.__major_violations = major_violations
-        
+
     def critical_violations(self, *args):
         ''' Return the number of critical violations. '''
         return self.__critical_violations
-    
+
     def major_violations(self, *args):
         ''' Return the number of major violations. '''
         return self.__major_violations
-    
+
     @staticmethod
     def dashboard_url(*args):  
         ''' Return a fake dashboard url. '''
         return 'http://sonar'
 
-    
+
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
-    
+
     def __repr__(self):
         return 'FakeSubject'
-    
+
     @staticmethod
     def sonar_id():
         ''' Return the Sonar id of the subject. '''
         return ''
-    
+
     @staticmethod
     def is_art():
         ''' Return whether the subject is an ART. '''
@@ -80,11 +80,11 @@ class ViolationsTestMixin(object):
         ''' Test that the value is equal to the number of critical 
             violations as reported by Sonar. '''
         self.assertEqual(self.__nr_violations, self._metric.value())
-        
+
     def test_status(self):
         ''' Test that the status is red when there are too many violations. '''
         self.assertEqual('red', self._metric.status())
-    
+
     def test_status_with_technical_debt(self):
         ''' Test that the status is grey when the subject has accepted
             technical debt. '''
@@ -113,6 +113,12 @@ class ViolationsTestMixin(object):
         self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), 
                          self._metric.url())
 
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(self.metric_class.norm_template % \
+                        self.metric_class.norm_template_default_values())
+
 
 class CriticalViolationsTest(ViolationsTestMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -125,6 +131,6 @@ class CriticalViolationsTest(ViolationsTestMixin, unittest.TestCase):
 class MajorViolationsTest(ViolationsTestMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the MajorViolations metric class. '''
-     
+
     metric_class = metric.MajorViolations
     violation_type = 'major'

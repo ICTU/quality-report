@@ -120,6 +120,12 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
                          'heeft een cyclomatische complexiteit van 10 of ' \
                          'hoger.', self._metric.report())
 
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.CyclomaticComplexity.norm_template % \
+            metric.CyclomaticComplexity.norm_template_default_values())
+
 
 class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -142,6 +148,12 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
                          '(Non-Comment Source Statements).', 
                          self._metric.report())
 
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.LongMethods.norm_template % \
+            metric.LongMethods.norm_template_default_values())
+
 
 class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -161,3 +173,9 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
         ''' Test that the report of the metric is correct. '''
         self.assertEqual('5% van de methoden (5 van 100) van FakeSubject ' \
                          'heeft meer dan 5 parameters.', self._metric.report())
+
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm 
+            template. '''
+        self.failUnless(metric.ManyParameters.norm_template % \
+            metric.ManyParameters.norm_template_default_values())
