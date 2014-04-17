@@ -255,7 +255,7 @@ class Project(object):
             resources.append(('Release archief', release_archive.url()))
         self.__add_repository_resources(resources)
         return resources
-    
+
     def __add_coverage_resources(self, resources):
         ''' Add the ART coverage reports to the resources. '''
         for product in self.products():
@@ -272,7 +272,7 @@ class Project(object):
                         ('JaCoCo coverage report %s' % product.name(),
                          self.jacoco().get_coverage_url( \
                                                 product.art_coverage_jacoco())))
-                    
+
     def __add_repository_resources(self, resources):
         ''' Add the repositories to the resources. '''
         for product in self.products():
