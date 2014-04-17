@@ -47,6 +47,7 @@ class JSONFormatter(base_formatter.Formatter):
     def kpi(self, kpi):
         ''' Return a JSON formatted version of the kpi. '''
         # Write numerical values without decimals.
+        logging.info('Formatting kpi %s.', kpi.stable_id())
         try:
             return '"%s": ("%.0f", "%s", "%s"), ' % (kpi.stable_id(), 
                                                      kpi.numerical_value(),
