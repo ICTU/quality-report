@@ -36,21 +36,14 @@ virtualenv $PYENV_HOME
 
 # Install the quality report software
 cd quality-report/python
-python setup.py install
+python setup.py bdist_egg
+easy_install dist/quality_report-*.egg
 cd ../..
 
 # Create the quality report
 retrieve_kpis.py --project $PROJECT/project_definition.py --report . --json $PROJECT/history.json --log INFO
-chmod a+x quality-report
-chmod a+x quality-report/img
-chmod a+r quality-report/img/*.png
-chmod a+x quality-report/js
-chmod a+r quality-report/js/*.js
-chmod a+x quality-report/css
-chmod a+r quality-report/css/*.css
 svn commit -m "Updated history from Jenkins." $PROJECT
 
 # Deactivate virtualenv and remove it
 deactivate
 rm -rf $PYENV_HOME
-
