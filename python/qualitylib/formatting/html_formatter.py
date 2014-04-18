@@ -32,8 +32,8 @@ class HTMLFormatter(base_formatter.Formatter):
                    """'<img src="http://chart.apis.google.com/chart?"""
                    """chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:%(history)s&"""
                    """chds=%(y_axis_range)s" border="0" />'""",
-                   """{v: '%(status_nr)d', f: '<img src="quality-report/"""
-                   """img/%(image)s.png" alt="%(alt)s" title="%(hover)s" """
+                   """{v: '%(status_nr)d', f: '<img src="img/%(image)s.png" """
+                   """alt="%(alt)s" title="%(hover)s" """
                    """border="0" />'}""",
                    "'%(text)s'",
                    "'%(norm)s'",
