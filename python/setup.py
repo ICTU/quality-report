@@ -33,7 +33,7 @@ class ParseRequirementsOptions(object):
     skip_requirements_regex = None
 
 
-setup(name='quality report',
+setup(name='quality_report',
       version='1.0',
       description='Software quality report generator',
       author='ICTU',
