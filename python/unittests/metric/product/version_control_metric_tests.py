@@ -62,10 +62,10 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__subversion = FakeSubversion()
-        project = domain.Project(subversion=self.__subversion)
+        self.__project = domain.Project(subversion=self.__subversion)
         self.__subject = FakeSubject()
         self.__metric = metric.UnmergedBranches(subject=self.__subject,
-                                                project=project)
+                                                project=self.__project)
 
     def test_value(self):
         ''' Test that the value of the metric equals the number of unmerged 
@@ -104,10 +104,17 @@ class UnmergedBranchesTest(unittest.TestCase):
         ''' Test that the metric can only be measured if the product is under
             version control and is the trunk version. '''
         self.failUnless(metric.UnmergedBranches.can_be_measured(self.__subject,
-                                                                None))
+                                                                self.__project))
 
     def test_cant_be_measured(self):
         ''' Test that the metric can not be measured if the product is 
             a trunk version. '''
         self.failIf(metric.UnmergedBranches.can_be_measured(FakeSubject('1.1'),
-                                                            None))
+                                                            self.__project))
+
+    def test_cant_be_measured_without_subversion(self):
+        ''' Test that the metric can not be measured if the project has 
+            no Subversion. '''
+        project = domain.Project()
+        self.failIf(metric.UnmergedBranches.can_be_measured(self.__subject,
+                                                            project))

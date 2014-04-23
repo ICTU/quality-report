@@ -30,3 +30,4 @@ from qualitylib.domain.team import Team
 from qualitylib.domain.project import Project
 from qualitylib.domain.quality_attribute import QualityAttribute
 from qualitylib.domain.street import Street
+from qualitylib.domain.document import Document

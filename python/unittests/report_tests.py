@@ -558,12 +558,14 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_unmerged_branches(self):
         ''' Test that the unmerged branches metric is added if possible. '''
-        self.__assert_metric(metric.UnmergedBranches, 
+        self.__assert_metric(metric.UnmergedBranches,
+                             project_kwargs=dict(subversion='Subversion'),
                              product_kwargs=dict(svn_path='svn'))
 
     def test_art_unmerged_branches(self):
         ''' Test that the unmerged branches metric is added for the ART. '''
-        self.__assert_metric(metric.UnmergedBranches, 
+        self.__assert_metric(metric.UnmergedBranches,
+                             project_kwargs=dict(subversion='Subversion'),
                              product_kwargs=dict(art=dict(svn_path='svn')))
 
     def test_no_art_performance(self):

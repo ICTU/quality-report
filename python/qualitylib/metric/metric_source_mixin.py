@@ -147,3 +147,11 @@ class SubversionMetricMixin(object):
     def __init__(self, *args, **kwargs):
         super(SubversionMetricMixin, self).__init__(*args, **kwargs)
         self._subversion = self._project.subversion()
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        ''' Metrics that use Subversion can be measured when the project has 
+            Subversion. '''
+        return super(SubversionMetricMixin, cls).can_be_measured(subject, 
+                                                                 project) \
+            and project.subversion()

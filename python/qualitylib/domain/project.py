@@ -59,6 +59,7 @@ class Project(object):
         self.__services = []
         self.__teams = []
         self.__responsible_teams = []
+        self.__documents = []
         self.__dashboard = [], []  # rows, columns
 
     def organization(self):
@@ -216,8 +217,20 @@ class Project(object):
         return self.__teams
 
     def responsible_teams(self, metric_class=None):
+        # pylint: disable=unused-argument
         ''' Return the teams that are responsible for the products. '''
+        # The metric_class argument is used in other domain objects that may 
+        # have teams responsible for them. Maybe we should create an explicit 
+        # "Responsibility" interface.
         return self.__responsible_teams
+
+    def add_document(self, document):
+        ''' Add a document to the project. '''
+        self.__documents.append(document)
+
+    def documents(self):
+        ''' Return the documents of the project. '''
+        return self.__documents
 
     def set_dashboard(self, dashboard_columns, dashboard_rows):
         ''' Set the dashboard layout for the project. '''
