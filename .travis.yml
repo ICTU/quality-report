@@ -1,8 +1,4 @@
 language: python
 install: pip install -r python/requirements.txt
 script: python python/run_unittests.py discover -s python/unittests -p "*_tests.py"
-deploy:
-  provider: pypi
-  username: fniessink
-  password:
-    secure: CgRxREUDZLjiyRsV9y+1OKrBTWlpTUSUL5qYDX9qslceha0ogGYavVkuiOh3aNW/E8DBLdRmuqf4cv+NKnAIfU0ARG0hYq/nWdvWUV4BztXBOs76ndZtvfNHaw0QWS+Ijn+HwF+6I69IwJYxaWhbx+5ImxwDDyDYYPAbv7kaHjU=
+
