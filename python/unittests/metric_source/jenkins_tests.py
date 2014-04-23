@@ -66,18 +66,28 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
             '"description": "", "url": "http://url", "buildable": False, ' \
             '"fakebuilddate": "<h1>(1-apr-2013 12:00:00)</h1>"}]}'
-        self.assertEqual({}, self.__jenkins.failing_jobs_url())        
+        self.assertEqual({}, self.__jenkins.failing_jobs_url())
 
     def test_failing_jobs_grace(self):
         ''' Test the failing jobs with one failing job within grace time. '''
+        this_year = datetime.datetime.now().year
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
             '"description": "[gracedays=400]", "url": "http://url", ' \
-            '"fakebuilddate": "<h1>(1-jan-2013 12:00:00)</h1>", ' \
-            '"buildable": True}]}'
+            '"fakebuilddate": "<h1>(1-jan-%d 12:00:00)</h1>", ' \
+            '"buildable": True}]}' % this_year
+        self.assertEqual({}, self.__jenkins.failing_jobs_url())
+
+    def test_failing_jobs_after_grace(self):
+        ''' Test the failing jobs with one failing job within grace time. '''
+        last_year = datetime.datetime.now().year - 1
+        self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
+            '"description": "[gracedays=200]", "url": "http://url", ' \
+            '"fakebuilddate": "<h1>(1-jan-%d 12:00:00)</h1>", ' \
+            '"buildable": True}]}' % last_year
         expected_days_ago = (datetime.datetime.now() - \
-                             datetime.datetime(2013, 1, 1, 12, 0, 0)).days
-        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'}, 
-                         self.__jenkins.failing_jobs_url())        
+                             datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
+        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'},
+                         self.__jenkins.failing_jobs_url())
 
     def test_failing_jobs_by_team(self):
         ''' Test the failing jobs for a specific team. '''
@@ -88,7 +98,7 @@ class JenkinsTest(unittest.TestCase):
             failing job. '''
         last_year = datetime.datetime.now().year
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
-            '"description": "[gracedays=400]", "url": "http://url", ' \
+            '"description": "", "url": "http://url", ' \
             '"fakebuilddate": "<h1>(1-jan-%d 12:00:00)</h1>", ' \
             '"buildable": True}]}' % last_year
         expected_days_ago = (datetime.datetime.now() - \
@@ -96,24 +106,17 @@ class JenkinsTest(unittest.TestCase):
         self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'},
                          self.__jenkins.failing_jobs_url())
 
-    def test_failing_jobs_url_old(self):
-        ''' Test that the failing jobs url dictionary doesn't contain the days
-            when the job failed long ago. '''
-        self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
-            '"description": "[gracedays=400]", "url": "http://url", ' \
-            '"fakebuilddate": "<h1>(1-jan-2000 12:00:00)</h1>", ' \
-            '"buildable":  True}]}'
-        self.assertEqual({'job1': 'http://url'}, 
-                         self.__jenkins.failing_jobs_url())
-
     def test_failing_jobs_url_no_description(self):
         ''' Test that the failing jobs url works if there are jobs without
             description. '''
+        last_year = datetime.datetime.now().year
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
             '"description": None, "url": "http://url", ' \
-            '"fakebuilddate": "<h1>(1-jan-2000 12:00:00)</h1>", ' \
-            '"buildable":  True}]}'
-        self.assertEqual({'job1': 'http://url'}, 
+            '"fakebuilddate": "<h1>(1-jan-%d 12:00:00)</h1>", ' \
+            '"buildable":  True}]}' % last_year
+        expected_days_ago = (datetime.datetime.now() - \
+                             datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
+        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'},
                          self.__jenkins.failing_jobs_url())
 
     def test_no_unused_jobs(self):

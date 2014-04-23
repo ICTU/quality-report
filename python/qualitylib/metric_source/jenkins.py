@@ -71,8 +71,7 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
         for failing_job in self.__failing_jobs(*teams):
             failing_job_description = failing_job['name']
             age = self.__age_of_last_stable_build(failing_job)
-            if age.days < 1000:
-                failing_job_description += ' (%s dagen)' % age.days
+            failing_job_description += ' (%s dagen)' % age.days
             urls[failing_job_description] = failing_job['url']
         return urls
 
@@ -100,7 +99,7 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
             # Don't consider projects to have failed until their last successful
             # build was longer ago than the grace time.
             description = job['description'] or ''
-            match = re.search(r'\[gracedays=(\d)\]', description.lower())
+            match = re.search(r'\[gracedays=(\d+)\]', description.lower())
             days = int(match.group(1)) if match else 1
             return datetime.timedelta(days=days)
 
