@@ -17,17 +17,17 @@ limitations under the License.
 from qualitylib.domain import QualityAttribute
 
 
-AVAILABILITY = QualityAttribute('availability', 'beschikbaarheid')
-TEST_COVERAGE = QualityAttribute('test_coverage', 'testdekking')
-CODE_QUALITY = QualityAttribute('code_quality', 'codekwaliteit')
-TEST_QUALITY = QualityAttribute('test_quality', 'testkwaliteit')
-DOC_QUALITY = QualityAttribute('doc_quality', 'documentatiekwaliteit')
-SIZE = QualityAttribute('size', 'omvang')
-PERFORMANCE = QualityAttribute('performance', 'performance')
+AVAILABILITY = QualityAttribute('availability', 'Beschikbaarheid')
+TEST_COVERAGE = QualityAttribute('test_coverage', 'Testdekking')
+CODE_QUALITY = QualityAttribute('code_quality', 'Codekwaliteit')
+TEST_QUALITY = QualityAttribute('test_quality', 'Testkwaliteit')
+DOC_QUALITY = QualityAttribute('doc_quality', 'Documentatiekwaliteit')
+SIZE = QualityAttribute('size', 'Omvang')
+PERFORMANCE = QualityAttribute('performance', 'Performance')
 PROJECT_MANAGEMENT = QualityAttribute('project_management', 
-                                      'project management')
+                                      'Project management')
 ENVIRONMENT_QUALITY = QualityAttribute('environment_quality', 
-                                       'kwaliteit van omgevingen')
-PROGRESS = QualityAttribute('progress', 'voortgang')
-SPIRIT = QualityAttribute('spirit', 'stemming')
-SECURITY = QualityAttribute('security', 'beveiliging')
+                                       'Kwaliteit van omgevingen')
+PROGRESS = QualityAttribute('progress', 'Voortgang')
+SPIRIT = QualityAttribute('spirit', 'Stemming')
+SECURITY = QualityAttribute('security', 'Beveiliging')

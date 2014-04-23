@@ -424,12 +424,15 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Return a HTML table of the metrics the software can measure. '''
         result = []
         result.append('<table>')
-        result.append('<tr><th>KPI</th><th>Norm</th></tr>')
+        result.append('<tr><th>KPI</th><th>Kwaliteitsattribuut</th>' \
+                      '<th>Norm</th></tr>')
         for metric_class in report.metric_classes():
             name = metric_class.name
+            quality_attribute = metric_class.quality_attribute.attribute_name()
             norm = metric_class.norm_template % \
                 metric_class.norm_template_default_values()
-            result.append('<tr><td>%s</td><td>%s</td></tr>' % (name, norm))
+            result.append('<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (name,
+                                                      quality_attribute, norm))
         result.append('</table>')
         return '\n'.join(result)
 
