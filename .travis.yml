@@ -5,4 +5,4 @@ deploy:
   provider: pypi
   username: fniessink
   password:
-    secure: Hkq0N8iNOF1JgfstmmxXOLHN2r824arS8SjbrhXZwCbD9ZPBtM19TSgj5IGYAux6G0t+R4/0FAFfIj/GsNiYIc0b8H2bvZXUumg6d2JMym9cy1GIOxQJPqPe56CynRpFwlVJxGLF498lcAQIKYuj7Ipa3zJ2dlT92tqnLiTQByw=
+    secure: CgRxREUDZLjiyRsV9y+1OKrBTWlpTUSUL5qYDX9qslceha0ogGYavVkuiOh3aNW/E8DBLdRmuqf4cv+NKnAIfU0ARG0hYq/nWdvWUV4BztXBOs76ndZtvfNHaw0QWS+Ijn+HwF+6I69IwJYxaWhbx+5ImxwDDyDYYPAbv7kaHjU=
