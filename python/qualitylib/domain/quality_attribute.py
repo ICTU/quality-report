@@ -24,17 +24,17 @@ class QualityAttribute(object):
     def id_string(self):
         ''' Return the id of the quality attribute. '''
         return self.__id_string
-        
+
     def attribute_name(self):
         ''' Return the human readable name of the quality attribute. '''
         return self.__name
-    
+
     def __nonzero__(self):
         ''' Return whether this is a valid quality attribute. '''
         return bool(self.__id_string)
-    
+
     def __lt__(self, other):
         return self.id_string() < other.id_string()
-    
+
     def __eq__(self, other):
         return self.id_string() == other.id_string()

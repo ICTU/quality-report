@@ -8,17 +8,17 @@
   <packaging>pom</packaging>
 
   <name>Quality Report</name>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  
+
   <modules>
     <module>python</module>
     <module>js</module>
     <module>html</module>
   </modules>
-  
+
   <developers>
     <developer>
       <id>frnie1</id>

@@ -49,14 +49,14 @@ class SubversionFolder(release_archive.ReleaseArchive):
 
 class Subversion(object):
     ''' Class representing the Subversion repository. '''
-    
+
     def __init__(self, username=None, password=None,
                  run_shell_command=subprocess.check_output):
         self.__username = username
         self.__password = password
         self.__shell_command = run_shell_command
         super(Subversion, self).__init__()
-        
+
     def check_out(self, svn_path, folder):
         ''' Check out the subversion path into the folder. '''
         shell_command = ['svn', 'co', svn_path, folder]
@@ -77,7 +77,7 @@ class Subversion(object):
         versions = [self.__parse_version(tag) for tag in tags]        
         versions.sort()
         return versions[-1][1]  # Return the text version of the highest number
-    
+
     @utils.memoized
     def last_changed_date(self, url):
         ''' Return the date when the url was last changed in Subversion. ''' 
@@ -85,7 +85,7 @@ class Subversion(object):
                                                      url]))
         date = BeautifulSoup(svn_info_xml)('date')[0].string
         return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
-        
+
     @utils.memoized
     def unmerged_branches(self, product_url):
         ''' Return a dictionary of branch names and number of unmerged 
@@ -96,14 +96,14 @@ class Subversion(object):
         unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) \
                              in branches if nr_revisions > 0]
         return dict(unmerged_branches)
-    
+
     @utils.memoized
     def branches(self, product_url):
         ''' Return a list of branch names for the specified product. '''
         shell_command = ['svn', 'list', '--xml', product_url + 'branches']
         svn_list_xml = str(self.__run_shell_command(shell_command))
         return [name.string for name in BeautifulSoup(svn_list_xml)('name')]
-    
+
     def __nr_unmerged_revisions(self, product_url, branch_name):
         ''' Return whether the branch has unmerged revisions. '''
         branch_url = product_url + 'branches/' + branch_name
@@ -132,7 +132,7 @@ class Subversion(object):
             version_integer_tuple = (0, 0, 0)
             version_text = ''
         return version_integer_tuple, version_text
-    
+
     def __run_shell_command(self, shell_command, log_level=logging.WARNING):
         ''' Invoke a shell and run the command. '''
         try:
