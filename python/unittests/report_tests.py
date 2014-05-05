@@ -369,7 +369,10 @@ class QualityReportMetricsTest(unittest.TestCase):
                         service_kwargs, number_of_teams=1):
         ''' Create the quality report. '''
         # pylint: disable=W0142
+        documents = project_kwargs.pop('documents', [])
         project = domain.Project('organization', 'project', **project_kwargs)
+        for document in documents:
+            project.add_document(document)
         for index in range(number_of_teams):
             team = domain.Team('Team %d' % index, **team_kwargs)
             project.add_team(team)
@@ -710,6 +713,21 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.CommentedLOC,
                              project_kwargs=dict(sonar=FakeSonar()),
                              product_kwargs=dict(short_name='dummy'),
+                             include=False)
+
+    def test_document_age(self):
+        ''' Test that the document age metric is added if possible. '''
+        document = domain.Document('Title', 'http://url')
+        self.__assert_metric(metric.DocumentAge,
+                             project_kwargs=dict(subversion='Subversion',
+                                                 documents=[document]))
+
+    def test_no_document_age(self):
+        ''' Test that the document age metric is not added if the project has 
+            no Subversion. '''
+        document = domain.Document('Title', 'http://url')
+        self.__assert_metric(metric.DocumentAge,
+                             project_kwargs=dict(documents=[document]),
                              include=False)
 
     def test_metric_classes(self):

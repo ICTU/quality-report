@@ -143,6 +143,7 @@ class QualityReport(object):
                               metric.ServiceAvailabilityThisMonth,
                               metric.ServiceResponseTimesLastMonth,
                               metric.ServiceResponseTimesThisMonth)
+    DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
 
     @classmethod
     def metric_classes(cls):
@@ -151,11 +152,11 @@ class QualityReport(object):
             cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
             cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
-            cls.SERVICE_METRIC_CLASSES + (metric.TotalLOC, 
-            metric.DependencyQuality, metric.UnmergedBranches, 
-            metric.TeamProgress, metric.ReleaseAge, metric.ARTStability,
-            metric.ServerAvailability, metric.TeamSpirit,
-            metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs)
+            cls.SERVICE_METRIC_CLASSES + cls.DOCUMENT_METRIC_CLASSES + \
+            (metric.TotalLOC, metric.DependencyQuality, metric.UnmergedBranches,
+             metric.TeamProgress, metric.ReleaseAge, metric.ARTStability,
+             metric.ServerAvailability, metric.TeamSpirit,
+             metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs)
 
     def __init__(self, project):
         self.__project = project
@@ -199,7 +200,7 @@ class QualityReport(object):
                 section = self.__service_section(service)
                 self.__service_sections[service] = section
                 self.__sections.append(section)
-            if self.__products:
+            if self.__products or self.__project.documents():
                 self.__sections.append(self.__overall_products_section())
             for product in self.__products:
                 section = self.__product_section(product)
@@ -287,6 +288,10 @@ class QualityReport(object):
                                     project=self.__project)]
         metrics.append(metric.DependencyQuality(report=self,
                                                 project=self.__project))
+        for document in self.__project.documents():
+            if metric.DocumentAge.can_be_measured(document, self.__project):
+                metrics.append(metric.DocumentAge(document, 
+                                                  project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'),
                        metrics)

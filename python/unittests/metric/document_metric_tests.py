@@ -57,7 +57,7 @@ class DocumentAgeTest(unittest.TestCase):
         self.failUnless(metric.DocumentAge.can_be_measured(self.__document,
                                                            self.__project))
 
-    def test_cant_be_measured_without_ur(self):
+    def test_cant_be_measured_without_url(self):
         ''' Test that the metric cannot be measured if the document has no 
             url. '''
         document = domain.Document('Title')
