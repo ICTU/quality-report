@@ -29,11 +29,19 @@ import pkg_resources
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
     ''' Class for creating the quality report for a specific project. '''
-    def __init__(self, project_module):
-        self.__project = project_module.PROJECT
 
-    def create_report(self, report_dir, json_filename, html_filename, 
-                      dot_filename):
+    PROJECT_DEFINITION_FILENAME = 'project_definition.py'
+    HISTORY_FILENAME = 'history.json'
+
+    def __init__(self, project_folder):
+        project_definition_filename = os.path.join(project_folder,
+                                           self.PROJECT_DEFINITION_FILENAME)
+        project_module = import_file.import_file(project_definition_filename)
+        self.__project = project_module.PROJECT
+        self.__history_filename = os.path.join(project_folder, 
+                                               self.HISTORY_FILENAME)
+
+    def create_report(self, report_folder):
         ''' Create, format, and write the quality report. '''
         self.__add_latest_release_of_products()
         self.__add_release_candidates_of_products()
@@ -41,17 +49,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__project.analyse_products()
 
         quality_report = report.QualityReport(self.__project)
-        formats = [(json_filename, formatting.JSONFormatter, 'a', 'ascii'),
-                   (html_filename, formatting.HTMLFormatter, 'w', 'utf-8'),
-                   (dot_filename, formatting.DotFormatter, 'w', 'ascii')]
-        for filename, formatter_class, mode, encoding in formats:
-            if filename:
-                self.__format_and_write_report(quality_report, formatter_class,
-                                               filename, mode, encoding)
-        if report_dir:
-            self.__format_and_write_html_report(quality_report, report_dir)
-        if json_filename:
-            metric_source.History(json_filename).clean_history()
+        self.__format_and_write_report(quality_report, formatting.JSONFormatter,
+                                       self.__history_filename, 'a', 'ascii')
+        self.__format_and_write_html_report(quality_report, report_folder)
+        metric_source.History(self.__history_filename).clean_history()
 
     def __add_latest_release_of_products(self):
         ''' Add the latest released version of each product. '''
@@ -85,6 +86,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __format_and_write_html_report(self, quality_report, report_dir):
         ''' Format the quality report to HTML and write the files in the report
             folder. '''
+        report_dir = report_dir or '.'
         self.__create_dir(report_dir)
         tmp_filename = os.path.join(report_dir, 'tmp.html')
         self.__format_and_write_report(quality_report, formatting.HTMLFormatter,
@@ -139,6 +141,4 @@ if __name__ == '__main__':
     # pylint: disable=invalid-name
     args = commandlineargs.parse()
     log.init_logging(args.log)
-    project_definition_module = import_file.import_file(args.project)
-    Reporter(project_definition_module).create_report(args.report, args.json, 
-                                                      args.html, args.dot)
+    Reporter(args.project).create_report(args.report)

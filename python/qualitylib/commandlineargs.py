@@ -21,24 +21,16 @@ def parse():
     ''' Parse the command line arguments. '''
     parser = ArgumentParser(description='Generate a quality report.')
     parser.add_argument('--project',
-                        help='definition file of the project to report on')
-    parser.add_argument('--html',
-                        help='write HTML report to the given HTML file')
-    parser.add_argument('--json',
-                        help='append metrics data to the given JSON file')
-    parser.add_argument('--dot',
-                        help='write product dependency graph to the given '
-                             'dot file')
+                        help='folder with project definition file and history')
     parser.add_argument('--report',
-                        help='folder to write the HTML report and accompanying '
-                             'files to')
+                        help='folder to write the HTML report in')
     parser.add_argument('--log', default="WARNING",
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
                                  'CRITICAL'],
                         help="log level (WARNING by default)")
     args = parser.parse_args()
     if not args.project:
-        parser.error('Need a project definition file.')
-    if not args.html and not args.json and not args.dot and not args.report:
-        parser.error('Need at least one of --report, --html, --json, and --dot')
+        parser.error('Need a project folder')
+    if not args.report:
+        parser.error('Need a report folder')
     return args
