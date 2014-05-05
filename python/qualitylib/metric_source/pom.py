@@ -22,11 +22,11 @@ import urllib2
 
 class Pom(beautifulsoup.BeautifulSoupOpener):
     ''' Class representing Maven pom.xml files. '''
-    
+
     def __init__(self, *args, **kwargs):
         self.__maven_binary = kwargs.pop('maven_binary', 'mvn')
         super(Pom, self).__init__(*args, **kwargs)
-    
+
     @utils.memoized
     def dependencies(self, url, products, parent_pom_properties=None):
         ''' Return a set of dependencies defined in the pom file. '''
@@ -41,8 +41,8 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
         dependencies.update(self.__module_dependencies(pom_soup, url, products,
             properties))
         return dependencies
-          
-    @utils.memoized    
+
+    @utils.memoized
     def modules(self, url):
         ''' Return the modules defined in the pom file, recursively. '''
         if not url:
@@ -55,7 +55,7 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
             module_artifacts.add(artifact_id)
             module_artifacts.update(self.modules(module_url))
         return module_artifacts
-    
+
     @classmethod
     def __artifacts(cls, pom_soup, url, properties, products):
         ''' Return the artifacts from the dependency tag. '''
@@ -77,7 +77,7 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
                 continue
             dependencies.add((artifact, version))
         return dependencies
-    
+
     @staticmethod
     def __artifact(dependency_tag, products):
         ''' Parse the artifact name from the dependency tag. '''
@@ -128,7 +128,7 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
             pass  # Ignore, deprecated way of referring to version
         cls.__resolve_properties(properties)
         return properties
-    
+
     @staticmethod
     def __resolve_properties(properties):
         ''' Resolve properties that use other properties as value. '''
@@ -144,7 +144,7 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
                     logging.warn("Couldn't resolve property %s: %s", 
                                  property_tag, value)
         properties.update(resolved_properties)
-    
+
     @staticmethod
     def __get_modules(pom_soup):
         ''' Return a set of modules defined in the pom file. '''
@@ -161,7 +161,7 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
         except urllib2.HTTPError, reason:
             logging.log(log_level, "Couldn't open %s: %s", pom_url, reason)
             raise
-        
+
         '''
         with file('pom.xml', 'w') as pom_file: 
             pom_file.write(pom_contents)
