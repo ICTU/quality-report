@@ -19,7 +19,6 @@ from qualitylib.metric_source.birt import Birt
 from qualitylib.metric_source.dependencies import Dependencies
 from qualitylib.metric_source.history import History
 from qualitylib.metric_source.jenkins import Jenkins
-from qualitylib.metric_source.nagios import Nagios
 from qualitylib.metric_source.sonar import Sonar
 from qualitylib.metric_source.performance_report import PerformanceReport
 from qualitylib.metric_source.wiki import Wiki
@@ -30,7 +29,6 @@ from qualitylib.metric_source.trello import TrelloBoard, \
     TrelloUnreachableException
 from qualitylib.metric_source.subversion import Subversion, SubversionFolder
 from qualitylib.metric_source.release_candidates import ReleaseCandidates
-from qualitylib.metric_source.javamelody import JavaMelody
 from qualitylib.metric_source.apache_directory import ApacheDirectory
 from qualitylib.metric_source.nexus_directory import NexusDirectory
 from qualitylib.metric_source.jira import Jira

@@ -108,15 +108,6 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_product(FakeProduct())
         self.assertEqual(1, len(self.__project.product_dependencies()))
 
-    def test_services(self):
-        ''' Test that a newly created project has no services. '''
-        self.failIf(self.__project.services())
-
-    def test_add_service(self):
-        ''' That that a service can be added to the project. '''
-        self.__project.add_service('Service')
-        self.assertEqual(['Service'], self.__project.services())
-
     def test_teams(self):
         ''' Test that a newly created project has no teams. '''
         self.failIf(self.__project.teams())
@@ -219,11 +210,6 @@ class ProjectResourcesTest(unittest.TestCase):
         ''' Test that Sonar is in the project resources. '''
         self.failUnless(('Sonar', FakeResource().url()) in
             domain.Project('', '', sonar=FakeResource()).project_resources())
-
-    def test_nagios(self):
-        ''' Test that Nagios is in the project resources. '''
-        self.failUnless(('Nagios', FakeResource().url()) in
-            self.project(nagios=FakeResource()).project_resources())
 
     def test_birt(self):
         ''' Test that Birt is in the project resources. '''

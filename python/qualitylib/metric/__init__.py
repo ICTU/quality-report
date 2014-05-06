@@ -22,6 +22,5 @@ from qualitylib.metric.project import *
 from qualitylib.metric.ci_metrics import *
 from qualitylib.metric.team_metrics import *
 from qualitylib.metric.document_metrics import *
-from qualitylib.metric.service_metrics import *
 from qualitylib.metric.meta_metrics import *
 from qualitylib.metric.quality_attributes import *

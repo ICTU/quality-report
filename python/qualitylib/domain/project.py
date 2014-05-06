@@ -24,7 +24,7 @@ class Project(object):
 
     def __init__(self, organization='Unnamed organization', 
                  name='Unnamed project', build_server=None, emma=None, 
-                 jacoco=None, sonar=None, nagios=None, birt=None, wiki=None, 
+                 jacoco=None, sonar=None, birt=None, wiki=None, 
                  history=None, trello_risklog_board=None, 
                  trello_actions_board=None, performance_report=None, 
                  release_candidates=None, release_archives=None, 
@@ -38,7 +38,6 @@ class Project(object):
         self.__emma = emma or missing
         self.__jacoco = jacoco or missing
         self.__sonar = sonar or missing
-        self.__nagios = nagios or missing
         self.__birt = birt or missing
         self.__wiki = wiki or missing
         self.__history = history
@@ -56,7 +55,6 @@ class Project(object):
         self.__java_home = java_home
         self.__dependencies_db = dependencies_db
         self.__products = []
-        self.__services = []
         self.__teams = []
         self.__responsible_teams = []
         self.__documents = []
@@ -97,10 +95,6 @@ class Project(object):
     def build_server(self):
         ''' Return the build server instance of the project. '''
         return self.__build_server
-
-    def nagios(self):
-        ''' Return the Nagios monitoring instance of the project. '''
-        return self.__nagios
 
     def birt(self):
         ''' Return the Birt reporting instance of the project. '''
@@ -198,14 +192,6 @@ class Project(object):
         if self.sonar():
             self.sonar().analyse_products(self.products())
 
-    def services(self):
-        ''' Return the services of the project. '''
-        return self.__services
-
-    def add_service(self, service):
-        ''' Add a service to the project. '''
-        self.__services.append(service)
-
     def add_team(self, team, responsible=False):
         ''' Add a team to the project. '''
         self.__teams.append(team)
@@ -247,7 +233,6 @@ class Project(object):
         resources.append(('Build server', self.build_server().url()))
         resources.append(('Sonar', self.sonar().url()))
         resources.append(('Birt reports', self.birt().url()))
-        resources.append(('Nagios', self.nagios().url()))
         self.__add_coverage_resources(resources)
         if self.performance_report():
             resources.append(('Performance reports', 

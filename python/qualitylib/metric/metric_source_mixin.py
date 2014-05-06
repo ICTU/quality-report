@@ -107,13 +107,6 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
         return dict(Birt=self._birt.whats_missing_url(self._birt_id()))
 
 
-class NagiosMetricMixin(object):
-    ''' Mixin class for metrics that use Nagios. '''
-    def __init__(self, *args, **kwargs):
-        super(NagiosMetricMixin, self).__init__(*args, **kwargs)
-        self._nagios = self._project.nagios()
-
-
 class TrelloActionsBoardMetricMixin(object):
     ''' Mixin class for metrics that use Trello for an actions board. '''
     def __init__(self, *args, **kwargs):

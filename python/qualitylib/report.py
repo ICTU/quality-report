@@ -47,13 +47,11 @@ class Section(object):
 
     ORDERED_STATUS_COLORS = ('red', 'yellow', 'grey', 'green', 'perfect')
 
-    def __init__(self, header, metrics, history=None, product=None,
-                 service=None):
+    def __init__(self, header, metrics, history=None, product=None):
         self.__header = header
         self.__metrics = metrics
         self.__history = history
         self.__product = product
-        self.__service = service
         for index, each_metric in enumerate(self.__metrics):
             each_metric.set_id_string('%s-%d' % (self.__header.id_prefix(),
                                                  index + 1))
@@ -111,10 +109,6 @@ class Section(object):
             product. '''
         return self.product() and not self.product().product_version()
 
-    def service(self):
-        ''' Return the service this section is about. '''
-        return self.__service
-
 
 class QualityReport(object):
     ''' Quality report on a project. '''
@@ -139,10 +133,6 @@ class QualityReport(object):
                                    metric.AssignedCIJobs)
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
                            metric.BlockingTestIssues)
-    SERVICE_METRIC_CLASSES = (metric.ServiceAvailabilityLastMonth,
-                              metric.ServiceAvailabilityThisMonth,
-                              metric.ServiceResponseTimesLastMonth,
-                              metric.ServiceResponseTimesThisMonth)
     DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
 
     @classmethod
@@ -152,11 +142,11 @@ class QualityReport(object):
             cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
             cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
-            cls.SERVICE_METRIC_CLASSES + cls.DOCUMENT_METRIC_CLASSES + \
+            cls.DOCUMENT_METRIC_CLASSES + \
             (metric.TotalLOC, metric.DependencyQuality, metric.UnmergedBranches,
              metric.TeamProgress, metric.ReleaseAge, metric.ARTStability,
-             metric.ServerAvailability, metric.TeamSpirit,
-             metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs)
+             metric.TeamSpirit, metric.TeamFailingCIJobs, 
+             metric.TeamUnusedCIJobs)
 
     def __init__(self, project):
         self.__project = project
@@ -165,10 +155,7 @@ class QualityReport(object):
         self.__products = sorted(project.products(),
                                  key=lambda product: (product.name(),
                                                       product.short_name()))
-        self.__services = sorted(project.services(), 
-                                 key=lambda service: service.name())
         self.__product_sections = dict()
-        self.__service_sections = dict()
         self.__teams = sorted(project.teams(), key=str)
         self.__sections = []
         self.__meta_section = None
@@ -196,10 +183,6 @@ class QualityReport(object):
             process_section = self.__process_section()
             if process_section:
                 self.__sections.append(process_section)
-            for service in self.__services:
-                section = self.__service_section(service)
-                self.__service_sections[service] = section
-                self.__sections.append(section)
             if self.__products or self.__project.documents():
                 self.__sections.append(self.__overall_products_section())
             for product in self.__products:
@@ -220,12 +203,6 @@ class QualityReport(object):
             self.sections()  # Create the sections
         return self.__product_sections[product_key]
 
-    def get_service_section(self, service):
-        ''' Return the section for a specific service. '''
-        if service not in self.__service_sections:
-            self.sections()  # Create the sections
-        return self.__service_sections[service]
-
     def get_meta_section(self):
         ''' Return the section with the meta metrics. '''
         return self.__meta_section
@@ -245,10 +222,6 @@ class QualityReport(object):
     def products(self):
         ''' Return the products we report on. '''
         return self.__products
-
-    def services(self):
-        ''' Return the services we report on. '''
-        return self.__services
 
     def get_product(self, product_name, product_version):
         ''' Return the product with the specified name and version. '''
@@ -326,18 +299,6 @@ class QualityReport(object):
                                      self.latest_product_version(product)),
                        metrics, product=product)
 
-    def __service_section(self, service):
-        ''' Return the section for the service. '''
-        metrics = []
-        for metric_class in self.SERVICE_METRIC_CLASSES:
-            if metric_class.can_be_measured(service, self.__project):
-                metrics.append(metric_class(subject=service,
-                                            project=self.__project))
-        self.__metrics.extend(metrics)
-        return Section(SectionHeader(service.short_name(), 
-                                     'Dienst ' + service.name()),
-                       metrics, service=service)
-
     def __team_section(self, team):
         ''' Return a report section for the team. '''
         metrics = []
@@ -353,8 +314,8 @@ class QualityReport(object):
             metrics.append(metric.ARTStability(street,
                                                responsible_teams=[team],
                                                project=self.__project))
-        for metric_class in (metric.ServerAvailability, metric.TeamSpirit,
-                             metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs):
+        for metric_class in (metric.TeamSpirit, metric.TeamFailingCIJobs, 
+                             metric.TeamUnusedCIJobs):
             if metric_class.can_be_measured(team, self.__project):
                 metrics.append(metric_class(team, project=self.__project))
         self.__metrics.extend(metrics)

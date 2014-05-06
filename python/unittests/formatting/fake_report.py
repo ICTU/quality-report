@@ -80,10 +80,9 @@ class Section(object):  # pylint: disable=incomplete-protocol
 class Report(object):
     ''' Fake a quality report. '''
 
-    def __init__(self, products=None, services=None, metrics=None, teams=None,
+    def __init__(self, products=None, metrics=None, teams=None,
                  number_of_meta_metrics=5):
         self.__products = products or []
-        self.__services = services or []
         self.__metrics = metrics or []
         self.__teams = teams or []
         self.__meta_metrics = [fake_domain.Metric('MM-%d' % nr) for nr in \
@@ -97,10 +96,6 @@ class Report(object):
     def products(self):
         ''' Return the products in the report. '''
         return self.__products
-
-    def services(self):
-        ''' Return the services in the report. '''
-        return self.__services
 
     @staticmethod
     def get_product(name, version):  # pylint: disable=unused-argument
@@ -119,11 +114,6 @@ class Report(object):
             return Section(product=self.__products[0])
         else:
             return Section()
-
-    @staticmethod
-    def get_service_section(service):  # pylint: disable=unused-argument
-        ''' Return a fake section. '''
-        return Section()
 
     @staticmethod
     def title():
@@ -150,7 +140,7 @@ class Report(object):
     @staticmethod
     def dashboard():
         ''' Return the columns and rows of the dashboard. '''
-        return [('ME', 1)], [(('me', 'title', 'lightsteelblue'),),]
+        return [('ME', 1)], [(('me', 'title', 'lightsteelblue'),), ]
 
     @staticmethod
     def project_resources():

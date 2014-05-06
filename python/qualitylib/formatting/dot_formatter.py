@@ -32,11 +32,7 @@ class DotFormatter(base_formatter.Formatter):
             format. '''
         graph = []
         graph.extend(self.__product_subgraphs(report))
-        service_nodes = self.__service_nodes(report)
-        if service_nodes:
-            graph.extend(service_nodes)
         graph.extend(self.__product_edges(report))
-        graph.extend(self.__service_edges(report))
         return self.sep.join(graph)
 
     def kpi(self, kpi):
@@ -75,23 +71,7 @@ class DotFormatter(base_formatter.Formatter):
             node_string = ';\n    '.join(nodes)
             subgraphs.append(subgraph_template % (name, name, node_string))
         return subgraphs
-    
-    @staticmethod
-    def __service_nodes(report):
-        ''' Return the nodes representing the services in the report. '''
-        node_template = '"%(name)s" [label="%(name)s" ' \
-                        'style="filled" fillcolor="%(color)s" URL="%(url)s" ' \
-                        'target="_top"]'
-        nodes = []
-        for service in report.services():
-            name = service.name()
-            url = html_formatter.HTMLFormatter.product_url(service)
-            color = report.get_service_section(service).color()
-            parameters = dict(name=name, color=color, url=url)
-            nodes.append(node_template % parameters)
-        nodes_string = ';\n    '.join(nodes)
-        return [nodes_string] if nodes_string else []
-            
+
     @staticmethod
     def __product_edges(report):
         ''' Return the edges representing the dependencies between products in
@@ -103,16 +83,4 @@ class DotFormatter(base_formatter.Formatter):
                 edges.append('  "%s-%s" -> "%s-%s";' % (product.name(),
                              product.product_version() or 'trunk',
                              dependency_name, dependency_version))
-        return edges
-
-    @staticmethod
-    def __service_edges(report):
-        ''' Return the edges represnting the dependencies between services in
-            the report. '''
-        edges = []
-        for service in report.services():
-            dependencies = service.dependencies()
-            for dependency in dependencies:
-                edges.append('  "%s" -> "%s";' % (service.name(), 
-                                                  dependency.name()))
         return edges

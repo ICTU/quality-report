@@ -25,7 +25,6 @@ from qualitylib.domain.measurement.target import TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
 from qualitylib.domain.product import Product
-from qualitylib.domain.service import Service
 from qualitylib.domain.team import Team
 from qualitylib.domain.project import Project
 from qualitylib.domain.quality_attribute import QualityAttribute

@@ -176,11 +176,6 @@ class SectionTest(unittest.TestCase):
         section = report.Section(None, [], product=FakeProduct())
         self.failUnless(section.contains_trunk_product())
 
-    def test_service(self):
-        ''' Test that the section returns the service. '''
-        section = report.Section(None, [], service='Service')
-        self.assertEqual('Service', section.service())
-
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods
     ''' Fake a Sonar instance. '''
@@ -255,31 +250,6 @@ class QualityReportTest(unittest.TestCase):
         section2 = quality_report.get_product_section(name, version)
         self.failUnless(section1 is section2)
 
-    def test_service(self):
-        ''' Test that the report has two sections when we add a service:
-            one for the service itself and one for meta metrics. '''
-        self.__project.add_service(domain.Service(self.__project, 'S1', 
-                                                  'Service 1'))
-        self.assertEqual(2, 
-                         len(report.QualityReport(self.__project).sections()))
-
-    def test_get_service_section(self):
-        ''' Test that the section for the service can be found. '''
-        service = domain.Service(self.__project, 'S1', 'Service 1')
-        self.__project.add_service(service)
-        quality_report = report.QualityReport(self.__project)
-        section = quality_report.get_service_section(service)
-        self.assertEqual(service, section.service())
-
-    def test_get_service_section_twice(self):
-        ''' Test that the service section is cached. '''
-        service = domain.Service(self.__project, 'S1', 'Service 1')
-        self.__project.add_service(service)
-        quality_report = report.QualityReport(self.__project)
-        section1 = quality_report.get_service_section(service)
-        section2 = quality_report.get_service_section(service)
-        self.failUnless(section1 is section2)
-
     def test_get_meta_section(self):
         ''' Test that the report has no meta section by default. '''
         self.failIf(self.__report.get_meta_section())
@@ -308,13 +278,6 @@ class QualityReportTest(unittest.TestCase):
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([product], quality_report.products())
-
-    def test_services(self):
-        ''' Test that the report returns the services. '''
-        service = domain.Service(self.__project, 'S1', 'Service 1')
-        self.__project.add_service(service)
-        quality_report = report.QualityReport(self.__project)
-        self.assertEqual([service], quality_report.services())
 
     def test_resources(self):
         ''' Test that the report has project resources. '''
@@ -366,7 +329,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs,
-                        service_kwargs, number_of_teams=1):
+                        number_of_teams=1):
         ''' Create the quality report. '''
         # pylint: disable=W0142
         documents = project_kwargs.pop('documents', [])
@@ -383,22 +346,17 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs['art'] = domain.Product(project, **art_kwargs)
             product = domain.Product(project, **product_kwargs)
             project.add_product(product)
-        if service_kwargs:
-            service = domain.Service(project, **service_kwargs)
-            project.add_service(service)
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
 
     def __assert_metric(self, metric_class, project_kwargs=None, 
                                 team_kwargs=None, product_kwargs=None,
-                                service_kwargs=None, number_of_teams=1, 
-                                include=True):
+                                number_of_teams=1, include=True):
         ''' Check that the metric class is included in the report. '''
         quality_report = self.__create_report(project_kwargs or dict(),
                                               team_kwargs or dict(),
                                               product_kwargs or dict(),
-                                              service_kwargs or dict(),
                                               number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric \
                                     in quality_report.metrics()]
@@ -420,12 +378,6 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the ART stability metric is added if possible. '''
         self.__assert_metric(metric.ARTStability,
                              team_kwargs=dict(streets=['Street']))
-
-    def test_server_availability(self):
-        ''' Test that the server availability metric is added if possible. '''
-        self.__assert_metric(metric.ServerAvailability, 
-                             project_kwargs=dict(nagios='Nagios'),
-                             team_kwargs=dict(is_support_team=True))
 
     def test_team_spirit(self):
         ''' Test that the team spirit metric is added if possible. '''
@@ -586,36 +538,6 @@ class QualityReportMetricsTest(unittest.TestCase):
                              product_kwargs=dict(birt_id='birt',
                                                  product_version='1.1'),
                              project_kwargs=dict(birt=FakeBirt()))
-
-    def test_service_availability_last_month(self):
-        ''' Test that the service availability metric is added if possible. '''
-        self.__assert_metric(metric.ServiceAvailabilityLastMonth,
-                             project_kwargs=dict(nagios='nagios'),
-                             service_kwargs=dict(short_name='S1', name='S1',
-                                                 nagios_server_id='id'))
-
-    def test_service_availability_this_month(self):
-        ''' Test that the service availability metric is added if possible. '''
-        self.__assert_metric(metric.ServiceAvailabilityThisMonth,
-                             project_kwargs=dict(nagios='nagios'),
-                             service_kwargs=dict(short_name='S1', name='S1',
-                                                 nagios_server_id='id'))
-
-    def test_service_reponse_times_last_month(self):
-        ''' Test that the service response times metric is added if 
-            possible. '''
-        self.__assert_metric(metric.ServiceResponseTimesLastMonth, 
-                             project_kwargs=dict(javamelody='javamelody'),
-                             service_kwargs=dict(short_name='S1', name='S1',
-                                                 javamelody_id='id'))
-
-    def test_service_reponse_times_this_month(self):
-        ''' Test that the service response times metric is added if 
-            possible. '''
-        self.__assert_metric(metric.ServiceResponseTimesThisMonth, 
-                             project_kwargs=dict(javamelody='javamelody'),
-                             service_kwargs=dict(short_name='S1', name='S1',
-                                                 javamelody_id='id'))
 
     def test_critical_violations(self):
         ''' Test that the critical violations metric is added if possible. '''

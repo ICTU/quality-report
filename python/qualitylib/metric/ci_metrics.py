@@ -18,8 +18,7 @@ limitations under the License.
 
 from qualitylib.domain import Metric, LowerIsBetterMetric, \
     HigherPercentageIsBetterMetric
-from qualitylib.metric.metric_source_mixin import JenkinsMetricMixin, \
-    NagiosMetricMixin
+from qualitylib.metric.metric_source_mixin import JenkinsMetricMixin
 from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY, \
     TEST_QUALITY
 
@@ -297,48 +296,3 @@ class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
 
     def url_label(self):
         return 'Niet toegewezen jobs'
-
-
-class ServerAvailability(NagiosMetricMixin, HigherPercentageIsBetterMetric):
-    # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the percentage of servers in the development
-        streets that are sufficiently available. '''
-
-    name = 'Server beschikbaarheid'
-    norm_template = 'Minimaal %(target)d%% van de servers, m.u.v. Selenium ' \
-        'slaves, is minimaal 99%% beschikbaar per week. ' \
-        'Lager dan 90%% is rood.'
-    template = 'Servers met voldoende beschikbaarheid is %(value)d%% ' \
-        '(%(numerator)d van %(denominator)d). Aantal servers per groep: ' \
-        '%(number_of_servers_per_group)s.'
-    target_value = 99
-    low_target_value = 90
-    quality_attribute = ENVIRONMENT_QUALITY
-
-    @classmethod
-    def can_be_measured(cls, team, project):
-        return super(ServerAvailability, cls).can_be_measured(team, project) \
-            and team.is_support_team() and project.nagios()
-
-    def _parameters(self):
-        ''' Add number of servers per group to the parameters. '''
-        # pylint: disable=protected-access
-        parameters = super(ServerAvailability, self)._parameters()
-        parameters.update(dict( \
-            number_of_servers_per_group=self.__number_of_servers_per_group()))
-        return parameters
-
-    def _numerator(self):
-        return self._nagios.number_of_servers_sufficiently_available()
-
-    def _denominator(self):
-        return self._nagios.number_of_servers()
-
-    def __number_of_servers_per_group(self):
-        ''' Return a formatted version of the number of servers per server
-            group. '''
-        return ', '.join(sorted(['%s: %d' % (group, number) for group, number \
-            in self._nagios.number_of_servers_per_group().items()]))
-
-    def url(self):
-        return dict(Nagios=self._nagios.availability_url())
