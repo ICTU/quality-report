@@ -32,7 +32,7 @@ class DocumentAge(SubversionMetricMixin, LowerIsBetterMetric):
         'bijgewerkt.'
     quality_attribute = DOC_QUALITY
     target_value = 180
-    low_target_value = 90
+    low_target_value = 200
 
     @classmethod
     def can_be_measured(cls, document, project):
