@@ -36,6 +36,8 @@ class SonarDashboard(beautifulsoup.BeautifulSoupOpener):
             return self.__soup('h4')[0].string.strip().split(' ')[1]
         except IndexError:
             logging.error('Error parsing %s', self.__url)
+            logging.debug('Error parsing %s, soup is "%s"', self.__url, 
+                          self.__soup)
             raise
 
     @utils.memoized
@@ -78,7 +80,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     def __init__(self, sonar_url, *args, **kwargs):
         super(SonarRunner, self).__init__(*args, **kwargs)
         self.__sonar_url = sonar_url
-        
+
     def analyse_products(self, products):
         ''' Run Sonar on the products and remove old analyses. '''
         sonar_analyses_to_keep = set()

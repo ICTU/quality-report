@@ -27,11 +27,11 @@ class UrlOpener(object):
         self.__username = username
         self.__password = password
         self.__opener = self.__create_url_opener(uri, build_opener, url_open)
-        
+
     def username(self):
         ''' Return the username, if any. '''
         return self.__username
-    
+
     def password(self):
         ''' Return the password, if any. '''
         return self.__password
