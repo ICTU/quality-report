@@ -1,3 +1,9 @@
+2014-05-12  Release 1.0.4
+
+  * Bug fix for getting violations from Sonar.
+  * Give a warning when a specific metric can't be retrieved via the Sonar API.
+
+
 2014-05-12  Release 1.0.3
 
   * Use only the Sonar API to access Sonar.
