@@ -22,7 +22,7 @@ class FakeBuildOpener(object):  # pylint: disable=too-few-public-methods
     ''' Fake a url opener build method. '''
     def __init__(self, *args):
         pass
-    
+
     @staticmethod  # pylint: disable=unused-argument
     def open(*args):
         ''' Fake opening a url and returning its contents. '''
@@ -32,7 +32,7 @@ class FakeBuildOpener(object):  # pylint: disable=too-few-public-methods
 class UrlOpenerTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the URL opener class. '''
-    
+
     def test_username_password(self):
         ''' Test that the username and password can be set. '''
         opener = url_opener.UrlOpener(username='user', password='pass')
@@ -42,16 +42,17 @@ class UrlOpenerTest(unittest.TestCase):
     def test_opener_with_password_mgr(self):
         ''' Test that the opener can create a basic auth handler with password
             manager. '''
-        opener = url_opener.UrlOpener('http://uri', 'user', 'pass', 
-                                      FakeBuildOpener)
+        opener = url_opener.UrlOpener('http://uri', username='user',
+                                      password='pass',
+                                      build_opener=FakeBuildOpener)
         self.assertEqual('url contents', opener.url_open('http://bla'))
-        
+
     def test_basic_auth_handler(self):
         ''' Test that the opener can create a basic auth handler. '''
         opener = url_opener.UrlOpener(username='user', password='pass', 
                                       url_open=FakeBuildOpener.open)
         self.assertEqual('url contents', opener.url_open('http://bla'))
-        
+
     def test_opener_without_auth(self):
         ''' Test that the opener can open urls without authentication. '''
         opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)

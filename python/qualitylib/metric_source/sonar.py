@@ -14,65 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.metric_source import beautifulsoup
+from qualitylib.metric_source import beautifulsoup, url_opener
 from qualitylib import utils
 import logging
 import os
-
-
-class SonarDashboard(beautifulsoup.BeautifulSoupOpener):
-    ''' Class representing a Sonar dashboard for a specific product. '''
-
-    def __init__(self, url):
-        super(SonarDashboard, self).__init__()
-        self.__url = url
-        self.__soup = self.soup(url)
-
-    @utils.memoized
-    def version(self):
-        ''' Return the version of the product displayed on this Sonar
-            dashboard. '''
-        try:
-            return self.__soup('h4')[0].string.strip().split(' ')[1]
-        except IndexError:
-            logging.error('Error parsing %s', self.__url)
-            logging.debug('Error parsing %s, soup is "%s"', self.__url, 
-                          self.__soup)
-            raise
-
-    @utils.memoized
-    def metric(self, metric_id, default=0):
-        ''' Return the metric with the specified metric id. '''
-        try:
-            # Get the metric with metric_id and remove the thousands separator
-            metric_text = self.__soup(id='m_' + metric_id)[0].string
-            metric_value = float(metric_text.replace(',', '').replace('%', ''))
-        except IndexError:
-            metric_value = default  # Metric not found
-        return metric_value
-
-
-class SonarViolations(beautifulsoup.BeautifulSoupOpener):
-    ''' Class representing the Sonar violations page for a specific
-        product. '''
-
-    def __init__(self, url):
-        super(SonarViolations, self).__init__()
-        self.__soup = self.soup(url)
-
-    @utils.memoized
-    def violation(self, rule_name, default=0):
-        ''' Return the number of violations for the specified rule. '''
-        rules = self.__soup('table', id='col_rules')[0]('tr')
-        if rules[0]('td')[0].string == 'No violations':
-            return default
-        violation = [rule for rule in rules if rule_name in \
-                     rule('td')[1]('a')[0].string]
-        if violation:
-            number_of_violations = int(violation[0]('td')[2]('span')[0].string)
-        else:
-            number_of_violations = default
-        return number_of_violations
 
 
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
@@ -120,13 +65,13 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     def __remove_old_analyses(self, sonar_analyses_to_keep):
         ''' Remove Sonar analyses that are no longer needed. '''
-        
+
         def sonar_id_contains_version(sonar_id):
             ''' Return whether the Sonar id contains a version number. '''
             last_part = sonar_id.split(':')[-1]
             return len(last_part) > 0 and (last_part[0].isdigit() or \
                                            last_part[-1].isdigit())
-        
+
         logging.debug('Removing Sonar analyses, keeping %s', 
                       sonar_analyses_to_keep)
         analyses = utils.eval_json(self.url_open(self.__sonar_url + \
@@ -179,19 +124,21 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         utils.rmtree(folder)  # Remove folder to save space
 
 
-class Sonar(beautifulsoup.BeautifulSoupOpener):
+class Sonar(url_opener.UrlOpener):
     ''' Class representing the Sonar instance. '''
 
-    def __init__(self, sonar_url, dashboard_class=SonarDashboard, 
-                 violations_class=SonarViolations, *args, **kwargs):
+    def __init__(self, sonar_url, *args, **kwargs):
         super(Sonar, self).__init__(*args, **kwargs)
         self.__sonar_url = sonar_url
         self.__runner = SonarRunner(sonar_url, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
-        self.__dashboard_class = dashboard_class
-        self.__violations_class = violations_class
-                                     
+        self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \
+            'metrics=blocker_violations,critical_violations,major_violations,' \
+            'minor_violations,info_violations'
+        self.__metrics_api_url = sonar_url + 'api/resources?resource=%s&' \
+            'metrics=%s'
+
     def url(self):
         ''' Return the base url for Sonar. '''
         return self.__sonar_url
@@ -199,59 +146,61 @@ class Sonar(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def version(self, product):
         ''' Return the version of the product. '''
-        result = self.__dashboard(product).version()
-        logging.debug('Retrieving Sonar version for %s -> %s', product, result)
-        return result
+        json = self.url_open(self.__sonar_url + \
+                             'api/resources?resource=%s' % product).read()
+        version = utils.eval_json(json)[0]['version']
+        logging.debug('Retrieving Sonar version for %s -> %s', product, version)
+        return version
 
     #  Metrics
 
     @utils.memoized
     def ncloc(self, product):
         ''' Non-comment lines of code. '''
-        return self.__dashboard(product).metric('ncloc')
+        return self.__metric(product, 'ncloc')
 
     def lines(self, product):
         ''' Bruto lines of code, including comments, whitespace, javadoc. '''
-        return self.__dashboard(product).metric('lines')
+        return self.__metric(product, 'lines')
 
     def major_violations(self, product):
         ''' Return the number of major violations for the product. '''
-        return self.__dashboard(product).metric('major_violations')
+        return self.__metric(product, 'major_violations')
 
     def critical_violations(self, product):
         ''' Return the number of critical violations for the product. '''
-        return self.__dashboard(product).metric('critical_violations')
+        return self.__metric(product, 'critical_violations')
 
     def duplicated_lines(self, product):
         ''' Return the number of duplicated lines for the product. '''
-        return self.__dashboard(product).metric('duplicated_lines')
-
+        return self.__metric(product, 'duplicated_lines')
+ 
     def line_coverage(self, product):
         ''' Return the line coverage of the unit tests for the product. '''
-        return self.__dashboard(product).metric('line_coverage')
+        return self.__metric(product, 'line_coverage')
 
     def unittests(self, product):
         ''' Return the number of unit tests for the product. '''
-        return self.__dashboard(product).metric('tests')
-    
+        return self.__metric(product, 'tests')
+
     def failing_unittests(self, product):
         ''' Return the number of failing unit tests for the product. '''
-        return self.__dashboard(product).metric('test_failures') + \
-               self.__dashboard(product).metric('test_errors')
-    
+        return self.__metric(product, 'test_failures') + \
+               self.__metric(product, 'test_errors')
+
     def package_cycles(self, product):
         ''' Return the number of cycles in the package dependencies for the
             product. '''
-        return self.__dashboard(product).metric('package_cycles')
+        return self.__metric(product, 'package_cycles')
 
     def methods(self, product):
         ''' Return the number of methods/functions in the product. '''
-        return self.__dashboard(product).metric('functions')
+        return self.__metric(product, 'functions')
 
     def commented_loc(self, product):
         ''' Return the number of commented out lines in the source code of
             the product. '''
-        return self.__dashboard(product).metric('commented_out_code_lines')
+        return self.__metric(product, 'commented_out_code_lines')
 
     def dashboard_url(self, product):
         ''' Return the url for the Sonar dashboard for the product. '''
@@ -262,24 +211,24 @@ class Sonar(beautifulsoup.BeautifulSoupOpener):
     def complex_methods(self, product):
         ''' Return the number of methods that violate the Cyclomatic complexity
             threshold. '''
-        return self.__violations(product).violation('Cyclomatic')
+        return self.__violation(product, 'Cyclomatic')
 
     def long_methods(self, product):
         ''' Return the number of methods in the product that have to many
             non-comment statements. '''
-        return self.__violations(product).violation('Ncss')
+        return self.__violation(product, 'Ncss')
 
     def many_parameters_methods(self, product):
         ''' Return the number of methods in the product that have too many
             parameters. '''
-        return self.__violations(product).violation('Parameter Number')
+        return self.__violation(product, 'Parameter Number')
 
     def violations_url(self, product):
         ''' Return the url for the violations of the product. '''
         return self.__base_violations_url + product
 
     # Analysis
-    
+
     def analyse_products(self, products):
         ''' Run Sonar on the products and remove old analyses. '''
         self.__runner.analyse_products(products)
@@ -287,11 +236,16 @@ class Sonar(beautifulsoup.BeautifulSoupOpener):
     # Helper methods
 
     @utils.memoized
-    def __dashboard(self, product):
-        ''' Return the dashboard for the product. '''
-        return self.__dashboard_class(self.dashboard_url(product))
+    def __metric(self, product, metric):
+        ''' Return a specific metric value for the product. '''
+        json = self.url_open(self.__metrics_api_url % (product, metric)).read()
+        return utils.eval_json(json)[0]['msr'][0]['val']
 
     @utils.memoized
-    def __violations(self, product):
-        ''' Return the violations page for the product. '''
-        return self.__violations_class(self.violations_url(product))
+    def __violation(self, product, violation_name):
+        ''' Return a specific violation value for the product. '''
+        json = self.url_open(self.__violations_api_url % product).read()
+        for violation in utils.eval_json(json)[0]['msr']:
+            if violation_name in violation['rule_name']:
+                return violation['val']
+        return 0

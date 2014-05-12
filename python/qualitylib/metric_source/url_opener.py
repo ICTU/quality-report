@@ -22,7 +22,7 @@ import logging
 class UrlOpener(object):
     ''' Class for opening urls with or without authentication. '''
 
-    def __init__(self, uri=None, username=None, password=None, 
+    def __init__(self, uri=None, username=None, password=None,
                  build_opener=urllib2.build_opener, url_open=urllib2.urlopen):
         self.__username = username
         self.__password = password
