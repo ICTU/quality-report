@@ -135,7 +135,7 @@ class Sonar(url_opener.UrlOpener):
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
         self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \
             'metrics=blocker_violations,critical_violations,major_violations,' \
-            'minor_violations,info_violations'
+            'minor_violations,info_violations&rules=true&includetrends=true'
         self.__metrics_api_url = sonar_url + 'api/resources?resource=%s&' \
             'metrics=%s'
 
@@ -236,10 +236,15 @@ class Sonar(url_opener.UrlOpener):
     # Helper methods
 
     @utils.memoized
-    def __metric(self, product, metric):
+    def __metric(self, product, metric, default=0):
         ''' Return a specific metric value for the product. '''
         json = self.url_open(self.__metrics_api_url % (product, metric)).read()
-        return utils.eval_json(json)[0]['msr'][0]['val']
+        try:
+            return utils.eval_json(json)[0]['msr'][0]['val']
+        except IndexError:
+            logging.warning("Can't get %s value for %s from %s", metric, 
+                            product, json)
+            return default
 
     @utils.memoized
     def __violation(self, product, violation_name):
