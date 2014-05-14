@@ -100,7 +100,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         svg_filename = os.path.join(report_dir, 'dependency.svg')
         os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
         for filename in (html_filename, svg_filename):
-            os.chmod(filename, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+            os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
+                     stat.S_IROTH)
         resource_manager = pkg_resources.ResourceManager()
         formatting_module = formatting.html_formatter.__name__
         for resource_type, encoding in (('css', 'utf-8'), ('img', None), 
@@ -125,17 +126,22 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     @staticmethod
     def __write_file(contents, filename, mode, encoding):
         ''' Write the contents to the specified file. '''
+        if os.path.exists(filename):
+            os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
+                     stat.S_IROTH)
         output_file = codecs.open(filename, mode, encoding)
         output_file.write(contents)
         output_file.close()
-        os.chmod(filename, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+        os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
+                 stat.S_IROTH)
 
     @staticmethod
     def __create_dir(dir_name):
         ''' Create a directory and make it accessible. '''
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
-        os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | \
+                 stat.S_IRUSR | stat.S_IWUSR)
 
 
 if __name__ == '__main__':
