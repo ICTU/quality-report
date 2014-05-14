@@ -2,5 +2,4 @@
 BeautifulSoup==3.2.1
 coverage==3.5
 import-file==1.11
-simplejson==2.1.6
 xmlrunner==1.7.4

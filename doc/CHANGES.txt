@@ -2,6 +2,7 @@ Release 1.0.5
 
   * Use a platform independent method to change the mode of folders and files.
   * Remove dependency on argparse 1.2, use Python included version of argparse.
+  * Remove dependency on simplejson, use Python included json.
 
 
 2014-05-12  Release 1.0.4

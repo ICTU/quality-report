@@ -19,7 +19,7 @@ import datetime
 import logging
 import os
 import shutil
-import simplejson
+import json
 
 
 MONTHS = {1: 'januari', 2: 'februari', 3: 'maart', 4: 'april', 5: 'mei', 
@@ -234,4 +234,4 @@ def html_escape(text):
 
 def eval_json(json_string):
     ''' Return an evaluated version of the json string. '''
-    return simplejson.loads(json_string)
+    return json.loads(json_string)
