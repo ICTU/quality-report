@@ -197,11 +197,6 @@ class Sonar(url_opener.UrlOpener):
         ''' Return the number of methods/functions in the product. '''
         return self.__metric(product, 'functions')
 
-    def commented_loc(self, product):
-        ''' Return the number of commented out lines in the source code of
-            the product. '''
-        return self.__metric(product, 'commented_out_code_lines')
-
     def dashboard_url(self, product):
         ''' Return the url for the Sonar dashboard for the product. '''
         return self.__base_dashboard_url + product
@@ -222,6 +217,11 @@ class Sonar(url_opener.UrlOpener):
         ''' Return the number of methods in the product that have too many
             parameters. '''
         return self.__violation(product, 'Parameter Number')
+
+    def commented_loc(self, product):
+        ''' Return the number of commented out lines in the source code of
+            the product. '''
+        return self.__violation(product, 'commented-out')
 
     def violations_url(self, product):
         ''' Return the url for the violations of the product. '''
@@ -250,7 +250,11 @@ class Sonar(url_opener.UrlOpener):
     def __violation(self, product, violation_name):
         ''' Return a specific violation value for the product. '''
         json = self.url_open(self.__violations_api_url % product).read()
-        for violation in utils.eval_json(json)[0]['msr']:
+        try:
+            violations = utils.eval_json(json)[0]['msr']
+        except (IndexError, KeyError):
+            return 0
+        for violation in violations:
             if violation_name in violation['rule_name']:
                 return violation['val']
         return 0

@@ -31,7 +31,8 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
             {"val": 100, "rule_name": ""}, 
             {"val": 50, "rule_name": "Cyclomatic complexity"},
             {"val": 50, "rule_name": "Ncss Method Count"},
-            {"val": 50, "rule_name": "Parameter Number"}
+            {"val": 50, "rule_name": "Parameter Number"},
+            {"val": 40, "rule_name": "Avoid commented-out lines of code"}
         ]
     }
 ]''')
@@ -117,7 +118,7 @@ class SonarTest(unittest.TestCase):
     def test_commented_loc(self):
         ''' Test that the number of commented loc equals the number of 
             commented loc returned by the dashboard. '''
-        self.assertEqual(100, self.__sonar.commented_loc('product'))
+        self.assertEqual(40, self.__sonar.commented_loc('product'))
 
     def test_complex_methods(self):
         ''' Test that the number of complex methods equals the number of 
