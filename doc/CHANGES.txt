@@ -1,3 +1,9 @@
+2014-05-15  Release 1.0.7
+
+  * Bug fix: Jenkins may return unquoted URLs, quote them before using them.
+  * Added: ability to provide additional resources for a project.
+
+
 2014-05-15  Release 1.0.6
 
   * Bug fix: can't rename a file on Windows if the target exists.
