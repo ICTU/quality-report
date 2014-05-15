@@ -1,4 +1,4 @@
-Release 1.0.5
+2014-05-15  Release 1.0.5
 
   * Use a platform independent method to change the mode of folders and files.
   * Remove dependency on argparse 1.2, use Python included version of argparse.
