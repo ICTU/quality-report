@@ -49,6 +49,7 @@ setup(name='quality_report',
       install_requires=[str(requirement.req) for requirement in \
                         parse_requirements('requirements.txt', 
                                            options=ParseRequirementsOptions)],
+      test_suite='unittests',
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
