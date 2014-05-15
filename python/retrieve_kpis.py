@@ -93,6 +93,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__format_and_write_report(quality_report, formatting.HTMLFormatter,
                                        tmp_filename, 'w', 'utf-8')
         html_filename = os.path.join(report_dir, 'index.html')
+        if os.path.exists(html_filename):
+            os.remove(html_filename)
         os.rename(tmp_filename, html_filename)
         dot_filename = os.path.join(report_dir, 'dependency.dot')
         self.__format_and_write_report(quality_report, formatting.DotFormatter,
