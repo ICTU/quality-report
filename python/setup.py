@@ -34,7 +34,7 @@ class ParseRequirementsOptions(object):
 
 
 setup(name='quality_report',
-      version='1.0.5',
+      version='1.0.6',
       description='Software quality report generator',
       author='ICTU',
       author_email='frank.niessink@ictu.nl',
