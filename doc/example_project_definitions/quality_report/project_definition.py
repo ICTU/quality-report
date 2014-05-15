@@ -20,7 +20,9 @@ SUBVERSION = metric_source.Subversion()
 PROJECT = Project('Organization name', 'Quality Report', 
                   build_server=BUILD_SERVER, sonar=SONAR, history=HISTORY, 
                   maven_binary='mvn3', subversion=SUBVERSION, 
-                  pom=metric_source.Pom())
+                  pom=metric_source.Pom(),
+                  additional_resources=[
+                      dict(title='GitHub Quality Report', url='https://github.com/ICTU/quality-report')] )
 
 # Teams of the project.
 QUALITY_TEAM = Team('Quality team', is_support_team=True)

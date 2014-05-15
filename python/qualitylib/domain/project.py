@@ -30,7 +30,7 @@ class Project(object):
                  release_candidates=None, release_archives=None, 
                  javamelody=None, jira=None, subversion=None, pom=None,
                  maven_binary='mvn', java_home=None, dependencies_db=None,
-                 tasks=None):
+                 tasks=None, additional_resources=None):
         self.__organization = organization
         self.__name = name
         missing = MissingMetricSource()
@@ -54,6 +54,7 @@ class Project(object):
         self.__maven_binary = maven_binary
         self.__java_home = java_home
         self.__dependencies_db = dependencies_db
+        self.__additional_resources = additional_resources or missing
         self.__products = []
         self.__teams = []
         self.__responsible_teams = []
@@ -107,6 +108,10 @@ class Project(object):
     def dependency_db(self):
         ''' Return the database with cached dependencies of the project. '''
         return self.__dependencies_db
+
+    def additional_resources(self):
+        ''' Return the additional resources of the project. '''
+        return self.__additional_resources
 
     def wiki(self):
         ''' Return the wiki of the project (for manual metrics). '''
@@ -252,6 +257,8 @@ class Project(object):
         for release_archive in self.release_archives():
             resources.append(('Release archief', release_archive.url()))
         self.__add_repository_resources(resources)
+        for additional_resource in self.additional_resources():
+            resources.append((additional_resource['title'], additional_resource['url']))
         return resources
 
     def __add_coverage_resources(self, resources):
