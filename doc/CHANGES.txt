@@ -1,6 +1,6 @@
-2014-05-??  Release 1.0.8
+2014-05-19  Release 1.0.8
 
-  * ?
+  * Bug fix: write image files in binary mode on Windows.
 
 
 2014-05-15  Release 1.0.7

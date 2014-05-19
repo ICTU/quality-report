@@ -115,7 +115,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 filename = os.path.join(resource_dir, resource)
                 contents = resource_manager.resource_string(formatting_module,
                                                 resource_type + '/' + resource)
-                self.__write_file(contents, filename, 'w', encoding)
+                mode = 'w' if encoding else 'wb'
+                self.__write_file(contents, filename, mode, encoding)
 
     @classmethod
     def __format_and_write_report(cls, quality_report, report_formatter,
