@@ -323,3 +323,11 @@ class ProjectResourcesTest(unittest.TestCase):
                          'https://svn/product1') in resources)
         self.failUnless(('Broncode repository Sonar id 2',
                          'https://svn/product2') in resources)
+
+    def test_additional_resources(self):
+        ''' Test that additional resources can be added to the project
+            resources. '''
+        project = self.project(additional_resources=[dict(title='Resource', 
+                                                          url='http://url')])
+        resources = project.project_resources()
+        self.failUnless(('Resource', 'http://url') in resources)

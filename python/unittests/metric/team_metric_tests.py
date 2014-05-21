@@ -188,3 +188,59 @@ class TeamSpiritTest(unittest.TestCase):
         ''' Test that the metric cannot be measured without a Wiki. '''
         project = domain.Project()
         self.failIf(metric.TeamSpirit.can_be_measured(self.__team, project))
+
+
+class ReleaseAgeTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the release age metric. '''
+
+    class FakeArchive(object):
+        ''' Fake a release archive. '''
+        @staticmethod
+        def date_of_most_recent_file():
+            ''' Return the date of the most recent file in the archive. '''
+            return datetime.datetime.now() - datetime.timedelta(minutes=1)
+
+        @staticmethod
+        def url():
+            ''' Return a fake url. '''
+            return 'http://archive'
+
+        @staticmethod
+        def name():
+            ''' Return a fake name. '''
+            return 'ABC'
+
+    def setUp(self):  # pylint: disable=invalid-name
+        project = domain.Project()
+        team = domain.Team('Team', 
+                           release_archives=[ReleaseAgeTest.FakeArchive()])
+        self.__metric = metric.ReleaseAge(team, project=project)
+
+    def test_value(self):
+        ''' Test that the value is correct. '''
+        self.assertEqual(0, self.__metric.value())
+
+    def test_url(self):
+        ''' Test that the url is correct. '''
+        self.assertEqual({'Release-archief ABC': 'http://archive'}, 
+                         self.__metric.url())
+
+    def test_report(self):
+        ''' Test that the report is correct. '''
+        self.assertEqual('Release leeftijden: ABC is 0 dag(en) oud.', 
+                         self.__metric.report())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured if the team has release
+            archives. '''
+        team = domain.Team('Team', release_archives=['Archive'])
+        project = domain.Project()
+        self.failUnless(metric.ReleaseAge.can_be_measured(team, project))
+
+    def test_cant_be_measured_without_release_archive(self):
+        ''' Test that the metric cannot be measured if the team has no
+            release archives. '''
+        team = domain.Team('Team')
+        project = domain.Project()
+        self.failIf(metric.ReleaseAge.can_be_measured(team, project))

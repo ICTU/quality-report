@@ -26,17 +26,17 @@ class FakeBoard(object):
     def url():
         ''' Return a fake url. '''
         return 'http://trello/board'
-    
+
     @staticmethod
     def date_of_last_update():
         ''' Fake the date of the last update. '''
         return datetime.datetime.now() - datetime.timedelta(minutes=1)
-    
+
     @staticmethod
     def over_due_or_inactive_cards_url():
         ''' Fake the url. '''
         return 'http://trello/over_due_or_inactive_cards'
-    
+
     @staticmethod
     def nr_of_over_due_or_inactive_cards():  # pylint: disable=invalid-name
         ''' Fake the number. '''
@@ -49,7 +49,7 @@ class UnreachableBoard(object):
     def url():
         ''' Fake that Trello is down. '''
         raise TrelloUnreachableException
-    
+
     @staticmethod
     def date_of_last_update():
         ''' Fake that Trello is down. '''
@@ -154,7 +154,7 @@ class UnreachableActionActivityTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project(trello_actions_board=UnreachableBoard())
         self.__metric = metric.ActionActivity(project=project)
-        
+
     def test_value(self):
         ''' Test that the board has been updated today. '''
         days = (datetime.datetime.now() - datetime.datetime(1, 1, 1)).days
@@ -219,24 +219,6 @@ class UnreachableActionAgeTest(unittest.TestCase):
         self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
 
 
-class FakeArchive(object):
-    ''' Fake a release archive. '''
-    @staticmethod
-    def date_of_most_recent_file():
-        ''' Return the date of the most recent file in the archive. '''
-        return datetime.datetime.now() - datetime.timedelta(minutes=1)
-    
-    @staticmethod
-    def url():
-        ''' Return a fake url. '''
-        return 'http://archive'
-    
-    @staticmethod
-    def name():
-        ''' Return a fake name. '''
-        return 'ABC'
-
-
 class FakeJira(object):
     ''' Fake Jira. '''
     def __init__(self, has_queries=True):
@@ -283,44 +265,6 @@ class FakeJira(object):
     def nr_open_security_bugs_url():
         ''' Return a fake url for the nr of open security bugs query. '''
         return 'http://opensecuritybugs/'
-
-
-class ReleaseAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    ''' Unit tests for the release age metric. '''
-
-    def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project()
-        self.__metric = metric.ReleaseAge(release_archive=FakeArchive(),
-                                          project=project)
-
-    def test_value(self):
-        ''' Test that the value is correct. '''
-        self.assertEqual(0, self.__metric.value())
-
-    def test_url(self):
-        ''' Test that the url is correct. '''
-        self.assertEqual({'Release-archief ABC': 'http://archive'}, 
-                         self.__metric.url())
-
-    def test_report(self):
-        ''' Test that the report is correct. '''
-        self.assertEqual('De laatste ABC-release is 0 dag(en) oud.', 
-                         self.__metric.report())
-
-    def test_can_be_measured(self):
-        ''' Test that the metric can be measured if the team has release
-            archives. '''
-        team = domain.Team('Team', release_archives=['Archive'])
-        project = domain.Project()
-        self.failUnless(metric.ReleaseAge.can_be_measured(team, project))
-
-    def test_cant_be_measured_without_release_archive(self):
-        ''' Test that the metric cannot be measured if the team has no
-            release archives. '''
-        team = domain.Team('Team')
-        project = domain.Project()
-        self.failIf(metric.ReleaseAge.can_be_measured(team, project))
 
 
 class OpenBugsTest(unittest.TestCase):
@@ -393,7 +337,7 @@ class OpenSecurityBugsTest(unittest.TestCase):
             in Jira. '''
         jira = FakeJira(has_queries=False)
         project = domain.Project(jira=jira)
-        self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project, 
+        self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project,
                                                             project))
 
 
@@ -412,7 +356,7 @@ class BlockingTestIssuesTest(unittest.TestCase):
 
     def test_url(self):
         ''' Test that the url is correct. '''
-        self.assertEqual({'Jira': FakeJira.nr_blocking_test_issues_url()}, 
+        self.assertEqual({'Jira': FakeJira.nr_blocking_test_issues_url()},
                          self.__metric.url())
 
     def test_report(self):
@@ -439,5 +383,5 @@ class BlockingTestIssuesTest(unittest.TestCase):
             in Jira. '''
         jira = FakeJira(has_queries=False)
         project = domain.Project(jira=jira)
-        self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project, 
+        self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project,
                                                               project))

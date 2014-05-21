@@ -18,6 +18,7 @@ import datetime
 from qualitylib.domain import Metric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin
 from qualitylib.metric.quality_attributes import PROGRESS, SPIRIT
+from qualitylib import utils
 
 
 class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
@@ -129,3 +130,47 @@ class TeamSpirit(Metric):
 
     def url(self):
         return dict(Wiki=self.__wiki.url())
+
+
+class ReleaseAge(LowerIsBetterMetric):
+    ''' Metric for measuring the age of the last release. '''
+
+    name = 'Release leeftijd'
+    norm_template = 'De laatste release is niet ouder dan %(target)d ' \
+        'dagen. Ouder dan %(low_target)d dagen is rood.'
+    template = 'Release leeftijden: %(archive_ages)s.'
+    target_value = 3 * 7
+    low_target_value = 4 * 7
+    quality_attribute = PROGRESS
+
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(ReleaseAge, cls).can_be_measured(team, project) and \
+            team.release_archives()
+
+    def value(self):
+        return max(self.__ages().values())
+
+    def url(self):
+        urls = dict()
+        for archive in self._subject.release_archives():
+            urls['Release-archief %s' % archive.name()] = archive.url()
+        return urls
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(ReleaseAge, self)._parameters()
+        parameters['archive_ages'] = ', '.join(['%s is %d dag(en) oud' % 
+            (name, age) for name, age in self.__ages().items()])
+        return parameters
+
+    @utils.memoized
+    def __ages(self):
+        ''' Return the ages in days of the last release in each release 
+            archive. '''
+        ages = dict()
+        now = datetime.datetime.now()
+        for archive in self._subject.release_archives():
+            release_date = archive.date_of_most_recent_file()
+            ages[archive.name()] = (now - release_date).days
+        return ages

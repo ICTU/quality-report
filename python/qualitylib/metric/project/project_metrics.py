@@ -125,41 +125,6 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
         return 'Niet bijgewerkte of te late acties'
 
 
-class ReleaseAge(LowerIsBetterMetric):
-    ''' Metric for measuring the age of the last release. '''
-
-    name = 'Release leeftijd'
-    norm_template = 'De laatste release is niet ouder dan %(target)d ' \
-        'dagen. Ouder dan %(low_target)d dagen is rood.'
-    template = 'De laatste %(archive_name)s-release is %(value)d dag(en) oud.'
-    target_value = 3 * 7
-    low_target_value = 4 * 7
-    quality_attribute = PROGRESS
-
-    def __init__(self, *args, **kwargs):
-        self.__release_archive = kwargs.pop('release_archive')
-        super(ReleaseAge, self).__init__(*args, **kwargs)
-
-    @classmethod
-    def can_be_measured(cls, team, project):
-        return super(ReleaseAge, cls).can_be_measured(team, project) and \
-            team.release_archives()
-
-    def value(self):
-        return (datetime.datetime.now() - self._date()).days
-
-    def _date(self):
-        return self.__release_archive.date_of_most_recent_file()
-
-    def url(self):
-        return {'Release-archief %s' % self.__release_archive.name(): 
-                self.__release_archive.url()}
-
-    def _parameters(self):  
-        # pylint: disable=protected-access
-        parameters = super(ReleaseAge, self)._parameters()
-        parameters['archive_name'] = self.__release_archive.name()
-        return parameters
 
 
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
