@@ -20,21 +20,22 @@ from qualitylib.domain.measurement.measurable import MeasurableObject
 class Team(MeasurableObject):
     ''' Class for representing a team. '''
 
-    def __init__(self, name, short_name=None, streets=None, is_scrum_team=False,
+    def __init__(self, name, short_name=None, is_scrum_team=False,
                  is_support_team=False, birt_id=None, release_archives=None,
-                 technical_debt_targets=None, days_per_sprint=21):
-        super(Team, self).__init__( \
-            technical_debt_targets=technical_debt_targets)
+                 days_per_sprint=21, **kwargs):
+        super(Team, self).__init__(**kwargs)
         self.__name = name
         if short_name:
             assert len(short_name) == 2
         self.__short_name = short_name or self.__name[:2].upper()
-        self.__streets = streets or []
         self.__release_archives = release_archives or []
         self.__is_scrum_team = is_scrum_team
         self.__is_support_team = is_support_team
         self.__birt_id = birt_id
         self.__days_per_sprint = days_per_sprint
+
+    def __eq__(self, other):
+        return self.id_string() == other.id_string()
 
     def __str__(self):
         return self.__name
@@ -50,10 +51,6 @@ class Team(MeasurableObject):
     def short_name(self):
         ''' Return an abbreviation of the team name. '''
         return self.__short_name
-
-    def streets(self):
-        ''' Return the development streets that the team uses. '''
-        return self.__streets
 
     def release_archives(self):
         ''' Return the release archives of the team. '''

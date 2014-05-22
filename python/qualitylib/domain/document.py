@@ -14,11 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
+from qualitylib.domain.measurement.measurable import MeasurableObject
 
-class Document(object):
+
+class Document(MeasurableObject):
     ''' Class representing a document. '''
 
-    def __init__(self, name, url=None):
+    def __init__(self, name, url=None, **kwargs):
+        super(Document, self).__init__(**kwargs)
         self.__name = name
         self.__url = url
 

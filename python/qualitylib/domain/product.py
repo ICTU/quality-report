@@ -43,6 +43,7 @@ class Product(MeasurableObject):
                                 of teams responsible for the product/metric
                                 combination. '''
         super(Product, self).__init__( \
+            targets=targets, low_targets=low_targets,
             technical_debt_targets=technical_debt_targets)
         self.__project = project
         self.__short_name = short_name
@@ -70,8 +71,6 @@ class Product(MeasurableObject):
         self.__performancetest_id = performancetest_id
         self.__product_responsibility = responsible_teams or []
         self.__kpi_responsibility = kpi_responsibility or {}
-        self.__targets = targets or {}
-        self.__low_targets = low_targets or {}
         self.__pom = pom
         self.__branches_to_ignore = branches_to_ignore or []
         self.__initialize_targets()
@@ -82,8 +81,8 @@ class Product(MeasurableObject):
         from qualitylib import metric  # Prevent circular import
         for metric_class in [metric.ManyParameters, metric.LongMethods,
                              metric.CyclomaticComplexity]:
-            if metric_class not in self.__targets and self.is_art():
-                self.__targets[metric_class] = 1
+            if metric_class not in self._targets and self.is_art():
+                self._targets[metric_class] = 1
 
     def __str__(self):
         return self.sonar_id()
@@ -102,7 +101,7 @@ class Product(MeasurableObject):
 
     def __radd__(self, other):
         return str(other) + str(self)
-    
+
     def sonar_id(self):
         ''' Return the id that identifies the product in Sonar. '''
         if self.__product_version in self.__old_sonar_ids:
@@ -112,7 +111,7 @@ class Product(MeasurableObject):
         if self.__product_version:
             sonar_id += ':' + self.__product_version
         return sonar_id
-    
+
     def all_sonar_ids(self):
         ''' Return all Sonar ids of the product: the Sonar id of the product
             itself and its unit tests if applicable. '''
@@ -131,7 +130,7 @@ class Product(MeasurableObject):
     def product_version(self):
         ''' Return the product version of this product. '''
         return self.__product_version
-    
+
     def product_version_type(self):
         ''' Return whether the version of this product is trunk, tagged or 
             release candidate. '''
@@ -148,7 +147,7 @@ class Product(MeasurableObject):
             return ''
         subversion = self.__project.subversion()
         return subversion.latest_tagged_product_version(self.__svn_path)
-        
+
     def is_latest_release(self):
         ''' Return whether the version of this product is the latest 
             released version. '''
@@ -173,7 +172,7 @@ class Product(MeasurableObject):
             except KeyError:
                 pass
         return ''
-    
+
     def is_release_candidate(self):
         ''' Return whether this product/version is a release candidate. '''
         if self.product_version():
@@ -244,14 +243,6 @@ class Product(MeasurableObject):
             return jsf
         else:
             return None
-
-    def target(self, metric_class):
-        ''' Return the target for the specified metric. '''
-        return self.__targets.get(metric_class, None)
-
-    def low_target(self, metric_class):
-        ''' Return the low target for the specified metric. '''
-        return self.__low_targets.get(metric_class, None)
 
     def technical_debt_target(self, metric_class):
         ''' Return whether a score below target is considered to be accepted

@@ -160,6 +160,13 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_document(document)
         self.failUnless(document in self.__project.documents())
 
+    def test_streets(self):
+        ''' Test that a project has development streets. '''
+        self.__project.add_street(domain.Street('A', 'A.*'))
+        self.__project.add_street(domain.Street('B', 'B.*'))
+        self.assertEqual([domain.Street('A', 'A.*'), domain.Street('B', 'B.*')],
+                         self.__project.streets())
+
 
 class FakeResource(object):
     ''' Class to fake resources such as metric sources. '''

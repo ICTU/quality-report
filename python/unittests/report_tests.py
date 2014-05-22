@@ -329,7 +329,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs,
-                        number_of_teams=1):
+                        street_kwargs, number_of_teams=1):
         ''' Create the quality report. '''
         # pylint: disable=W0142
         documents = project_kwargs.pop('documents', [])
@@ -346,17 +346,20 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs['art'] = domain.Product(project, **art_kwargs)
             product = domain.Product(project, **product_kwargs)
             project.add_product(product)
+        if street_kwargs:
+            project.add_street(domain.Street(**street_kwargs))
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
 
-    def __assert_metric(self, metric_class, project_kwargs=None, 
-                                team_kwargs=None, product_kwargs=None,
-                                number_of_teams=1, include=True):
+    def __assert_metric(self, metric_class, project_kwargs=None,
+                        team_kwargs=None, product_kwargs=None,
+                        street_kwargs=None, number_of_teams=1, include=True):
         ''' Check that the metric class is included in the report. '''
         quality_report = self.__create_report(project_kwargs or dict(),
                                               team_kwargs or dict(),
                                               product_kwargs or dict(),
+                                              street_kwargs or dict(),
                                               number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric \
                                     in quality_report.metrics()]
@@ -377,7 +380,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_art_stability(self):
         ''' Test that the ART stability metric is added if possible. '''
         self.__assert_metric(metric.ARTStability,
-                             team_kwargs=dict(streets=['Street']))
+                             street_kwargs=dict(name='A', job_regexp='A.*'))
 
     def test_team_spirit(self):
         ''' Test that the team spirit metric is added if possible. '''

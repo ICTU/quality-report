@@ -21,7 +21,8 @@ import unittest
 class StreetTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     ''' Unit tests for the Street domain class. '''
     def setUp(self):  # pylint: disable=C0103
-        self.__street = domain.Street('Street A', 'street_a.*')
+        self.__street = domain.Street('Street A', 'street_a.*', 
+                                      responsible_teams=[domain.Team('A')])
 
     def test_name(self):
         ''' Test the name of the street. '''
@@ -35,3 +36,7 @@ class StreetTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_id_string(self):
         ''' Test that the id string for the street does not contain spaces. '''
         self.assertEqual('street_a', self.__street.id_string())
+
+    def test_responsible_teams(self):
+        ''' Test that the street has responsible teams. '''
+        self.assertEqual([domain.Team('A')], self.__street.responsible_teams())

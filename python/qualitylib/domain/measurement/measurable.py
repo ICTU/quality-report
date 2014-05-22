@@ -18,8 +18,19 @@ limitations under the License.
 class MeasurableObject(object):  # pylint: disable=too-few-public-methods
     ''' An object that has measurable characteristics. Base class for products,
         teams, etc. '''
-    def __init__(self, technical_debt_targets=None):
+    def __init__(self, targets=None, low_targets=None, 
+                 technical_debt_targets=None):
+        self._targets = targets or dict()
+        self.__low_targets = low_targets or dict()
         self._technical_debt_targets = technical_debt_targets or dict()
+
+    def target(self, metric_class):
+        ''' Return the target for the specified metric. '''
+        return self._targets.get(metric_class, None)
+
+    def low_target(self, metric_class):
+        ''' Return the low target for the specified metric. '''
+        return self.__low_targets.get(metric_class, None)
 
     def technical_debt_target(self, metric_class):
         ''' Return whether a score below target is considered to be accepted

@@ -140,6 +140,9 @@ class QualityReport(object):
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + \
         BUILD_SERVER_METRIC_CLASSES + BUGS_METRIC_CLASSES
     META_SECTION_METRIC_CLASSES = META_METRIC_CLASSES
+    TEAM_SECTION_METRIC_CLASSES = (metric.ReleaseAge, metric.TeamProgress,
+                                   metric.TeamSpirit, metric.TeamFailingCIJobs,
+                                   metric.TeamUnusedCIJobs)
 
     @classmethod
     def metric_classes(cls):
@@ -253,6 +256,8 @@ class QualityReport(object):
         for metric_class in self.PROCESS_SECTION_METRIC_CLASSES:
             if metric_class.can_be_measured(self.__project, self.__project):
                 metrics.append(metric_class(project=self.__project))
+        for street in self.__project.streets():
+            metrics.append(metric.ARTStability(street, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'),
                        metrics) if metrics else None
@@ -306,13 +311,7 @@ class QualityReport(object):
     def __team_section(self, team):
         ''' Return a report section for the team. '''
         metrics = []
-        for street in team.streets():
-            metrics.append(metric.ARTStability(street,
-                                               responsible_teams=[team],
-                                               project=self.__project))
-        for metric_class in (metric.ReleaseAge, metric.TeamProgress, 
-                             metric.TeamSpirit,
-                             metric.TeamFailingCIJobs, metric.TeamUnusedCIJobs):
+        for metric_class in self.TEAM_SECTION_METRIC_CLASSES:
             if metric_class.can_be_measured(team, self.__project):
                 metrics.append(metric_class(team, project=self.__project))
         self.__metrics.extend(metrics)

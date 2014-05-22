@@ -42,12 +42,6 @@ class ARTStability(JenkinsMetricMixin, Metric):
     low_target_value = 7
     quality_attribute = TEST_QUALITY
 
-    def target(self):
-        return self._subject.target_art_stability()
-
-    def low_target(self):
-        return self._subject.low_target_art_stability()
-
     def value(self, days=0):  # pylint: disable=W0221
         return len(self._jenkins.unstable_arts_url(self.__street_regexp(), 
                                                    days=days or self.target()))
@@ -62,7 +56,7 @@ class ARTStability(JenkinsMetricMixin, Metric):
         return self.value(days=self.low_target()) > 0
 
     def _is_perfect(self):
-        return self.value(days=self._subject.perfect_art_stability()) == 0
+        return self.value(days=1) == 0
 
     def _get_template(self):
         return self.below_target_template if self.value() > 0 \

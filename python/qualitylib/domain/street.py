@@ -14,17 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
+from qualitylib.domain.measurement.measurable import MeasurableObject
 
-class Street(object):
+
+class Street(MeasurableObject):
     ''' Class representing a development or test street. '''
 
-    def __init__(self, name, job_regexp, target_art_stability=3, 
-                 low_target_art_stability=7, perfect_art_stability=1):
+    def __init__(self, name, job_regexp, responsible_teams=None, **kwargs):
+        super(Street, self).__init__(**kwargs)
         self.__name = name
         self.__job_regexp = job_regexp
-        self.__target_art_stability = target_art_stability
-        self.__low_target_art_stability = low_target_art_stability
-        self.__perfect_art_stability = perfect_art_stability
+        self.__responsible_teams = responsible_teams or []
+
+    def __eq__(self, other):
+        return self.id_string() == other.id_string()
 
     def __str__(self):
         ''' Return the id string of the street. '''
@@ -38,22 +41,11 @@ class Street(object):
         ''' Return an id string for the street. '''
         return self.__name.lower().replace(' ', '_')
 
+    def responsible_teams(self, metric_class=None):
+        ''' Return the teams responsible for the street. '''
+        return self.__responsible_teams
+
     def regexp(self):
         ''' Return the regular expression that describes the CI-jobs of the
             street. '''
         return self.__job_regexp
-
-    def target_art_stability(self):
-        ''' Return after how many days not succeeding we consider an ART to
-            be unstable. '''
-        return self.__target_art_stability
-
-    def low_target_art_stability(self):
-        ''' Return after how many days not succeeding we consider an ART to
-            be very unstable. '''
-        return self.__low_target_art_stability
-
-    def perfect_art_stability(self):
-        ''' Return after how many days not succeeding we consider an ART to
-            be not perfectly stable. '''
-        return self.__perfect_art_stability

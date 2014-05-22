@@ -27,7 +27,7 @@ class Project(object):
                  jacoco=None, sonar=None, birt=None, wiki=None, 
                  history=None, trello_risklog_board=None, 
                  trello_actions_board=None, performance_report=None, 
-                 release_candidates=None, release_archives=None, 
+                 release_candidates=None, release_archives=None,
                  javamelody=None, jira=None, subversion=None, pom=None,
                  maven_binary='mvn', java_home=None, dependencies_db=None,
                  tasks=None, additional_resources=None):
@@ -58,6 +58,7 @@ class Project(object):
         self.__products = []
         self.__teams = []
         self.__responsible_teams = []
+        self.__streets = []
         self.__documents = []
         self.__dashboard = [], []  # rows, columns
 
@@ -214,6 +215,14 @@ class Project(object):
         # have teams responsible for them. Maybe we should create an explicit 
         # "Responsibility" interface.
         return self.__responsible_teams
+
+    def add_street(self, street):
+        ''' Add a development street to the project. '''
+        self.__streets.append(street)
+
+    def streets(self):
+        ''' Return the development streets of the project. '''
+        return self.__streets
 
     def add_document(self, document):
         ''' Add a document to the project. '''
