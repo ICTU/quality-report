@@ -1,3 +1,8 @@
+2014-05-??  Release 1.0.10
+
+  * Allow for giving a development street a url.
+
+
 2014-05-22  Release 1.0.9
 
   * Make the document class a measurable object so it's possible to specify

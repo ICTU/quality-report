@@ -22,7 +22,8 @@ class StreetTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     ''' Unit tests for the Street domain class. '''
     def setUp(self):  # pylint: disable=C0103
         self.__street = domain.Street('Street A', 'street_a.*', 
-                                      responsible_teams=[domain.Team('A')])
+                                      responsible_teams=[domain.Team('A')],
+                                      url='http://street')
 
     def test_name(self):
         ''' Test the name of the street. '''
@@ -40,3 +41,7 @@ class StreetTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_responsible_teams(self):
         ''' Test that the street has responsible teams. '''
         self.assertEqual([domain.Team('A')], self.__street.responsible_teams())
+
+    def test_url(self):
+        ''' Test that the street has a url. '''
+        self.assertEqual('http://street', self.__street.url())

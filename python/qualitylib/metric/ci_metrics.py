@@ -69,8 +69,13 @@ class ARTStability(JenkinsMetricMixin, Metric):
         return parameters
 
     def url(self):
-        return self._jenkins.unstable_arts_url(self.__street_regexp(), 
-                                               days=self.target())
+        urls = dict()
+        urls.update(self._jenkins.unstable_arts_url(self.__street_regexp(), 
+                                                    days=self.target()))
+        street_url = self._subject.url()
+        if street_url:
+            urls['"%s"-straat' % self.__street_name()] = street_url
+        return urls
 
     def __street_name(self):
         ''' Return the name of the street. '''
