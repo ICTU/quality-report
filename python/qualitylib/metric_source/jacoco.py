@@ -35,7 +35,7 @@ class JaCoCo(coverage_report.CoverageReport):
                          float(total_instructions))
         else:
             return 0
-        
+
     def _parse_coverage_date(self, soup):
         coverage_date = datetime.datetime.min
         session_rows = soup('tbody')[0]('tr')

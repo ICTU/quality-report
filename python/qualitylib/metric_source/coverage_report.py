@@ -40,7 +40,7 @@ class CoverageReport(beautifulsoup.BeautifulSoupOpener):
         else:
             coverage = self._parse_coverage_percentage(soup)
         return coverage
-    
+
     def _parse_coverage_percentage(self, soup):
         ''' Parse the coverage percentage from the soup. '''
         raise NotImplementedError  # pragma: no cover
@@ -57,7 +57,7 @@ class CoverageReport(beautifulsoup.BeautifulSoupOpener):
         else:
             coverage_date = self._parse_coverage_date(soup)
         return coverage_date
-    
+
     def _parse_coverage_date(self, soup):
         ''' Parse the coverage date from the soup. '''
         raise NotImplementedError  # pragma: no cover
@@ -65,7 +65,7 @@ class CoverageReport(beautifulsoup.BeautifulSoupOpener):
     def get_coverage_url(self, product):
         ''' Return the url for the coverage report for the product. '''
         return self.__url % product
-    
+
     def get_coverage_date_url(self, product):
         ''' Return the url for the date when the coverage of the product
             was last measured. '''
