@@ -233,3 +233,8 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
         # Jenkins can return url's that are not properly quoted
         url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         return eval(self.url_open(url).read())
+
+    def soup(self, url):
+        # Jenkins can return url's that are not properly quoted
+        url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
+        return super(Jenkins, self).soup(url)
