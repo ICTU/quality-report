@@ -230,11 +230,10 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __api(self, url):
         ''' Return the result of the API call at the url. '''
-        # Jenkins can return url's that are not properly quoted
-        url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         return eval(self.url_open(url).read())
 
-    def soup(self, url):
-        # Jenkins can return url's that are not properly quoted
+    def url_open(self, url):
+        ''' Override to safely quote the url, needed because Jenkins may return
+            unquoted urls. '''
         url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
-        return super(Jenkins, self).soup(url)
+        return super(Jenkins, self).url_open(url)
