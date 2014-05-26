@@ -14,12 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.metric_source import beautifulsoup
+from qualitylib.metric_source import url_opener
 from qualitylib import utils
 import datetime
-import logging
 import re
-import time
 import urllib2
 
 
@@ -32,7 +30,7 @@ class UnknownAge(object):  # pylint: disable=too-few-public-methods
     days = '?'
 
 
-class Jenkins(beautifulsoup.BeautifulSoupOpener):
+class Jenkins(url_opener.UrlOpener):
     ''' Class representing the Jenkins instance. '''
 
     api_postfix = 'api/python'
@@ -158,74 +156,39 @@ class Jenkins(beautifulsoup.BeautifulSoupOpener):
     def unstable_arts_url(self, projects, days):
         ''' Return the urls for the ARTs that have been unstable for the
             specified number of days. '''
-        soup = self.soup(self.__jenkins_url)
-        arts = soup('table', id='projectstatus')[0]('a',
-                                                    text=re.compile(projects))
+        projects_re = re.compile(projects)
+        all_jobs = self.__api(self.__jobs_api_url)['jobs']
+        arts = [job for job in all_jobs if projects_re.match(job['name'])]
         max_age = datetime.timedelta(days=days)
         unstable = dict()
         for art in arts:
-            age = self.__build_age(self.__last_stable_build_url % art)
+            age = self.__age_of_last_stable_build(art)
             if age > max_age:
-                art_description = art + ' (%s dagen)' % age.days
-                unstable[art_description] = self.__job_url % art
+                art_description = art['name'] + ' (%s dagen)' % age.days
+                unstable[art_description] = self.__job_url % art['name']
         return unstable
 
     def __age_of_last_completed_build(self, job):
         ''' Return the age of the last completed build of the job. '''
-        return self.__build_age(self.__last_completed_build_url % job['name'])
+        return self.__age_of_build(job, self.__last_completed_build_url)
 
     def __age_of_last_stable_build(self, job):
         ''' Return the age of the last stable build of the job. '''
-        return self.__build_age(self.__last_stable_build_url % job['name'])
+        return self.__age_of_build(job, self.__last_stable_build_url)
 
-    def __build_age(self, url):
-        ''' Return the age of the build in days. '''
-        build_date = self.__build_date(url)
-        if build_date > datetime.datetime.min:
-            build_age = datetime.datetime.today() - build_date
-        else:
-            build_age = UnknownAge()
-        return build_age
-
-    @utils.memoized
-    def __build_date(self, url):
-        ''' Return the date and time of the build. '''
+    def __age_of_build(self, job, url):
+        ''' Return the age of the last completed or stable build of the job. '''
+        builds_api_postfix = self.api_postfix + '?tree=id'
         try:
-            datetime_text = self.__get_build_date_time(self.soup(url))
-            return self.__parse_build_date(datetime_text)
-        except urllib2.HTTPError, message:
-            logging.warning("Couldn't read %s: %s", url, message)
-            return datetime.datetime.min
-        except (ValueError, KeyError, IndexError):
-            logging.error("Couldn't parse %s", url)
-            raise
-
-    @staticmethod
-    def __get_build_date_time(soup):
-        ''' Get the build date and time from the soup. '''
-        title = str(soup('h1')[0])
-        return title.split('(')[1].split(')')[0]
-
-    @staticmethod
-    def __parse_build_date(datetime_text):
-        ''' Parse the build date and time text. '''
-        try:
-            parsed_datetime = time.strptime(datetime_text,
-                                            '%b %d, %Y %H:%M:%S %p')
-        except ValueError:
-            try:
-                parsed_datetime = time.strptime(datetime_text,
-                                                '%d-%b-%Y %H:%M:%S')
-            except ValueError:
-                date_text, time_text = datetime_text.split(' ')
-                day, month, year = date_text.split('-')
-                month = dict(jan=1, feb=2, mrt=3, mar=3, apr=4, mei=5, may=5,
-                             jun=6, jul=7, aug=8, sep=9, okt=10, oct=10,
-                             nov=11, dec=12)[month[:3].lower()]
-                hour, minute, second = time_text.split(':')
-                parsed_datetime = [int(year), month, int(day),
-                                   int(hour), int(minute), int(second)]
-        return datetime.datetime(*(parsed_datetime[0:6]))
+            timestamp = self.__api(url % job['name'] + builds_api_postfix)['id']
+        except (KeyError, urllib2.HTTPError):
+            return UnknownAge()
+        date_text, time_text = timestamp.split('_')
+        year, month, day = date_text.split('-')
+        hour, minute, second = time_text.split('-')
+        return datetime.datetime.today() - \
+            datetime.datetime(int(year), int(month), int(day), 
+                              int(hour), int(minute), int(second))
 
     @utils.memoized
     def __api(self, url):
