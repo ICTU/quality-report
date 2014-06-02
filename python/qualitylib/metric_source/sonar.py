@@ -22,9 +22,10 @@ import os
 
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     ''' Class for creating and removing Sonar analyses. '''
-    def __init__(self, sonar_url, *args, **kwargs):
+    def __init__(self, sonar, *args, **kwargs):
         super(SonarRunner, self).__init__(*args, **kwargs)
-        self.__sonar_url = sonar_url
+        self.__sonar = sonar
+        self.__sonar_url = sonar.url()
 
     def analyse_products(self, products):
         ''' Run Sonar on the products and remove old analyses. '''
@@ -48,7 +49,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
             self.__checkout_code_and_run_sonar(product)
         unittests = product.unittests()
         if unittests and unittests.sonar_id() != product.sonar_id() \
-            and not self.__analysis_exists(unittests.sonar_id()):
+            and not self.__analysis_exists(unittests):
             # Need to run Sonar again for the unit test coverage:
             self.__checkout_code_and_run_sonar(unittests, unittests=True)
         jsf = product.jsf()
@@ -85,15 +86,14 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                 logging.info('Removing Sonar analysis for %s', sonar_id)
                 self.url_delete(self.__sonar_url + 'api/projects/%s' % sonar_id)
 
-    @staticmethod
-    def __checkout_code_and_run_sonar(product, unittests=False):
+    def __checkout_code_and_run_sonar(self, product, unittests=False):
         ''' Check out the product and invoke Sonar through Maven. '''
         version = product.product_version()
         folder = product.name()
         if version:
             folder += '-' + version
         folder = folder.replace(':', '_')
-        sonar_options = product.sonar_options()
+        sonar_options = product.metric_source_options(self.__sonar)
         maven_options_string = product.maven_options()
         if unittests:
             folder += '-unittests'
@@ -130,7 +130,7 @@ class Sonar(url_opener.UrlOpener):
     def __init__(self, sonar_url, *args, **kwargs):
         super(Sonar, self).__init__(*args, **kwargs)
         self.__sonar_url = sonar_url
-        self.__runner = SonarRunner(sonar_url, *args, **kwargs)
+        self.__runner = SonarRunner(self, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
         self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \

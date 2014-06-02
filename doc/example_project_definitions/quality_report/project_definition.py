@@ -14,17 +14,17 @@ SONAR = metric_source.Sonar('http://sonar/', username='sonar_user',
                             password='sonar_admin')
 HISTORY = metric_source.History('quality-data/quality_report/history.json')
 SUBVERSION = metric_source.Subversion()
-ACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
+JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
                               'artifact/trunk/coveragereport/index.html', 
                               BUILD_SERVER.username(), BUILD_SERVER.password())
 
 # The project
 PROJECT = Project('Organization name', 'Quality Report', 
-                  build_server=BUILD_SERVER, sonar=SONAR, history=HISTORY, 
-                  maven_binary='mvn3', subversion=SUBVERSION, 
+                  build_server=BUILD_SERVER, sonar=SONAR, history=HISTORY,
+                  maven_binary='mvn3', subversion=SUBVERSION, jacoco=JACOCO,
                   pom=metric_source.Pom(),
                   additional_resources=[
-                      dict(title='GitHub Quality Report', 
+                      dict(title='GitHub Quality Report',
                            url='https://github.com/ICTU/quality-report')] )
 
 # Teams of the project.
@@ -43,7 +43,7 @@ QUALITY_REPORT = \
             technical_debt_targets={
                 metric.UnittestCoverage:
                     TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% ' \
-                                        'unit test coverage', '%'),
+                                           'unit test coverage', '%'),
                 metric.MajorViolations:
                     DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 
                         12), 25, datetime.datetime(2014, 6, 1), 

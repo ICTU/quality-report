@@ -27,7 +27,7 @@ class Product(MeasurableObject):
 
     def __init__(self, project, short_name='', sonar_id='', 
                  old_sonar_ids=None, unittests=None, jsf=None, 
-                 svn_path='', old_svn_paths=None, sonar_options=None,
+                 svn_path='', old_svn_paths=None,
                  maven_binary=None, maven_options=None, java_home=None,
                  responsible_teams=None, kpi_responsibility=None, art=None,
                  branches_to_ignore=None, product_version='', **kwargs):
@@ -49,7 +49,6 @@ class Product(MeasurableObject):
         self.__svn_path = svn_path
         self.__old_svn_paths = old_svn_paths or {}
         self.__product_version = product_version
-        self.__sonar_options = sonar_options or {}
         self.__maven_binary = maven_binary or self.__project.maven_binary()
         self.__maven_options = maven_options or ''
         self.__java_home = java_home or self.__project.java_home()
@@ -224,6 +223,8 @@ class Product(MeasurableObject):
                 name = self.name()
                 if name.endswith(':jsf'):
                     name = name[:-len(':jsf')]
+                if name.endswith(':ut'):
+                    name = name[:-len(':ut')]
                 result += 'tags/' + name + '-' + version
             else:
                 result += 'trunk'
@@ -237,10 +238,6 @@ class Product(MeasurableObject):
         ''' Return the list of branch names that shouldn't be checked for
             unmerged code. '''
         return self.__branches_to_ignore
-
-    def sonar_options(self):
-        ''' Return options to pass to Sonar for analysing this product. '''
-        return self.__sonar_options.copy()
 
     def maven_binary(self):
         ''' Return the Maven binary to use for building the project. '''

@@ -150,7 +150,7 @@ class SonarRunnerTest(unittest.TestCase):
         analyses. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__runner = SonarRunnerUnderTest('http://sonar/')
+        self.__runner = SonarRunnerUnderTest(Sonar('http://sonar/'))
 
     def test_analyse_products(self):
         ''' Test that the runner analyses products. '''
