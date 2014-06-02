@@ -180,7 +180,7 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
     def whats_missing_url(self, product):
         ''' Return the What's missing report url for the product. '''
         return self.__whats_missing_url % product
-    
+
     def page_performance_url(self, product, version):
         ''' Return the page performance report url for the product and 
             version. '''

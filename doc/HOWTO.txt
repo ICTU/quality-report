@@ -34,6 +34,10 @@ How to add a new project to the quality system.
    The doc/example_project_definitions folder contains a number of project 
    definition examples.
 
+   See the section "How to define a project" below for more information on how 
+   to define products, teams, documents, etc. and how to override default metric
+   target values.
+
 2. Add the project definition file to version control. For example: 
    $ svn add quality-data/new_project/project_definition.py
 
@@ -61,3 +65,78 @@ How to add a new project to the quality system.
 
    Also make sure the Jenkins job runs periodically, for example every 15 
    minutes during office hours: "*/15 7-19 * * 1-5"
+
+
+How to add define a project.
+===
+
+To generate a quality report, the quality report software uses a project 
+definition file. This project definition is a python file that defines what
+software components the project consists of, which teams there are, and what the
+available metric sources are.
+
+Since the project definition is a python file there's a lot of freedom on how
+to organize it, but in general it will contain the following elements:
+- Import statements
+- Metric sources
+- Project
+- Teams
+- Documents
+- Components
+- Dashboard layout
+
+The project is defined using the domain, metric_course and metric classes of
+the software. To make these available import the packages:
+
+from qualitylib import domain, metric_source, metric
+
+# Create the relevant metric sources:
+
+BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='user',
+                                     password='password')
+SONAR = metric_source.Sonar('http://sonar/', username='user, 
+                            password='password')
+HISTORY = metric_source.History('quality-data/history.json')
+SUBVERSION = metric_source.Subversion()
+RELEASE_ARCHIVES = [metric_source.SubversionFolder('Project', 
+                                                   'http://releases/')]
+
+# Create the project itself and pass it its metric sources:
+PROJECT = Project('Organization', 'Project name', sonar=SONAR, 
+                  build_server=BUILD_SERVER, history=HISTORY,
+                  subversion=SUBVERSION)
+
+# Create the teams of the project. In this example we have two Scrum teams and
+# one support team that's responsible for the releases.
+TEAM_1 = domain.Team('First team', is_scrum_team=True)
+PROJECT.add_team(TEAM_1)
+TEAM_2 = domain.Team('Second team', is_scrum_team=True)
+PROJECT.add_team(TEAM_2)
+TEAM_3 = domain.Team('Third team', is_scrum_team=False, 
+                     release_archives=RELEASE_ARCHIVES)
+PROJECT.add_team(TEAM_3)
+
+# Create the documents that we want to monitor. Some documents are expected to
+# be updated every sprint, others every release:
+SPRINT_LENGTH = 16 # days
+RELEASE_FREQUENCY = 5 # sprints 
+PROJECT.add_document(domain.Document('Deployment document', 
+                     targets={metric.DocumentAge: RELEASE_FREQUENCY * SPRINT_LENGTH},
+                     low_targets={metric.DocumentAge: (RELEASE_FREQUENCY + 1) * SPRINT_LENGTH}))
+PROJECT.add_document(domain.Document('Release notes',
+                     targets={metric.DocumentAge: SPRINT_LENGTH},
+                     low_targets={metric.DocumentAge: SPRINT_LENGTH + 7}))
+
+# Create the components we want to monitor.
+PROJECT.add_product(domain.Product(PROJECT, 'PA', sonar_id='com.company.pa',
+                    unittests=domain.Product(PROJECT, sonar_id='com.company.pa')))
+PROJECT.add_product(domain.Project(PROJECT, 'PB', sonar_id='com.company.pb',
+                    jsf=domain.Product(PROJECT, sonar_id='com.company.pa:jsf')))
+PROJECT.add_product(domain.Project(PROJECT, 'PC', sonar_id='com.company.pc'))
+
+# Finally, specify the dashboard layout:
+COLUMNS = [('Components', 1), ('Teams', 1)]
+ROWS = [(('pa', 'Component A', 'color'), ('fi', 'First team', 'color')),
+        (('pb', 'Component B', 'color'), ('se', 'Second team', 'color')),
+        (('pc', 'Component C', 'color'), ('th', 'Third team', 'color'))]
+PROJECT.set_dashboard(COLUMNS, ROWS)

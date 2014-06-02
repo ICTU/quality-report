@@ -275,17 +275,17 @@ class Project(object):
         for product in self.products():
             # Only include trunk versions that have an ART with coverage
             # measurement:
-            if not product.product_version() and product.has_art_coverage():
-                if product.art_coverage_emma():
+            if not product.product_version():
+                emma_id = product.metric_source_id(self.emma())
+                if emma_id:
                     resources.append( \
                         ('Emma coverage report %s' % product.name(), 
-                         self.emma().get_coverage_url( \
-                                                product.art_coverage_emma())))
-                if product.art_coverage_jacoco():
+                         self.emma().get_coverage_url(emma_id)))
+                jacoco_id = product.metric_source_id(self.jacoco())
+                if jacoco_id:
                     resources.append( \
                         ('JaCoCo coverage report %s' % product.name(),
-                         self.jacoco().get_coverage_url( \
-                                                product.art_coverage_jacoco())))
+                         self.jacoco().get_coverage_url(jacoco_id)))
 
     def __add_repository_resources(self, resources):
         ''' Add the repositories to the resources. '''

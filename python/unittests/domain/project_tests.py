@@ -243,45 +243,49 @@ class ProjectResourcesTest(unittest.TestCase):
 
     def test_emma(self):
         ''' Test that the Emma reports are in the project resources. '''
-        project = self.project(emma=FakeResource())
+        emma = FakeResource()
+        project = self.project(emma=emma)
         product = domain.Product(project, 'Short name', 'Sonar id', 
-                                 art_coverage_emma_id='emma_id')
+                                 metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
-        url = FakeResource.get_coverage_url(product.art_coverage_emma())
+        url = FakeResource.get_coverage_url('emma_id')
         self.failUnless(('Emma coverage report %s' % product.name(), url) in
                          project.project_resources())
 
     def test_emma_only_for_trunk(self):
         ''' Test that only the Emma reports for trunk versions of products
             are included. '''
-        project = self.project(emma=FakeResource())
-        product = domain.Product(project, 'Short name', 'Sonar id', 
-                                 art_coverage_emma_id='emma_id')
+        emma = FakeResource()
+        project = self.project(emma=emma)
+        product = domain.Product(project, 'Short name', 'Sonar id',
+                                 metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        url = FakeResource.get_coverage_url(product.art_coverage_emma())
+        url = FakeResource.get_coverage_url('emma_id')
         self.failUnless(('Emma coverage report %s' % product.name(), url) in
                          project.project_resources())
 
     def test_jacoco(self):
         ''' Test that the JacCoCo reports are in the project resources. '''
-        project = self.project(jacoco=FakeResource())
+        jacoco = FakeResource()
+        project = self.project(jacoco=jacoco)
         product = domain.Product(project, 'Short name', 'Sonar id', 
-                                 art_coverage_jacoco_id='jacoco_id')
+                                 metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
-        url = FakeResource.get_coverage_url(product.art_coverage_jacoco())
+        url = FakeResource.get_coverage_url('jacoco_id')
         self.failUnless(('JaCoCo coverage report %s' % product.name(), url) in 
                          project.project_resources())
 
     def test_jacoco_only_for_trunk(self):
         ''' Test that only the JaCoCo reports for trunk versions of products
             are included. '''
-        project = self.project(jacoco=FakeResource())
+        jacoco = FakeResource()
+        project = self.project(jacoco=jacoco)
         product = domain.Product(project, 'Short name', 'Sonar id', 
-                                 art_coverage_jacoco_id='jacoco_id')
+                                 metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        url = FakeResource.get_coverage_url(product.art_coverage_jacoco())
+        url = FakeResource.get_coverage_url('jacoco_id')
         self.failUnless(('JaCoCo coverage report %s' % product.name(), url) in 
                          project.project_resources())
 

@@ -46,10 +46,11 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                          '(dependency of %s)', product.name(), 
                          product.product_version() or 'trunk', users or 'none')
             self.__checkout_code_and_run_sonar(product)
-        if product.unittests() and product.unittests() != product.sonar_id() \
-            and not self.__analysis_exists(product.unittests()):
+        unittests = product.unittests()
+        if unittests and unittests.sonar_id() != product.sonar_id() \
+            and not self.__analysis_exists(unittests.sonar_id()):
             # Need to run Sonar again for the unit test coverage:
-            self.__checkout_code_and_run_sonar(product, unittests=True)
+            self.__checkout_code_and_run_sonar(unittests, unittests=True)
         jsf = product.jsf()
         if jsf and not self.__analysis_exists(jsf):
             self.__checkout_code_and_run_sonar(jsf)
@@ -57,7 +58,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __analysis_exists(self, product):
         ''' Return whether a Sonar analysis for this product already exists. '''
-        sonar_id = '"%s"' % str(product)
+        sonar_id = '"%s"' % product.sonar_id()
         result = sonar_id in str(self.soup(self.__sonar_url + 'api/resources'))
         logging.info('Sonar analysis for %s %s', sonar_id,
                       {True: 'exists', False: 'does not exist'}[result])
@@ -93,16 +94,15 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
             folder += '-' + version
         folder = folder.replace(':', '_')
         sonar_options = product.sonar_options()
+        maven_options_string = product.maven_options()
         if unittests:
             folder += '-unittests'
-            maven_options_string = '-Dut-coverage=true ' + \
-                                   product.unittest_maven_options()
+            maven_options_string += ' -Dut-coverage=true'
             sonar_branch = 'ut'
             if version:
                 sonar_branch += ':' + version
             sonar_options['branch'] = sonar_branch
         else:
-            maven_options_string = product.maven_options()
             if version:
                 if 'branch' in sonar_options:
                     sonar_options['branch'] += ':' + version

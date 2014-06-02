@@ -14,7 +14,9 @@ SONAR = metric_source.Sonar('http://sonar/', username='sonar_user',
                             password='sonar_admin')
 HISTORY = metric_source.History('quality-data/quality_report/history.json')
 SUBVERSION = metric_source.Subversion()
-
+ACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
+                              'artifact/trunk/coveragereport/index.html', 
+                              BUILD_SERVER.username(), BUILD_SERVER.password())
 
 # The project
 PROJECT = Project('Organization name', 'Quality Report', 
@@ -22,17 +24,22 @@ PROJECT = Project('Organization name', 'Quality Report',
                   maven_binary='mvn3', subversion=SUBVERSION, 
                   pom=metric_source.Pom(),
                   additional_resources=[
-                      dict(title='GitHub Quality Report', url='https://github.com/ICTU/quality-report')] )
+                      dict(title='GitHub Quality Report', 
+                           url='https://github.com/ICTU/quality-report')] )
 
 # Teams of the project.
 QUALITY_TEAM = Team('Quality team', is_support_team=True)
 PROJECT.add_team(QUALITY_TEAM, responsible=True)
 
 # Products the project(s) develop(s).
+QUALITY_REPORT_UNITTESTS = \
+    Product(PROJECT, sonar_id='nl.ictu.quality-report:quality-report')
+
 QUALITY_REPORT = \
-    Product(PROJECT, 'QR', 'nl.ictu.quality-report:quality-report',
+    Product(PROJECT, 'QR',
+            sonar_id = 'nl.ictu.quality-report:quality-report',
             svn_path='http://svn/commons/scripts/quality-report/',
-            unittest_sonar_id='nl.ictu.quality-report:quality-report',
+            unittests=QUALITY_REPORT_UNITTESTS,
             technical_debt_targets={
                 metric.UnittestCoverage:
                     TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% ' \
@@ -40,7 +47,8 @@ QUALITY_REPORT = \
                 metric.MajorViolations:
                     DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 
                         12), 25, datetime.datetime(2014, 6, 1), 
-                        unit='major violations')})
+                        unit='major violations')},
+            metric_source_ids={JACOCO: 'quality-report-coverage-report'})
 
 PROJECT.add_product(QUALITY_REPORT)
 

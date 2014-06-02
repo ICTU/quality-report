@@ -57,8 +57,10 @@ class FakeSubject(object):
     def __init__(self, birt_id=True):
         self.__birt_id = birt_id
 
-    def birt_id(self):
-        ''' Return the Birt id of the subject. '''
+    def metric_source_id(self, metric_source):
+        # pylint: disable=unused-argument
+        ''' Return the metric source id of the subject for the metric 
+            source. '''
         return 'birt id' if self.__birt_id else ''
 
     def product_version(self):

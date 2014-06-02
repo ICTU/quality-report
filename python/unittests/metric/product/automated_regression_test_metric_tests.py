@@ -46,11 +46,10 @@ class FakeJaCoCo(FakeEmma):
 
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
-    def __init__(self, emma_id=None, jacoco_id=None, version='', art=''):
-        self.__emma_id = emma_id
-        self.__jacoco_id = jacoco_id
+    def __init__(self, version='', art='', metric_source_ids=None):
         self.__version = version
         self.__art = art
+        self.__metric_source_ids = metric_source_ids or dict()
 
     def __repr__(self):
         return 'FakeSubject'
@@ -59,18 +58,9 @@ class FakeSubject(object):
         ''' Return the version of the subject. '''
         return self.__version
 
-    def art_coverage_emma(self):
-        ''' Return the Emma id of the subject. '''
-        return self.__emma_id
-
-    def art_coverage_jacoco(self):
-        ''' Return the JaCoCo id of the subject. '''
-        return self.__jacoco_id 
-
-    @staticmethod
-    def birt_id():
-        ''' Return the Birt id of the subject. '''
-        return 'birt_id'
+    def metric_source_id(self, metric_source):
+        ''' Return the id of the subject for the metric source. '''
+        return self.__metric_source_ids.get(metric_source, None)
 
     def art(self):
         ''' Return the automated regression test of the subject. '''
@@ -82,7 +72,9 @@ class ARTCoverageJacocoTest(unittest.TestCase):
     ''' Unit tests for the ART coverage metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__jacoco = FakeJaCoCo()
-        self.__subject = FakeSubject(jacoco_id='jacoco_id', version='1.1')
+        self.__subject = FakeSubject(metric_source_ids={self.__jacoco:
+                                                        'jacoco_id'},
+                                     version='1.1')
         self.__project = domain.Project(jacoco=self.__jacoco)
         self.__metric = metric.ARTCoverage(subject=self.__subject, 
                                            project=self.__project)
@@ -123,8 +115,8 @@ class ARTCoverageEmmaTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the ART coverage metric. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = FakeSubject(emma_id='emma_id')
         self.__emma = FakeEmma()
+        self.__subject = FakeSubject(metric_source_ids={self.__emma: 'emma_id'})
         self.__project = domain.Project(emma=self.__emma)
         self.__metric = metric.ARTCoverage(subject=self.__subject, 
                                            project=self.__project)
@@ -185,9 +177,10 @@ class ARTPerformanceTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the ART coverage metric. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = FakeSubject(version='1')
         self.__birt = FakeBirt()
-        self.__project = domain.Project(birt=FakeBirt())
+        self.__subject = FakeSubject(version='1',
+                                     metric_source_ids={self.__birt: 'birt_id'})
+        self.__project = domain.Project(birt=self.__birt)
         self.__metric = metric.ARTPerformance(subject=self.__subject, 
                                               project=self.__project)
 
@@ -231,6 +224,7 @@ class ARTPerformanceTest(unittest.TestCase):
         ''' Test that metric can be measured when Birt is available, the
             product is not the trunk version, and it has an automated regression
             test. '''
-        subject = FakeSubject(art='ART', version='1')
+        subject = FakeSubject(art='ART', version='1',
+                              metric_source_ids={self.__birt: 'birt_id'})
         self.failUnless(metric.ARTPerformance.can_be_measured(subject, 
                                                               self.__project))

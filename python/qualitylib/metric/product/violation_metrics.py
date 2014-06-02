@@ -42,16 +42,6 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
     def value(self):
         raise NotImplementedError  # pragma: no cover
 
-    def target(self):
-        return self.__adapt_target_for_art(super(Violations, self).target())
-
-    def low_target(self):
-        return self.__adapt_target_for_art(super(Violations, self).low_target())
-
-    def __adapt_target_for_art(self, value):
-        ''' Return a lower (low) target value for ARTs. '''
-        return 2 * value if self._subject.is_art() else value
-
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(Violations, self)._parameters()

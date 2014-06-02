@@ -75,8 +75,10 @@ class TeamProgressTest(unittest.TestCase):
     ''' Unit tests for the team progress metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__team = domain.Team('ABC', birt_id='abc', is_scrum_team=True)
-        self.__project = domain.Project(birt=FakeBirt())
+        self.__birt = FakeBirt()
+        self.__team = domain.Team('ABC', is_scrum_team=True,
+                                  metric_source_ids={self.__birt: 'abc'})
+        self.__project = domain.Project(birt=self.__birt)
         self.__metric = metric.TeamProgress(subject=self.__team, 
                                             project=self.__project)
 
@@ -106,7 +108,7 @@ class TeamProgressTest(unittest.TestCase):
     def test_can_only_be_measured_for_scrum_teams(self):
         ''' Test that the metric cannot be measured if the team is not a Scrum
             team. '''
-        team = domain.Team('ABC', birt_id='abc')
+        team = domain.Team('ABC', metric_source_ids={self.__birt: 'abc'})
         self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
 
     def test_cant_be_measured_without_birt_id(self):

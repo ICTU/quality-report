@@ -39,7 +39,7 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):
         return parameters
 
     def _sonar_id(self):
-        return self._subject.unittests()
+        return self._subject.unittests().sonar_id()
 
 
 class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):

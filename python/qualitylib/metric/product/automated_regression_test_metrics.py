@@ -53,8 +53,8 @@ class ARTCoverage(HigherIsBetterMetric):
     @classmethod
     def can_be_measured(cls, subject, project):
         return super(ARTCoverage, cls).can_be_measured(subject, project) and \
-            (project.jacoco() and subject.art_coverage_jacoco()) or \
-            (project.emma() and subject.art_coverage_emma())
+            (project.jacoco() and subject.metric_source_id(project.jacoco())) \
+            or (project.emma() and subject.metric_source_id(project.emma()))
 
     def value(self):
         return self.__coverage()
@@ -67,31 +67,31 @@ class ARTCoverage(HigherIsBetterMetric):
 
     def url(self):
         urls = dict()
-        emma_id = self._subject.art_coverage_emma()
+        emma_id = self._subject.metric_source_id(self.__emma)
         if emma_id:
             urls['Emma'] = self.__emma.get_coverage_url(emma_id)
-        jacoco_id = self._subject.art_coverage_jacoco()
+        jacoco_id = self._subject.metric_source_id(self.__jacoco)
         if jacoco_id:
             urls['JaCoCo'] = self.__jacoco.get_coverage_url(jacoco_id)
         return urls
 
     def __coverage(self):
         ''' Return the coverage from Emma or Jacoco. '''
-        emma_id = self._subject.art_coverage_emma()
+        emma_id = self._subject.metric_source_id(self.__emma)
         if emma_id:
             return self.__emma.coverage(emma_id)
         else:
-            jacoco_id = self._subject.art_coverage_jacoco()
+            jacoco_id = self._subject.metric_source_id(self.__jacoco)
             return self.__jacoco.coverage(jacoco_id)
 
     def _date(self):
         ''' Return the date of the last coverage measurement from Emma or 
             Jacoco. '''
-        emma_id = self._subject.art_coverage_emma()
+        emma_id = self._subject.metric_source_id(self.__emma)
         if emma_id:
             return self.__emma.coverage_date(emma_id)
         else:
-            jacoco_id = self._subject.art_coverage_jacoco()
+            jacoco_id = self._subject.metric_source_id(self.__jacoco)
             return self.__jacoco.coverage_date(jacoco_id)
 
 

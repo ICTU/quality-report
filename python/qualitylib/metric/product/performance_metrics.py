@@ -67,7 +67,7 @@ class ResponseTimes(Metric):
         ''' The performance can be measured when the product has a performance
             report. '''
         return super(ResponseTimes, cls).can_be_measured(subject, project) and \
-            subject.performance_test()
+            subject.metric_source_id(project.performance_report())
 
     def value(self):
         return None  # We use max_violations and wish_violations as value
@@ -142,7 +142,7 @@ class ResponseTimes(Metric):
         ''' Return whether a performance report exists for the product and
             version this metric reports on. '''
         return self.__performance_report.exists(*self.__product_id())
-    
+
     def __nr_queries(self):
         ''' Return the number of performance requeries in the performance 
             report for the product. '''
@@ -150,5 +150,9 @@ class ResponseTimes(Metric):
 
     def __product_id(self):
         ''' Return the performance report id and version of the product. '''
-        return (self._subject.performance_test(),
+        return (self.__performance_report_id(),
                 self._subject.product_version())
+
+    def __performance_report_id(self):
+        ''' Return the performance report id of the product. '''
+        return self._subject.metric_source_id(self.__performance_report)

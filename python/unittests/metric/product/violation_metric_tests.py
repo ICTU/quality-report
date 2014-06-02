@@ -51,11 +51,6 @@ class FakeSubject(object):
         ''' Return the Sonar id of the subject. '''
         return ''
 
-    @staticmethod
-    def is_art():
-        ''' Return whether the subject is an ART. '''
-        return False
-
 
 class ViolationsTestMixin(object):
     # pylint: disable=too-many-public-methods

@@ -26,7 +26,8 @@ class MeasurableObjectTests(unittest.TestCase):
         self.__measurable = MeasurableObject(targets={self.__class__: 100},
             low_targets={self.__class__: 50},
             technical_debt_targets={self.__class__: 
-                                    TechnicalDebtTarget(100, 'explanation')})
+                                    TechnicalDebtTarget(100, 'explanation')},
+            metric_source_ids={self.__class__: 'id'})
 
     def test_no_target(self):
         ''' Test that there is no target for an unknown class. '''
@@ -52,3 +53,12 @@ class MeasurableObjectTests(unittest.TestCase):
         ''' Test the technical debt for a known class. '''
         target = self.__measurable.technical_debt_target(self.__class__)
         self.assertEqual(100, target.target_value())
+
+    def test_no_metric_source_id(self):
+        ''' Test the metric source id for an unknown class. '''
+        self.failIf(self.__measurable.metric_source_id(''.__class__))
+
+    def test_metric_source_id(self):
+        ''' Test the metric source id for a known class. '''
+        self.assertEqual('id', 
+                         self.__measurable.metric_source_id(self.__class__))

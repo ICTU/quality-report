@@ -340,10 +340,16 @@ class QualityReportMetricsTest(unittest.TestCase):
             team = domain.Team('Team %d' % index, **team_kwargs)
             project.add_team(team)
         if product_kwargs:
+            unittests_kwargs = product_kwargs.pop('unittests', dict())
+            if unittests_kwargs:
+                product_kwargs['unittests'] = domain.Product(project, 
+                                                             **unittests_kwargs)
             jsf_kwargs = product_kwargs.pop('jsf', dict())
-            product_kwargs['jsf'] = domain.Product(project, **jsf_kwargs)
+            if jsf_kwargs:
+                product_kwargs['jsf'] = domain.Product(project, **jsf_kwargs)
             art_kwargs = product_kwargs.pop('art', dict())
-            product_kwargs['art'] = domain.Product(project, **art_kwargs)
+            if art_kwargs:
+                product_kwargs['art'] = domain.Product(project, **art_kwargs)
             product = domain.Product(project, **product_kwargs)
             project.add_product(product)
         if street_kwargs:
@@ -367,10 +373,11 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_team_progress(self):
         ''' Test that the team progress metric is added if possible. '''
+        birt = FakeBirt()
         self.__assert_metric(metric.TeamProgress,
-                             project_kwargs=dict(birt=FakeBirt()),
-                             team_kwargs=dict(birt_id='team', 
-                                              is_scrum_team=True))
+                             project_kwargs=dict(birt=birt),
+                             team_kwargs=dict(is_scrum_team=True,
+                                              metric_source_ids={birt: 'team'}))
 
     def test_release_age(self):
         ''' Test that the release age metric is added if possible. '''
@@ -403,28 +410,29 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the failing unit tests metric is added if possible. '''
         self.__assert_metric(metric.FailingUnittests, 
                              product_kwargs=dict(sonar_id='id',
-                                                 unittest_sonar_id='id'),
+                                                 unittests=dict(sonar_id='id')),
                              project_kwargs=dict(sonar=FakeSonar()))
 
     def test_unittest_coverage(self):
         ''' Test that the unit test coverage metric is added if possible. '''
         self.__assert_metric(metric.UnittestCoverage, 
                              product_kwargs=dict(sonar_id='id',
-                                                 unittest_sonar_id='id'),
+                                                 unittests=dict(sonar_id='id')),
                              project_kwargs=dict(sonar=FakeSonar()))
 
     def test_art_coverage(self):
         ''' Test that the ART coverage metric is added if possible. '''
         self.__assert_metric(metric.ARTCoverage,
                              project_kwargs=dict(emma='Emma'), 
-                             product_kwargs=dict(art_coverage_emma_id='emma'))
+                             product_kwargs=dict(metric_source_ids={'Emma':
+                                                                    'emma'}))
 
     def test_art_coverage_via_art(self):
         ''' Test that the ART coverage metric is added if the ART product
             has the coverage report. '''
         self.__assert_metric(metric.ARTCoverage, 
             project_kwargs=dict(emma='Emma'),
-            product_kwargs=dict(art=dict(art_coverage_emma_id='emma')))
+            product_kwargs=dict(art=dict(metric_source_ids={'Emma': 'emma'})))
 
     def test_art_critical_violations(self):
         ''' Test that the critical violations is added for the ART. '''
@@ -436,17 +444,21 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_reviewed_and_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is added
             if possible. '''
+        birt = FakeBirt()
         self.__assert_metric(metric.ReviewedAndApprovedUserStories,
-                             project_kwargs=dict(birt=FakeBirt()),
-                             product_kwargs=dict(birt_id='birt'))
+                             project_kwargs=dict(birt=birt),
+                             product_kwargs=dict(metric_source_ids={birt: 
+                                                                    'birt'}))
 
     def test_no_reviewed_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is not added
             when the product is not a trunk version. '''
+        birt = FakeBirt()
         self.__assert_metric(metric.ReviewedAndApprovedUserStories,
-                             project_kwargs=dict(birt=FakeBirt()),
-                             product_kwargs=dict(birt_id='birt',
-                                                 product_version='1.1'), 
+                             project_kwargs=dict(birt=birt),
+                             product_kwargs=dict(product_version='1.1',
+                                                 metric_source_ids={birt:
+                                                                    'birt'}), 
                              include=False)
 
     def test_jsf_duplication(self):
@@ -466,7 +478,9 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_response_times(self):
         ''' Test that the response times metric is added if possible. '''
         self.__assert_metric(metric.ResponseTimes,
-                             product_kwargs=dict(performancetest_id='id'))
+                             project_kwargs=dict(performance_report='report'),
+                             product_kwargs=dict(metric_source_ids={'report':
+                                                                    'id'}))
 
     def test_open_bugs(self):
         ''' Test that the open bugs metric is added if possible. '''
@@ -529,18 +543,23 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_no_art_performance(self):
         ''' Test that the ART performance metric is not added for a trunk
             version. '''
+        birt = FakeBirt()
         self.__assert_metric(metric.ARTPerformance,
-                             product_kwargs=dict(birt_id='birt'),
-                             project_kwargs=dict(birt=FakeBirt()),
+                             product_kwargs=dict(metric_source_ids={birt:
+                                                                    'birt'}),
+                             project_kwargs=dict(birt=birt),
                              include=False)
 
     def test_art_performance(self):
-        ''' Test that the ART performance metric is not added for a trunk
+        ''' Test that the ART performance metric is added for a released
             version. '''
+        birt = FakeBirt()
         self.__assert_metric(metric.ARTPerformance,
-                             product_kwargs=dict(birt_id='birt',
-                                                 product_version='1.1'),
-                             project_kwargs=dict(birt=FakeBirt()))
+                             product_kwargs=dict(product_version='1.1',
+                                                 art={'sonar_id': 'art'},
+                                                 metric_source_ids={birt:
+                                                                    'birt'}),
+                             project_kwargs=dict(birt=birt))
 
     def test_critical_violations(self):
         ''' Test that the critical violations metric is added if possible. '''

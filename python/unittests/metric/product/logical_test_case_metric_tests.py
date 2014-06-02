@@ -94,7 +94,8 @@ class FakeSubject(object):
     def __repr__(self):
         return 'FakeSubject'
 
-    def birt_id(self):
+    def metric_source_id(self, metric_source):
+        # pylint: disable=unused-argument
         ''' Return the Birt id of the subject. '''
         return 'birt id' if self.__birt_id else ''
 

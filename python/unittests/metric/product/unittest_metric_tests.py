@@ -55,7 +55,8 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
 
     def unittests(self):
         ''' Return the unit test Sonar id of the subject. '''
-        return 'some:fake:id' if self.__has_unittests else None
+        return domain.Product(domain.Project(), sonar_id='some:fake:id') if \
+            self.__has_unittests else None
 
 
 class SonarDashboardUrlTestMixin(object):  

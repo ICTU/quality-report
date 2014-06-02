@@ -58,10 +58,6 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the string formatting of a team equals the team name. '''
         self.assertEqual(self.__team.name(), str(self.__team))
 
-    def test_default_birt_id(self):
-        ''' Test the default Birt id. '''
-        self.failIf(self.__team.birt_id())
-
     def test_default_sprint_length(self):
         ''' Test the default sprint length of the team. '''
         self.assertEqual(21, self.__team.days_per_sprint())

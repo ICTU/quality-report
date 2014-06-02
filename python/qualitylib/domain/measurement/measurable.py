@@ -19,10 +19,11 @@ class MeasurableObject(object):  # pylint: disable=too-few-public-methods
     ''' An object that has measurable characteristics. Base class for products,
         teams, etc. '''
     def __init__(self, targets=None, low_targets=None, 
-                 technical_debt_targets=None):
+                 technical_debt_targets=None, metric_source_ids=None):
         self._targets = targets or dict()
         self.__low_targets = low_targets or dict()
         self._technical_debt_targets = technical_debt_targets or dict()
+        self.__metric_source_ids = metric_source_ids or dict()
 
     def target(self, metric_class):
         ''' Return the target for the specified metric. '''
@@ -36,3 +37,7 @@ class MeasurableObject(object):  # pylint: disable=too-few-public-methods
         ''' Return whether a score below target is considered to be accepted
             technical debt. '''
         return self._technical_debt_targets.get(metric_class, None)
+
+    def metric_source_id(self, metric_source):
+        ''' Return the id of this object in the metric source. '''
+        return self.__metric_source_ids.get(metric_source, None)

@@ -54,7 +54,7 @@ class FakePerformanceReport(object):
     def exists(*args):
         ''' Return whether a product exists in the report. '''
         return True
-    
+
     @staticmethod
     def date(*args):
         ''' Return the report date. '''
@@ -68,12 +68,13 @@ class FakeSubject(object):
                  performance_report_id='performance report id'):
         self.__version = version
         self.__performance_report_id = performance_report_id
-        
+
     def product_version(self):
         ''' Return the version of the subject. '''
         return self.__version
 
-    def performance_test(self):
+    def metric_source_id(self, performance_report):
+        # pylint: disable=unused-argument
         ''' Return the performance report id of the subject. '''
         return self.__performance_report_id
 
@@ -94,20 +95,21 @@ class ResponseTimesTestsMixin(object):
         report = FakePerformanceReport(queries=10, 
             queries_violating_max_responsetime=self.expected_max_violations,
             queries_violating_wished_reponsetime=self.expected_wish_violations)
-        project = domain.Project(performance_report=report)
+        self.__project = domain.Project(performance_report=report)
         self._metric = metric.ResponseTimes(subject=self.__subject,
-                                            project=project)
+                                            project=self.__project)
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured. '''
         self.failUnless(metric.ResponseTimes.can_be_measured(self.__subject,
-                                                             None))
+                                                             self.__project))
 
     def test_cant_be_measured(self):
         ''' Test that the metric can't be measured without performance 
             report. '''
         subject = FakeSubject(performance_report_id=None)
-        self.failIf(metric.ResponseTimes.can_be_measured(subject, None))
+        self.failIf(metric.ResponseTimes.can_be_measured(subject, 
+                                                         domain.Project()))
 
     def test_value(self):
         ''' Test that the value of the metric equals None since it is not

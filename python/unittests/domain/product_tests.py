@@ -112,9 +112,11 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_all_sonar_ids_unittests(self):
         ''' Test that for a product with unittests, the Sonar id of the 
             unit tests is included in the set of all Sonar ids. '''
-        product = domain.Product(domain.Project(), sonar_id='sonar:id', 
-                                 unittest_sonar_id='sonar:ut:id')
-        self.assertEqual(set(['sonar:id', 'sonar:ut:id']), 
+        project = domain.Project()
+        product = domain.Product(project, sonar_id='sonar:id', 
+                                 unittests=domain.Product(project,
+                                     sonar_id='sonar:id:ut'))
+        self.assertEqual(set(['sonar:id', 'sonar:id:ut']),
                          product.all_sonar_ids())
 
     def test_all_sonar_ids_jsf(self):
@@ -126,25 +128,6 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
                                                     sonar_id='sonar:id:jsf'))
         self.assertEqual(set(['sonar:id', 'sonar:id:jsf']), 
                          product.all_sonar_ids())
-
-    def test_no_birt_no_test_design(self):
-        ''' Test that the product has no test design when Birt is not 
-            available. '''
-        self.failIf(self.__product.has_test_design())
-
-    def test_birt_has_test_design(self):
-        ''' Test that the product has a test design if Birt says so. '''
-        project = domain.Project('Organization', 'Project name', 
-                                 birt=FakeBirt(test_design=True))
-        product = domain.Product(project)
-        self.failUnless(product.has_test_design())
-
-    def test_birt_has_no_test_design(self):
-        ''' Test that the product hasn't got a test design if Birt says so. '''
-        project = domain.Project('Organization', 'Project name', 
-                                 birt=FakeBirt(test_design=False))
-        product = domain.Product(project)
-        self.failIf(product.has_test_design())
 
     def test_trunk_without_dependencies(self):
         ''' Test that the product dependencies set is empty if the product has
@@ -178,9 +161,17 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_version_type_release(self):
         ''' Test that the product version type of a product to be released
             is release. '''
+        class FakeReleaseCandidates(object):
+            # pylint: disable=too-few-public-methods,incomplete-protocol
+            ''' Fake a release candidates metric source. '''
+            def __getitem__(self, item):
+                return '1.1'
+
+        release_candidates = FakeReleaseCandidates()
         project = domain.Project('Organization', 'Project name', 
-                                 release_candidates=dict(P='1.1'))
-        product = domain.Product(project, release_candidate_id='P')
+                                 release_candidates=release_candidates)
+        product = domain.Product(project,
+                                 metric_source_ids={release_candidates: 'P'})
         product.set_product_version('1.1')
         self.assertEqual('release', product.product_version_type())
 
@@ -262,6 +253,24 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         project.add_team('Team', responsible=True)
         product = domain.Product(project)
         self.assertEqual(['Team'], product.responsible_teams())
+
+    def test_default_unittests(self):
+        ''' Test that products have no unit test component by default. '''
+        self.failIf(self.__product.unittests())
+
+    def test_unittests(self):
+        ''' Test that the unit test component can be retrieved. '''
+        unittests = domain.Product(self.__project)
+        product = domain.Product(self.__project, unittests=unittests)
+        self.assertEqual(unittests, product.unittests())
+
+    def test_unittests_have_product_version(self):
+        ''' Test that the unit test component has the same version as the
+            product it belongs to. '''
+        unittests = domain.Product(self.__project)
+        product = domain.Product(self.__project, unittests=unittests)
+        product.set_product_version('1.1')
+        self.assertEqual('1.1', product.unittests().product_version())
 
     def test_default_jsf(self):
         ''' Test that products have no jsf component by default. '''

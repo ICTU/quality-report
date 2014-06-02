@@ -21,7 +21,7 @@ class Team(MeasurableObject):
     ''' Class for representing a team. '''
 
     def __init__(self, name, short_name=None, is_scrum_team=False,
-                 is_support_team=False, birt_id=None, release_archives=None,
+                 is_support_team=False, release_archives=None,
                  days_per_sprint=21, **kwargs):
         super(Team, self).__init__(**kwargs)
         self.__name = name
@@ -31,7 +31,6 @@ class Team(MeasurableObject):
         self.__release_archives = release_archives or []
         self.__is_scrum_team = is_scrum_team
         self.__is_support_team = is_support_team
-        self.__birt_id = birt_id
         self.__days_per_sprint = days_per_sprint
 
     def __eq__(self, other):
@@ -65,10 +64,6 @@ class Team(MeasurableObject):
         ''' Return whether this team is a support team, which means it is not
             doing direct product development. '''
         return self.__is_support_team
-
-    def birt_id(self):
-        ''' Return the id for this team in Birt. '''
-        return self.__birt_id
 
     def days_per_sprint(self):
         ''' Return the sprint length in days that the team uses. '''

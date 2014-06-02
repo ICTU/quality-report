@@ -84,11 +84,11 @@ class BirtMetricMixin(object):
             and the product has a Birt id so it can be found in Birt 
             reports. '''
         return super(BirtMetricMixin, cls).can_be_measured(product, project) \
-            and project.birt() and product.birt_id()
+            and project.birt() and product.metric_source_id(project.birt())
 
     def _birt_id(self):
         ''' Return the id of the subject in Birt. '''
-        return self._subject.birt_id()
+        return self._subject.metric_source_id(self._birt)
 
 
 class BirtTestDesignMetricMixin(BirtMetricMixin):
@@ -98,7 +98,7 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
     def can_be_measured(cls, product, project):
         return super(BirtTestDesignMetricMixin, cls).can_be_measured(product, 
                                                                      project) \
-            and project.birt().has_test_design(product.birt_id())
+            and project.birt().has_test_design(product.metric_source_id(project.birt()))
 
     def url(self):
         ''' Return the url for the What's Missing report instead of the 

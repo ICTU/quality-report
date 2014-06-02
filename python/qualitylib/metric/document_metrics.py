@@ -25,7 +25,7 @@ class DocumentAge(SubversionMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the progress of a team. '''
 
     name = 'Document update leeftijd'
-    norm_template = 'Documenten worden minimaal een keer per %(target)d ' \
+    norm_template = 'Dit document wordt minimaal een keer per %(target)d ' \
         'dagen bijgewerkt. Als het document langer dan %(low_target)d dagen ' \
         'geleden is bijgewerkt is deze KPI rood.'
     template = 'Het document "%(name)s" is %(value)d dag(en) geleden ' \
