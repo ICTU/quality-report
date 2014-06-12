@@ -29,8 +29,7 @@ class Project(object):
                  trello_actions_board=None, performance_report=None, 
                  release_candidates=None, release_archives=None,
                  javamelody=None, jira=None, subversion=None, pom=None,
-                 maven_binary='mvn', java_home=None, dependencies_db=None,
-                 tasks=None, additional_resources=None):
+                 dependencies_db=None, tasks=None, additional_resources=None):
         self.__organization = organization
         self.__name = name
         missing = MissingMetricSource()
@@ -51,8 +50,6 @@ class Project(object):
         self.__tasks = tasks or jira or missing
         self.__subversion = subversion or missing
         self.__pom = pom or missing
-        self.__maven_binary = maven_binary
-        self.__java_home = java_home
         self.__dependencies_db = dependencies_db
         self.__additional_resources = additional_resources or missing
         self.__products = []
@@ -85,14 +82,6 @@ class Project(object):
     def sonar(self):
         ''' Return the Sonar instance of the project. '''
         return self.__sonar
-
-    def maven_binary(self):
-        ''' Return the Maven binary the project uses. '''
-        return self.__maven_binary
-
-    def java_home(self):
-        ''' Return the JAVA_HOME environment variable the project uses. '''
-        return self.__java_home
 
     def build_server(self):
         ''' Return the build server instance of the project. '''

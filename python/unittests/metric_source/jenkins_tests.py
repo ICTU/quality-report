@@ -16,7 +16,6 @@ limitations under the License.
 
 import datetime
 import unittest
-import urllib2
 import StringIO
 from qualitylib.metric_source import Jenkins
 from qualitylib.domain import Team
@@ -27,12 +26,7 @@ class JenkinsUnderTest(Jenkins):
     contents = '{"jobs": []}'
 
     def url_open(self, url):
-        contents = self.contents
-        if 'httperror' in self.contents:
-            self.contents = 'raise'
-        elif 'raise' in self.contents:
-            raise urllib2.HTTPError(url, None, None, None, None)
-        return StringIO.StringIO(contents)
+        return StringIO.StringIO(self.contents)
 
 
 class JenkinsTest(unittest.TestCase):  
@@ -177,4 +171,10 @@ class JenkinsTest(unittest.TestCase):
                          datetime.datetime(2000, 1, 1, 0, 0, 0)).days
         self.assertEqual({'job-a (%s dagen)' % expected_days: 
                           'http://jenkins/job/job-a/'}, 
+                         self.__jenkins.unstable_arts_url('job-a', 3))
+
+    def test_unstable_art_key_error(self):
+        ''' Test the unstable ART url when a HTTP error occurs. '''
+        self.__jenkins.contents = '{"jobs": [{"name": "job-a"}]}'
+        self.assertEqual({'job-a (? dagen)': 'http://jenkins/job/job-a/'}, 
                          self.__jenkins.unstable_arts_url('job-a', 3))

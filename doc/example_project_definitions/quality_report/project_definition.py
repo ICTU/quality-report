@@ -10,8 +10,9 @@ BUILD_SERVER = metric_source.Jenkins('http://jenkins/',
                                      username='jenkings_user', 
                                      password='jenkings_password',
                                      job_re='-metrics')
+MAVEN = metric_source.Maven(binary='mvn3')
 SONAR = metric_source.Sonar('http://sonar/', username='sonar_user',
-                            password='sonar_admin')
+                            password='sonar_admin', maven=MAVEN)
 HISTORY = metric_source.History('quality-data/quality_report/history.json')
 SUBVERSION = metric_source.Subversion()
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
@@ -21,8 +22,7 @@ JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
 # The project
 PROJECT = Project('Organization name', 'Quality Report', 
                   build_server=BUILD_SERVER, sonar=SONAR, history=HISTORY,
-                  maven_binary='mvn3', subversion=SUBVERSION, jacoco=JACOCO,
-                  pom=metric_source.Pom(),
+                  subversion=SUBVERSION, jacoco=JACOCO, pom=metric_source.Pom(),
                   additional_resources=[
                       dict(title='GitHub Quality Report',
                            url='https://github.com/ICTU/quality-report')] )
@@ -33,12 +33,13 @@ PROJECT.add_team(QUALITY_TEAM, responsible=True)
 
 # Products the project(s) develop(s).
 QUALITY_REPORT_UNITTESTS = \
-    Product(PROJECT, sonar_id='nl.ictu.quality-report:quality-report')
+    Product(PROJECT,
+            metric_source_ids={
+                SONAR: 'nl.ictu.quality-report:quality-report',
+                SUBVERSION: 'http://svn/commons/scripts/quality-report/'})
 
 QUALITY_REPORT = \
     Product(PROJECT, 'QR',
-            sonar_id = 'nl.ictu.quality-report:quality-report',
-            svn_path='http://svn/commons/scripts/quality-report/',
             unittests=QUALITY_REPORT_UNITTESTS,
             technical_debt_targets={
                 metric.UnittestCoverage:
@@ -48,7 +49,10 @@ QUALITY_REPORT = \
                     DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 
                         12), 25, datetime.datetime(2014, 6, 1), 
                         unit='major violations')},
-            metric_source_ids={JACOCO: 'quality-report-coverage-report'})
+            metric_source_ids={
+                SONAR: 'nl.ictu.quality-report:quality-report',
+                JACOCO: 'quality-report-coverage-report',
+                SUBVERSION: 'http://svn/commons/scripts/quality-report/'})
 
 PROJECT.add_product(QUALITY_REPORT)
 

@@ -22,9 +22,10 @@ import os
 
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     ''' Class for creating and removing Sonar analyses. '''
-    def __init__(self, sonar, *args, **kwargs):
+    def __init__(self, sonar, maven, *args, **kwargs):
         super(SonarRunner, self).__init__(*args, **kwargs)
         self.__sonar = sonar
+        self.__maven = maven
         self.__sonar_url = sonar.url()
 
     def analyse_products(self, products):
@@ -93,8 +94,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         if version:
             folder += '-' + version
         folder = folder.replace(':', '_')
-        sonar_options = product.metric_source_options(self.__sonar)
-        maven_options_string = product.maven_options()
+        sonar_options = product.metric_source_options(self.__sonar) or dict()
+        maven_options_string = product.metric_source_options(self.__maven) or ''
         if unittests:
             folder += '-unittests'
             maven_options_string += ' -Dut-coverage=true'
@@ -114,11 +115,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         product.check_out(folder)
         maven_command = ('export MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=512m"; '
                          'cd %s; %s --fail-never clean install sonar:sonar ' % \
-                         (folder, product.maven_binary())) + \
+                         (folder, self.__maven.binary())) + \
                          sonar_options_string + ' ' + maven_options_string
-        if product.java_home():
-            maven_command = 'export JAVA_HOME="%s"; ' % product.java_home() + \
-                maven_command
         logging.info(maven_command)
         os.system(maven_command)
         utils.rmtree(folder)  # Remove folder to save space
@@ -127,10 +125,10 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 class Sonar(url_opener.UrlOpener):
     ''' Class representing the Sonar instance. '''
 
-    def __init__(self, sonar_url, *args, **kwargs):
+    def __init__(self, sonar_url, maven=None, *args, **kwargs):
         super(Sonar, self).__init__(*args, **kwargs)
         self.__sonar_url = sonar_url
-        self.__runner = SonarRunner(self, *args, **kwargs)
+        self.__runner = SonarRunner(self, maven, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
         self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \

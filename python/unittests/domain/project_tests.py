@@ -245,7 +245,7 @@ class ProjectResourcesTest(unittest.TestCase):
         ''' Test that the Emma reports are in the project resources. '''
         emma = FakeResource()
         project = self.project(emma=emma)
-        product = domain.Product(project, 'Short name', 'Sonar id', 
+        product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
         url = FakeResource.get_coverage_url('emma_id')
@@ -257,7 +257,7 @@ class ProjectResourcesTest(unittest.TestCase):
             are included. '''
         emma = FakeResource()
         project = self.project(emma=emma)
-        product = domain.Product(project, 'Short name', 'Sonar id',
+        product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
@@ -269,7 +269,7 @@ class ProjectResourcesTest(unittest.TestCase):
         ''' Test that the JacCoCo reports are in the project resources. '''
         jacoco = FakeResource()
         project = self.project(jacoco=jacoco)
-        product = domain.Product(project, 'Short name', 'Sonar id', 
+        product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
         url = FakeResource.get_coverage_url('jacoco_id')
@@ -281,7 +281,7 @@ class ProjectResourcesTest(unittest.TestCase):
             are included. '''
         jacoco = FakeResource()
         project = self.project(jacoco=jacoco)
-        product = domain.Product(project, 'Short name', 'Sonar id', 
+        product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
@@ -311,28 +311,27 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_repository(self):
         ''' Test that the source code repository is in the project 
             resources. '''
-        project = self.project()
-        product = domain.Product(project, 'Short name', 'Sonar id',
-                                 svn_path='https://svn/product')
+        project = self.project(subversion='SVN')
+        product = domain.Product(project, 'Short name',
+            metric_source_ids={'SVN': 'http://svn/product/'})
         project.add_product(product)
-        self.failUnless(('Broncode repository Sonar id', 
-                         'https://svn/product') in project.project_resources())
+        self.failUnless(('Broncode repository Short name', 
+                         'http://svn/product') in project.project_resources())
 
     def test_repositories(self):
         ''' Test that the source code repositories are in the project 
             resources. '''
-        project = self.project()
+        project = self.project(subversion='SVN')
         for index in range(1, 4):
-            product = domain.Product(project, 'Short name', 
-                                     'Sonar id %d' % index,
-                                     svn_path='https://svn/product%d' % index)
+            product = domain.Product(project, 'Product %d' % index, 
+                metric_source_ids={'SVN': 'https://svn/product%d/' % index})
             if index == 3:
                 product.set_product_version('1.1')
             project.add_product(product)
         resources = project.project_resources()
-        self.failUnless(('Broncode repository Sonar id 1', 
+        self.failUnless(('Broncode repository Product 1', 
                          'https://svn/product1') in resources)
-        self.failUnless(('Broncode repository Sonar id 2',
+        self.failUnless(('Broncode repository Product 2',
                          'https://svn/product2') in resources)
 
     def test_additional_resources(self):

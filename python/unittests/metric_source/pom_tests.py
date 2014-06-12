@@ -60,14 +60,14 @@ class PomUnderTest(Pom):
 class PomTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the pom file metric source. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__pom = PomUnderTest()
 
     def test_no_dependencies(self):
         ''' Test pom without dependencies. '''
         self.assertEqual(set(), self.__pom.dependencies(MINIMAL_POM, []))
-        
+
     def test_log_http_error(self):
         ''' Test that a HTTP error while opening a pom file is logged. '''
         stream = StringIO.StringIO()
@@ -79,21 +79,27 @@ class PomTest(unittest.TestCase):
 
     def test_dependency(self):
         ''' Test a pom with one dependency. '''
-        product = domain.Product(domain.Project(), 'product',
-                                 'group_id:artifact_id')
+        sonar = 'sonar'
+        product = domain.Product(domain.Project(sonar=sonar), 'product',
+                                 metric_source_ids={sonar: 
+                                                    'group_id:artifact_id'})
         self.assertEqual(set([('artifact_id', '1.0')]), 
                          self.__pom.dependencies(ONE_DEPENDENCY, [product]))
-        
+
     def test_property(self):
         ''' Test a pom with a property. '''
-        product = domain.Product(domain.Project(), 'product',
-                                 'group_id:artifact_id')
+        sonar = 'sonar'
+        product = domain.Product(domain.Project(sonar=sonar), 'product',
+                                 metric_source_ids={sonar:
+                                                    'group_id:artifact_id'})
         self.assertEqual(set([('artifact_id', '2.0')]), 
                          self.__pom.dependencies(ONE_PROPERTY, [product]))
-        
+
     def test_recursive_property(self):
         ''' Test a pom with a property whose value is a property. '''
-        product = domain.Product(domain.Project(), 'product',
-                                 'group_id:artifact_id')
+        sonar = 'sonar'
+        product = domain.Product(domain.Project(sonar=sonar), 'product',
+                                 metric_source_ids={sonar:
+                                                    'group_id:artifact_id'})
         self.assertEqual(set([('artifact_id', '3.0')]), 
                          self.__pom.dependencies(RECURSIVE_PROPERTY, [product]))

@@ -24,6 +24,7 @@ from qualitylib.metric_source.performance_report import PerformanceReport
 from qualitylib.metric_source.wiki import Wiki
 from qualitylib.metric_source.emma import Emma
 from qualitylib.metric_source.jacoco import JaCoCo
+from qualitylib.metric_source.maven import Maven
 from qualitylib.metric_source.pom import Pom
 from qualitylib.metric_source.trello import TrelloBoard, \
     TrelloUnreachableException

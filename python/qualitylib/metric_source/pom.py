@@ -23,10 +23,6 @@ import urllib2
 class Pom(beautifulsoup.BeautifulSoupOpener):
     ''' Class representing Maven pom.xml files. '''
 
-    def __init__(self, *args, **kwargs):
-        self.__maven_binary = kwargs.pop('maven_binary', 'mvn')
-        super(Pom, self).__init__(*args, **kwargs)
-
     @utils.memoized
     def dependencies(self, url, products, parent_pom_properties=None):
         ''' Return a set of dependencies defined in the pom file. '''
@@ -161,11 +157,3 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
         except urllib2.HTTPError, reason:
             logging.log(log_level, "Couldn't open %s: %s", pom_url, reason)
             raise
-
-        '''
-        with file('pom.xml', 'w') as pom_file: 
-            pom_file.write(pom_contents)
-            pom_file.close()
-        os.system('%s help:effective-pom > effective-pom.xml' % self.__maven_binary)
-        return BeautifulSoup(file('effective-pom.xml'))
-        '''

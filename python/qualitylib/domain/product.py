@@ -25,10 +25,8 @@ class Product(MeasurableObject):
     ''' Class representing a software product that is developed or
         maintained. '''
 
-    def __init__(self, project, short_name='', sonar_id='', 
-                 old_sonar_ids=None, unittests=None, jsf=None, 
-                 svn_path='', old_svn_paths=None,
-                 maven_binary=None, maven_options=None, java_home=None,
+    def __init__(self, project, short_name='',
+                 unittests=None, jsf=None,
                  responsible_teams=None, kpi_responsibility=None, art=None,
                  branches_to_ignore=None, product_version='', **kwargs):
 
@@ -39,19 +37,10 @@ class Product(MeasurableObject):
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
-        self.__sonar_id = sonar_id
-        self.__old_sonar_ids = old_sonar_ids or {}
         self.__unittests = unittests
         self.__jsf = jsf
         self.__art = art
-        if svn_path and not svn_path.endswith('/'):
-            svn_path += '/'
-        self.__svn_path = svn_path
-        self.__old_svn_paths = old_svn_paths or {}
         self.__product_version = product_version
-        self.__maven_binary = maven_binary or self.__project.maven_binary()
-        self.__maven_options = maven_options or ''
-        self.__java_home = java_home or self.__project.java_home()
         self.__product_responsibility = responsible_teams or []
         self.__kpi_responsibility = kpi_responsibility or {}
         self.__branches_to_ignore = branches_to_ignore or []
@@ -76,10 +65,10 @@ class Product(MeasurableObject):
 
     def sonar_id(self):
         ''' Return the id that identifies the product in Sonar. '''
-        if self.__product_version in self.__old_sonar_ids:
-            sonar_id = self.__old_sonar_ids[self.__product_version]
-        else:
-            sonar_id = self.__sonar_id
+        sonar_id = self.old_metric_source_id(self.__project.sonar(),
+                                             self.__product_version)
+        if not sonar_id:
+            sonar_id = self.metric_source_id(self.__project.sonar()) or ''
         if self.__product_version:
             sonar_id += ':' + self.__product_version
         return sonar_id
@@ -113,10 +102,11 @@ class Product(MeasurableObject):
 
     def latest_released_product_version(self):
         ''' Return the latest released version of this product. '''
-        if not self.__svn_path:
-            return ''
         subversion = self.__project.subversion()
-        return subversion.latest_tagged_product_version(self.__svn_path)
+        svn_path = self.metric_source_id(subversion)
+        if not svn_path:
+            return ''
+        return subversion.latest_tagged_product_version(svn_path)
 
     def is_latest_release(self):
         ''' Return whether the version of this product is the latest 
@@ -157,8 +147,9 @@ class Product(MeasurableObject):
 
     def name(self):
         ''' Return a human readable name for the product. '''
+        sonar_id = self.metric_source_id(self.__project.sonar()) or self.short_name()
         try:
-            return self.__sonar_id.split(':', 1)[-1]
+            return sonar_id.split(':', 1)[-1]
         except AttributeError:
             logging.error('Product %s has no Sonar id', self.__short_name)
             raise
@@ -212,13 +203,17 @@ class Product(MeasurableObject):
 
     def svn_path(self, version=None):
         ''' Return the svn path of this product and version. '''
+        subversion = self.__project.subversion()
         version = version or self.product_version()
-        if version in self.__old_svn_paths:
-            return self.__old_svn_paths[version]
+        svn_path = self.old_metric_source_id(subversion, version)
+        if svn_path:
+            return svn_path
         else:
-            result = self.__svn_path
+            result = self.metric_source_id(subversion)
             if not result:
                 return ''
+            if not result.endswith('/'):
+                result += '/'
             if version:
                 name = self.name()
                 if name.endswith(':jsf'):
@@ -238,19 +233,6 @@ class Product(MeasurableObject):
         ''' Return the list of branch names that shouldn't be checked for
             unmerged code. '''
         return self.__branches_to_ignore
-
-    def maven_binary(self):
-        ''' Return the Maven binary to use for building the project. '''
-        return self.__maven_binary
-
-    def maven_options(self):
-        ''' Return options to pass to Maven for building this product. '''
-        return self.__maven_options
-
-    def java_home(self):
-        ''' Return the JAVA_HOME environment variable to be used for building
-            the product. '''
-        return self.__java_home
 
     @utils.memoized
     def dependencies(self, recursive=True, version=None, user=None):

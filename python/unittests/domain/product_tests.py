@@ -18,14 +18,14 @@ from qualitylib import domain
 import unittest
 
 
+class FakeSonar(object):  # pylint: disable=too-few-public-methods
+    ''' Fake a Sonar instance. '''
+    pass
+
+
 class FakeBirt(object):  # pylint: disable=too-few-public-methods
     ''' Fake Birt so we can return whether a product has a test design. '''
-    def __init__(self, test_design):
-        self.__test_design = test_design
-
-    def has_test_design(self, birt_id):  # pylint: disable=unused-argument
-        ''' Return whether the product has a test design report in Birt. '''
-        return self.__test_design
+    pass
 
 
 class FakeSubversion(object):
@@ -73,10 +73,13 @@ class FakeDependenciesDb(object):
 class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     '''Unit tests for the Product domain class. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project('Organization', 'Project name')
-        self.__product = domain.Product(self.__project, sonar_id='sonar:id', 
-                                        old_sonar_ids={'old.version': 
-                                                       'old-sonar:id'})
+        self.__sonar = FakeSonar()
+        self.__project = domain.Project('Organization', 'Project name',
+                                        sonar=self.__sonar)
+        self.__product = domain.Product(self.__project,
+            metric_source_ids={self.__sonar: 'sonar:id'},
+            old_metric_source_ids={self.__sonar: {'old.version':
+                                                  'old-sonar:id'}})
 
     def test_product_name(self):
         ''' Test that the name of the product equals the Sonar id. '''
@@ -112,20 +115,21 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_all_sonar_ids_unittests(self):
         ''' Test that for a product with unittests, the Sonar id of the 
             unit tests is included in the set of all Sonar ids. '''
-        project = domain.Project()
-        product = domain.Product(project, sonar_id='sonar:id', 
-                                 unittests=domain.Product(project,
-                                     sonar_id='sonar:id:ut'))
+        product = domain.Product(self.__project, 
+                                 metric_source_ids={self.__sonar: 'sonar:id'},
+                                 unittests=domain.Product(self.__project,
+                                     metric_source_ids={self.__sonar:
+                                                        'sonar:id:ut'}))
         self.assertEqual(set(['sonar:id', 'sonar:id:ut']),
                          product.all_sonar_ids())
 
     def test_all_sonar_ids_jsf(self):
         ''' Test that for a product with jsf, the Sonar id of the jsf project
             is included in the set of all Sonar ids. '''
-        project = domain.Project(())
-        product = domain.Product(project, sonar_id='sonar:id',
-                                 jsf=domain.Product(project, 
-                                                    sonar_id='sonar:id:jsf'))
+        product = domain.Product(self.__project, 
+            metric_source_ids={self.__sonar: 'sonar:id'},
+            jsf=domain.Product(self.__project, 
+                metric_source_ids={self.__sonar: 'sonar:id:jsf'}))
         self.assertEqual(set(['sonar:id', 'sonar:id:jsf']), 
                          product.all_sonar_ids())
 
@@ -178,9 +182,11 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_latest_released_product_version(self):
         ''' Test that the latest release product version is retrieved from
             Subversion. '''
+        subversion = FakeSubversion()
         project = domain.Project('Organization', 'Project name',
-                                 subversion=FakeSubversion())
-        product = domain.Product(project, svn_path='http://svn/')
+                                 subversion=subversion)
+        product = domain.Product(project,
+                                 metric_source_ids={subversion: 'http://svn/'})
         self.assertEqual('1.1', product.latest_released_product_version())
 
     def test_latest_release_product_version_without_svn_path(self):
@@ -196,9 +202,11 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_is_latest_release(self):
         ''' Test that the product is the latest release if its product version
             is the same as the latest release returned by Subversion. '''
+        subversion = FakeSubversion()
         project = domain.Project('Organization', 'Project name',
-                                 subversion=FakeSubversion())
-        product = domain.Product(project, svn_path='http://svn/')
+                                 subversion=subversion)
+        product = domain.Product(project,
+                                 metric_source_ids={subversion: 'http://svn/'})
         product.set_product_version('1.1')
         self.failUnless(product.is_latest_release())
 
@@ -208,33 +216,10 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         subversion = FakeSubversion()
         project = domain.Project('Organization', 'Project name',
                                  subversion=subversion)
-        product = domain.Product(project, svn_path='http://svn/')
+        product = domain.Product(project,
+                                 metric_source_ids={subversion: 'http://svn/'})
         self.assertEqual(subversion.last_changed_date('http://svn'),
                          product.last_changed_date())
-
-    def test_maven_binary(self):
-        ''' Test that the maven binary can be set. '''
-        product = domain.Product(domain.Project(), maven_binary='maven_binary')
-        self.assertEqual('maven_binary', product.maven_binary())
-
-    def test_maven_binary_from_project(self):
-        ''' Test that the maven binary of the project is used when the maven
-            binary of the product is not set. '''
-        product = domain.Product(domain.Project(maven_binary='maven_binary'))
-        self.assertEqual('maven_binary', product.maven_binary())
-
-    def test_java_home(self):
-        ''' Test that the JAVA_HOME environment variable can be set. '''
-        product = domain.Product(domain.Project(),
-                                 java_home='/usr/java/jdk1.6')
-        self.assertEqual('/usr/java/jdk1.6', product.java_home())
-
-    def test_java_home_from_project(self):
-        ''' Test that the JAVA_HOME of the project is used when the JAVA_HOME
-            of the product is not set. '''
-        product = domain.Product(domain.Project(java_home='/usr/java/jdk1.6'), 
-                                 '', '')
-        self.assertEqual('/usr/java/jdk1.6', product.java_home())
 
     def test_responsible_teams(self):
         ''' Test that the product has no responsible teams by default. '''

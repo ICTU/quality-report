@@ -256,10 +256,10 @@ class ARTStabilityTest(unittest.TestCase):
     ''' Unit tests for the ARTstability metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(build_server=FakeJenkins())
+        self.__project = domain.Project(build_server=FakeJenkins())
         self.__street = domain.Street('a', 'b', url='http://street')
         self.__metric = metric.ARTStability(subject=self.__street,
-                                            project=project)
+                                            project=self.__project)
 
     def test_value_stable(self):
         ''' Test that the value of the metric equals the list of unstable ARTs
@@ -294,6 +294,15 @@ class ARTStabilityTest(unittest.TestCase):
         street_label = '"%s"-straat' % self.__street.name()
         expected_urls[street_label] = self.__street.url()
         self.assertEqual(expected_urls, self.__metric.url())
+
+    def test_url_without_street(self):
+        ''' Test the url without a street url. '''
+        expected_urls = dict()
+        expected_urls.update(FakeJenkins.unstable_arts_url())
+        street = domain.Street('a', 'b')
+        art_stability = metric.ARTStability(subject=street,
+                                            project=self.__project)
+        self.assertEqual(expected_urls, art_stability.url())
 
     def test_numerical_value(self):
         ''' Test that the numerical value is the number of unstable ARTs. '''

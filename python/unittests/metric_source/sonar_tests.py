@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 import StringIO
-from qualitylib.metric_source import Sonar
+from qualitylib.metric_source import Sonar, Maven
 from qualitylib.metric_source.sonar import SonarRunner
 
 
@@ -150,7 +150,7 @@ class SonarRunnerTest(unittest.TestCase):
         analyses. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__runner = SonarRunnerUnderTest(Sonar('http://sonar/'))
+        self.__runner = SonarRunnerUnderTest(Sonar('http://sonar/'), Maven())
 
     def test_analyse_products(self):
         ''' Test that the runner analyses products. '''
