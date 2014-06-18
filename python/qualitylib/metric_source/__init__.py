@@ -26,11 +26,12 @@ from qualitylib.metric_source.emma import Emma
 from qualitylib.metric_source.jacoco import JaCoCo
 from qualitylib.metric_source.maven import Maven
 from qualitylib.metric_source.pom import Pom
-from qualitylib.metric_source.trello import TrelloBoard, \
-    TrelloUnreachableException
+from qualitylib.metric_source.trello import TrelloBoard, TrelloActionsBoard, \
+    TrelloRiskBoard, TrelloUnreachableException
 from qualitylib.metric_source.subversion import Subversion, SubversionFolder
 from qualitylib.metric_source.release_candidates import ReleaseCandidates
+from qualitylib.metric_source.release_archive import ReleaseArchive
 from qualitylib.metric_source.apache_directory import ApacheDirectory
 from qualitylib.metric_source.nexus_directory import NexusDirectory
 from qualitylib.metric_source.jira import Jira
-from qualitylib.metric_source.missing_source import MissingMetricSource
+from qualitylib.metric_source.tasks import Tasks

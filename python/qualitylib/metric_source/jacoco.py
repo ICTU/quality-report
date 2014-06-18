@@ -21,6 +21,7 @@ import datetime
 
 class JaCoCo(coverage_report.CoverageReport):
     ''' Class representing an JaCoCo coverage report. '''
+    metric_source_name = 'JaCoCo coverage report'
 
     def get_coverage_date_url(self, product):
         url = super(JaCoCo, self).get_coverage_date_url(product)

@@ -14,17 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
+
 from qualitylib import domain
 
 
-class Maven(domain.MetricSource):  # pylint: disable=too-few-public-methods
-    ''' Object representing Maven. '''
-    metric_source_name = 'Maven'
+class Tasks(domain.MetricSource):
+    # pylint: disable=too-few-public-methods,abstract-class-not-used
+    ''' Class representing a task manager. '''
 
-    def __init__(self, binary='mvn'):
-        self.__binary = binary
-        super(Maven, self).__init__()
+    metric_source_name = 'Task manager'
 
-    def binary(self):
-        ''' Return the Maven binary. '''
-        return self.__binary
+    def tasks(self, metric_id, recent_only=False, weeks_recent=3):
+        ''' Return a lists of tasks for the specified metric. '''
+        raise NotImplementedError  # pragma: nocover

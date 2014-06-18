@@ -18,7 +18,7 @@ import datetime
 from qualitylib.domain import Metric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin
 from qualitylib.metric.quality_attributes import PROGRESS, SPIRIT
-from qualitylib import utils
+from qualitylib import utils, metric_source
 
 
 class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
@@ -42,9 +42,9 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, team, project):
+        birt = project.metric_source(metric_source.Birt)
         return super(TeamProgress, cls).can_be_measured(team, project) and \
-            team.is_scrum_team() and project.birt() and \
-            team.metric_source_id(project.birt())
+            team.is_scrum_team() and birt and team.metric_source_id(birt)
 
     @classmethod
     def norm_template_default_values(cls):
@@ -101,12 +101,12 @@ class TeamSpirit(Metric):
 
     def __init__(self, *args, **kwargs):
         super(TeamSpirit, self).__init__(*args, **kwargs)
-        self.__wiki = self._project.wiki()
+        self.__wiki = self._project.metric_source(metric_source.Wiki)
 
     @classmethod
     def can_be_measured(cls, team, project):
         return super(TeamSpirit, cls).can_be_measured(team, project) and \
-            project.wiki()
+            project.metric_source(metric_source.Wiki)
 
     def value(self):
         return self.__wiki.team_spirit(self._subject) or '?'

@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import metric, utils, domain
+from qualitylib import metric, utils, domain, metric_source
 from qualitylib.metric_source import TrelloUnreachableException
 
 
@@ -71,7 +71,8 @@ class RiskLogTest(unittest.TestCase):
     ''' Unit tests for the risk log metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(trello_risklog_board=FakeBoard())
+        self.__project = domain.Project(
+            metric_sources={metric_source.TrelloRiskBoard: FakeBoard()})
         self.__metric = metric.RiskLog(project=self.__project)
 
     def test_url(self):
@@ -102,7 +103,8 @@ class UnreachableRiskLogTest(unittest.TestCase):
     ''' Unit tests for the risk log metric when Trello is unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(trello_risklog_board=UnreachableBoard())
+        project = domain.Project(
+            metric_sources={metric_source.TrelloRiskBoard: UnreachableBoard()})
         self.__metric = metric.RiskLog(project=project)
 
     def test_url(self):
@@ -122,7 +124,8 @@ class ActionActivityTest(unittest.TestCase):
     ''' Unit tests for the action activity metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(trello_actions_board=FakeBoard())
+        self.__project = domain.Project(
+            metric_sources={metric_source.TrelloActionsBoard: FakeBoard()})
         self.__metric = metric.ActionActivity(project=self.__project)
 
     def test_value(self):
@@ -152,7 +155,9 @@ class UnreachableActionActivityTest(unittest.TestCase):
         unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(trello_actions_board=UnreachableBoard())
+        project = domain.Project(
+            metric_sources={metric_source.TrelloActionsBoard: 
+                            UnreachableBoard()})
         self.__metric = metric.ActionActivity(project=project)
 
     def test_value(self):
@@ -170,7 +175,8 @@ class ActionAgeTest(unittest.TestCase):
     ''' Unit tests for the action age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(trello_actions_board=FakeBoard())
+        self.__project = domain.Project(
+            metric_sources={metric_source.TrelloActionsBoard: FakeBoard()})
         self.__metric = metric.ActionAge(project=self.__project)
 
     def test_value(self):
@@ -207,7 +213,9 @@ class UnreachableActionAgeTest(unittest.TestCase):
     ''' Unit tests for the action age metric when Trello is unreachable. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(trello_actions_board=UnreachableBoard())
+        project = domain.Project(
+            metric_sources={metric_source.TrelloActionsBoard:
+                            UnreachableBoard()})
         self.__metric = metric.ActionAge(project=project)
 
     def test_value(self):
@@ -272,7 +280,7 @@ class OpenBugsTest(unittest.TestCase):
     ''' Unit tests for the number of open bugs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(jira=FakeJira())
+        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()})
         self.__metric = metric.OpenBugs(project=self.__project)
 
     def test_value(self):
@@ -298,7 +306,8 @@ class OpenBugsTest(unittest.TestCase):
     def test_cant_be_measured_without_open_bugs_query(self):
         ''' Test that the metric cannot be measured without an open bugs query 
             in Jira. '''
-        project = domain.Project(jira=FakeJira(has_queries=False))
+        project = domain.Project(metric_sources={metric_source.Jira: 
+                                                 FakeJira(has_queries=False)})
         self.failIf(metric.OpenBugs.can_be_measured(self.__project, project))
 
 
@@ -307,7 +316,8 @@ class OpenSecurityBugsTest(unittest.TestCase):
     ''' Unit tests for the number of open security bugs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(jira=FakeJira())
+        self.__project = domain.Project(metric_sources={metric_source.Jira: 
+                                                        FakeJira()})
         self.__metric = metric.OpenSecurityBugs(project=self.__project)
 
     def test_value(self):
@@ -336,7 +346,7 @@ class OpenSecurityBugsTest(unittest.TestCase):
         ''' Test that the metric cannot be measured without an open bugs query 
             in Jira. '''
         jira = FakeJira(has_queries=False)
-        project = domain.Project(jira=jira)
+        project = domain.Project(metric_sources={metric_source.Jira: jira})
         self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project,
                                                             project))
 
@@ -346,7 +356,8 @@ class BlockingTestIssuesTest(unittest.TestCase):
     ''' Unit tests for the number of blocking test issues metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(jira=FakeJira())
+        self.__project = domain.Project(metric_sources={metric_source.Jira:
+                                                        FakeJira()})
         self.__metric = metric.BlockingTestIssues(project=self.__project)
 
     def test_value(self):
@@ -382,6 +393,6 @@ class BlockingTestIssuesTest(unittest.TestCase):
         ''' Test that the metric cannot be measured without an open bugs query 
             in Jira. '''
         jira = FakeJira(has_queries=False)
-        project = domain.Project(jira=jira)
+        project = domain.Project(metric_sources={metric_source.Jira: jira})
         self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project,
                                                               project))

@@ -190,8 +190,11 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __date_and_time(history_record):
         ''' Return the date and time of the history record. '''
+        ''' Remove leading zero from date/time elements (assuming all '''
+        ''' elements are 2 digits long). Turn month into zero-based '''
+        ''' value for usage within Javascript. '''
         year, month, day, hour, minute, second = \
-            re.split(r' |:|\-|\.', history_record['date'])[:6]
+            re.split(r' 0?|:0?|\-0?|\.0?', history_record['date'])[:6]
         month = str(int(month) - 1)  # Months are zero based
         return year, month, day, hour, minute, second
 

@@ -47,7 +47,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__add_latest_release_of_products()
         self.__add_release_candidates_of_products()
         self.__add_dependencies()
-        self.__project.analyse_products()
+        self.__analyse_products()
 
         quality_report = report.QualityReport(self.__project)
         self.__format_and_write_report(quality_report, formatting.JSONFormatter,
@@ -83,6 +83,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             logging.info('Adding %s:%s to the project because it is a ' \
                          'dependency.', name, version)
             self.__project.add_product_with_version(name, version)
+
+    def __analyse_products(self):
+        ''' Make sure Sonar contains the right analysis projects. '''
+        sonar = self.__project.metric_source(metric_source.Sonar)
+        if sonar:
+            sonar.analyse_products(self.__project.products())
 
     def __format_and_write_html_report(self, quality_report, report_dir):
         ''' Format the quality report to HTML and write the files in the report

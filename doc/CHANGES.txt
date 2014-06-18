@@ -1,3 +1,12 @@
+2014-06-18  Release 1.2.0
+
+  * Metric sources and metric options are now passed to the project via the 
+    metric_sources and metric_options parameters so that the project class 
+    doesn't need to know what metric sources exist.
+  * Bug fix: Time stamps in the history file without milliseconds wouldn't be
+    parsed.
+
+
 2014-06-12  Release 1.1.0
 
   * Measurable objects like products and teams now take a metric_source_ids 

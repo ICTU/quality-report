@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeSonar(object):
@@ -75,7 +75,8 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = FakeSonar(line_coverage=89)
-        project = domain.Project(sonar=self.__sonar)
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar})
         self._metric = metric.FailingUnittests(subject=FakeSubject(self.__sonar),
                                                project=project)
 
@@ -92,7 +93,8 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         ''' Test that the metric can be measured when the project has
             Sonar and the product has unit tests. '''
         product = FakeSubject(self.__sonar)
-        project = domain.Project(sonar=self.__sonar)
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar})
         self.failUnless(metric.FailingUnittests.can_be_measured(product,
                                                                 project))
 
@@ -100,7 +102,8 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         ''' Test that the metric can only be measured when the product has
             unit tests. '''
         product = FakeSubject()
-        project = domain.Project(sonar=self.__sonar)
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar})
         self.failIf(metric.FailingUnittests.can_be_measured(product, project))
 
     def test_cant_be_measured_without_sonar(self):
@@ -117,7 +120,8 @@ class UnittestCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = FakeSonar(line_coverage=89)
-        project = domain.Project(sonar=self.__sonar)
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar})
         self._metric = metric.UnittestCoverage(subject=FakeSubject(self.__sonar),
                                                project=project)
 
@@ -135,7 +139,8 @@ class UnittestCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         ''' Test that the metric can be measured when the project has Sonar
             and the product has unit tests. '''
         product = FakeSubject(self.__sonar)
-        project = domain.Project(sonar=self.__sonar)
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar})
         self.failUnless(metric.UnittestCoverage.can_be_measured(product, 
                                                                 project))
 
@@ -143,7 +148,8 @@ class UnittestCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         ''' Test that the metric can only be measured when the product has
             unit tests. '''
         product = FakeSubject()
-        project = domain.Project(sonar=self.__sonar)
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar})
         self.failIf(metric.UnittestCoverage.can_be_measured(product, project))
 
     def test_cant_be_measured_without_sonar(self):

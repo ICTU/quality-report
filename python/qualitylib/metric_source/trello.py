@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import utils
+from qualitylib import utils, domain
 import datetime
 import httplib
 import logging
@@ -27,7 +27,7 @@ class TrelloUnreachableException(Exception):
     pass
 
 
-class TrelloObject(object):
+class TrelloObject(domain.MetricSource):
     ''' Base class for Trello objects. '''
 
     url_template = 'https://api.trello.com/1/%(object_type)s/%(object_id)s' \
@@ -130,7 +130,7 @@ class TrelloCard(TrelloObject):
 
 class TrelloBoard(TrelloObject):
     ''' Class representing a Trello board. '''
-    
+
     def __init__(self, *args, **kwargs):
         self.__card_class = kwargs.pop('card_class', TrelloCard)
         super(TrelloBoard, self).__init__(*args, **kwargs)
@@ -173,7 +173,17 @@ class TrelloBoard(TrelloObject):
         except TrelloUnreachableException, reason:
             logging.warning("Couldn't get cards from Trello board: %s", reason)
             return []
-        
+
     def __create_card(self, card_id):
         ''' Create a Trello card with the specified id. '''
         return self.__card_class(card_id, self._appkey, self._token)
+
+
+class TrelloActionsBoard(TrelloBoard):
+    ''' Actions board in Trello. '''
+    metric_source_name = 'Trello actions board'
+
+
+class TrelloRiskBoard(TrelloBoard):
+    ''' Risk log in Trello. '''
+    metric_source_name = 'Trello risk board'

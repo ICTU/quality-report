@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import url_opener
-from qualitylib import utils
+from qualitylib import utils, domain
 import datetime
 import re
 import urllib2
@@ -30,26 +30,23 @@ class UnknownAge(object):  # pylint: disable=too-few-public-methods
     days = '?'
 
 
-class Jenkins(url_opener.UrlOpener):
+class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     ''' Class representing the Jenkins instance. '''
 
+    metric_source_name = 'Jenkins build server'
     api_postfix = 'api/python'
     jobs_api_postfix = api_postfix + \
                        '?tree=jobs[name,description,color,url,buildable]'
 
     def __init__(self, jenkins_url, username, password, job_re=''):
-        super(Jenkins, self).__init__(username=username, password=password)
-        self.__jenkins_url = jenkins_url
+        super(Jenkins, self).__init__(url=jenkins_url, username=username, 
+                                      password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = jenkins_url + 'job/%s/'
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self.__job_api_url = self.__job_url + self.api_postfix
         self.__jobs_api_url = jenkins_url + self.jobs_api_postfix
-
-    def url(self):
-        ''' Return the base url for the Jenkins server. '''
-        return self.__jenkins_url
 
     def number_of_assigned_jobs(self):
         ''' Return the number of Jenkins jobs that has been assigned to one or

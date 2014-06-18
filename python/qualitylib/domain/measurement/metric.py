@@ -57,9 +57,10 @@ class Metric(object):
         else:
             self.__responsible_teams = []
         self._project = project
-        self._wiki = self._project.wiki()
-        self.__history = self._project.history()
-        self.__tasks = self._project.tasks()
+        from qualitylib import metric_source
+        self._wiki = self._project.metric_source(metric_source.Wiki)
+        self.__history = self._project.metric_source(metric_source.History)
+        self.__tasks = self._project.metric_source(metric_source.Tasks)
 
     def stable_id(self):
         ''' Return an id that doesn't depend on numbering/order of KPI's. '''

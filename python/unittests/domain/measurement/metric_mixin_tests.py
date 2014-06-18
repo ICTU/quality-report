@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import domain
+from qualitylib import domain, metric_source
 from unittests.domain.measurement.fake import FakeHistory, FakeSubject
 import unittest
 
@@ -40,7 +40,8 @@ class MetaMetricMixinTest(unittest.TestCase):
     ''' Test case for meta metric mixin class. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(history=FakeHistory())
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory()})
         subject = [DummyMetric(FakeSubject(), project=project)]
         self._metric = MetaMetricUnderTest(subject, project=project)
 

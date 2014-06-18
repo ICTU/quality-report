@@ -15,13 +15,14 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup, url_opener
-from qualitylib import utils
+from qualitylib import utils, domain
 import logging
 import os
 
 
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     ''' Class for creating and removing Sonar analyses. '''
+
     def __init__(self, sonar, maven, *args, **kwargs):
         super(SonarRunner, self).__init__(*args, **kwargs)
         self.__sonar = sonar
@@ -122,12 +123,13 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         utils.rmtree(folder)  # Remove folder to save space
 
 
-class Sonar(url_opener.UrlOpener):
+class Sonar(domain.MetricSource, url_opener.UrlOpener):
     ''' Class representing the Sonar instance. '''
 
+    metric_source_name = 'SonarQube'
+
     def __init__(self, sonar_url, maven=None, *args, **kwargs):
-        super(Sonar, self).__init__(*args, **kwargs)
-        self.__sonar_url = sonar_url
+        super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
         self.__runner = SonarRunner(self, maven, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
@@ -137,14 +139,10 @@ class Sonar(url_opener.UrlOpener):
         self.__metrics_api_url = sonar_url + 'api/resources?resource=%s&' \
             'metrics=%s'
 
-    def url(self):
-        ''' Return the base url for Sonar. '''
-        return self.__sonar_url
-
     @utils.memoized
     def version(self, product):
         ''' Return the version of the product. '''
-        json = self.url_open(self.__sonar_url + \
+        json = self.url_open(self.url() + \
                              'api/resources?resource=%s' % product).read()
         version = utils.eval_json(json)[0]['version']
         logging.debug('Retrieving Sonar version for %s -> %s', product, version)

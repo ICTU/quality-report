@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import report, domain, metric
+from qualitylib import report, domain, metric, metric_source
 
 
 class FakeMetric(object):
@@ -189,14 +189,20 @@ class FakeSonar(object):  # pylint: disable=too-few-public-methods
         ''' Return the Sonar url. '''
         return 'http://sonar'
 
+    @staticmethod
+    def name():
+        ''' Return the Sonar name. '''
+        return 'SonarQube'
+
 
 class QualityReportTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the quality report class. '''
 
     def setUp(self):  # pylint: disable=invalid-name
+        self.__sonar = FakeSonar()
         self.__project = domain.Project('organization', 'project title',
-                                        sonar=FakeSonar())
+            metric_sources={metric_source.Sonar: self.__sonar})
         self.__report = report.QualityReport(self.__project)
 
     def test_title(self):
@@ -227,14 +233,14 @@ class QualityReportTest(unittest.TestCase):
             one for overall product quality, one for the product itself and
             one for meta metrics. '''
         self.__project.add_product(domain.Product(self.__project, 'FP',
-            metric_source_ids={self.__project.sonar(): 'sonar.id'}))
+            metric_source_ids={self.__sonar: 'sonar.id'}))
         self.assertEqual(3, 
                          len(report.QualityReport(self.__project).sections()))
 
     def test_get_product_section(self):
         ''' Test that the section for the product can be found. '''
         product = domain.Product(self.__project, 'FP', 
-            metric_source_ids={self.__project.sonar(): 'sonar.id'})
+            metric_source_ids={self.__sonar: 'sonar.id'})
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section = quality_report.get_product_section(product.name(), 
@@ -244,7 +250,7 @@ class QualityReportTest(unittest.TestCase):
     def test_get_product_section_twice(self):
         ''' Test that the product section is cached. '''
         product = domain.Product(self.__project, 'FP',
-            metric_source_ids={self.__project.sonar(): 'sonar.id'})
+            metric_source_ids={self.__sonar: 'sonar.id'})
         self.__project.add_product(product)
         name, version = product.name(), product.product_version()
         quality_report = report.QualityReport(self.__project)
@@ -284,13 +290,13 @@ class QualityReportTest(unittest.TestCase):
     def test_resources(self):
         ''' Test that the report has project resources. '''
         quality_report = report.QualityReport(self.__project)
-        self.failUnless(('Sonar', FakeSonar.url()) in 
+        self.failUnless(('SonarQube', FakeSonar.url()) in 
                          quality_report.project_resources())
 
     def test_get_product(self):
         ''' Test that a product can be retrieved by version number. '''
         product = domain.Product(self.__project, 'FP', 
-            metric_source_ids={self.__project.sonar(): 'sonar.id'})
+            metric_source_ids={self.__sonar: 'sonar.id'})
         product.set_product_version('1.1')
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
@@ -376,9 +382,10 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_team_progress(self):
         ''' Test that the team progress metric is added if possible. '''
         self.__assert_metric(metric.TeamProgress,
-                             project_kwargs=dict(birt=self.__birt),
-                             team_kwargs=dict(is_scrum_team=True,
-                                 metric_source_ids={self.__birt: 'team'}))
+            project_kwargs=dict(metric_sources={metric_source.Birt: 
+                                                self.__birt}),
+            team_kwargs=dict(is_scrum_team=True,
+                             metric_source_ids={self.__birt: 'team'}))
 
     def test_release_age(self):
         ''' Test that the release age metric is added if possible. '''
@@ -393,72 +400,76 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_team_spirit(self):
         ''' Test that the team spirit metric is added if possible. '''
         self.__assert_metric(metric.TeamSpirit,
-                             project_kwargs=dict(wiki='Wiki'))
+            project_kwargs=dict(metric_sources={metric_source.Wiki: 'Wiki'}))
 
     def test_failing_ci_jobs_team(self):
         ''' Test that the failing CI jobs metric per team is added if 
             possible. '''
         self.__assert_metric(metric.TeamFailingCIJobs, number_of_teams=2,
-                             project_kwargs=dict(build_server='Jenkins'))
+            project_kwargs=dict(metric_sources={metric_source.Jenkins:
+                                                'Jenkins'}))
 
     def test_unused_ci_jobs_team(self):
         ''' Test that the unused CI jobs metric per team is added if 
             possible. '''
         self.__assert_metric(metric.TeamUnusedCIJobs, number_of_teams=2,
-                             project_kwargs=dict(build_server='Jenkins'))
+            project_kwargs=dict(metric_sources={metric_source.Jenkins:
+                                                'Jenkins'}))
 
     def test_failing_unittests(self):
         ''' Test that the failing unit tests metric is added if possible. '''
         self.__assert_metric(
             metric.FailingUnittests, 
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'},
-                                unittests=dict(metric_source_ids={self.__sonar:
-                                                                  'id'})),
-            project_kwargs=dict(sonar=self.__sonar))
+                unittests=dict(metric_source_ids={self.__sonar: 'id'})),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}))
 
     def test_unittest_coverage(self):
         ''' Test that the unit test coverage metric is added if possible. '''
         self.__assert_metric(
             metric.UnittestCoverage, 
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'},
-                                unittests=dict(metric_source_ids={self.__sonar:
-                                                                  'id'})),
-            project_kwargs=dict(sonar=self.__sonar))
+                unittests=dict(metric_source_ids={self.__sonar: 'id'})),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}))
 
     def test_art_coverage(self):
         ''' Test that the ART coverage metric is added if possible. '''
         self.__assert_metric(metric.ARTCoverage,
-                             project_kwargs=dict(emma='Emma'), 
-                             product_kwargs=dict(metric_source_ids={'Emma':
-                                                                    'emma'}))
+            project_kwargs=dict(metric_sources={metric_source.Emma: 'Emma'}), 
+            product_kwargs=dict(metric_source_ids={'Emma': 'emma'}))
 
     def test_art_coverage_via_art(self):
         ''' Test that the ART coverage metric is added if the ART product
             has the coverage report. '''
         self.__assert_metric(metric.ARTCoverage, 
-            project_kwargs=dict(emma='Emma'),
+            project_kwargs=dict(metric_sources={metric_source.Emma: 'Emma'}),
             product_kwargs=dict(art=dict(metric_source_ids={'Emma': 'emma'})))
 
     def test_art_critical_violations(self):
         ''' Test that the critical violations is added for the ART. '''
         for metric_class in report.QualityReport.JAVA_METRIC_CLASSES:
             self.__assert_metric(metric_class,
-                project_kwargs=dict(sonar=self.__sonar),
-                product_kwargs=dict(art=dict(metric_source_ids={self.__sonar:
-                                                                'id'})))
+                project_kwargs=dict(
+                    metric_sources={metric_source.Sonar: self.__sonar}),
+                product_kwargs=dict(
+                    art=dict(metric_source_ids={self.__sonar: 'id'})))
 
     def test_reviewed_and_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is added
             if possible. '''
         self.__assert_metric(metric.ReviewedAndApprovedUserStories,
-            project_kwargs=dict(birt=self.__birt),
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
             product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
 
     def test_no_reviewed_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is not added
             when the product is not a trunk version. '''
         self.__assert_metric(metric.ReviewedAndApprovedUserStories,
-            project_kwargs=dict(birt=self.__birt),
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
             product_kwargs=dict(product_version='1.1',
                                 metric_source_ids={self.__birt: 'birt'}), 
             include=False)
@@ -466,7 +477,8 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_jsf_duplication(self):
         ''' Test that the jsf duplication metric is added if possible. '''
         self.__assert_metric(metric.JsfDuplication,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(jsf=dict(metric_source_ids={self.__sonar:
                                                             'id'})))
 
@@ -474,72 +486,85 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the jsf duplication metric is not added if the jsf 
             component has no Sonar id. '''
         self.__assert_metric(metric.JsfDuplication,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(jsf=dict(short_name='foo')),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(jsf=dict(short_name='foo')),
+            include=False)
 
     def test_response_times(self):
         ''' Test that the response times metric is added if possible. '''
         self.__assert_metric(metric.ResponseTimes,
-            project_kwargs=dict(performance_report='report'),
+            project_kwargs=dict(
+                metric_sources={metric_source.PerformanceReport: 'report'}),
             product_kwargs=dict(metric_source_ids={'report': 'id'}))
 
     def test_open_bugs(self):
         ''' Test that the open bugs metric is added if possible. '''
         self.__assert_metric(metric.OpenBugs, 
-                             project_kwargs=dict(jira=FakeJira()))
+            project_kwargs=dict(
+                metric_sources={metric_source.Jira: FakeJira()}))
 
     def test_open_security_bugs(self):
         ''' Test that the open security bugs metric is added if possible. '''
         self.__assert_metric(metric.OpenSecurityBugs, 
-                             project_kwargs=dict(jira=FakeJira()))
+            project_kwargs=dict(
+                metric_sources={metric_source.Jira: FakeJira()}))
 
     def test_blocking_test_issues(self):
         ''' Test that the blocking test issues metric is added if possible. '''
         self.__assert_metric(metric.BlockingTestIssues, 
-                             project_kwargs=dict(jira=FakeJira()))
+            project_kwargs=dict(metric_sources={metric_source.Jira:
+                                                FakeJira()}))
 
     def test_failing_ci_jobs(self):
         ''' Test that the failing CI jobs metric is added if possible. '''
         self.__assert_metric(metric.ProjectFailingCIJobs, 
-                             project_kwargs=dict(build_server='Jenkins'))
+            project_kwargs=dict(metric_sources={metric_source.Jenkins:
+                                                'Jenkins'}))
 
     def test_unused_ci_jobs(self):
         ''' Test that the unused CI jobs metric is added if possible. '''
         self.__assert_metric(metric.ProjectUnusedCIJobs, 
-                             project_kwargs=dict(build_server='Jenkins'))
+            project_kwargs=dict(metric_sources={metric_source.Jenkins:
+                                                'Jenkins'}))
 
     def test_assigned_ci_jobs(self):
         ''' Test that the (un)assigned CI jobs metric is added if possible. '''
         self.__assert_metric(metric.AssignedCIJobs, 
-                             project_kwargs=dict(build_server='Jenkins'), 
-                             number_of_teams=2)
+            project_kwargs=dict(metric_sources={metric_source.Jenkins:
+                                                'Jenkins'}),
+            number_of_teams=2)
 
     def test_action_activity(self):
         ''' Test that the action activity metric is added if possible. '''
         self.__assert_metric(metric.ActionActivity, 
-                             project_kwargs=dict(trello_actions_board='Trello'))
+            project_kwargs=dict(
+                metric_sources={metric_source.TrelloActionsBoard: 'Trello'}))
 
     def test_action_age(self):
         ''' Test that the action age metric is added if possible. '''
         self.__assert_metric(metric.ActionAge, 
-                             project_kwargs=dict(trello_actions_board='Trello'))
+            project_kwargs=dict(
+                metric_sources={metric_source.TrelloActionsBoard: 'Trello'}))
 
     def test_risk_log(self):
         ''' Test that the risk log metric is added if possible. '''
         self.__assert_metric(metric.RiskLog, 
-                             project_kwargs=dict(trello_risklog_board='Trello'))
+            project_kwargs=dict(
+                metric_sources={metric_source.TrelloRiskBoard: 'Trello'}))
 
     def test_unmerged_branches(self):
         ''' Test that the unmerged branches metric is added if possible. '''
         self.__assert_metric(metric.UnmergedBranches,
-            project_kwargs=dict(subversion='Subversion'),
+            project_kwargs=dict(metric_sources={metric_source.Subversion:
+                                                'Subversion'}),
             product_kwargs=dict(metric_source_ids={'Subversion': 'svn'}))
 
     def test_art_unmerged_branches(self):
         ''' Test that the unmerged branches metric is added for the ART. '''
         self.__assert_metric(metric.UnmergedBranches,
-            project_kwargs=dict(subversion='SVN'),
+            project_kwargs=dict(metric_sources={metric_source.Subversion:
+                                                'SVN'}),
             product_kwargs=dict(art=dict(metric_source_ids={'SVN': 'svn'})))
 
     def test_no_art_performance(self):
@@ -547,7 +572,9 @@ class QualityReportMetricsTest(unittest.TestCase):
             version. '''
         self.__assert_metric(metric.ARTPerformance,
             product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}),
-            project_kwargs=dict(birt=self.__birt), include=False)
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}), 
+            include=False)
 
     def test_art_performance(self):
         ''' Test that the ART performance metric is added for a released
@@ -556,112 +583,128 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(product_version='1.1',
                 art=dict(metric_source_ids={self.__sonar: 'art'}),
                 metric_source_ids={self.__birt: 'birt'}),
-            project_kwargs=dict(birt=self.__birt))
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}))
 
     def test_critical_violations(self):
         ''' Test that the critical violations metric is added if possible. '''
         self.__assert_metric(metric.CriticalViolations,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_critical_violations(self):
         ''' Test that the critical violations metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.CriticalViolations,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_major_violations(self):
         ''' Test that the major violations metric is added if possible. '''
         self.__assert_metric(metric.MajorViolations,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_major_violations(self):
         ''' Test that the major violations metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.MajorViolations,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_cyclomatic_complexity(self):
         ''' Test that the cyclomatic complexity metric is added if possible. '''
         self.__assert_metric(metric.CyclomaticComplexity,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_cyclomatic_complexity(self):
         ''' Test that the cyclomatic complexity metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.CyclomaticComplexity,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_cyclic_dependencies(self):
         ''' Test that the cyclic dependencies metric is added if possible. '''
         self.__assert_metric(metric.CyclicDependencies,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_cyclic_dependencies(self):
         ''' Test that the cyclic dependencies metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.CyclicDependencies,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_java_duplication(self):
         ''' Test that the Java duplication metric is added if possible. '''
         self.__assert_metric(metric.JavaDuplication,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_java_duplication(self):
         ''' Test that the Java duplication metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.JavaDuplication,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_product_loc(self):
         ''' Test that the product LOC metric is added if possible. '''
         self.__assert_metric(metric.ProductLOC,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_product_loc(self):
         ''' Test that the product LOC metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.ProductLOC,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_commented_loc(self):
         ''' Test that the commented LOC metric is added if possible. '''
         self.__assert_metric(metric.CommentedLOC,
-            project_kwargs=dict(sonar=self.__sonar),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_commented_loc(self):
         ''' Test that the commented LOC metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.CommentedLOC,
-                             project_kwargs=dict(sonar=self.__sonar),
-                             product_kwargs=dict(short_name='dummy'),
-                             include=False)
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
 
     def test_document_age(self):
         ''' Test that the document age metric is added if possible. '''
         document = domain.Document('Title', 'http://url')
         self.__assert_metric(metric.DocumentAge,
-                             project_kwargs=dict(subversion='Subversion',
-                                                 documents=[document]))
+            project_kwargs=dict(metric_sources={metric_source.Subversion:
+                                                'Subversion'},
+                                documents=[document]))
 
     def test_no_document_age(self):
         ''' Test that the document age metric is not added if the project has 

@@ -68,3 +68,11 @@ class Team(MeasurableObject):
     def days_per_sprint(self):
         ''' Return the sprint length in days that the team uses. '''
         return self.__days_per_sprint
+
+    def team_resources(self):
+        ''' Return the resources of the team. '''
+        resources = []
+        for release_archive in self.release_archives():
+            resources.append(('Release archief team %s' % self.name(), 
+                              release_archive.url()))
+        return resources

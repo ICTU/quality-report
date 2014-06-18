@@ -20,6 +20,8 @@ limitations under the License.
 from qualitylib.domain.measurement.metric import Metric, HigherIsBetterMetric, \
     HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric, \
     LowerIsBetterMetric
+from qualitylib.domain.measurement.metric_source import MetricSource, \
+    MissingMetricSource
 from qualitylib.domain.measurement.metric_mixin import MetaMetricMixin
 from qualitylib.domain.measurement.target import TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget

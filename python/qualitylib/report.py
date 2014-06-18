@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric, utils
+from qualitylib import metric, utils, metric_source
 import datetime
 
 
@@ -246,7 +246,8 @@ class QualityReport(object):
         elif product.sonar_id():
             # Product is a trunk version, get the SNAPSHOT version number 
             # from Sonar
-            return self.__project.sonar().version(product.sonar_id())
+            sonar = self.__project.metric_source(metric_source.Sonar)
+            return sonar.version(product.sonar_id())
         else:
             return ''
 
@@ -327,7 +328,7 @@ class QualityReport(object):
                         meta_metric_class in self.META_SECTION_METRIC_CLASSES]
         self.__metrics.extend(meta_metrics)
         return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,
-                       history=self.__project.history())
+            history=self.__project.metric_source(metric_source.History))
 
     def __jsf_metrics(self, product):
         ''' Return a list of JSF metrics for the (JSF) product. '''

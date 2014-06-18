@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import domain
+from qualitylib import domain, metric_source
 import unittest
 
 
@@ -129,31 +129,6 @@ class ProjectTest(unittest.TestCase):
         self.__project.set_dashboard([1, 2], [3, 4])
         self.assertEqual(([1, 2], [3, 4]), self.__project.dashboard())
 
-    def test_analyse_products_without_sonar(self):
-        # pylint: disable=invalid-name
-        ''' Test that analyse products doesn't do anything when no Sonar is
-            present. '''
-        self.__project.analyse_products()
-
-    def test_analyse_products_with_sonar(self):
-        # pylint: disable=invalid-name
-        ''' Test that the project delegates analysing products to Sonar. '''
-
-        class FakeSonar(object):  # pylint: disable=too-few-public-methods
-            ''' Fake Sonar for this unit test. '''
-            def __init__(self):
-                self.products_analysed = []
-
-            def analyse_products(self, products):
-                ''' Keep a reference to the products to analyse. '''
-                self.products_analysed = products
-
-        sonar = FakeSonar()
-        project = domain.Project('Organization', 'Project name', sonar=sonar)
-        project.add_product(FakeProduct())
-        project.analyse_products()
-        self.failUnless(sonar.products_analysed)
-
     def test_add_document(self):
         ''' Test that a document can be added to the project. '''
         document = domain.Document('Title')
@@ -167,9 +142,23 @@ class ProjectTest(unittest.TestCase):
         self.assertEqual([domain.Street('A', 'A.*'), domain.Street('B', 'B.*')],
                          self.__project.streets())
 
+    def test_unknown_metric_source(self):
+        ''' Test that the project returns None for an unknown metric source
+            class. '''
+        self.failIf(self.__project.metric_source(self.__class__))
+
+    def test_known_metric_source(self):
+        ''' Test that the project returns the instance of a known metric
+            source class. '''
+        project = domain.Project(metric_sources={''.__class__: 'metric_source'})
+        self.assertEqual('metric_source', project.metric_source(''.__class__))
+
 
 class FakeResource(object):
     ''' Class to fake resources such as metric sources. '''
+    def __init__(self, name='FakeResource'):
+        self.__name = name
+
     @staticmethod
     def url():
         ''' Return a fake url. '''
@@ -180,8 +169,12 @@ class FakeResource(object):
         ''' Return a fake coverage url. '''
         return 'http://cov/%s' % product
 
+    def name(self):
+        ''' Return the name of the resource. '''
+        return self.__name
 
-class ProjectResourcesTest(unittest.TestCase):  
+
+class ProjectResourcesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Test case for the Project.project_resources() method. '''
 
@@ -198,120 +191,131 @@ class ProjectResourcesTest(unittest.TestCase):
 
     def test_wiki(self):
         ''' Test that the wiki is in the project resources. '''
-        self.failUnless(('Wiki', FakeResource().url()) in
-            self.project(wiki=FakeResource()).project_resources())
+        wiki = FakeResource('Wiki')
+        project = self.project(metric_sources={metric_source.Wiki: wiki})
+        self.failUnless((wiki.name(), wiki.url()) in \
+                        project.project_resources())
 
     def test_jira(self):
         ''' Test that Jira is in the project resources. '''
-        self.failUnless(('Jira', FakeResource().url()) in
-            domain.Project('Organization', 'Project name', 
-                           jira=FakeResource()).project_resources())
+        jira = metric_source.Jira('url', '', '')
+        project = self.project(metric_sources={metric_source.Jira: jira})
+        self.failUnless(('Jira', 'url') in project.project_resources())
 
     def test_build_server(self):
         ''' Test that build server is in the project resources. '''
-        self.failUnless(('Build server', FakeResource().url()) in 
-            domain.Project('Organization', 'Project name',
-                           build_server=FakeResource()).project_resources())
+        jenkins = metric_source.Jenkins('url', '', '')
+        project = self.project(metric_sources={metric_source.Jenkins: jenkins})
+        self.failUnless(('Jenkins build server', 'url') in \
+                        project.project_resources())
 
     def test_sonar(self):
         ''' Test that Sonar is in the project resources. '''
-        self.failUnless(('Sonar', FakeResource().url()) in
-            domain.Project('', '', sonar=FakeResource()).project_resources())
+        sonar = metric_source.Sonar('url')
+        project = domain.Project('', '', 
+            metric_sources={metric_source.Sonar: sonar})
+        self.failUnless(('SonarQube', 'url') in project.project_resources())
 
     def test_birt(self):
         ''' Test that Birt is in the project resources. '''
-        self.failUnless(('Birt reports', FakeResource().url()) in 
-            self.project(birt=FakeResource()).project_resources())
+        birt = FakeResource('Birt reports')
+        project = self.project(metric_sources={metric_source.Birt: birt})
+        self.failUnless(('Birt reports', birt.url()) in 
+                        project.project_resources())
 
     def test_trello_risk_log(self):
         ''' Test that the Trello risk log board is in the project resources. '''
-        project = self.project(trello_risklog_board=FakeResource())
-        self.failUnless(('Trello risico log', FakeResource().url()) in
-                         project.project_resources())
+        trello_risk_board = FakeResource('Trello risico log')
+        project = self.project(
+            metric_sources={metric_source.TrelloRiskBoard: trello_risk_board})
+        self.failUnless((trello_risk_board.name(), trello_risk_board.url()) in
+                        project.project_resources())
 
     def test_trello_actions(self):
         ''' Test that the Trello actions board is in the project resources. '''
-        project = self.project(trello_actions_board=FakeResource())
-        self.failUnless(('Trello acties', FakeResource().url()) in
-                         project.project_resources())
+        actions = FakeResource('Trello acties')
+        project = self.project(
+            metric_sources={metric_source.TrelloActionsBoard: actions})
+        self.failUnless((actions.name(), actions.url()) in
+                        project.project_resources())
 
     def test_performance_report(self):
         ''' Test that the performance report is in the project resources. '''
-        project = self.project(performance_report=FakeResource())
-        self.failUnless(('Performance reports', FakeResource().url()) in
+        performance_report = FakeResource('Performance reports')
+        project = self.project(metric_sources={metric_source.PerformanceReport:
+                                               performance_report})
+        self.failUnless((performance_report.name(), performance_report.url()) in
                          project.project_resources())
 
     def test_emma(self):
         ''' Test that the Emma reports are in the project resources. '''
-        emma = FakeResource()
-        project = self.project(emma=emma)
+        emma = metric_source.Emma('http://emma/%s', '', '')
+        project = self.project(metric_sources={metric_source.Emma: emma})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
-        url = FakeResource.get_coverage_url('emma_id')
+        url = emma.get_coverage_url('emma_id')
         self.failUnless(('Emma coverage report %s' % product.name(), url) in
                          project.project_resources())
 
     def test_emma_only_for_trunk(self):
         ''' Test that only the Emma reports for trunk versions of products
             are included. '''
-        emma = FakeResource()
-        project = self.project(emma=emma)
+        emma = metric_source.Emma('http://emma/%s', '', '')
+        project = self.project(metric_sources={metric_source.Emma: emma})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        url = FakeResource.get_coverage_url('emma_id')
+        url = emma.get_coverage_url('emma_id')
         self.failUnless(('Emma coverage report %s' % product.name(), url) in
                          project.project_resources())
 
     def test_jacoco(self):
         ''' Test that the JacCoCo reports are in the project resources. '''
-        jacoco = FakeResource()
-        project = self.project(jacoco=jacoco)
+        jacoco = metric_source.JaCoCo('http://jacoco/%s', '', '')
+        project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
-        url = FakeResource.get_coverage_url('jacoco_id')
+        url = jacoco.get_coverage_url('jacoco_id')
         self.failUnless(('JaCoCo coverage report %s' % product.name(), url) in 
                          project.project_resources())
 
     def test_jacoco_only_for_trunk(self):
         ''' Test that only the JaCoCo reports for trunk versions of products
             are included. '''
-        jacoco = FakeResource()
-        project = self.project(jacoco=jacoco)
+        jacoco = metric_source.JaCoCo('http://jacoco/%s', '', '')
+        project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        url = FakeResource.get_coverage_url('jacoco_id')
+        url = jacoco.get_coverage_url('jacoco_id')
         self.failUnless(('JaCoCo coverage report %s' % product.name(), url) in 
-                         project.project_resources())
-
-    def test_javamelody(self):
-        ''' Test that JavaMelody is in the project resources. '''
-        project = self.project(javamelody=FakeResource())
-        self.failUnless(('JavaMelody', FakeResource().url()) in
                          project.project_resources())
 
     def test_release_candidates(self):
         ''' Test that the release candidates file is in the project 
             resources. '''
-        project = self.project(release_candidates=FakeResource())
-        self.failUnless(('Release kandidaten', FakeResource().url()) in
+        release_candidates = FakeResource('Release kandidaten')
+        project = self.project(metric_sources={metric_source.ReleaseCandidates:
+                                               release_candidates})
+        self.failUnless((release_candidates.name(), release_candidates.url()) in
                          project.project_resources())
 
     def test_release_archive(self):
         ''' Test that the release archive is in the project resources. '''
-        project = self.project(release_archives=[FakeResource()])
-        self.failUnless(('Release archief', FakeResource().url()) in
+        project = self.project()
+        team = domain.Team('A', release_archives=[FakeResource()])
+        project.add_team(team)
+        self.failUnless(('Release archief team A', FakeResource().url()) in
                          project.project_resources())
 
     def test_repository(self):
         ''' Test that the source code repository is in the project 
             resources. '''
-        project = self.project(subversion='SVN')
+        project = self.project(metric_sources={metric_source.Subversion: 'SVN'})
         product = domain.Product(project, 'Short name',
             metric_source_ids={'SVN': 'http://svn/product/'})
         project.add_product(product)
@@ -321,7 +325,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_repositories(self):
         ''' Test that the source code repositories are in the project 
             resources. '''
-        project = self.project(subversion='SVN')
+        project = self.project(metric_sources={metric_source.Subversion: 'SVN'})
         for index in range(1, 4):
             product = domain.Product(project, 'Product %d' % index, 
                 metric_source_ids={'SVN': 'https://svn/product%d/' % index})
@@ -337,7 +341,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_additional_resources(self):
         ''' Test that additional resources can be added to the project
             resources. '''
-        project = self.project(additional_resources=[dict(title='Resource', 
-                                                          url='http://url')])
+        project = self.project(additional_resources=[
+            domain.MetricSource(name='Resource', url='http://url')])
         resources = project.project_resources()
         self.failUnless(('Resource', 'http://url') in resources)

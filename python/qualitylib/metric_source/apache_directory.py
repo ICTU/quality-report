@@ -22,6 +22,8 @@ import datetime
 class ApacheDirectory(release_archive.ReleaseArchive, 
                       beautifulsoup.BeautifulSoupOpener):
     ''' Class representing a specific directory served by Apache. '''
+    metric_source_name = 'Apache directory'
+
     @utils.memoized
     def date_of_most_recent_file(self):
         ''' Return the date and time of the most recent file listed. '''

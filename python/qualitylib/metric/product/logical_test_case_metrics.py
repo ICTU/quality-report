@@ -123,7 +123,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
                                                    self.__version())
         # If this product/version never has been tested and it is not the 
         # trunk version, return the date the version was created so we don't 
-        # start complaining about not executed manual  tests right after 
+        # start complaining about not executed manual tests right after 
         # creation of the version.
         if date == datetime.datetime.min and self._subject.product_version():
             date = self._subject.last_changed_date()

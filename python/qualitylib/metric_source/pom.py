@@ -15,13 +15,15 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils
+from qualitylib import utils, domain
 import logging
 import urllib2
 
 
-class Pom(beautifulsoup.BeautifulSoupOpener):
+class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing Maven pom.xml files. '''
+
+    metric_source_name = 'Maven pom file'
 
     @utils.memoized
     def dependencies(self, url, products, parent_pom_properties=None):
@@ -52,8 +54,7 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
             module_artifacts.update(self.modules(module_url))
         return module_artifacts
 
-    @classmethod
-    def __artifacts(cls, pom_soup, url, properties, products):
+    def __artifacts(self, pom_soup, url, properties, products):
         ''' Return the artifacts from the dependency tag. '''
         dependencies = set()
         for dependency_tag in pom_soup('dependency'):
@@ -63,10 +64,10 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
                     continue
             except IndexError:
                 pass  # No explicit scope
-            artifact = cls.__artifact(dependency_tag, products)
+            artifact = self.__artifact(dependency_tag, products)
             if not artifact:
                 continue
-            version = cls.__version(dependency_tag, url, properties)
+            version = self.__version(dependency_tag, url, properties)
             if not version:
                 continue
             if 'SNAPSHOT' in version:
@@ -74,13 +75,23 @@ class Pom(beautifulsoup.BeautifulSoupOpener):
             dependencies.add((artifact, version))
         return dependencies
 
-    @staticmethod
-    def __artifact(dependency_tag, products):
+    def __artifact(self, dependency_tag, products):
         ''' Parse the artifact name from the dependency tag. '''
         artifact_name = dependency_tag('artifactid')[0].string
         for product in products:
-            if product.has_artifact(artifact_name):
+            if self.__product_has_artifact(product, artifact_name):
                 return product.sonar_id().split(':')[1]
+
+    @utils.memoized
+    def __product_has_artifact(self, product, artifact_id):
+        ''' Return whether the product has an artifact with artifact id. '''
+        product_artifact_id = product.sonar_id().split(':')[1]
+        if artifact_id == product_artifact_id:
+            return True
+        for module in self.modules(product.svn_path()):
+            if artifact_id == module:
+                return True
+        return False
 
     @staticmethod
     def __version(dependency_tag, url, properties):

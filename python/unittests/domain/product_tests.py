@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import domain
+from qualitylib import domain, metric_source
 import unittest
 
 
@@ -75,7 +75,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = FakeSonar()
         self.__project = domain.Project('Organization', 'Project name',
-                                        sonar=self.__sonar)
+            metric_sources={metric_source.Sonar: self.__sonar})
         self.__product = domain.Product(self.__project,
             metric_source_ids={self.__sonar: 'sonar:id'},
             old_metric_source_ids={self.__sonar: {'old.version':
@@ -141,14 +141,15 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_one_unknown_dependency(self):
         ''' Test that the product has no dependencies when the dependency
             returned by the pom file is not in the project. '''
-        project = domain.Project('Organization', 'Project name', pom=FakePom())
+        project = domain.Project('Organization', 'Project name', 
+                                 metric_sources={metric_source.Pom: FakePom()})
         product = domain.Product(project)
         self.failIf(product.dependencies())
 
     def test_version_without_dependencies(self):
         ''' Test a product version without dependencies. '''
         project = domain.Project('Organization', 'Project name',
-                                 dependencies_db=FakeDependenciesDb())
+            metric_sources={metric_source.Dependencies: FakeDependenciesDb()})
         product = domain.Product(project)
         self.failIf(product.dependencies(version='1.1'))
 
@@ -173,7 +174,8 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
         release_candidates = FakeReleaseCandidates()
         project = domain.Project('Organization', 'Project name', 
-                                 release_candidates=release_candidates)
+            metric_sources={metric_source.ReleaseCandidates:
+                            release_candidates})
         product = domain.Product(project,
                                  metric_source_ids={release_candidates: 'P'})
         product.set_product_version('1.1')
@@ -184,7 +186,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             Subversion. '''
         subversion = FakeSubversion()
         project = domain.Project('Organization', 'Project name',
-                                 subversion=subversion)
+            metric_sources={metric_source.Subversion: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})
         self.assertEqual('1.1', product.latest_released_product_version())
@@ -204,7 +206,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             is the same as the latest release returned by Subversion. '''
         subversion = FakeSubversion()
         project = domain.Project('Organization', 'Project name',
-                                 subversion=subversion)
+            metric_sources={metric_source.Subversion: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})
         product.set_product_version('1.1')
@@ -215,7 +217,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             reported by Subversion. '''
         subversion = FakeSubversion()
         project = domain.Project('Organization', 'Project name',
-                                 subversion=subversion)
+            metric_sources={metric_source.Subversion: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})
         self.assertEqual(subversion.last_changed_date('http://svn'),

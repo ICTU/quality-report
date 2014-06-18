@@ -26,9 +26,9 @@ class Product(MeasurableObject):
         maintained. '''
 
     def __init__(self, project, short_name='',
-                 unittests=None, jsf=None,
-                 responsible_teams=None, kpi_responsibility=None, art=None,
-                 branches_to_ignore=None, product_version='', **kwargs):
+                 unittests=None, jsf=None, art=None,
+                 responsible_teams=None, kpi_responsibility=None, 
+                 product_version='', **kwargs):
 
         ''' responsible_teams: list of teams responsible for this product.
             kpi_responsibility: dictionary of metric classes mapped to lists
@@ -43,7 +43,6 @@ class Product(MeasurableObject):
         self.__product_version = product_version
         self.__product_responsibility = responsible_teams or []
         self.__kpi_responsibility = kpi_responsibility or {}
-        self.__branches_to_ignore = branches_to_ignore or []
 
     def __str__(self):
         return self.sonar_id()
@@ -65,10 +64,11 @@ class Product(MeasurableObject):
 
     def sonar_id(self):
         ''' Return the id that identifies the product in Sonar. '''
-        sonar_id = self.old_metric_source_id(self.__project.sonar(),
-                                             self.__product_version)
+        from qualitylib import metric_source
+        sonar = self.__project.metric_source(metric_source.Sonar)
+        sonar_id = self.old_metric_source_id(sonar, self.__product_version)
         if not sonar_id:
-            sonar_id = self.metric_source_id(self.__project.sonar()) or ''
+            sonar_id = self.metric_source_id(sonar) or ''
         if self.__product_version:
             sonar_id += ':' + self.__product_version
         return sonar_id
@@ -102,7 +102,8 @@ class Product(MeasurableObject):
 
     def latest_released_product_version(self):
         ''' Return the latest released version of this product. '''
-        subversion = self.__project.subversion()
+        from qualitylib import metric_source
+        subversion = self.__project.metric_source(metric_source.Subversion)
         svn_path = self.metric_source_id(subversion)
         if not svn_path:
             return ''
@@ -119,13 +120,15 @@ class Product(MeasurableObject):
 
     def last_changed_date(self):
         ''' Return the date this product/version was last changed. '''
-        subversion = self.__project.subversion()
+        from qualitylib import metric_source
+        subversion = self.__project.metric_source(metric_source.Subversion)
         return subversion.last_changed_date(self.svn_path())
 
     def release_candidate(self):
         ''' Return the version of this product that is the candidate for 
             release to operations. '''
-        release_candidates = self.__project.release_candidates()
+        from qualitylib import metric_source
+        release_candidates = self.__project.metric_source(metric_source.ReleaseCandidates)
         release_candidate_id = self.metric_source_id(release_candidates)
         if release_candidate_id:
             try:
@@ -147,7 +150,9 @@ class Product(MeasurableObject):
 
     def name(self):
         ''' Return a human readable name for the product. '''
-        sonar_id = self.metric_source_id(self.__project.sonar()) or self.short_name()
+        from qualitylib import metric_source
+        sonar = self.__project.metric_source(metric_source.Sonar)
+        sonar_id = self.metric_source_id(sonar) or self.short_name()
         try:
             return sonar_id.split(':', 1)[-1]
         except AttributeError:
@@ -203,7 +208,8 @@ class Product(MeasurableObject):
 
     def svn_path(self, version=None):
         ''' Return the svn path of this product and version. '''
-        subversion = self.__project.subversion()
+        from qualitylib import metric_source
+        subversion = self.__project.metric_source(metric_source.Subversion)
         version = version or self.product_version()
         svn_path = self.old_metric_source_id(subversion, version)
         if svn_path:
@@ -227,12 +233,29 @@ class Product(MeasurableObject):
 
     def check_out(self, folder):
         ''' Check out the source code of the product. '''
-        self.__project.subversion().check_out(self.svn_path(), folder)
+        from qualitylib import metric_source
+        subversion = self.__project.metric_source(metric_source.Subversion)
+        subversion.check_out(self.svn_path(), folder)
 
-    def branches_to_ignore(self):
-        ''' Return the list of branch names that shouldn't be checked for
-            unmerged code. '''
-        return self.__branches_to_ignore
+    def product_resources(self):
+        ''' Return the resources of the product. '''
+        from qualitylib import metric_source
+        resources = []
+        # Only include trunk versions that have an ART with coverage
+        # measurement:
+        if not self.product_version():
+            for metric_source_class in [metric_source.Emma,
+                                        metric_source.JaCoCo]:
+                source = self.__project.metric_source(metric_source_class)
+                source_id = self.metric_source_id(source)
+                if source_id:
+                    resources.append(('%s %s' % (source.name(), 
+                                                 self.name()), 
+                                      source.get_coverage_url(source_id)))
+        if self.svn_path().endswith('/trunk'):
+            resources.append(('Broncode repository %s' % self.name(),
+                              self.svn_path()[:-len('/trunk')]))
+        return resources
 
     @utils.memoized
     def dependencies(self, recursive=True, version=None, user=None):
@@ -266,29 +289,19 @@ class Product(MeasurableObject):
                 users.add(product)
         return users
 
-    @utils.memoized
-    def has_artifact(self, artifact_id):
-        ''' Return whether this product has an artifact with artifact id. '''
-        own_artifact_id = self.sonar_id().split(':')[1]
-        if artifact_id == own_artifact_id:
-            return True
-        for module in self.__project.pom().modules(self.svn_path()):
-            if artifact_id == module:
-                return True
-        return False
-
     def __get_dependencies(self, version, user):
         ''' Get the dependencies from the cached dependencies database if 
             possible or else from the pom file. '''
-        if self.__project.dependency_db() and version:
-            return self.__get_dependencies_from_cache(version, user)
+        from qualitylib import metric_source
+        cache = self.__project.metric_source(metric_source.Dependencies)
+        if cache and version:
+            return self.__get_dependencies_from_cache(version, user, cache)
         else:
             return self.__get_dependencies_from_pom(version, user)
 
-    def __get_dependencies_from_cache(self, version, user):
+    def __get_dependencies_from_cache(self, version, user, cache):
         ''' Get the dependencies from the cached dependencies database. First
             update cache if necessary. '''
-        cache = self.__project.dependency_db()
         name = self.name()
         if not cache.has_dependencies(name, version):
             # Update the cache
@@ -301,7 +314,8 @@ class Product(MeasurableObject):
     def __get_dependencies_from_pom(self, version, user):
         ''' Open the pom file for this product and the specified version
             and retrieve the dependencies from the pom file. '''
-        pom = self.__project.pom()
+        from qualitylib import metric_source
+        pom = self.__project.metric_source(metric_source.Pom)
         if not pom:
             logging.warning('No pom retriever defined.')
             return set()

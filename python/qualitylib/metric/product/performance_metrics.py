@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.domain import Metric
+from qualitylib import domain, metric_source
 from qualitylib.metric.quality_attributes import PERFORMANCE
 import datetime
 
 
-class ResponseTimes(Metric):
+class ResponseTimes(domain.Metric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring reponsetimes as determined in the performance
         tests. '''
@@ -51,7 +51,8 @@ class ResponseTimes(Metric):
 
     def __init__(self, *args, **kwargs):
         super(ResponseTimes, self).__init__(*args, **kwargs)
-        self.__performance_report = self._project.performance_report()
+        self.__performance_report = self._project.metric_source(
+            metric_source.PerformanceReport)
         if not self._subject.product_version():
             self.old_age = datetime.timedelta(hours=7 * 24)
             self.max_old_age = datetime.timedelta(hours=14 * 24)
@@ -66,8 +67,9 @@ class ResponseTimes(Metric):
     def can_be_measured(cls, subject, project):
         ''' The performance can be measured when the product has a performance
             report. '''
+        report = project.metric_source(metric_source.PerformanceReport)
         return super(ResponseTimes, cls).can_be_measured(subject, project) and \
-            subject.metric_source_id(project.performance_report())
+            subject.metric_source_id(report)
 
     def value(self):
         return None  # We use max_violations and wish_violations as value

@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeSonar(object):
@@ -61,7 +61,8 @@ class ProductLOCTest(unittest.TestCase):
     ''' Unit tests for the product LOC metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.ProductLOC(subject=FakeSubject(), project=project)
 
     def test_value(self):
@@ -81,7 +82,9 @@ class TotalLOCTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        project = domain.Project(sonar=FakeSonar(), history=FakeHistory())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar(),
+                            metric_source.History: FakeHistory()})
         self.__metric = metric.TotalLOC(subject=[self.__subject,
                                                  self.__subject],
                                         project=project)

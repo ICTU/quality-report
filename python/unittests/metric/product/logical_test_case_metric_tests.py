@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeBirt(object):
@@ -121,7 +121,8 @@ class AutomatedLogicalTestCasesTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(birt=self.__birt)
+        self.__project = domain.Project(metric_sources={metric_source.Birt:
+                                                        self.__birt})
         self.__metric = metric.AutomatedLogicalTestCases( \
             subject=self.__subject, project=self.__project)
 
@@ -168,7 +169,8 @@ class ReviewedAndApprovedLogicalTestCasesTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(birt=birt)
+        self.__project = domain.Project(metric_sources={metric_source.Birt:
+                                                        birt})
         self.__metric = metric.ReviewedAndApprovedLogicalTestCases( \
             subject=self.__subject, project=self.__project)
 
@@ -211,7 +213,7 @@ class ReviewedAndApprovedLogicalTestCasesTest(unittest.TestCase):
         ''' Test that the metric can not be measured if the product has no
             test design report in Birt. '''
         birt = FakeBirt(test_design=False)
-        project = domain.Project(birt=birt)
+        project = domain.Project(metric_sources={metric_source.Birt: birt})
         self.failIf(metric.ReviewedAndApprovedLogicalTestCases.\
                     can_be_measured(self.__subject, project))
 
@@ -222,7 +224,8 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(birt=self.__birt)
+        self.__project = domain.Project(metric_sources={metric_source.Birt:
+                                                        self.__birt})
         self.__metric = metric.ManualLogicalTestCases( \
             subject=self.__subject, project=self.__project)
 

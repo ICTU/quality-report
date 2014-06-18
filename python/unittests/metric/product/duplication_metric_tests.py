@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeSonar(object):
@@ -60,7 +60,8 @@ class DuplicationTest(unittest.TestCase):
     ''' Unit tests for the duplication metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.Duplication(subject=FakeSubject(),
                                           project=project)
 
@@ -81,7 +82,8 @@ class JsfDuplicationTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        self.__project = domain.Project(sonar=FakeSonar())
+        self.__project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.JsfDuplication(subject=self.__subject,
                                              project=self.__project)
  

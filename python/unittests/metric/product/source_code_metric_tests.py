@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeSonar(object):
@@ -85,7 +85,8 @@ class CommentedLOCTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.CommentedLOC(subject=self.__subject,
                                            project=project)
 
@@ -105,7 +106,8 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     ''' Unit tests for the Cyclomatic complexity metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.CyclomaticComplexity(subject=FakeSubject(),
                                                    project=project)
 
@@ -132,7 +134,8 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     ''' Unit tests for the long methods metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.LongMethods(subject=FakeSubject(),
                                           project=project)
 
@@ -160,7 +163,7 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     ''' Unit tests for the many parameters metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.ManyParameters(subject=FakeSubject(),
                                              project=project)
 

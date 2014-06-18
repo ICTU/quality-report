@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import utils
+from qualitylib import utils, metric_source
 from qualitylib.metric import LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import \
     TrelloActionsBoardMetricMixin, JiraMetricMixin
@@ -40,12 +40,13 @@ class RiskLog(LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(RiskLog, self).__init__(*args, **kwargs)
-        self.__trello_risklog_board = self._project.trello_risklog_board()
+        self.__trello_risklog_board = \
+            self._project.metric_source(metric_source.TrelloRiskBoard)
 
     @classmethod
     def can_be_measured(cls, subject, project):
         return super(RiskLog, cls).can_be_measured(subject, project) and \
-            project.trello_risklog_board()
+            project.metric_source(metric_source.TrelloRiskBoard)
 
     def value(self):
         return (datetime.datetime.now() - self._date()).days
@@ -100,7 +101,7 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 
     name = 'Tijdigheid acties'
     norm_template = 'Geen van de acties en besluiten in de actie- en ' \
-        'besluitenlijst is te laat of te lang (14 dagen) niet bijgewerkt.' \
+        'besluitenlijst is te laat of te lang (14 dagen) niet bijgewerkt. ' \
         'Meer dan %(low_target)d acties te laat of te lang niet bijgewerkt ' \
         'is rood.'
     template = '%(value)d acties uit de actie- en besluitenlijst zijn te ' \
@@ -125,8 +126,6 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
         return 'Niet bijgewerkte of te late acties'
 
 
-
-
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of open bug reports. '''
 
@@ -140,8 +139,9 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, subject, project):
+        jira = project.metric_source(metric_source.Jira)
         return super(OpenBugs, cls).can_be_measured(subject, project) and \
-            project.jira().has_open_bugs_query()
+            jira.has_open_bugs_query()
 
     def value(self):
         return self._jira.nr_open_bugs()
@@ -165,9 +165,10 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, subject, project):
+        jira = project.metric_source(metric_source.Jira)
         return super(OpenSecurityBugs, cls).can_be_measured(subject, 
                                                             project) and \
-            project.jira().has_open_security_bugs_query()
+            jira.has_open_security_bugs_query()
 
     def value(self):
         return self._jira.nr_open_security_bugs()
@@ -191,9 +192,10 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, subject, project):
+        jira = project.metric_source(metric_source.Jira)
         return super(BlockingTestIssues, cls).can_be_measured(subject, 
                                                               project) and \
-            project.jira().has_blocking_test_issues_query()
+            jira.has_blocking_test_issues_query()
 
     def value(self):
         return self._jira.nr_blocking_test_issues()

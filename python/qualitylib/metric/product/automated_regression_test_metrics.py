@@ -18,6 +18,7 @@ from qualitylib.domain import HigherIsBetterMetric, \
    LowerPercentageIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE
+from qualitylib import metric_source
 import datetime
 
 
@@ -39,8 +40,8 @@ class ARTCoverage(HigherIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(ARTCoverage, self).__init__(*args, **kwargs)
-        self.__emma = self._project.emma()
-        self.__jacoco = self._project.jacoco()
+        self.__emma = self._project.metric_source(metric_source.Emma)
+        self.__jacoco = self._project.metric_source(metric_source.JaCoCo)
         if not self._subject.product_version():
             # Trunk version, ART coverage measurement should not be too old.
             self.old_age = datetime.timedelta(hours=3 * 24)
@@ -52,9 +53,11 @@ class ARTCoverage(HigherIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, subject, project):
+        emma = project.metric_source(metric_source.Emma)
+        jacoco = project.metric_source(metric_source.JaCoCo)
         return super(ARTCoverage, cls).can_be_measured(subject, project) and \
-            (project.jacoco() and subject.metric_source_id(project.jacoco())) \
-            or (project.emma() and subject.metric_source_id(project.emma()))
+            (jacoco and subject.metric_source_id(jacoco)) \
+            or (emma and subject.metric_source_id(emma))
 
     def value(self):
         return self.__coverage()
@@ -111,8 +114,9 @@ class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, product, project):
+        birt = project.metric_source(metric_source.Birt)
         return super(ARTPerformance, cls).can_be_measured(product, project) \
-            and product.product_version() and product.art() and project.birt()
+            and product.product_version() and product.art() and birt
 
     def _denominator(self):
         return self._birt.nr_performance_pages(self._birt_id(), 

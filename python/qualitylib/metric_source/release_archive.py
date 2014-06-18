@@ -15,20 +15,18 @@ limitations under the License.
 '''
 
 
-class ReleaseArchive(object):  # pylint: disable=abstract-class-not-used
+from qualitylib import domain
+
+
+class ReleaseArchive(domain.MetricSource):
+    # pylint: disable=abstract-class-not-used
     ''' Abstract base class for release archives. '''
+
+    metric_source_name = 'Release archief'
+
     def __init__(self, name, url, *args, **kwargs):
-        self.__name = name
-        self.__url = url
-        super(ReleaseArchive, self).__init__(*args, **kwargs)
-        
-    def name(self):
-        ''' Return the name of the release archive. '''
-        return self.__name
-    
-    def url(self):
-        ''' Return the url of the release archive. '''
-        return self.__url
+        super(ReleaseArchive, self).__init__(name=name, url=url,
+                                             *args, **kwargs)
 
     def date_of_most_recent_file(self):
         ''' Return the date and time of the most recent file in the release

@@ -15,22 +15,19 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils
+from qualitylib import utils, domain
 import datetime
 import logging
 import time
 
 
-class Wiki(beautifulsoup.BeautifulSoupOpener):
+class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing the Wiki instance. '''
 
-    def __init__(self, wiki_url):
-        super(Wiki, self).__init__()
-        self.__wiki_url = wiki_url
+    metric_source_name = 'Wiki'
 
-    def url(self):
-        ''' Return the url to the Wiki. '''
-        return self.__wiki_url
+    def __init__(self, wiki_url):
+        super(Wiki, self).__init__(url=wiki_url)
 
     # Team spirit
 
@@ -38,7 +35,7 @@ class Wiki(beautifulsoup.BeautifulSoupOpener):
     def team_spirit(self, team):
         ''' Return the team spirit of the team. Team spirit is either :-), :-|,
             or :-( '''
-        soup = self.soup(self.__wiki_url)
+        soup = self.soup(self.url())
         try:
             row = soup('tr', id='smiley_%s' % team.id_string())[0]('td')
         except IndexError:
@@ -51,7 +48,7 @@ class Wiki(beautifulsoup.BeautifulSoupOpener):
     def date_of_last_team_spirit_measurement(self, team):
         ''' Return the date that the team spirit of the team was last
             measured. '''
-        soup = self.soup(self.__wiki_url)
+        soup = self.soup(self.url())
         columns = len(soup('tr', id='smiley_%s' % team.id_string())[0]('td'))
         date_text = soup('th')[columns - 1].string.strip()
         return self.__parse_date(date_text)
@@ -61,7 +58,7 @@ class Wiki(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def comment(self, metric_id):
         ''' Return a comment on a metric from the Wiki. '''
-        soup = self.soup(self.__wiki_url)
+        soup = self.soup(self.url())
         try:
             metric_row = soup('table')[1]('tr', id=metric_id)[0]
             return metric_row('td')[1].string.strip()
@@ -70,7 +67,7 @@ class Wiki(beautifulsoup.BeautifulSoupOpener):
 
     def comment_url(self):
         ''' Return the url for comments. '''
-        return self.__wiki_url
+        return self.url()
 
     # Utility methods
 

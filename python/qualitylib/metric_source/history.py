@@ -17,16 +17,18 @@ limitations under the License.
 import datetime
 import logging
 import StringIO
-from qualitylib import utils
+from qualitylib import utils, domain
 
 
-class History(object):
+class History(domain.MetricSource):
     ''' Class representing the history file. '''
+    metric_source_name = 'Measurement history file'
 
     def __init__(self, history_filename, recent_history=250, file_=file):
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_
+        super(History, self).__init__()
 
     def recent_history(self, *metric_ids):
         ''' Retrieve the recent history for the metric_ids. '''
@@ -62,8 +64,11 @@ class History(object):
             last_measurement = None
         if type(last_measurement) == type((),) and len(last_measurement) >= 3:
             last_status = last_measurement[1]
-            date = datetime.datetime.strptime(last_measurement[2], 
-                                              '%Y-%m-%d %H:%M:%S.%f')
+            time_stamp = last_measurement[2]
+            time_stamp_format = '%Y-%m-%d %H:%M:%S'
+            if '.' in time_stamp:
+                time_stamp_format += '.%f'
+            date = datetime.datetime.strptime(time_stamp, time_stamp_format)
             return last_status, date
         else:
             return '', datetime.datetime.min

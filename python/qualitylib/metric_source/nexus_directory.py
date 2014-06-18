@@ -21,6 +21,8 @@ from qualitylib import utils
 class NexusDirectory(release_archive.ReleaseArchive, 
                       beautifulsoup.BeautifulSoupOpener):
     ''' Class representing a specific directory served by Nexus. '''
+    metric_source_name = 'Nexus'
+
     @utils.memoized
     def date_of_most_recent_file(self):
         ''' Return the date and time of the most recent file listed. '''

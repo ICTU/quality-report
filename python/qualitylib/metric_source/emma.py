@@ -21,6 +21,7 @@ import time
 
 class Emma(coverage_report.CoverageReport):
     ''' Class representing an Emma coverage report. '''
+    metric_source_name = 'Emma coverage report'
 
     def _parse_coverage_percentage(self, soup):
         coverage_text = soup('td')[5].string

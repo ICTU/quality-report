@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import utils
+from qualitylib import utils, domain
 from qualitylib.metric_source import release_archive
 from BeautifulSoup import BeautifulSoup
 import datetime
@@ -25,6 +25,9 @@ import subprocess
 
 class SubversionFolder(release_archive.ReleaseArchive):
     ''' Class representing a specific directory served by Subversion. '''
+
+    metric_source_name = 'Subversion folder'
+
     def __init__(self, name, url, run_shell_command=subprocess.check_output):
         self.__run_shell_command = run_shell_command
         super(SubversionFolder, self).__init__(name, url)
@@ -47,8 +50,10 @@ class SubversionFolder(release_archive.ReleaseArchive):
         return self.__run_shell_command(['svn', 'info', self.url()])
 
 
-class Subversion(object):
+class Subversion(domain.MetricSource):
     ''' Class representing the Subversion repository. '''
+
+    metric_source_name = 'Subversion'
 
     def __init__(self, username=None, password=None,
                  run_shell_command=subprocess.check_output):

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 import unittest
 
 
@@ -31,7 +31,7 @@ class SonarMetricMixinTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that subclasses of the Sonar metric mixin can be measured
             when the project has Sonar. '''
-        project = domain.Project(sonar='Sonar')
+        project = domain.Project(metric_sources={metric_source.Sonar: 'Sonar'})
         product = domain.Product(project)
         self.failUnless(SonarMetricMixinUnderTest.can_be_measured(product,
                                                                   project))

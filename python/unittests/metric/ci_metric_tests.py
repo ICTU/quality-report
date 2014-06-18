@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 import unittest
 
 
@@ -86,7 +86,8 @@ class ProjectFailingCIJobsTest(FailingCIJobsCommonTestsMixin,
     def setUp(self):  # pylint: disable=invalid-name
         ''' Create the text fixture. '''
         self._subject = None
-        self._project = domain.Project(build_server=FakeJenkins())
+        self._project = domain.Project(metric_sources={metric_source.Jenkins:
+                                                       FakeJenkins()})
         self._metric = metric.ProjectFailingCIJobs(subject=self._subject,
                                                    project=self._project)
 
@@ -119,7 +120,8 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         ''' Create the text fixture. '''
-        self._project = domain.Project(build_server=FakeJenkins())
+        self._project = domain.Project(metric_sources={metric_source.Jenkins:
+                                                       FakeJenkins()})
         self._subject = domain.Team('Team')
         self._project.add_team(self._subject, responsible=True)
         self._project.add_team(domain.Team('Another team'), responsible=True)
@@ -135,7 +137,8 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
     def test_wont_be_measured_unless_multiple_teams(self):
         ''' Test that the metric won't be measured unless the project has 
             multiple teams. '''
-        project = domain.Project(build_server=FakeJenkins())
+        project = domain.Project(metric_sources={metric_source.Jenkins:
+                                                 FakeJenkins()})
         team = domain.Team('Single team')
         project.add_team(team, responsible=True)
         self.failIf(metric.TeamFailingCIJobs.can_be_measured(team, project))
@@ -185,7 +188,8 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         ''' Create the text fixture. '''
-        self._project = domain.Project(build_server=FakeJenkins())
+        self._project = domain.Project(metric_sources={metric_source.Jenkins: 
+                                                       FakeJenkins()})
         self.__team = domain.Team('Team')
         self._project.add_team(self.__team)
         self._project.add_team(domain.Team('Another team'))
@@ -201,7 +205,8 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
     def test_wont_be_measured_unless_multiple_teams(self):
         ''' Test that the metric won't be measured unless the project has
             multiple teams. '''
-        project = domain.Project(build_server=FakeJenkins())
+        project = domain.Project(metric_sources={metric_source.Jenkins: 
+                                                 FakeJenkins()})
         project.add_team(self.__team)
         self.failIf(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
                                                             project))
@@ -229,7 +234,8 @@ class ProjectUnusedCIJobs(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         ''' Create the text fixture. '''
-        self._project = domain.Project(build_server=FakeJenkins())
+        self._project = domain.Project(metric_sources={metric_source.Jenkins:
+                                                       FakeJenkins()})
         self._metric = metric.ProjectUnusedCIJobs(subject=self._project,
                                                   project=self._project)
 
@@ -256,7 +262,8 @@ class ARTStabilityTest(unittest.TestCase):
     ''' Unit tests for the ARTstability metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(build_server=FakeJenkins())
+        self.__project = domain.Project(metric_sources={metric_source.Jenkins: 
+                                                        FakeJenkins()})
         self.__street = domain.Street('a', 'b', url='http://street')
         self.__metric = metric.ARTStability(subject=self.__street,
                                             project=self.__project)
@@ -328,7 +335,8 @@ class AssignedCIJobsTest(unittest.TestCase):
     ''' Unit tests for the assigned CI jobs metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(build_server=FakeJenkins())
+        self.__project = domain.Project(metric_sources={metric_source.Jenkins:
+                                                        FakeJenkins()})
         self.__project.add_team('team1')
         self.__project.add_team('team2')
         self.__metric = metric.AssignedCIJobs(subject=domain.Team('Team'), 
@@ -368,5 +376,6 @@ class AssignedCIJobsTest(unittest.TestCase):
     def test_cant_be_measured_without_multiple_teams(self):
         ''' Test that the metric can be measured when the project has a build 
             server and the project has more than one team. '''
-        project = domain.Project(build_server=FakeJenkins())
+        project = domain.Project(metric_sources={metric_source.Jenkins:
+                                                 FakeJenkins()})
         self.failIf(metric.AssignedCIJobs.can_be_measured(project, project))

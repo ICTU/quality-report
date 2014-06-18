@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeEmma(object):
@@ -72,10 +72,10 @@ class ARTCoverageJacocoTest(unittest.TestCase):
     ''' Unit tests for the ART coverage metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__jacoco = FakeJaCoCo()
-        self.__subject = FakeSubject(metric_source_ids={self.__jacoco:
-                                                        'jacoco_id'},
-                                     version='1.1')
-        self.__project = domain.Project(jacoco=self.__jacoco)
+        self.__subject = FakeSubject(
+            metric_source_ids={self.__jacoco: 'jacoco_id'}, version='1.1')
+        self.__project = domain.Project(metric_sources={metric_source.JaCoCo:
+                                                        self.__jacoco})
         self.__metric = metric.ARTCoverage(subject=self.__subject, 
                                            project=self.__project)
 
@@ -117,7 +117,8 @@ class ARTCoverageEmmaTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__emma = FakeEmma()
         self.__subject = FakeSubject(metric_source_ids={self.__emma: 'emma_id'})
-        self.__project = domain.Project(emma=self.__emma)
+        self.__project = domain.Project(metric_sources={metric_source.Emma:
+                                                        self.__emma})
         self.__metric = metric.ARTCoverage(subject=self.__subject, 
                                            project=self.__project)
 
@@ -180,7 +181,8 @@ class ARTPerformanceTest(unittest.TestCase):
         self.__birt = FakeBirt()
         self.__subject = FakeSubject(version='1',
                                      metric_source_ids={self.__birt: 'birt_id'})
-        self.__project = domain.Project(birt=self.__birt)
+        self.__project = domain.Project(metric_sources={metric_source.Birt:
+                                                        self.__birt})
         self.__metric = metric.ARTPerformance(subject=self.__subject, 
                                               project=self.__project)
 

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import domain
+from qualitylib import domain, metric_source
 from unittests.domain.measurement.fake import FakeWiki, FakeHistory, \
     FakeTasks, FakeSubject
 import datetime
@@ -45,7 +45,9 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
         self.__fake_tasks = FakeTasks()
-        project = domain.Project(history=FakeHistory(), tasks=self.__fake_tasks)
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory(),
+                            metric_source.Tasks: self.__fake_tasks})
         self.__metric = MetricUnderTest(self.__subject, project=project)
 
     def test_stable_id(self):
@@ -119,7 +121,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_url(self):
         ''' Test that the metric has no default url. '''
         self.failIf(self.__metric.url())
-        
+
     def test_default_url_label(self):
         ''' Test that the metric has no default url label. '''
         self.failIf(self.__metric.url_label())
@@ -222,7 +224,9 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the comment urls include a link to the Wiki if the Wiki
             has a comment on the metric. '''
         wiki = FakeWiki('Comment')
-        project = domain.Project(history=FakeHistory(), wiki=wiki)
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory(),
+                            metric_source.Wiki: wiki})
         metric = MetricUnderTest(self.__subject, project=project)
         self.assertEqual(dict(Wiki=wiki.comment_url()), metric.comment_urls())
 
@@ -245,7 +249,8 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_no_task_urls_without_issue_manager(self):
         ''' Test that the metric has no task urls when there's no issue 
             manager. '''
-        project = domain.Project(history=FakeHistory())
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory()})
         self.assertEqual({}, MetricUnderTest(self.__subject,
                                              project=project).task_urls())
 
@@ -300,7 +305,8 @@ class LowerIsBetterMetricTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
-        project = domain.Project(history=FakeHistory())
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory()})
         self.__metric = LowerIsBetterMetricUnderTest(self.__subject, 
                                                      project=project)
 
@@ -315,7 +321,7 @@ class HigherIsBetterMetricUnderTest(domain.HigherIsBetterMetric):
         needed for running the unit tests. '''
     def value(self):
         return 0
-    
+
 
 class HigherIsBetterMetricTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
@@ -323,7 +329,8 @@ class HigherIsBetterMetricTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
-        project = domain.Project(history=FakeHistory())
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory()})
         self.__metric = HigherIsBetterMetricUnderTest(self.__subject, 
                                                       project=project)
 
@@ -349,10 +356,10 @@ class LowerPercentageIsBetterMetricUnderTest( \
     target_value = 10
     numerator = 0
     denominator = 0
-    
+
     def _numerator(self):
         return self.numerator
-    
+
     def _denominator(self):
         return self.denominator
 
@@ -363,7 +370,8 @@ class PercentageMetricTestCase(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        project = domain.Project(history=FakeHistory())
+        project = domain.Project(
+            metric_sources={metric_source.History: FakeHistory()})
         self._metric = self.metric_under_test_class()(self.__subject,
                                                       project=project)
 
@@ -378,15 +386,15 @@ class PercentageMetricTestCase(unittest.TestCase):
         self._metric.numerator = numerator
         self._metric.denominator = denominator
 
-        
+
 class LowerPercentageIsBetterMetricTest(PercentageMetricTestCase):  
     # pylint: disable=too-many-public-methods
     ''' Test case for the LowerPercentageIsBetterMetric domain class. '''
-    
+
     @staticmethod
     def metric_under_test_class():
         return LowerPercentageIsBetterMetricUnderTest
-    
+
     def test_perfect_status(self):
         ''' Test that the default status is perfect when the score is 100%. '''
         self.assertEqual('perfect', self._metric.status())
@@ -408,16 +416,16 @@ class LowerPercentageIsBetterMetricTest(PercentageMetricTestCase):
             target. '''
         self.set_metric_value(40, 100)
         self.assertEqual('red', self._metric.status())
-                
+
     def test_y_axis_range(self):
         ''' Test that the y axis range is 0-100. '''
         self.assertEqual((0, 100), self._metric.y_axis_range())
-        
+
     def test_default_report(self):
         ''' Test that the default report. '''
         self.set_metric_value(0, 0)
         self.assertEqual('Subclass responsibility', self._metric.report())
-        
+
 
 class HigherPercentageIsBetterMetricUnderTest( \
     domain.HigherPercentageIsBetterMetric):
@@ -428,34 +436,34 @@ class HigherPercentageIsBetterMetricUnderTest( \
     target_value = 90
     numerator = 0
     denominator = 0
-    
+
     def _numerator(self):
         return self.numerator
-    
+
     def _denominator(self):
         return self.denominator
-    
+
 
 class HigherPercentageIsBetterMetricTest(PercentageMetricTestCase):  
     # pylint: disable=too-many-public-methods
     ''' Test case for the HigherPercentageIsBetterMetric domain class. '''
-    
+
     @staticmethod
     def metric_under_test_class():
         return HigherPercentageIsBetterMetricUnderTest
-    
+
     def test_red_status(self):
         ''' Test that the status is red when the percentage is lower than the
             low target. '''
         self.set_metric_value(0, 5)
         self.assertEqual('red', self._metric.status())
-        
+
     def test_yellow_status(self):
         ''' Test that the status is yellow when the percentage is lower than
             the target. '''
         self.set_metric_value(85, 100)
         self.assertEqual('yellow', self._metric.status())
-        
+
     def test_green_status(self):
         ''' Test that the status is green when the metric value is higher than
             the target value. '''
@@ -470,7 +478,7 @@ class HigherPercentageIsBetterMetricTest(PercentageMetricTestCase):
     def test_y_axis_range(self):
         ''' Test that the y axis range is 0-100. '''
         self.assertEqual((0, 100), self._metric.y_axis_range())
-        
+
     def test_default_report(self):
         ''' Test that the default report. '''
         self.set_metric_value(0, 5)

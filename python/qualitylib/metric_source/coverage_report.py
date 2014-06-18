@@ -15,19 +15,19 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils
+from qualitylib import utils, domain
 import datetime
 import urllib2
 
 
-class CoverageReport(beautifulsoup.BeautifulSoupOpener):
+class CoverageReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     # pylint: disable=abstract-class-not-used
     ''' Abstract class representing a coverage report. '''
+    metric_source_name = 'Coverage report'
 
     def __init__(self, url, username, password):
-        super(CoverageReport, self).__init__(username=username, 
+        super(CoverageReport, self).__init__(url=url, username=username, 
                                              password=password)
-        self.__url = url
 
     @utils.memoized
     def coverage(self, product):
@@ -64,7 +64,7 @@ class CoverageReport(beautifulsoup.BeautifulSoupOpener):
 
     def get_coverage_url(self, product):
         ''' Return the url for the coverage report for the product. '''
-        return self.__url % product
+        return self.url() % product
 
     def get_coverage_date_url(self, product):
         ''' Return the url for the date when the coverage of the product

@@ -15,21 +15,18 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import url_opener
-from qualitylib import utils
+from qualitylib import utils, domain
 
 
-class ReleaseCandidates(url_opener.UrlOpener):
+class ReleaseCandidates(domain.MetricSource, url_opener.UrlOpener):
     # pylint: disable=incomplete-protocol
     ''' Class representing the file with release candidate version numbers. '''
-    
+
+    metric_source_name = 'Release candidates'
+
     def __init__(self, url):
-        super(ReleaseCandidates, self).__init__()
-        self.__url = url
-        
-    def url(self):
-        ''' Return the url of the release candidates file. '''
-        return self.__url
-        
+        super(ReleaseCandidates, self).__init__(url=url)
+
     def __getitem__(self, product):
         buildnr_prefix = 'buildnr_'
         for line in self.__rc_file_contents():
@@ -43,4 +40,4 @@ class ReleaseCandidates(url_opener.UrlOpener):
     @utils.memoized
     def __rc_file_contents(self):
         ''' Return the lines in the release candidates file. '''
-        return self.url_open(self.__url).readlines() if self.__url else []
+        return self.url_open(self.url()).readlines() if self.url() else []

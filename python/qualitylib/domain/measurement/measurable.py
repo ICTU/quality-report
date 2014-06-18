@@ -20,13 +20,15 @@ class MeasurableObject(object):  # pylint: disable=too-few-public-methods
         teams, etc. '''
     def __init__(self, targets=None, low_targets=None, 
                  technical_debt_targets=None, metric_source_ids=None,
-                 old_metric_source_ids=None, metric_source_options=None):
+                 old_metric_source_ids=None, metric_source_options=None,
+                 metric_options=None):
         self._targets = targets or dict()
         self.__low_targets = low_targets or dict()
         self._technical_debt_targets = technical_debt_targets or dict()
         self.__metric_source_ids = metric_source_ids or dict()
         self.__old_metric_source_ids = old_metric_source_ids or dict()
         self.__metric_source_options = metric_source_options or dict()
+        self.__metric_options = metric_options or dict()
 
     def target(self, metric_class):
         ''' Return the target for the specified metric. '''
@@ -57,3 +59,8 @@ class MeasurableObject(object):  # pylint: disable=too-few-public-methods
             can be any information that is needed to get information about this
             object from the metric source. '''
         return self.__metric_source_options.get(metric_source, None)
+
+    def metric_options(self, metric_class):
+        ''' Return the options of this object for the metric class. Options
+            can be any information that is needed for the metric. '''
+        return self.__metric_options.get(metric_class, None)

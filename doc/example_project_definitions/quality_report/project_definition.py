@@ -1,7 +1,7 @@
 ''' Project definition for the Quality Report software itself. '''
 
 from qualitylib.domain import Project, Product, Team, TechnicalDebtTarget, \
-    DynamicTechnicalDebtTarget
+    DynamicTechnicalDebtTarget, MetricSource
 from qualitylib import metric_source, metric
 import datetime
 
@@ -21,11 +21,15 @@ JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
 
 # The project
 PROJECT = Project('Organization name', 'Quality Report', 
-                  build_server=BUILD_SERVER, sonar=SONAR, history=HISTORY,
-                  subversion=SUBVERSION, jacoco=JACOCO, pom=metric_source.Pom(),
+                  metric_sources={metric_source.Jenkins: BUILD_SERVER,
+                                  metric_source.Subversion: SUBVERSION,
+                                  metric_source.Sonar: SONAR,
+                                  metric_source.JaCoCo: JACOCO,
+                                  metric_source.Pom: metric_source.Pom(),
+                                  metric_source.History: HISTORY},
                   additional_resources=[
-                      dict(title='GitHub Quality Report',
-                           url='https://github.com/ICTU/quality-report')] )
+                      MetricSource(name='GitHub Quality Report',
+                               url='https://github.com/ICTU/quality-report')])
 
 # Teams of the project.
 QUALITY_TEAM = Team('Quality team', is_support_team=True)
@@ -52,7 +56,9 @@ QUALITY_REPORT = \
             metric_source_ids={
                 SONAR: 'nl.ictu.quality-report:quality-report',
                 JACOCO: 'quality-report-coverage-report',
-                SUBVERSION: 'http://svn/commons/scripts/quality-report/'})
+                SUBVERSION: 'http://svn/commons/scripts/quality-report/'},
+            metric_options={
+                metric.UnmergedBranches: dict(branches_to_ignore='spike')})
 
 PROJECT.add_product(QUALITY_REPORT)
 

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 import unittest
 import datetime
 
@@ -33,7 +33,8 @@ class DocumentAgeTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__document = domain.Document('Title', 'http://doc')
-        self.__project = domain.Project(subversion=FakeSubversion())
+        self.__project = domain.Project(
+            metric_sources={metric_source.Subversion: FakeSubversion()})
         self.__metric = metric.DocumentAge(subject=self.__document,
                                            project=self.__project)
 

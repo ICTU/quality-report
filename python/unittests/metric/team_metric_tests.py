@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 import datetime
 import unittest
 
@@ -78,7 +78,8 @@ class TeamProgressTest(unittest.TestCase):
         self.__birt = FakeBirt()
         self.__team = domain.Team('ABC', is_scrum_team=True,
                                   metric_source_ids={self.__birt: 'abc'})
-        self.__project = domain.Project(birt=self.__birt)
+        self.__project = domain.Project(metric_sources={metric_source.Birt: 
+                                                        self.__birt})
         self.__metric = metric.TeamProgress(subject=self.__team, 
                                             project=self.__project)
 
@@ -155,7 +156,8 @@ class TeamSpiritTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__team = FakeSubject()
         self.__wiki = FakeWiki()
-        self.__project = domain.Project(wiki=self.__wiki)
+        self.__project = domain.Project(metric_sources={metric_source.Wiki:
+                                                        self.__wiki})
         self.__metric = metric.TeamSpirit(subject=self.__team, 
                                           project=self.__project)
 

@@ -54,7 +54,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         return 'Genegeerde branches'
 
     def comment_urls(self):
-        return self.__branch_urls(self._subject.branches_to_ignore())
+        return self.__branch_urls(self.__branches_to_ignore())
 
     def _get_template(self):
         # pylint: disable=protected-access
@@ -93,7 +93,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
             unmerged revisions for each branch. '''
         unmerged_branches = \
             self._subversion.unmerged_branches(self.__svn_path())
-        branches_to_ignore = self._subject.branches_to_ignore()
+        branches_to_ignore = self.__branches_to_ignore()
         for branch in unmerged_branches.copy():
             if branch in branches_to_ignore:
                 del unmerged_branches[branch]
@@ -105,3 +105,11 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         # This metric only makes sense for trunk versions:
         assert svn_path.endswith('trunk')
         return svn_path[:-len('trunk')]
+
+    def __branches_to_ignore(self):
+        ''' Return the branches to ignore for the measured product. '''
+        metric_options = self._subject.metric_options(self.__class__)
+        if metric_options:
+            return metric_options.get('branches_to_ignore', [])
+        else:
+            return []

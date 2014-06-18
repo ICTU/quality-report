@@ -15,18 +15,22 @@ limitations under the License.
 '''
 
 import os
+from qualitylib import domain
 
 
-class Dependencies(object):
+class Dependencies(domain.MetricSource):
     ''' Store and retrieve dependencies of released components. '''
+    metric_source_name = 'Dependencies cache database'
+
     def __init__(self, filename, file_=file):
         self.__file = file_
         self.__filename = os.path.abspath(filename)
         self.__db = self.load()
-        
+        super(Dependencies, self).__init__()
+
     def __repr__(self):
         return repr(self.__db)
-                
+
     def load(self):
         ''' Load the contents of the database from disk. '''
         with self.__file(self.__filename) as db_file:  # pragma: no branch
@@ -34,12 +38,12 @@ class Dependencies(object):
                 return eval(db_file.read())
             except SyntaxError:
                 return dict()
-        
+
     def save(self):
         ''' Write the contents of the database to disk. '''
         with self.__file(self.__filename, 'wb') as db_file:
             db_file.write(unicode(self.__db))
-            
+
     def set_dependencies(self, product_name, product_version, dependencies):
         ''' Add dependencies of product to the database. '''
         self.__db[self.__key(product_name, product_version)] = dependencies
@@ -48,12 +52,12 @@ class Dependencies(object):
         ''' Return the dependencies of the product as stored in the 
             database. '''
         return self.__db[self.__key(product_name, product_version)]
-    
+
     def has_dependencies(self, product_name, product_version):
         ''' Return whether the dependencies for the product are stored in the 
             database. '''
         return self.__key(product_name, product_version) in self.__db
-    
+
     @staticmethod
     def __key(product_name, product_version):
         ''' Create a string representation of the product that can be used as

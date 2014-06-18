@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakeSonar(object):
@@ -61,7 +61,7 @@ class ViolationsTestMixin(object):
         self.__subject = FakeSubject()
         sonar = FakeSonar(critical_violations=self.__nr_violations, 
                           major_violations=self.__nr_violations)
-        project = domain.Project(sonar=sonar)
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         self._metric = self.metric_class(subject=self.__subject, 
                                          project=project)
 
@@ -98,7 +98,7 @@ class ViolationsTestMixin(object):
         ''' Test that the metric is perfect when both the number of major and 
             the number of critical violations is zero. '''
         sonar = FakeSonar(critical_violations=0, major_violations=0)
-        project = domain.Project(sonar=sonar)
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         violations = metric.CriticalViolations(subject=self.__subject, 
                                                project=project)
         self.assertEqual('perfect', violations.status())

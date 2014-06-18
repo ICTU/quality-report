@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 from qualitylib.report import Section
 
 
@@ -23,37 +23,37 @@ class FakeSonar(object):
     ''' Provide for a fake Sonar object so that the unit test don't need 
         access to an actual Sonar instance. '''
     # pylint: disable=unused-argument
-            
+
     @staticmethod
     def dashboard_url(*args):  
         ''' Return a fake dashboard url. '''
         return 'http://sonar'
-          
+
     @staticmethod
     def package_cycles(*args):
         ''' Return the number of package cycles. '''
         return 1
-    
-        
+
+
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
-    
+
     @staticmethod
     def short_name():
         ''' Return the short name of the subject. '''
         return 'FS'
-    
+
     @staticmethod
     def sonar_id():
         ''' Return the Sonar id of the subject. '''
         return ''
-           
+
     @staticmethod  # pylint: disable=unused-argument
     def dependencies(**kwargs):
         ''' Return the dependencies of the subject. '''
         return [('product_name', 'product_version')]
 
-    
+
 class FakeReport(object):
     ''' Fake a quality report. '''
     @staticmethod
@@ -66,7 +66,7 @@ class FakeReport(object):
     def products():
         ''' Return the products of the project. '''
         return [FakeSubject(), FakeSubject()]
-    
+
     @staticmethod
     def get_product(product, version):  # pylint: disable=unused-argument
         ''' Return the specified product. '''
@@ -87,7 +87,7 @@ class DependencyQualityTest(unittest.TestCase):
         ''' Test that the value of the metric equals the percentage of 
             dependencies without red metrics. '''
         self.assertEqual(0, self.__metric.value())
-        
+
     def test_report(self):
         ''' Test that the report is correct. '''
         self.assertEqual('0% van de afhankelijkheden (0 van de 2) is naar ' \
@@ -98,7 +98,7 @@ class DependencyQualityTest(unittest.TestCase):
         ''' Test that the url contains the "red" products. '''
         self.assertEqual({'product_name:product_version':
                           'index.html#section_FS'}, self.__metric.url())
-        
+
     def test_url_label(self):
         ''' Test that the url label is correct. '''
         self.assertEqual('Componenten die "rode" metrieken hebben',
@@ -111,7 +111,8 @@ class CyclicDependenciesTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__subject = FakeSubject()
-        project = domain.Project(sonar=FakeSonar())
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.CyclicDependencies(subject=self.__subject,
                                                  project=project)
 

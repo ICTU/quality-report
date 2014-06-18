@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import utils
+from qualitylib import utils, domain
 from qualitylib.metric_source import beautifulsoup
 import datetime
 
@@ -82,7 +82,7 @@ class SprintProgressReport(BirtReport):
         ''' Return the number of days left in the current sprint of the
             team. '''
         return 1 + self.days_in_sprint(team) - self.day_in_sprint(team)
-    
+
     def __nr_points_to_do(self, team):
         ''' Return the number of points to be realized in the current sprint
             of the specified team. '''
@@ -133,13 +133,15 @@ class SprintProgressReport(BirtReport):
             return 0.
 
 
-class Birt(beautifulsoup.BeautifulSoupOpener):
+class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing the Birt report engine instance. '''
 
+    metric_source_name = 'Birt reports'
+
     def __init__(self, birt_url):
-        super(Birt, self).__init__()
-        self.__birt_url = birt_url + 'birt/'
-        birt_report_url = self.__birt_url + 'preview?__report=report/'
+        birt_url = birt_url + 'birt/'
+        super(Birt, self).__init__(url=birt_url)
+        birt_report_url = birt_url + 'preview?__report=report/'
         self.__test_design_url = birt_report_url + 'test_design.rptdesign'
         self.__manual_test_execution_url = birt_report_url + \
             'manual_test_execution_report.rptdesign&application=%s&version=%s'
@@ -160,10 +162,6 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
         return getattr(self.__sprint_progress_report, attribute) 
 
     # Urls to reports
-    
-    def url(self):
-        ''' Return the base Birt url. '''
-        return self.__birt_url
 
     def test_design_url(self):
         ''' Return the url for the Birt test design report. '''
@@ -176,7 +174,7 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
     def sprint_progress_url(self, team):
         ''' Return the url for the Birt sprint progress report. '''
         return self.__sprint_progress_report.url(team)
-    
+
     def whats_missing_url(self, product):
         ''' Return the What's missing report url for the product. '''
         return self.__whats_missing_url % product
@@ -242,29 +240,29 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
         ''' Return the number of logical test cases for the product that
             have to be automated. '''
         return self.__test_design_metric(product, table_nr=3, column_nr=2)
-    
+
     def nr_performance_pages(self, product, version):
         ''' Return the number of pages reported in the performance report. '''
         return len(self.__performance_pages(product, version))
-    
+
     def nr_slow_performance_pages(self, product, version):
         ''' Return the number of pages reported in the performance report that
             load too slow on average. '''
         rows = self.__performance_pages(product, version)
         too_slow = [row for row in rows if 'style' in dict(row('td')[1].attrs)]
         return len(too_slow)
-    
+
     def __performance_pages(self, product, version):
         ''' Return the rows with page performance numbers. '''
         soup = self.soup(self.page_performance_url(product, version))
         inner_table = soup('table')[0]('table')[0]
         return inner_table('tr')[1:]  # Skip header row
-    
+
     def nr_manual_ltcs(self, product, version='trunk'):
         ''' Return the number of logical test cases for the product that are
             executed manually. '''
         return len(self.__manual_test_dates(product, version))
-    
+
     def nr_manual_ltcs_too_old(self, product, version, target):
         ''' Return the number of manual logical test cases that have not been
             executed for target amount of days. '''
@@ -287,14 +285,14 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
         # cases at all.
         test_dates.append(datetime.datetime.now())
         return min(test_dates)
-    
+
     @utils.memoized
     def __manual_test_dates(self, product, version):
         ''' Return the manual test cases. '''
         soup = self.soup(self.__manual_test_execution_url % (product, version))
         inner_table = soup('table')[0]('table')[0]
         rows = inner_table('tr')[1:]  # Skip header row
-        test_dates = []      
+        test_dates = []
         for row in rows:
             try:
                 last_test_date_string = row('td')[2]('div')[0].string
@@ -313,7 +311,7 @@ class Birt(beautifulsoup.BeautifulSoupOpener):
             except IndexError:
                 continue  # Skip empty row
         return test_dates
-        
+
     @utils.memoized
     def __test_design_metric(self, product, table_nr, column_nr):
         ''' Get a metric for a specific product from a specific table and

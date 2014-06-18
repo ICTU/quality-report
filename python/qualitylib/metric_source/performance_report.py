@@ -14,30 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import utils
+from qualitylib import utils, domain
 from qualitylib.metric_source import beautifulsoup
 import datetime
+import logging
 import re
 import time
 
 
-class PerformanceReport(beautifulsoup.BeautifulSoupOpener):
+class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing the Performance report. '''
 
+    metric_source_name = 'Jmeter performance report'
     COLUMN_90_PERC = 10
-    
+
     def __init__(self, report_folder_url):
-        super(PerformanceReport, self).__init__()
-        self.__report_folder_url = report_folder_url
-        
-    def url(self):
-        ''' Return the url for the folder where the reports are stored. '''
-        return self.__report_folder_url
-        
+        super(PerformanceReport, self).__init__(url=report_folder_url)
+
     def queries(self, product, version):
         ''' Return the number of performance queries. '''
         return len(self.__query_rows(product, version))
-    
+
     def queries_violating_max_responsetime(self, product, version):
         ''' Return the number of performance queries that violate the maximum
             response time. '''
@@ -54,8 +51,8 @@ class PerformanceReport(beautifulsoup.BeautifulSoupOpener):
             or the desired response time. '''
         return len([row for row in self.__query_rows(product, version) \
                     if row('td')[self.COLUMN_90_PERC]['class'] == color])
-    
-    @utils.memoized    
+
+    @utils.memoized
     def __query_rows(self, product, version):
         ''' Return the queries for the specified product and version. '''
         rows = []
@@ -80,8 +77,14 @@ class PerformanceReport(beautifulsoup.BeautifulSoupOpener):
         ''' Return the date when performance was last measured. '''
         urls = self.urls(product, version)
         if urls:
-            soup = self.soup(list(urls)[0])  # Any url is fine
-            date_text = soup('h2')[0].string.split(' - ')[1].split(' ')[0]
+            url = list(urls)[0]  # Any url is fine
+            soup = self.soup(url)
+            try:
+                date_text = soup('h2')[0].string.split(' - ')[1].split(' ')[0]
+            except IndexError:
+                logging.warning("Can't get date from performance report %s", 
+                                url)
+                return datetime.datetime.today()
             return self.__parse_date(date_text)
         else:
             return datetime.datetime.min
@@ -95,13 +98,13 @@ class PerformanceReport(beautifulsoup.BeautifulSoupOpener):
     def urls(self, product, version):
         ''' Return the url(s) of the performance report for the specified
             product and version. '''
-        soup = self.soup(self.__report_folder_url)
+        soup = self.soup(self.url())
         urls = {0: set()}  # {test_run_number: set(of urls)}
         for list_item in soup('li'):
             filename = list_item('a')[0].string
             if not filename.endswith('.html'):
                 continue
-            url = self.__report_folder_url + filename
+            url = self.url() + filename
             if self.__report_covers_product_and_version(url, product, version):
                 urls.setdefault(self.__test_run_number(filename), 
                                 set()).add(url)
@@ -126,7 +129,7 @@ class PerformanceReport(beautifulsoup.BeautifulSoupOpener):
                    version in (covered_version, ''):
                     return True
         return False
-    
+
     @staticmethod
     def __report_contains_queries(soup, product_query_id):
         ''' Return whether the performance report contains queries with the
@@ -139,13 +142,13 @@ class PerformanceReport(beautifulsoup.BeautifulSoupOpener):
             if re.match(product_query_id, query_name):
                 return True
         return False
-    
+
     @staticmethod
     def __test_run_number(filename):
         ''' Return the test run number as contained in the filename. '''
         number_part = filename.split('_')[2]
         return int(re.search('[0-9]+', number_part).group(0))
-        
+
     @staticmethod
     def __parse_date(date_text):
         ''' Return a parsed version of the date text. '''

@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import metric, domain
+from qualitylib import metric, domain, metric_source
 
 
 class FakePerformanceReport(object):
@@ -95,7 +95,8 @@ class ResponseTimesTestsMixin(object):
         report = FakePerformanceReport(queries=10, 
             queries_violating_max_responsetime=self.expected_max_violations,
             queries_violating_wished_reponsetime=self.expected_wish_violations)
-        self.__project = domain.Project(performance_report=report)
+        self.__project = domain.Project(
+            metric_sources={metric_source.PerformanceReport: report})
         self._metric = metric.ResponseTimes(subject=self.__subject,
                                             project=self.__project)
 
@@ -155,9 +156,10 @@ class ResponseTimesTestsMixin(object):
                 ''' Return the date of the report. '''
                 return datetime.datetime.min
 
-        project = domain.Project(performance_report=MissingPerformanceReport())
-        rt_metric = metric.ResponseTimes(subject=FakeSubject(),  
-                                         project=project)
+        project = domain.Project(
+            metric_sources={
+                metric_source.PerformanceReport: MissingPerformanceReport()})
+        rt_metric = metric.ResponseTimes(subject=FakeSubject(), project=project)
         self.failUnless(rt_metric.report().startswith('Er is geen ' \
             'performancetestrapport voor'))
 

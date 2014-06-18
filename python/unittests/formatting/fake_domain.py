@@ -28,37 +28,37 @@ class Product(object):
         self.__version = version
         self.__is_release_candidate = is_release_candidate
         self.__is_latest_release = is_latest_release
-        
+
     def __str__(self):
         return 'Product'
-        
+
     @staticmethod
     def name():
         ''' Return the name of the product. '''
         return 'Fake Product'
-    
+
     @staticmethod
     def short_name():
         ''' Return the short version of the name of the product. '''
         return 'FP'
-    
+
     def product_version(self):
         ''' Return the version of the product. '''
         return self.__version
-    
+
     def dependencies(self, recursive=False):  # pylint: disable=unused-argument
         ''' Return a list of dependencies of the product. '''
         return [('Fake Dependency', 1)] if self.__dependencies else []
-    
+
     @staticmethod
     def users(recursive=False):  # pylint: disable=unused-argument
         ''' Return a list of users of the product. '''
         return []
-    
+
     def is_latest_release(self):
         ''' Return whether this product version is the latest release. '''
         return self.__is_latest_release
-    
+
     def is_release_candidate(self):
         ''' Return whether this product version is a release candidate. '''
         return self.__is_release_candidate
@@ -75,50 +75,50 @@ class Team(object):  # pylint: disable=too-few-public-methods
 class Metric(object):
     ''' Fake a metric class. '''
     quality_attribute = domain.QualityAttribute('quality', 'Quality')
-    
+
     def __init__(self, id_string='id_string-1', 
                  status_start_date=datetime.datetime(2012, 1, 1, 12, 0, 0)):
         self.__id_string = id_string
         self.__status_start_date = status_start_date
-    
+
     @staticmethod
     def stable_id():
         ''' Return the stable id of the metric. '''
         return 'metric_id'
-    
+
     def id_string(self):
         ''' Return the id string of the metric. '''
         return self.__id_string
-    
+
     @staticmethod
     def numerical_value():
         ''' Return the numerical value of the metric. '''
         return 15
-    
+
     @staticmethod
     def status():
         ''' Return the status of the metric. '''
         return 'red'
-    
+
     def status_start_date(self):
         ''' Return the start date of the curent status. '''
         return self.__status_start_date
-    
+
     @staticmethod
     def url():
         ''' Return the url of the metric. '''
         return dict()
-    
+
     @staticmethod
     def url_label():
         ''' Return the label for the urls. '''
         return ''
-    
+
     @staticmethod
     def report():
         ''' Return the report of the metric. '''
         return 'report'
-    
+
     @staticmethod
     def norm():
         ''' Return the norm of the metric. '''
@@ -128,12 +128,12 @@ class Metric(object):
     def comment():
         ''' Return the comment for the metric. '''
         return ''
-    
+
     @staticmethod
     def comment_urls():
         ''' Return the urls for the comment. '''
         return {}
-    
+
     @staticmethod
     def comment_url_label():
         ''' Return the label for the urls. '''
@@ -143,17 +143,17 @@ class Metric(object):
     def task_urls():
         ''' Return the urls for the tasks. '''
         return {}
-        
+
     @staticmethod
     def recent_history():
         ''' Return the history of the metric.'''
         return []
-    
+
     @staticmethod
     def y_axis_range():
         ''' Return the y axis range of the metric. '''
         return 0, 100
-    
+
     @staticmethod
     def responsible_teams():
         ''' Return the teams responsible for the metric. '''
@@ -163,9 +163,8 @@ class Metric(object):
     def product_version_type():
         ''' Return a fake version type. '''
         return 'trunk'
-    
+
     @staticmethod
     def has_tasks():
         ''' Return whether this metric has tasks. '''
         return False
-    
