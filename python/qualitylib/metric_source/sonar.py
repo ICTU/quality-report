@@ -19,7 +19,6 @@ from qualitylib.metric_source.maven import Maven
 from qualitylib import utils, domain
 import logging
 import os
-import platform
 
 
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
@@ -116,13 +115,15 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                                          for item in sonar_options.items()])
         utils.rmtree(folder)  # Remove any left over checkouts
         product.check_out(folder)
-        set_env = 'set' if platform.system() == 'Windows' else 'export'
-        maven_command = ('%s MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=512m"; '
-                         'cd %s; %s --fail-never clean install sonar:sonar ' % \
-                         (set_env, folder, self.__maven.binary())) + \
+        os.putenv('MAVEN_OPTS', '-Xmx2048m -XX:MaxPermSize=512m')
+        maven_command = ('%s --fail-never clean install sonar:sonar ' % \
+                         self.__maven.binary()) + \
                          sonar_options_string + ' ' + maven_options_string
         logging.info(maven_command)
+        original_working_dir = os.getcwd()
+        os.chdir(folder)
         os.system(maven_command)
+        os.chdir(original_working_dir)
         utils.rmtree(folder)  # Remove folder to save space
 
 
