@@ -15,6 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup, url_opener
+from qualitylib.metric_source.maven import Maven
 from qualitylib import utils, domain
 import logging
 import os
@@ -130,6 +131,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def __init__(self, sonar_url, maven=None, *args, **kwargs):
         super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
+        maven = Maven() or maven
         self.__runner = SonarRunner(self, maven, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'

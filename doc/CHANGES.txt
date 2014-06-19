@@ -1,3 +1,9 @@
+2014-06-19  Release 1.2.2
+
+  * Bug fix: Sonar wouldn't work without passing it a Maven metric source. Use a
+    default Maven when no Maven is specified.
+
+
 2014-06-19  Release 1.2.1
 
   * Allow Subversion paths where there is a subpath below the trunk folder.
