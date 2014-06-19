@@ -1,3 +1,9 @@
+2014-06-19  Release 1.2.4
+
+  * Bug fix: Make the call to Maven to build a specific product version
+    platform independent.
+
+
 2014-06-19  Release 1.2.3
 
   * Bug fix: Don't assume all products have a Sonar id.
