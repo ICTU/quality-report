@@ -316,11 +316,12 @@ class ProjectResourcesTest(unittest.TestCase):
         ''' Test that the source code repository is in the project 
             resources. '''
         project = self.project(metric_sources={metric_source.Subversion: 'SVN'})
+        svn_url = 'http://svn/product/trunk/'
         product = domain.Product(project, 'Short name',
-            metric_source_ids={'SVN': 'http://svn/product/'})
+                                 metric_source_ids={'SVN': svn_url})
         project.add_product(product)
         self.failUnless(('Broncode repository Short name', 
-                         'http://svn/product') in project.project_resources())
+                         svn_url) in project.project_resources())
 
     def test_repositories(self):
         ''' Test that the source code repositories are in the project 
@@ -328,15 +329,16 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(metric_sources={metric_source.Subversion: 'SVN'})
         for index in range(1, 4):
             product = domain.Product(project, 'Product %d' % index, 
-                metric_source_ids={'SVN': 'https://svn/product%d/' % index})
+                metric_source_ids={'SVN': 
+                                   'https://svn/product%d/trunk/' % index})
             if index == 3:
                 product.set_product_version('1.1')
             project.add_product(product)
         resources = project.project_resources()
         self.failUnless(('Broncode repository Product 1', 
-                         'https://svn/product1') in resources)
+                         'https://svn/product1/trunk/') in resources)
         self.failUnless(('Broncode repository Product 2',
-                         'https://svn/product2') in resources)
+                         'https://svn/product2/trunk/') in resources)
 
     def test_additional_resources(self):
         ''' Test that additional resources can be added to the project

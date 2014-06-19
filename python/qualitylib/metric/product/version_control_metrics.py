@@ -70,18 +70,20 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     def __branch_and_nr_revs_urls(self, branches_and_revisions):
         ''' Return a list of branch urls. '''
         urls = dict()
-        svn_path = self.__svn_path()
+        svn_path_base, svn_path_postfix = self.__svn_path().split('/trunk/')
         for branch, nr_revisions in branches_and_revisions.items():
             label = '%s: %d ongemergde revisie(s)' % (branch, nr_revisions) 
-            urls[label] = svn_path + 'branches/' + branch
+            urls[label] = svn_path_base + '/branches/' + branch + '/' + \
+                          svn_path_postfix
         return urls
 
     def __branch_urls(self, branches):
         ''' Return a list of branch urls. '''
         urls = dict()
-        svn_path = self.__svn_path()
+        svn_path_base, svn_path_postfix = self.__svn_path().split('/trunk/')
         for branch in branches:
-            urls[branch] = svn_path + 'branches/' + branch
+            urls[branch] = svn_path_base + '/branches/' + branch + '/' + \
+                           svn_path_postfix
         return urls
 
     def __branches(self):
@@ -103,8 +105,8 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         ''' Return the Subversion path for the product. '''
         svn_path = self._subject.svn_path()
         # This metric only makes sense for trunk versions:
-        assert svn_path.endswith('trunk')
-        return svn_path[:-len('trunk')]
+        assert '/trunk/' in svn_path
+        return svn_path
 
     def __branches_to_ignore(self):
         ''' Return the branches to ignore for the measured product. '''

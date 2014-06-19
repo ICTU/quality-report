@@ -25,14 +25,14 @@ import subprocess
 class SubversionTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Subversion class. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__run_shell_command_results = ['r123']
         self.__system_args = ()
         self.__stream = None
         self.__subversion = Subversion( \
                                 run_shell_command=self.__shell_command)
-        
+
     def __shell_command(self, args):  # pylint: disable=unused-argument
         ''' Fake shell commands, by returning results one by one. '''
         self.__system_args = args
@@ -48,40 +48,40 @@ class SubversionTest(unittest.TestCase):
         ''' Check that the log message has actually been logged. '''
         self.__stream.seek(0)
         self.assertEqual(log_message, self.__stream.getvalue())
-        
+
     def test_latest_tagged_product_version(self):
         ''' Test that the latest tagged product version is correct. '''
         self.__run_shell_command_results = ['<name>product-1.2.3</name>' \
                                             '<name>product-1.2.4-emma</name']
         self.assertEqual('1.2.3', 
             self.__subversion.latest_tagged_product_version('product url'))
-        
+
     def test_latest_tagged_product_version_with_error(self):
         ''' Test that the version is None when Subversion can't be reached. '''
         self.assertEqual(None, 
             self.__subversion.latest_tagged_product_version('raise HTTPError'))
-        
+
     def test_branches(self):
         ''' Test that Subversion returns a list of branches for a product. '''
         self.__run_shell_command_results = ['<name>product-1.2.3</name>' \
                                             '<name>product-1.2.3-emma</name>']
         self.assertEqual(['product-1.2.3', 'product-1.2.3-emma'], 
-                         self.__subversion.branches('product_url'))
-        
+                         self.__subversion.branches('product_url/trunk/'))
+
     def test_unmerged_branches(self):
         ''' Test that Subversion returns a list of branches for a product. '''
         self.__run_shell_command_results = ['<name>product-1.2.3</name>' \
                                             '<name>product-1.2.3-emma</name>',
                                             'r123\nr124\n', '\n']
         self.assertEqual({'product-1.2.3': 2}, 
-                         self.__subversion.unmerged_branches('product_url'))
-        
+            self.__subversion.unmerged_branches('product_url/trunk/'))
+
     def test_check_out(self):
         ''' Test that Subversion can check out. '''    
         self.__subversion.check_out('svn_path', 'folder')
         self.assertEqual('svn co svn_path folder', 
                          ' '.join(self.__system_args))
-        
+
     def test_check_out_with_credentials(self):
         ''' Test that Subversion can check out. '''
         subversion = Subversion(username='username', password='password',
@@ -90,7 +90,7 @@ class SubversionTest(unittest.TestCase):
         self.assertEqual('svn co svn_path folder --no-auth-cache ' \
                          '--username username --password password', 
                          ' '.join(self.__system_args))
-        
+
     def test_last_changed_date(self):
         ''' Test that Subversion correctly reports the date a url was last
             changed. '''
@@ -112,7 +112,7 @@ class SubversionTest(unittest.TestCase):
 ''']
         self.assertEqual(datetime.datetime(2014, 1, 27, 9, 33, 9, 907516), 
                          self.__subversion.last_changed_date('svn_path'))
-        
+
     def test_log_exception(self):
         ''' Test that a failure is logged when svn info fails. '''
         self.__run_shell_command_results = ['raise']
@@ -120,7 +120,7 @@ class SubversionTest(unittest.TestCase):
                           self.__subversion.last_changed_date, 'svn_path')
         self.__assert_logged('Shell command failed: Command ' \
                          "'command' returned non-zero exit status -1\n")
-        
+
     def test_log_and_raise_exception(self):
         ''' Test that a failure is logged and raised when svn co fails. '''
         self.__run_shell_command_results = ['raise']
@@ -128,17 +128,17 @@ class SubversionTest(unittest.TestCase):
                           self.__subversion.check_out, 'svn_path', 'folder')
         self.__assert_logged('Shell command failed: Command ' \
                          "'command' returned non-zero exit status -1\n")
-        
-            
+
+
 class SubversionFolderTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the SubversionFolder class. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__subversion = SubversionFolder('name', 'http://svn', 
                                 run_shell_command=self.__run_shell_command)
-    
-    @staticmethod    
+
+    @staticmethod
     def __run_shell_command(url):  # pylint: disable=unused-argument
         ''' Fake running svn info. '''
         return '''Path: releases
@@ -160,7 +160,7 @@ Last Changed Date: 2013-02-08 10:01:43 +0100 (vr, 08 feb 2013)
     def test_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual('http://svn', self.__subversion.url())
-        
+
     def test_date_of_most_recent_file(self):
         ''' Test that the date is correctly parsed. '''
         self.assertEqual(datetime.datetime(2013, 2, 8, 10, 1, 43),

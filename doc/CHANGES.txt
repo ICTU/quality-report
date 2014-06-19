@@ -1,3 +1,9 @@
+2014-06-19  Release 1.2.1
+
+  * Allow Subversion paths where there is a subpath below the trunk folder.
+    For example, http://svn/product/trunk/sources/.
+
+
 2014-06-18  Release 1.2.0
 
   * Metric sources and metric options are now passed to the project via the 

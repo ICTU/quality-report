@@ -40,7 +40,7 @@ class UnmergedBranchesTest(unittest.TestCase):
         self.__project = domain.Project(
             metric_sources={metric_source.Subversion: self.__subversion})
         self.__subject = domain.Product(self.__project, short_name='Product',
-            metric_source_ids={self.__subversion: 'http://svn/'},
+            metric_source_ids={self.__subversion: 'http://svn/trunk/foo/'},
             metric_options={
                 metric.UnmergedBranches: dict(
                     branches_to_ignore=['ignored branch'])})
@@ -65,7 +65,8 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_url(self):
         ''' Test that the unmerged branches are listed. '''
         self.assertEqual({'branch2: 1 ongemergde revisie(s)': 
-                          'http://svn/branches/branch2'}, self.__metric.url())
+                          'http://svn/branches/branch2/foo/'}, 
+                         self.__metric.url())
 
     def test_url_label(self):
         ''' Test that the label for the urls is correct. '''
@@ -74,7 +75,7 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_comment_urls(self):
         ''' Test that the comment urls include a link to ignored branches. '''
         self.assertEqual({'ignored branch': 
-                          'http://svn/branches/ignored branch'}, 
+                          'http://svn/branches/ignored branch/foo/'}, 
                          self.__metric.comment_urls())
 
     def test_comment_url_label(self):

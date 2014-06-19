@@ -67,7 +67,7 @@ How to add a new project to the quality system.
    minutes during office hours: "*/15 7-19 * * 1-5"
 
 
-How to add define a project.
+How to define a project.
 ===
 
 To generate a quality report, the quality report software uses a project 
@@ -102,9 +102,12 @@ RELEASE_ARCHIVES = [metric_source.SubversionFolder('Project',
                                                    'http://releases/')]
 
 # Create the project itself and pass it its metric sources:
-PROJECT = Project('Organization', 'Project name', sonar=SONAR, 
-                  build_server=BUILD_SERVER, history=HISTORY,
-                  subversion=SUBVERSION)
+PROJECT = Project('Organization', 'Project name',
+                  metric_sources={
+                      metric_source.Sonar: SONAR,
+                      metric_source.Jenkins: BUILD_SERVER,
+                      metric_source.History: HISTORY,
+                      metric_source.Subversion: SUBVERSION})
 
 # Create the teams of the project. In this example we have two Scrum teams and
 # one support team that's responsible for the releases.
@@ -128,11 +131,24 @@ PROJECT.add_document(domain.Document('Release notes',
                      low_targets={metric.DocumentAge: SPRINT_LENGTH + 7}))
 
 # Create the components we want to monitor.
-PROJECT.add_product(domain.Product(PROJECT, 'PA', sonar_id='com.company.pa',
-                    unittests=domain.Product(PROJECT, sonar_id='com.company.pa')))
-PROJECT.add_product(domain.Project(PROJECT, 'PB', sonar_id='com.company.pb',
-                    jsf=domain.Product(PROJECT, sonar_id='com.company.pa:jsf')))
-PROJECT.add_product(domain.Project(PROJECT, 'PC', sonar_id='com.company.pc'))
+PROJECT.add_product(domain.Product(PROJECT, 'PA',
+                    metric_source_ids={
+                        SONAR: 'com.company.pa',
+                        SUBVERSION: 'http://svn/pa/trunk/'},
+                    unittests=domain.Product(PROJECT, 
+                        metric_source_ids={
+                            SONAR: 'com.company.pa'})))
+PROJECT.add_product(domain.Project(PROJECT, 'PB',
+                    metric_source_ids={
+                        SONAR: 'com.company.pb',
+                        SUBVERSION: 'http://svn/pb/trunk/'},
+                    jsf=domain.Product(PROJECT,
+                        metric_source_ids={
+                            SONAR: 'com.company.pb:jsf'})))
+PROJECT.add_product(domain.Project(PROJECT, 'PC',
+                    metric_source_ids={
+                        SONAR: 'com.company.pc',
+                        SUBVERSION: 'http://svn/pc/trunk/'}))
 
 # Finally, specify the dashboard layout:
 COLUMNS = [('Components', 1), ('Teams', 1)]
@@ -140,3 +156,4 @@ ROWS = [(('pa', 'Component A', 'color'), ('fi', 'First team', 'color')),
         (('pb', 'Component B', 'color'), ('se', 'Second team', 'color')),
         (('pc', 'Component C', 'color'), ('th', 'Third team', 'color'))]
 PROJECT.set_dashboard(COLUMNS, ROWS)
+

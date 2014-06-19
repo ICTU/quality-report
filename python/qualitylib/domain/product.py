@@ -107,6 +107,10 @@ class Product(MeasurableObject):
         svn_path = self.metric_source_id(subversion)
         if not svn_path:
             return ''
+        if not svn_path.endswith('/'):
+            svn_path += '/'
+        if not '/trunk/' in svn_path:
+            svn_path += 'trunk/'
         return subversion.latest_tagged_product_version(svn_path)
 
     def is_latest_release(self):
@@ -211,25 +215,26 @@ class Product(MeasurableObject):
         from qualitylib import metric_source
         subversion = self.__project.metric_source(metric_source.Subversion)
         version = version or self.product_version()
-        svn_path = self.old_metric_source_id(subversion, version)
-        if svn_path:
-            return svn_path
-        else:
-            result = self.metric_source_id(subversion)
-            if not result:
-                return ''
-            if not result.endswith('/'):
-                result += '/'
-            if version:
-                name = self.name()
-                if name.endswith(':jsf'):
-                    name = name[:-len(':jsf')]
-                if name.endswith(':ut'):
-                    name = name[:-len(':ut')]
-                result += 'tags/' + name + '-' + version
-            else:
-                result += 'trunk'
-            return result
+        old_svn_path = self.old_metric_source_id(subversion, version)
+        if old_svn_path:
+            return old_svn_path
+        result = self.metric_source_id(subversion)
+        if not result:
+            return ''
+        if not result.endswith('/'):
+            result += '/'
+        if not '/trunk/' in result:
+            result += 'trunk/'
+        if version:
+            name = self.name()
+            if name.endswith(':jsf'):
+                name = name[:-len(':jsf')]
+            if name.endswith(':ut'):
+                name = name[:-len(':ut')]
+            tags_folder = '/tags/' + name + '-' + version + '/'
+            result = result.split('/trunk/')
+            result = result[0] + tags_folder + result[1] 
+        return result
 
     def check_out(self, folder):
         ''' Check out the source code of the product. '''
@@ -241,9 +246,8 @@ class Product(MeasurableObject):
         ''' Return the resources of the product. '''
         from qualitylib import metric_source
         resources = []
-        # Only include trunk versions that have an ART with coverage
-        # measurement:
         if not self.product_version():
+        # Only include these resources for trunk versions:
             for metric_source_class in [metric_source.Emma,
                                         metric_source.JaCoCo]:
                 source = self.__project.metric_source(metric_source_class)
@@ -252,9 +256,9 @@ class Product(MeasurableObject):
                     resources.append(('%s %s' % (source.name(), 
                                                  self.name()), 
                                       source.get_coverage_url(source_id)))
-        if self.svn_path().endswith('/trunk'):
-            resources.append(('Broncode repository %s' % self.name(),
-                              self.svn_path()[:-len('/trunk')]))
+            if self.svn_path():
+                resources.append(('Broncode repository %s' % self.name(), 
+                                  self.svn_path()))
         return resources
 
     @utils.memoized

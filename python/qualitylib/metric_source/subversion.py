@@ -74,12 +74,13 @@ class Subversion(domain.MetricSource):
     @utils.memoized
     def latest_tagged_product_version(self, product_url):
         ''' Return the latest version as tagged in Subversion. '''
-        shell_command = ['svn', 'list', '--xml', product_url + 'tags']
+        tags_folder = product_url.split('/trunk/')[0] + '/tags/'
+        shell_command = ['svn', 'list', '--xml', tags_folder]
         svn_info_xml = str(self.__run_shell_command(shell_command))
         tags = [name.string for name in BeautifulSoup(svn_info_xml)('name')]
         if not tags:
             return
-        versions = [self.__parse_version(tag) for tag in tags]        
+        versions = [self.__parse_version(tag) for tag in tags]
         versions.sort()
         return versions[-1][1]  # Return the text version of the highest number
 
@@ -105,14 +106,16 @@ class Subversion(domain.MetricSource):
     @utils.memoized
     def branches(self, product_url):
         ''' Return a list of branch names for the specified product. '''
-        shell_command = ['svn', 'list', '--xml', product_url + 'branches']
+        branches_folder = product_url.split('/trunk/')[0] + '/branches/'
+        shell_command = ['svn', 'list', '--xml', branches_folder]
         svn_list_xml = str(self.__run_shell_command(shell_command))
         return [name.string for name in BeautifulSoup(svn_list_xml)('name')]
 
     def __nr_unmerged_revisions(self, product_url, branch_name):
         ''' Return whether the branch has unmerged revisions. '''
-        branch_url = product_url + 'branches/' + branch_name
-        trunk_url = product_url + 'trunk/'
+        branch_url = product_url.split('/trunk/')
+        branch_url = branch_url[0] + '/branches/' + branch_name
+        trunk_url = product_url
         revisions = str(self.__run_shell_command(['svn', 'mergeinfo', 
             '--show-revs', 'eligible', branch_url, trunk_url])).strip()
         logging.debug('Unmerged revisions from %s to %s: "%s"', branch_url, 
@@ -133,7 +136,7 @@ class Subversion(domain.MetricSource):
             numbers = versions_in_tag[0].split('.')
             version_integer_tuple = tuple(int(number) for number in numbers)
             version_text = re.findall(r'[0-9].*', tag)[0]
-        else:     
+        else:
             version_integer_tuple = (0, 0, 0)
             version_text = ''
         return version_integer_tuple, version_text
