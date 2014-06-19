@@ -1,3 +1,8 @@
+2014-06-19  Release 1.2.3
+
+  * Bug fix: Don't assume all products have a Sonar id.
+
+
 2014-06-19  Release 1.2.2
 
   * Bug fix: Sonar wouldn't work without passing it a Maven metric source. Use a

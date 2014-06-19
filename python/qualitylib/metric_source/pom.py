@@ -85,7 +85,10 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __product_has_artifact(self, product, artifact_id):
         ''' Return whether the product has an artifact with artifact id. '''
-        product_artifact_id = product.sonar_id().split(':')[1]
+        sonar_id = product.sonar_id()
+        if not sonar_id:
+            return False
+        product_artifact_id = sonar_id.split(':')[1]
         if artifact_id == product_artifact_id:
             return True
         for module in self.modules(product.svn_path()):

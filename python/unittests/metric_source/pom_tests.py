@@ -102,3 +102,15 @@ class PomTest(unittest.TestCase):
             metric_source_ids={sonar: 'group_id:artifact_id'})
         self.assertEqual(set([('artifact_id', '3.0')]), 
                          self.__pom.dependencies(RECURSIVE_PROPERTY, [product]))
+
+    def test_product_without_sonar_id(self):
+        ''' Test that getting dependecies works when there is a product without
+            Sonar id. '''
+        sonar = 'sonar'
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        product = domain.Product(project, 'product',
+            metric_source_ids={sonar: 'group_id:artifact_id'})
+        product_no_sonar = domain.Product(project, 'product no sonar')
+        self.assertEqual(set([('artifact_id', '1.0')]), 
+                         self.__pom.dependencies(ONE_DEPENDENCY,
+                                                 [product_no_sonar, product]))
