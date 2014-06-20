@@ -21,8 +21,8 @@ from qualitylib.metric_source import Sonar
 
 class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
     ''' Override the url open method to be able to return test data. '''
-    def url_open(self, url):
-        return StringIO.StringIO('''
+
+    json = '''
 [
     {"version": "4.2", 
      "msr": 
@@ -34,7 +34,10 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
             {"val": 40, "rule_name": "Avoid commented-out lines of code"}
         ]
     }
-]''')
+]'''
+
+    def url_open(self, url):
+        return StringIO.StringIO(self.json)
 
 
 class SonarTest(unittest.TestCase):
@@ -134,3 +137,13 @@ class SonarTest(unittest.TestCase):
             number of methods with many parameters returned by the violations
             page. '''
         self.assertEqual(50, self.__sonar.many_parameters_methods('product'))
+
+    def test_missing_metric_value(self):
+        ''' Test that the default value is returned for missing values. '''
+        self.__sonar.json = '[{"msr": []}]'
+        self.assertEqual(0, self.__sonar.unittests('product'))
+
+    def test_missing_violation_value(self):
+        ''' Test that the default value is returned for missing violations. '''
+        self.__sonar.json = '[{}]'
+        self.assertEqual(0, self.__sonar.long_methods('product'))

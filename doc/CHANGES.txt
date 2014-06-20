@@ -1,3 +1,8 @@
+2014-06-20  Release 1.2.8
+
+  * Bug fix: Indication of availability of new versions didn't work.
+
+
 2014-06-20  Release 1.2.7
 
   * Show version number of the software in the help information of the

@@ -459,4 +459,4 @@ class HTMLFormatter(base_formatter.Formatter):
             available. '''
         latest = self.__latest_software_version
         current = self.__current_software_version
-        return ' Versie %s is beschikbaar.' % latest if current > latest else ''
+        return ' Versie %s is beschikbaar.' % latest if latest > current else ''

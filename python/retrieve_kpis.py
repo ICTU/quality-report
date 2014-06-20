@@ -162,7 +162,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         ''' Return the latest released version of the quality report
             software. '''
         client = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
-        return max(client.package_releases('quality_report'))
+        latest_version = max(client.package_releases('quality_report'))
+        logging.info('Latest quality_report package release is %s',
+                     latest_version)
+        return latest_version
 
 
 if __name__ == '__main__':
