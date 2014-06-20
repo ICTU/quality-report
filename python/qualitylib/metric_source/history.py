@@ -28,7 +28,7 @@ class History(domain.MetricSource):
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_
-        super(History, self).__init__()
+        super(History, self).__init__(url=history_filename)
 
     def recent_history(self, *metric_ids):
         ''' Retrieve the recent history for the metric_ids. '''

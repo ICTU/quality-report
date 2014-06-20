@@ -171,3 +171,7 @@ class HistoryTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2013, 2, 27, 15, 45, 32),
                          self.__history.status_start_date('OpenBugsFoo', 
                                                           'green'))
+
+    def test_url(self):
+        ''' Test that the url is the filename. '''
+        self.assertEqual('fake file', self.__history.url())
