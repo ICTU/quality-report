@@ -23,6 +23,7 @@ import glob
 import os
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
+from qualitylib import VERSION
 
 
 class ParseRequirementsOptions(object):
@@ -34,7 +35,7 @@ class ParseRequirementsOptions(object):
 
 
 setup(name='quality_report',
-      version='1.2.6',
+      version=VERSION,
       description='Software quality report generator',
       author='ICTU',
       author_email='frank.niessink@ictu.nl',

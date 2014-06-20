@@ -37,3 +37,12 @@ class MetricSourceTests(unittest.TestCase):
         ''' Test that an url can be given as parameter. '''
         self.assertEqual('http://url/',
                          domain.MetricSource(url='http://url/').url())
+
+
+class MissingMetricSourceTests(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the missing metric source domain class. '''
+    def test_iteration(self):
+        ''' Test that missing metric sources are iterable. '''
+        for _ in domain.MissingMetricSource():  # pragma: no branch
+            self.fail('Expected no items to iterate.')  # pragma: no cover

@@ -1,3 +1,9 @@
+2014-06-20  Release 1.2.7
+
+  * Show version number of the software in the help information of the
+    generated quality reports. Also show whether a newer version is available.
+
+
 2014-06-19  Release 1.2.6
 
   * Bug fix: Don't use default Maven if a user specified Maven is passed.

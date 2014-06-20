@@ -136,18 +136,9 @@ class Project(object):
 
     def project_resources(self):
         ''' Return all resources of the project. '''
-        from qualitylib import metric_source
         resources = []
-        for metric_source_class in [metric_source.Jira, metric_source.Jenkins,
-                                    metric_source.Sonar, metric_source.Birt,
-                                    metric_source.PerformanceReport,
-                                    metric_source.Wiki, 
-                                    metric_source.TrelloRiskBoard,
-                                    metric_source.TrelloActionsBoard,
-                                    metric_source.ReleaseCandidates]:
-            source = self.metric_source(metric_source_class)
-            if source:
-                resources.append((source.name(), source.url()))
+        for source in self.__metric_sources.values():
+            resources.append((source.name(), source.url()))
         for team in self.teams():
             resources.extend(team.team_resources())
         for product in self.products():

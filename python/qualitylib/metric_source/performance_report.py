@@ -146,8 +146,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @staticmethod
     def __test_run_number(filename):
         ''' Return the test run number as contained in the filename. '''
-        number_part = filename.split('_')[2]
-        return int(re.search('[0-9]+', number_part).group(0))
+        return int(re.search('[0-9]+', filename).group(0))
 
     @staticmethod
     def __parse_date(date_text):

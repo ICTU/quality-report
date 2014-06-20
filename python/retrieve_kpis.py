@@ -19,13 +19,15 @@ limitations under the License.
 # like Sonar and Jenkins.
 
 
-from qualitylib import formatting, commandlineargs, report, metric_source, log
+from qualitylib import formatting, commandlineargs, report, metric_source, \
+    log, VERSION
 import import_file
 import codecs
 import logging
 import os
 import stat
 import pkg_resources
+import xmlrpclib
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -96,8 +98,11 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         report_dir = report_dir or '.'
         self.__create_dir(report_dir)
         tmp_filename = os.path.join(report_dir, 'tmp.html')
+        latest_software_version = self.__latest_software_version()
         self.__format_and_write_report(quality_report, formatting.HTMLFormatter,
-                                       tmp_filename, 'w', 'utf-8')
+            tmp_filename, 'w', 'utf-8',
+            latest_software_version=latest_software_version,
+            current_software_version=VERSION)
         html_filename = os.path.join(report_dir, 'index.html')
         if os.path.exists(html_filename):
             os.remove(html_filename)
@@ -126,10 +131,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     @classmethod
     def __format_and_write_report(cls, quality_report, report_formatter,
-                                  filename, mode, encoding):
+                                  filename, mode, encoding, **kwargs):
         ''' Format the report using the formatter and write it to the specified
             file. '''
-        formatted_report = report_formatter().process(quality_report)
+        formatted_report = report_formatter(**kwargs).process(quality_report)
         cls.__write_file(formatted_report, filename, mode, encoding)
 
     @staticmethod
@@ -151,6 +156,13 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             os.mkdir(dir_name)
         os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | \
                  stat.S_IRUSR | stat.S_IWUSR)
+
+    @staticmethod
+    def __latest_software_version():
+        ''' Return the latest released version of the quality report
+            software. '''
+        client = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
+        return max(client.package_releases('quality_report'))
 
 
 if __name__ == '__main__':

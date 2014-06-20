@@ -43,10 +43,20 @@ class HTMLFormatter(base_formatter.Formatter):
                    "'%(quality_attribute)s'"]
     columns = '[' + ', '.join(column_list) + ']'
 
+    def __init__(self, *args, **kwargs):
+        self.__latest_software_version = kwargs.pop('latest_software_version', 
+                                                    '0')
+        self.__current_software_version = kwargs.pop('current_software_version',
+                                                     '0')
+        super(HTMLFormatter, self).__init__(*args, **kwargs)
+
     def prefix(self, report):
         ''' Return a HTML formatted version of the report prefix. '''
-        parameters = dict(title=report.title(),
-                          date=report.date().strftime('%d-%m-%y %H:%M'))
+        parameters = dict(
+            title=report.title(),
+            date=report.date().strftime('%d-%m-%y %H:%M'),
+            current_version=self.__current_software_version,
+            new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
         parameters['quality_attribute_filter_menu'] = \
             self.__quality_attribute_filter_menu(report)
@@ -189,10 +199,9 @@ class HTMLFormatter(base_formatter.Formatter):
 
     @staticmethod
     def __date_and_time(history_record):
-        ''' Return the date and time of the history record. '''
-        ''' Remove leading zero from date/time elements (assuming all '''
-        ''' elements are 2 digits long). Turn month into zero-based '''
-        ''' value for usage within Javascript. '''
+        ''' Return the date and time of the history record. Remove leading zero 
+            from date/time elements (assuming all elements are 2 digits long).
+            Turn month into zero-based value for usage within Javascript. '''
         year, month, day, hour, minute, second = \
             re.split(r' 0?|:0?|\-0?|\.0?', history_record['date'])[:6]
         month = str(int(month) - 1)  # Months are zero based
@@ -444,3 +453,10 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Return a url to the product section in the HTML report for the
             specified product. '''
         return 'index.html#section_%s' % product.short_name()
+
+    def __new_release_text(self):
+        ''' Return a line of text if there is a new version of the software
+            available. '''
+        latest = self.__latest_software_version
+        current = self.__current_software_version
+        return ' Versie %s is beschikbaar.' % latest if current > latest else ''

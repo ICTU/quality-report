@@ -164,11 +164,6 @@ class FakeResource(object):
         ''' Return a fake url. '''
         return 'http://resource'
 
-    @staticmethod
-    def get_coverage_url(product):
-        ''' Return a fake coverage url. '''
-        return 'http://cov/%s' % product
-
     def name(self):
         ''' Return the name of the resource. '''
         return self.__name
@@ -185,9 +180,8 @@ class ProjectResourcesTest(unittest.TestCase):
         return domain.Project('Organization', 'Project', **kwargs)
 
     def test_default_resources(self):
-        ''' Test that the project has only missing resources by default. '''
-        for resource in self.project().project_resources():
-            self.assertEqual(None, resource[1])
+        ''' Test that the project has no resources by default. '''
+        self.failIf(self.project().project_resources())
 
     def test_wiki(self):
         ''' Test that the wiki is in the project resources. '''
@@ -315,10 +309,12 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_repository(self):
         ''' Test that the source code repository is in the project 
             resources. '''
-        project = self.project(metric_sources={metric_source.Subversion: 'SVN'})
+        subversion = metric_source.Subversion()
+        project = self.project(metric_sources={
+                                   metric_source.Subversion: subversion})
         svn_url = 'http://svn/product/trunk/'
         product = domain.Product(project, 'Short name',
-                                 metric_source_ids={'SVN': svn_url})
+                                 metric_source_ids={subversion: svn_url})
         project.add_product(product)
         self.failUnless(('Broncode repository Short name', 
                          svn_url) in project.project_resources())
@@ -326,10 +322,12 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_repositories(self):
         ''' Test that the source code repositories are in the project 
             resources. '''
-        project = self.project(metric_sources={metric_source.Subversion: 'SVN'})
+        subversion = metric_source.Subversion()
+        project = self.project(metric_sources={
+                                   metric_source.Subversion: subversion})
         for index in range(1, 4):
             product = domain.Product(project, 'Product %d' % index, 
-                metric_source_ids={'SVN': 
+                metric_source_ids={subversion: 
                                    'https://svn/product%d/trunk/' % index})
             if index == 3:
                 product.set_product_version('1.1')
