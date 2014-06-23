@@ -43,13 +43,19 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def modules(self, url):
         ''' Return the modules defined in the pom file, recursively. '''
-        if not url:
+        try:
+            pom_soup = self.__get_pom_soup(url)
+        except urllib2.HTTPError:
             return set()
-        pom_soup = self.__get_pom_soup(url, log_level=logging.ERROR)
         module_artifacts = set()
         for module in self.__get_modules(pom_soup):
-            module_url = url + '/' + module
-            artifact_id = self.soup(module_url + '/pom.xml').project.find('artifactid', recursive=False).string
+            module_url = url + '/' + module + '/'
+            try:
+                module_pom_soup = self.__get_pom_soup(module_url)
+            except urllib2.HTTPError:
+                continue
+            artifact_id = module_pom_soup.project.find('artifactid', 
+                                                       recursive=False).string
             module_artifacts.add(artifact_id)
             module_artifacts.update(self.modules(module_url))
         return module_artifacts
@@ -163,11 +169,11 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             modules.add(module_tag.string)
         return modules
 
-    def __get_pom_soup(self, url, log_level=logging.WARNING):
+    def __get_pom_soup(self, url):
         ''' Return the soup version of the pom. '''
         pom_url = url + '/pom.xml'
         try:
             return self.soup(pom_url)
         except urllib2.HTTPError, reason:
-            logging.log(log_level, "Couldn't open %s: %s", pom_url, reason)
+            logging.warn("Couldn't open %s: %s", pom_url, reason)
             raise

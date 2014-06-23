@@ -1,3 +1,9 @@
+2014-06-23  Release 1.2.11
+
+  * Bug fix: Don't assume other products have pom files when looking for 
+    dependencies.
+
+
 2014-06-23  Release 1.2.10
 
   * Bug fix: Don't assume a pom file exists if a product has a Subversion url.
