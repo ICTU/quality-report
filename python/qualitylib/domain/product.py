@@ -326,8 +326,12 @@ class Product(MeasurableObject):
         svn_path = self.svn_path(version)
         try:
             return pom.dependencies(svn_path, self.__project.products())
-        except (ValueError, IndexError, urllib2.HTTPError), reason:
-            logging.error("Couldn't retrieve dependencies for %s:%s: %s",
+        except urllib2.HTTPError, reason:
+            logging.warn("Couldn't retrieve dependencies for %s:%s: %s",
+                          self.name(), version or 'trunk', reason)
+            return set()
+        except (ValueError, IndexError), reason:
+            logging.error("Couldn't parse dependencies for %s:%s: %s",
                           self.name(), version or 'trunk', reason)
             if user:
                 logging.error('User of %s:%s is %s:%s', self.name(), 
