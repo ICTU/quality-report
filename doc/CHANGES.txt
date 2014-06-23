@@ -1,6 +1,8 @@
-2014-06-??  Release 1.2.9
+2014-06-23  Release 1.2.9
 
   * Bug fix: Don't list the history file as missing when it is not.
+  * Bug fix: Don't fail when the Python Package Index (PyPI) can't be reached
+    for checking the latest released version.
 
 
 2014-06-20  Release 1.2.8

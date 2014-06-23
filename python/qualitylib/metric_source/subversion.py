@@ -55,12 +55,12 @@ class Subversion(domain.MetricSource):
 
     metric_source_name = 'Subversion'
 
-    def __init__(self, username=None, password=None,
+    def __init__(self, username=None, password=None, url=None,
                  run_shell_command=subprocess.check_output):
         self.__username = username
         self.__password = password
         self.__shell_command = run_shell_command
-        super(Subversion, self).__init__()
+        super(Subversion, self).__init__(url=url)
 
     def check_out(self, svn_path, folder):
         ''' Check out the subversion path into the folder. '''

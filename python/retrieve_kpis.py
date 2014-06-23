@@ -28,6 +28,7 @@ import os
 import stat
 import pkg_resources
 import xmlrpclib
+import socket
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -161,8 +162,14 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __latest_software_version():
         ''' Return the latest released version of the quality report
             software. '''
-        client = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
-        latest_version = max(client.package_releases('quality_report'))
+        python_package_index_url = 'https://pypi.python.org/pypi'
+        client = xmlrpclib.ServerProxy(python_package_index_url)
+        try:
+            latest_version = max(client.package_releases('quality_report'))
+        except socket.gaierror, reason:
+            logging.warn("Can't create connection to %s: %s",
+                         python_package_index_url, reason)
+            return '0'
         logging.info('Latest quality_report package release is %s',
                      latest_version)
         return latest_version
