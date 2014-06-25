@@ -47,7 +47,7 @@ How to add a new project to the quality system.
    $ svn add quality-data/new_project/history.json
 
 4. Test the new project by running the quality report from the command line:
-   $ python python/retrieve_kpis.py --project quality-data/new_project/project_definition.py --report . --log INFO
+   $ python python/quality_report.py --project quality-data/new_project/project_definition.py --report . --log INFO
 
 5. Commit the changes to version control.
    $ svn commit -m "Added new_project to the quality system."
