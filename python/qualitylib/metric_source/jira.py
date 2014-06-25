@@ -27,6 +27,8 @@ class Jira(Tasks, url_opener.UrlOpener):
     ''' Class representing the Jira instance. '''
     metric_source_name = 'Jira'
     TECHNICAL_TASK_ISSUE_TYPE = 8
+    ID_PREFIX = 'Metriek '
+    ID_TEMPLATE = ID_PREFIX + '%s'
 
     def __init__(self, url, username, password, jira_project_id=None,
                  jira_parent_task_id=None, open_bug_query_id=None, 
@@ -53,15 +55,16 @@ class Jira(Tasks, url_opener.UrlOpener):
                 'parentIssueId=%(parent_issue_id)d' % parameters
         return new_task_url
 
-    def tasks(self, kpi_id, recent_only=False, weeks_recent=3):
-        ''' Return a list of open issues that refer to the kpi id. '''
+    def tasks(self, metric_id, recent_only=False, weeks_recent=3):
+        ''' Return a list of open issues that refer to the metric id. '''
         def browse_url(issue):
             ''' Return a url that points to the issue. '''
             return self.__url + 'browse/' + issue['key']
 
-        def match_id(issue, kpi_id):
-            ''' Return whether the issue refers to the KPI. '''
-            return 'KPI %s' % kpi_id in issue['fields']['description']
+        def match_id(issue, metric_id):
+            ''' Return whether the issue refers to the metric. '''
+            return self.ID_TEMPLATE % metric_id in \
+                issue['fields']['description']
 
         def match_recent(issue):
             ''' Return whether the issue is recent. '''
@@ -74,16 +77,17 @@ class Jira(Tasks, url_opener.UrlOpener):
                 return True
 
         return [browse_url(issue) for issue in self.__all_tasks() \
-                if match_id(issue, kpi_id) and match_recent(issue)]
+                if match_id(issue, metric_id) and match_recent(issue)]
 
-    def new_task_url(self, kpi_id):
+    def new_task_url(self, metric_id):
         ''' Return a url for creating a new issue. '''
         return self.__new_task_url + '&description=%s' % \
-            urllib.quote_plus('KPI %s' % kpi_id)
+            urllib.quote_plus(self.ID_TEMPLATE % metric_id)
 
     @utils.memoized
     def __all_tasks(self):
-        ''' Return all issues from Jira that contain a reference to a KPI. '''
+        ''' Return all issues from Jira that contain a reference to a 
+            metric. '''
 
         url = self.__url + 'rest/api/2/search?maxResults=1000&jql=' + \
             urllib.quote_plus('status in (Open, "In Progress", Reopened) AND ' \
@@ -92,7 +96,7 @@ class Jira(Tasks, url_opener.UrlOpener):
         logging.info('Received %d Jira issues', len(issues))
         logging.debug('Jira issues: %s', issues)
         tasks = [issue for issue in issues if 'description' in issue['fields'] \
-                and 'KPI ' in unicode(issue['fields']['description'])]
+                and self.ID_PREFIX in unicode(issue['fields']['description'])]
         return tasks
 
     @utils.memoized

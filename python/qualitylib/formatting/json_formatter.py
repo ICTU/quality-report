@@ -44,17 +44,17 @@ class JSONFormatter(base_formatter.Formatter):
         return [section for section in report.sections() if \
                 not section.product() or section.contains_trunk_product()]
 
-    def kpi(self, kpi):
-        ''' Return a JSON formatted version of the kpi. '''
+    def metric(self, metric):
+        ''' Return a JSON formatted version of the metric. '''
         # Write numerical values without decimals.
-        logging.info('Formatting kpi %s.', kpi.stable_id())
+        logging.info('Formatting metric %s.', metric.stable_id())
         try:
-            return '"%s": ("%.0f", "%s", "%s"), ' % (kpi.stable_id(), 
-                                                     kpi.numerical_value(),
-                                                     kpi.status(),
-                                                     kpi.status_start_date())
+            return '"%s": ("%.0f", "%s", "%s"), ' % (metric.stable_id(), 
+                                                     metric.numerical_value(),
+                                                     metric.status(),
+                                                     metric.status_start_date())
         except TypeError:
-            logging.error('Error formatting %s', kpi.stable_id())
+            logging.error('Error formatting %s', metric.stable_id())
             raise
 
     @staticmethod

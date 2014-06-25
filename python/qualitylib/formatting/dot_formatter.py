@@ -35,8 +35,8 @@ class DotFormatter(base_formatter.Formatter):
         graph.extend(self.__product_edges(report))
         return self.sep.join(graph)
 
-    def kpi(self, kpi):
-        ''' Return a dot formatted version of the KPI. '''
+    def metric(self, metric):
+        ''' Return a dot formatted version of the metric. '''
         return ''  # pragma: no cover
 
     @staticmethod

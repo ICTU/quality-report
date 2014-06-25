@@ -125,7 +125,7 @@ class ResponseTimesTestsMixin(object):
                          self._metric.numerical_value())
 
     def test_status(self):
-        ''' Test the status of the KPI. '''
+        ''' Test the status of the metric. '''
         self.assertEqual(self.expected_status, self._metric.status())
 
     def test_url(self):

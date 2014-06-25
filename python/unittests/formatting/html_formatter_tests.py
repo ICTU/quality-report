@@ -51,7 +51,7 @@ class HTMLFormatterTest(unittest.TestCase):
         self.failUnless('%s:%s gebruikt:' % (product.name(), 
                                              product.product_version()) in html)
 
-    def test_one_kpi(self):
+    def test_one_metric(self):
         ''' Test that the report contains one metric. '''
         metric = fake_domain.Metric()
         html = self.__formatter.process(fake_report.Report(metrics=[metric]))
@@ -63,7 +63,7 @@ class HTMLFormatterTest(unittest.TestCase):
         html = self.__formatter.process(fake_report.Report(teams=[team]))
         self.failUnless(team.id_string() in html)
 
-    def test_meta_kpis(self):
+    def test_meta_metrics(self):
         ''' Test meta metrics. '''
         html = self.__formatter.process(fake_report.Report( \
                                         metrics=[fake_domain.Metric()]))
@@ -139,5 +139,5 @@ class HTMLFormatterTest(unittest.TestCase):
         ''' Test that the report contains a list of metric classes it can 
             report on. '''
         html = self.__formatter.process(fake_report.Report())
-        self.failUnless('<table>\n<tr><th>KPI</th><th>Kwaliteitsattribuut' \
+        self.failUnless('<table>\n<tr><th>Metriek</th><th>Kwaliteitsattribuut' \
                         '</th><th>Norm</th>' in html)

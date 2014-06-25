@@ -50,13 +50,13 @@ class Formatter(object):  # pylint: disable=R0921
 
     def section(self, report, section):  # pylint: disable=W0613
         ''' Return a formatted version of the section. '''
-        kpis = []
-        for kpi in section:
-            kpis.append(self.kpi(kpi))
-        return self.sep.join(kpis)
+        metrics = []
+        for metric in section:
+            metrics.append(self.metric(metric))
+        return self.sep.join(metrics)
 
-    def kpi(self, kpi):  # pylint: disable=W0613
-        ''' Return a formatted version of the kpi. '''
+    def metric(self, metric):  # pylint: disable=W0613
+        ''' Return a formatted version of the metric. '''
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod

@@ -60,7 +60,7 @@ How to add a new project to the quality system.
    . /home/nfsusers/jenkins/quality-report-pyenv/bin/activate
    PROJECT=quality-data/new_project
    # Create the quality report
-   retrieve_kpis.py --project $PROJECT/project_definition.py --report . --json $PROJECT/history.json --log INFO
+   quality_report.py --project $PROJECT/project_definition.py --report . --json $PROJECT/history.json --log INFO
    svn commit -m "Updated history from Jenkins." $PROJECT
 
    Also make sure the Jenkins job runs periodically, for example every 15 

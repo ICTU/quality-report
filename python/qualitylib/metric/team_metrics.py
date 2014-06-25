@@ -29,7 +29,7 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
         'lager dan of gelijk aan %(target_factor).1f maal de geplande ' \
         'velocity. Als de velocity die nodig is om het sprintdoel te halen ' \
         'hoger wordt dan %(low_target_factor).1f maal de geplande velocity ' \
-        'is deze KPI rood.'
+        'is deze metriek rood.'
     template = 'Team %(name)s heeft een velocity van %(value).1f punt per ' \
         'dag nodig om het sprintdoel van de huidige sprint (%(sprint_goal).1f '\
         'punten) te halen. De geplande velocity is %(planned_velocity).1f ' \

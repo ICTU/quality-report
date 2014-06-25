@@ -18,6 +18,7 @@ from qualitylib.metric_source import url_opener, sonar_runner
 from qualitylib.metric_source.maven import Maven
 from qualitylib import utils, domain
 import logging
+import urllib2
 
 
 class Sonar(domain.MetricSource, url_opener.UrlOpener):
@@ -132,7 +133,12 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def __metric(self, product, metric, default=0):
         ''' Return a specific metric value for the product. '''
-        json = self.url_open(self.__metrics_api_url % (product, metric)).read()
+        try:
+            json = self.url_open(self.__metrics_api_url % (product, metric)).read()
+        except urllib2.HTTPError:
+            logging.warning("Can't retrieve resource url %s from Sonar.",
+                            self.__metrics_api_url % (product, metric))
+            return default
         try:
             return utils.eval_json(json)[0]['msr'][0]['val']
         except IndexError:

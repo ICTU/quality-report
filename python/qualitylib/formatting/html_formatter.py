@@ -68,7 +68,7 @@ class HTMLFormatter(base_formatter.Formatter):
 
         metrics = []
         for metric in report.metrics():
-            data = self.__kpi_data(metric)
+            data = self.__metric_data(metric)
             metric_number = int(data['metric_id'].split('-')[1])
             data['metric_number'] = '%s-%02d' % (data['section'],
                                                  metric_number)
@@ -98,8 +98,8 @@ class HTMLFormatter(base_formatter.Formatter):
                           product_links=links)
         return self.__get_html_fragment('section') % parameters
 
-    def kpi(self, kpi):
-        ''' Return a HTML formatted version of the KPI. '''
+    def metric(self, metric):
+        ''' Return a HTML formatted version of the metric. '''
         return ''  # pragma: no cover
 
     @staticmethod
@@ -154,7 +154,7 @@ class HTMLFormatter(base_formatter.Formatter):
                 <a class="filter_quality_attribute"
                    id="filter_quality_attribute_%(attribute_id)s" 
                    href="#">
-                    <i class=""></i> Alleen KPI's die %(attribute_name)s meten
+                    <i class=""></i> Alleen %(attribute_name)s-metingen
                 </a>
             </li>'''
         menu_items = [menu_item_template % \
@@ -170,7 +170,7 @@ class HTMLFormatter(base_formatter.Formatter):
         for team in report.teams():
             team_filter_menu_items.append('<li><a class="filter_team" ' \
                 'id="filter_team_%(team_id)s" href="#"><i class=""></i> ' \
-                "Alleen KPI's van team %(team)s</a></li>" % \
+                "Alleen metingen van team %(team)s</a></li>" % \
                 dict(team=team, team_id=team.id_string()))
         return '\n'.join(team_filter_menu_items)
 
@@ -225,10 +225,10 @@ class HTMLFormatter(base_formatter.Formatter):
         return (percentage_green, percentage_yellow, percentage_red,
                 percentage_grey)
 
-    def __kpi_data(self, kpi):
-        ''' Return the kpi data as a dictionary, so it can be used in string
+    def __metric_data(self, metric):
+        ''' Return the metric data as a dictionary, so it can be used in string
             templates. '''
-        status = kpi.status()
+        status = metric.status()
         kwargs_by_status = dict(
             red=dict(image='sad', alt=':-(', status_nr=0,
                      hover='Direct actie vereist: norm niet gehaald of meting '
@@ -242,30 +242,30 @@ class HTMLFormatter(base_formatter.Formatter):
             grey=dict(image='ashamed', alt=':-o', status_nr=4,
                       hover='Technische schuld: lossen we later op'))
         kwargs = kwargs_by_status[status]
-        qualifier = 'tenminste ' if kpi.status_start_date() <= \
+        qualifier = 'tenminste ' if metric.status_start_date() <= \
                     datetime.datetime(2013, 3, 19, 23, 59, 59) else ''   
         kwargs['hover'] += ' (sinds %s%s)' % (qualifier,
-            utils.format_date(kpi.status_start_date(), year=True))
-        kwargs['status'] = self.__kpi_status(kpi)
-        kwargs['metric_id'] = kpi.id_string()
-        kwargs['section'] = kpi.id_string().split('-')[0]
-        kwargs['version'] = kpi.product_version_type()
-        kwargs['text'] = self.__format_kpi_text(kpi)
-        kwargs['tasks'] = self.__format_kpi_tasks(kpi)
-        kwargs['norm'] = kpi.norm()
-        attribute_id = kpi.quality_attribute.id_string()
+            utils.format_date(metric.status_start_date(), year=True))
+        kwargs['status'] = self.__metric_status(metric)
+        kwargs['metric_id'] = metric.id_string()
+        kwargs['section'] = metric.id_string().split('-')[0]
+        kwargs['version'] = metric.product_version_type()
+        kwargs['text'] = self.__format_metric_text(metric)
+        kwargs['tasks'] = self.__format_metric_tasks(metric)
+        kwargs['norm'] = metric.norm()
+        attribute_id = metric.quality_attribute.id_string()
         if attribute_id:
             attribute_id = 'filter_quality_attribute_' + attribute_id
         kwargs['quality_attribute'] = attribute_id
-        kwargs['comment'] = self.__format_kpi_comment(kpi)
+        kwargs['comment'] = self.__format_metric_comment(metric)
         try:
             kwargs['history'] = ','.join([str(value) \
-                                          for value in kpi.recent_history()])
+                                          for value in metric.recent_history()])
         except ValueError:
             kwargs['history'] = ''
-        kwargs['y_axis_range'] = self.__format_y_axis_range(kpi.y_axis_range())
+        kwargs['y_axis_range'] = self.__format_y_axis_range(metric.y_axis_range())
         kwargs['teams'] = ','.join(['filter_team_%s' % team.id_string() \
-                                    for team in kpi.responsible_teams()])
+                                    for team in metric.responsible_teams()])
         return kwargs
 
     def postfix(self):  # pylint: disable=arguments-differ
@@ -273,31 +273,32 @@ class HTMLFormatter(base_formatter.Formatter):
         return self.__get_html_fragment('postfix')
 
     @classmethod
-    def __format_kpi_text(cls, kpi):
-        ''' Return a HTML formatted version of the kpi text that includes one
-            or more links to the kpi source(s) if available. '''
-        return cls.__format_text_with_links(kpi.report(), kpi.url(), 
-                                            kpi.url_label())
+    def __format_metric_text(cls, metric):
+        ''' Return a HTML formatted version of the metric text that includes one
+            or more links to the metric source(s) if available. '''
+        return cls.__format_text_with_links(metric.report(), metric.url(), 
+                                            metric.url_label())
 
     @staticmethod
-    def __kpi_status(kpi):
-        ''' Return the status of the kpi, including corrective actions. '''
-        status = kpi.status()
-        if status in ('red', 'yellow') and kpi.has_tasks():
+    def __metric_status(metric):
+        ''' Return the status of the metric, including corrective actions. '''
+        status = metric.status()
+        if status in ('red', 'yellow') and metric.has_tasks():
             status += '_with_action'
         return status
 
     @classmethod
-    def __format_kpi_tasks(cls, kpi):
-        ''' Return a HTML formatted version of the kpi action(s). '''
-        return cls.__format_text_with_links('', kpi.task_urls())
+    def __format_metric_tasks(cls, metric):
+        ''' Return a HTML formatted version of the metric action(s). '''
+        return cls.__format_text_with_links('', metric.task_urls())
 
     @classmethod
-    def __format_kpi_comment(cls, kpi):
-        ''' Return a HTML formatted version of the kpi comment that includes
+    def __format_metric_comment(cls, metric):
+        ''' Return a HTML formatted version of the metric comment that includes
             a link to the comment source (the wiki). '''
-        return cls.__format_text_with_links(kpi.comment(), kpi.comment_urls(), 
-                                            kpi.comment_url_label())
+        return cls.__format_text_with_links(metric.comment(), 
+                                            metric.comment_urls(), 
+                                            metric.comment_url_label())
 
     @classmethod
     def __format_text_with_links(cls, text, url_dict, url_label=''):
@@ -315,7 +316,7 @@ class HTMLFormatter(base_formatter.Formatter):
 
     @staticmethod
     def __format_subtitle(subtitle):
-        ''' Return a HTML formatted subtitle. '''        
+        ''' Return a HTML formatted subtitle. '''
         return ' <small>%s</small>' % subtitle if subtitle else ''
 
     @staticmethod
@@ -436,7 +437,7 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Return a HTML table of the metrics the software can measure. '''
         result = []
         result.append('<table>')
-        result.append('<tr><th>KPI</th><th>Kwaliteitsattribuut</th>' \
+        result.append('<tr><th>Metriek</th><th>Kwaliteitsattribuut</th>' \
                       '<th>Norm</th></tr>')
         for metric_class in report.metric_classes():
             name = metric_class.name

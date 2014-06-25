@@ -63,7 +63,7 @@ class Metric(object):
         self.__tasks = self._project.metric_source(metric_source.Tasks)
 
     def stable_id(self):
-        ''' Return an id that doesn't depend on numbering/order of KPI's. '''
+        ''' Return an id that doesn't depend on numbering/order of metrics. '''
         stable_id = self.__class__.__name__
         if type(self._subject) != type([]):
             # Add the product or team to the id:

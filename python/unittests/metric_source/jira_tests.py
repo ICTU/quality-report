@@ -94,19 +94,19 @@ class JiraTest(unittest.TestCase):
 
     def test_no_tasks(self):
         ''' Test there are no tasks by default. '''
-        self.failIf(self.__jira.tasks('KPI-1'))
+        self.failIf(self.__jira.tasks('K1'))
 
     def test_one_task(self):
         ''' Test one task. '''
         JiraUnderTest.ISSUES = '[{"key": "I1", ' \
-                               '"fields": {"description": "KPI K1"}}]'
+                               '"fields": {"description": "Metriek K1"}}]'
         self.assertEqual(['http://jira/browse/I1'], self.__jira.tasks('K1'))
 
     def test_one_recent_task(self):
         ''' Test one recent task. '''
         now = datetime.datetime.now()
         JiraUnderTest.ISSUES = '[{"key": "I1", ' \
-                               '"fields": {"description": "KPI K1", ' \
+                               '"fields": {"description": "Metriek K1", ' \
                                '"updated": "%s"}}]' % \
                                now.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
         self.assertEqual(['http://jira/browse/I1'], 
@@ -114,12 +114,12 @@ class JiraTest(unittest.TestCase):
 
     def test_default_new_task_url(self):
         ''' Test the default url for creating new tasks. '''
-        self.assertEqual('http://jira/&description=KPI+K1', 
+        self.assertEqual('http://jira/&description=Metriek+K1', 
                          JiraUnderTest(self.__jira_url, 'username', 
                                        'password').new_task_url('K1'))
 
     def test_new_task_url(self):
         ''' Test the url for creating new tasks. '''
         self.assertEqual('http://jira/secure/CreateSubTaskIssue!default.jspa' \
-            '?pid=99&issuetype=8&parentIssueId=1234&description=KPI+K1', 
+            '?pid=99&issuetype=8&parentIssueId=1234&description=Metriek+K1', 
             self.__jira.new_task_url('K1'))

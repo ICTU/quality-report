@@ -23,25 +23,24 @@ class FormatterUnderTest(Formatter):
     ''' Implement abstract methods. '''
     def prefix(self, *args, **kwargs):  # pylint: disable=unused-argument
         return '<prefix>'
-    
-    def kpi(self, *args, **kwargs):  # pylint: disable=unused-argument
-        return '<kpi>'
+
+    def metric(self, *args, **kwargs):  # pylint: disable=unused-argument
+        return '<metric>'
 
 
 class BaseFormatterTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the base report formatter. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__formatter = FormatterUnderTest()
-        
+
     def test_process(self):
         ''' Test that the report is processed. '''
         report = fake_report.Report([fake_domain.Product()])
-        self.assertEqual('<prefix><kpi><kpi>', 
+        self.assertEqual('<prefix><metric><metric>', 
                          self.__formatter.process(report))
-        
+
     def test_postfix(self):
         ''' Test that the postfix is empty. '''
         self.assertEqual('', self.__formatter.postfix())
-

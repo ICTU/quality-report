@@ -27,13 +27,12 @@ class Product(MeasurableObject):
 
     def __init__(self, project, short_name='',
                  unittests=None, jsf=None, art=None,
-                 responsible_teams=None, kpi_responsibility=None, 
+                 responsible_teams=None, metric_responsibility=None, 
                  product_version='', **kwargs):
 
         ''' responsible_teams: list of teams responsible for this product.
-            kpi_responsibility: dictionary of metric classes mapped to lists
-                                of teams responsible for the product/metric
-                                combination. '''
+            metric_responsibility: dictionary of metric classes mapped to lists
+                of teams responsible for the product/metric combination. '''
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
@@ -42,7 +41,7 @@ class Product(MeasurableObject):
         self.__art = art
         self.__product_version = product_version
         self.__product_responsibility = responsible_teams or []
-        self.__kpi_responsibility = kpi_responsibility or {}
+        self.__metric_responsibility = metric_responsibility or {}
 
     def __str__(self):
         return self.sonar_id()
@@ -203,8 +202,8 @@ class Product(MeasurableObject):
 
     def responsible_teams(self, metric_class=None):
         ''' Return the list of teams responsible for this product. '''
-        if metric_class in self.__kpi_responsibility:
-            return self.__kpi_responsibility[metric_class]
+        if metric_class in self.__metric_responsibility:
+            return self.__metric_responsibility[metric_class]
         elif self.__product_responsibility:
             return self.__product_responsibility
         else:
@@ -269,7 +268,7 @@ class Product(MeasurableObject):
         dependencies = self.__get_dependencies(version, user)
         recursive_dependencies = set()
         for dependency_name, dependency_version in dependencies.copy():
-            dependency = self.__find_product_by_name(dependency_name)
+            dependency = self.__project.get_product(dependency_name)
             if dependency and dependency.name() != self.name():
                 if recursive:
                     recursive_dependencies.update(\
@@ -338,9 +337,3 @@ class Product(MeasurableObject):
                               version or 'trunk', user.name(), 
                               user.product_version() or 'trunk')
             raise
-
-    def __find_product_by_name(self, product_name):
-        ''' Lookup a product in the list of products by its name. '''
-        for product in self.__project.products():
-            if product_name == product.name():
-                return product
