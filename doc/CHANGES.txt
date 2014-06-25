@@ -2,7 +2,9 @@
 
   * Don't use the term key performance indicator (KPI) since there are way too 
     many metrics to justify usage of the phrase "key". Consequently, the main 
-    script is rename to quality_report.py.
+    script is renamed to quality_report.py.
+  * Bug fix: Don't assume other products have Subversion paths when looking for
+    dependencies.
 
 
 2014-06-23  Release 1.2.11

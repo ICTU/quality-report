@@ -97,9 +97,10 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         product_artifact_id = sonar_id.split(':')[1]
         if artifact_id == product_artifact_id:
             return True
-        for module in self.modules(product.svn_path()):
-            if artifact_id == module:
-                return True
+        if product.svn_path():
+            for module in self.modules(product.svn_path()):
+                if artifact_id == module:
+                    return True
         return False
 
     @staticmethod
