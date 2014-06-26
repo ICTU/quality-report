@@ -135,9 +135,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         ''' Return a specific metric value for the product. '''
         try:
             json = self.url_open(self.__metrics_api_url % (product, metric)).read()
-        except urllib2.HTTPError:
-            logging.warning("Can't retrieve resource url %s from Sonar.",
-                            self.__metrics_api_url % (product, metric))
+        except urllib2.HTTPError, reason:
+            logging.warning("Can't retrieve resource url %s from Sonar: %s",
+                            self.__metrics_api_url % (product, metric), reason)
             return default
         try:
             return utils.eval_json(json)[0]['msr'][0]['val']
@@ -147,14 +147,23 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return default
 
     @utils.memoized
-    def __violation(self, product, violation_name):
+    def __violation(self, product, violation_name, default=0):
         ''' Return a specific violation value for the product. '''
-        json = self.url_open(self.__violations_api_url % product).read()
+        try:
+            json = self.url_open(self.__violations_api_url % product).read()
+        except urllib2.HTTPError, reason:
+            logging.warning("Can't retrieve resource url %s from Sonar: %s",
+                            self.__violations_api_url % product, reason)
+            return default
         try:
             violations = utils.eval_json(json)[0]['msr']
         except (IndexError, KeyError):
-            return 0
+            logging.warning("Can't get %s value for %s from %s", violation_name,
+                            product, json)
+            return default
         for violation in violations:
             if violation_name in violation['rule_name']:
                 return violation['val']
-        return 0
+        logging.warning("Can't get %s value for %s from %s", violation_name,
+                        product, violations)
+        return default
