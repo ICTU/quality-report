@@ -16,6 +16,7 @@ limitations under the License.
 
 from qualitylib.metric_source import beautifulsoup
 from qualitylib import utils
+import copy
 import logging
 import os
 
@@ -95,7 +96,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         if version:
             folder += '-' + version
         folder = folder.replace(':', '_')
-        sonar_options = product.metric_source_options(self.__sonar) or dict()
+        sonar_options = copy.copy(product.metric_source_options(self.__sonar)) \
+            or dict()
         maven_options_string = product.metric_source_options(self.__maven) or ''
         if unittests:
             folder += '-unittests'
