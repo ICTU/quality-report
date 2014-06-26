@@ -19,6 +19,7 @@ from qualitylib import utils
 import copy
 import logging
 import os
+import urllib2
 
 
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
@@ -86,8 +87,13 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
             if sonar_id_contains_version(sonar_id) and \
                sonar_id not in sonar_analyses_to_keep and \
                sonar_id.rsplit(':', 1)[0] in sonar_analyses_to_keep:
-                logging.info('Removing Sonar analysis for %s', sonar_id)
-                self.url_delete(self.__sonar_url + 'api/projects/%s' % sonar_id)
+                try:
+                    self.url_delete(self.__sonar_url + 'api/projects/%s' % \
+                                    sonar_id)
+                    logging.info('Removed Sonar analysis for %s', sonar_id)
+                except urllib2.HTTPError, reason:
+                    logging.warn("Can't remove Sonar analysis for %s: %s", 
+                                 sonar_id, reason)
 
     def __checkout_code_and_run_sonar(self, product, unittests=False):
         ''' Check out the product and invoke Sonar through Maven. '''
