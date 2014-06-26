@@ -30,6 +30,11 @@ class FakeSubversion(object):
         ''' Return the branches for a product. '''
         return ['branch1', 'branch2', 'ignored branch']
 
+    @staticmethod  # pylint: disable=unused-argument    
+    def tags_folder_for_version(*args):
+        ''' Return the tags folder for the version. '''
+        return 'http://tags/'
+
 
 class UnmergedBranchesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods

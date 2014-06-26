@@ -74,15 +74,27 @@ class Subversion(domain.MetricSource):
     @utils.memoized
     def latest_tagged_product_version(self, product_url):
         ''' Return the latest version as tagged in Subversion. '''
-        tags_folder = product_url.split('/trunk/')[0] + '/tags/'
-        shell_command = ['svn', 'list', '--xml', tags_folder]
-        svn_info_xml = str(self.__run_shell_command(shell_command))
-        tags = [name.string for name in BeautifulSoup(svn_info_xml)('name')]
+        tags = self.tags(product_url)
         if not tags:
             return
         versions = [self.__parse_version(tag) for tag in tags]
         versions.sort()
         return versions[-1][1]  # Return the text version of the highest number
+
+    def tags_folder_for_version(self, trunk_url, version):
+        ''' Return the tags folder for the specified version. '''
+        tags = self.tags(trunk_url)
+        # Mapping from version numbers to tags:
+        folders = dict([(self.__parse_version(tag)[1], tag) for tag in tags])
+        # Look up the tag by its version number and return the tag folder
+        tags_folder = self.__tags_folder(trunk_url)
+        if version in folders:
+            return tags_folder + folders[version] + '/' + \
+                   trunk_url.split('/trunk/')[1]
+        else:
+            logging.warn('No tag folder for %s version %s in %s', trunk_url,
+                         version, tags_folder)
+            return ''
 
     @utils.memoized
     def last_changed_date(self, url):
@@ -103,18 +115,9 @@ class Subversion(domain.MetricSource):
                              in branches if nr_revisions > 0]
         return dict(unmerged_branches)
 
-    @utils.memoized
-    def branches(self, product_url):
-        ''' Return a list of branch names for the specified product. '''
-        branches_folder = product_url.split('/trunk/')[0] + '/branches/'
-        shell_command = ['svn', 'list', '--xml', branches_folder]
-        svn_list_xml = str(self.__run_shell_command(shell_command))
-        return [name.string for name in BeautifulSoup(svn_list_xml)('name')]
-
     def __nr_unmerged_revisions(self, product_url, branch_name):
         ''' Return whether the branch has unmerged revisions. '''
-        branch_url = product_url.split('/trunk/')
-        branch_url = branch_url[0] + '/branches/' + branch_name
+        branch_url = self.__branches_folder(product_url) + branch_name
         trunk_url = product_url
         revisions = str(self.__run_shell_command(['svn', 'mergeinfo', 
             '--show-revs', 'eligible', branch_url, trunk_url])).strip()
@@ -123,6 +126,26 @@ class Subversion(domain.MetricSource):
         # Number of revisions is one more than the number of line breaks, if 
         # there is any output:
         return revisions.count('\n') + 1 if revisions else 0
+
+    @utils.memoized
+    def branches(self, trunk_url):
+        ''' Return a list of branch names for the specified trunk url. '''
+        return self.__svn_list(self.__branches_folder(trunk_url))
+
+    @utils.memoized
+    def tags(self, trunk_url):
+        ''' Return a list of tags for the specified trunk url. '''
+        return self.__svn_list(self.__tags_folder(trunk_url))
+
+    @staticmethod
+    def __tags_folder(trunk_url):
+        ''' Return the tags folder for the trunk url. '''
+        return trunk_url.split('/trunk/')[0] + '/tags/'
+
+    @staticmethod
+    def __branches_folder(trunk_url):
+        ''' Return the branches folder for the trunk url. '''
+        return trunk_url.split('/trunk/')[0] + '/branches/'
 
     @staticmethod
     def __parse_version(tag):
@@ -140,6 +163,12 @@ class Subversion(domain.MetricSource):
             version_integer_tuple = (0, 0, 0)
             version_text = ''
         return version_integer_tuple, version_text
+
+    def __svn_list(self, url):
+        ''' Return a list of sub folder names. '''
+        shell_command = ['svn', 'list', '--xml', url]
+        svn_info_xml = str(self.__run_shell_command(shell_command))
+        return [name.string for name in BeautifulSoup(svn_info_xml)('name')]
 
     def __run_shell_command(self, shell_command, log_level=logging.WARNING):
         ''' Invoke a shell and run the command. '''

@@ -133,12 +133,7 @@ class Product(MeasurableObject):
         from qualitylib import metric_source
         release_candidates = self.__project.metric_source(metric_source.ReleaseCandidates)
         release_candidate_id = self.metric_source_id(release_candidates)
-        if release_candidate_id:
-            try:
-                return release_candidates[release_candidate_id]
-            except KeyError:
-                pass
-        return ''
+        return release_candidates.release_candidate(release_candidate_id)
 
     def is_release_candidate(self):
         ''' Return whether this product/version is a release candidate. '''
@@ -225,14 +220,7 @@ class Product(MeasurableObject):
         if not '/trunk/' in result:
             result += 'trunk/'
         if version:
-            name = self.name()
-            if name.endswith(':jsf'):
-                name = name[:-len(':jsf')]
-            if name.endswith(':ut'):
-                name = name[:-len(':ut')]
-            tags_folder = '/tags/' + name + '-' + version + '/'
-            result = result.split('/trunk/')
-            result = result[0] + tags_folder + result[1] 
+            result = subversion.tags_folder_for_version(result, version)
         return result
 
     def check_out(self, folder):

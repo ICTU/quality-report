@@ -169,7 +169,9 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         class FakeReleaseCandidates(object):
             # pylint: disable=too-few-public-methods,incomplete-protocol
             ''' Fake a release candidates metric source. '''
-            def __getitem__(self, item):
+            @staticmethod
+            def release_candidate(item):  # pylint: disable=unused-argument
+                ''' Return the release candidate version number. '''
                 return '1.1'
 
         release_candidates = FakeReleaseCandidates()

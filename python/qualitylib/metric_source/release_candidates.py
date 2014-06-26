@@ -19,7 +19,6 @@ from qualitylib import utils, domain
 
 
 class ReleaseCandidates(domain.MetricSource, url_opener.UrlOpener):
-    # pylint: disable=incomplete-protocol
     ''' Class representing the file with release candidate version numbers. '''
 
     metric_source_name = 'Release candidates'
@@ -27,7 +26,10 @@ class ReleaseCandidates(domain.MetricSource, url_opener.UrlOpener):
     def __init__(self, url):
         super(ReleaseCandidates, self).__init__(url=url)
 
-    def __getitem__(self, product):
+    def release_candidate(self, product):
+        ''' Return the release candidate version number for the product. '''
+        if not product:
+            return ''
         buildnr_prefix = 'buildnr_'
         for line in self.__rc_file_contents():
             if not line.startswith(buildnr_prefix):
