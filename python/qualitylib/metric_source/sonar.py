@@ -164,6 +164,4 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         for violation in violations:
             if violation_name in violation['rule_name']:
                 return violation['val']
-        logging.warning("Can't get %s value for %s from %s", violation_name,
-                        product, violations)
         return default

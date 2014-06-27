@@ -318,6 +318,13 @@ class FakeBirt(object):
             design. '''
         return True
 
+    @staticmethod
+    def has_art_performance(birt_id, version):
+        # pylint: disable=unused-argument
+        ''' Return whether the product with the specified birt id has relative
+            performance data. '''
+        return True
+
 
 class FakeJira(object):  # pylint: disable=too-few-public-methods
     ''' Fake Jira. '''
@@ -497,6 +504,14 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(
                 metric_sources={metric_source.PerformanceReport: 'report'}),
             product_kwargs=dict(metric_source_ids={'report': 'id'}))
+
+    def test_relative_art_performance(self):
+        ''' Test that the relative art performance metric is added if
+            possible. '''
+        self.__assert_metric(metric.RelativeARTPerformance,
+            project_kwargs=dict(
+                metric_sources={metric_source.Birt: self.__birt}),
+            product_kwargs=dict(metric_source_ids={self.__birt: 'id'}))
 
     def test_open_bugs(self):
         ''' Test that the open bugs metric is added if possible. '''

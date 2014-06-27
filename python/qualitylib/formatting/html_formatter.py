@@ -399,16 +399,16 @@ class HTMLFormatter(base_formatter.Formatter):
         for row in dashboard_rows:
             dashboard += tr_indent + '<tr>\n'
             for column in row:
-                row_parameters = dict(ID=column[0].upper(),
-                                      title=column[1],
-                                      bg_color=column[2])
-                colspan, rowspan = column[3] if len(column) == 4 else (1, 1)
+                try:
+                    section_id = column[0].short_name()
+                except AttributeError:
+                    section_id = column[0].upper()
+                title = report.get_section(section_id).title() or '???'
+                row_parameters = dict(ID=section_id, title=title,
+                                      bg_color=column[1])
+                colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
                 row_parameters['colspan'] = colspan
                 row_parameters['rowspan'] = rowspan
-                for product in report.products():
-                    if product.short_name().startswith(row_parameters['ID']):
-                        row_parameters['ID'] = product.short_name()
-                        break
                 dashboard += td_indent + '<td colspan=%(colspan)d ' \
                     'rowspan=%(rowspan)d align="center" ' \
                     'bgcolor="%(bg_color)s">\n' \

@@ -131,29 +131,34 @@ PROJECT.add_document(domain.Document('Release notes',
                      low_targets={metric.DocumentAge: SPRINT_LENGTH + 7}))
 
 # Create the components we want to monitor.
-PROJECT.add_product(domain.Product(PROJECT, 'PA',
+PA = domain.Product(PROJECT, 'PA',
                     metric_source_ids={
                         SONAR: 'com.company.pa',
                         SUBVERSION: 'http://svn/pa/trunk/'},
                     unittests=domain.Product(PROJECT, 
                         metric_source_ids={
-                            SONAR: 'com.company.pa'})))
-PROJECT.add_product(domain.Project(PROJECT, 'PB',
+                            SONAR: 'com.company.pa'})
+
+PB = domain.Project(PROJECT, 'PB',
                     metric_source_ids={
                         SONAR: 'com.company.pb',
                         SUBVERSION: 'http://svn/pb/trunk/'},
                     jsf=domain.Product(PROJECT,
                         metric_source_ids={
-                            SONAR: 'com.company.pb:jsf'})))
-PROJECT.add_product(domain.Project(PROJECT, 'PC',
+                            SONAR: 'com.company.pb:jsf'})
+
+PC = domain.Project(PROJECT, 'PC',
                     metric_source_ids={
                         SONAR: 'com.company.pc',
-                        SUBVERSION: 'http://svn/pc/trunk/'}))
+                        SUBVERSION: 'http://svn/pc/trunk/'})
+
+for product in (PA, PB, PC):
+    PROJECT.add_product(product)
 
 # Finally, specify the dashboard layout:
 COLUMNS = [('Components', 1), ('Teams', 1)]
-ROWS = [(('pa', 'Component A', 'color'), ('fi', 'First team', 'color')),
-        (('pb', 'Component B', 'color'), ('se', 'Second team', 'color')),
-        (('pc', 'Component C', 'color'), ('th', 'Third team', 'color'))]
+ROWS = [((PA, 'color'), (TEAM_1, 'color')),
+        ((PB, 'color'), (TEAM_2, 'color')),
+        ((PC, 'color'), (TEAM_3, 'color'))]
 PROJECT.set_dashboard(COLUMNS, ROWS)
 

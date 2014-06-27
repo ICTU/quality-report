@@ -323,68 +323,68 @@ class BirtUnderTest(Birt):
     def soup(self, url):
         return BeautifulSoup.BeautifulSoup(self.html)
 
-    
+
 class BirtTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Birt class. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = BirtUnderTest('http://birt/')
-        
+
     def test_url(self):
         ''' Test the url. '''
         self.assertEqual('http://birt/birt/', self.__birt.url())
-        
+
     def test_test_design_url(self):
         ''' Test the test design url. '''
         self.assertEqual('http://birt/birt/preview?__report=report/' \
                          'test_design.rptdesign', self.__birt.test_design_url())
-        
+
     def test_whats_missing_url(self):
         ''' Test the what's missing report url. '''
         self.assertEqual('http://birt/birt/preview?__report=report/' \
                          'whats_missing.rptdesign&application=product', 
                          self.__birt.whats_missing_url('product'))
-        
+
     def test_manual_test_url_trunk(self):
         ''' Test the manual test execution url for the trunk. '''
         self.assertEqual('http://birt/birt/preview?__report=report/' \
                          'manual_test_execution_report.rptdesign&' \
                          'application=product&version=trunk', 
                          self.__birt.manual_test_execution_url('product'))
-        
+
     def test_manual_test_url_version(self):
         ''' Test the manual test execution url with a specific version. '''
         self.assertEqual('http://birt/birt/preview?__report=report/' \
                          'manual_test_execution_report.rptdesign&' \
                          'application=product&version=1', 
                          self.__birt.manual_test_execution_url('product', '1'))
-        
+
     def test_sprint_progress_url(self):
         ''' Test the sprint progress url. '''
         self.assertEqual('http://birt/birt/preview?__report=report/' \
                          'sprint_voortgang.rptdesign&project=team', 
                          self.__birt.sprint_progress_url('team'))
-        
+
     def test_has_no_test_design(self):
         ''' Test checking for test design information with a product that has 
             no test design information in Birt (i.e. user stories, logical 
             test cases, etc.). '''
         self.__birt.html = TEST_DESIGN_HTML
         self.failIf(self.__birt.has_test_design('product does not exist'))
-        
+
     def test_non_existing_product(self):
         ''' Test that metrics for non-existing products return -1. '''
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(-1, self.__birt.nr_ltcs('product does not exist'))
-    
+
     def test_has_test_design(self):
         ''' Test checking for test design information with a product that has 
             test design information in Birt (i.e. user stories, logical 
             test cases, etc.).  '''
         self.__birt.html = TEST_DESIGN_HTML
         self.failUnless(self.__birt.has_test_design('bulk'))
-        
+
     def test_nr_user_stories_with_sufficient_ltcs(self):  
         # pylint: disable=invalid-name
         ''' Test that the number of user stories with sufficient number of 
@@ -392,17 +392,17 @@ class BirtTest(unittest.TestCase):
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(4, 
             self.__birt.nr_user_stories_with_sufficient_ltcs('bulk'))
-        
+
     def test_nr_automated_ltcs(self):
         ''' Test the number of automated logical test cases is correct. '''
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(3, self.__birt.nr_automated_ltcs('bulk'))
-        
+
     def test_nr_user_stories(self):
         ''' Test that the number of user stories is correct. '''
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(10, self.__birt.nr_user_stories('bulk'))
-        
+
     def test_approved_user_stories(self):
         ''' Test that the number of approved user stories is correct. '''
         self.__birt.html = TEST_DESIGN_HTML
@@ -423,19 +423,19 @@ class BirtTest(unittest.TestCase):
             correct. '''
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(6, self.__birt.nr_ltcs_to_be_automated('bulk'))
-        
+
     def test_nr_manual_ltcs(self):
         ''' Test that the number of manual logical test cases is correct. '''
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         self.assertEqual(2, self.__birt.nr_manual_ltcs('bulk'))
-        
+
     def test_nr_manual_ltcs_too_old(self):
         ''' Test that the number of manual logical test cases that have not
             been tested recently is correct. '''
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         self.assertEqual(2, self.__birt.nr_manual_ltcs_too_old('bulk', 
                                                                'trunk', 14))
-        
+
     def test_no_date_manual_tests(self):
         ''' Test that the date of the last manual test execution is correct. '''
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED
@@ -447,19 +447,23 @@ class BirtTest(unittest.TestCase):
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         date = self.__birt.date_of_last_manual_test('bulk')
         self.assertEqual(datetime.datetime(2013, 3, 19), date)
-        
+
     def test_nr_performance_pages(self):
         ''' Test that the number of pages can be retrieved. '''
         self.__birt.html = PERFORMANCE_MEASUREMENT_HTML
         self.assertEqual(5, self.__birt.nr_performance_pages('bulk', '1.0'))
-        
+
     def test_nr_slow_pages(self):
         ''' Test that the number of pages that are too slow on average can be
             retrieved. '''
         self.__birt.html = PERFORMANCE_MEASUREMENT_HTML
         self.assertEqual(1, self.__birt.nr_slow_performance_pages('bulk', 
                                                                   '1.0'))
-        
+
+    def test_has_art_performance(self):
+        ''' Test a product without performance measurements. '''
+        self.failIf(self.__birt.has_art_performance('abc', '1.0'))
+
 
 class BirtSprintProgressReportUnderTest(SprintProgressReport):
     ''' Override the soup method to return a fixed HTML fragment. '''
@@ -468,15 +472,15 @@ class BirtSprintProgressReportUnderTest(SprintProgressReport):
     def soup(self, url):
         return BeautifulSoup.BeautifulSoup(self.html)
 
-    
+
 class BirtSprintProgressReportTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Birt sprint progress report. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = BirtSprintProgressReportUnderTest('http://birt/%s')
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML
-        
+
     def test_actual_velocity(self):
         ''' Test that the actual velocity is the number of points realized
             per day so far. '''
@@ -485,7 +489,7 @@ class BirtSprintProgressReportTest(unittest.TestCase):
     def test_planned_velocity(self):
         ''' Test that the planned velocity is correct. '''
         self.assertEqual(23.5 / 15, self.__birt.planned_velocity('birt_id'))
-        
+
     def test_required_velocity(self):
         ''' Test that the required velocity is correct. '''
         self.assertEqual(3.5 / 2, self.__birt.required_velocity('birt_id'))
@@ -495,7 +499,7 @@ class BirtSprintProgressReportTest(unittest.TestCase):
             unknown. '''
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
         self.assertEqual(0, self.__birt.days_in_sprint('birt_id'))
-        
+
     def test_missing_velocity(self):
         ''' Test that the actual velocity is zero when the data is missing. '''
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA

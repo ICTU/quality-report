@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.domain import HigherIsBetterMetric, \
-   LowerPercentageIsBetterMetric
+   LowerPercentageIsBetterMetric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE
 from qualitylib import metric_source
@@ -114,9 +114,8 @@ class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, product, project):
-        birt = project.metric_source(metric_source.Birt)
         return super(ARTPerformance, cls).can_be_measured(product, project) \
-            and product.product_version() and product.art() and birt
+            and product.product_version() and product.art()
 
     def _denominator(self):
         return self._birt.nr_performance_pages(self._birt_id(), 
@@ -134,3 +133,33 @@ class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
         ''' Return the version number for the product this metric is reporting 
             on. '''
         return self._subject.product_version() or 'trunk'
+
+
+class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
+    ''' Metric for measuring the number of pages that loads slower during
+        running of an automated regression test than during a previous ART. '''
+
+    name = 'Automatic regression test relative performance'
+    norm_template = 'Maximaal %(target)d van de paginas heeft een gemiddelde ' \
+        'laadtijd hoger dan tijdens de vorige automatische regressie test. ' \
+        'Meer dan %(low_target)d is rood.'
+    template = '%(value)d van de paginas van %(name)s laadt ' \
+        'bij het uitvoeren van de ART.'
+    target_value = 0
+    low_target_value = 5
+    quality_attribute = PERFORMANCE
+
+    @classmethod
+    def can_be_measured(cls, product, project):
+        birt = project.metric_source(metric_source.Birt)
+        birt_id = product.metric_source_id(birt)
+        return super(RelativeARTPerformance, cls).can_be_measured(product, 
+                                                                  project) \
+            and birt.has_art_performance(birt_id, product.product_version())
+
+    def value(self):
+        return self._birt.nr_slower_pages_art(self._birt_id(),
+                                              self._subject.product_version())
+
+    def url(self):
+        return dict(Birt='http://todo')

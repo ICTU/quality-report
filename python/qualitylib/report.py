@@ -125,7 +125,8 @@ class QualityReport(object):
                            metric.CyclicDependencies, metric.JavaDuplication,
                            metric.ProductLOC, metric.LongMethods,
                            metric.ManyParameters, metric.CommentedLOC)
-    PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes, metric.ARTPerformance)
+    PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes, metric.ARTPerformance,
+                                  metric.RelativeARTPerformance)
     MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, 
                                  metric.RiskLog)
     BUILD_SERVER_METRIC_CLASSES = (metric.ProjectFailingCIJobs,
@@ -204,6 +205,12 @@ class QualityReport(object):
             self.__meta_section = self.__create_meta_section(self.__sections)
             self.__sections.append(self.__meta_section)
         return self.__sections
+
+    def get_section(self, section_id):
+        ''' Return the section with the specified section id. '''
+        for section in self.sections():
+            if section_id == section.id_prefix():
+                return section
 
     def get_product_section(self, product_name, product_version):
         ''' Return the section for a specific product. '''

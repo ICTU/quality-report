@@ -102,6 +102,10 @@ class Report(object):
         ''' Return a fake product. ''' 
         return fake_domain.Product()
 
+    def get_section(self, section_id):  # pylint: disable=unused-argument
+        ''' Return a fake section. '''
+        return self.get_meta_section()
+
     @staticmethod
     def latest_product_version(product):  # pylint: disable=unused-argument
         ''' Return the latest version number of the product. '''
@@ -140,7 +144,7 @@ class Report(object):
     @staticmethod
     def dashboard():
         ''' Return the columns and rows of the dashboard. '''
-        return [('ME', 1)], [(('me', 'title', 'lightsteelblue'),), ]
+        return [('ME', 1)], [(('id', 'lightsteelblue'),), ]
 
     @staticmethod
     def project_resources():

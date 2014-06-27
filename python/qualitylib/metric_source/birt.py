@@ -153,6 +153,8 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             'sprint_voortgang.rptdesign&project=%s'
         self.__sprint_progress_report = \
             SprintProgressReport(sprint_progress_url)
+        self.__art_performance_versions_url = birt_report_url + \
+            'art_performance_versions.rptdesign&Applicatie=%s'
         self.__test_design_report = None
         self.__manual_test_report = None
 
@@ -198,6 +200,17 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 return True
         return False
 
+    def has_art_performance(self, product, version):
+        ''' Return whether ART performance information is available on the 
+            specified product and version. Note that to be able to report on
+            the ART performance, information about this product and version has
+            to be available *and* on at least one older version to be able to
+            compare response times. '''
+        soup = self.soup(self.__art_performance_versions_url % product)
+        # Use a set because there may be multiple runs for one version
+        available_versions = set([a.string for a in soup('a')])
+        return version in available_versions and len(available_versions) > 2 
+
     # Metrics calculated from other metrics:
 
     def nr_user_stories_with_sufficient_ltcs(self, product):
@@ -211,6 +224,13 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             as automated tests. '''
         return int(self.nr_ltcs_to_be_automated(product)) - \
                int(self.__nr_missing_automated_ltcs(product))
+
+    def nr_slower_pages_art(self, product, version):
+        ''' Return the number of pages that are slower in the last run of the
+            automated regression test for the product and version as compared
+            to the last run of the automated regression test for the product and
+            a previous version. '''
+        return 2
 
     # Metrics available directly in Birt:
 

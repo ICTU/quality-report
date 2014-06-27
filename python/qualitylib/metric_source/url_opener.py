@@ -74,5 +74,5 @@ class UrlOpener(object):
     def url_delete(self, url):
         ''' Delete the given url. '''
         request = urllib2.Request(url)
-        request.get_method = lambda: 'DELETE'
+        request.get_method = lambda: 'DELETE'  # pragma: no branch
         return self.__opener(request)
