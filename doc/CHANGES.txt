@@ -1,3 +1,8 @@
+2014-07-03  Release 1.5.2
+
+  * Upgrade jQuery to 1.11.1.
+
+
 2014-07-03  Release 1.5.1
 
   * Bug fix: Better compatibility with Internet Explorer.
