@@ -131,8 +131,7 @@ class HTMLFormatterTest(unittest.TestCase):
 
     def test_history(self):
         ''' Test that the report contains the history of the meta metrics. '''
-        html = self.__formatter.process( \
-                   fake_report.Report(number_of_meta_metrics=3))
+        html = self.__formatter.process(fake_report.Report())
         self.failUnless('new Date(2012, 3, 5, 16, 16, 58)' in html)
 
     def test_metric_classes(self):

@@ -1,3 +1,9 @@
+2014-07-03  Release 1.5.0
+
+  * Write a summary of metrics to the summary.csv file in the report folder,
+    if and only if that file exists.
+
+
 2014-06-27  Release 1.4.0
 
   * Don't use abbreviations for the dashboard layout, but references to

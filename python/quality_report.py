@@ -36,6 +36,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     PROJECT_DEFINITION_FILENAME = 'project_definition.py'
     HISTORY_FILENAME = 'history.json'
+    CSV_FILENAME = 'summary.csv'
 
     def __init__(self, project_folder):
         project_definition_filename = os.path.join(project_folder,
@@ -44,6 +45,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__project = project_module.PROJECT
         self.__history_filename = os.path.join(project_folder, 
                                                self.HISTORY_FILENAME)
+        self.__csv_filename = os.path.join(project_folder, self.CSV_FILENAME)
 
     def create_report(self, report_folder):
         ''' Create, format, and write the quality report. '''
@@ -55,6 +57,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         quality_report = report.QualityReport(self.__project)
         self.__format_and_write_report(quality_report, formatting.JSONFormatter,
                                        self.__history_filename, 'a', 'ascii')
+        if os.path.exists(self.__csv_filename):
+            self.__format_and_write_report(quality_report,
+                                           formatting.CSVFormatter,
+                                           self.__csv_filename, 'a', 'ascii')
         self.__format_and_write_html_report(quality_report, report_folder)
         metric_source.History(self.__history_filename).clean_history()
 

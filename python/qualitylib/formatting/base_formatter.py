@@ -25,9 +25,8 @@ class Formatter(object):  # pylint: disable=R0921
     def process(self, report):
         ''' Return a formatted version of the report. '''
         self.__log_report(report)
-        result = self.sep.join([self.prefix(report),
-                                self.body(report),
-                                self.postfix()])
+        parts = [self.prefix(report), self.body(report), self.postfix()]
+        result = self.sep.join([part for part in parts if part])
         self.__log_report(report, done=True)
         return result
 

@@ -243,7 +243,7 @@ class HTMLFormatter(base_formatter.Formatter):
                       hover='Technische schuld: lossen we later op'))
         kwargs = kwargs_by_status[status]
         qualifier = 'tenminste ' if metric.status_start_date() <= \
-                    datetime.datetime(2013, 3, 19, 23, 59, 59) else ''   
+                    datetime.datetime(2013, 3, 19, 23, 59, 59) else ''
         kwargs['hover'] += ' (sinds %s%s)' % (qualifier,
             utils.format_date(metric.status_start_date(), year=True))
         kwargs['status'] = self.__metric_status(metric)
