@@ -67,7 +67,7 @@ class FakeSubject(object):
     @staticmethod  # pylint: disable-msg=unused-argument
     def responsible_teams(*args):
         ''' Return the responsible teams for this product. '''
-        return [domain.Team('Team')]
+        return [domain.Team(name='Team')]
 
 
 class SonarViolationsUrlTestMixin(object):

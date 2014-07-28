@@ -26,6 +26,7 @@ from qualitylib.domain.measurement.metric_mixin import MetaMetricMixin
 from qualitylib.domain.measurement.target import TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
+from qualitylib.domain.base import DomainObject
 from qualitylib.domain.product import Product
 from qualitylib.domain.team import Team
 from qualitylib.domain.project import Project

@@ -21,32 +21,27 @@ import unittest
 class QualityAttributeTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the quality attribute domain class. '''
-        
+
     def test_id_string(self):
         ''' Test that the id string is correct. '''
-        self.assertEqual('id', domain.QualityAttribute('id', '').id_string())
+        self.assertEqual('id', domain.QualityAttribute('id').id_string())
 
-    def test_attribute_name(self):
-        ''' Test that the attribute name is returned correctly. '''
-        self.assertEqual('Name', 
-                         domain.QualityAttribute('', 'Name').attribute_name())
-        
     def test_valid(self):
         ''' Test that the attribute is True when casted to boolean. '''
-        self.failUnless(domain.QualityAttribute('id', ''))
-        
+        self.failUnless(domain.QualityAttribute('id'))
+
     def test_not_valid(self):
         ''' Test that the attribute is False when it doesn't have a id 
             string. '''
-        self.failIf(domain.QualityAttribute('', ''))
-        
+        self.failIf(domain.QualityAttribute(''))
+
     def test_equality(self):
         ''' Test that two quality attributes are equal when their id strings
             are equal. '''
-        self.assertEqual(domain.QualityAttribute('a', 'A'),
-                         domain.QualityAttribute('a', 'B'))
-        
+        self.assertEqual(domain.QualityAttribute('a', name='A'),
+                         domain.QualityAttribute('a', name='B'))
+
     def test_sort(self):
         ''' Test that quality attributes are sorted by id string. '''
-        self.failUnless(domain.QualityAttribute('a', 'B') < \
-                        domain.QualityAttribute('b', 'A'))
+        self.failUnless(domain.QualityAttribute('a', name='B') < \
+                        domain.QualityAttribute('b', name='A'))

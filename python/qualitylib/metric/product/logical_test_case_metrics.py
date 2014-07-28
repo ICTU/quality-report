@@ -14,67 +14,82 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.domain import LowerIsBetterMetric, \
-    HigherPercentageIsBetterMetric
+from qualitylib.domain import LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin, \
     BirtTestDesignMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, DOC_QUALITY
 import datetime
 
 
-class ReviewedAndApprovedLogicalTestCases(BirtTestDesignMetricMixin,
-                                          HigherPercentageIsBetterMetric):
+class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the percentage of logical test cases that has
-        been reviewed and approved. '''
-
-    name = 'Goedkeuring van logische testgevallen'
-    norm_template = 'Minimaal %(target)d%% van de logische testgevallen is ' \
-        'gereviewd en goedgekeurd. Lager dan %(low_target)d%% is rood.'
-    template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \
-        '%(denominator)d) goedgekeurde logische testgevallen.'
-    target_value = 95
-    low_target_value = 75
-    quality_attribute = DOC_QUALITY
-
+    ''' Base class for metrics measuring the quality of logical test cases. '''
     @classmethod
     def can_be_measured(cls, product, project):
-        return super(ReviewedAndApprovedLogicalTestCases, cls).\
-            can_be_measured(product, project) and not product.product_version()
+        return super(LogicalTestCaseMetric, cls).can_be_measured(product, 
+                                                                 project) and \
+            not product.product_version()
 
-    def _numerator(self):
+    def value(self):
+        return self._nr_ltcs() - self._nr_ltcs_ok()
+
+    def _nr_ltcs_ok(self):
+        ''' Return the number of logical test cases whose quality is good. '''
+        raise NotImplementedError  # pragma: no cover
+
+    def _nr_ltcs(self):
+        ''' Return the total number of logical test cases. '''
+        raise NotImplementedError  # pragma: no cover
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(LogicalTestCaseMetric, self)._parameters()
+        parameters['total'] = self._nr_ltcs()
+        return parameters
+
+
+class LogicalTestCasesNotReviewedAndApproved(LogicalTestCaseMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of logical test cases that has
+        not been reviewed and/or approved. '''
+
+    name = 'Goedkeuring van logische testgevallen'
+    norm_template = 'Maximaal %(target)d van de logische testgevallen is ' \
+        'niet gereviewd en/of goedgekeurd. Meer dan %(low_target)d is rood.'
+    template = '%(name)s heeft %(value)d niet gereviewde en/of niet ' \
+        'goedgekeurde logische testgevallen van in totaal %(total)d ' \
+        'logische testgevallen.'
+    target_value = 9
+    low_target_value = 15
+    quality_attribute = DOC_QUALITY
+
+    def _nr_ltcs_ok(self):
         return self._birt.approved_ltcs(self._birt_id())
 
-    def _denominator(self):
+    def _nr_ltcs(self):
         return self._birt.nr_ltcs(self._birt_id())
 
 
-class AutomatedLogicalTestCases(BirtTestDesignMetricMixin, 
-                                HigherPercentageIsBetterMetric):
+class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the percentage of logical test cases that should
+    ''' Metric for measuring the number of logical test cases that should
         be automated that has actually been automated. '''
 
     name = 'Automatisering van logische testgevallen'
-    norm_template = 'Minimaal %(target)d%% van de te automatiseren logische ' \
-        'testgevallen is opgenomen in de ART. ' \
-        'Lager dan %(low_target)d%% is rood.'
-    template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \
-        '%(denominator)d) geautomatiseerde logische testgevallen.'
-    target_value = 95
-    low_target_value = 75
+    norm_template = 'Maximaal %(target)d van de te automatiseren logische ' \
+        'testgevallen is niet geautomatiseerd. ' \
+        'Meer dan %(low_target)d is rood.'
+    template = '%(name)s heeft %(value)d nog te automatiseren logische ' \
+        'testgevallen, van in totaal %(total)d geautomatiseerde logische ' \
+        'testgevallen.'
+    target_value = 9
+    low_target_value = 15
     quality_attribute = TEST_COVERAGE
 
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(AutomatedLogicalTestCases, cls).can_be_measured(product,
-                                                                     project) \
-            and not product.product_version()
-
-    def _numerator(self):
+    def _nr_ltcs_ok(self):
         return self._birt.nr_automated_ltcs(self._birt_id())
 
-    def _denominator(self):
+    def _nr_ltcs(self):
         return self._birt.nr_ltcs_to_be_automated(self._birt_id())
 
 

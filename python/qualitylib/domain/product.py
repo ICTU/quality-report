@@ -46,20 +46,11 @@ class Product(MeasurableObject):
     def __str__(self):
         return self.sonar_id()
 
-    def __repr__(self):
-        return self.sonar_id()
-
     def __eq__(self, other):
         return str(self) == str(other)
 
     def __ne__(self, other):
         return str(self) != str(other)
-
-    def __add__(self, other):
-        return str(self) + str(other)
-
-    def __radd__(self, other):
-        return str(other) + str(self)
 
     def sonar_id(self):
         ''' Return the id that identifies the product in Sonar. '''
@@ -71,15 +62,6 @@ class Product(MeasurableObject):
         if self.__product_version:
             sonar_id += ':' + self.__product_version
         return sonar_id
-
-    def all_sonar_ids(self):
-        ''' Return all Sonar ids of the product: the Sonar id of the product
-            itself and its unit tests if applicable. '''
-        sonar_ids = set([self.sonar_id()])
-        for component in [self.unittests(), self.jsf()]:
-            if component:
-                sonar_ids.add(component.sonar_id())
-        return sonar_ids
 
     def set_product_version(self, product_version):
         ''' Set the product version of this product. '''
@@ -150,7 +132,7 @@ class Product(MeasurableObject):
         ''' Return a human readable name for the product. '''
         from qualitylib import metric_source
         sonar = self.__project.metric_source(metric_source.Sonar)
-        sonar_id = self.metric_source_id(sonar) or self.short_name()
+        sonar_id = self.metric_source_id(sonar) or super(Product, self).name()
         try:
             return sonar_id.split(':', 1)[-1]
         except AttributeError:

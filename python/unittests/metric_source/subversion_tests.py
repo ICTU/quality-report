@@ -68,6 +68,28 @@ class SubversionTest(unittest.TestCase):
         self.assertEqual(['product-1.2.3', 'product-1.2.3-emma'], 
                          self.__subversion.branches('product_url/trunk/'))
 
+    def test_tags(self):
+        ''' Test that Subversion returns a list of tags for a product. '''
+        self.__run_shell_command_results = ['<name>product-1.2.3</name>']
+        self.assertEqual(['product-1.2.3'],
+                         self.__subversion.tags('product_url/trunk/'))
+
+    def test_tags_folder_for_version(self):
+        ''' Test that Subversion returns the tags folder for a specific
+            product version. '''
+        self.__run_shell_command_results = ['<name>product-1.2.3</name>']
+        self.assertEqual('product_url/tags/product-1.2.3/',
+            self.__subversion.tags_folder_for_version('product_url/trunk/',
+                                                      '1.2.3'))
+
+    def test_no_tags_folder_for_version(self):
+        ''' Test that Subversion returns nothing when the tags folder for a 
+            specific product version doesn't exist. '''
+        self.__run_shell_command_results = ['<name>product-2.1</name>']
+        self.assertEqual('',
+            self.__subversion.tags_folder_for_version('product_url/trunk/',
+                                                      '1.2.3'))
+
     def test_unmerged_branches(self):
         ''' Test that Subversion returns a list of branches for a product. '''
         self.__run_shell_command_results = ['<name>product-1.2.3</name>' \

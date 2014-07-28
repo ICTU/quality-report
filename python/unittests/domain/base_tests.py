@@ -14,4 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-VERSION = '1.6.0'
+from qualitylib import domain
+import unittest
+
+
+class DomainObjectTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the base domain object class. '''
+    def setUp(self):  # pylint: disable=C0103
+        self.__object = domain.DomainObject(name='Name', url='http://url')
+
+    def test_name(self):
+        ''' Test the name of the domain object. '''
+        self.assertEqual('Name', self.__object.name())
+
+    def test_url(self):
+        ''' Test the url of the domain object. '''
+        self.assertEqual('http://url', self.__object.url())

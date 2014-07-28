@@ -74,9 +74,9 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     '''Unit tests for the Product domain class. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = FakeSonar()
-        self.__project = domain.Project('Organization', 'Project name',
+        self.__project = domain.Project('Organization',
             metric_sources={metric_source.Sonar: self.__sonar})
-        self.__product = domain.Product(self.__project,
+        self.__product = domain.Product(self.__project, name='Product',
             metric_source_ids={self.__sonar: 'sonar:id'},
             old_metric_source_ids={self.__sonar: {'old.version':
                                                   'old-sonar:id'}})
@@ -100,39 +100,6 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__product.set_product_version('old.version')
         self.assertEqual('old-sonar:id:old.version', self.__product.sonar_id())
 
-    def test_all_sonar_ids(self):
-        ''' Test that by default all Sonar ids consist of just the product 
-            Sonar id. '''
-        self.assertEqual(set(['sonar:id']), self.__product.all_sonar_ids())
-
-    def test_all_sonar_ids_released(self):
-        ''' Test that for a released product, the set of all Sonar ids only
-            contains the product:version id. '''
-        self.__product.set_product_version('1.2.3')
-        self.assertEqual(set(['sonar:id:1.2.3']), 
-                         self.__product.all_sonar_ids())
-
-    def test_all_sonar_ids_unittests(self):
-        ''' Test that for a product with unittests, the Sonar id of the 
-            unit tests is included in the set of all Sonar ids. '''
-        product = domain.Product(self.__project, 
-                                 metric_source_ids={self.__sonar: 'sonar:id'},
-                                 unittests=domain.Product(self.__project,
-                                     metric_source_ids={self.__sonar:
-                                                        'sonar:id:ut'}))
-        self.assertEqual(set(['sonar:id', 'sonar:id:ut']),
-                         product.all_sonar_ids())
-
-    def test_all_sonar_ids_jsf(self):
-        ''' Test that for a product with jsf, the Sonar id of the jsf project
-            is included in the set of all Sonar ids. '''
-        product = domain.Product(self.__project, 
-            metric_source_ids={self.__sonar: 'sonar:id'},
-            jsf=domain.Product(self.__project, 
-                metric_source_ids={self.__sonar: 'sonar:id:jsf'}))
-        self.assertEqual(set(['sonar:id', 'sonar:id:jsf']), 
-                         product.all_sonar_ids())
-
     def test_trunk_without_dependencies(self):
         ''' Test that the product dependencies set is empty if the product has
             no dependencies. '''
@@ -141,14 +108,14 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_one_unknown_dependency(self):
         ''' Test that the product has no dependencies when the dependency
             returned by the pom file is not in the project. '''
-        project = domain.Project('Organization', 'Project name', 
+        project = domain.Project('Organization',
                                  metric_sources={metric_source.Pom: FakePom()})
         product = domain.Product(project)
         self.failIf(product.dependencies())
 
     def test_version_without_dependencies(self):
         ''' Test a product version without dependencies. '''
-        project = domain.Project('Organization', 'Project name',
+        project = domain.Project('Organization',
             metric_sources={metric_source.Dependencies: FakeDependenciesDb()})
         product = domain.Product(project)
         self.failIf(product.dependencies(version='1.1'))
@@ -175,7 +142,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
                 return '1.1'
 
         release_candidates = FakeReleaseCandidates()
-        project = domain.Project('Organization', 'Project name', 
+        project = domain.Project('Organization',
             metric_sources={metric_source.ReleaseCandidates:
                             release_candidates})
         product = domain.Product(project,
@@ -187,7 +154,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the latest release product version is retrieved from
             Subversion. '''
         subversion = FakeSubversion()
-        project = domain.Project('Organization', 'Project name',
+        project = domain.Project('Organization',
             metric_sources={metric_source.Subversion: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})
@@ -207,7 +174,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the product is the latest release if its product version
             is the same as the latest release returned by Subversion. '''
         subversion = FakeSubversion()
-        project = domain.Project('Organization', 'Project name',
+        project = domain.Project('Organization',
             metric_sources={metric_source.Subversion: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})
@@ -218,7 +185,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the date the product was last changed is the date
             reported by Subversion. '''
         subversion = FakeSubversion()
-        project = domain.Project('Organization', 'Project name',
+        project = domain.Project('Organization',
             metric_sources={metric_source.Subversion: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})

@@ -17,16 +17,16 @@ limitations under the License.
 import copy
 import logging
 from qualitylib.domain.measurement import metric_source
+from qualitylib.domain.base import DomainObject
 
 
-class Project(object):
+class Project(DomainObject):
     ''' Class representing a software development/maintenance project. '''
 
     def __init__(self, organization='Unnamed organization', 
-                 name='Unnamed project',
-                 metric_sources=None, additional_resources=None):
+                 metric_sources=None, additional_resources=None,
+                 *args, **kwargs):
         self.__organization = organization
-        self.__name = name
         self.__metric_sources = metric_sources or dict()
         self.__additional_resources = additional_resources or []
         self.__products = []
@@ -35,14 +35,11 @@ class Project(object):
         self.__streets = []
         self.__documents = []
         self.__dashboard = [], []  # rows, columns
+        super(Project, self).__init__(*args, **kwargs)
 
     def organization(self):
         ''' Return the name of the organization. '''
         return self.__organization
-
-    def name(self):
-        ''' Return the name of the project. '''
-        return self.__name
 
     def metric_source(self, metric_source_class):
         ''' Return the metric source instance for the metric source class. '''

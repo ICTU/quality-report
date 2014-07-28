@@ -14,4 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-VERSION = '1.6.0'
+
+class DomainObject(object):
+    ''' Base class for all domain objects. '''
+    def __init__(self, name='<no name>', url='', *args, **kwargs):
+        self.__name = name
+        self.__url = url
+        super(DomainObject, self).__init__(*args, **kwargs)
+
+    def name(self):
+        ''' Return the name of the domain object. '''
+        return self.__name
+
+    def url(self):
+        ''' Return the url of the domain object. '''
+        return self.__url

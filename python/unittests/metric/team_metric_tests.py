@@ -76,7 +76,7 @@ class TeamProgressTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
-        self.__team = domain.Team('ABC', is_scrum_team=True,
+        self.__team = domain.Team(name='ABC', is_scrum_team=True,
                                   metric_source_ids={self.__birt: 'abc'})
         self.__project = domain.Project(metric_sources={metric_source.Birt: 
                                                         self.__birt})
@@ -109,13 +109,13 @@ class TeamProgressTest(unittest.TestCase):
     def test_can_only_be_measured_for_scrum_teams(self):
         ''' Test that the metric cannot be measured if the team is not a Scrum
             team. '''
-        team = domain.Team('ABC', metric_source_ids={self.__birt: 'abc'})
+        team = domain.Team(name='ABC', metric_source_ids={self.__birt: 'abc'})
         self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric cannot be measured if the team has no Birt 
             id. '''
-        team = domain.Team('Team', is_scrum_team=True)
+        team = domain.Team(name='Team', is_scrum_team=True)
         self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
 
     def test_cant_be_measured_without_birt(self):
@@ -217,7 +217,7 @@ class ReleaseAgeTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project()
-        team = domain.Team('Team', 
+        team = domain.Team(name='Team', 
                            release_archives=[ReleaseAgeTest.FakeArchive()])
         self.__metric = metric.ReleaseAge(team, project=project)
 
@@ -238,13 +238,13 @@ class ReleaseAgeTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the team has release
             archives. '''
-        team = domain.Team('Team', release_archives=['Archive'])
+        team = domain.Team(name='Team', release_archives=['Archive'])
         project = domain.Project()
         self.failUnless(metric.ReleaseAge.can_be_measured(team, project))
 
     def test_cant_be_measured_without_release_archive(self):
         ''' Test that the metric cannot be measured if the team has no
             release archives. '''
-        team = domain.Team('Team')
+        team = domain.Team(name='Team')
         project = domain.Project()
         self.failIf(metric.ReleaseAge.can_be_measured(team, project))

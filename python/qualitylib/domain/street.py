@@ -20,13 +20,10 @@ from qualitylib.domain.measurement.measurable import MeasurableObject
 class Street(MeasurableObject):
     ''' Class representing a development or test street. '''
 
-    def __init__(self, name, job_regexp, responsible_teams=None, url=None,
-                 **kwargs):
-        super(Street, self).__init__(**kwargs)
-        self.__name = name
+    def __init__(self, job_regexp, responsible_teams=None, *args, **kwargs):
+        super(Street, self).__init__(*args, **kwargs)
         self.__job_regexp = job_regexp
         self.__responsible_teams = responsible_teams or []
-        self.__url = url
 
     def __eq__(self, other):
         return self.id_string() == other.id_string()
@@ -35,13 +32,9 @@ class Street(MeasurableObject):
         ''' Return the id string of the street. '''
         return self.id_string()
 
-    def name(self):
-        ''' Return the name of the street. '''
-        return self.__name
-
     def id_string(self):
         ''' Return an id string for the street. '''
-        return self.__name.lower().replace(' ', '_')
+        return self.name().lower().replace(' ', '_')
 
     def responsible_teams(self, metric_class=None):
         ''' Return the teams responsible for the street. '''
@@ -51,7 +44,3 @@ class Street(MeasurableObject):
         ''' Return the regular expression that describes the CI-jobs of the
             street. '''
         return self.__job_regexp
-
-    def url(self):
-        ''' Return the url of the street. '''
-        return self.__url

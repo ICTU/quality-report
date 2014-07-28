@@ -15,23 +15,17 @@ limitations under the License.
 '''
 
 
-class MetricSource(object):  # pylint: disable=too-few-public-methods
+from qualitylib.domain.base import DomainObject
+
+
+class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     ''' Base class for metric sources. '''
     metric_source_name = ''
 
     def __init__(self, *args, **kwargs):
-        self.__name = kwargs.pop('name',
-            self.metric_source_name or 'Unknown metric source')
-        self.__url = kwargs.pop('url', None)
+        if 'name' not in kwargs:
+            kwargs['name'] = self.metric_source_name or 'Unknown metric source'
         super(MetricSource, self).__init__(*args, **kwargs)
-
-    def name(self):
-        ''' Return the name of the metric source. '''
-        return self.__name
-
-    def url(self):
-        ''' Return the url of the metric source. '''
-        return self.__url
 
 
 class MissingMetricSource(MetricSource):

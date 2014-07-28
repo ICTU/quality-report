@@ -29,15 +29,6 @@ class MetricSourceTests(unittest.TestCase):
         ''' Test that the name can be given as a parameter. '''
         self.assertEqual('ABC', domain.MetricSource(name='ABC').name())
 
-    def test_default_url(self):
-        ''' Test that the metric source has no default url. '''
-        self.failIf(domain.MetricSource().url())
-
-    def test_given_url(self):
-        ''' Test that an url can be given as parameter. '''
-        self.assertEqual('http://url/',
-                         domain.MetricSource(url='http://url/').url())
-
 
 class MissingMetricSourceTests(unittest.TestCase):
     # pylint: disable=too-many-public-methods

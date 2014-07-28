@@ -32,7 +32,7 @@ class DocumentAgeTest(unittest.TestCase):
     ''' Unit tests for the document age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__document = domain.Document('Title', 'http://doc')
+        self.__document = domain.Document(name='Title', url='http://doc')
         self.__project = domain.Project(
             metric_sources={metric_source.Subversion: FakeSubversion()})
         self.__metric = metric.DocumentAge(subject=self.__document,
@@ -61,7 +61,7 @@ class DocumentAgeTest(unittest.TestCase):
     def test_cant_be_measured_without_url(self):
         ''' Test that the metric cannot be measured if the document has no 
             url. '''
-        document = domain.Document('Title')
+        document = domain.Document(name='Title')
         self.failIf(metric.DocumentAge.can_be_measured(document, 
                                                        self.__project))
 
@@ -79,6 +79,7 @@ class DocumentAgeTest(unittest.TestCase):
 
     def test_document_overrides_target(self):
         ''' Test that the document can override the default target value. '''
-        document = domain.Document('Title', targets={metric.DocumentAge: 20})
+        document = domain.Document(name='Title',
+                                   targets={metric.DocumentAge: 20})
         age = metric.DocumentAge(subject=document, project=self.__project)
         self.assertEqual(document.target(metric.DocumentAge), age.target())

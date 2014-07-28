@@ -25,12 +25,12 @@ class TechnicalDebtTarget(object):
         self.__target_value = target_value
         self.__explanation = explanation
         self._unit = ' ' + unit if unit and unit != '%' else unit
-        
+
     def target_value(self):
         ''' Return the current technical debt target. This is the level of 
             technical debt that is currently accepted. '''
         return self.__target_value
-    
+
     def explanation(self):
         ''' Return the explanation for the technical debt. '''
         explanation = 'De op dit moment geaccepteerde technische ' \
@@ -65,7 +65,7 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
             fraction = period_passed / self.__period_length
             delta = self.__end_target_value - self.__initial_target_value
             return int(round(fraction * delta + self.__initial_target_value))
-            
+
     def explanation(self):
         start_date = format_date(self.__initial_datetime, year=True)
         end_date = format_date(self.__end_datetime, year=True)

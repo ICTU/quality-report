@@ -20,14 +20,13 @@ from qualitylib.domain.measurement.measurable import MeasurableObject
 class Team(MeasurableObject):
     ''' Class for representing a team. '''
 
-    def __init__(self, name, short_name=None, is_scrum_team=False,
+    def __init__(self, short_name=None, is_scrum_team=False,
                  is_support_team=False, release_archives=None,
-                 days_per_sprint=21, **kwargs):
-        super(Team, self).__init__(**kwargs)
-        self.__name = name
+                 days_per_sprint=21, *args, **kwargs):
+        super(Team, self).__init__(*args, **kwargs)
         if short_name:
             assert len(short_name) == 2
-        self.__short_name = short_name or self.__name[:2].upper()
+        self.__short_name = short_name or self.name()[:2].upper()
         self.__release_archives = release_archives or []
         self.__is_scrum_team = is_scrum_team
         self.__is_support_team = is_support_team
@@ -37,15 +36,11 @@ class Team(MeasurableObject):
         return self.id_string() == other.id_string()
 
     def __str__(self):
-        return self.__name
-
-    def name(self):
-        ''' Return the full name of the team. '''
-        return self.__name
+        return self.name()
 
     def id_string(self):
         ''' Return an id string for the team. '''
-        return self.__name.lower().replace(' ', '_')
+        return self.name().lower().replace(' ', '_')
 
     def short_name(self):
         ''' Return an abbreviation of the team name. '''

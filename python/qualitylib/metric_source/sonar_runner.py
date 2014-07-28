@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils
+from qualitylib import utils, metric_info
 import copy
 import logging
 import os
@@ -36,7 +36,9 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         sonar_analyses_to_keep = set()
         for product in products:
             self.__analyse_product(product)
-            sonar_analyses_to_keep.update(product.all_sonar_ids())
+            sonar_product_info = metric_info.SonarProductInfo(self.__sonar,
+                                                              product)
+            sonar_analyses_to_keep.update(sonar_product_info.all_sonar_ids())
         self.__remove_old_analyses(sonar_analyses_to_keep)
 
     def __analyse_product(self, product):

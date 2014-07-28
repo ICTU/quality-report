@@ -21,7 +21,7 @@ import unittest
 class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     ''' Unit tests for the Team domain class. '''
     def setUp(self):  # pylint: disable=C0103
-        self.__team = domain.Team('The A-team')
+        self.__team = domain.Team(name='The A-team')
 
     def test_default_scrum_team(self):
         ''' Test that a team is not a Scrum team by default. '''
@@ -37,7 +37,8 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_one_release_archive(self):
         ''' Test giving a team release archives. '''
-        team = domain.Team('The B-team', release_archives=['Release archive'])
+        team = domain.Team(name='The B-team',
+                           release_archives=['Release archive'])
         self.assertEqual(['Release archive'], team.release_archives())
 
     def test_id_string(self):
@@ -52,7 +53,8 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_short_name(self):
         ''' Test that the short name of the team can also be passed at 
             initialization. '''
-        self.assertEqual('ZZ', domain.Team('ABC', short_name='ZZ').short_name())
+        self.assertEqual('ZZ', domain.Team(name='ABC', 
+                                           short_name='ZZ').short_name())
 
     def test_str(self):
         ''' Test that the string formatting of a team equals the team name. '''

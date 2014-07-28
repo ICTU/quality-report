@@ -15,19 +15,18 @@ limitations under the License.
 '''
 
 
-class QualityAttribute(object):
+from qualitylib.domain.base import DomainObject
+
+
+class QualityAttribute(DomainObject):
     ''' Class representing a quality attribute of a product or process. '''
-    def __init__(self, id_string, name):
+    def __init__(self, id_string, *args, **kwargs):
         self.__id_string = id_string
-        self.__name = name
+        super(QualityAttribute, self).__init__(*args, **kwargs)
 
     def id_string(self):
         ''' Return the id of the quality attribute. '''
         return self.__id_string
-
-    def attribute_name(self):
-        ''' Return the human readable name of the quality attribute. '''
-        return self.__name
 
     def __nonzero__(self):
         ''' Return whether this is a valid quality attribute. '''

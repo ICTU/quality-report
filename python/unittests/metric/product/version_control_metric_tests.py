@@ -44,7 +44,8 @@ class UnmergedBranchesTest(unittest.TestCase):
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(
             metric_sources={metric_source.Subversion: self.__subversion})
-        self.__subject = domain.Product(self.__project, short_name='Product',
+        self.__subject = domain.Product(self.__project, name='Product',
+            short_name='PR',
             metric_source_ids={self.__subversion: 'http://svn/trunk/foo/'},
             metric_options={
                 metric.UnmergedBranches: dict(

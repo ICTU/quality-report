@@ -159,7 +159,7 @@ class HTMLFormatter(base_formatter.Formatter):
             </li>'''
         menu_items = [menu_item_template % \
                       dict(attribute_id=attribute.id_string(),
-                           attribute_name=attribute.attribute_name()) \
+                           attribute_name=attribute.name()) \
                       for attribute in quality_attributes]
         return '\n'.join(menu_items)
 
@@ -441,7 +441,7 @@ class HTMLFormatter(base_formatter.Formatter):
                       '<th>Norm</th></tr>')
         for metric_class in report.metric_classes():
             name = metric_class.name
-            quality_attribute = metric_class.quality_attribute.attribute_name()
+            quality_attribute = metric_class.quality_attribute.name()
             norm = metric_class.norm_template % \
                 metric_class.norm_template_default_values()
             result.append('<tr><td>%s</td><td>%s</td><td>%s</td></tr>' % (name,

@@ -29,7 +29,10 @@ How to add a new project to the quality system.
    HISTORY = metric_source.History('projects/new_project/history.json')
    WIKI = metric_source.Wiki('http://wiki/ManualKPIsNewProject')
 
-   project = Project('New Project', jira=JIRA, history=HISTORY, wiki=WIKI)
+   project = Project('Organization', name='New Project', 
+                     metric_sources={metric_source.Jira: JIRA, 
+                                     metric_source.History: HISTORY, 
+                                     metric_source.Wiki: WIKI})
 
    The doc/example_project_definitions folder contains a number of project 
    definition examples.
@@ -102,7 +105,7 @@ RELEASE_ARCHIVES = [metric_source.SubversionFolder('Project',
                                                    'http://releases/')]
 
 # Create the project itself and pass it its metric sources:
-PROJECT = Project('Organization', 'Project name',
+PROJECT = Project('Organization', name='Project name',
                   metric_sources={
                       metric_source.Sonar: SONAR,
                       metric_source.Jenkins: BUILD_SERVER,
@@ -111,11 +114,11 @@ PROJECT = Project('Organization', 'Project name',
 
 # Create the teams of the project. In this example we have two Scrum teams and
 # one support team that's responsible for the releases.
-TEAM_1 = domain.Team('First team', is_scrum_team=True)
+TEAM_1 = domain.Team(name='First team', is_scrum_team=True)
 PROJECT.add_team(TEAM_1)
-TEAM_2 = domain.Team('Second team', is_scrum_team=True)
+TEAM_2 = domain.Team(name='Second team', is_scrum_team=True)
 PROJECT.add_team(TEAM_2)
-TEAM_3 = domain.Team('Third team', is_scrum_team=False, 
+TEAM_3 = domain.Team(name='Third team', is_scrum_team=False, 
                      release_archives=RELEASE_ARCHIVES)
 PROJECT.add_team(TEAM_3)
 
@@ -123,10 +126,10 @@ PROJECT.add_team(TEAM_3)
 # be updated every sprint, others every release:
 SPRINT_LENGTH = 16 # days
 RELEASE_FREQUENCY = 5 # sprints 
-PROJECT.add_document(domain.Document('Deployment document', 
+PROJECT.add_document(domain.Document(name='Deployment document', 
                      targets={metric.DocumentAge: RELEASE_FREQUENCY * SPRINT_LENGTH},
                      low_targets={metric.DocumentAge: (RELEASE_FREQUENCY + 1) * SPRINT_LENGTH}))
-PROJECT.add_document(domain.Document('Release notes',
+PROJECT.add_document(domain.Document(name='Release notes',
                      targets={metric.DocumentAge: SPRINT_LENGTH},
                      low_targets={metric.DocumentAge: SPRINT_LENGTH + 7}))
 

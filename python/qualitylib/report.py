@@ -115,10 +115,10 @@ class QualityReport(object):
 
     TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests, 
                                     metric.UnittestCoverage, metric.ARTCoverage)
-    TEST_DESIGN_METRIC_CLASSES = (metric.ReviewedAndApprovedUserStories,
-                                  metric.ReviewedAndApprovedLogicalTestCases,
-                                  metric.UserStoriesWithEnoughLogicalTestCases,
-                                  metric.AutomatedLogicalTestCases,
+    TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewedAndApproved,
+                                  metric.LogicalTestCasesNotReviewedAndApproved,
+                                  metric.UserStoriesWithTooFewLogicalTestCases,
+                                  metric.LogicalTestCasesNotAutomated,
                                   metric.ManualLogicalTestCases)
     JAVA_METRIC_CLASSES = (metric.CriticalViolations, metric.MajorViolations,
                            metric.CyclomaticComplexity, 
@@ -323,7 +323,7 @@ class QualityReport(object):
             if metric_class.can_be_measured(team, self.__project):
                 metrics.append(metric_class(team, project=self.__project))
         self.__metrics.extend(metrics)
-        return Section(SectionHeader(team.short_name(), 'Team ' + str(team)),
+        return Section(SectionHeader(team.short_name(), 'Team ' + team.name()),
                        metrics)
 
     def __create_meta_section(self, sections):

@@ -47,7 +47,7 @@ class ProjectTest(unittest.TestCase):
     ''' Test case for the Project domain class. '''
 
     def setUp(self):  # pylint: disable=C0103
-        self.__project = domain.Project('Organization', 'Project Name')
+        self.__project = domain.Project('Organization', name='Project Name')
 
     def test_name(self):
         ''' Test that the project has the correct name. '''
@@ -131,15 +131,16 @@ class ProjectTest(unittest.TestCase):
 
     def test_add_document(self):
         ''' Test that a document can be added to the project. '''
-        document = domain.Document('Title')
+        document = domain.Document(name='Title')
         self.__project.add_document(document)
         self.failUnless(document in self.__project.documents())
 
     def test_streets(self):
         ''' Test that a project has development streets. '''
-        self.__project.add_street(domain.Street('A', 'A.*'))
-        self.__project.add_street(domain.Street('B', 'B.*'))
-        self.assertEqual([domain.Street('A', 'A.*'), domain.Street('B', 'B.*')],
+        self.__project.add_street(domain.Street('A.*', name='A'))
+        self.__project.add_street(domain.Street('B.*', name='B'))
+        self.assertEqual([domain.Street('A.*', name='A'),
+                          domain.Street('B.*', name='B')],
                          self.__project.streets())
 
     def test_unknown_metric_source(self):
@@ -177,7 +178,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def project(**kwargs):
         ''' Create a project with a default organization and project name and
             the passed keyword arguments. '''
-        return domain.Project('Organization', 'Project', **kwargs)
+        return domain.Project('Organization', name='Project', **kwargs)
 
     def test_default_resources(self):
         ''' Test that the project has no resources by default. '''
@@ -206,7 +207,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_sonar(self):
         ''' Test that Sonar is in the project resources. '''
         sonar = metric_source.Sonar('url')
-        project = domain.Project('', '', 
+        project = domain.Project('', name='', 
             metric_sources={metric_source.Sonar: sonar})
         self.failUnless(('SonarQube', 'url') in project.project_resources())
 
@@ -301,7 +302,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_release_archive(self):
         ''' Test that the release archive is in the project resources. '''
         project = self.project()
-        team = domain.Team('A', release_archives=[FakeResource()])
+        team = domain.Team(name='A', release_archives=[FakeResource()])
         project.add_team(team)
         self.failUnless(('Release archief team A', FakeResource().url()) in
                          project.project_resources())
@@ -313,10 +314,10 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(metric_sources={
                                    metric_source.Subversion: subversion})
         svn_url = 'http://svn/product/trunk/'
-        product = domain.Product(project, 'Short name',
+        product = domain.Product(project, name='Name',
                                  metric_source_ids={subversion: svn_url})
         project.add_product(product)
-        self.failUnless(('Broncode repository Short name', 
+        self.failUnless(('Broncode repository Name', 
                          svn_url) in project.project_resources())
 
     def test_repositories(self):
@@ -326,7 +327,7 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(metric_sources={
                                    metric_source.Subversion: subversion})
         for index in range(1, 4):
-            product = domain.Product(project, 'Product %d' % index, 
+            product = domain.Product(project, name='Product %d' % index, 
                 metric_source_ids={subversion: 
                                    'https://svn/product%d/trunk/' % index})
             if index == 3:

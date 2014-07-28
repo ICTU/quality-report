@@ -201,7 +201,7 @@ class QualityReportTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = FakeSonar()
-        self.__project = domain.Project('organization', 'project title',
+        self.__project = domain.Project('organization', name='project title',
             metric_sources={metric_source.Sonar: self.__sonar})
         self.__report = report.QualityReport(self.__project)
 
@@ -227,6 +227,12 @@ class QualityReportTest(unittest.TestCase):
     def test_sections_twice(self):
         ''' Test that the sections are cached. '''
         self.failUnless(self.__report.sections() is self.__report.sections())
+
+    def test_get_section(self):
+        ''' Test that a section can be retrieved by section id. '''
+        section = self.__report.sections()[0]
+        self.assertEqual(section,
+                         self.__report.get_section(section.id_prefix()))
 
     def test_product(self):
         ''' Test that the report has three sections when we add a product:
@@ -268,14 +274,14 @@ class QualityReportTest(unittest.TestCase):
 
     def test_team(self):
         ''' Test that the report has 2 sections when we add a team. '''
-        team = domain.Team('Team')
+        team = domain.Team(name='Team')
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(2, len(quality_report.sections()))
 
     def test_teams(self):
         ''' Test that the report returns the team. '''
-        team = domain.Team('Team')
+        team = domain.Team(name='Team')
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([team], quality_report.teams())
@@ -295,13 +301,11 @@ class QualityReportTest(unittest.TestCase):
 
     def test_get_product(self):
         ''' Test that a product can be retrieved by version number. '''
-        product = domain.Product(self.__project, 'FP', 
-            metric_source_ids={self.__sonar: 'sonar.id'})
+        product = domain.Product(self.__project, name='Product')
         product.set_product_version('1.1')
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
-        self.assertEqual(product, quality_report.get_product('sonar.id', 
-                                                               '1.1'))
+        self.assertEqual(product, quality_report.get_product('Product', '1.1'))
 
 
 class FakeBirt(object):
@@ -353,11 +357,12 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Create the quality report. '''
         # pylint: disable=W0142
         documents = project_kwargs.pop('documents', [])
-        project = domain.Project('organization', 'project', **project_kwargs)
+        project = domain.Project('organization', name='project',
+                                 **project_kwargs)
         for document in documents:
             project.add_document(document)
         for index in range(number_of_teams):
-            team = domain.Team('Team %d' % index, **team_kwargs)
+            team = domain.Team(name='Team %d' % index, **team_kwargs)
             project.add_team(team)
         if product_kwargs:
             for component_name in ('unittests', 'jsf', 'art'):
@@ -466,7 +471,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_reviewed_and_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is added
             if possible. '''
-        self.__assert_metric(metric.ReviewedAndApprovedUserStories,
+        self.__assert_metric(metric.UserStoriesNotReviewedAndApproved,
             project_kwargs=dict(metric_sources={metric_source.Birt:
                                                 self.__birt}),
             product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
@@ -474,7 +479,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_no_reviewed_approved_us(self):
         ''' Test that the reviewed and approved user stories metric is not added
             when the product is not a trunk version. '''
-        self.__assert_metric(metric.ReviewedAndApprovedUserStories,
+        self.__assert_metric(metric.UserStoriesNotReviewedAndApproved,
             project_kwargs=dict(metric_sources={metric_source.Birt:
                                                 self.__birt}),
             product_kwargs=dict(product_version='1.1',
@@ -715,7 +720,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_document_age(self):
         ''' Test that the document age metric is added if possible. '''
-        document = domain.Document('Title', 'http://url')
+        document = domain.Document(name='Title', url='http://url')
         self.__assert_metric(metric.DocumentAge,
             project_kwargs=dict(metric_sources={metric_source.Subversion:
                                                 'Subversion'},
@@ -724,7 +729,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_no_document_age(self):
         ''' Test that the document age metric is not added if the project has 
             no Subversion. '''
-        document = domain.Document('Title', 'http://url')
+        document = domain.Document(name='Title', url='http://url')
         self.__assert_metric(metric.DocumentAge,
                              project_kwargs=dict(documents=[document]),
                              include=False)

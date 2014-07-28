@@ -82,7 +82,8 @@ class JenkinsTest(unittest.TestCase):
 
     def test_failing_jobs_by_team(self):
         ''' Test the failing jobs for a specific team. '''
-        self.assertEqual({}, self.__jenkins.failing_jobs_url(Team('team 1')))
+        self.assertEqual({},
+                         self.__jenkins.failing_jobs_url(Team(name='team 1')))
 
     def test_failing_jobs_url(self):
         ''' Test that the failing jobs url dictionary contains the url for the
@@ -140,7 +141,7 @@ class JenkinsTest(unittest.TestCase):
 
     def test_nr_of_jobs_for_team(self):
         ''' Test the number of jobs for a specific team. '''
-        self.assertEqual(0, self.__jenkins.number_of_jobs(Team('team 1')))
+        self.assertEqual(0, self.__jenkins.number_of_jobs(Team(name='team 1')))
 
     def test_unstable_arts_none(self):
         ''' Test the number of unstable ARTs. '''

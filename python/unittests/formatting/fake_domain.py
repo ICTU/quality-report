@@ -29,7 +29,9 @@ class Product(object):
         self.__is_release_candidate = is_release_candidate
         self.__is_latest_release = is_latest_release
 
-    def __str__(self):
+    @staticmethod
+    def sonar_id():
+        ''' Return the Sonar id of the product. '''
         return 'Product'
 
     @staticmethod
@@ -74,7 +76,7 @@ class Team(object):  # pylint: disable=too-few-public-methods
 
 class Metric(object):
     ''' Fake a metric class. '''
-    quality_attribute = domain.QualityAttribute('quality', 'Quality')
+    quality_attribute = domain.QualityAttribute('quality', name='Quality')
 
     def __init__(self, id_string='id_string-1', 
                  status_start_date=datetime.datetime(2012, 1, 1, 12, 0, 0)):

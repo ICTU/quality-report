@@ -29,7 +29,7 @@ class Metric(object):
         template = 'Subclass responsibility'
     old_age = datetime.timedelta.max
     max_old_age = datetime.timedelta.max
-    quality_attribute = QualityAttribute('', '')
+    quality_attribute = QualityAttribute('', name='')
 
     @classmethod
     def can_be_measured(cls, subject, project):

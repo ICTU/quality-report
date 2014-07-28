@@ -64,30 +64,30 @@ class WikiTest(unittest.TestCase):
     def test_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual('http://wiki', self.__wiki.url())
-        
+
     def test_comment_url(self):
         ''' Test that the comment url is correct. '''
         self.assertEqual('http://wiki', self.__wiki.comment_url())
 
     def test_team_spirit(self):
         ''' Test the spirit of the team. '''
-        self.assertEqual(':-(', self.__wiki.team_spirit(Team('2')))
-        
+        self.assertEqual(':-(', self.__wiki.team_spirit(Team(name='2')))
+
     def test_missing_team_spirit(self):
         ''' Test exception when team is missing. '''
-        self.assertRaises(IndexError, self.__wiki.team_spirit, Team('missing'))
-        
+        self.assertRaises(IndexError, self.__wiki.team_spirit,
+                          Team(name='missing'))
+
     def test_date_of_last_measurement(self):
         ''' Test the date of the last measurement of the spirit of the team. '''
         self.assertEqual(datetime.datetime(2013, 1, 18), 
-                         self.__wiki.date_of_last_team_spirit_measurement( \
-                                                                    Team('2')))
+            self.__wiki.date_of_last_team_spirit_measurement(Team(name='2')))
 
     def test_no_comment(self):
         ''' Test that the comment is empty for a metric that is not in the 
             comment table. '''
         self.failIf(self.__wiki.comment('missing_id'))
-        
+
     def test_comment(self):
         ''' Test that the comment from the wiki is returned. '''
         self.assertEqual('Comment', self.__wiki.comment('metric_id'))

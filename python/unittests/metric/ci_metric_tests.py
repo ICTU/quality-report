@@ -100,7 +100,7 @@ class ProjectFailingCIJobsTest(FailingCIJobsCommonTestsMixin,
         ''' Test that the metric cannot be measured without build server. '''
         project = domain.Project()
         for index in range(2):
-            team = domain.Team('Team %d' % index)
+            team = domain.Team(name='Team %d' % index)
             project.add_team(team, responsible=True)
         self.failIf(metric.ProjectFailingCIJobs.can_be_measured(team, project))
 
@@ -122,9 +122,10 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
         ''' Create the text fixture. '''
         self._project = domain.Project(metric_sources={metric_source.Jenkins:
                                                        FakeJenkins()})
-        self._subject = domain.Team('Team')
+        self._subject = domain.Team(name='Team')
         self._project.add_team(self._subject, responsible=True)
-        self._project.add_team(domain.Team('Another team'), responsible=True)
+        self._project.add_team(domain.Team(name='Another team'),
+                               responsible=True)
         self._metric = metric.TeamFailingCIJobs(subject=self._subject, 
                                                 project=self._project)
 
@@ -139,7 +140,7 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
             multiple teams. '''
         project = domain.Project(metric_sources={metric_source.Jenkins:
                                                  FakeJenkins()})
-        team = domain.Team('Single team')
+        team = domain.Team(name='Single team')
         project.add_team(team, responsible=True)
         self.failIf(metric.TeamFailingCIJobs.can_be_measured(team, project))
 
@@ -147,7 +148,7 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
         ''' Test that the metric cannot be measured without build server. '''
         project = domain.Project()
         for index in range(2):
-            team = domain.Team('Team %d' % index)
+            team = domain.Team(name='Team %d' % index)
             project.add_team(team, responsible=True)
         self.failIf(metric.TeamFailingCIJobs.can_be_measured(team, project))
 
@@ -190,9 +191,9 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
         ''' Create the text fixture. '''
         self._project = domain.Project(metric_sources={metric_source.Jenkins: 
                                                        FakeJenkins()})
-        self.__team = domain.Team('Team')
+        self.__team = domain.Team(name='Team')
         self._project.add_team(self.__team)
-        self._project.add_team(domain.Team('Another team'))
+        self._project.add_team(domain.Team(name='Another team'))
         self._metric = metric.TeamUnusedCIJobs(subject=self.__team,
                                                project=self._project)
 
@@ -215,7 +216,7 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
         ''' Test that the metric cannot be measured without build server. '''
         project = domain.Project()
         project.add_team(self.__team)
-        project.add_team(domain.Team('Another team'))
+        project.add_team(domain.Team(name='Another team'))
         self.failIf(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
                                                             project))
 
@@ -264,7 +265,7 @@ class ARTStabilityTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__project = domain.Project(metric_sources={metric_source.Jenkins: 
                                                         FakeJenkins()})
-        self.__street = domain.Street('a', 'b', url='http://street')
+        self.__street = domain.Street('b', name='a', url='http://street')
         self.__metric = metric.ARTStability(subject=self.__street,
                                             project=self.__project)
 
@@ -306,7 +307,7 @@ class ARTStabilityTest(unittest.TestCase):
         ''' Test the url without a street url. '''
         expected_urls = dict()
         expected_urls.update(FakeJenkins.unstable_arts_url())
-        street = domain.Street('a', 'b')
+        street = domain.Street('b', name='a')
         art_stability = metric.ARTStability(subject=street,
                                             project=self.__project)
         self.assertEqual(expected_urls, art_stability.url())
@@ -339,7 +340,7 @@ class AssignedCIJobsTest(unittest.TestCase):
                                                         FakeJenkins()})
         self.__project.add_team('team1')
         self.__project.add_team('team2')
-        self.__metric = metric.AssignedCIJobs(subject=domain.Team('Team'), 
+        self.__metric = metric.AssignedCIJobs(subject=domain.Team(name='Team'), 
                                               project=self.__project)
 
     def test_value(self):

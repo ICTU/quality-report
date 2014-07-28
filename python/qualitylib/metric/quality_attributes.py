@@ -17,17 +17,17 @@ limitations under the License.
 from qualitylib.domain import QualityAttribute
 
 
-AVAILABILITY = QualityAttribute('availability', 'Beschikbaarheid')
-TEST_COVERAGE = QualityAttribute('test_coverage', 'Testdekking')
-CODE_QUALITY = QualityAttribute('code_quality', 'Codekwaliteit')
-TEST_QUALITY = QualityAttribute('test_quality', 'Testkwaliteit')
-DOC_QUALITY = QualityAttribute('doc_quality', 'Documentatiekwaliteit')
-SIZE = QualityAttribute('size', 'Omvang')
-PERFORMANCE = QualityAttribute('performance', 'Performance')
+AVAILABILITY = QualityAttribute('availability', name='Beschikbaarheid')
+TEST_COVERAGE = QualityAttribute('test_coverage', name='Testdekking')
+CODE_QUALITY = QualityAttribute('code_quality', name='Codekwaliteit')
+TEST_QUALITY = QualityAttribute('test_quality', name='Testkwaliteit')
+DOC_QUALITY = QualityAttribute('doc_quality', name='Documentatiekwaliteit')
+SIZE = QualityAttribute('size', name='Omvang')
+PERFORMANCE = QualityAttribute('performance', name='Performance')
 PROJECT_MANAGEMENT = QualityAttribute('project_management', 
-                                      'Project management')
+                                      name='Project management')
 ENVIRONMENT_QUALITY = QualityAttribute('environment_quality', 
-                                       'Kwaliteit van omgevingen')
-PROGRESS = QualityAttribute('progress', 'Voortgang')
-SPIRIT = QualityAttribute('spirit', 'Stemming')
-SECURITY = QualityAttribute('security', 'Beveiliging')
+                                       name='Kwaliteit van omgevingen')
+PROGRESS = QualityAttribute('progress', name='Voortgang')
+SPIRIT = QualityAttribute('spirit', name='Stemming')
+SECURITY = QualityAttribute('security', name='Beveiliging')

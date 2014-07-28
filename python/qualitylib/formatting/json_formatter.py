@@ -28,7 +28,7 @@ class JSONFormatter(base_formatter.Formatter):
         # Add the product versions of trunk versions to the prefix
         for product in report.products():
             if not product.product_version():
-                prefix_elements.append('"%s-version": "%s"' % (product,
+                prefix_elements.append('"%s-version": "%s"' % (product.sonar_id(),
                                        report.latest_product_version(product)))
         # Add the current date to the prefix
         prefix_elements.append('"date": "%s"' % \

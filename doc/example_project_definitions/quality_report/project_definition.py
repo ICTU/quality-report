@@ -20,7 +20,7 @@ JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
                               BUILD_SERVER.username(), BUILD_SERVER.password())
 
 # The project
-PROJECT = Project('Organization name', 'Quality Report', 
+PROJECT = Project('Organization name', name='Quality Report', 
                   metric_sources={metric_source.Jenkins: BUILD_SERVER,
                                   metric_source.Subversion: SUBVERSION,
                                   metric_source.Sonar: SONAR,
@@ -32,7 +32,7 @@ PROJECT = Project('Organization name', 'Quality Report',
                                url='https://github.com/ICTU/quality-report')])
 
 # Teams of the project.
-QUALITY_TEAM = Team('Quality team', is_support_team=True)
+QUALITY_TEAM = Team(name='Quality team', is_support_team=True)
 PROJECT.add_team(QUALITY_TEAM, responsible=True)
 
 # Products the project(s) develop(s).

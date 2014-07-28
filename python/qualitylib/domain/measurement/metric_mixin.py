@@ -23,14 +23,14 @@ class PercentageMixin(object):
         numerator and a denominator. '''
 
     zero_divided_by_zero_is_zero = 'Subclass responsibility'
-    
+
     @utils.memoized
     def value(self):
         ''' Return the actual value of the metric as a percentage calculated
             from the numerator and denominator of the metric. '''
         return utils.percentage(self._numerator(), self._denominator(),
                                 self.zero_divided_by_zero_is_zero)
-    
+
     def _parameters(self):
         ''' Add numerator and denominator to the parameters. '''
         # pylint: disable=protected-access

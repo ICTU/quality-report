@@ -1,3 +1,15 @@
+2014-07-28  Release 1.6.0
+
+  * The name parameter for domain objects like project, team, street is now
+    a keyword parameter.
+  * Make a number of metrics absolute instead of relative so it is easier to set
+    an upper bound on the number of cases that do not meet the criteria.
+    The metrics changed are the metrics for measuring whether user stories and 
+    logical test cases are reviewed and approved, whether user stories have
+    enough logical test cases, and whether logical test cases to be automated
+    are actually automated.
+
+
 2014-07-03  Release 1.5.2
 
   * Upgrade jQuery to 1.11.1.

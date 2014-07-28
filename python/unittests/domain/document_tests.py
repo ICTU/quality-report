@@ -22,7 +22,7 @@ class DocumentTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Document domain class. '''
     def setUp(self):  # pylint: disable=C0103
-        self.__document = domain.Document('Document name', 'http://doc/url')
+        self.__document = domain.Document(name='Document name')
 
     def test_name(self):
         ''' Test the name of the street. '''
