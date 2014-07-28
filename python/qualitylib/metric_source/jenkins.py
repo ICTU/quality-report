@@ -43,8 +43,10 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
                                       password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = jenkins_url + 'job/%s/'
-        self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
+        self._last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
+        self.__test_report_api_url = self._last_completed_build_url + \
+            'testReport/' + self.api_postfix
         self.__job_api_url = self.__job_url + self.api_postfix
         self.__jobs_api_url = jenkins_url + self.jobs_api_postfix
 
@@ -137,7 +139,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def __jobs(self, *teams):
         ''' Return the Jenkins jobs the specified teams are responsible for, or
             all jobs if no teams are specified. '''
-        all_jobs = self.__api(self.__jobs_api_url)['jobs']
+        all_jobs = self._api(self.__jobs_api_url)['jobs']
         all_jobs = [job for job in all_jobs if self.__job_re.match(job['name'])]
         if teams:
             jobs = list()
@@ -154,7 +156,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         ''' Return the urls for the ARTs that have been unstable for the
             specified number of days. '''
         projects_re = re.compile(projects)
-        all_jobs = self.__api(self.__jobs_api_url)['jobs']
+        all_jobs = self._api(self.__jobs_api_url)['jobs']
         arts = [job for job in all_jobs if projects_re.match(job['name'])]
         max_age = datetime.timedelta(days=days)
         unstable = dict()
@@ -167,7 +169,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __age_of_last_completed_build(self, job):
         ''' Return the age of the last completed build of the job. '''
-        return self.__age_of_build(job, self.__last_completed_build_url)
+        return self.__age_of_build(job, self._last_completed_build_url)
 
     def __age_of_last_stable_build(self, job):
         ''' Return the age of the last stable build of the job. '''
@@ -177,7 +179,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         ''' Return the age of the last completed or stable build of the job. '''
         builds_api_postfix = self.api_postfix + '?tree=id'
         try:
-            timestamp = self.__api(url % job['name'] + builds_api_postfix)['id']
+            timestamp = self._api(url % job['name'] + builds_api_postfix)['id']
         except (KeyError, urllib2.HTTPError):
             return UnknownAge()
         date_text, time_text = timestamp.split('_')
@@ -188,7 +190,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
                               int(hour), int(minute), int(second))
 
     @utils.memoized
-    def __api(self, url):
+    def _api(self, url):
         ''' Return the result of the API call at the url. '''
         return eval(self.url_open(url).read())
 
@@ -197,3 +199,35 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             unquoted urls. '''
         url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         return super(Jenkins, self).url_open(url)
+
+
+class JenkinsTestReport(Jenkins):
+    ''' Class representing test reports in Jenkins jobs. '''
+    def __init__(self, *args, **kwargs):
+        super(JenkinsTestReport, self).__init__(*args, **kwargs)
+        self.__test_report_url = self._last_completed_build_url + 'testReport/'
+        self.__test_report_api_url = self.__test_report_url + self.api_postfix
+
+    def failed_tests(self, job_name):
+        ''' Return the number of failed tests as reported by the test report 
+            of a job. '''
+        return int(self.__test_report(job_name)['failCount'])
+
+    def passed_tests(self, job_name):
+        ''' Return the number of passed tests as reported by the test report
+            of a job. '''
+        return int(self.__test_report(job_name)['passCount'])
+
+    def skipped_tests(self, job_name):
+        ''' Return the number of skipped tests as reported by the test report
+            of a job. '''
+        return int(self.__test_report(job_name)['skipCount'])
+
+    @utils.memoized
+    def __test_report(self, job_name):
+        ''' Return the test report of a job. '''
+        return self._api(self.__test_report_api_url % job_name)
+
+    def test_report_url(self, job_name):
+        ''' Return the url of the job. '''
+        return self.__test_report_url % job_name

@@ -342,6 +342,11 @@ class FakeJira(object):  # pylint: disable=too-few-public-methods
         has_open_bugs_query
 
 
+class FakeJenkinsTestReport(object):
+    ''' Fake Jenkins. '''
+    pass
+
+
 class QualityReportMetricsTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the quality report class that test whether the right
@@ -350,6 +355,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def setUp(self):
         self.__sonar = FakeSonar()
         self.__birt = FakeBirt()
+        self.__jenkins = FakeJenkinsTestReport()
 
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs,
@@ -436,6 +442,14 @@ class QualityReportMetricsTest(unittest.TestCase):
                 unittests=dict(metric_source_ids={self.__sonar: 'id'})),
             project_kwargs=dict(
                 metric_sources={metric_source.Sonar: self.__sonar}))
+
+    def test_failing_regression_tests(self):
+        ''' Test that the failing regression tests metric is added if
+            possible. '''
+        self.__assert_metric(metric.FailingRegressionTests,
+            product_kwargs=dict(metric_source_ids={self.__jenkins: 'id'}),
+            project_kwargs=dict(metric_sources={metric_source.JenkinsTestReport:
+                                                self.__jenkins}))
 
     def test_unittest_coverage(self):
         ''' Test that the unit test coverage metric is added if possible. '''

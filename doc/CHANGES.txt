@@ -1,3 +1,9 @@
+2014-07-28  Release 1.7.0
+
+  * Add a metric for measuring regression test success, based on a Jenkins job's
+    test report.
+
+
 2014-07-28  Release 1.6.0
 
   * The name parameter for domain objects like project, team, street is now

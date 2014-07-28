@@ -230,3 +230,77 @@ class ARTPerformanceTest(unittest.TestCase):
                               metric_source_ids={self.__birt: 'birt_id'})
         self.failUnless(metric.ARTPerformance.can_be_measured(subject, 
                                                               self.__project))
+
+
+class FakeJenkinsTestReport(object):
+    ''' Fake a Jenkins test report instance for unit test purposes. '''
+    @staticmethod
+    def failed_tests(job_name):  # pylint: disable=unused-argument
+        ''' Return the number of failing tests for the job. '''
+        return 4
+
+    @staticmethod
+    def skipped_tests(job_name):  # pylint: disable=unused-argument
+        ''' Return the number of skipped tests for the job. '''
+        return 2
+
+    @staticmethod
+    def passed_tests(job_name):  # pylint: disable=unused-argument
+        ''' Return the number of passed tests for the job. '''
+        return 14
+
+    @staticmethod
+    def test_report_url(job_name):
+        ''' Return the url for the job. '''
+        return 'http://jenkins/%s' % job_name
+
+
+class FailingRegressionTestsTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the failing regression tests metric. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__jenkins = FakeJenkinsTestReport()
+        self.__subject = FakeSubject(
+            metric_source_ids={self.__jenkins: 'jenkins_job'})
+        self.__project = domain.Project(metric_sources={
+                                            metric_source.JenkinsTestReport:
+                                                self.__jenkins})
+        self.__metric = metric.FailingRegressionTests(subject=self.__subject, 
+                                                      project=self.__project)
+
+    def test_value(self):
+        ''' Test that value of the metric equals the failing tests as reported
+            by Jenkins. '''
+        self.assertEqual(self.__jenkins.failed_tests('jenkins_job') + \
+                         self.__jenkins.skipped_tests('jenkins_job'), 
+                         self.__metric.value())
+
+    def test_report(self):
+        ''' Test that the report for the metric is correct. '''
+        self.assertEqual('6 van de 20 regressietesten slagen niet.', 
+                         self.__metric.report())
+
+    def test_url(self):
+        ''' Test that the url points to the Jenkins job. '''
+        self.assertEqual({'Jenkins test report': 
+                          self.__jenkins.test_report_url('jenkins_job')},
+                         self.__metric.url())
+
+    def test_can_be_measured(self):
+        ''' Test that metric can be measured when Jenkins is available and the 
+            product has a Jenkins job. '''
+        self.failUnless(
+            metric.FailingRegressionTests.can_be_measured(self.__subject, 
+                                                          self.__project))
+
+    def test_cant_be_measured_without_jenkins(self):
+        ''' Test that the metric cannot be measured without Jenkins. '''
+        self.failIf(
+            metric.FailingRegressionTests.can_be_measured(self.__subject, 
+                                                          domain.Project()))
+
+    def test_cant_be_measured_without_jenkins_job(self):
+        ''' Test that the metric cannot be measured without Jenkins job. '''
+        self.failIf(
+            metric.FailingRegressionTests.can_be_measured(FakeSubject(), 
+                                                          self.__project))

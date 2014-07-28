@@ -17,9 +17,61 @@ limitations under the License.
 from qualitylib.domain import HigherIsBetterMetric, \
    LowerPercentageIsBetterMetric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin
-from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE
+from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE, \
+   TEST_QUALITY
 from qualitylib import metric_source
 import datetime
+
+
+class FailingRegressionTests(LowerIsBetterMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of regression tests that fail. '''
+
+    name = 'Falende regressietesten'
+    norm_template = 'Alle regressietesten slagen.'
+    perfect_template = 'Alle %(tests)d regressietesten slagen. '
+    template = '%(value)d van de %(tests)d regressietesten slagen niet.'
+    target_value = 0
+    low_target_value = 0
+    quality_attribute = TEST_QUALITY
+
+    def __init__(self, *args, **kwargs):
+        super(FailingRegressionTests, self).__init__(*args, **kwargs)
+        self.__jenkins_test_report = \
+            self._project.metric_source(metric_source.JenkinsTestReport)
+ 
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        jenkins_test_report = \
+            project.metric_source(metric_source.JenkinsTestReport)
+        return super(FailingRegressionTests, cls).can_be_measured(subject, 
+                                                                  project) and \
+            jenkins_test_report and \
+            subject.metric_source_id(jenkins_test_report)
+
+    def value(self):
+        return self.__jenkins_test_report.failed_tests(self.__jenkins_id()) + \
+               self.__jenkins_test_report.skipped_tests(self.__jenkins_id())
+
+    def _get_template(self):
+        # pylint: disable=protected-access
+        return self.perfect_template if self._is_perfect() else \
+            super(FailingRegressionTests, self)._get_template()
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(FailingRegressionTests, self)._parameters()
+        parameters['tests'] = self.value() + \
+            self.__jenkins_test_report.passed_tests(self.__jenkins_id())
+        return parameters
+
+    def __jenkins_id(self):
+        ''' Return the Jenkins test report id (job name). '''
+        return self._subject.metric_source_id(self.__jenkins_test_report)
+
+    def url(self):
+        return {'Jenkins test report': 
+                self.__jenkins_test_report.test_report_url(self.__jenkins_id())}
 
 
 class ARTCoverage(HigherIsBetterMetric):

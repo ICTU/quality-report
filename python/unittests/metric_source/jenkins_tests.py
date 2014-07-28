@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 import StringIO
-from qualitylib.metric_source import Jenkins
+from qualitylib.metric_source import Jenkins, JenkinsTestReport
 from qualitylib.domain import Team
 
 
@@ -35,7 +35,7 @@ class JenkinsTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__jenkins = JenkinsUnderTest('http://jenkins/', 'username', 
-                                        'password')
+                                          'password')
 
     def test_url(self):
         ''' Test the Jenkins url. '''
@@ -179,3 +179,27 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{"jobs": [{"name": "job-a"}]}'
         self.assertEqual({'job-a (? dagen)': 'http://jenkins/job/job-a/'}, 
                          self.__jenkins.unstable_arts_url('job-a', 3))
+
+
+class JenkinsTestReportUnderTest(JenkinsTestReport):
+    ''' Override the url_open method to return a fixed HTML fragment. '''
+    contents = '{"jobs": []}'
+
+    def url_open(self, url):
+        return StringIO.StringIO(self.contents)
+
+
+class JenkinsTestReportTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the Jenkins test report class. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__jenkins = JenkinsTestReportUnderTest('http://jenkins/', 
+                                                    'username', 'password')
+
+    def test_testreport(self):
+        ''' Test retrieving a Jenkins test report. '''
+        self.__jenkins.contents = '{"failCount":2, "passCount":9, ' \
+                                  '"skipCount":1}'
+        self.assertEqual(2, self.__jenkins.failed_tests('job'))
+        self.assertEqual(9, self.__jenkins.passed_tests('job'))
+        self.assertEqual(1, self.__jenkins.skipped_tests('job'))

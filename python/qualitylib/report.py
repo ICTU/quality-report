@@ -114,7 +114,9 @@ class QualityReport(object):
     ''' Quality report on a project. '''
 
     TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests, 
-                                    metric.UnittestCoverage, metric.ARTCoverage)
+                                    metric.UnittestCoverage, 
+                                    metric.FailingRegressionTests,
+                                    metric.ARTCoverage)
     TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewedAndApproved,
                                   metric.LogicalTestCasesNotReviewedAndApproved,
                                   metric.UserStoriesWithTooFewLogicalTestCases,

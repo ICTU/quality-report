@@ -18,7 +18,7 @@ limitations under the License.
 from qualitylib.metric_source.birt import Birt
 from qualitylib.metric_source.dependencies import Dependencies
 from qualitylib.metric_source.history import History
-from qualitylib.metric_source.jenkins import Jenkins
+from qualitylib.metric_source.jenkins import Jenkins, JenkinsTestReport
 from qualitylib.metric_source.sonar import Sonar
 from qualitylib.metric_source.performance_report import PerformanceReport
 from qualitylib.metric_source.wiki import Wiki
