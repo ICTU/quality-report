@@ -451,6 +451,15 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.JenkinsTestReport:
                                                 self.__jenkins}))
 
+    def test_failing_regression_tests_art(self):
+        ''' Test that the failing regression tests metric is added if
+            the ART component has the Jenkins test report. '''
+        self.__assert_metric(metric.FailingRegressionTests,
+            product_kwargs=dict(
+                art=dict(metric_source_ids={self.__jenkins: 'id'})),
+            project_kwargs=dict(metric_sources={metric_source.JenkinsTestReport:
+                                                self.__jenkins}))
+
     def test_unittest_coverage(self):
         ''' Test that the unit test coverage metric is added if possible. '''
         self.__assert_metric(

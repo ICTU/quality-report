@@ -29,8 +29,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
 
     name = 'Falende regressietesten'
     norm_template = 'Alle regressietesten slagen.'
-    perfect_template = 'Alle %(tests)d regressietesten slagen. '
-    template = '%(value)d van de %(tests)d regressietesten slagen niet.'
+    perfect_template = 'Alle %(tests)d regressietesten van %(name)s slagen. '
+    template = '%(value)d van de %(tests)d regressietesten van %(name)s slagen niet.'
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
@@ -50,8 +50,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
             subject.metric_source_id(jenkins_test_report)
 
     def value(self):
-        return self.__jenkins_test_report.failed_tests(self.__jenkins_id()) + \
-               self.__jenkins_test_report.skipped_tests(self.__jenkins_id())
+        return self.__jenkins_test_report.failed_tests(self.__jenkins_ids()) + \
+               self.__jenkins_test_report.skipped_tests(self.__jenkins_ids())
 
     def _get_template(self):
         # pylint: disable=protected-access
@@ -62,16 +62,25 @@ class FailingRegressionTests(LowerIsBetterMetric):
         # pylint: disable=protected-access
         parameters = super(FailingRegressionTests, self)._parameters()
         parameters['tests'] = self.value() + \
-            self.__jenkins_test_report.passed_tests(self.__jenkins_id())
+            self.__jenkins_test_report.passed_tests(self.__jenkins_ids())
         return parameters
 
-    def __jenkins_id(self):
-        ''' Return the Jenkins test report id (job name). '''
-        return self._subject.metric_source_id(self.__jenkins_test_report)
+    def __jenkins_ids(self):
+        ''' Return the Jenkins test report ids (job names). '''
+        test_report = self._subject.metric_source_id(self.__jenkins_test_report)
+        return [test_report] if type(test_report) == type('') else test_report
 
     def url(self):
-        return {'Jenkins test report': 
-                self.__jenkins_test_report.test_report_url(self.__jenkins_id())}
+        jenkins_ids = self.__jenkins_ids()
+        if len(jenkins_ids) == 1:
+            return {'Jenkins test report': 
+                    self.__jenkins_test_report.test_report_url(jenkins_ids[0])}
+        else:
+            urls = {}
+            for jenkins_id in jenkins_ids:
+                urls['Jenkins test report %s' % jenkins_id] = \
+                    self.__jenkins_test_report.test_report_url(jenkins_id)
+            return urls
 
 
 class ARTCoverage(HigherIsBetterMetric):

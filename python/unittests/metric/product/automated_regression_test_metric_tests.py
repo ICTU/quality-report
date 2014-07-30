@@ -275,16 +275,37 @@ class FailingRegressionTestsTest(unittest.TestCase):
                          self.__jenkins.skipped_tests('jenkins_job'), 
                          self.__metric.value())
 
+    def test_value_multiple_jobs(self):
+        ''' Test that the value of the metric equals to total number of
+            failing tests if there are multiple test reports. '''
+        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
+        failing_tests = metric.FailingRegressionTests(subject=subject,
+                                                      project=self.__project)
+        expected = self.__jenkins.failed_tests(['a', 'b']) + \
+                   self.__jenkins.skipped_tests(['a', 'b'])
+        self.assertEqual(expected, failing_tests.value())
+
     def test_report(self):
         ''' Test that the report for the metric is correct. '''
-        self.assertEqual('6 van de 20 regressietesten slagen niet.', 
-                         self.__metric.report())
+        self.assertEqual('6 van de 20 regressietesten van FakeSubject ' 
+                         'slagen niet.', self.__metric.report())
 
     def test_url(self):
         ''' Test that the url points to the Jenkins job. '''
         self.assertEqual({'Jenkins test report': 
                           self.__jenkins.test_report_url('jenkins_job')},
                          self.__metric.url())
+
+    def test_url_multiple_jobs(self):
+        ''' Test that the url points to the Jenkins jobs. '''
+        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
+        failing_tests = metric.FailingRegressionTests(subject=subject,
+                                                      project=self.__project)
+        self.assertEqual({'Jenkins test report a': 
+                              self.__jenkins.test_report_url('a'),
+                          'Jenkins test report b':
+                              self.__jenkins.test_report_url('b')},
+                         failing_tests.url())
 
     def test_can_be_measured(self):
         ''' Test that metric can be measured when Jenkins is available and the 

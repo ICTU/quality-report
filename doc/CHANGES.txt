@@ -1,3 +1,11 @@
+2014-07-30  Release 1.7.1
+
+  * Bug fix: add the metric for measuring regression test success to the report
+    even when the Jenkins test report job is a metric source id of the ART
+    component of a product.
+  * Bug fix: deal with Jenkins test reports that have no pass count.
+
+
 2014-07-28  Release 1.7.0
 
   * Add a metric for measuring regression test success, based on a Jenkins job's

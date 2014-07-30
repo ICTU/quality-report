@@ -200,6 +200,21 @@ class JenkinsTestReportTest(unittest.TestCase):
         ''' Test retrieving a Jenkins test report. '''
         self.__jenkins.contents = '{"failCount":2, "passCount":9, ' \
                                   '"skipCount":1}'
-        self.assertEqual(2, self.__jenkins.failed_tests('job'))
-        self.assertEqual(9, self.__jenkins.passed_tests('job'))
-        self.assertEqual(1, self.__jenkins.skipped_tests('job'))
+        self.assertEqual(2, self.__jenkins.failed_tests(['job']))
+        self.assertEqual(9, self.__jenkins.passed_tests(['job']))
+        self.assertEqual(1, self.__jenkins.skipped_tests(['job']))
+
+    def test_testreport_without_pass_count(self):
+        ''' Test retrieving a Jenkins test report that has no pass count. 
+            Apparently that field is not present when there are no tests. '''
+        self.__jenkins.contents = '{"failCount":0, "skipCount":0, ' \
+                                  '"totalCount":8}'
+        self.assertEqual(0, self.__jenkins.failed_tests(['job']))
+        self.assertEqual(8, self.__jenkins.passed_tests(['job']))
+        self.assertEqual(0, self.__jenkins.skipped_tests(['job']))
+
+    def test_url(self):
+        ''' Test the url for a test report. '''
+        self.assertEqual(
+            'http://jenkins/job/job_name/lastSuccessfulBuild/testReport/',
+            self.__jenkins.test_report_url('job_name'))

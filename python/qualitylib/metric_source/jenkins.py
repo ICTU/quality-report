@@ -43,10 +43,9 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
                                       password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = jenkins_url + 'job/%s/'
-        self._last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
+        self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
+        self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
-        self.__test_report_api_url = self._last_completed_build_url + \
-            'testReport/' + self.api_postfix
         self.__job_api_url = self.__job_url + self.api_postfix
         self.__jobs_api_url = jenkins_url + self.jobs_api_postfix
 
@@ -169,7 +168,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __age_of_last_completed_build(self, job):
         ''' Return the age of the last completed build of the job. '''
-        return self.__age_of_build(job, self._last_completed_build_url)
+        return self.__age_of_build(job, self.__last_completed_build_url)
 
     def __age_of_last_stable_build(self, job):
         ''' Return the age of the last stable build of the job. '''
@@ -205,28 +204,52 @@ class JenkinsTestReport(Jenkins):
     ''' Class representing test reports in Jenkins jobs. '''
     def __init__(self, *args, **kwargs):
         super(JenkinsTestReport, self).__init__(*args, **kwargs)
-        self.__test_report_url = self._last_completed_build_url + 'testReport/'
+        self.__test_report_url = self._last_successful_build_url + 'testReport/'
         self.__test_report_api_url = self.__test_report_url + self.api_postfix
 
-    def failed_tests(self, job_name):
-        ''' Return the number of failed tests as reported by the test report 
-            of a job. '''
-        return int(self.__test_report(job_name)['failCount'])
-
-    def passed_tests(self, job_name):
+    def passed_tests(self, job_names):
         ''' Return the number of passed tests as reported by the test report
             of a job. '''
-        return int(self.__test_report(job_name)['passCount'])
+        return sum([self.__passed_tests(job_name) for job_name in job_names])
 
-    def skipped_tests(self, job_name):
+    def failed_tests(self, job_names):
+        ''' Return the number of failed tests as reported by the test report 
+            of a job. '''
+        return sum([self.__failed_tests(job_name) for job_name in job_names])
+
+    def skipped_tests(self, job_names):
         ''' Return the number of skipped tests as reported by the test report
             of a job. '''
-        return int(self.__test_report(job_name)['skipCount'])
+        return sum([self.__skipped_tests(job_name) for job_name in job_names])
+
+    def __passed_tests(self, job_name):
+        ''' Return the number of passed tests reported by the test report of
+            one Jenkins job. '''
+        try:
+            return self.__test_count(job_name, 'passCount')
+        except KeyError:
+            # Surefire reports don't have a pass count, calculate it:
+            total = self.__test_count(job_name, 'totalCount')
+            skipped = self.__skipped_tests(job_name)
+            failed = self.__failed_tests(job_name)
+            return total - skipped - failed
+
+    def __failed_tests(self, job_name):
+        ''' Return the number of failed tests reported by the test report of
+            one Jenkins job. '''
+        return self.__test_count(job_name, 'failCount')
+
+    def __skipped_tests(self, job_name):
+        ''' Return the number of skipped tests reported by the test report of
+            one Jenkins job. '''
+        return self.__test_count(job_name, 'skipCount')
 
     @utils.memoized
-    def __test_report(self, job_name):
-        ''' Return the test report of a job. '''
-        return self._api(self.__test_report_api_url % job_name)
+    def __test_count(self, job_name, result_type):
+        ''' Return the number of tests with the specified result in the test
+            report of a job. '''
+        report_dict = self._api(self.__test_report_api_url % job_name)
+        return int(report_dict[result_type])
 
     def test_report_url(self, job_name):
         ''' Return the url of the job. '''

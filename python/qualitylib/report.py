@@ -303,8 +303,11 @@ class QualityReport(object):
             # because we currently can only report on the trunk version of the
             # ART.
             metrics.extend(self.__java_metrics(art))
-            if metric.ARTCoverage.can_be_measured(art, self.__project):
-                metrics.append(metric.ARTCoverage(art, project=self.__project))
+            for art_metric_class in (metric.ARTCoverage,
+                                     metric.FailingRegressionTests):
+                if art_metric_class.can_be_measured(art, self.__project):
+                    metrics.append(art_metric_class(art,
+                                                    project=self.__project))
         if metric.UnmergedBranches.can_be_measured(art, self.__project):
             metrics.append(metric.UnmergedBranches(subject=art,
                                                    project=self.__project))

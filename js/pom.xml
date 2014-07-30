@@ -11,14 +11,14 @@
   <artifactId>js</artifactId>
 
   <name>JavaScript</name>
-  
+
   <build>
     <sourceDirectory>.</sourceDirectory>
   </build>
-  
+
   <properties>
     <sonar.language>js</sonar.language>
-    <sonar.exclusions>bootstrap.min.js</sonar.exclusions>
+    <sonar.exclusions>bootstrap.min.js,compatibility.js</sonar.exclusions>
   </properties>
 
 </project>
