@@ -82,5 +82,5 @@ class DotFormatter(base_formatter.Formatter):
             for dependency_name, dependency_version in dependencies:
                 edges.append('  "%s-%s" -> "%s-%s";' % (product.name(),
                              product.product_version() or 'trunk',
-                             dependency_name, dependency_version))
+                             dependency_name, dependency_version or 'trunk'))
         return edges

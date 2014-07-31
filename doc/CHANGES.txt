@@ -1,3 +1,9 @@
+2014-07-31  Release 1.7.4
+
+  * Bug fix: dependency graph would be corrupted in case of snapshot
+    dependencies.
+
+
 2014-07-31  Release 1.7.3
 
   * Bug fix: don't try to add snapshot dependencies to the project.
