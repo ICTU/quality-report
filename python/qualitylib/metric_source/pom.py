@@ -77,7 +77,7 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             if not version:
                 continue
             if 'SNAPSHOT' in version:
-                continue
+                version = ''
             dependencies.add((artifact, version))
         return dependencies
 

@@ -1,3 +1,8 @@
+2014-07-31  Release 1.7.2
+
+  * Support snapshot dependencies.
+
+
 2014-07-30  Release 1.7.1
 
   * Bug fix: add the metric for measuring regression test success to the report

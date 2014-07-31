@@ -201,11 +201,11 @@ class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
         running of an automated regression test than during a previous ART. '''
 
     name = 'Automatic regression test relative performance'
-    norm_template = 'Maximaal %(target)d van de paginas heeft een gemiddelde ' \
-        'laadtijd hoger dan tijdens de vorige automatische regressie test. ' \
+    norm_template = 'Maximaal %(target)d van de paginas laadt langzamer dan ' \
+        'tijdens de vorige automatische regressie test. ' \
         'Meer dan %(low_target)d is rood.'
-    template = '%(value)d van de paginas van %(name)s laadt ' \
-        'bij het uitvoeren van de ART.'
+    template = '%(value)d van de paginas van %(name)s laadt langzamer ' \
+        'bij het uitvoeren van de laatste test dan bij de voorlaatste test.'
     target_value = 0
     low_target_value = 5
     quality_attribute = PERFORMANCE
@@ -223,4 +223,5 @@ class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
                                               self._subject.product_version())
 
     def url(self):
-        return dict(Birt='http://todo')
+        return dict(
+            Birt=self._birt.relative_art_performance_url(self._birt_id()))

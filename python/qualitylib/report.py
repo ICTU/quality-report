@@ -304,7 +304,8 @@ class QualityReport(object):
             # ART.
             metrics.extend(self.__java_metrics(art))
             for art_metric_class in (metric.ARTCoverage,
-                                     metric.FailingRegressionTests):
+                                     metric.FailingRegressionTests,
+                                     metric.RelativeARTPerformance):
                 if art_metric_class.can_be_measured(art, self.__project):
                     metrics.append(art_metric_class(art,
                                                     project=self.__project))

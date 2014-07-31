@@ -17,6 +17,7 @@ limitations under the License.
 from qualitylib import utils, domain
 from qualitylib.metric_source import beautifulsoup
 import datetime
+import logging
 
 
 class BirtReport(beautifulsoup.BeautifulSoupOpener):
@@ -186,6 +187,10 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             version. '''
         return self.__page_performance_url % (product, version)
 
+    def relative_art_performance_url(self, product):
+        ''' Return the relative page performance url for the product. '''
+        return self.__art_performance_versions_url % product
+
     # Misc
 
     def has_test_design(self, product):
@@ -209,7 +214,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         soup = self.soup(self.__art_performance_versions_url % product)
         # Use a set because there may be multiple runs for one version
         available_versions = set([a.string for a in soup('a')])
-        return version in available_versions and len(available_versions) > 2 
+        return version in available_versions and len(available_versions) >= 2
 
     # Metrics calculated from other metrics:
 
@@ -230,7 +235,52 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             automated regression test for the product and version as compared
             to the last run of the automated regression test for the product and
             a previous version. '''
-        return 2
+        version_link, previous_version_link = self.__load_times_links(product,
+                                                                      version)
+        load_times = self.__load_times(version_link)
+        previous_load_times = self.__load_times(previous_version_link)
+        return self.__nr_slower_pages(load_times, previous_load_times)
+
+    def __load_times_links(self, product, version):
+        ''' Return the links for the last and previous load times. '''
+        soup = self.soup(self.__art_performance_versions_url % product)
+        version_link = previous_version_link = None
+        for anchor in soup('a'):
+            # First, look for the newest link for our version
+            if not version_link and anchor.string == version:
+                version_link = anchor['href']
+            # Next, look for the newest link for the previous version
+            if version_link and anchor.string != version:
+                previous_version_link = anchor['href']
+                break
+        return version_link, previous_version_link
+
+    def __load_times(self, link):
+        ''' Read the average load times and return them as a dictionary mapping
+            pages to average load times. '''
+        load_times_soup = self.soup(link)
+        load_times = dict()
+        for row in load_times_soup('tr'):
+            try:
+                page = row('td')[0]('div')[0].string
+                avg_load_time = int(row('td')[2]('div')[0].string)
+                load_times[page] = avg_load_time
+            except IndexError:
+                continue  # Skip rows without performance data
+            except ValueError, message:
+                logging.warn("Can't parse '%s' in Birt report: %s", row, 
+                             message)
+        return load_times
+
+    @staticmethod
+    def __nr_slower_pages(load_times, previous_load_times):
+        ''' Compare the load times in the two sets and return the number of 
+            pages that loaded slower in the latest run of the test. '''
+        nr_slower = 0
+        for page, avg_load_time in load_times.iteritems():
+            if previous_load_times.get(page, float("inf")) < avg_load_time:
+                nr_slower += 1
+        return nr_slower
 
     # Metrics available directly in Birt:
 
