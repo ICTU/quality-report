@@ -43,6 +43,41 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return self._sonar.package_cycles(self._sonar_id())
 
 
+class SnapshotDependencies(LowerIsBetterMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of the dependencies on snapshot versions
+        of other products. '''
+    name = 'Snapshot afhankelijkheden'
+    norm_template = 'Maximaal %(target)d afhankelijkheden op snapshot ' \
+        'versies van andere producten. Meer dan %(low_target)d is rood.'
+    template = '%(name)s heeft %(value)d afhankelijkheden op snapshot ' \
+        'versies van andere producten.'
+    target_value = 0
+    low_target_value = 2
+    quality_attribute = CODE_QUALITY
+
+    def __init__(self, *args, **kwargs):
+        self.__report = kwargs.pop('report')
+        super(SnapshotDependencies, self).__init__(*args, **kwargs)
+
+    def value(self):
+        return len(self.__snapshot_dependencies())
+
+    def url(self):
+        # pylint: disable=star-args
+        urls = dict()
+        for dependency in self.__snapshot_dependencies():
+            product = self.__report.get_product(*dependency)
+            label = '%s:%s' % (dependency[0], dependency[1] or 'trunk')
+            urls[label] = HTMLFormatter.product_url(product)
+        return urls
+ 
+    def __snapshot_dependencies(self):
+        ''' Return a list of snapshot dependencies of this product. '''
+        return [dependency for dependency in self._subject.dependencies() if \
+                not dependency[1]]
+
+
 class DependencyQuality(LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the quality of the dependencies of the project. '''
@@ -87,7 +122,8 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         for product in self.__report.products():
             for dependency in product.dependencies(recursive=False):
                 product = self.__report.get_product(*dependency)
-                urls['%s:%s' % dependency] = HTMLFormatter.product_url(product)
+                label = '%s:%s' % (dependency[0], dependency[1] or 'trunk')
+                urls[label] = HTMLFormatter.product_url(product)
         return urls
 
     def _parameters(self):

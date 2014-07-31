@@ -39,6 +39,11 @@ class FakeSubject(object):
     ''' Provide for a fake subject. '''
 
     @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
+        return 'FakeSubject'
+
+    @staticmethod
     def short_name():
         ''' Return the short name of the subject. '''
         return 'FS'
@@ -51,7 +56,7 @@ class FakeSubject(object):
     @staticmethod  # pylint: disable=unused-argument
     def dependencies(**kwargs):
         ''' Return the dependencies of the subject. '''
-        return [('product_name', 'product_version')]
+        return [('product1', 'product1_version'), ('product2', '')]
 
 
 class FakeReport(object):
@@ -90,19 +95,46 @@ class DependencyQualityTest(unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.assertEqual('0% van de afhankelijkheden (0 van de 2) is naar ' \
+        self.assertEqual('0% van de afhankelijkheden (0 van de 4) is naar ' \
                          'componenten die "rode" metrieken hebben.', 
                          self.__metric.report())
 
     def test_url(self):
         ''' Test that the url contains the "red" products. '''
-        self.assertEqual({'product_name:product_version':
-                          'index.html#section_FS'}, self.__metric.url())
+        self.assertEqual({'product1:product1_version': 'index.html#section_FS',
+                          'product2:trunk': 'index.html#section_FS'}, 
+                         self.__metric.url())
 
     def test_url_label(self):
         ''' Test that the url label is correct. '''
         self.assertEqual('Componenten die "rode" metrieken hebben',
                          self.__metric.url_label())
+
+
+class SnapshotDependenciesTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the snapshot dependencies metric. '''
+
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__metric = metric.SnapshotDependencies(subject=FakeSubject(),
+                                                    report=FakeReport(),
+                                                    project=domain.Project())
+
+    def test_value(self):
+        ''' Test that the value of the metric equals the number of snapshot 
+            dependencies of the product. '''
+        self.assertEqual(1, self.__metric.value())
+
+    def test_url(self):
+        ''' Test that the url is correct. '''
+        self.assertEqual({'product2:trunk': 'index.html#section_FS'},
+                         self.__metric.url())
+
+    def test_report(self):
+        ''' Test the metric report. '''
+        self.assertEqual('FakeSubject heeft 1 afhankelijkheden op snapshot ' \
+                         'versies van andere producten.',
+                         self.__metric.report())
 
 
 class CyclicDependenciesTest(unittest.TestCase):

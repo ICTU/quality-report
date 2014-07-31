@@ -155,7 +155,8 @@ class QualityReport(object):
             cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
             cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + \
-            (metric.TotalLOC, metric.DependencyQuality, metric.UnmergedBranches,
+            (metric.TotalLOC, metric.DependencyQuality, 
+             metric.SnapshotDependencies, metric.UnmergedBranches,
              metric.TeamProgress, metric.ReleaseAge, metric.ARTStability,
              metric.TeamSpirit, metric.TeamFailingCIJobs, 
              metric.TeamUnusedCIJobs)
@@ -297,6 +298,9 @@ class QualityReport(object):
                             self.PERFORMANCE_METRIC_CLASSES:
             if metric_class.can_be_measured(product, self.__project):
                 metrics.append(metric_class(product, project=self.__project))
+        if metric.SnapshotDependencies.can_be_measured(product, self.__project):
+            metrics.append(metric.SnapshotDependencies(product, report=self,
+                                                       project=self.__project))
         art = product.art()
         if art and not art.product_version():
             # Only add the ART if we're reporting on the trunk version
