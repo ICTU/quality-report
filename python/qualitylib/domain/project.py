@@ -56,6 +56,8 @@ class Project(DomainObject):
 
     def add_product_with_version(self, product_name, product_version):
         ''' Add product with the specified version to the project. '''
+        if not product_version:
+            return  # Don't need to add trunk versions
         base_product = None
         for product in self.products():
             if product.name() == product_name:

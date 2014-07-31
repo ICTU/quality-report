@@ -76,6 +76,13 @@ class ProjectTest(unittest.TestCase):
                                                              '1.1')
         self.assertEqual([product, product1_1], self.__project.products())
 
+    def test_add_trunk_product(self):
+        ''' Test that a product without a specific version won't be added to the
+            project. '''
+        product = FakeProduct()
+        self.__project.add_product(product)
+        self.failIf(self.__project.add_product_with_version('FakeProduct', ''))
+
     def test_add_product_with_version_twice(self): 
         # pylint: disable=invalid-name
         ''' Test that adding a product/version twice is not possible. '''
