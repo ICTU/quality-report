@@ -56,6 +56,12 @@ class SnapshotDependencies(LowerIsBetterMetric):
     low_target_value = 2
     quality_attribute = CODE_QUALITY
 
+    @classmethod
+    def can_be_measured(cls, product, project):
+        return super(SnapshotDependencies, cls).can_be_measured(product,
+                                                              project) and \
+            product.product_version()  # Only report for released versions
+
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')
         super(SnapshotDependencies, self).__init__(*args, **kwargs)

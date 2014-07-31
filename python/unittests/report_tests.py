@@ -693,10 +693,16 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(short_name='dummy'),
             include=False)
 
+    def test_no_snapshot_dependencies(self):
+        ''' Test that the snapshot dependencies metric is not added for trunk
+            versions. '''
+        self.__assert_metric(metric.SnapshotDependencies,
+            product_kwargs=dict(short_name='dummy'), include=False)
+
     def test_snapshot_dependencies(self):
         ''' Test that the snapshot dependencies metric is added if possible. '''
         self.__assert_metric(metric.SnapshotDependencies,
-            product_kwargs=dict(short_name='dummy'))
+            product_kwargs=dict(short_name='dummy', product_version='1.1'))
 
     def test_java_duplication(self):
         ''' Test that the Java duplication metric is added if possible. '''
