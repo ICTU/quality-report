@@ -20,6 +20,8 @@ from qualitylib.domain import QualityAttribute
 AVAILABILITY = QualityAttribute('availability', name='Beschikbaarheid')
 TEST_COVERAGE = QualityAttribute('test_coverage', name='Testdekking')
 CODE_QUALITY = QualityAttribute('code_quality', name='Codekwaliteit')
+DEPENDENCY_QUALITY = QualityAttribute('dependency_quality', 
+                                      name='Kwaliteit van afhankelijkheden')
 TEST_QUALITY = QualityAttribute('test_quality', name='Testkwaliteit')
 DOC_QUALITY = QualityAttribute('doc_quality', name='Documentatiekwaliteit')
 SIZE = QualityAttribute('size', name='Omvang')

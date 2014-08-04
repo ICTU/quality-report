@@ -1,3 +1,9 @@
+2014-08-??  Release 1.8.2
+
+  * Introduce new quality attribute - dependency quality - and specify that the
+    related metrics measure that quality attribute.
+
+
 2014-07-31  Release 1.8.1
 
   * Bug fix: don't report the number of dependencies on snapshot versions for

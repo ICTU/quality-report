@@ -16,7 +16,7 @@ limitations under the License.
 
 from qualitylib.domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
 from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
-from qualitylib.metric.quality_attributes import CODE_QUALITY
+from qualitylib.metric.quality_attributes import DEPENDENCY_QUALITY
 from qualitylib import utils
 from qualitylib.formatting import HTMLFormatter
 
@@ -31,7 +31,7 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     template = '%(name)s heeft %(value)d cyclische afhankelijkheden.'
     target_value = 0
     low_target_value = 10
-    quality_attribute = CODE_QUALITY
+    quality_attribute = DEPENDENCY_QUALITY
 
     @classmethod
     def can_be_measured(cls, product, project):
@@ -54,7 +54,7 @@ class SnapshotDependencies(LowerIsBetterMetric):
         'versies van andere producten.'
     target_value = 0
     low_target_value = 2
-    quality_attribute = CODE_QUALITY
+    quality_attribute = DEPENDENCY_QUALITY
 
     @classmethod
     def can_be_measured(cls, product, project):
@@ -96,7 +96,7 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         'de %(nr_deps)d) is naar componenten die "rode" metrieken hebben.'
     target_value = 10
     low_target_value = 20
-    quality_attribute = CODE_QUALITY
+    quality_attribute = DEPENDENCY_QUALITY
 
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')
