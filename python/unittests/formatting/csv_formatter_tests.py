@@ -27,7 +27,17 @@ class TotalLOC(metric.TotalLOC):  # pylint:disable=too-many-public-methods
         return 100
 
 
-class CSVFormatterTest(unittest.TestCase):  
+class FakeMetric(object):  # pylint:disable=too-few-public-methods
+    ''' Fake metric with a specified status. '''
+    def __init__(self, status):
+        self.__status = status
+
+    def status(self):
+        ''' Return the status (color) of the metric. '''
+        return self.__status
+
+
+class CSVFormatterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit test for the CSV report formatter class. '''
     def setUp(self):  # pylint: disable=invalid-name
@@ -43,13 +53,16 @@ class CSVFormatterTest(unittest.TestCase):
 
     def test_metric(self):
         ''' Test that the value of the metric is returned. '''
-        self.assertEqual('100', 
-                         self.__formatter.metric(self.__total_loc))
+        self.assertEqual('100', self.__formatter.metric(self.__total_loc))
 
     def test_process(self):
         ''' Test that the report results in one line that can be appended to
             a CSV file. '''
-        another_metric = metric.TeamSpirit(project=self.__project)
-        self.assertEqual('%s, 100, 2, 0, 4, 0\n' % self.__expected_date,
-                         self.__formatter.process(fake_report.Report(
-                            metrics=[self.__total_loc, another_metric])))
+        green_metric = FakeMetric(status='green')
+        grey_metric = FakeMetric(status='grey')
+        yellow_metric = FakeMetric(status='yellow')
+        invalid_metric = FakeMetric(status='invalid status')
+        self.assertEqual('%s, 100, 2, 1, 4, 1\n' % self.__expected_date,
+            self.__formatter.process(fake_report.Report(
+                metrics=[self.__total_loc, green_metric, grey_metric, 
+                         yellow_metric, invalid_metric])))
