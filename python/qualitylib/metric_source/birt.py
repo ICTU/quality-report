@@ -243,23 +243,32 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __load_times_links(self, product, version):
         ''' Return the links for the last and previous load times. '''
+        def remove_frameset(birt_frameset_link):
+            ''' Replace the frameset with preview. '''
+            return birt_frameset_link.replace('frameset', 'preview')
+
         soup = self.soup(self.__art_performance_versions_url % product)
         version_link = previous_version_link = None
         for anchor in soup('a'):
             # First, look for the newest link for our version
             if not version_link and anchor.string == version:
-                version_link = anchor['href']
+                version_link = remove_frameset(anchor['href'])
             # Next, look for the newest link for the previous version
             if version_link and anchor.string != version:
-                previous_version_link = anchor['href']
+                previous_version_link = remove_frameset(anchor['href'])
                 break
+        logging.info('URLs for ART load times of %s:%s are %s and %s.', 
+                     product, version or 'trunk', version_link, 
+                     previous_version_link)
         return version_link, previous_version_link
 
     def __load_times(self, link):
         ''' Read the average load times and return them as a dictionary mapping
             pages to average load times. '''
-        load_times_soup = self.soup(link)
         load_times = dict()
+        if not link:
+            return load_times
+        load_times_soup = self.soup(link)
         for row in load_times_soup('tr'):
             try:
                 page = row('td')[0]('div')[0].string
