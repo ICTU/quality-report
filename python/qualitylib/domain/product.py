@@ -128,17 +128,6 @@ class Product(MeasurableObject):
                         return True
         return False
 
-    def name(self):
-        ''' Return a human readable name for the product. '''
-        from qualitylib import metric_source
-        sonar = self.__project.metric_source(metric_source.Sonar)
-        sonar_id = self.metric_source_id(sonar) or super(Product, self).name()
-        try:
-            return sonar_id.split(':', 1)[-1]
-        except AttributeError:
-            logging.error('Product %s has no Sonar id', self.__short_name)
-            raise
-
     def short_name(self):
         ''' Return a short (two letter) abbreviation of the product name. '''
         return self.__short_name + \

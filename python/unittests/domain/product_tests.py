@@ -82,8 +82,8 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
                                                   'old-sonar:id'}})
 
     def test_product_name(self):
-        ''' Test that the name of the product equals the Sonar id. '''
-        self.assertEqual('id', self.__product.name())
+        ''' Test that the name of the product equals given name. '''
+        self.assertEqual('Product', self.__product.name())
 
     def test_sonar_id(self):
         ''' Test that the Sonar id of the product equals the passed id. '''
