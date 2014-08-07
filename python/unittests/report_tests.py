@@ -234,6 +234,10 @@ class QualityReportTest(unittest.TestCase):
         self.assertEqual(section,
                          self.__report.get_section(section.id_prefix()))
 
+    def test_get_section_with_unknown_id(self):
+        ''' Test that a unknown id results in None returned. '''
+        self.assertEqual(None, self.__report.get_section('unknown'))
+
     def test_product(self):
         ''' Test that the report has three sections when we add a product:
             one for overall product quality, one for the product itself and
@@ -609,25 +613,6 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.Subversion:
                                                 'SVN'}),
             product_kwargs=dict(art=dict(metric_source_ids={'SVN': 'svn'})))
-
-    def test_no_art_performance(self):
-        ''' Test that the ART performance metric is not added for a trunk
-            version. '''
-        self.__assert_metric(metric.ARTPerformance,
-            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}),
-            project_kwargs=dict(metric_sources={metric_source.Birt:
-                                                self.__birt}), 
-            include=False)
-
-    def test_art_performance(self):
-        ''' Test that the ART performance metric is added for a released
-            version. '''
-        self.__assert_metric(metric.ARTPerformance,
-            product_kwargs=dict(product_version='1.1',
-                art=dict(metric_source_ids={self.__sonar: 'art'}),
-                metric_source_ids={self.__birt: 'birt'}),
-            project_kwargs=dict(metric_sources={metric_source.Birt:
-                                                self.__birt}))
 
     def test_critical_violations(self):
         ''' Test that the critical violations metric is added if possible. '''

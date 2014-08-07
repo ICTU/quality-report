@@ -127,7 +127,7 @@ class QualityReport(object):
                            metric.CyclicDependencies, metric.JavaDuplication,
                            metric.ProductLOC, metric.LongMethods,
                            metric.ManyParameters, metric.CommentedLOC)
-    PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes, metric.ARTPerformance,
+    PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes,
                                   metric.RelativeARTPerformance)
     MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, 
                                  metric.RiskLog)

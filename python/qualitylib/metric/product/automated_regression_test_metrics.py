@@ -159,43 +159,6 @@ class ARTCoverage(HigherIsBetterMetric):
             return self.__jacoco.coverage_date(jacoco_id)
 
 
-class ARTPerformance(BirtMetricMixin, LowerPercentageIsBetterMetric):
-    ''' Metric for measuring the percentage of pages that loads too slow 
-        during running an automated regression test. '''
-
-    name = 'Automatic regression test performance'
-    norm_template = 'Maximaal %(target)d%% van de paginas heeft een ' \
-        'gemiddelde laadtijd hoger dan het maximum. ' \
-        'Meer dan %(low_target)d%% is rood.'
-    template = '%(value)d%% (%(numerator)d van de %(denominator)d) van de ' \
-        'paginas van %(name)s laadt te langzaam bij het uitvoeren van de ART.' 
-    target_value = 25
-    low_target_value = 50
-    quality_attribute = PERFORMANCE
-
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(ARTPerformance, cls).can_be_measured(product, project) \
-            and product.product_version() and product.art()
-
-    def _denominator(self):
-        return self._birt.nr_performance_pages(self._birt_id(), 
-                                               self.__version())
-
-    def _numerator(self):
-        return self._birt.nr_slow_performance_pages(self._birt_id(), 
-                                                    self.__version())
-
-    def url(self):
-        return dict(Birt=self._birt.page_performance_url(self._birt_id(),
-                                                         self.__version()))
-
-    def __version(self):
-        ''' Return the version number for the product this metric is reporting 
-            on. '''
-        return self._subject.product_version() or 'trunk'
-
-
 class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of pages that loads slower during
         running of an automated regression test than during a previous ART. '''

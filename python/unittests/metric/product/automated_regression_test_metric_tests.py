@@ -58,13 +58,9 @@ class FakeSubject(object):
         ''' Return the version of the subject. '''
         return self.__version
 
-    def metric_source_id(self, metric_source):
+    def metric_source_id(self, the_metric_source):
         ''' Return the id of the subject for the metric source. '''
-        return self.__metric_source_ids.get(metric_source, None)
-
-    def art(self):
-        ''' Return the automated regression test of the subject. '''
-        return self.__art
+        return self.__metric_source_ids.get(the_metric_source, None)
 
 
 class ARTCoverageJacocoTest(unittest.TestCase):
@@ -156,25 +152,26 @@ class ARTCoverageEmmaTest(unittest.TestCase):
 
 class FakeBirt(object):
     ''' Fake a Birt instance. '''
+    @classmethod
+    def has_art_performance(cls, product, version):
+        # pylint: disable=unused-argument
+        ''' Return whether Birt can report on the relative ART performance for
+            this product and version. '''
+        return True
+
     @staticmethod
-    def nr_performance_pages(product, version):
-        ''' Return the number of pages. '''
+    def nr_slower_pages_art(product, version):
+        ''' Return the number of slow pages. '''
         # pylint: disable=unused-argument
         return 10
 
     @staticmethod
-    def nr_slow_performance_pages(product, version):
-        ''' Return the number of slow pages. '''
-        # pylint: disable=unused-argument
-        return 3
-
-    @staticmethod
-    def page_performance_url(product, version):
-        ''' Return the url for the page performance report. '''
-        return 'http://birt/performance/%s/%s' % (product, version)
+    def relative_art_performance_url(product):
+        ''' Return the url for the relative art performance report. '''
+        return 'http://birt/performance/%s/' % product
 
 
-class ARTPerformanceTest(unittest.TestCase):
+class RelativeARTPerformanceTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the ART coverage metric. '''
     def setUp(self):  # pylint: disable=invalid-name
@@ -183,53 +180,37 @@ class ARTPerformanceTest(unittest.TestCase):
                                      metric_source_ids={self.__birt: 'birt_id'})
         self.__project = domain.Project(metric_sources={metric_source.Birt:
                                                         self.__birt})
-        self.__metric = metric.ARTPerformance(subject=self.__subject, 
-                                              project=self.__project)
+        self.__metric = metric.RelativeARTPerformance(subject=self.__subject,
+                                                      project=self.__project)
 
     def test_value(self):
-        ''' Test that value of the metric equals the percentage too slow pages
-            as reported by Birt. '''
-        expected = self.__birt.nr_slow_performance_pages('product', 
-                                                         'version') / \
-            float(self.__birt.nr_performance_pages('product', 'version')) * 100
-        self.assertEqual(expected, self.__metric.value())
+        ''' Test that value of the metric equals the number of pages that are
+            slower as reported by Birt. '''
+        self.assertEqual(10, self.__metric.value())
 
     def test_url(self):
         ''' Test that the url correctly points to the Birt report. '''
-        self.assertEqual({'Birt': self.__birt.page_performance_url('birt_id', 
-                                                                   '1')},
+        self.assertEqual({'Birt':
+                          self.__birt.relative_art_performance_url('birt_id')},
                          self.__metric.url())
 
     def test_report(self):
         ''' Test that the report for the metric is correct. '''
-        self.assertEqual('30% (3 van de 10) van de paginas van FakeSubject ' \
-                         'laadt te langzaam bij het uitvoeren van de ART.', 
+        self.assertEqual('10 van de paginas van FakeSubject ' \
+                         'laadt langzamer bij het uitvoeren van de laatste ' \
+                         'test dan bij de voorlaatste test.',
                          self.__metric.report())
 
-    def test_cant_be_measured_without_art(self):
-        ''' Test that the metric cannot be measured with automated regression
-            test. '''
-        self.failIf(metric.ARTPerformance.can_be_measured(self.__subject, 
-                                                          self.__project))
- 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric cannot be measured without Birt. '''
-        self.failIf(metric.ARTPerformance.can_be_measured(self.__subject, 
-                                                          domain.Project()))
-
-    def test_cant_be_measured_for_trunk(self):
-        ''' Test that the metric cannot be measured for trunk versions. '''
-        self.failIf(metric.ARTPerformance.can_be_measured(FakeSubject(), 
-                                                          self.__project))
+        self.failIf(metric.RelativeARTPerformance.can_be_measured(
+            self.__subject, domain.Project()))
 
     def test_can_be_measured(self):
-        ''' Test that metric can be measured when Birt is available, the
-            product is not the trunk version, and it has an automated regression
-            test. '''
-        subject = FakeSubject(art='ART', version='1',
-                              metric_source_ids={self.__birt: 'birt_id'})
-        self.failUnless(metric.ARTPerformance.can_be_measured(subject, 
-                                                              self.__project))
+        ''' Test that metric can be measured when Birt is available and Birt
+            has relative ART performance data for the product. '''
+        self.failUnless(metric.RelativeARTPerformance.can_be_measured(
+            self.__subject, self.__project))
 
 
 class FakeJenkinsTestReport(object):
