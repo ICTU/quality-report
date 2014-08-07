@@ -413,7 +413,7 @@ class HTMLFormatter(base_formatter.Formatter):
                     'rowspan=%(rowspan)d align="center" ' \
                     'bgcolor="%(bg_color)s">\n' \
                     '<div class="link_section_%(ID)s" title="%(title)s">' \
-                    '</div><div id="piechart_%(ID)s"></div>' \
+                    '</div><div id="section_summary_chart_%(ID)s"></div>' \
                     '</td>\n' % row_parameters
             dashboard += tr_indent + '</tr>\n'
         dashboard += table_indent + '</table>'
