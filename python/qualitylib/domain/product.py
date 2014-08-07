@@ -43,14 +43,9 @@ class Product(MeasurableObject):
         self.__product_responsibility = responsible_teams or []
         self.__metric_responsibility = metric_responsibility or {}
 
-    def __str__(self):
-        return self.sonar_id()
-
     def __eq__(self, other):
-        return str(self) == str(other)
-
-    def __ne__(self, other):
-        return str(self) != str(other)
+        return (self.name(), self.product_version()) == \
+               (other.name(), other.product_version())
 
     def sonar_id(self):
         ''' Return the id that identifies the product in Sonar. '''
@@ -59,7 +54,7 @@ class Product(MeasurableObject):
         sonar_id = self.old_metric_source_id(sonar, self.__product_version)
         if not sonar_id:
             sonar_id = self.metric_source_id(sonar) or ''
-        if self.__product_version:
+        if sonar_id and self.__product_version:
             sonar_id += ':' + self.__product_version
         return sonar_id
 
