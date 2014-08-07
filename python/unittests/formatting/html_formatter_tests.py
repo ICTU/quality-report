@@ -87,7 +87,7 @@ class HTMLFormatterTest(unittest.TestCase):
         self.failUnless('<td colspan=1 rowspan=1 align="center" ' \
                         'bgcolor="lightsteelblue">\n' \
                         '<div class="link_section_ID" title="Section title">' \
-                        '</div><div id="piechart_ID"></div>' \
+                        '</div><div id="section_summary_chart_ID"></div>' \
                         '</td>\n' in html)
 
     def test_hover_unknown_start(self):
