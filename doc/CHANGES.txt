@@ -1,7 +1,14 @@
-2014-08-??  Release 1.8.2
+2014-08-07  Release 1.9.0
 
+  * Dashboard now used column charts instead of pie chart so that it can
+    give an overview of all product versions that are included in the quality
+    report.
   * Introduce new quality attribute - dependency quality - and specify that the
     related metrics measure that quality attribute.
+  * Bug fix: ignore revisions created by Maven on tags when checking for 
+    unmerged revisions of branches.
+  * Bug fix: don't invoke the Sonar runner on products without Sonar id.
+  * Remove ART performance metric. Not used anymore.
 
 
 2014-07-31  Release 1.8.1
