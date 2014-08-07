@@ -125,7 +125,24 @@ class Subversion(domain.MetricSource):
                      trunk_url, revisions)
         # Number of revisions is one more than the number of line breaks, if 
         # there is any output:
-        return revisions.count('\n') + 1 if revisions else 0
+        nr_revisions = revisions.count('\n') + 1 if revisions else 0
+        # If there is a small number of revisions, it may be caused by the Maven
+        # release plugin committing to a tag before creating the branch.
+        # Check for that and ignore those revisions if that's the case. 
+        if 1 <= nr_revisions <= 3:
+            # Create a list of revision numbers and remove the initial 'r'
+            revisions = [revision[1:] for revision in revisions.split('\n')]
+            for revision in revisions:
+                if '/tags/' in self.__revision_url(branch_url, revision):
+                    nr_revisions -= 1
+        return nr_revisions
+
+    def __revision_url(self, branch_url, revision_number):
+        ''' Return the url for a specific revision number. '''
+        svn_info_xml = str(self.__run_shell_command(['svn', 'info', branch_url,
+                                                     '--xml',
+                                                     '-r', revision_number]))
+        return BeautifulSoup(svn_info_xml)('url')[0].string
 
     @utils.memoized
     def branches(self, trunk_url):

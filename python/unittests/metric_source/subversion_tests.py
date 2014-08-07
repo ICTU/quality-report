@@ -94,8 +94,22 @@ class SubversionTest(unittest.TestCase):
         ''' Test that Subversion returns a list of branches for a product. '''
         self.__run_shell_command_results = ['<name>product-1.2.3</name>' \
                                             '<name>product-1.2.3-emma</name>',
-                                            'r123\nr124\n', '\n']
+                                            'r123\nr124\n', 
+                                            '<url>bla</url>', 
+                                            '<url>bla</url>', '\n']
         self.assertEqual({'product-1.2.3': 2}, 
+            self.__subversion.unmerged_branches('product_url/trunk/'))
+
+    def test_unmerged_branches_with_tag_revision(self):
+        ''' Test that Subversion ignores revisions made on tags (Maven
+            release plugin does this). '''
+        self.__run_shell_command_results = ['<name>product-1.2.3</name>' \
+                                            '<name>product-1.2.3-emma</name>',
+                                            'r123\nr124\n', 
+                                            '<url>http://tags/rev123</url>', 
+                                            '<url>http://branch/rev124/url>',
+                                            '\n']
+        self.assertEqual({'product-1.2.3': 1}, 
             self.__subversion.unmerged_branches('product_url/trunk/'))
 
     def test_check_out(self):
