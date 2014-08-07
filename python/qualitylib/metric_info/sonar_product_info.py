@@ -24,8 +24,9 @@ class SonarProductInfo(object):
     def all_sonar_ids(self):
         ''' Return all Sonar ids of the product: the Sonar id of the product
             itself and its unit tests if applicable. '''
-        sonar_ids = set([self.__product.sonar_id()])
-        for component in [self.__product.unittests(), self.__product.jsf()]:
-            if component:
+        sonar_ids = set()
+        for component in [self.__product, self.__product.unittests(),
+                          self.__product.jsf()]:
+            if component and component.sonar_id():
                 sonar_ids.add(component.sonar_id())
         return sonar_ids
