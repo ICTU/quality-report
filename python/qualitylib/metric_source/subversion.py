@@ -131,7 +131,7 @@ class Subversion(domain.MetricSource):
         # Check for that and ignore those revisions if that's the case. 
         if 1 <= nr_revisions <= 3:
             # Create a list of revision numbers and remove the initial 'r'
-            revisions = [revision[1:] for revision in revisions.split('\n')]
+            revisions = [revision[1:].strip() for revision in revisions.split('\n')]
             for revision in revisions:
                 if '/tags/' in self.__revision_url(branch_url, revision):
                     nr_revisions -= 1

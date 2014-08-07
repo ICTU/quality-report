@@ -1,3 +1,8 @@
+2014-08-07  Release 1.9.1
+
+  * Bug fix: strip revision numbers before passing them to Subversion.
+
+
 2014-08-07  Release 1.9.0
 
   * Dashboard now used column charts instead of pie chart so that it can
