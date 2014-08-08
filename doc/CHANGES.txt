@@ -1,3 +1,9 @@
+2014-08-08  Release 1.10.0
+
+  * The dashboard now uses column charts when displaying all versions of
+    products and pie charts when displaying only the trunk versions of products.
+
+
 2014-08-07  Release 1.9.1
 
   * Bug fix: strip revision numbers before passing them to Subversion.
@@ -5,7 +11,7 @@
 
 2014-08-07  Release 1.9.0
 
-  * Dashboard now used column charts instead of pie chart so that it can
+  * The dashboard now uses column charts instead of pie chart so that it can
     give an overview of all product versions that are included in the quality
     report.
   * Introduce new quality attribute - dependency quality - and specify that the

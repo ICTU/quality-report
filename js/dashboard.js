@@ -105,6 +105,7 @@ function create_dashboard(metrics_data, history_data) {
     set_check_indicator('show_dashboard', settings.show_dashboard);
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
     show_or_hide_dashboard();
+    show_section_summary_charts(settings.filter_version);
     draw_tables(tables);
 
     // Event handler for navigating between tabs
@@ -237,8 +238,28 @@ function set_filter(filter, filter_value, tables) {
     write_cookie(filter, filter_value);
     set_radio_indicator(filter, filter_value);
     draw_tables(tables);
+    if (filter === 'filter_version') {
+        show_section_summary_charts(filter_value);
+    }
 }
 
+function show_section_summary_charts(filter_value) {
+    // Show either the column chart or the pie chart depending on whether the
+    // user wants to see all versions or only trunk versions.
+    var show_trunk_only = (filter_value === 'filter_version_trunk');
+    var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
+    for (var index = 0; index < sections.length; index++) {
+        var section = sections[index];
+        var trunk_chart_div = document.getElementById('section_summary_trunk_chart_' + section);
+        if (trunk_chart_div !== null) {
+            trunk_chart_div.style.display = show_trunk_only ? 'block' : 'none';;
+        }
+        var summary_chart_div = document.getElementById('section_summary_chart_' + section);
+        if (summary_chart_div !== null) {
+            summary_chart_div.style.display = show_trunk_only ? 'none' : 'block';
+        }
+    }
+}
 
 function color_metrics(color_green, color_yellow, color_red, color_grey) {
     var numberOfColumns = window.metrics.getNumberOfColumns();
@@ -409,7 +430,7 @@ function table_view(section) {
 function draw_section_summary_chart(section) {
     var section_summary_chart_div = document.getElementById('section_summary_chart_' + section);
     if (section_summary_chart_div === null) {
-        // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
+        // Not all sections have a summary chart, e.g. the meta metrics (MM) section.
         return;
     }
     // Collect all sections that contain the same product
@@ -429,15 +450,15 @@ function draw_section_summary_chart(section) {
     data.addColumn('number', 'Rood met actie');
     data.addColumn('number', 'Grijs');
     for(var index = 0; index < sections.length; index++) {
-        var section = sections[index];
-        var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
-        var red_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red_with_action'}]);
-        var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
-        var yellow_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow_with_action'}]);
-        var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
-        var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
-        var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
-        data.addRow([section, green_rows.length + perfect_rows.length,
+        var version = sections[index];
+        var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
+        var red_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red_with_action'}]);
+        var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
+        var yellow_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow_with_action'}]);
+        var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
+        var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
+        var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
+        data.addRow([version, green_rows.length + perfect_rows.length,
           yellow_rows.length, yellow_with_action_rows.length,
           red_rows.length, red_with_action_rows.length,
           grey_rows.length]);
@@ -456,6 +477,50 @@ function draw_section_summary_chart(section) {
       isStacked: true
     };
     var chart = new google.visualization.ColumnChart(section_summary_chart_div);
+    chart.draw(data, options);
+    draw_pie_chart(section);
+}
+
+function draw_pie_chart(section) {
+    var piechart_div = document.getElementById('section_summary_trunk_chart_' + section);
+    if (piechart_div === null) {
+        // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
+        return;
+    }
+
+    var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
+    var red_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red_with_action'}]);
+    var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
+    var yellow_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow_with_action'}]);
+    var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
+    var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
+    var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Status');
+    data.addColumn('number', 'Number');
+    data.addRows([
+      ['Groen', green_rows.length + perfect_rows.length],
+      ['Geel', yellow_rows.length],
+      ['Geel met actie', yellow_with_action_rows.length],
+      ['Rood', red_rows.length],
+      ['Rood met actie', red_with_action_rows.length],
+      ['Grijs', grey_rows.length]
+    ]);
+    var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
+    var options = {
+      slices: [{color: COLOR_GREEN}, {color: COLOR_YELLOW},
+               {color: COLOR_YELLOW_WITH_ACTION}, {color: COLOR_RED},
+               {color: COLOR_RED_WITH_ACTION}, {color: COLOR_GREY}],
+      pieSliceText: 'none',
+      tooltip: {textStyle: {fontSize: 14}},
+      legend: 'none',
+      width: 80, height: 80,
+      backgroundColor: bg_color,
+      chartArea: {left:7, top:7, width:66, height:66},
+      is3D: true
+    };
+    var chart = new google.visualization.PieChart(piechart_div);
     chart.draw(data, options);
 }
 

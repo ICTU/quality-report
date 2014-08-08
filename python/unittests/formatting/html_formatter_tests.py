@@ -88,6 +88,7 @@ class HTMLFormatterTest(unittest.TestCase):
                         'bgcolor="lightsteelblue">\n' \
                         '<div class="link_section_ID" title="Section title">' \
                         '</div><div id="section_summary_chart_ID"></div>' \
+                        '<div id="section_summary_trunk_chart_ID"></div>' \
                         '</td>\n' in html)
 
     def test_hover_unknown_start(self):
