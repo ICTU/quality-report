@@ -38,6 +38,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     PROJECT_DEFINITION_FILENAME = 'project_definition.py'
     HISTORY_FILENAME = 'history.json'
     CSV_FILENAME = 'summary.csv'
+    EMPTY_HISTORY_PNG = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
 
     def __init__(self, project_folder):
         project_definition_filename = os.path.join(project_folder,
@@ -152,9 +153,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                   "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:%(history)s&" \
                   "chds=%(y_axis_range)s" % dict(history=history, 
                                                  y_axis_range=y_axis_range)
-            logging.info('Getting %s history chart: %s', metric.id_string(),
-                         url)
-            image = urllib2.urlopen(url).read()
+            try:
+                image = urllib2.urlopen(url).read()
+            except urllib2.URLError, reason:
+                logging.warn("Couldn't open %s history chart at %s: %s",
+                             metric.id_string(), url, reason)
+                image = self.EMPTY_HISTORY_PNG
             filename = os.path.join(report_dir, 'img', 
                                     '%s.png' % metric.id_string())
             self.__write_file(image, filename, mode='wb', encoding=None)
