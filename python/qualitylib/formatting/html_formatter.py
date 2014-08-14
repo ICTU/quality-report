@@ -29,9 +29,7 @@ class HTMLFormatter(base_formatter.Formatter):
                    "'%(section)s'",
                    "'%(status)s'",
                    "'%(teams)s'",
-                   """'<img src="http://chart.apis.google.com/chart?"""
-                   """chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:%(history)s&"""
-                   """chds=%(y_axis_range)s" border="0" />'""",
+                   """'<img src="img/%(metric_id)s.png" border="0" />'""",
                    """{v: '%(status_nr)d', f: '<img src="img/%(image)s.png" """
                    """alt="%(alt)s" title="%(hover)s" """
                    """border="0" />'}""",
@@ -258,12 +256,6 @@ class HTMLFormatter(base_formatter.Formatter):
             attribute_id = 'filter_quality_attribute_' + attribute_id
         kwargs['quality_attribute'] = attribute_id
         kwargs['comment'] = self.__format_metric_comment(metric)
-        try:
-            kwargs['history'] = ','.join([str(value) \
-                                          for value in metric.recent_history()])
-        except ValueError:
-            kwargs['history'] = ''
-        kwargs['y_axis_range'] = self.__format_y_axis_range(metric.y_axis_range())
         kwargs['teams'] = ','.join(['filter_team_%s' % team.id_string() \
                                     for team in metric.responsible_teams()])
         return kwargs
@@ -324,12 +316,6 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Return a HTML formatted url. '''
         return '<a href="%(href)s" target="_blank">%(anchor)s</a>' % \
             dict(href=href, anchor=utils.html_escape(anchor))
-
-    @staticmethod
-    def __format_y_axis_range(y_axis_range):
-        ''' Return the y axis range parameter for the Google sparkline
-            graph. '''
-        return '%d,%d' % y_axis_range if y_axis_range else 'a'
 
     @classmethod
     def __format_product_links(cls, report, product):

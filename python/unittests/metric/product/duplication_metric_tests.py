@@ -46,6 +46,11 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
         self.__jsf = jsf
         self.__jsf_id = jsf_id
 
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
+        return 'FakeSubject'
+
     def jsf(self):
         ''' Return the JSF component. '''
         return FakeSubject(jsf_id=self.__jsf_id) if self.__jsf else None

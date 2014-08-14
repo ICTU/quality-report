@@ -57,7 +57,9 @@ class FakeSubject(object):
     def __init__(self, birt_id=True):
         self.__birt_id = birt_id
 
-    def __str__(self):
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
         return 'FakeSubject'
 
     def metric_source_id(self, metric_source):

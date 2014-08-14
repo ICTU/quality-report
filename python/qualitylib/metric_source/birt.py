@@ -378,14 +378,8 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 try:
                     last_test_date = utils.parse_iso_date(last_test_date_string)
                 except AttributeError:
-                    # If the test has not been executed yet, use the creation 
-                    # date as the last test date
-                    creation_date_string = row('td')[1]('div')[0].string
-                    try:
-                        last_test_date = utils.parse_iso_date(creation_date_string)
-                    except AttributeError:
-                        # No valid date at all. Use an arbitrary date.
-                        last_test_date = datetime.datetime.min
+                    # No valid date at all. Test was never executed.
+                    last_test_date = datetime.datetime.min
                 test_dates.append(last_test_date)
             except IndexError:
                 continue  # Skip empty row

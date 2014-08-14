@@ -85,13 +85,16 @@ class FakeBirt(object):
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
     version = ''
+    version_type = 'trunk'
 
     def __init__(self, birt_id=True, team=True, scrum_team=True):
         self.__birt_id = birt_id
         self.__team = team
         self.__scrum_team = scrum_team
 
-    def __repr__(self):
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
         return 'FakeSubject'
 
     def metric_source_id(self, metric_source):
@@ -101,13 +104,11 @@ class FakeSubject(object):
 
     def product_version(self):
         ''' Return the version of the subject. '''
-        return self.version 
+        return self.version
 
-    @staticmethod
-    def last_changed_date():
-        ''' Return the date this product/version was last changed in the 
-            source code repository. '''
-        return datetime.datetime.now() - datetime.timedelta(days=2)
+    def product_version_type(self):
+        ''' Return the version type of the product. '''
+        return self.version_type
 
     def responsible_teams(self, *args):  # pylint: disable-msg=unused-argument
         ''' Return the responsible teams for this product. '''
@@ -238,7 +239,7 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_value(self):
         ''' Test that the value of the metric is the number of days ago that
-            the manual logical test cases  have been last executed as reported 
+            the manual logical test cases have been last executed as reported 
             by Birt. '''
         self.assertEqual(5, self.__metric.value())
 
@@ -253,13 +254,14 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
             not been tested. '''
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
         self.__subject.version = '1.1'
-        self.assertEqual(2, self.__metric.value())
+        expected_value = (datetime.datetime.now() - datetime.datetime.min).days
+        self.assertEqual(expected_value, self.__metric.value())
 
     def test_report(self):
         ''' Test that the report is correct. '''
         self.failUnless('5 van de 10 handmatige logische testgevallen van ' \
-                        'FakeSubject zijn te lang geleden (5 dag(en), ' in 
-                        self.__metric.report())
+                        'FakeSubject zijn te lang geleden ' \
+                        '(meest recente 5 dag(en), ' in self.__metric.report())
 
     def test_report_with_untested(self):
         ''' Test that the report mentions the number of test cases that have
@@ -268,7 +270,21 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
                                                 datetime.timedelta(days=60)
         self.failUnless(self.__metric.report().startswith('5 van de 10 ' \
             'handmatige logische testgevallen van FakeSubject zijn te lang ' \
-            'geleden (60 dag(en), '))
+            'geleden (meest recente 60 dag(en), '))
+
+    def test_report_when_untested(self):
+        ''' Test that the report uses the correct template when the manual
+            tests have not been executed at all. '''
+        self.__birt.date_of_last_manual_tests = datetime.datetime.min
+        self.assertEqual('De 10 handmatige logische testgevallen van ' \
+                        'FakeSubject zijn nog nooit uitgevoerd.',
+                        self.__metric.report())
+
+    def test_target_when_release(self):
+        ''' Test that the target is stricter for release candidates. '''
+        self.__subject.version = '1.1'
+        self.__subject.version_type = 'release'
+        self.assertEqual(0, self.__metric.target())
 
     def test_url(self):
         ''' Test that the url is correct. '''

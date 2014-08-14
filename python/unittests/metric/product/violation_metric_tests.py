@@ -43,7 +43,9 @@ class FakeSonar(object):
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
 
-    def __repr__(self):
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
         return 'FakeSubject'
 
     @staticmethod

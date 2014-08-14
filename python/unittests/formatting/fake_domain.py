@@ -147,16 +147,6 @@ class Metric(object):
         return {}
 
     @staticmethod
-    def recent_history():
-        ''' Return the history of the metric.'''
-        return []
-
-    @staticmethod
-    def y_axis_range():
-        ''' Return the y axis range of the metric. '''
-        return 0, 100
-
-    @staticmethod
     def responsible_teams():
         ''' Return the teams responsible for the metric. '''
         return []

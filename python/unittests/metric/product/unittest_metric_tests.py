@@ -50,7 +50,9 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
     def __init__(self, sonar=None):
         self.__sonar = sonar
 
-    def __repr__(self):
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
         return 'FakeSubject'
 
     def unittests(self):

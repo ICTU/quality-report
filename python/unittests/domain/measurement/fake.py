@@ -52,7 +52,10 @@ class FakeWiki(object):
 
 class FakeSubject(object):  # pylint: disable=too-few-public-methods
     ''' Class to fake a metric subject. '''
-    def __str__(self):
+
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
         return 'FakeSubject'
 
     @staticmethod

@@ -67,7 +67,7 @@ class Metric(object):
         stable_id = self.__class__.__name__
         if type(self._subject) != type([]):
             # Add the product or team to the id:
-            stable_id += str(self._subject)
+            stable_id += self._subject.name() if self._subject else str(self._subject)
         return stable_id
 
     def set_id_string(self, id_string):

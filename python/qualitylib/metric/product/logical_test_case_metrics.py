@@ -95,17 +95,18 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
 
 class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the how long ago the manual logical test cases
+    ''' Metric for measuring how long ago the manual logical test cases
         have been tested. '''
 
-    name = 'Uitvoering van handmatige logische testgevallen'
-    norm_template = 'Alle handmatige logische testgevallen zijn minstens ' \
-        'eenmaal uitgevoerd. In geval van trunk versies geldt bovendien dat ' \
-        'ze minder dan %(target)d dagen geleden moeten zijn uitgevoerd. ' \
-        'Langer dan %(low_target)d dagen geleden is rood.'
+    name = 'Tijdige uitvoering van handmatige logische testgevallen'
+    norm_template = 'Alle handmatige logische testgevallen zijn minder dan ' \
+        '%(target)d dagen geleden uitgevoerd. Langer dan %(low_target)d ' \
+        'dagen geleden is rood.'
     template = '%(nr_manual_ltcs_too_old)d van de %(nr_manual_ltcs)d ' \
         'handmatige logische testgevallen van %(name)s zijn te lang geleden '\
-        '(%(value)d dag(en), op %(date)s) uitgevoerd.'
+        '(meest recente %(value)d dag(en), op %(date)s) uitgevoerd.'
+    never_template = 'De %(nr_manual_ltcs)d handmatige logische testgevallen ' \
+        'van %(name)s zijn nog nooit uitgevoerd.'
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
@@ -117,9 +118,12 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
             product.responsible_teams() 
 
     def target(self):
-        teams = self._subject.responsible_teams()
-        sprint_length = min([team.days_per_sprint() for team in teams])
-        return sprint_length
+        if self._subject.product_version_type() == 'release':
+            return 0  # Release candidates should already be tested
+        else:
+            teams = self._subject.responsible_teams()
+            sprint_length = min([team.days_per_sprint() for team in teams])
+            return sprint_length
 
     def low_target(self):
         return self.target() + 7
@@ -134,15 +138,8 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
                                                               self.__version()))
 
     def _date(self):
-        date = self._birt.date_of_last_manual_test(self._birt_id(),
+        return self._birt.date_of_last_manual_test(self._birt_id(),
                                                    self.__version())
-        # If this product/version never has been tested and it is not the 
-        # trunk version, return the date the version was created so we don't 
-        # start complaining about not executed manual tests right after 
-        # creation of the version.
-        if date == datetime.datetime.min and self._subject.product_version():
-            date = self._subject.last_changed_date()
-        return date
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -153,6 +150,11 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
             self._birt.nr_manual_ltcs_too_old(self._birt_id(), self.__version(),
                                               self.target())
         return parameters
+
+    def _get_template(self):
+        # pylint: disable=protected-access
+        return self.never_template if self._date() == datetime.datetime.min \
+            else super(ManualLogicalTestCases, self)._get_template()
 
     def __version(self):
         ''' Return the version number for the product this metric is reporting 

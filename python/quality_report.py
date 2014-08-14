@@ -29,6 +29,7 @@ import stat
 import pkg_resources
 import xmlrpclib
 import socket
+import urllib2
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -104,6 +105,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             folder. '''
         report_dir = report_dir or '.'
         self.__create_dir(report_dir)
+        # HTML file
         tmp_filename = os.path.join(report_dir, 'tmp.html')
         latest_software_version = self.__latest_software_version()
         self.__format_and_write_report(quality_report, formatting.HTMLFormatter,
@@ -114,6 +116,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         if os.path.exists(html_filename):
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)
+        # Dependency graph
         dot_filename = os.path.join(report_dir, 'dependency.dot')
         self.__format_and_write_report(quality_report, formatting.DotFormatter,
                                        dot_filename, 'w', 'ascii')
@@ -122,6 +125,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         for filename in (html_filename, svg_filename):
             os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
                      stat.S_IROTH)
+        # Resources
         resource_manager = pkg_resources.ResourceManager()
         formatting_module = formatting.html_formatter.__name__
         for resource_type, encoding in (('css', 'utf-8'), ('img', None), 
@@ -135,6 +139,25 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                                                 resource_type + '/' + resource)
                 mode = 'w' if encoding else 'wb'
                 self.__write_file(contents, filename, mode, encoding)
+        # Trend images
+        for metric in quality_report.metrics():
+            if metric.product_version_type() in ('tag', 'release'):
+                continue
+            try:
+                history = ','.join([str(value) for value in metric.recent_history()])
+            except ValueError:
+                history = ''
+            y_axis_range = self.__format_y_axis_range(metric.y_axis_range())
+            url = "http://chart.apis.google.com/chart?" \
+                  "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:%(history)s&" \
+                  "chds=%(y_axis_range)s" % dict(history=history, 
+                                                 y_axis_range=y_axis_range)
+            logging.info('Getting %s history chart: %s', metric.id_string(),
+                         url)
+            image = urllib2.urlopen(url).read()
+            filename = os.path.join(report_dir, 'img', 
+                                    '%s.png' % metric.id_string())
+            self.__write_file(image, filename, mode='wb', encoding=None)
 
     @classmethod
     def __format_and_write_report(cls, quality_report, report_formatter,
@@ -179,6 +202,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         logging.info('Latest quality_report package release is %s',
                      latest_version)
         return latest_version
+
+    @staticmethod
+    def __format_y_axis_range(y_axis_range):
+        ''' Return the y axis range parameter for the Google sparkline
+            graph. '''
+        return '%d,%d' % y_axis_range if y_axis_range else 'a'
 
 
 if __name__ == '__main__':

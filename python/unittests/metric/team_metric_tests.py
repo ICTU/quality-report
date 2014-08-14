@@ -20,8 +20,10 @@ import unittest
 
 
 class FakeSubject(object):  # pylint:disable=too-few-public-methods
-    ''' Fake subject (team). ''' 
-    def __str__(self):
+    ''' Fake subject (team). '''
+    @staticmethod
+    def name():
+        ''' Return product name. '''
         return 'FakeSubject'
 
 

@@ -69,6 +69,11 @@ class FakeSubject(object):
         self.__version = version
         self.__performance_report_id = performance_report_id
 
+    @staticmethod
+    def name():
+        ''' Return the name of the subject. '''
+        return 'FakeSubject'
+
     def product_version(self):
         ''' Return the version of the subject. '''
         return self.__version
