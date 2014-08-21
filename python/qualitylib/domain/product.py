@@ -47,8 +47,7 @@ class Product(MeasurableObject):
         self.__metric_responsibility = metric_responsibility or {}
 
     def __eq__(self, other):
-        return (self.name(), self.product_version()) == \
-               (other.name(), other.product_version())
+        return self.product_label() == other.product_label()
 
     def sonar_id(self):
         ''' Return the id that identifies the product in Sonar. '''
@@ -57,6 +56,8 @@ class Product(MeasurableObject):
         sonar_id = self.old_metric_source_id(sonar, self.__product_version)
         if not sonar_id:
             sonar_id = self.metric_source_id(sonar) or ''
+        if sonar_id and self.__product_branch:
+            sonar_id += ':' + self.__product_branch
         if sonar_id and self.__product_version:
             sonar_id += ':' + self.__product_version
         return sonar_id
@@ -93,6 +94,22 @@ class Product(MeasurableObject):
             return 'branch'
         else:
             return 'trunk'
+
+    def product_label(self):
+        ''' Name, version, branch combination. '''
+        return self.name() + ':' + self.branch_version_label()
+
+    def branch_version_label(self):
+        ''' Return the branch and version as label. '''
+        branch = self.product_branch()
+        version = self.product_version()
+        if branch and version:
+            return branch + ':' + version
+        if branch:
+            return branch
+        if version:
+            return version
+        return 'trunk'
 
     def latest_released_product_version(self):
         ''' Return the latest released version of this product. '''
@@ -144,6 +161,7 @@ class Product(MeasurableObject):
     def short_name(self):
         ''' Return a short (two letter) abbreviation of the product name. '''
         return self.__short_name + \
+            self.__product_branch.replace('-', '_').replace('.', '_') + \
             self.__product_version.replace('-', '_').replace('.', '_')
 
     def art(self):
@@ -162,6 +180,7 @@ class Product(MeasurableObject):
         ''' Return a product that represents a component of this product. '''
         if component:
             copy_component = copy.copy(component)
+            copy_component.set_product_branch(self.product_branch())
             copy_component.set_product_version(self.product_version())
             return copy_component
         else:
@@ -252,15 +271,15 @@ class Product(MeasurableObject):
             else:
                 dependencies.remove((dependency_name, dependency_version))
         all_dependencies = dependencies | recursive_dependencies
-        logging.debug('Dependencies of %s:%s are: %s', self.name(),
-                      version or 'trunk', all_dependencies)
+        logging.debug('Dependencies of %s are: %s', self.product_label(), 
+                      all_dependencies)
         return all_dependencies
 
     @utils.memoized
     def users(self, recursive=True):
         ''' Return the users of this product and version. '''
+        logging.info('Retrieving users of %s', self.product_label())
         name, version = self.name(), self.product_version()
-        logging.info('Retrieving users of %s:%s', name, version or 'trunk')
         users = set()
         for product in self.__project.products():
             if (name, version) in product.dependencies(recursive):
@@ -301,14 +320,13 @@ class Product(MeasurableObject):
         try:
             return pom.dependencies(svn_path, self.__project.products())
         except urllib2.HTTPError, reason:
-            logging.warn("Couldn't retrieve dependencies for %s:%s: %s",
-                          self.name(), version or 'trunk', reason)
+            logging.warn("Couldn't retrieve dependencies for %s: %s",
+                          self.product_label(), reason)
             return set()
         except (ValueError, IndexError), reason:
-            logging.error("Couldn't parse dependencies for %s:%s: %s",
-                          self.name(), version or 'trunk', reason)
+            logging.error("Couldn't parse dependencies for %s: %s",
+                          self.product_label(), reason)
             if user:
-                logging.error('User of %s:%s is %s:%s', self.name(), 
-                              version or 'trunk', user.name(), 
-                              user.product_version() or 'trunk')
+                logging.error('User of %s is %s', self.product_label(),
+                              user.product_label())
             raise

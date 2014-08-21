@@ -35,6 +35,10 @@ class FakeSubversion(object):
         ''' Return the tags folder for the version. '''
         return 'http://tags/'
 
+    @staticmethod  # pylint: disable=unused-argument
+    def branch_folder_for_branch(*args):
+        return 'http://branches/'
+
 
 class UnmergedBranchesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -103,10 +107,17 @@ class UnmergedBranchesTest(unittest.TestCase):
         self.failUnless(metric.UnmergedBranches.can_be_measured(self.__subject,
                                                                 self.__project))
 
-    def test_cant_be_measured(self):
+    def test_cant_be_measured_if_releases(self):
         ''' Test that the metric can not be measured if the product is 
             a released version. '''
         self.__subject.set_product_version('1.1')
+        self.failIf(metric.UnmergedBranches.can_be_measured(self.__subject,
+                                                            self.__project))
+
+    def test_cant_be_measured_if_branch(self):
+        ''' Test that the metric can not be measured if the product is 
+            a released version. '''
+        self.__subject.set_product_branch('branch')
         self.failIf(metric.UnmergedBranches.can_be_measured(self.__subject,
                                                             self.__project))
 

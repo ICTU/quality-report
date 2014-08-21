@@ -359,7 +359,8 @@ class HTMLFormatter(base_formatter.Formatter):
     @classmethod
     def __format_product_link(cls, report, product_name, product_version):
         ''' Return a HTML formatted product link. '''
-        section = report.get_product_section(product_name, product_version)
+        product = report.get_product(product_name, product_version)
+        section = report.get_product_section(product)
         color = section.color()
         color = 'gold' if color == 'yellow' else color
         section_id = section.id_prefix()

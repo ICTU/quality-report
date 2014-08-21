@@ -115,7 +115,8 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         colors = []
         for product in self.__report.products():
             for dependency in product.dependencies(recursive=False):
-                color = self.__report.get_product_section(*dependency).color()
+                product = self.__report.get_product(*dependency)
+                color = self.__report.get_product_section(product).color()
                 colors.append(color)
         return colors
 

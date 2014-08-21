@@ -40,7 +40,7 @@ class DotFormatterTest(unittest.TestCase):
         self.assertEqual('  subgraph "cluster-Fake Product" {\n'
                          '    label="Fake Product"; fillcolor="lightgrey"; '
                          'style="filled"\n'
-                         '    "Fake Product-1" [label="1" style="filled" '
+                         '    "Fake Product:1" [label="1" style="filled" '
                          'fillcolor="green" URL="index.html#section_FP" '
                          'target="_top"];\n  };', 
                          self.__formatter.body(fake_report.Report( \
@@ -52,10 +52,10 @@ class DotFormatterTest(unittest.TestCase):
         self.assertEqual('  subgraph "cluster-Fake Product" {\n'
                          '    label="Fake Product"; fillcolor="lightgrey"; '
                          'style="filled"\n'
-                         '    "Fake Product-1" [label="1" style="filled" '
+                         '    "Fake Product:1" [label="1" style="filled" '
                          'fillcolor="green" URL="index.html#section_FP" '
                          'target="_top"];\n  };\n'
-                         '  "Fake Product-1" -> "Fake Dependency-1";',
+                         '  "Fake Product:1" -> "Fake Dependency:1";',
                          self.__formatter.body(report))
 
     def test_postfix(self):

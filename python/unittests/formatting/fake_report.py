@@ -111,7 +111,7 @@ class Report(object):
         ''' Return the latest version number of the product. '''
         return '2'
 
-    def get_product_section(self, name, version):
+    def get_product_section(self, product_label):
         # pylint: disable=unused-argument
         ''' Return a fake section. '''
         if self.__products:
@@ -131,7 +131,7 @@ class Report(object):
 
     def sections(self):
         ''' Return a list of report sections. '''
-        return [self.get_product_section('whatever', '1.0')]
+        return [self.get_product_section('whatever:1.0')]
 
     def metrics(self):
         ''' Return the metrics in the report. '''

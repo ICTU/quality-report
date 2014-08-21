@@ -53,6 +53,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         ''' Create, format, and write the quality report. '''
         self.__add_latest_release_of_products()
         self.__add_release_candidates_of_products()
+        self.__add_branches_of_products()
         self.__add_dependencies()
         self.__analyse_products()
 
@@ -91,7 +92,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __add_branches_of_products(self):
         ''' Add the branches of the products that have to be monitored. '''
         for product in self.__project.products()[:]:
-            for branch in product.branches():
+            for branch in product.product_branches():
                 logging.info('Adding %s:%s to the project because it is a ' \
                              'branch to be monitored.', product.name(), branch)
                 self.__project.add_product_with_branch(product.name(), branch)

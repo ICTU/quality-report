@@ -169,9 +169,9 @@ class SectionTest(unittest.TestCase):
         class FakeProduct(object):  # pylint: disable=too-few-public-methods
             ''' Fake a trunk product. '''
             @staticmethod
-            def product_version():
+            def product_version_type():
                 ''' Fake a trunk version. '''
-                return
+                return 'trunk'
 
         section = report.Section(None, [], product=FakeProduct())
         self.failUnless(section.contains_trunk_product())
@@ -253,8 +253,7 @@ class QualityReportTest(unittest.TestCase):
             metric_source_ids={self.__sonar: 'sonar.id'})
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
-        section = quality_report.get_product_section(product.name(), 
-                                                     product.product_version())
+        section = quality_report.get_product_section(product)
         self.assertEqual(product, section.product())
 
     def test_get_product_section_twice(self):
@@ -262,10 +261,9 @@ class QualityReportTest(unittest.TestCase):
         product = domain.Product(self.__project, 'FP',
             metric_source_ids={self.__sonar: 'sonar.id'})
         self.__project.add_product(product)
-        name, version = product.name(), product.product_version()
         quality_report = report.QualityReport(self.__project)
-        section1 = quality_report.get_product_section(name, version)
-        section2 = quality_report.get_product_section(name, version)
+        section1 = quality_report.get_product_section(product)
+        section2 = quality_report.get_product_section(product)
         self.failUnless(section1 is section2)
 
     def test_get_meta_section(self):

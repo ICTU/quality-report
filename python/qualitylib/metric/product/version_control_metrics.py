@@ -38,7 +38,8 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         ''' Unmerged branches can only be measured for trunk versions of 
             products that are under version control. '''
         return super(UnmergedBranches, cls).can_be_measured(product, project) \
-            and product.svn_path() and not product.product_version()
+            and product.svn_path() and not product.product_version() and not \
+            product.product_branch()
 
     def value(self):
         return len(self.__unmerged_branches())

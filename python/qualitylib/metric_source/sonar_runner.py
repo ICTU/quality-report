@@ -49,9 +49,9 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
             users = ', '.join(['%s:%s' % (user.name(), 
                                           user.product_version() or 'trunk') \
                                for user in product.users()])
-            logging.info('Check out and run sonar on %s:%s '
-                         '(dependency of %s)', product.name(), 
-                         product.product_version() or 'trunk', users or 'none')
+            logging.info('Check out and run sonar on %s '
+                         '(dependency of %s)', product.product_label(), 
+                         users or 'none')
             self.__checkout_code_and_run_sonar(product)
         unittests = product.unittests()
         if unittests and unittests.sonar_id() != product.sonar_id() \
@@ -99,11 +99,9 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     def __checkout_code_and_run_sonar(self, product, unittests=False):
         ''' Check out the product and invoke Sonar through Maven. '''
+        branch = product.product_branch()
         version = product.product_version()
-        folder = product.name()
-        if version:
-            folder += '-' + version
-        folder = folder.replace(':', '_')
+        folder = product.product_label().replace(':', '_')
         sonar_options = copy.copy(product.metric_source_options(self.__sonar)) \
             or dict()
         maven_options_string = product.metric_source_options(self.__maven) or ''
@@ -111,10 +109,17 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
             folder += '-unittests'
             maven_options_string += ' -Dut-coverage=true'
             sonar_branch = 'ut'
+            if branch:
+                sonar_branch += ':' + branch
             if version:
                 sonar_branch += ':' + version
             sonar_options['branch'] = sonar_branch
         else:
+            if branch:
+                if 'branch' in sonar_options:
+                    sonar_options['branch'] += ':' + branch
+                else:
+                    sonar_options['branch'] = branch
             if version:
                 if 'branch' in sonar_options:
                     sonar_options['branch'] += ':' + version

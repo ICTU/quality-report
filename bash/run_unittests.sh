@@ -30,7 +30,7 @@ fi
 # Create virtualenv and activate it
 virtualenv $PYENV_HOME
 . $PYENV_HOME/bin/activate
-cd quality-report/python
+cd python
 
 # Install the required packages
 pip install --quiet -r requirements.txt
@@ -41,6 +41,6 @@ python -m coverage html --omit "*site-packages*"
 python -m coverage xml --omit "*site-packages*"
 
 # Deactivate and remove virtualenv
-cd ../..
+cd ..
 deactivate
 rm -rf $PYENV_HOME

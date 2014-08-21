@@ -107,7 +107,8 @@ class Section(object):
     def contains_trunk_product(self):
         ''' Return whether this section describes a trunk version of a
             product. '''
-        return self.product() and not self.product().product_version()
+        return self.product() and \
+            self.product().product_version_type() == 'trunk'
 
 
 class QualityReport(object):
@@ -200,8 +201,7 @@ class QualityReport(object):
                 self.__sections.append(self.__overall_products_section())
             for product in self.__products:
                 section = self.__product_section(product)
-                self.__product_sections[(product.name(),
-                                         product.product_version())] = section
+                self.__product_sections[product.product_label()] = section
                 self.__sections.append(section)
             for team in self.__teams:
                 self.__sections.append(self.__team_section(team))
@@ -215,12 +215,11 @@ class QualityReport(object):
             if section_id == section.id_prefix():
                 return section
 
-    def get_product_section(self, product_name, product_version):
+    def get_product_section(self, product):
         ''' Return the section for a specific product. '''
-        product_key = (product_name, product_version)
-        if product_key not in self.__product_sections:
+        if product.product_label() not in self.__product_sections:
             self.sections()  # Create the sections
-        return self.__product_sections[product_key]
+        return self.__product_sections[product.product_label()]
 
     def get_meta_section(self):
         ''' Return the section with the meta metrics. '''
@@ -254,10 +253,12 @@ class QualityReport(object):
         if version:
             return version
         elif product.sonar_id():
-            # Product is a trunk version, get the SNAPSHOT version number 
-            # from Sonar
+            # Product is a branch or trunk version, get the SNAPSHOT version 
+            # number from Sonar
             sonar = self.__project.metric_source(metric_source.Sonar)
-            return sonar.version(product.sonar_id())
+            sonar_version = sonar.version(product.sonar_id())
+            branch = product.product_branch()
+            return branch + ':' + sonar_version if branch else sonar_version
         else:
             return ''
 
@@ -276,8 +277,8 @@ class QualityReport(object):
     def __overall_products_section(self):
         ''' Return the products overall section. '''
         metrics = [metric.TotalLOC([product for product in self.__products \
-                                     if not product.product_version() and \
-                                     product.sonar_id()],
+                                     if product.product_version_type() == \
+                                     'trunk' and product.sonar_id()],
                                     project=self.__project)]
         metrics.append(metric.DependencyQuality(report=self,
                                                 project=self.__project))
@@ -302,7 +303,7 @@ class QualityReport(object):
             metrics.append(metric.SnapshotDependencies(product, report=self,
                                                        project=self.__project))
         art = product.art()
-        if art and not art.product_version():
+        if art and art.product_version_type() == 'trunk':
             # Only add the ART if we're reporting on the trunk version
             # because we currently can only report on the trunk version of the
             # ART.

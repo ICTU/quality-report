@@ -47,26 +47,24 @@ class DotFormatter(base_formatter.Formatter):
     @staticmethod
     def __product_subgraphs(report):
         ''' Return the subgraphs representing the products in the report. '''
-        product_versions = dict()
+        products_by_name = dict()
         for product in report.products():
-            name, version = product.name(), product.product_version()
-            product_versions.setdefault(name, set()).add(version)
+            products_by_name.setdefault(product.name(), set()).add(product)
         subgraphs = []
-        node_template = '"%(name)s-%(version)s" [label="%(label)s" ' \
+        node_template = '"%(label)s" [label="%(branch_version)s" ' \
                         'style="filled" fillcolor="%(color)s" URL="%(url)s" ' \
                         'target="_top"]'
         subgraph_template = '  subgraph "cluster-%s" {\n    label="%s"; ' \
                             'fillcolor="lightgrey"; style="filled"\n    %s;' \
                             '\n  };'
-        for name, versions in product_versions.items():
+        for name, products in products_by_name.items():
             nodes = []
-            for version in versions:
-                product = report.get_product(name, version)
+            for product in products:
                 url = html_formatter.HTMLFormatter.product_url(product)
-                color = report.get_product_section(name, version).color()
-                parameters = dict(name=name, version=version or 'trunk',
-                                  label=version or 'trunk', color=color,
-                                  url=url)
+                color = report.get_product_section(product).color()
+                parameters = dict(label=product.product_label(), 
+                                  branch_version=product.branch_version_label(),
+                                  color=color, url=url)
                 nodes.append(node_template % parameters)
             node_string = ';\n    '.join(nodes)
             subgraphs.append(subgraph_template % (name, name, node_string))
@@ -80,7 +78,6 @@ class DotFormatter(base_formatter.Formatter):
         for product in report.products():
             dependencies = product.dependencies(recursive=False)
             for dependency_name, dependency_version in dependencies:
-                edges.append('  "%s-%s" -> "%s-%s";' % (product.name(),
-                             product.product_version() or 'trunk',
+                edges.append('  "%s" -> "%s:%s";' % (product.product_label(),
                              dependency_name, dependency_version or 'trunk'))
         return edges

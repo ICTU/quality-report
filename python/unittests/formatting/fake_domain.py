@@ -48,6 +48,14 @@ class Product(object):
         ''' Return the version of the product. '''
         return self.__version
 
+    def product_label(self):
+        ''' Return the label of the product. '''
+        return self.name() + ':' + self.branch_version_label()
+
+    def branch_version_label(self):
+        ''' Return the branch and/or version. '''
+        return self.product_version() or 'trunk'
+
     def dependencies(self, recursive=False):  # pylint: disable=unused-argument
         ''' Return a list of dependencies of the product. '''
         return [('Fake Dependency', 1)] if self.__dependencies else []

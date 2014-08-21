@@ -95,6 +95,11 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__product.set_product_version('1.2.3')
         self.assertEqual('sonar:id:1.2.3', self.__product.sonar_id())
 
+    def test_sonar_id_with_branch(self):
+        ''' Test that the Sonar id includes the branch for branch products. '''
+        self.__product.set_product_branch('product-branch')
+        self.assertEqual('sonar:id:product-branch', self.__product.sonar_id())
+
     def test_old_sonar_id(self):
         ''' Test that the Sonar id for an old version can be different. '''
         self.__product.set_product_version('old.version')
