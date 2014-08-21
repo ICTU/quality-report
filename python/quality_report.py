@@ -88,6 +88,14 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 self.__project.add_product_with_version(product.name(),
                                                         release_candidate)
 
+    def __add_branches_of_products(self):
+        ''' Add the branches of the products that have to be monitored. '''
+        for product in self.__project.products()[:]:
+            for branch in product.branches():
+                logging.info('Adding %s:%s to the project because it is a ' \
+                             'branch to be monitored.', product.name(), branch)
+                self.__project.add_product_with_branch(product.name(), branch)
+
     def __add_dependencies(self):
         ''' Add product versions that other products depend on. '''
         for name, version in self.__project.product_dependencies():

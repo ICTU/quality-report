@@ -1,6 +1,6 @@
-2014-08-??  Release 1.10.3
+2014-08-21  Release 1.11.0
 
-  * ...
+  * Allow for adding branches of products to the project.
 
 
 2014-08-14  Release 1.10.2

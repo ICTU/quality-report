@@ -96,6 +96,11 @@ class Subversion(domain.MetricSource):
                          version, tags_folder)
             return ''
 
+    def branch_folder_for_branch(self, trunk_url, branch):
+        ''' Return the branch folder for the specified branch. '''
+        return self.__branches_folder(trunk_url) + branch + '/' + \
+            trunk_url.split('/trunk/')[1]
+
     @utils.memoized
     def last_changed_date(self, url):
         ''' Return the date when the url was last changed in Subversion. ''' 

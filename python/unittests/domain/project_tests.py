@@ -22,6 +22,7 @@ class FakeProduct(object):
     ''' Fake the product class for unit test purposes. '''
     def __init__(self):
         self.__version = None
+        self.__branch = None
 
     @staticmethod
     def name():
@@ -31,6 +32,10 @@ class FakeProduct(object):
     def product_version(self):
         ''' Return the product version. '''
         return self.__version
+
+    def product_branch(self):
+        ''' Return the product branch. '''
+        return self.__branch
 
     def set_product_version(self, version):
         ''' Set the product version. '''

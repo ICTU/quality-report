@@ -28,7 +28,8 @@ class Product(MeasurableObject):
     def __init__(self, project, short_name='',
                  unittests=None, jsf=None, art=None,
                  responsible_teams=None, metric_responsibility=None, 
-                 product_version='', **kwargs):
+                 product_branches=None, product_version='', product_branch='',
+                 **kwargs):
 
         ''' responsible_teams: list of teams responsible for this product.
             metric_responsibility: dictionary of metric classes mapped to lists
@@ -39,7 +40,9 @@ class Product(MeasurableObject):
         self.__unittests = unittests
         self.__jsf = jsf
         self.__art = art
+        self.__product_branches = product_branches or []
         self.__product_version = product_version
+        self.__product_branch = product_branch
         self.__product_responsibility = responsible_teams or []
         self.__metric_responsibility = metric_responsibility or {}
 
@@ -66,6 +69,19 @@ class Product(MeasurableObject):
         ''' Return the product version of this product. '''
         return self.__product_version
 
+    def product_branches(self):
+        ''' Return the branches of this product that have to be monitored. '''
+        return self.__product_branches if \
+            self.product_version_type() == 'trunk' else []
+
+    def product_branch(self):
+        ''' Return the branch of this product. '''
+        return self.__product_branch
+
+    def set_product_branch(self, product_branch):
+        ''' Set the product branch of this product. '''
+        self.__product_branch = product_branch
+
     def product_version_type(self):
         ''' Return whether the version of this product is trunk, tagged or 
             release candidate. '''
@@ -73,6 +89,8 @@ class Product(MeasurableObject):
             return 'release'
         elif self.product_version():
             return 'tag'
+        elif self.product_branch():
+            return 'branch'
         else:
             return 'trunk'
 
@@ -170,11 +188,12 @@ class Product(MeasurableObject):
         else:
             return self.__project.responsible_teams()
 
-    def svn_path(self, version=None):
+    def svn_path(self, version=None, branch=None):
         ''' Return the svn path of this product and version. '''
         from qualitylib import metric_source
         subversion = self.__project.metric_source(metric_source.Subversion)
         version = version or self.product_version()
+        branch = branch or self.product_branch()
         old_svn_path = self.old_metric_source_id(subversion, version)
         if old_svn_path:
             return old_svn_path
@@ -187,6 +206,8 @@ class Product(MeasurableObject):
             result += 'trunk/'
         if version:
             result = subversion.tags_folder_for_version(result, version)
+        elif branch:
+            result = subversion.branch_folder_for_branch(result, branch)
         return result
 
     def check_out(self, folder):
