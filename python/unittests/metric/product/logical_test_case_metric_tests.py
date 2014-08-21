@@ -115,6 +115,11 @@ class FakeSubject(object):
         return [domain.Team(name='Team', is_scrum_team=self.__scrum_team)] if \
             self.__team else []
 
+    @staticmethod
+    def last_changed_date():
+        ''' Return the date that this product was last changed. '''
+        return datetime.datetime.now() - datetime.timedelta(days=50)
+
 
 class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -244,18 +249,10 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.assertEqual(5, self.__metric.value())
 
     def test_value_when_untested(self):
-        ''' Test that the value is large when the manual tests have not been 
-            executed at all. '''
-        self.__birt.date_of_last_manual_tests = datetime.datetime.min
-        self.failUnless(self.__metric.value() > 100000)
-
-    def test_value_when_release_untested(self):
-        ''' Test that the value is the age of the release when the release has
+        ''' Test that the value is the age of the version when the release has
             not been tested. '''
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
-        self.__subject.version = '1.1'
-        expected_value = (datetime.datetime.now() - datetime.datetime.min).days
-        self.assertEqual(expected_value, self.__metric.value())
+        self.assertEqual(50, self.__metric.value())
 
     def test_report(self):
         ''' Test that the report is correct. '''
@@ -276,9 +273,8 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         ''' Test that the report uses the correct template when the manual
             tests have not been executed at all. '''
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
-        self.assertEqual('De 10 handmatige logische testgevallen van ' \
-                        'FakeSubject zijn nog nooit uitgevoerd.',
-                        self.__metric.report())
+        self.failUnless(self.__metric.report().startswith('De 10 handmatige ' \
+            'logische testgevallen van FakeSubject zijn nog nooit uitgevoerd.'))
 
     def test_target_when_release(self):
         ''' Test that the target is stricter for release candidates. '''

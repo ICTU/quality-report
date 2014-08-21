@@ -29,9 +29,9 @@ class HTMLFormatter(base_formatter.Formatter):
                    "'%(section)s'",
                    "'%(status)s'",
                    "'%(teams)s'",
-                   """'<img src="img/%(metric_id)s.png" border="0" />'""",
+                   """'<img src="img/%(metric_id)s.png" border="0" width="100" height="25" />'""",
                    """{v: '%(status_nr)d', f: '<img src="img/%(image)s.png" """
-                   """alt="%(alt)s" title="%(hover)s" """
+                   """alt="%(alt)s" width="48" height="48" title="%(hover)s" """
                    """border="0" />'}""",
                    "'%(text)s'",
                    "'%(norm)s'",

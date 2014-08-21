@@ -1,3 +1,8 @@
+2014-08-??  Release 1.10.3
+
+  * ...
+
+
 2014-08-14  Release 1.10.2
 
   * Bugfix: don't crash when history charts can't be downloaded when creating

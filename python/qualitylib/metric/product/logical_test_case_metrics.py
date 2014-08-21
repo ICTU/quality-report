@@ -18,6 +18,7 @@ from qualitylib.domain import LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin, \
     BirtTestDesignMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, DOC_QUALITY
+from qualitylib import utils
 import datetime
 
 
@@ -106,7 +107,8 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         'handmatige logische testgevallen van %(name)s zijn te lang geleden '\
         '(meest recente %(value)d dag(en), op %(date)s) uitgevoerd.'
     never_template = 'De %(nr_manual_ltcs)d handmatige logische testgevallen ' \
-        'van %(name)s zijn nog nooit uitgevoerd.'
+        'van %(name)s zijn nog nooit uitgevoerd. %(name)s is voor het laatst ' \
+        'op %(last_changed_date)s gewijzigd.'
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
@@ -129,8 +131,9 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return self.target() + 7
 
     def value(self):
-        date = self._date()  # Make sure date is older than datetime.now() in
-        # the next line so that the time delta is always positive
+        date = self._date()
+        if date == datetime.datetime.min:
+            date = self._subject.last_changed_date()
         return (datetime.datetime.now() - date).days
 
     def url(self):
@@ -149,6 +152,8 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         parameters['nr_manual_ltcs_too_old'] = \
             self._birt.nr_manual_ltcs_too_old(self._birt_id(), self.__version(),
                                               self.target())
+        parameters['last_changed_date'] = \
+            utils.format_date(self._subject.last_changed_date())
         return parameters
 
     def _get_template(self):

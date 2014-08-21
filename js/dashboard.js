@@ -441,6 +441,11 @@ function draw_section_summary_chart(section) {
             sections.push(all_sections[index]);
         }
     }
+    draw_column_chart(section_summary_chart_div, sections)
+    draw_pie_chart(section);
+}
+
+function draw_column_chart(chart_div, sections) {
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Versie');
     data.addColumn('number', 'Groen');
@@ -464,7 +469,7 @@ function draw_section_summary_chart(section) {
           grey_rows.length]);
     }
 
-    var bg_color = section_summary_chart_div.parentNode.getAttribute('bgcolor');
+    var bg_color = chart_div.parentNode.getAttribute('bgcolor');
     var options = {
       series: {0: {color: COLOR_GREEN}, 1: {color: COLOR_YELLOW},
                2: {color: COLOR_YELLOW_WITH_ACTION}, 3: {color: COLOR_RED},
@@ -476,9 +481,8 @@ function draw_section_summary_chart(section) {
       chartArea: {left:7, top:7, width:66, height:66},
       isStacked: true
     };
-    var chart = new google.visualization.ColumnChart(section_summary_chart_div);
+    var chart = new google.visualization.ColumnChart(chart_div);
     chart.draw(data, options);
-    draw_pie_chart(section);
 }
 
 function draw_pie_chart(section) {

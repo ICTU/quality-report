@@ -160,11 +160,10 @@ class Metric(object):
     def report(self, max_subject_length=200):
         ''' Return the actual value of the metric in the form of a short,
             mostly one sentence, report. '''
-        subject_repr = '%s' % self._subject
-        if len(subject_repr) > max_subject_length:
-            subject_repr = subject_repr[:max_subject_length] + '...'
-        logging.info('Reporting %s on %s', self.__class__.__name__,
-                     subject_repr)
+        name = self.__subject_name()
+        if len(name) > max_subject_length:
+            name = name[:max_subject_length] + '...'
+        logging.info('Reporting %s on %s', self.__class__.__name__, name)
         return self._get_template() % self._parameters()
 
     def _get_template(self):
@@ -175,16 +174,12 @@ class Metric(object):
         ''' Return the parameters for the metric report template and for the
             metric norm template. '''
         try:
-            name = self._subject.name()
-        except AttributeError:
-            name = str(self._subject)
-        try:
             version = self._subject.product_version()
         except AttributeError:
             version = '<no version>'
-        return dict(name=name, version=version, target=self.target(),
-                    low_target=self.low_target(), value=self.value(),
-                    date=utils.format_date(self._date()),
+        return dict(name=self.__subject_name(), version=version,
+                    target=self.target(), low_target=self.low_target(), 
+                    value=self.value(), date=utils.format_date(self._date()),
                     old_age=utils.format_timedelta(self.old_age),
                     max_old_age=utils.format_timedelta(self.max_old_age),
                     age=utils.format_timedelta(self.__age()))
@@ -307,6 +302,14 @@ class Metric(object):
             return self._subject.product_version_type()
         except AttributeError:
             return 'no_product'
+
+    def __subject_name(self):
+        ''' Return the subject name, or a string representation if the subject
+            has no name. '''
+        try:
+            return self._subject.name()
+        except AttributeError:
+            return str(self._subject)
 
 
 class LowerIsBetterMetric(Metric):
