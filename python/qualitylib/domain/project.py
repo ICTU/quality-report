@@ -53,6 +53,7 @@ class Project(DomainObject):
     def add_product(self, product):
         ''' Add a product to the project. '''
         self.__products.append(product)
+        return product
 
     def add_product_with_version(self, product_name, product_version):
         ''' Add product with the specified version to the project. '''

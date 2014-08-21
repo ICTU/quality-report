@@ -90,6 +90,13 @@ class SubversionTest(unittest.TestCase):
             self.__subversion.tags_folder_for_version('product_url/trunk/',
                                                       '1.2.3'))
 
+    def test_branch_folder_for_branch(self):
+        ''' Test that the branch folder is correctly created from the trunk
+            url and the branch name. '''
+        self.assertEqual('http://svn/product/branches/branch/src/', 
+            self.__subversion.branch_folder_for_branch(
+                'http://svn/product/trunk/src/', 'branch'))
+
     def test_unmerged_branches(self):
         ''' Test that Subversion returns a list of branches for a product. '''
         self.__run_shell_command_results = ['<name>product-1.2.3</name>' \
