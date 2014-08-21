@@ -99,7 +99,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     def __checkout_code_and_run_sonar(self, product, unittests=False):
         ''' Check out the product and invoke Sonar through Maven. '''
-        branch = product.product_branch()
+        branch = product.product_branch_id(self.__sonar)
         version = product.product_version()
         folder = product.product_label().replace(':', '_')
         sonar_options = copy.copy(product.metric_source_options(self.__sonar)) \

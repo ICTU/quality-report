@@ -40,9 +40,9 @@ class Product(MeasurableObject):
         self.__unittests = unittests
         self.__jsf = jsf
         self.__art = art
-        self.__product_branches = product_branches or []
         self.__product_version = product_version
         self.__product_branch = product_branch
+        self.__product_branches = product_branches or {}
         self.__product_responsibility = responsible_teams or []
         self.__metric_responsibility = metric_responsibility or {}
 
@@ -72,12 +72,20 @@ class Product(MeasurableObject):
 
     def product_branches(self):
         ''' Return the branches of this product that have to be monitored. '''
-        return self.__product_branches if \
+        return self.__product_branches.keys() if \
             self.product_version_type() == 'trunk' else []
 
     def product_branch(self):
         ''' Return the branch of this product. '''
         return self.__product_branch
+
+    def product_branch_id(self, metric_source):
+        ''' Return the branch id for the metric source. '''
+        branch = self.product_branch()
+        if branch and branch in self.__product_branches:
+            return self.__product_branches[branch][metric_source]
+        else:
+            return ''
 
     def set_product_branch(self, product_branch):
         ''' Set the product branch of this product. '''
@@ -212,7 +220,7 @@ class Product(MeasurableObject):
         from qualitylib import metric_source
         subversion = self.__project.metric_source(metric_source.Subversion)
         version = version or self.product_version()
-        branch = branch or self.product_branch()
+        branch = branch or self.product_branch_id(subversion)
         old_svn_path = self.old_metric_source_id(subversion, version)
         if old_svn_path:
             return old_svn_path

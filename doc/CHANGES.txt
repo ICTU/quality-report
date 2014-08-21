@@ -1,3 +1,9 @@
+2014-08-21  Release 1.11.1
+
+  * Allow for specifying branch ids per metric source. Useful if the branch is
+    named differently in e.g. Sonar than in Subversion.
+
+
 2014-08-21  Release 1.11.0
 
   * Allow for adding branches of products to the project.

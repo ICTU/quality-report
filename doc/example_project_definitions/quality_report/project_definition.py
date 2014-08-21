@@ -59,7 +59,9 @@ QUALITY_REPORT = \
                 SUBVERSION: 'http://svn/commons/scripts/quality-report/'},
             metric_options={
                 metric.UnmergedBranches: dict(branches_to_ignore='spike')},
-            product_branches=['auto-discovery-branch'])
+            product_branches={'auto-discovery-branch':
+                                   {SUBVERSION: 'auto-discovery',
+                                    SONAR: 'auto_discovery'}})
 
 PROJECT.add_product(QUALITY_REPORT)
 
