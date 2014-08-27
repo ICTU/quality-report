@@ -29,6 +29,7 @@ from qualitylib.domain.measurement.target import TechnicalDebtTarget, \
 from qualitylib.domain.base import DomainObject
 from qualitylib.domain.product import Product
 from qualitylib.domain.team import Team
+from qualitylib.domain.person import Person
 from qualitylib.domain.project import Project
 from qualitylib.domain.quality_attribute import QualityAttribute
 from qualitylib.domain.street import Street

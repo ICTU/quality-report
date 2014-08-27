@@ -31,6 +31,7 @@ class Team(MeasurableObject):
         self.__is_scrum_team = is_scrum_team
         self.__is_support_team = is_support_team
         self.__days_per_sprint = days_per_sprint
+        self.__members = set()
 
     def __eq__(self, other):
         return self.id_string() == other.id_string()
@@ -70,4 +71,14 @@ class Team(MeasurableObject):
         for release_archive in self.release_archives():
             resources.append(('Release archief team %s' % self.name(), 
                               release_archive.url()))
+        for member in self.members():
+            resources.append((member.name(), member.url()))
         return resources
+
+    def members(self):
+        ''' Return the team members. '''
+        return self.__members
+
+    def add_member(self, person):
+        ''' Add the person as a team member. '''
+        self.__members.add(person)

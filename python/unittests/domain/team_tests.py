@@ -63,3 +63,19 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_sprint_length(self):
         ''' Test the default sprint length of the team. '''
         self.assertEqual(21, self.__team.days_per_sprint())
+
+    def test_default_team_members(self):
+        ''' Test that the team has no team members by default. '''
+        self.failIf(self.__team.members())
+
+    def test_add_team_member(self):
+        ''' Test that a person can be added as team member. '''
+        piet = domain.Person(name='Piet Programmer')
+        self.__team.add_member(piet)
+        self.failUnless(piet in self.__team.members())
+
+    def test_members_in_resources(self):
+        ''' Test that team members are listed as team resource. '''
+        piet = domain.Person(name='Piet Programmer')
+        self.__team.add_member(piet)
+        self.failUnless(('Piet Programmer', '') in self.__team.team_resources())

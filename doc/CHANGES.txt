@@ -4,6 +4,8 @@
     should resolve to exactly one job.
   * Coverage report metric sources (JaCoCo and Emma) now take a Jenkins instance
     as first argument. This allows for using job names with regular expressions.
+  * Allow for adding people (Person class) as team members to teams. The 
+    team members are listed as part of the team resources.
 
 
 2014-08-21  Release 1.11.1
