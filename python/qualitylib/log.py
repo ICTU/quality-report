@@ -21,7 +21,7 @@ class SuppressRepeatMessages(object):  # pylint: disable=too-few-public-methods
     ''' Filter to suppress logging of repeated messages. '''
     def __init__(self):
         self.__messages_seen = set()
-        
+
     def filter(self, record):
         ''' Decide whether the record should be logged. '''
         message = record.getMessage()

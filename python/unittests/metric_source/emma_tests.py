@@ -14,15 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-import BeautifulSoup
 import datetime
 import unittest
 import urllib2
 from qualitylib.metric_source import Emma
 
 
-class EmmaUnderTest(Emma):
-    ''' Override the soup method to return a fixed HTML fragment. '''
+class FakeJenkins(object):
+    ''' Fake Jenkins to provide fixed data. '''
     html = '<th class="tl"><a>EMMA</a> Coverage Report (generated ' \
            'Tue Jan 29 15:02:28 CET 2013)</th>' \
            '<td></td><td></td><td></td><td></td><td></td><td>99%</td>'
@@ -30,29 +29,41 @@ class EmmaUnderTest(Emma):
            'Report (generated Tue Okt 29 15:02:28 CET 2013)</th>' \
            '<td></td><td></td><td></td><td></td><td></td><td>99%</td>'
 
-    def soup(self, url):
+    @staticmethod
+    def url():
+        ''' Return the Jenkins url. '''
+        return 'http://jenkins/'
+
+    def url_open(self, url):
+        ''' Open a url. '''
         if 'raise' in url:
             raise urllib2.HTTPError(url, None, None, None, None)
         else:
-            return BeautifulSoup.BeautifulSoup(self.html)
+            return self.html
 
-    
+    @staticmethod
+    def resolve_job_name(job_re):
+        ''' Resolve the job regular expression to a concrete job name. '''
+        return job_re
+
+
 class EmmaTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Emma class. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
-        self.__emma = EmmaUnderTest('http://emma/%s', 'username', 'password')
-        
+        self.__jenkins = FakeJenkins()
+        self.__emma = Emma(self.__jenkins, '%s/')
+
     def test_coverage(self):
         ''' Test the coverage for a specific product. '''
         self.assertEqual(99, self.__emma.coverage('product'))
-        
+
     def test_coverage_on_error(self):
         ''' Test that the reported coverage is -1 when Emma can't be 
             reached. '''
         self.assertEqual(-1, self.__emma.coverage('raise'))
-        
+
     def test_coverage_date(self):
         ''' Test the date of the coverage report. '''
         self.assertEqual(datetime.datetime(2013, 1, 29, 15, 2, 28), 
@@ -60,13 +71,12 @@ class EmmaTest(unittest.TestCase):
 
     def test_coverage_date_alt_format(self):
         ''' Test the date of the coverage report without timezone. '''
-        EmmaUnderTest.html = EmmaUnderTest.alternative_datetime_format_html
+        self.__jenkins.html = self.__jenkins.alternative_datetime_format_html
         self.assertEqual(datetime.datetime(2013, 10, 29, 15, 2, 28), 
                          self.__emma.coverage_date('product'))
-        
+
     def test_coverage_date_on_error(self):
         ''' Test that the date is now when Emma can't be reached. '''
         coverage_date = self.__emma.coverage_date('raise')
         age = datetime.datetime.now() - coverage_date
         self.failUnless(age < datetime.timedelta(seconds=1))
-        

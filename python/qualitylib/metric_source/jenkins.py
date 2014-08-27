@@ -19,6 +19,7 @@ from qualitylib import utils, domain
 import datetime
 import re
 import urllib2
+import logging
 
 
 class UnknownAge(object):  # pylint: disable=too-few-public-methods
@@ -38,16 +39,16 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     jobs_api_postfix = api_postfix + \
                        '?tree=jobs[name,description,color,url,buildable]'
 
-    def __init__(self, jenkins_url, username, password, job_re=''):
-        super(Jenkins, self).__init__(url=jenkins_url, username=username, 
+    def __init__(self, url, username, password, job_re=''):
+        super(Jenkins, self).__init__(url=url, username=username, 
                                       password=password)
         self.__job_re = re.compile(job_re)
-        self.__job_url = jenkins_url + 'job/%s/'
+        self.__job_url = url + 'job/%s/'
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self.__job_api_url = self.__job_url + self.api_postfix
-        self.__jobs_api_url = jenkins_url + self.jobs_api_postfix
+        self._jobs_api_url = url + self.jobs_api_postfix
 
     def number_of_assigned_jobs(self):
         ''' Return the number of Jenkins jobs that has been assigned to one or
@@ -138,7 +139,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def __jobs(self, *teams):
         ''' Return the Jenkins jobs the specified teams are responsible for, or
             all jobs if no teams are specified. '''
-        all_jobs = self._api(self.__jobs_api_url)['jobs']
+        all_jobs = self._api(self._jobs_api_url)['jobs']
         all_jobs = [job for job in all_jobs if self.__job_re.match(job['name'])]
         if teams:
             jobs = list()
@@ -155,7 +156,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         ''' Return the urls for the ARTs that have been unstable for the
             specified number of days. '''
         projects_re = re.compile(projects)
-        all_jobs = self._api(self.__jobs_api_url)['jobs']
+        all_jobs = self._api(self._jobs_api_url)['jobs']
         arts = [job for job in all_jobs if projects_re.match(job['name'])]
         max_age = datetime.timedelta(days=days)
         unstable = dict()
@@ -198,6 +199,19 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             unquoted urls. '''
         url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         return super(Jenkins, self).url_open(url)
+
+    def resolve_job_name(self, job_name):
+        ''' If the job name is a regular expression, resolve it to a concrete
+            job name. Assumes there is exactly one result. '''
+        if '\\' in job_name or '.*' in job_name or '[' in job_name:
+            if not job_name.endswith('$'):
+                job_name += '$'
+            jobs_re = re.compile(job_name)
+            all_jobs = self._api(self._jobs_api_url)['jobs']
+            jobs = [job for job in all_jobs if jobs_re.match(job['name'])]
+            assert len(jobs) == 1
+            job_name = jobs[0]['name']
+        return job_name
 
 
 class JenkinsTestReport(Jenkins):
@@ -248,9 +262,16 @@ class JenkinsTestReport(Jenkins):
     def __test_count(self, job_name, result_type):
         ''' Return the number of tests with the specified result in the test
             report of a job. '''
-        report_dict = self._api(self.__test_report_api_url % job_name)
+        job_name = self.resolve_job_name(job_name)
+        url = self.__test_report_api_url % job_name
+        try:
+            report_dict = self._api(url)
+        except urllib2.HTTPError, reason:
+            logging.warn("Couldn't open %s to read test count %s: %s", url, 
+                         result_type, reason)
+            return 0
         return int(report_dict[result_type])
 
     def test_report_url(self, job_name):
         ''' Return the url of the job. '''
-        return self.__test_report_url % job_name
+        return self.__test_report_url % self.resolve_job_name(job_name)

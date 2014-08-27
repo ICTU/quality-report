@@ -14,27 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.metric_source import beautifulsoup
 from qualitylib import utils, domain
+from BeautifulSoup import BeautifulSoup
 import datetime
 import urllib2
 
 
-class CoverageReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
+class CoverageReport(domain.MetricSource):
     # pylint: disable=abstract-class-not-used
     ''' Abstract class representing a coverage report. '''
     metric_source_name = 'Coverage report'
 
-    def __init__(self, url, username, password):
-        super(CoverageReport, self).__init__(url=url, username=username, 
-                                             password=password)
+    def __init__(self, jenkins, job_url):
+        self.__jenkins = jenkins
+        super(CoverageReport, self).__init__(url=jenkins.url() + job_url)
 
     @utils.memoized
     def coverage(self, product):
         ''' Return the ART coverage for a specific product. '''
         coverage_url = self.get_coverage_url(product)
         try:
-            soup = self.soup(coverage_url)
+            soup = BeautifulSoup(self.__jenkins.url_open(coverage_url))
         except urllib2.HTTPError:
             coverage = -1
         else:
@@ -51,7 +51,7 @@ class CoverageReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             was last successfully measured. '''
         coverage_url = self.get_coverage_date_url(product)
         try:
-            soup = self.soup(coverage_url)
+            soup = BeautifulSoup(self.__jenkins.url_open(coverage_url))
         except urllib2.HTTPError:
             coverage_date = now()
         else:
@@ -64,7 +64,7 @@ class CoverageReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def get_coverage_url(self, product):
         ''' Return the url for the coverage report for the product. '''
-        return self.url() % product
+        return self.url() % self.__jenkins.resolve_job_name(product)
 
     def get_coverage_date_url(self, product):
         ''' Return the url for the date when the coverage of the product

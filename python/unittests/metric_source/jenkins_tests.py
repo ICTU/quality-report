@@ -17,6 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 import StringIO
+import urllib2
 from qualitylib.metric_source import Jenkins, JenkinsTestReport
 from qualitylib.domain import Team
 
@@ -180,13 +181,28 @@ class JenkinsTest(unittest.TestCase):
         self.assertEqual({'job-a (? dagen)': 'http://jenkins/job/job-a/'}, 
                          self.__jenkins.unstable_arts_url('job-a', 3))
 
+    def test_resolve_job_name(self):
+        ''' Test that a job name that is a regular expression is resolved. '''
+        self.__jenkins.contents = '{"jobs": [{"name": "job5"}]}'
+        self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]$'))
+
+    def test_resolve_job_name_with_partial_match(self):
+        ''' Test that a job name that is a regular expression is resolved, 
+            even when it partially matches another job. '''
+        self.__jenkins.contents = '{"jobs": [{"name": "job50"}, ' \
+                                  '{"name": "job5"}]}'
+        self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
+
 
 class JenkinsTestReportUnderTest(JenkinsTestReport):
     ''' Override the url_open method to return a fixed HTML fragment. '''
     contents = '{"jobs": []}'
 
     def url_open(self, url):
-        return StringIO.StringIO(self.contents)
+        if 'raise' in self.contents:
+            raise urllib2.HTTPError(None, None, None, None, None)
+        else:
+            return StringIO.StringIO(self.contents)
 
 
 class JenkinsTestReportTest(unittest.TestCase):
@@ -218,3 +234,10 @@ class JenkinsTestReportTest(unittest.TestCase):
         self.assertEqual(
             'http://jenkins/job/job_name/lastSuccessfulBuild/testReport/',
             self.__jenkins.test_report_url('job_name'))
+
+    def test_http_error(self):
+        ''' Test that the default is returned when a HTTP error occurs. '''
+        self.__jenkins.contents = 'raise'
+        self.assertEqual(0, self.__jenkins.failed_tests(['job']))
+        self.assertEqual(0, self.__jenkins.passed_tests(['job']))
+        self.assertEqual(0, self.__jenkins.skipped_tests(['job']))

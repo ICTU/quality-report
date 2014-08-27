@@ -41,6 +41,11 @@ class FakeSubversion(object):
         ''' Return the date the product was last changed. '''
         return 'yesterday'
 
+    @staticmethod
+    def branch_folder_for_branch(trunk, branch):
+        ''' Return the branch folder for the branch. '''
+        return metric_source.Subversion.branch_folder_for_branch(trunk, branch)
+
 
 class FakePom(object):  # pylint: disable=too-few-public-methods
     ''' Fake a pom file. '''
@@ -266,3 +271,60 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product = domain.Product(self.__project, art=art)
         product.set_product_version('1.1')
         self.assertEqual('1.1', product.art().product_version())
+
+
+class BranchProductTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    '''Unit tests for the Product domain class. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__sonar = FakeSonar()
+        self.__subversion = FakeSubversion()
+        self.__project = domain.Project('Organization',
+            metric_sources={metric_source.Sonar: self.__sonar,
+                            metric_source.Subversion: self.__subversion})
+        self.__product = domain.Product(self.__project, name='Product',
+            metric_source_ids={
+                self.__sonar: 'sonar:id',
+                self.__subversion: 'http://svn/p/product/trunk/'}, 
+            product_branches={
+                'branch1': {self.__sonar: 'b1', self.__subversion: 'br1'}, 
+                'branch2': {self.__sonar: 'b2', self.__subversion: 'br2'}})
+
+    def test_product_branches(self):
+        ''' Test that all product branches are returned. '''
+        self.assertEqual(set(['branch1', 'branch2']), 
+                         set(self.__product.product_branches()))
+
+    def test_no_product_branches(self):
+        ''' Test that the product returns no list of branches when it is a 
+            branch itself. '''
+        self.__product.set_product_branch('branch1')
+        self.failIf(self.__product.product_branches())
+
+    def test_branch_id(self):
+        ''' Test that the id of the branch in  a metric source can be 
+            retrieved. '''
+        self.__product.set_product_branch('branch1')
+        self.assertEqual('b1', self.__product.product_branch_id(self.__sonar))
+
+    def test_product_version_type(self):
+        ''' Test that the product version type is branch. '''
+        self.__product.set_product_branch('branch1')
+        self.assertEqual('branch', self.__product.product_version_type())
+
+    def test_label(self):
+        ''' Test that the product label includes the branch name. '''
+        self.__product.set_product_branch('branch1')
+        self.assertEqual('Product:branch1', self.__product.product_label())
+
+    def test_label_with_version(self):
+        ''' Test that the product label includes both branch and version. '''
+        self.__product.set_product_branch('branch1')
+        self.__product.set_product_version('1.1')
+        self.assertEqual('Product:branch1:1.1', self.__product.product_label())
+
+    def test_svn_path(self):
+        ''' Test that the subversion path is the branch folder. '''
+        self.__product.set_product_branch('branch1')
+        self.assertEqual('http://svn/p/product/branches/br1/', 
+                         self.__product.svn_path())

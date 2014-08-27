@@ -134,29 +134,25 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def __metric(self, product, metric, default=0):
         ''' Return a specific metric value for the product. '''
         try:
-            json = self.url_open(self.__metrics_api_url % (product, metric)).read()
-        except urllib2.HTTPError, reason:
-            logging.warning("Can't retrieve resource url %s from Sonar: %s",
-                            self.__metrics_api_url % (product, metric), reason)
+            json = self.__get_json(self.__metrics_api_url % (product, metric))
+        except urllib2.HTTPError:
             return default
         try:
-            return utils.eval_json(json)[0]['msr'][0]['val']
+            return json[0]['msr'][0]['val']
         except IndexError:
             logging.warning("Can't get %s value for %s from %s", metric, 
                             product, json)
-            return default
+        return default
 
     @utils.memoized
     def __violation(self, product, violation_name, default=0):
         ''' Return a specific violation value for the product. '''
         try:
-            json = self.url_open(self.__violations_api_url % product).read()
-        except urllib2.HTTPError, reason:
-            logging.warning("Can't retrieve resource url %s from Sonar: %s",
-                            self.__violations_api_url % product, reason)
+            json = self.__get_json(self.__violations_api_url % product)
+        except urllib2.HTTPError:
             return default
         try:
-            violations = utils.eval_json(json)[0]['msr']
+            violations = json[0]['msr']
         except (IndexError, KeyError):
             logging.warning("Can't get %s value for %s from %s", violation_name,
                             product, json)
@@ -165,3 +161,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             if violation_name in violation['rule_name']:
                 return violation['val']
         return default
+
+    def __get_json(self, url):
+        ''' Get and evaluate the json from the url. '''
+        try:
+            json_string = self.url_open(url).read()
+        except urllib2.HTTPError, reason:
+            logging.warning("Can't retrieve resource url %s from Sonar: %s",
+                            url, reason)
+            raise
+        return utils.eval_json(json_string)

@@ -96,9 +96,10 @@ class Subversion(domain.MetricSource):
                          version, tags_folder)
             return ''
 
-    def branch_folder_for_branch(self, trunk_url, branch):
+    @classmethod
+    def branch_folder_for_branch(cls, trunk_url, branch):
         ''' Return the branch folder for the specified branch. '''
-        return self.__branches_folder(trunk_url) + branch + '/' + \
+        return cls.__branches_folder(trunk_url) + branch + '/' + \
             trunk_url.split('/trunk/')[1]
 
     @utils.memoized

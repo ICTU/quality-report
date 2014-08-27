@@ -208,11 +208,16 @@ class FakeResource(object):
     @staticmethod
     def url():
         ''' Return a fake url. '''
-        return 'http://resource'
+        return 'http://resource/'
 
     def name(self):
         ''' Return the name of the resource. '''
         return self.__name
+
+    @staticmethod
+    def resolve_job_name(job_re):
+        ''' Resolve the job regular expression to a concrete job name. '''
+        return job_re
 
 
 class ProjectResourcesTest(unittest.TestCase):
@@ -289,7 +294,7 @@ class ProjectResourcesTest(unittest.TestCase):
 
     def test_emma(self):
         ''' Test that the Emma reports are in the project resources. '''
-        emma = metric_source.Emma('http://emma/%s', '', '')
+        emma = metric_source.Emma(FakeResource(), '%s/')
         project = self.project(metric_sources={metric_source.Emma: emma})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
@@ -301,7 +306,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_emma_only_for_trunk(self):
         ''' Test that only the Emma reports for trunk versions of products
             are included. '''
-        emma = metric_source.Emma('http://emma/%s', '', '')
+        emma = metric_source.Emma(FakeResource(), '%s/')
         project = self.project(metric_sources={metric_source.Emma: emma})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
@@ -313,7 +318,7 @@ class ProjectResourcesTest(unittest.TestCase):
 
     def test_jacoco(self):
         ''' Test that the JacCoCo reports are in the project resources. '''
-        jacoco = metric_source.JaCoCo('http://jacoco/%s', '', '')
+        jacoco = metric_source.JaCoCo(FakeResource(), '%s/')
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
@@ -325,7 +330,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_jacoco_only_for_trunk(self):
         ''' Test that only the JaCoCo reports for trunk versions of products
             are included. '''
-        jacoco = metric_source.JaCoCo('http://jacoco/%s', '', '')
+        jacoco = metric_source.JaCoCo(FakeResource(), '%s/')
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})

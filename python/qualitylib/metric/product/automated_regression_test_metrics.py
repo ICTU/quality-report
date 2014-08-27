@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib.domain import HigherIsBetterMetric, \
-   LowerPercentageIsBetterMetric, LowerIsBetterMetric
+from qualitylib.domain import HigherIsBetterMetric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE, \
    TEST_QUALITY

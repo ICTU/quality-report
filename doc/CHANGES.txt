@@ -1,3 +1,11 @@
+2014-08-??  Release 1.12.0
+
+  * Jenkins job names can be regular expressions. The regular expressions 
+    should resolve to exactly one job.
+  * Coverage report metric sources (JaCoCo and Emma) now take a Jenkins instance
+    as first argument. This allows for using job names with regular expressions.
+
+
 2014-08-21  Release 1.11.1
 
   * Allow for specifying branch ids per metric source. Useful if the branch is

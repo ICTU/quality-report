@@ -14,15 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-import BeautifulSoup
 import datetime
 import unittest
 import urllib2
 from qualitylib.metric_source import JaCoCo
 
 
-class JaCoCoUnderTest(JaCoCo):
-    ''' Override the soup method to return a fixed HTML fragment. '''
+class FakeJenkins(object):
+    ''' Fake Jenkins to provide fixed data. '''
     html = '<tfoot><tr><td>Total</td><td class="bar">1,162 of 6,293</td>' \
         '<td class="ctr2">82%</td><td class="bar">161 of 422</td>' \
         '<td class="ctr2">62%</td><td class="ctr1">287</td>' \
@@ -36,30 +35,41 @@ class JaCoCoUnderTest(JaCoCo):
         '1f82fbab</span></td><td>Apr 4, 2013 4:43:39 PM</td><td>Apr 5, 2013 ' \
         '10:34:55 AM</td></tr></tbody>'
 
-    def soup(self, url):
+    @staticmethod
+    def url():
+        ''' Return the Jenkins url. '''
+        return 'http://jenkins/'
+
+    def url_open(self, url):
+        ''' Open a url. '''
         if 'raise' in url:
             raise urllib2.HTTPError(url, None, None, None, None)
         else:
             html = self.html if url.endswith('index.html') else self.date_html
-            return BeautifulSoup.BeautifulSoup(html)
+            return html
 
-    
+    @staticmethod
+    def resolve_job_name(job_re):
+        ''' Resolve the job regular expression to a concrete job name. '''
+        return job_re
+
+
 class JacocoTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Jacoco class. '''
-    
+
     def setUp(self):  # pylint: disable=invalid-name
-        self.__jacoco = JaCoCoUnderTest('http://jacoco/%s/index.html', 
-                                        'username', 'password')
-        
+        self.__jenkins = FakeJenkins()
+        self.__jacoco = JaCoCo(self.__jenkins, '%s/index.html')
+
     def test_coverage(self):
         ''' Test the coverage for a specific product. '''
         self.assertEqual(round(100 * (6293 - 1162) / 6293.), 
                          self.__jacoco.coverage('product'))
-        
+
     def test_zero_coverage(self):
         ''' Test zero coverage. '''
-        self.__jacoco.html = '<tfoot><tr>' \
+        self.__jenkins.html = '<tfoot><tr>' \
             '<td>Total</td><td class="bar">0 of 0</td>' \
             '<td class="ctr2">0%</td><td class="bar">0 of 0</td>' \
             '<td class="ctr2">0%</td><td class="ctr1">0</td>' \
@@ -68,12 +78,12 @@ class JacocoTest(unittest.TestCase):
             '<td class="ctr2">0</td><td class="ctr1">0</td>' \
             '<td class="ctr2">0</td></tr></tfoot>'
         self.assertEqual(0, self.__jacoco.coverage('product'))
-        
+
     def test_coverage_on_error(self):
         ''' Test that the reported coverage is -1 when Jacoco can't be 
             reached. '''
         self.assertEqual(-1, self.__jacoco.coverage('raise'))
-        
+
     def test_coverage_date(self):
         ''' Test the date of the coverage report. '''
         expected = datetime.datetime(2013, 4, 5, 10, 34, 55)
@@ -84,10 +94,9 @@ class JacocoTest(unittest.TestCase):
         coverage_date = self.__jacoco.coverage_date('raise')
         age = datetime.datetime.now() - coverage_date
         self.failUnless(age < datetime.timedelta(seconds=1))
-        
+
     def test_coverage_date_url(self):
         ''' Test that the coverage date url is different than the coverage
             url for JaCoCo. '''
-        self.assertEqual('http://jacoco/product/.sessions.html', 
+        self.assertEqual('http://jenkins/product/.sessions.html', 
                          self.__jacoco.get_coverage_date_url('product'))
-        
