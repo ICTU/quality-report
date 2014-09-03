@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 from qualitylib.domain.measurement.measurable import MeasurableObject
-from qualitylib.domain import TechnicalDebtTarget
+from qualitylib.domain import TechnicalDebtTarget, Team
 
 
 class MeasurableObjectTests(unittest.TestCase):
@@ -30,7 +30,8 @@ class MeasurableObjectTests(unittest.TestCase):
             metric_source_ids={self.__class__: 'id'},
             old_metric_source_ids={self.__class__: {'1': 'old_id'}},
             metric_source_options={self.__class__: 'options'},
-            metric_options={self.__class__: 'metric options'})
+            metric_options={self.__class__: 'metric options'},
+            responsible_teams=[Team(name='A')])
 
     def test_no_target(self):
         ''' Test that there is no target for an unknown class. '''
@@ -98,3 +99,8 @@ class MeasurableObjectTests(unittest.TestCase):
         ''' Test the metric options for a known class. '''
         self.assertEqual('metric options', 
                          self.__measurable.metric_options(self.__class__))
+
+    def test_responsible_teams(self):
+        ''' Test that the street has responsible teams. '''
+        self.assertEqual([Team(name='A')],
+                         self.__measurable.responsible_teams())

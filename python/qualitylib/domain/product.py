@@ -25,14 +25,13 @@ class Product(MeasurableObject):
     ''' Class representing a software product that is developed or
         maintained. '''
 
-    def __init__(self, project, short_name='',
+    def __init__(self, project, short_name='', 
                  unittests=None, jsf=None, art=None,
-                 responsible_teams=None, metric_responsibility=None, 
+                 metric_responsibility=None, 
                  product_branches=None, product_version='', product_branch='',
                  **kwargs):
 
-        ''' responsible_teams: list of teams responsible for this product.
-            metric_responsibility: dictionary of metric classes mapped to lists
+        ''' metric_responsibility: dictionary of metric classes mapped to lists
                 of teams responsible for the product/metric combination. '''
         super(Product, self).__init__(**kwargs)
         self.__project = project
@@ -43,7 +42,6 @@ class Product(MeasurableObject):
         self.__product_version = product_version
         self.__product_branch = product_branch
         self.__product_branches = product_branches or {}
-        self.__product_responsibility = responsible_teams or []
         self.__metric_responsibility = metric_responsibility or {}
 
     def __eq__(self, other):
@@ -210,8 +208,9 @@ class Product(MeasurableObject):
         ''' Return the list of teams responsible for this product. '''
         if metric_class in self.__metric_responsibility:
             return self.__metric_responsibility[metric_class]
-        elif self.__product_responsibility:
-            return self.__product_responsibility
+        responsible_teams = super(Product, self).responsible_teams()
+        if responsible_teams:
+            return responsible_teams
         else:
             return self.__project.responsible_teams()
 

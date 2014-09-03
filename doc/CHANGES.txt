@@ -1,4 +1,4 @@
-2014-08-??  Release 1.12.0
+2014-09-03  Release 1.12.0
 
   * Jenkins job names can be regular expressions. The regular expressions 
     should resolve to exactly one job.
@@ -6,6 +6,7 @@
     as first argument. This allows for using job names with regular expressions.
   * Allow for adding people (Person class) as team members to teams. The 
     team members are listed as part of the team resources.
+  * Documents can have one or more teams responsible for them.
 
 
 2014-08-21  Release 1.11.1
