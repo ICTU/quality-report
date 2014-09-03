@@ -107,7 +107,10 @@ class Subversion(domain.MetricSource):
         ''' Return the date when the url was last changed in Subversion. ''' 
         svn_info_xml = str(self.__run_shell_command(['svn', 'info', '--xml', 
                                                      url]))
-        date = BeautifulSoup(svn_info_xml)('date')[0].string
+        try:
+            date = BeautifulSoup(svn_info_xml)('date')[0].string
+        except IndexError:
+            return datetime.datetime.min
         return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     @utils.memoized

@@ -30,6 +30,7 @@ class DocumentAge(SubversionMetricMixin, LowerIsBetterMetric):
         'geleden is bijgewerkt is deze metriek rood.'
     template = 'Het document "%(name)s" is %(value)d dag(en) geleden ' \
         'bijgewerkt.'
+    never_template = 'Het document "%(name)s" is niet aangetroffen.'
     quality_attribute = DOC_QUALITY
     target_value = 180
     low_target_value = 200
@@ -40,9 +41,20 @@ class DocumentAge(SubversionMetricMixin, LowerIsBetterMetric):
             document.url()
 
     def value(self):
-        now = datetime.datetime.now()
-        changed_date = self._subversion.last_changed_date(self._subject.url())
-        return (now - changed_date).days
+        return (datetime.datetime.now() - self.__changed_date()).days
 
     def url(self):
         return dict(Subversion=self._subject.url())
+
+    def _get_template(self):
+        # pylint: disable=protected-access
+        return self.never_template if self.__document_not_found() else \
+            super(DocumentAge, self)._get_template()
+
+    def __changed_date(self):
+        ''' Return the date that the document was last changed. '''
+        return self._subversion.last_changed_date(self._subject.url())
+
+    def __document_not_found(self):
+        ''' Return whether the age of the document could be established. '''
+        return self.__changed_date() == datetime.datetime.min

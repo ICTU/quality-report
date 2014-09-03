@@ -1,3 +1,8 @@
+2014-09-03  Release 1.12.1
+
+  * Bug fix: don't crash when a document has an invalid url.
+
+
 2014-09-03  Release 1.12.0
 
   * Jenkins job names can be regular expressions. The regular expressions 

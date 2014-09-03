@@ -371,6 +371,8 @@ class QualityReportMetricsTest(unittest.TestCase):
             project.add_document(document)
         for index in range(number_of_teams):
             team = domain.Team(name='Team %d' % index, **team_kwargs)
+            team.add_member(domain.Person(name='Piet Programmer'))
+            team.add_member(domain.Person(name='Tara Tester'))
             project.add_team(team)
         if product_kwargs:
             for component_name in ('unittests', 'jsf', 'art'):
@@ -421,6 +423,12 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the team spirit metric is added if possible. '''
         self.__assert_metric(metric.TeamSpirit,
             project_kwargs=dict(metric_sources={metric_source.Wiki: 'Wiki'}))
+
+    def test_team_absence(self):
+        ''' Test that the team absence metric is added if possible. '''
+        self.__assert_metric(metric.TeamAbsence, 
+            project_kwargs=dict(metric_sources={metric_source.HolidayPlanner: 
+                                                'Planner'}))
 
     def test_failing_ci_jobs_team(self):
         ''' Test that the failing CI jobs metric per team is added if 

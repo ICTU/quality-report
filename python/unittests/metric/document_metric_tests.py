@@ -83,3 +83,36 @@ class DocumentAgeTest(unittest.TestCase):
                                    targets={metric.DocumentAge: 20})
         age = metric.DocumentAge(subject=document, project=self.__project)
         self.assertEqual(document.target(metric.DocumentAge), age.target())
+
+
+class FakeSubversionForMissingDocument(object):
+    # pylint: disable=too-few-public-methods
+    ''' Fake Subversion for unit tests with a missing document. '''
+    @staticmethod
+    def last_changed_date(url):  # pylint: disable=unused-argument
+        ''' Return the date the url was last changed. '''
+        return datetime.datetime.min
+
+
+class MissingDocumentAgeTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the document age metric when the document is missing. '''
+
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__document = domain.Document(name='Title', url='http://doc')
+        self.__project = domain.Project(
+            metric_sources={
+                metric_source.Subversion: FakeSubversionForMissingDocument()})
+        self.__metric = metric.DocumentAge(subject=self.__document,
+                                           project=self.__project)
+
+    def test_value(self):
+        ''' Test that the value of the metric equals the document age in 
+            days. '''
+        expected = (datetime.datetime.now() - datetime.datetime.min).days
+        self.assertEqual(expected, self.__metric.value())
+
+    def test_report(self):
+        ''' Test that the report is correct. '''
+        self.assertEqual('Het document "Title" is niet aangetroffen.',
+                         self.__metric.report())

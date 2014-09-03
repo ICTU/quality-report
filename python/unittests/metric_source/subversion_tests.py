@@ -156,11 +156,22 @@ class SubversionTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2014, 1, 27, 9, 33, 9, 907516), 
                          self.__subversion.last_changed_date('svn_path'))
 
+    def test_last_changed_date_missing(self):
+        ''' Test that Subversion returns the minimum date when the svn info
+            doesn't contain a date. '''
+        self.__run_shell_command_results = [
+'''<?xml version="1.0" encoding="UTF-8"?>
+<info>
+</info>
+''']
+        self.assertEqual(datetime.datetime.min, 
+                         self.__subversion.last_changed_date('svn_path'))
+
     def test_log_exception(self):
         ''' Test that a failure is logged when svn info fails. '''
         self.__run_shell_command_results = ['raise']
-        self.assertRaises(IndexError,
-                          self.__subversion.last_changed_date, 'svn_path')
+        self.assertEqual(datetime.datetime.min,
+                         self.__subversion.last_changed_date('svn_path'))
         self.__assert_logged('Shell command failed: Command ' \
                          "'command' returned non-zero exit status -1\n")
 

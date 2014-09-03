@@ -145,7 +145,8 @@ class QualityReport(object):
         BUILD_SERVER_METRIC_CLASSES + BUGS_METRIC_CLASSES
     META_SECTION_METRIC_CLASSES = META_METRIC_CLASSES
     TEAM_SECTION_METRIC_CLASSES = (metric.ReleaseAge, metric.TeamProgress,
-                                   metric.TeamSpirit, metric.TeamFailingCIJobs,
+                                   metric.TeamSpirit, metric.TeamAbsence,
+                                   metric.TeamFailingCIJobs,
                                    metric.TeamUnusedCIJobs)
 
     @classmethod

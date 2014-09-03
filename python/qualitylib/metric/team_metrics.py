@@ -173,3 +173,50 @@ class ReleaseAge(LowerIsBetterMetric):
             release_date = archive.date_of_most_recent_file()
             ages[archive.name()] = (now - release_date).days
         return ages
+
+
+class TeamAbsence(LowerIsBetterMetric):
+    ''' Metric for measuring the number of consecutive days that multiple
+        team members are absent. '''
+
+    name = 'Absentie'
+    norm_template = 'Het aantal aaneengesloten dagen dat meerdere ' \
+        'teamleden tegelijk gepland afwezig zijn is lager dan %(target)d ' \
+        'werkdagen. Meer dan %(low_target)d werkdagen is rood.'
+    template = 'De langste periode dat meerdere teamleden ' \
+        'tegelijk gepland afwezig zijn is %(value)d werkdagen ' \
+        '(%(start)s tot en met %(end)s).'
+    perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
+    target_value = 5
+    low_target_value = 10
+    quality_attribute = PROGRESS
+
+    @classmethod
+    def can_be_measured(cls, team, project):
+        return super(TeamAbsence, cls).can_be_measured(team, project) and \
+            project.metric_source(metric_source.HolidayPlanner) and \
+            len(team.members()) > 1
+
+    def __init__(self, *args, **kwargs):
+        super(TeamAbsence, self).__init__(*args, **kwargs)
+        self.__planner = self._project.metric_source(metric_source.HolidayPlanner)
+
+    def value(self):
+        return self.__planner.days(self._subject)[0]
+
+    def url(self):
+        return dict(Planner=self.__planner.url())
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(TeamAbsence, self)._parameters()
+        length, start, end = self.__planner.days(self._subject)
+        if length:
+            parameters['start'] = start.isoformat()
+            parameters['end'] = end.isoformat()
+        return parameters
+
+    def _get_template(self):
+        # pylint: disable=protected-access
+        return self.perfect_template if self._is_perfect() else \
+            super(TeamAbsence, self)._get_template()

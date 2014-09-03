@@ -35,3 +35,4 @@ from qualitylib.metric_source.apache_directory import ApacheDirectory
 from qualitylib.metric_source.nexus_directory import NexusDirectory
 from qualitylib.metric_source.jira import Jira
 from qualitylib.metric_source.tasks import Tasks
+from qualitylib.metric_source.holiday_planner import HolidayPlanner
