@@ -52,8 +52,6 @@ class Metric(object):
         elif self._subject and hasattr(self._subject, 'responsible_teams'):
             self.__responsible_teams = \
                 self._subject.responsible_teams(self.__class__)
-        elif isinstance(subject, Team):
-            self.__responsible_teams = [subject]
         else:
             self.__responsible_teams = []
         self._project = project

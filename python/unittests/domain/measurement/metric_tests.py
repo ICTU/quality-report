@@ -177,8 +177,8 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_passed_responsible_teams(self):
         ''' Test that the metric can be initialized with responsible teams. '''
-        self.assertEqual('Teams', MetricUnderTest(project=domain.Project(), 
-                         responsible_teams='Teams').responsible_teams())
+        self.assertEqual(['Team'], MetricUnderTest(project=domain.Project(), 
+                         responsible_teams=['Team']).responsible_teams())
 
     def test_subject_responsible_teams(self):
         ''' Test that the responsible teams for the metric equal those of the
@@ -189,6 +189,13 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         project = domain.Project()
         self.assertEqual('Teams', MetricUnderTest(subject, 
                                   project=project).responsible_teams())
+
+    def test_team_is_responsible_for_itself(self):
+        ''' Test that if the metric is measuring a team, that team is 
+            responsible for the metric. '''
+        team = domain.Team(name='Team')
+        metric = MetricUnderTest(team, project=domain.Project())
+        self.assertEqual([team], metric.responsible_teams())
 
     def test_default_comment(self):
         ''' Test that the metric has no comment by default. '''

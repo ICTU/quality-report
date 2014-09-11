@@ -43,7 +43,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     def __analyse_product(self, product):
         ''' Run Sonar on the product, and unit tests if any. '''
-        if not product.sonar_id():
+        if not self.__product_sonar_id(product):
             return
         if not self.__analysis_exists(product):
             users = ', '.join(['%s:%s' % (user.name(), 
@@ -54,8 +54,9 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                          users or 'none')
             self.__checkout_code_and_run_sonar(product)
         unittests = product.unittests()
-        if unittests and unittests.sonar_id() != product.sonar_id() \
-            and not self.__analysis_exists(unittests):
+        if unittests and self.__product_sonar_id(unittests) != \
+            self.__product_sonar_id(product) and not \
+            self.__analysis_exists(unittests):
             # Need to run Sonar again for the unit test coverage:
             self.__checkout_code_and_run_sonar(unittests, unittests=True)
         jsf = product.jsf()
@@ -65,7 +66,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __analysis_exists(self, product):
         ''' Return whether a Sonar analysis for this product already exists. '''
-        sonar_id = '"%s"' % product.sonar_id()
+        sonar_id = '"%s"' % self.__product_sonar_id(product)
         result = sonar_id in str(self.soup(self.__sonar_url + 'api/resources'))
         logging.info('Sonar analysis for %s %s', sonar_id,
                       {True: 'exists', False: 'does not exist'}[result])
@@ -139,3 +140,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         os.system(maven_command)
         os.chdir(original_working_dir)
         utils.rmtree(folder)  # Remove folder to save space
+
+    def __product_sonar_id(self, product):
+        ''' Return the product's Sonar id. '''
+        sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+        return sonar_product_info.sonar_id()

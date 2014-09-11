@@ -15,6 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.formatting import base_formatter
+from qualitylib import metric_info
 import logging
 
 
@@ -22,13 +23,19 @@ class JSONFormatter(base_formatter.Formatter):
     ''' Format the report in JSON. This is used for generating a history
         file. '''
 
+    def __init__(self, *args, **kwargs):
+        self.__sonar = kwargs.pop('sonar')
+        super(JSONFormatter, self).__init__(*args, **kwargs)
+
     def prefix(self, report):
         ''' Return a JSON formatted version of the report prefix. '''
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
         for product in report.products():
             if not product.product_version():
-                prefix_elements.append('"%s-version": "%s"' % (product.sonar_id(),
+                sonar_id = metric_info.SonarProductInfo(self.__sonar,
+                                                        product).sonar_id()
+                prefix_elements.append('"%s-version": "%s"' % (sonar_id,
                                        report.latest_product_version(product)))
         # Add the current date to the prefix
         prefix_elements.append('"date": "%s"' % \

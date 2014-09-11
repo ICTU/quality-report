@@ -15,6 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.formatting import JSONFormatter
+from qualitylib import metric_source
 from unittests.formatting import fake_report, fake_domain
 import unittest
 
@@ -23,7 +24,8 @@ class JSONFormatterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit test for the dot report formatter class. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__formatter = JSONFormatter()
+        self.__formatter = JSONFormatter(
+                               sonar=metric_source.Sonar('http://sonar'))
 
     def test_process(self):
         ''' Test that the report is processed correctly. '''

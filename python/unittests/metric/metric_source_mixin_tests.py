@@ -30,9 +30,10 @@ class SonarMetricMixinTest(unittest.TestCase):
 
     def test_can_be_measured(self):
         ''' Test that subclasses of the Sonar metric mixin can be measured
-            when the project has Sonar. '''
+            when the project has Sonar and the product has a Sonar id. '''
         project = domain.Project(metric_sources={metric_source.Sonar: 'Sonar'})
-        product = domain.Product(project)
+        product = domain.Product(project,
+                                 metric_source_ids={'Sonar': 'sonar id'})
         self.failUnless(SonarMetricMixinUnderTest.can_be_measured(product,
                                                                   project))
 
@@ -40,5 +41,12 @@ class SonarMetricMixinTest(unittest.TestCase):
         ''' Test that subclasses of the Sonar metric mixin can't be measured
             when the product has a Sonar id but the project has no Sonar. '''
         project = domain.Project()
+        product = domain.Product(project)
+        self.failIf(SonarMetricMixinUnderTest.can_be_measured(product, project))
+
+    def test_cant_be_measured_without_sonar_d(self):
+        ''' Test that subclasses of the Sonar metric mixin can't be measured
+            when the project has Sonar but the product has no Sonar id. '''
+        project = domain.Project(metric_sources={metric_source.Sonar: 'Sonar'})
         product = domain.Product(project)
         self.failIf(SonarMetricMixinUnderTest.can_be_measured(product, project))

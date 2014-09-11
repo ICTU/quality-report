@@ -39,27 +39,6 @@ class FakeSonar(object):
         return 150
 
 
-class FakeSubject(object):  # pylint: disable=too-few-public-methods
-    ''' Provide for a fake subject. '''
-
-    def __init__(self, jsf=True, jsf_id=True):
-        self.__jsf = jsf
-        self.__jsf_id = jsf_id
-
-    @staticmethod
-    def name():
-        ''' Return the name of the subject. '''
-        return 'FakeSubject'
-
-    def jsf(self):
-        ''' Return the JSF component. '''
-        return FakeSubject(jsf_id=self.__jsf_id) if self.__jsf else None
-
-    def sonar_id(self):
-        ''' Return the Sonar id of the subject. '''
-        return 'sonar id' if self.__jsf_id else ''
-
-
 class DuplicationTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the duplication metric. '''
@@ -67,8 +46,8 @@ class DuplicationTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project(
             metric_sources={metric_source.Sonar: FakeSonar()})
-        self._metric = metric.Duplication(subject=FakeSubject(),
-                                          project=project)
+        product = domain.Product(project, 'PR', name='FakeSubject')
+        self._metric = metric.Duplication(subject=product, project=project)
 
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
@@ -86,9 +65,13 @@ class JsfDuplicationTest(unittest.TestCase):
     ''' Unit tests for the duplication metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = FakeSubject()
+        sonar = FakeSonar()
         self.__project = domain.Project(
-            metric_sources={metric_source.Sonar: FakeSonar()})
+            metric_sources={metric_source.Sonar: sonar})
+        jsf = domain.Product(self.__project, 'JS',
+            metric_source_ids={sonar: 'sonar id'})
+        self.__subject = domain.Product(self.__project, 'PR',
+                                        name='FakeSubject', jsf=jsf)
         self._metric = metric.JsfDuplication(subject=self.__subject,
                                              project=self.__project)
  
@@ -107,13 +90,14 @@ class JsfDuplicationTest(unittest.TestCase):
     def test_cant_be_measured_without_jsf(self):
         ''' Test that the JSF duplication cannot be measured if the product
             has no JSF component. '''
-        product = FakeSubject(jsf=False)
+        product = domain.Product(self.__project)
         self.failIf(metric.JsfDuplication.can_be_measured(product, 
                                                           self.__project))
 
     def test_cant_be_measured_without_jsf_sonar_id(self):
         ''' Test that the JSF duplication cannot be measured if the product
             has no JSF Sonar id. '''
-        product = FakeSubject(jsf_id=False)
+        jsf = domain.Product(self.__project)
+        product = domain.Product(self.__project, jsf=jsf)
         self.failIf(metric.JsfDuplication.can_be_measured(product, 
                                                           self.__project))

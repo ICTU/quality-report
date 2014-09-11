@@ -53,8 +53,8 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_short_name(self):
         ''' Test that the short name of the team can also be passed at 
             initialization. '''
-        self.assertEqual('ZZ', domain.Team(name='ABC', 
-                                           short_name='ZZ').short_name())
+        team = domain.Team(name='ABC', short_name='ZZ')
+        self.assertEqual('ZZ', team.short_name())
 
     def test_str(self):
         ''' Test that the string formatting of a team equals the team name. '''
@@ -79,3 +79,7 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         piet = domain.Person(name='Piet Programmer')
         self.__team.add_member(piet)
         self.failUnless(('Piet Programmer', '') in self.__team.team_resources())
+
+    def test_responsible_teams(self):
+        ''' Test that a team is responsible for itself. '''
+        self.assertEqual([self.__team], self.__team.responsible_teams())

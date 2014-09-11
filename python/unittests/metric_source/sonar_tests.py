@@ -96,6 +96,11 @@ class SonarTest(unittest.TestCase):
             the dashboard. '''
         self.assertEqual(100, self.__sonar.line_coverage('product'))
 
+    def test_branch_coverage(self):
+        ''' Test that the branch coverage equals the branch coverage returned by
+            the dashboard. '''
+        self.assertEqual(100, self.__sonar.branch_coverage('product'))
+
     def test_unittests(self):
         ''' Test that the number of unit tests equals the number of unit tests 
             returned by the dashboard. '''

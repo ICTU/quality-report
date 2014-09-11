@@ -25,12 +25,18 @@ class Product(object):
     def __init__(self, dependencies=False, version='1', 
                  is_release_candidate=False, is_latest_release=False):
         self.__dependencies = dependencies
+        self.__branch = ''
         self.__version = version
         self.__is_release_candidate = is_release_candidate
         self.__is_latest_release = is_latest_release
 
-    @staticmethod
-    def sonar_id():
+    @staticmethod  # pylint: disable=unused-argument
+    def old_metric_source_id(*args):
+        ''' Return the old Sonar id of the product. '''
+        return ''
+
+    @staticmethod  # pylint: disable=unused-argument
+    def metric_source_id(*args):
         ''' Return the Sonar id of the product. '''
         return 'Product'
 
@@ -43,6 +49,10 @@ class Product(object):
     def short_name():
         ''' Return the short version of the name of the product. '''
         return 'FP'
+
+    def product_branch(self):
+        ''' Return the branch of the product. '''
+        return self.__branch
 
     def product_version(self):
         ''' Return the version of the product. '''

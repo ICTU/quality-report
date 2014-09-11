@@ -17,6 +17,7 @@ limitations under the License.
 from qualitylib.domain import LowerPercentageIsBetterMetric
 from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
 from qualitylib.metric.quality_attributes import CODE_QUALITY
+from qualitylib import metric_info
 
 
 class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
@@ -45,11 +46,6 @@ class JavaDuplication(Duplication):
     target_value = 0
     low_target_value = 5
 
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(JavaDuplication, cls).can_be_measured(product, project) \
-            and product.sonar_id()
-
 
 class JsfDuplication(Duplication):
     # pylint: disable=too-many-public-methods, too-many-ancestors
@@ -60,7 +56,7 @@ class JsfDuplication(Duplication):
     target_value = 10
     low_target_value = 20
 
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(JsfDuplication, cls).can_be_measured(product, project) \
-            and product.jsf() and product.jsf().sonar_id()
+    @staticmethod
+    def product_has_sonar_id(sonar, product):
+        jsf_sonar_info = metric_info.SonarProductInfo(sonar, product.jsf())
+        return product.jsf() and jsf_sonar_info.sonar_id()

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric_source
+from qualitylib import metric_source, metric_info
 
 # pylint: disable=R0903
 
@@ -24,13 +24,23 @@ class SonarMetricMixin(object):
     def __init__(self, *args, **kwargs):
         super(SonarMetricMixin, self).__init__(*args, **kwargs)
         self._sonar = self._project.metric_source(metric_source.Sonar)
+        self.__sonar_product_info = metric_info.SonarProductInfo(self._sonar,
+                                                                 self._subject)
 
     @classmethod
     def can_be_measured(cls, product, project):
         ''' Return whether the metric can be measured. The metric can be
             measured when the project has Sonar. '''
+        sonar = project.metric_source(metric_source.Sonar)
         return super(SonarMetricMixin, cls).can_be_measured(product, project) \
-            and project.metric_source(metric_source.Sonar)
+            and sonar and cls.product_has_sonar_id(sonar, product)
+
+    @staticmethod
+    def product_has_sonar_id(sonar, product):
+        ''' Return whether the product has a Sonar id. Can be overridden to 
+            for example check a subcomponent for a Sonar id. '''
+        product_sonar_info = metric_info.SonarProductInfo(sonar, product)
+        return product_sonar_info.sonar_id()
 
     def url(self):
         ''' Return the url to Sonar. '''
@@ -42,7 +52,7 @@ class SonarMetricMixin(object):
 
     def _sonar_id(self):
         ''' Return the id of the subject in Sonar. '''
-        return self._subject.sonar_id()
+        return self.__sonar_product_info.sonar_id()
 
 
 class SonarDashboardMetricMixin(SonarMetricMixin):

@@ -29,11 +29,6 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
     violation_type = 'Subclass responsibility'
 
     @classmethod
-    def can_be_measured(cls, product, project):
-        return super(Violations, cls).can_be_measured(product, project) and \
-            product.sonar_id()
-
-    @classmethod
     def norm_template_default_values(cls):
         values = super(Violations, cls).norm_template_default_values()
         values['violation_type'] = cls.violation_type

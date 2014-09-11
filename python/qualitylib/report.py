@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import metric, utils, metric_source
+from qualitylib import metric, utils, metric_source, metric_info
 import datetime
 
 
@@ -115,7 +115,8 @@ class QualityReport(object):
     ''' Quality report on a project. '''
 
     TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests, 
-                                    metric.UnittestCoverage, 
+                                    metric.UnittestLineCoverage, 
+                                    metric.UnittestBranchCoverage, 
                                     metric.FailingRegressionTests,
                                     metric.ARTCoverage)
     TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewedAndApproved,
@@ -251,13 +252,14 @@ class QualityReport(object):
     def latest_product_version(self, product):
         ''' Return the most recent version of the product. '''
         version = product.product_version()
+        sonar = self.__project.metric_source(metric_source.Sonar)
+        sonar_id = metric_info.SonarProductInfo(sonar, product).sonar_id()
         if version:
             return version
-        elif product.sonar_id():
+        elif sonar_id:
             # Product is a branch or trunk version, get the SNAPSHOT version 
             # number from Sonar
-            sonar = self.__project.metric_source(metric_source.Sonar)
-            sonar_version = sonar.version(product.sonar_id())
+            sonar_version = sonar.version(sonar_id)
             branch = product.product_branch()
             return branch + ':' + sonar_version if branch else sonar_version
         else:
@@ -277,10 +279,9 @@ class QualityReport(object):
 
     def __overall_products_section(self):
         ''' Return the products overall section. '''
-        metrics = [metric.TotalLOC([product for product in self.__products \
-                                     if product.product_version_type() == \
-                                     'trunk' and product.sonar_id()],
-                                    project=self.__project)]
+        metrics = [metric.TotalLOC([product for product in self.__products if \
+                                    product.product_version_type() == 'trunk'],
+                                   project=self.__project)]
         metrics.append(metric.DependencyQuality(report=self,
                                                 project=self.__project))
         for document in self.__project.documents():

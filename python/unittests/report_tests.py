@@ -470,10 +470,21 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.JenkinsTestReport:
                                                 self.__jenkins}))
 
-    def test_unittest_coverage(self):
-        ''' Test that the unit test coverage metric is added if possible. '''
+    def test_unittest_line_coverage(self):
+        ''' Test that the unit test line coverage metric is added if 
+            possible. '''
         self.__assert_metric(
-            metric.UnittestCoverage, 
+            metric.UnittestLineCoverage, 
+            product_kwargs=dict(metric_source_ids={self.__sonar: 'id'},
+                unittests=dict(metric_source_ids={self.__sonar: 'id'})),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}))
+
+    def test_unittest_branch_coverage(self):
+        ''' Test that the unit test branch coverage metric is added if
+            possible. '''
+        self.__assert_metric(
+            metric.UnittestBranchCoverage, 
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'},
                 unittests=dict(metric_source_ids={self.__sonar: 'id'})),
             project_kwargs=dict(

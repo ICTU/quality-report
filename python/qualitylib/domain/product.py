@@ -47,19 +47,6 @@ class Product(MeasurableObject):
     def __eq__(self, other):
         return self.product_label() == other.product_label()
 
-    def sonar_id(self):
-        ''' Return the id that identifies the product in Sonar. '''
-        from qualitylib import metric_source
-        sonar = self.__project.metric_source(metric_source.Sonar)
-        sonar_id = self.old_metric_source_id(sonar, self.__product_version)
-        if not sonar_id:
-            sonar_id = self.metric_source_id(sonar) or ''
-        if sonar_id and self.__product_branch:
-            sonar_id += ':' + self.__product_branch
-        if sonar_id and self.__product_version:
-            sonar_id += ':' + self.__product_version
-        return sonar_id
-
     def set_product_version(self, product_version):
         ''' Set the product version of this product. '''
         self.__product_version = product_version

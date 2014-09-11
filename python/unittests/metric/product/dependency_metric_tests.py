@@ -48,11 +48,6 @@ class FakeSubject(object):
         ''' Return the short name of the subject. '''
         return 'FS'
 
-    @staticmethod
-    def sonar_id():
-        ''' Return the Sonar id of the subject. '''
-        return ''
-
     @staticmethod  # pylint: disable=unused-argument
     def dependencies(**kwargs):
         ''' Return the dependencies of the subject. '''
@@ -142,9 +137,9 @@ class CyclicDependenciesTest(unittest.TestCase):
     ''' Unit tests for the cyclic dependencies metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = FakeSubject()
         project = domain.Project(
             metric_sources={metric_source.Sonar: FakeSonar()})
+        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
         self._metric = metric.CyclicDependencies(subject=self.__subject,
                                                  project=project)
 

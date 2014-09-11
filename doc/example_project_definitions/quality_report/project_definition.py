@@ -46,7 +46,7 @@ QUALITY_REPORT = \
     Product(PROJECT, 'QR',
             unittests=QUALITY_REPORT_UNITTESTS,
             technical_debt_targets={
-                metric.UnittestCoverage:
+                metric.UnittestLineCoverage:
                     TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% ' \
                                            'unit test coverage', '%'),
                 metric.MajorViolations:

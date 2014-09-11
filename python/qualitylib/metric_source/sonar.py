@@ -74,6 +74,10 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         ''' Return the line coverage of the unit tests for the product. '''
         return self.__metric(product, 'line_coverage')
 
+    def branch_coverage(self, product):
+        ''' Return the branch coverage of the unit tests for the product. '''
+        return self.__metric(product, 'branch_coverage')
+
     def unittests(self, product):
         ''' Return the number of unit tests for the product. '''
         return self.__metric(product, 'tests')

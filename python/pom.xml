@@ -21,6 +21,7 @@
     <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>
     <sonar.python.pylint>/usr/local/bin/pylint</sonar.python.pylint>
     <sonar.python.pylint_config>.pylintrc</sonar.python.pylint_config>
+    <sonar.python.xunit.reportPath>test-reports</sonar.python.xunit.reportPath>
     <sonar.python.coverage.reportPath>coverage.xml</sonar.python.coverage.reportPath>
   </properties>
 

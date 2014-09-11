@@ -33,12 +33,6 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     low_target_value = 10
     quality_attribute = DEPENDENCY_QUALITY
 
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(CyclicDependencies, cls).can_be_measured(product,
-                                                              project) and \
-            product.sonar_id()
-
     def value(self):
         return self._sonar.package_cycles(self._sonar_id())
 

@@ -20,12 +20,10 @@ limitations under the License.
 
 
 from qualitylib import formatting, commandlineargs, report, metric_source, \
-    log, VERSION
+    log, filesystem, VERSION
 import import_file
-import codecs
 import logging
 import os
-import stat
 import pkg_resources
 import xmlrpclib
 import socket
@@ -59,12 +57,13 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
         quality_report = report.QualityReport(self.__project)
         self.__format_and_write_report(quality_report, formatting.JSONFormatter,
-                                       self.__history_filename, 'a', 'ascii')
+            self.__history_filename, 'a', 'ascii',
+            sonar=self.__project.metric_source(metric_source.Sonar))
         if os.path.exists(self.__csv_filename):
             self.__format_and_write_report(quality_report,
                                            formatting.CSVFormatter,
                                            self.__csv_filename, 'a', 'ascii')
-        self.__format_and_write_html_report(quality_report, report_folder)
+        self.__create_report(quality_report, report_folder)
         metric_source.History(self.__history_filename).clean_history()
 
     def __add_latest_release_of_products(self):
@@ -110,12 +109,18 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         if sonar:
             sonar.analyse_products(self.__project.products())
 
-    def __format_and_write_html_report(self, quality_report, report_dir):
+    def __create_report(self, quality_report, report_dir):
         ''' Format the quality report to HTML and write the files in the report
             folder. '''
         report_dir = report_dir or '.'
-        self.__create_dir(report_dir)
-        # HTML file
+        filesystem.create_dir(report_dir)
+        self.__create_html_file(quality_report, report_dir)
+        self.__create_dependency_graph(quality_report, report_dir)
+        self.__create_resources(report_dir)
+        self.__create_trend_images(quality_report, report_dir)
+
+    def __create_html_file(self, quality_report, report_dir):
+        ''' Create the html file with the report. '''
         tmp_filename = os.path.join(report_dir, 'tmp.html')
         latest_software_version = self.__latest_software_version()
         self.__format_and_write_report(quality_report, formatting.HTMLFormatter,
@@ -126,30 +131,35 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         if os.path.exists(html_filename):
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)
-        # Dependency graph
+        filesystem.make_file_readable(html_filename)
+
+    def __create_dependency_graph(self, quality_report, report_dir):
+        ''' Create and write the dependency graph. '''
         dot_filename = os.path.join(report_dir, 'dependency.dot')
         self.__format_and_write_report(quality_report, formatting.DotFormatter,
                                        dot_filename, 'w', 'ascii')
         svg_filename = os.path.join(report_dir, 'dependency.svg')
         os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
-        for filename in (html_filename, svg_filename):
-            os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
-                     stat.S_IROTH)
-        # Resources
+        filesystem.make_file_readable(svg_filename)
+
+    def __create_resources(self, report_dir):
+        ''' Create and write the resources. '''
         resource_manager = pkg_resources.ResourceManager()
         formatting_module = formatting.html_formatter.__name__
         for resource_type, encoding in (('css', 'utf-8'), ('img', None), 
                                         ('js', 'utf-8')):
             resource_dir = os.path.join(report_dir, resource_type)
-            self.__create_dir(resource_dir)
+            filesystem.create_dir(resource_dir)
             for resource in resource_manager.resource_listdir(formatting_module,
                                                               resource_type):
                 filename = os.path.join(resource_dir, resource)
                 contents = resource_manager.resource_string(formatting_module,
                                                 resource_type + '/' + resource)
                 mode = 'w' if encoding else 'wb'
-                self.__write_file(contents, filename, mode, encoding)
-        # Trend images
+                filesystem.write_file(contents, filename, mode, encoding)
+
+    def __create_trend_images(self, quality_report, report_dir):
+        ''' Retrieve and write the trend images. '''
         for metric in quality_report.metrics():
             if metric.product_version_type() in ('tag', 'release'):
                 continue
@@ -170,7 +180,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 image = self.EMPTY_HISTORY_PNG
             filename = os.path.join(report_dir, 'img', 
                                     '%s.png' % metric.id_string())
-            self.__write_file(image, filename, mode='wb', encoding=None)
+            filesystem.write_file(image, filename, mode='wb', encoding=None)
 
     @classmethod
     def __format_and_write_report(cls, quality_report, report_formatter,
@@ -178,27 +188,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         ''' Format the report using the formatter and write it to the specified
             file. '''
         formatted_report = report_formatter(**kwargs).process(quality_report)
-        cls.__write_file(formatted_report, filename, mode, encoding)
-
-    @staticmethod
-    def __write_file(contents, filename, mode, encoding):
-        ''' Write the contents to the specified file. '''
-        if os.path.exists(filename):
-            os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
-                     stat.S_IROTH)
-        output_file = codecs.open(filename, mode, encoding)
-        output_file.write(contents)
-        output_file.close()
-        os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
-                 stat.S_IROTH)
-
-    @staticmethod
-    def __create_dir(dir_name):
-        ''' Create a directory and make it accessible. '''
-        if not os.path.exists(dir_name):
-            os.mkdir(dir_name)
-        os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | \
-                 stat.S_IRUSR | stat.S_IWUSR)
+        filesystem.write_file(formatted_report, filename, mode, encoding)
 
     @staticmethod
     def __latest_software_version():

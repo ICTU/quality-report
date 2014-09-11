@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils, domain
+from qualitylib import utils, domain, metric_info
 import logging
 import urllib2
 
@@ -24,6 +24,10 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing Maven pom.xml files. '''
 
     metric_source_name = 'Maven pom file'
+
+    def __init__(self, *args, **kwargs):
+        self.__sonar = kwargs.pop('sonar')
+        super(Pom, self).__init__(*args, **kwargs)
 
     @utils.memoized
     def dependencies(self, url, products, parent_pom_properties=None):
@@ -86,12 +90,12 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         artifact_name = dependency_tag('artifactid')[0].string
         for product in products:
             if self.__product_has_artifact(product, artifact_name):
-                return product.sonar_id().split(':')[1]
+                return self.__product_sonar_id(product).split(':')[1]
 
     @utils.memoized
     def __product_has_artifact(self, product, artifact_id):
         ''' Return whether the product has an artifact with artifact id. '''
-        sonar_id = product.sonar_id()
+        sonar_id = self.__product_sonar_id(product)
         if not sonar_id:
             return False
         product_artifact_id = sonar_id.split(':')[1]
@@ -178,3 +182,8 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except urllib2.HTTPError, reason:
             logging.warn("Couldn't open %s: %s", pom_url, reason)
             raise
+
+    def __product_sonar_id(self, product):
+        ''' Return the product's Sonar id. '''
+        sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+        return sonar_product_info.sonar_id()

@@ -1,6 +1,15 @@
+2014-09-11  Release 1.13.0
+
+  * The unit test coverage metric is renamed UnittestLineCoverage to prepare for
+    the addition of metrics for other types of unit test coverage.
+  * Add a unit test branch coverage metric (UnittestBranchCoverage).
+  * Pom metric source now needs a Sonar instance as parameter because it uses 
+    the Sonar ids of products.
+ 
+
 2014-09-03  Release 1.12.1
 
-  * Bug fix: don't crash when a document has an invalid url.
+  * Bug fix: don't crash when a document has an invalid URL.
 
 
 2014-09-03  Release 1.12.0

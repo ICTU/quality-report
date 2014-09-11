@@ -53,25 +53,6 @@ class FakeSonar(object):
         return 100
 
 
-class FakeSubject(object):
-    ''' Provide for a fake subject. '''
-
-    @staticmethod
-    def name():
-        ''' Return the name of the subject. '''
-        return 'FakeSubject'
-
-    @staticmethod
-    def sonar_id():
-        ''' Return the Sonar id of the subject. '''
-        return ''
-
-    @staticmethod  # pylint: disable-msg=unused-argument
-    def responsible_teams(*args):
-        ''' Return the responsible teams for this product. '''
-        return [domain.Team(name='Team')]
-
-
 class SonarViolationsUrlTestMixin(object):
     # pylint: disable=too-few-public-methods
     ''' Mixin for metrics whose url refers to the Sonar violations page. '''
@@ -86,9 +67,9 @@ class CommentedLOCTest(unittest.TestCase):
     ''' Unit tests for the commented LOC metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = FakeSubject()
         project = domain.Project(
             metric_sources={metric_source.Sonar: FakeSonar()})
+        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
         self._metric = metric.CommentedLOC(subject=self.__subject,
                                            project=project)
 
@@ -110,7 +91,8 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project(
             metric_sources={metric_source.Sonar: FakeSonar()})
-        self._metric = metric.CyclomaticComplexity(subject=FakeSubject(),
+        subject = domain.Product(project, 'PR', name='FakeSubject')
+        self._metric = metric.CyclomaticComplexity(subject=subject,
                                                    project=project)
 
     def test_value(self):
@@ -138,8 +120,8 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project(
             metric_sources={metric_source.Sonar: FakeSonar()})
-        self._metric = metric.LongMethods(subject=FakeSubject(),
-                                          project=project)
+        subject = domain.Product(project, 'PR', name='FakeSubject')
+        self._metric = metric.LongMethods(subject=subject, project=project)
 
     def test_value(self):
         ''' Test that the value of the metric equals the percentage of 
@@ -165,8 +147,9 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     ''' Unit tests for the many parameters metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
+        subject = domain.Product(domain.Project(), 'PR', name='FakeSubject')
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self._metric = metric.ManyParameters(subject=FakeSubject(),
+        self._metric = metric.ManyParameters(subject=subject,
                                              project=project)
 
     def test_value(self):

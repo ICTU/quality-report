@@ -78,37 +78,12 @@ class FakeDependenciesDb(object):
 class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     '''Unit tests for the Product domain class. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__sonar = FakeSonar()
-        self.__project = domain.Project('Organization',
-            metric_sources={metric_source.Sonar: self.__sonar})
-        self.__product = domain.Product(self.__project, name='Product',
-            metric_source_ids={self.__sonar: 'sonar:id'},
-            old_metric_source_ids={self.__sonar: {'old.version':
-                                                  'old-sonar:id'}})
+        self.__project = domain.Project('Organization')
+        self.__product = domain.Product(self.__project, name='Product')
 
     def test_product_name(self):
         ''' Test that the name of the product equals given name. '''
         self.assertEqual('Product', self.__product.name())
-
-    def test_sonar_id(self):
-        ''' Test that the Sonar id of the product equals the passed id. '''
-        self.assertEqual('sonar:id', self.__product.sonar_id())
-
-    def test_sonar_id_with_version(self):
-        ''' Test that the Sonar id includes the version for released 
-            products. '''
-        self.__product.set_product_version('1.2.3')
-        self.assertEqual('sonar:id:1.2.3', self.__product.sonar_id())
-
-    def test_sonar_id_with_branch(self):
-        ''' Test that the Sonar id includes the branch for branch products. '''
-        self.__product.set_product_branch('product-branch')
-        self.assertEqual('sonar:id:product-branch', self.__product.sonar_id())
-
-    def test_old_sonar_id(self):
-        ''' Test that the Sonar id for an old version can be different. '''
-        self.__product.set_product_version('old.version')
-        self.assertEqual('old-sonar:id:old.version', self.__product.sonar_id())
 
     def test_trunk_without_dependencies(self):
         ''' Test that the product dependencies set is empty if the product has

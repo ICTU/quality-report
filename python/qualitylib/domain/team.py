@@ -82,3 +82,7 @@ class Team(MeasurableObject):
     def add_member(self, person):
         ''' Add the person as a team member. '''
         self.__members.add(person)
+
+    def responsible_teams(self, metric_class=None):
+        teams = super(Team, self).responsible_teams(metric_class)
+        return teams or [self]

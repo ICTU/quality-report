@@ -40,30 +40,16 @@ class FakeSonar(object):
         return 'http://sonar'
 
 
-class FakeSubject(object):
-    ''' Provide for a fake subject. '''
-
-    @staticmethod
-    def name():
-        ''' Return the name of the subject. '''
-        return 'FakeSubject'
-
-    @staticmethod
-    def sonar_id():
-        ''' Return the Sonar id of the subject. '''
-        return ''
-
-
 class ViolationsTestMixin(object):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Violations metric classes. '''
 
     def setUp(self):  # pylint: disable=invalid-name,missing-docstring
         self.__nr_violations = 51
-        self.__subject = FakeSubject()
         sonar = FakeSonar(critical_violations=self.__nr_violations, 
                           major_violations=self.__nr_violations)
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
         self._metric = self.metric_class(subject=self.__subject, 
                                          project=project)
 

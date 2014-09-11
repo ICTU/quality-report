@@ -36,20 +36,6 @@ class FakeSonar(object):
         return 123
 
 
-class FakeSubject(object):  # pylint: disable=too-few-public-methods
-    ''' Provide for a fake subject. '''
-
-    @staticmethod
-    def name():
-        ''' Return the name of the subject. '''
-        return 'FakeSubject'
-
-    @staticmethod
-    def sonar_id():
-        ''' Return the Sonar id of the subject. '''
-        return ''
-
-
 class FakeHistory(object):  # pylint: disable=too-few-public-methods
     ''' Fake the history for testing purposes. '''
     @staticmethod  # pylint: disable=unused-argument
@@ -65,7 +51,8 @@ class ProductLOCTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project(
             metric_sources={metric_source.Sonar: FakeSonar()})
-        self._metric = metric.ProductLOC(subject=FakeSubject(), project=project)
+        subject = domain.Product(project, 'PR', name='FakeSubject')
+        self._metric = metric.ProductLOC(subject=subject, project=project)
 
     def test_value(self):
         ''' Test that the value of the metric equals the NCLOC returned by
@@ -83,12 +70,16 @@ class TotalLOCTest(unittest.TestCase):
     ''' Unit tests for the total LOC metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__subject = FakeSubject()
+        sonar = FakeSonar()
         project = domain.Project(
-            metric_sources={metric_source.Sonar: FakeSonar(),
+            metric_sources={metric_source.Sonar: sonar,
                             metric_source.History: FakeHistory()})
-        self.__metric = metric.TotalLOC(subject=[self.__subject,
-                                                 self.__subject],
+        product = domain.Product(project, 'PR', name='FakeSubject',
+                                 metric_source_ids={sonar: 'sonar id'})
+        product_without_sonar_id = domain.Product(project, 'PW', 
+                                                  name='ProductWithoutSonarId')
+        self.__metric = metric.TotalLOC(subject=[product, product,
+                                                 product_without_sonar_id],
                                         project=project)
 
     def test_value(self):

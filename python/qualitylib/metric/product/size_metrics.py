@@ -18,6 +18,7 @@ from qualitylib.domain import LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import SonarMetricMixin, \
     SonarDashboardMetricMixin
 from qualitylib.metric.quality_attributes import SIZE
+from qualitylib import metric_info
 
 
 class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
@@ -30,11 +31,6 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     target_value = 50000
     low_target_value = 100000
     quality_attribute = SIZE
-
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(ProductLOC, cls).can_be_measured(product, project) and \
-            product.sonar_id()
 
     def value(self):
         return self._sonar.ncloc(self._sonar_id())
@@ -58,7 +54,10 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     def value(self):
         total = 0
         for product in self._subject:
-            total += self._sonar.ncloc(product.sonar_id())
+            sonar_id = metric_info.SonarProductInfo(self._sonar, 
+                                                    product).sonar_id()
+            if sonar_id:
+                total += self._sonar.ncloc(sonar_id)
         return total
 
     def recent_history(self):

@@ -14,4 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
+# <MetricSource><DomainObject>Info classes provide bridges between metric
+# sources and domain objects. They make it possible that domain objects have
+# no knowledge of metric sources and vice versa.
+
 from sonar_product_info import SonarProductInfo

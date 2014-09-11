@@ -17,19 +17,17 @@ limitations under the License.
 from qualitylib.domain import HigherIsBetterMetric, LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, TEST_QUALITY
+from qualitylib import metric_info
 
 
 class UnittestMetricMixin(SonarDashboardMetricMixin):
     ''' Mixin class for Sonar metrics about unit tests. '''
 
-    @classmethod
-    def can_be_measured(cls, product, project):
-        ''' Return whether the metric can be measured. The metric can be
-            measured when the product has unit tests (and the project has
-            Sonar; tested in the super class). '''
-        return super(UnittestMetricMixin, cls).can_be_measured(product, 
-                                                               project) \
-            and product.unittests()
+    @staticmethod
+    def product_has_sonar_id(sonar, product):
+        unittest_sonar_info = metric_info.SonarProductInfo(sonar, 
+                                                           product.unittests())
+        return product.unittests() and unittest_sonar_info.sonar_id()
 
     def _parameters(self):
         ''' Add the number of unit tests to the parameters for the report. ''' 
@@ -39,7 +37,9 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):
         return parameters
 
     def _sonar_id(self):
-        return self._subject.unittests().sonar_id()
+        unittest_sonar_info = metric_info.SonarProductInfo(self._sonar,
+            self._subject.unittests())
+        return unittest_sonar_info.sonar_id()
 
 
 class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
@@ -71,17 +71,43 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
 
 class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the coverage of unit tests for a product. '''
+    ''' Base class for metrics measuring coverage of unit tests for a 
+        product. '''
 
-    name = 'Unit test broncode dekking'
-    norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
-        'door unittests. Lager dan %(low_target)d%% is rood.'
-    template = '%(name)s unittest coverage is %(value)d%% (%(tests)d ' \
-        'unittests).'
     perfect_value = 100
     target_value = 98
     low_target_value = 90
     quality_attribute = TEST_COVERAGE
 
     def value(self):
+        raise NotImplementedError  # pragma: no cover
+
+
+class UnittestLineCoverage(UnittestCoverage):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the line coverage of unit tests for a product. '''
+
+    name = 'Unit test broncode dekking (line coverage)'
+    norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
+        'door unittests. Lager dan %(low_target)d%% is rood.'
+    template = '%(name)s unittest line coverage is %(value)d%% (%(tests)d ' \
+        'unittests).'
+
+    def value(self):
         return round(self._sonar.line_coverage(self._sonar_id()))
+
+
+class UnittestBranchCoverage(UnittestCoverage):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the branch coverage of unit tests for a 
+        product. '''
+
+    name = 'Unit test broncode dekking (branch coverage)'
+    norm_template = 'Minimaal %(target)d%% van de code branches wordt gedekt ' \
+        'door unittests. Lager dan %(low_target)d%% is rood.'
+    template = '%(name)s unittest branch coverage is %(value)d%% (%(tests)d ' \
+        'unittests).'
+    low_target_value = 80
+
+    def value(self):
+        return round(self._sonar.branch_coverage(self._sonar_id()))
