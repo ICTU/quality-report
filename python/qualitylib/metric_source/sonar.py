@@ -61,7 +61,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def __language(self, product):
         ''' Return the programming language of the product. '''
-        json = self.url_open(self.__resource_api_url % product).read()
+        url = self.__resource_api_url % product
+        try:
+            json = self.url_open(url).read()
+        except urllib2.HTTPError, reason:
+            logging.warn("Couldn't open %s to retrieve language: %s", url, 
+                         reason)
+            return 'java'
         return utils.eval_json(json)[0]['lang']
 
     #  Metrics
@@ -135,7 +141,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         ''' Return the number of methods in the product that have too many
             parameters. '''
         violation_name = self.rules['many_parameters_methods'][self.__language(product)]
-        return self.__violation(product, 'Parameter Number')
+        return self.__violation(product, violation_name)
 
     def commented_loc(self, product):
         ''' Return the number of commented out lines in the source code of

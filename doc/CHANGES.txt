@@ -1,3 +1,11 @@
+2014-09-18  Release 1.13.2
+
+  * Bug fix: use the language of a component to decide what the rule name is 
+    for the number of parameters from Sonar.
+  * Bug fix: don't crash when the language of a component in Sonar can't be
+    retrieved.
+
+
 2014-09-18  Release 1.13.1
 
   * Bug fix: use C-sharp and Javascript specific rule names when the language of
