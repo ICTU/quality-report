@@ -139,5 +139,5 @@ class HTMLFormatterTest(unittest.TestCase):
         ''' Test that the report contains a list of metric classes it can 
             report on. '''
         html = self.__formatter.process(fake_report.Report())
-        self.failUnless('<table>\n<tr><th>Metriek</th><th>Kwaliteitsattribuut' \
-                        '</th><th>Norm</th>' in html)
+        self.failUnless('<table>\n<tr><th>Metriek</th><th>Class naam</th>' \
+                        '<th>Kwaliteitsattribuut</th><th>Norm</th>' in html)
