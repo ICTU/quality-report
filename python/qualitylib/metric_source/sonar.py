@@ -25,6 +25,18 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     ''' Class representing the Sonar instance. '''
 
     metric_source_name = 'SonarQube'
+    rules = dict(complex_methods=dict(java='Cyclomatic', 
+                                 cs='FunctionComplexity',
+                                 js='FunctionComplexity'),
+                 long_methods=dict(java='Ncss',
+                                   cs='AvoidLongMethodsRule',
+                                   js='S138'),
+                 commented_loc=dict(java='commented-out', 
+                                    cs='CommentedCode',
+                                    js='CommentedCode'),
+                 many_parameters_methods=dict(java='Parameter Number',
+                                              cs='AvoidLongParameterListsRule',
+                                              js='ExcessiveParameterList'))
 
     def __init__(self, sonar_url, maven=None, *args, **kwargs):
         super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
@@ -35,17 +47,22 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \
             'metrics=blocker_violations,critical_violations,major_violations,' \
             'minor_violations,info_violations&rules=true&includetrends=true'
-        self.__metrics_api_url = sonar_url + 'api/resources?resource=%s&' \
-            'metrics=%s'
+        self.__resource_api_url = sonar_url + 'api/resources?resource=%s'
+        self.__metrics_api_url = self.__resource_api_url + '&metrics=%s'
 
     @utils.memoized
     def version(self, product):
         ''' Return the version of the product. '''
-        json = self.url_open(self.url() + \
-                             'api/resources?resource=%s' % product).read()
+        json = self.url_open(self.__resource_api_url % product).read()
         version = utils.eval_json(json)[0]['version']
         logging.debug('Retrieving Sonar version for %s -> %s', product, version)
         return version
+
+    @utils.memoized
+    def __language(self, product):
+        ''' Return the programming language of the product. '''
+        json = self.url_open(self.__resource_api_url % product).read()
+        return utils.eval_json(json)[0]['lang']
 
     #  Metrics
 
@@ -105,22 +122,26 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def complex_methods(self, product):
         ''' Return the number of methods that violate the Cyclomatic complexity
             threshold. '''
-        return self.__violation(product, 'Cyclomatic')
+        violation_name = self.rules['complex_methods'][self.__language(product)]
+        return self.__violation(product, violation_name)
 
     def long_methods(self, product):
         ''' Return the number of methods in the product that have to many
             non-comment statements. '''
-        return self.__violation(product, 'Ncss')
+        violation_name = self.rules['long_methods'][self.__language(product)]
+        return self.__violation(product, violation_name)
 
     def many_parameters_methods(self, product):
         ''' Return the number of methods in the product that have too many
             parameters. '''
+        violation_name = self.rules['many_parameters_methods'][self.__language(product)]
         return self.__violation(product, 'Parameter Number')
 
     def commented_loc(self, product):
         ''' Return the number of commented out lines in the source code of
             the product. '''
-        return self.__violation(product, 'commented-out')
+        violation_name = self.rules['commented_loc'][self.__language(product)]
+        return self.__violation(product, violation_name)
 
     def violations_url(self, product):
         ''' Return the url for the violations of the product. '''
@@ -162,7 +183,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                             product, json)
             return default
         for violation in violations:
-            if violation_name in violation['rule_name']:
+            if violation_name in violation['rule_name'] or \
+               violation_name in violation['rule_key']:
                 return violation['val']
         return default
 

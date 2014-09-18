@@ -1,3 +1,11 @@
+2014-09-18  Release 1.13.1
+
+  * Bug fix: use C-sharp and Javascript specific rule names when the language of
+    a component is C-sharp or Javascript to get violations from Sonar.
+  * Add metric class names to Help menu as reference for specifying targets and
+    technical debt in the project definition file.
+
+
 2014-09-11  Release 1.13.0
 
   * The unit test coverage metric is renamed UnittestLineCoverage to prepare for

@@ -428,7 +428,8 @@ class HTMLFormatter(base_formatter.Formatter):
         result.append('<tr><th>Metriek</th><th>Kwaliteitsattribuut</th>' \
                       '<th>Norm</th></tr>')
         for metric_class in report.metric_classes():
-            name = metric_class.name
+            name = '%s (%s)' % (metric_class.name,
+                                metric_class.__class__.__name__)
             quality_attribute = metric_class.quality_attribute.name()
             norm = metric_class.norm_template % \
                 metric_class.norm_template_default_values()

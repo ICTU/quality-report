@@ -24,14 +24,16 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
 
     json = '''
 [
-    {"version": "4.2", 
+    {"version": "4.2",
+     "lang": "java",
      "msr": 
          [
-            {"val": 100, "rule_name": ""}, 
-            {"val": 50, "rule_name": "Cyclomatic complexity"},
-            {"val": 50, "rule_name": "Ncss Method Count"},
-            {"val": 50, "rule_name": "Parameter Number"},
-            {"val": 40, "rule_name": "Avoid commented-out lines of code"}
+            {"val": 100, "rule_name": "", "rule_key": ""}, 
+            {"val": 50, "rule_name": "Cyclomatic complexity", "rule_key": ""},
+            {"val": 50, "rule_name": "Ncss Method Count", "rule_key": ""},
+            {"val": 50, "rule_name": "Parameter Number", "rule_key": ""},
+            {"val": 40, "rule_name": "Avoid commented-out lines of code",
+             "rule_key": ""}
         ]
     }
 ]'''
@@ -127,6 +129,22 @@ class SonarTest(unittest.TestCase):
             commented loc returned by the dashboard. '''
         self.assertEqual(40, self.__sonar.commented_loc('product'))
 
+    def test_commented_loc_cs(self):
+        ''' Test that the number of commented loc equals the number of
+            commented loc returned by the dashboard. '''
+        self.__sonar.json = '''
+[
+    {"version": "4.2",
+     "lang": "cs",
+     "msr": 
+         [
+            {"val": 30, "rule_name": "Comment should not include code",
+             "rule_key": "CommentedCode"}
+        ]
+    }
+]'''
+        self.assertEqual(30, self.__sonar.commented_loc('product'))
+
     def test_complex_methods(self):
         ''' Test that the number of complex methods equals the number of 
             complex methods returned by the violations page. '''
@@ -150,5 +168,5 @@ class SonarTest(unittest.TestCase):
 
     def test_missing_violation_value(self):
         ''' Test that the default value is returned for missing violations. '''
-        self.__sonar.json = '[{}]'
+        self.__sonar.json = '[{"lang": "java"}]'
         self.assertEqual(0, self.__sonar.long_methods('product'))

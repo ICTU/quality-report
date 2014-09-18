@@ -75,8 +75,6 @@ class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
         product. '''
 
     perfect_value = 100
-    target_value = 98
-    low_target_value = 90
     quality_attribute = TEST_COVERAGE
 
     def value(self):
@@ -92,6 +90,8 @@ class UnittestLineCoverage(UnittestCoverage):
         'door unittests. Lager dan %(low_target)d%% is rood.'
     template = '%(name)s unittest line coverage is %(value)d%% (%(tests)d ' \
         'unittests).'
+    target_value = 98
+    low_target_value = 90
 
     def value(self):
         return round(self._sonar.line_coverage(self._sonar_id()))
@@ -107,7 +107,8 @@ class UnittestBranchCoverage(UnittestCoverage):
         'door unittests. Lager dan %(low_target)d%% is rood.'
     template = '%(name)s unittest branch coverage is %(value)d%% (%(tests)d ' \
         'unittests).'
-    low_target_value = 80
+    target_value = 80
+    low_target_value = 60
 
     def value(self):
         return round(self._sonar.branch_coverage(self._sonar_id()))

@@ -28,8 +28,9 @@ class FailingRegressionTests(LowerIsBetterMetric):
 
     name = 'Falende regressietesten'
     norm_template = 'Alle regressietesten slagen.'
-    perfect_template = 'Alle %(tests)d regressietesten van %(name)s slagen. '
-    template = '%(value)d van de %(tests)d regressietesten van %(name)s slagen niet.'
+    perfect_template = 'Alle %(tests)d regressietesten van %(name)s slagen.'
+    template = '%(value)d van de %(tests)d regressietesten van %(name)s ' \
+        'slagen niet.'
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
@@ -159,6 +160,7 @@ class ARTCoverage(HigherIsBetterMetric):
 
 
 class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
+    # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of pages that loads slower during
         running of an automated regression test than during a previous ART. '''
 
