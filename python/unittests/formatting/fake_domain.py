@@ -160,11 +160,6 @@ class Metric(object):
         return ''
 
     @staticmethod
-    def task_urls():
-        ''' Return the urls for the tasks. '''
-        return {}
-
-    @staticmethod
     def responsible_teams():
         ''' Return the teams responsible for the metric. '''
         return []
@@ -173,8 +168,3 @@ class Metric(object):
     def product_version_type():
         ''' Return a fake version type. '''
         return 'trunk'
-
-    @staticmethod
-    def has_tasks():
-        ''' Return whether this metric has tasks. '''
-        return False

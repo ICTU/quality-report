@@ -43,9 +43,7 @@ class JiraTest(unittest.TestCase):
         self.__jira = JiraUnderTest(self.__jira_url, 'username', 'password', 
                                     open_bug_query_id=123,
                                     open_security_bug_query_id=456,
-                                    blocking_test_issues_query_id=321,
-                                    jira_project_id=99,
-                                    jira_parent_task_id=1234)
+                                    blocking_test_issues_query_id=321)
 
     def test_url(self):
         ''' Test the Jira url. '''
@@ -91,35 +89,3 @@ class JiraTest(unittest.TestCase):
         ''' Test that the url is correct. '''
         self.assertEqual(self.__jira.VIEW_URL, 
                          self.__jira.nr_blocking_test_issues_url())
-
-    def test_no_tasks(self):
-        ''' Test there are no tasks by default. '''
-        self.failIf(self.__jira.tasks('K1'))
-
-    def test_one_task(self):
-        ''' Test one task. '''
-        JiraUnderTest.ISSUES = '[{"key": "I1", ' \
-                               '"fields": {"description": "Metriek K1"}}]'
-        self.assertEqual(['http://jira/browse/I1'], self.__jira.tasks('K1'))
-
-    def test_one_recent_task(self):
-        ''' Test one recent task. '''
-        now = datetime.datetime.now()
-        JiraUnderTest.ISSUES = '[{"key": "I1", ' \
-                               '"fields": {"description": "Metriek K1", ' \
-                               '"updated": "%s"}}]' % \
-                               now.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-        self.assertEqual(['http://jira/browse/I1'], 
-                         self.__jira.tasks('K1', recent_only=True))
-
-    def test_default_new_task_url(self):
-        ''' Test the default url for creating new tasks. '''
-        self.assertEqual('http://jira/&description=Metriek+K1', 
-                         JiraUnderTest(self.__jira_url, 'username', 
-                                       'password').new_task_url('K1'))
-
-    def test_new_task_url(self):
-        ''' Test the url for creating new tasks. '''
-        self.assertEqual('http://jira/secure/CreateSubTaskIssue!default.jspa' \
-            '?pid=99&issuetype=8&parentIssueId=1234&description=Metriek+K1', 
-            self.__jira.new_task_url('K1'))

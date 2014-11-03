@@ -17,6 +17,7 @@ limitations under the License.
 import base64
 import urllib2
 import logging
+import socket
 
 
 class UrlOpener(object):
@@ -67,7 +68,7 @@ class UrlOpener(object):
         ''' Return an opened url, using the opener created earlier. '''
         try:
             return self.__opener(url)
-        except (urllib2.HTTPError, urllib2.URLError), reason:
+        except (urllib2.HTTPError, urllib2.URLError, socket.error), reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
 

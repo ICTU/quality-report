@@ -48,6 +48,7 @@ class ResponseTimes(domain.Metric):
     target_value = 0  # Not used
     low_target_value = 0  # Not used
     quality_attribute = PERFORMANCE
+    metric_source_classes = (metric_source.PerformanceReport,)
 
     def __init__(self, *args, **kwargs):
         super(ResponseTimes, self).__init__(*args, **kwargs)
@@ -62,14 +63,6 @@ class ResponseTimes(domain.Metric):
                 '%(old_age)s. Als een of meer queries de maximum ' \
                 'responsetijd overschrijden of als de meting ouder is dan ' \
                 '%(max_old_age)s, is de score rood, anders geel.'
-
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        ''' The performance can be measured when the product has a performance
-            report. '''
-        report = project.metric_source(metric_source.PerformanceReport)
-        return super(ResponseTimes, cls).can_be_measured(subject, project) and \
-            subject.metric_source_id(report)
 
     def value(self):
         return None  # We use max_violations and wish_violations as value

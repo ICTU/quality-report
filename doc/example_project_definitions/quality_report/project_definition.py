@@ -11,13 +11,15 @@ BUILD_SERVER = metric_source.Jenkins('http://jenkins/',
                                      password='jenkings_password',
                                      job_re='-metrics')
 MAVEN = metric_source.Maven(binary='mvn3')
-SONAR = metric_source.Sonar('http://sonar/', username='sonar_user',
-                            password='sonar_admin', maven=MAVEN)
-HISTORY = metric_source.History('quality-data/quality_report/history.json')
 SUBVERSION = metric_source.Subversion()
+SONAR = metric_source.Sonar('http://sonar/', username='sonar_user',
+                            password='sonar_admin', maven=MAVEN,
+                            subversion=SUBVERSION)
+HISTORY = metric_source.History('quality-data/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
                               'artifact/trunk/coveragereport/index.html', 
                               BUILD_SERVER.username(), BUILD_SERVER.password())
+POM = metric_source.Pom(sonar=SONAR, subversion=SUBVERSION)
 
 # The project
 PROJECT = Project('Organization name', name='Quality Report', 
@@ -25,7 +27,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                                   metric_source.Subversion: SUBVERSION,
                                   metric_source.Sonar: SONAR,
                                   metric_source.JaCoCo: JACOCO,
-                                  metric_source.Pom: metric_source.Pom(),
+                                  metric_source.Pom: POM,
                                   metric_source.History: HISTORY},
                   additional_resources=[
                       MetricSource(name='GitHub Quality Report',
@@ -34,6 +36,12 @@ PROJECT = Project('Organization name', name='Quality Report',
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', is_support_team=True)
 PROJECT.add_team(QUALITY_TEAM, responsible=True)
+
+# Documents of the project.
+QUALITY_PLAN_URL = SVN_BASE + 'http://svn/commons/docs/quality_plan.doc'
+PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
+    metric_source_ids={SUBVERSION: QUALITY_PLAN_URL},
+    responsible_teams=[QUALITY_TEAM]))
 
 # Products the project(s) develop(s).
 QUALITY_REPORT_UNITTESTS = \

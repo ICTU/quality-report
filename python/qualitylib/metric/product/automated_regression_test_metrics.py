@@ -34,20 +34,12 @@ class FailingRegressionTests(LowerIsBetterMetric):
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
+    metric_source_classes = (metric_source.JenkinsTestReport,)
 
     def __init__(self, *args, **kwargs):
         super(FailingRegressionTests, self).__init__(*args, **kwargs)
         self.__jenkins_test_report = \
             self._project.metric_source(metric_source.JenkinsTestReport)
- 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jenkins_test_report = \
-            project.metric_source(metric_source.JenkinsTestReport)
-        return super(FailingRegressionTests, cls).can_be_measured(subject, 
-                                                                  project) and \
-            jenkins_test_report and \
-            subject.metric_source_id(jenkins_test_report)
 
     def value(self):
         return self.__jenkins_test_report.failed_tests(self.__jenkins_ids()) + \
@@ -92,17 +84,18 @@ class ARTCoverage(HigherIsBetterMetric):
     norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
            'door geautomatiseerde functionele tests. ' \
            'Minder dan %(low_target)d%% is rood.'
-    template = '%(name)s ART coverage is %(coverage)d%% ' \
+    template = '%(name)s ART coverage is %(value)d%% ' \
                '(%(date)s, %(age)s geleden).'
     perfect_value = 100
     target_value = 80
     low_target_value = 70
     quality_attribute = TEST_COVERAGE
+    metric_source_classes = []  # subclass responsibility
 
     def __init__(self, *args, **kwargs):
         super(ARTCoverage, self).__init__(*args, **kwargs)
-        self.__emma = self._project.metric_source(metric_source.Emma)
-        self.__jacoco = self._project.metric_source(metric_source.JaCoCo)
+        self.__coverage_report = \
+            self._project.metric_source(self.__coverage_class())
         if not self._subject.product_version():
             # Trunk version, ART coverage measurement should not be too old.
             self.old_age = datetime.timedelta(hours=3 * 24)
@@ -112,51 +105,40 @@ class ARTCoverage(HigherIsBetterMetric):
                 'coverage meting is niet ouder dan %(old_age)s. Minder dan ' \
                 '%(low_target)d%% of meting ouder dan %(max_old_age)s is rood.'
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        emma = project.metric_source(metric_source.Emma)
-        jacoco = project.metric_source(metric_source.JaCoCo)
-        return super(ARTCoverage, cls).can_be_measured(subject, project) and \
-            (jacoco and subject.metric_source_id(jacoco)) \
-            or (emma and subject.metric_source_id(emma))
-
     def value(self):
-        return self.__coverage()
-
-    def _parameters(self):
-        # pylint: disable=protected-access
-        parameters = super(ARTCoverage, self)._parameters()
-        parameters['coverage'] = self.__coverage()
-        return parameters
+        coverage_id = self._subject.metric_source_id(self.__coverage_report)
+        return self.__coverage_report.coverage(coverage_id)
 
     def url(self):
         urls = dict()
-        emma_id = self._subject.metric_source_id(self.__emma)
-        if emma_id:
-            urls['Emma'] = self.__emma.get_coverage_url(emma_id)
-        jacoco_id = self._subject.metric_source_id(self.__jacoco)
-        if jacoco_id:
-            urls['JaCoCo'] = self.__jacoco.get_coverage_url(jacoco_id)
+        coverage_id = self._subject.metric_source_id(self.__coverage_report)
+        urls[self.__coverage_class().__name__] = \
+            self.__coverage_report.get_coverage_url(coverage_id)
         return urls
 
-    def __coverage(self):
-        ''' Return the coverage from Emma or Jacoco. '''
-        emma_id = self._subject.metric_source_id(self.__emma)
-        if emma_id:
-            return self.__emma.coverage(emma_id)
-        else:
-            jacoco_id = self._subject.metric_source_id(self.__jacoco)
-            return self.__jacoco.coverage(jacoco_id)
-
     def _date(self):
-        ''' Return the date of the last coverage measurement from Emma or 
-            Jacoco. '''
-        emma_id = self._subject.metric_source_id(self.__emma)
-        if emma_id:
-            return self.__emma.coverage_date(emma_id)
-        else:
-            jacoco_id = self._subject.metric_source_id(self.__jacoco)
-            return self.__jacoco.coverage_date(jacoco_id)
+        ''' Return the date of the last coverage measurement from the coverage
+            report. '''
+        coverage_id = self._subject.metric_source_id(self.__coverage_report)
+        return self.__coverage_report.coverage_date(coverage_id)
+
+    def __coverage_class(self):
+        ''' Return the coverage class we're using. '''
+        return self.metric_source_classes[0]
+
+
+class EmmaARTCoverage(ARTCoverage):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the coverage of automated regression tests (ART)
+        for a product with Emma. '''
+    metric_source_classes = [metric_source.Emma]
+
+
+class JaCoCoARTCoverage(ARTCoverage):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the coverage of automated regression tests (ART)
+        for a product with JacCoCo. '''
+    metric_source_classes = [metric_source.JaCoCo]
 
 
 class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
@@ -173,6 +155,7 @@ class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 5
     quality_attribute = PERFORMANCE
+    metric_source_classes = (metric_source.Birt,)
 
     @classmethod
     def can_be_measured(cls, product, project):

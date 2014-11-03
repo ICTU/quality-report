@@ -44,6 +44,19 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return parameters
 
 
+class BlockerViolations(Violations):  # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of blocker violations reported by
+        Sonar. '''
+
+    name = 'Blocker violations'
+    violation_type = 'blocker'
+    target_value = 0
+    low_target_value = 0
+
+    def value(self):
+        return self._sonar.blocker_violations(self._sonar_id())
+
+
 class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of critical violations reported by 
         Sonar. '''

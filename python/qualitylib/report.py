@@ -118,14 +118,15 @@ class QualityReport(object):
                                     metric.UnittestLineCoverage, 
                                     metric.UnittestBranchCoverage, 
                                     metric.FailingRegressionTests,
-                                    metric.ARTCoverage)
+                                    metric.EmmaARTCoverage,
+                                    metric.JaCoCoARTCoverage)
     TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewedAndApproved,
                                   metric.LogicalTestCasesNotReviewedAndApproved,
                                   metric.UserStoriesWithTooFewLogicalTestCases,
                                   metric.LogicalTestCasesNotAutomated,
                                   metric.ManualLogicalTestCases)
-    JAVA_METRIC_CLASSES = (metric.CriticalViolations, metric.MajorViolations,
-                           metric.CyclomaticComplexity, 
+    JAVA_METRIC_CLASSES = (metric.BlockerViolations, metric.CriticalViolations,
+                           metric.MajorViolations, metric.CyclomaticComplexity,
                            metric.CyclicDependencies, metric.JavaDuplication,
                            metric.ProductLOC, metric.LongMethods,
                            metric.ManyParameters, metric.CommentedLOC)
@@ -139,16 +140,17 @@ class QualityReport(object):
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
                            metric.BlockingTestIssues)
     DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
+    TEAM_METRIC_CLASSES = (metric.ReleaseAge, metric.TeamProgress,
+                                   metric.TeamSpirit, metric.TeamAbsence,
+                                   metric.TeamFailingCIJobs,
+                                   metric.TeamUnusedCIJobs)
     META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
                            metric.YellowMetaMetric, metric.GreyMetaMetric)
 
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + \
         BUILD_SERVER_METRIC_CLASSES + BUGS_METRIC_CLASSES
     META_SECTION_METRIC_CLASSES = META_METRIC_CLASSES
-    TEAM_SECTION_METRIC_CLASSES = (metric.ReleaseAge, metric.TeamProgress,
-                                   metric.TeamSpirit, metric.TeamAbsence,
-                                   metric.TeamFailingCIJobs,
-                                   metric.TeamUnusedCIJobs)
+    TEAM_SECTION_METRIC_CLASSES = TEAM_METRIC_CLASSES
 
     @classmethod
     def metric_classes(cls):
@@ -157,12 +159,10 @@ class QualityReport(object):
             cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
             cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
-            cls.DOCUMENT_METRIC_CLASSES + \
+            cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + \
             (metric.TotalLOC, metric.DependencyQuality, 
              metric.SnapshotDependencies, metric.UnmergedBranches,
-             metric.TeamProgress, metric.ReleaseAge, metric.ARTStability,
-             metric.TeamSpirit, metric.TeamFailingCIJobs, 
-             metric.TeamUnusedCIJobs)
+             metric.ARTStability)
 
     def __init__(self, project):
         self.__project = project
@@ -184,9 +184,9 @@ class QualityReport(object):
         ''' Return the title of the quality report. '''
         return self.__title
 
-    def project_resources(self):
-        ''' Return the project resources. '''
-        return self.__project.project_resources()
+    def project(self):
+        ''' Return the project this report is about. '''
+        return self.__project
 
     @staticmethod
     def date():
@@ -310,7 +310,8 @@ class QualityReport(object):
             # because we currently can only report on the trunk version of the
             # ART.
             metrics.extend(self.__java_metrics(art))
-            for art_metric_class in (metric.ARTCoverage,
+            for art_metric_class in (metric.EmmaARTCoverage,
+                                     metric.JaCoCoARTCoverage,
                                      metric.FailingRegressionTests,
                                      metric.RelativeARTPerformance):
                 if art_metric_class.can_be_measured(art, self.__project):

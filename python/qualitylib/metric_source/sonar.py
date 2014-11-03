@@ -25,23 +25,12 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     ''' Class representing the Sonar instance. '''
 
     metric_source_name = 'SonarQube'
-    rules = dict(complex_methods=dict(java='Cyclomatic', 
-                                 cs='FunctionComplexity',
-                                 js='FunctionComplexity'),
-                 long_methods=dict(java='Ncss',
-                                   cs='AvoidLongMethodsRule',
-                                   js='S138'),
-                 commented_loc=dict(java='commented-out', 
-                                    cs='CommentedCode',
-                                    js='CommentedCode'),
-                 many_parameters_methods=dict(java='Parameter Number',
-                                              cs='AvoidLongParameterListsRule',
-                                              js='ExcessiveParameterList'))
 
-    def __init__(self, sonar_url, maven=None, *args, **kwargs):
+    def __init__(self, sonar_url, maven=None, subversion=None, *args, **kwargs):
         super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
         maven = maven or Maven()
-        self.__runner = sonar_runner.SonarRunner(self, maven, *args, **kwargs)
+        self.__runner = sonar_runner.SonarRunner(self, maven, subversion, 
+                                                 *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
         self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \
@@ -57,18 +46,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         version = utils.eval_json(json)[0]['version']
         logging.debug('Retrieving Sonar version for %s -> %s', product, version)
         return version
-
-    @utils.memoized
-    def __language(self, product):
-        ''' Return the programming language of the product. '''
-        url = self.__resource_api_url % product
-        try:
-            json = self.url_open(url).read()
-        except urllib2.HTTPError, reason:
-            logging.warn("Couldn't open %s to retrieve language: %s", url, 
-                         reason)
-            return 'java'
-        return utils.eval_json(json)[0]['lang']
 
     #  Metrics
 
@@ -88,6 +65,10 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def critical_violations(self, product):
         ''' Return the number of critical violations for the product. '''
         return self.__metric(product, 'critical_violations')
+
+    def blocker_violations(self, product):
+        ''' Return the number of blocker violations for the product. '''
+        return self.__metric(product, 'blocker_violations')
 
     def duplicated_lines(self, product):
         ''' Return the number of duplicated lines for the product. '''
@@ -128,26 +109,39 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def complex_methods(self, product):
         ''' Return the number of methods that violate the Cyclomatic complexity
             threshold. '''
-        violation_name = self.rules['complex_methods'][self.__language(product)]
-        return self.__violation(product, violation_name)
+        nr_complex_methods = 0
+        violation_names = ('Cyclomatic', 'FunctionComplexity')
+        for violation_name in violation_names:
+            nr_complex_methods += self.__violation(product, violation_name)
+        return nr_complex_methods
 
     def long_methods(self, product):
         ''' Return the number of methods in the product that have to many
             non-comment statements. '''
-        violation_name = self.rules['long_methods'][self.__language(product)]
-        return self.__violation(product, violation_name)
+        nr_long_methods = 0
+        violation_names = ('Ncss', 'AvoidLongMethodsRule', 'S138')
+        for violation_name in violation_names:
+            nr_long_methods += self.__violation(product, violation_name)
+        return nr_long_methods
 
     def many_parameters_methods(self, product):
         ''' Return the number of methods in the product that have too many
             parameters. '''
-        violation_name = self.rules['many_parameters_methods'][self.__language(product)]
-        return self.__violation(product, violation_name)
+        nr_many_parameters = 0
+        violation_names = ('Parameter Number', 'AvoidLongParameterListsRule',
+                           'ExcessiveParameterList')
+        for violation_name in violation_names:
+            nr_many_parameters += self.__violation(product, violation_name)
+        return nr_many_parameters
 
     def commented_loc(self, product):
         ''' Return the number of commented out lines in the source code of
             the product. '''
-        violation_name = self.rules['commented_loc'][self.__language(product)]
-        return self.__violation(product, violation_name)
+        nr_commented_loc = 0
+        violation_names = ('commented-out', 'CommentedCode')
+        for violation_name in violation_names:
+            nr_commented_loc += self.__violation(product, violation_name)
+        return nr_commented_loc
 
     def violations_url(self, product):
         ''' Return the url for the violations of the product. '''

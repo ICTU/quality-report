@@ -18,8 +18,8 @@ from qualitylib.formatting import base_formatter, html_formatter
 
 
 class DotFormatter(base_formatter.Formatter):
-    ''' Format the report as GraphViz dot file. This is used for generating a
-        dependency graph. '''
+    ''' Base class for formatters that format the report as a GraphVix dot 
+        file. '''
 
     sep = '\n'
 
@@ -28,12 +28,19 @@ class DotFormatter(base_formatter.Formatter):
         return 'digraph { ranksep="2.5"; concentrate="true";'
 
     def body(self, report):
-        ''' Return the dependencies between the products in the project in dot
-            format. '''
+        ''' Return the nodes and edges in dot format. '''
         graph = []
-        graph.extend(self.__product_subgraphs(report))
-        graph.extend(self.__product_edges(report))
+        graph.extend(self._nodes(report))
+        graph.extend(self._edges(report))
         return self.sep.join(graph)
+
+    def _nodes(self, report):
+        ''' Override to return a list of graph nodes. ''' 
+        raise NotImplementedError  # pragma: no cover
+
+    def _edges(self, report):
+        ''' Override to return a list of graph edges. '''
+        raise NotImplementedError  # pragma: no cover
 
     def metric(self, metric):
         ''' Return a dot formatted version of the metric. '''
@@ -44,8 +51,12 @@ class DotFormatter(base_formatter.Formatter):
         ''' Return the graph postfix. '''
         return '}\n'
 
-    @staticmethod
-    def __product_subgraphs(report):
+
+class DependencyFormatter(DotFormatter):
+    ''' Format the report as GraphViz dot file. This is used for generating a
+        dependency graph. '''
+
+    def _nodes(self, report):
         ''' Return the subgraphs representing the products in the report. '''
         products_by_name = dict()
         for product in report.products():
@@ -70,8 +81,7 @@ class DotFormatter(base_formatter.Formatter):
             subgraphs.append(subgraph_template % (name, name, node_string))
         return subgraphs
 
-    @staticmethod
-    def __product_edges(report):
+    def _edges(self, report):
         ''' Return the edges representing the dependencies between products in
             the report. '''
         edges = []
@@ -81,3 +91,73 @@ class DotFormatter(base_formatter.Formatter):
                 edges.append('  "%s" -> "%s:%s";' % (product.product_label(),
                              dependency_name, dependency_version or 'trunk'))
         return edges
+
+
+class MetricClassesFormatter(DotFormatter):
+    ''' Format the metrics and metric sources as a graph. '''
+
+    def prefix(self, report):
+        return super(MetricClassesFormatter, self).prefix(report) + \
+            ' rankdir=LR; size="10,20!";'
+
+    def _nodes(self, report):
+        nodes = []
+        project = report.project()
+        nodes.extend(self.__metric_source_nodes(report, project))
+        nodes.extend(self.__metric_nodes(report, project))
+        return nodes
+
+    def _edges(self, report):
+        edges = []
+        for metric_class in report.metric_classes():
+            for metric_source_class in metric_class.metric_source_classes:
+                edges.append('"%s" -> "%s";' % \
+                    (metric_source_class.metric_source_name, metric_class.name))
+        return edges
+
+    def __metric_source_nodes(self, report, project):
+        ''' Return a list of metric source nodes. '''
+        nodes = []
+        node_template = '"%(name)s" [style="filled" ' \
+                                    'fillcolor="%(color)s"%(url)s];'
+        for metric_source_class in self.__metric_source_classes(report):
+            name = metric_source_class.metric_source_name
+            metric_source = project.metric_source(metric_source_class)
+            url = ' URL="%s" target="_top"' % metric_source.url() \
+                if metric_source else ''
+            color = self.__color(project, metric_source_class)
+            nodes.append(node_template % dict(name=name, color=color, url=url))
+        return nodes
+
+    def __metric_nodes(self, report, project):
+        ''' Return a list of metric class nodes. '''
+        nodes = []
+        node_template = '"%(name)s" [style="filled" fillcolor="%(color)s"];'
+        for metric_class in report.metric_classes():
+            name = metric_class.name
+            color = self.__color(project, *metric_class.metric_source_classes)
+            nodes.append(node_template % dict(name=name, color=color))
+        return nodes
+
+    @staticmethod
+    def __metric_source_classes(report):
+        ''' Return a set of all metric source classes. '''
+        metric_source_classes = set()
+        for metric_class in report.metric_classes():
+            metric_source_classes.update(set(metric_class.metric_source_classes))
+        return metric_source_classes
+
+    @classmethod
+    def __color(cls, project, *metric_source_classes):
+        ''' Return a color to represent whether all metric sources are 
+            available in the project. '''
+        return 'green' if cls.__available(project, *metric_source_classes) \
+            else 'red'
+
+    @staticmethod
+    def __available(project, *metric_source_classes):
+        ''' Return whether the project has all of the metric source classes. '''
+        for metric_source_class in metric_source_classes:
+            if not project.metric_source(metric_source_class):
+                return False
+        return True

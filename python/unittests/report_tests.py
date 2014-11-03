@@ -184,16 +184,6 @@ class FakeSonar(object):  # pylint: disable=too-few-public-methods
         ''' Return the version number of the product. '''
         return '1'
 
-    @staticmethod
-    def url():
-        ''' Return the Sonar url. '''
-        return 'http://sonar'
-
-    @staticmethod
-    def name():
-        ''' Return the Sonar name. '''
-        return 'SonarQube'
-
 
 class QualityReportTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -204,6 +194,10 @@ class QualityReportTest(unittest.TestCase):
         self.__project = domain.Project('organization', name='project title',
             metric_sources={metric_source.Sonar: self.__sonar})
         self.__report = report.QualityReport(self.__project)
+
+    def test_project(self):
+        ''' Test that the report has the project. '''
+        self.assertEqual(self.__project, self.__report.project())
 
     def test_title(self):
         ''' Test that the title of the report is equal to the title of the
@@ -295,12 +289,6 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([product], quality_report.products())
 
-    def test_resources(self):
-        ''' Test that the report has project resources. '''
-        quality_report = report.QualityReport(self.__project)
-        self.failUnless(('SonarQube', FakeSonar.url()) in 
-                         quality_report.project_resources())
-
     def test_get_product(self):
         ''' Test that a product can be retrieved by version number. '''
         product = domain.Product(self.__project, name='Product')
@@ -344,8 +332,21 @@ class FakeJira(object):  # pylint: disable=too-few-public-methods
         has_open_bugs_query
 
 
-class FakeJenkinsTestReport(object):
+class FakeJenkinsTestReport(object):  # pylint: disable=too-few-public-methods
     ''' Fake Jenkins. '''
+    pass
+
+
+class FakePom(object):  # pylint: disable=too-few-public-methods
+    ''' Fake Pom retriever. '''
+    @staticmethod  # pylint: disable=unused-argument
+    def dependencies(*args):
+        ''' Return the dependencies. '''
+        return set()
+
+
+class FakeSubversion(object):  # pylint: disable=too-few-public-methods
+    ''' Fake Subversion repository. '''
     pass
 
 
@@ -357,6 +358,8 @@ class QualityReportMetricsTest(unittest.TestCase):
     def setUp(self):
         self.__sonar = FakeSonar()
         self.__birt = FakeBirt()
+        self.__pom = FakePom()
+        self.__subversion = FakeSubversion()
         self.__jenkins = FakeJenkinsTestReport()
 
     @staticmethod
@@ -492,14 +495,14 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_art_coverage(self):
         ''' Test that the ART coverage metric is added if possible. '''
-        self.__assert_metric(metric.ARTCoverage,
+        self.__assert_metric(metric.EmmaARTCoverage,
             project_kwargs=dict(metric_sources={metric_source.Emma: 'Emma'}), 
             product_kwargs=dict(metric_source_ids={'Emma': 'emma'}))
 
     def test_art_coverage_via_art(self):
         ''' Test that the ART coverage metric is added if the ART product
             has the coverage report. '''
-        self.__assert_metric(metric.ARTCoverage, 
+        self.__assert_metric(metric.EmmaARTCoverage, 
             project_kwargs=dict(metric_sources={metric_source.Emma: 'Emma'}),
             product_kwargs=dict(art=dict(metric_source_ids={'Emma': 'emma'})))
 
@@ -686,7 +689,7 @@ class QualityReportMetricsTest(unittest.TestCase):
                 metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
-    def test_no_cyclic_dependencies(self):
+    def test_no_cyclic_dependencies_without_sonar_id(self):
         ''' Test that the cyclic dependencies metric is not added if the 
             product has no Sonar id. '''
         self.__assert_metric(metric.CyclicDependencies,
@@ -699,11 +702,35 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the snapshot dependencies metric is not added for trunk
             versions. '''
         self.__assert_metric(metric.SnapshotDependencies,
+            project_kwargs=dict(
+                metric_sources={metric_source.Pom: self.__pom,
+                                metric_source.Subversion: self.__subversion}),
             product_kwargs=dict(short_name='dummy'), include=False)
+
+    def test_no_snapshot_dependencies_without_pom(self):
+        ''' Test that the snapshot dependencies metric is not added without
+            pom files. '''
+        self.__assert_metric(metric.SnapshotDependencies,
+            project_kwargs=dict(
+                metric_sources={metric_source.Subversion: self.__subversion}),
+            product_kwargs=dict(short_name='dummy', product_version='1.1'),
+            include=False)
+
+    def test_no_snapshot_dependencies_without_subversion(self):
+        ''' Test that the snapshot dependencies metric is not added without
+            pom files. '''
+        self.__assert_metric(metric.SnapshotDependencies,
+            project_kwargs=dict(
+                metric_sources={metric_source.Pom: self.__pom}),
+            product_kwargs=dict(short_name='dummy', product_version='1.1'),
+            include=False)
 
     def test_snapshot_dependencies(self):
         ''' Test that the snapshot dependencies metric is added if possible. '''
         self.__assert_metric(metric.SnapshotDependencies,
+            project_kwargs=dict(
+                metric_sources={metric_source.Pom: self.__pom,
+                                metric_source.Subversion: self.__subversion}),
             product_kwargs=dict(short_name='dummy', product_version='1.1'))
 
     def test_java_duplication(self):
@@ -756,7 +783,8 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_document_age(self):
         ''' Test that the document age metric is added if possible. '''
-        document = domain.Document(name='Title', url='http://url')
+        document = domain.Document(name='Title', url='http://url/',
+            metric_source_ids={'Subversion': 'http://url/'})
         self.__assert_metric(metric.DocumentAge,
             project_kwargs=dict(metric_sources={metric_source.Subversion:
                                                 'Subversion'},
@@ -772,5 +800,5 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_metric_classes(self):
         ''' Test that the report gives a list of metric classes. '''
-        self.failUnless(metric.ARTCoverage in \
+        self.failUnless(metric.EmmaARTCoverage in \
                         report.QualityReport.metric_classes())

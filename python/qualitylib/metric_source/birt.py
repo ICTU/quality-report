@@ -138,6 +138,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing the Birt report engine instance. '''
 
     metric_source_name = 'Birt reports'
+    needs_metric_source_id = True
 
     def __init__(self, birt_url):
         birt_url = birt_url + 'birt/'

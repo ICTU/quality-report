@@ -36,16 +36,6 @@ class FakeSubversion(object):
         ''' Return the latest tagged product version from Subversion. '''
         return '1.1'
 
-    @staticmethod
-    def last_changed_date(svn_path):  # pylint: disable=unused-argument
-        ''' Return the date the product was last changed. '''
-        return 'yesterday'
-
-    @staticmethod
-    def branch_folder_for_branch(trunk, branch):
-        ''' Return the branch folder for the branch. '''
-        return metric_source.Subversion.branch_folder_for_branch(trunk, branch)
-
 
 class FakePom(object):  # pylint: disable=too-few-public-methods
     ''' Fake a pom file. '''
@@ -135,21 +125,6 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product.set_product_version('1.1')
         self.assertEqual('release', product.product_version_type())
 
-    def test_latest_released_product_version(self):
-        ''' Test that the latest release product version is retrieved from
-            Subversion. '''
-        subversion = FakeSubversion()
-        project = domain.Project('Organization',
-            metric_sources={metric_source.Subversion: subversion})
-        product = domain.Product(project,
-                                 metric_source_ids={subversion: 'http://svn/'})
-        self.assertEqual('1.1', product.latest_released_product_version())
-
-    def test_latest_release_product_version_without_svn_path(self):
-        ''' Test that a product without Subversion path doesn't have a latest
-            released product version. '''
-        self.assertEqual('', self.__product.latest_released_product_version())
-
     def test_trunk_is_not_latest_release(self):
         ''' Test that the trunk version of a product is not the latest 
             release. '''
@@ -165,17 +140,6 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
                                  metric_source_ids={subversion: 'http://svn/'})
         product.set_product_version('1.1')
         self.failUnless(product.is_latest_release())
-
-    def test_last_changed_date(self):
-        ''' Test that the date the product was last changed is the date
-            reported by Subversion. '''
-        subversion = FakeSubversion()
-        project = domain.Project('Organization',
-            metric_sources={metric_source.Subversion: subversion})
-        product = domain.Product(project,
-                                 metric_source_ids={subversion: 'http://svn/'})
-        self.assertEqual(subversion.last_changed_date('http://svn'),
-                         product.last_changed_date())
 
     def test_responsible_teams(self):
         ''' Test that the product has no responsible teams by default. '''
@@ -297,9 +261,3 @@ class BranchProductTest(unittest.TestCase):
         self.__product.set_product_branch('branch1')
         self.__product.set_product_version('1.1')
         self.assertEqual('Product:branch1:1.1', self.__product.product_label())
-
-    def test_svn_path(self):
-        ''' Test that the subversion path is the branch folder. '''
-        self.__product.set_product_branch('branch1')
-        self.assertEqual('http://svn/p/product/branches/br1/', 
-                         self.__product.svn_path())

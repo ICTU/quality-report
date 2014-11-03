@@ -88,6 +88,11 @@ class SonarTest(unittest.TestCase):
             critical violations returned by the dashboard. '''
         self.assertEqual(100, self.__sonar.critical_violations('product'))
 
+    def test_blocker_violations(self):
+        ''' Test that the number of blocker violations equals the number of
+            blocker violations returned by the dashboard. '''
+        self.assertEqual(100, self.__sonar.blocker_violations('product'))
+
     def test_duplicated_lines(self):
         ''' Test that the number of duplicated lines equals the number of 
             duplicated lines returned by the dashboard. '''

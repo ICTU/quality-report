@@ -216,6 +216,8 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
 class JenkinsTestReport(Jenkins):
     ''' Class representing test reports in Jenkins jobs. '''
+    needs_metric_source_id = True
+
     def __init__(self, *args, **kwargs):
         super(JenkinsTestReport, self).__init__(*args, **kwargs)
         self.__test_report_url = self._last_successful_build_url + 'testReport/'

@@ -62,7 +62,9 @@ class PomTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = metric_source.Sonar('http://sonar')
-        self.__pom = PomUnderTest(sonar=self.__sonar)
+        self.__subversion = metric_source.Subversion()
+        self.__pom = PomUnderTest(sonar=self.__sonar,
+                                  subversion=self.__subversion)
 
     def test_no_dependencies(self):
         ''' Test pom without dependencies. '''

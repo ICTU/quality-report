@@ -19,3 +19,4 @@ limitations under the License.
 # no knowledge of metric sources and vice versa.
 
 from sonar_product_info import SonarProductInfo
+from subversion_product_info import SubversionProductInfo

@@ -27,6 +27,7 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __init__(self, *args, **kwargs):
         self.__sonar = kwargs.pop('sonar')
+        self.__subversion = kwargs.pop('subversion')
         super(Pom, self).__init__(*args, **kwargs)
 
     @utils.memoized
@@ -101,8 +102,9 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         product_artifact_id = sonar_id.split(':')[1]
         if artifact_id == product_artifact_id:
             return True
-        if product.svn_path():
-            for module in self.modules(product.svn_path()):
+        svn_path = self.__product_svn_path(product)
+        if svn_path:
+            for module in self.modules(svn_path):
                 if artifact_id == module:
                     return True
         return False
@@ -187,3 +189,9 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         ''' Return the product's Sonar id. '''
         sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
         return sonar_product_info.sonar_id()
+
+    def __product_svn_path(self, product):
+        ''' Return the product's Subversion path. '''
+        subversion_product_info = metric_info.SubversionProductInfo( \
+            self.__subversion, product)
+        return subversion_product_info.svn_path()

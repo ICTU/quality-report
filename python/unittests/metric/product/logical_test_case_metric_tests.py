@@ -82,6 +82,17 @@ class FakeBirt(object):
         return 'http://manual_tests'
 
 
+class FakeSubversion(object):
+    ''' Fake Subversion so unit tests don't touch the file system. '''
+    def tags_folder_for_version(self, *args):  # pylint: disable=unused-argument
+        ''' Return the tags folder. '''
+        return 'tags/'
+
+    def last_changed_date(self, *args):  # pylint: disable=unused-argument
+        ''' Return the date that a path was last changed. '''
+        return datetime.datetime.now() - datetime.timedelta(days=50)
+
+
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
     version = ''
@@ -102,6 +113,11 @@ class FakeSubject(object):
         ''' Return the Birt id of the subject. '''
         return 'birt id' if self.__birt_id else ''
 
+    def old_metric_source_id(self, *args):
+        # pylint: disable=unused-argument
+        ''' Return the old metric source id of the subject. '''
+        return ''
+
     def product_version(self):
         ''' Return the version of the subject. '''
         return self.version
@@ -110,15 +126,14 @@ class FakeSubject(object):
         ''' Return the version type of the product. '''
         return self.version_type
 
-    def responsible_teams(self, *args):  # pylint: disable-msg=unused-argument
+    def product_branch_id(self, subversion):  # pylint: disable=unused-argument
+        ''' Return the branch id of the product. '''
+        return ''
+
+    def responsible_teams(self, *args):  # pylint: disable=unused-argument
         ''' Return the responsible teams for this product. '''
         return [domain.Team(name='Team', is_scrum_team=self.__scrum_team)] if \
             self.__team else []
-
-    @staticmethod
-    def last_changed_date():
-        ''' Return the date that this product was last changed. '''
-        return datetime.datetime.now() - datetime.timedelta(days=50)
 
 
 class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
@@ -236,9 +251,11 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
     ''' Unit tests for the ManualLogicalTestCases metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
+        self.__subversion = FakeSubversion()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(metric_sources={metric_source.Birt:
-                                                        self.__birt})
+        self.__project = domain.Project(metric_sources={
+            metric_source.Birt: self.__birt,
+            metric_source.Subversion: self.__subversion})
         self.__metric = metric.ManualLogicalTestCases( \
             subject=self.__subject, project=self.__project)
 
@@ -289,7 +306,8 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_can_be_measured(self):
         ''' Test that the metric can  be measured when the project has Birt and
-            the product has a Birt id and is a trunk version. '''
+            the product has a Birt id, the project has Subversion and the
+            product has a Subversion id and the product is a trunk version. '''
         self.failUnless(metric.ManualLogicalTestCases.\
                         can_be_measured(self.__subject, self.__project))
 

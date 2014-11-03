@@ -39,12 +39,12 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     quality_attribute = PROGRESS
     target_factor = 1.25
     low_target_factor = 1.5
+    metric_source_classes = (metric_source.Birt,)
 
     @classmethod
     def can_be_measured(cls, team, project):
-        birt = project.metric_source(metric_source.Birt)
         return super(TeamProgress, cls).can_be_measured(team, project) and \
-            team.is_scrum_team() and birt and team.metric_source_id(birt)
+            team.is_scrum_team()
 
     @classmethod
     def norm_template_default_values(cls):
@@ -98,15 +98,11 @@ class TeamSpirit(Metric):
     old_age = datetime.timedelta(hours=7 * 24)
     max_old_age = datetime.timedelta(hours=14 * 24)
     quality_attribute = SPIRIT
+    metric_source_classes = (metric_source.Wiki,)
 
     def __init__(self, *args, **kwargs):
         super(TeamSpirit, self).__init__(*args, **kwargs)
         self.__wiki = self._project.metric_source(metric_source.Wiki)
-
-    @classmethod
-    def can_be_measured(cls, team, project):
-        return super(TeamSpirit, cls).can_be_measured(team, project) and \
-            project.metric_source(metric_source.Wiki)
 
     def value(self):
         return self.__wiki.team_spirit(self._subject) or '?'
@@ -190,11 +186,11 @@ class TeamAbsence(LowerIsBetterMetric):
     target_value = 5
     low_target_value = 10
     quality_attribute = PROGRESS
+    metric_source_classes = (metric_source.HolidayPlanner,)
 
     @classmethod
     def can_be_measured(cls, team, project):
         return super(TeamAbsence, cls).can_be_measured(team, project) and \
-            project.metric_source(metric_source.HolidayPlanner) and \
             len(team.members()) > 1
 
     def __init__(self, *args, **kwargs):

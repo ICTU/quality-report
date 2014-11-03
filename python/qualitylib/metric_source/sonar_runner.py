@@ -25,10 +25,11 @@ import urllib2
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     ''' Class for creating and removing Sonar analyses. '''
 
-    def __init__(self, sonar, maven, *args, **kwargs):
+    def __init__(self, sonar, maven, subversion, *args, **kwargs):
         super(SonarRunner, self).__init__(*args, **kwargs)
         self.__sonar = sonar
         self.__maven = maven
+        self.__subversion = subversion
         self.__sonar_url = sonar.url()
 
     def analyse_products(self, products):
@@ -129,7 +130,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         sonar_options_string = ' '.join(['-Dsonar.%s=%s' % item \
                                          for item in sonar_options.items()])
         utils.rmtree(folder)  # Remove any left over checkouts
-        product.check_out(folder)
+        self.__check_out(product, folder)
         os.putenv('MAVEN_OPTS', '-Xmx2048m -XX:MaxPermSize=512m')
         maven_command = ('%s --fail-never clean install sonar:sonar ' % \
                          self.__maven.binary()) + \
@@ -145,3 +146,9 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         ''' Return the product's Sonar id. '''
         sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
         return sonar_product_info.sonar_id()
+
+    def __check_out(self, product, folder):
+        ''' Check out the product in the folder. '''
+        subversion_product_info = metric_info.SubversionProductInfo( \
+            self.__subversion, product)
+        self.__subversion.check_out(subversion_product_info.svn_path(), folder)

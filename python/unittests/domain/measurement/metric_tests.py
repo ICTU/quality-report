@@ -16,7 +16,7 @@ limitations under the License.
 
 from qualitylib import domain, metric_source
 from unittests.domain.measurement.fake import FakeWiki, FakeHistory, \
-    FakeTasks, FakeSubject
+    FakeSubject
 import datetime
 import unittest
 
@@ -44,10 +44,8 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
-        self.__fake_tasks = FakeTasks()
         project = domain.Project(
-            metric_sources={metric_source.History: FakeHistory(),
-                            metric_source.Tasks: self.__fake_tasks})
+            metric_sources={metric_source.History: FakeHistory()})
         self.__metric = MetricUnderTest(self.__subject, project=project)
 
     def test_stable_id(self):
@@ -125,10 +123,6 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_url_label(self):
         ''' Test that the metric has no default url label. '''
         self.failIf(self.__metric.url_label())
-
-    def test_default_tasks(self):
-        ''' Test that the metric has no tasks by default. '''
-        self.failIf(self.__metric.has_tasks())
 
     def test_recent_history(self):
         ''' Test that the metric has no history by default. '''
@@ -252,42 +246,6 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the product version type is no_product when the metric
             subject is not a product. '''
         self.assertEqual('no_product', self.__metric.product_version_type())
-
-    def test_no_task_urls_without_issue_manager(self):
-        ''' Test that the metric has no task urls when there's no issue 
-            manager. '''
-        project = domain.Project(
-            metric_sources={metric_source.History: FakeHistory()})
-        self.assertEqual({}, MetricUnderTest(self.__subject,
-                                             project=project).task_urls())
-
-    def test_no_task_urls(self):
-        ''' Test that the metric has no task urls by default. '''
-        self.assertEqual({}, self.__metric.task_urls())
-
-    def test_one_task_url(self):
-        ''' Test that the metric has a task url when the issue manager reports
-            so. '''
-        self.__fake_tasks.task_urls = ['http://url1']
-        self.assertEqual({'Correctieve actie': 'http://url1'}, 
-                         self.__metric.task_urls())
-
-    def test_two_task_urls(self):
-        ''' Test that the metric has a task urls when the issue manager reports
-            so. '''
-        self.__fake_tasks.task_urls = ['http://url1', 'http://url2']
-        self.assertEqual({'Correctieve actie': 'http://url1',
-                          'Correctieve actie 1': 'http://url2'}, 
-                         self.__metric.task_urls())
-
-    def test_new_task_url(self):
-        ''' Test that the metric task url include a new task link when the
-            metric is below target and has no existing tasks. '''
-        self.__metric.max_old_age = datetime.timedelta(days=1)
-        self.__metric.date = datetime.datetime.now() - \
-                             datetime.timedelta(hours=25)
-        self.assertEqual({'Maak taak': FakeTasks.new_task_url()},
-                          self.__metric.task_urls())
 
     def test_metric_can_be_measured(self):
         ''' Test that a metric can be measured if given a subject. '''

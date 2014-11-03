@@ -29,9 +29,7 @@ var tables = [];
 
 var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
-var COLOR_YELLOW_WITH_ACTION = '#FDFDE0';
 var COLOR_RED = '#FC9090';
-var COLOR_RED_WITH_ACTION = '#FCE0E0';
 var COLOR_GREY = '#808080';
 var BG_COLOR_GREEN = '#E6F8E0';
 var BG_COLOR_YELLOW = '#F8F8C0';
@@ -46,10 +44,9 @@ var METRICS_COLUMN_TREND = 4;
 var METRICS_COLUMN_STATUS_ICON = 5;
 var METRICS_COLUMN_SCORE = 6;
 var METRICS_COLUMN_NORM = 7;
-var METRICS_COLUMN_TASK = 8;
-var METRICS_COLUMN_COMMENT = 9;
-var METRICS_COLUMN_VERSION = 10;
-var METRICS_COLUMN_QUALITY_ATTRIBUTE = 11;
+var METRICS_COLUMN_COMMENT = 8;
+var METRICS_COLUMN_VERSION = 9;
+var METRICS_COLUMN_QUALITY_ATTRIBUTE = 10;
 
 function create_metrics_table(metrics_data) {
     var metrics = new google.visualization.DataTable();
@@ -62,7 +59,6 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Status');
     metrics.addColumn('string', 'Score');
     metrics.addColumn('string', 'Norm');
-    metrics.addColumn('string', 'Task');
     metrics.addColumn('string', 'Toelichting');
     metrics.addColumn('string', 'Version');
     metrics.addColumn('string', 'Quality attribute');
@@ -264,9 +260,8 @@ function show_section_summary_charts(filter_value) {
 function color_metrics(color_green, color_yellow, color_red, color_grey) {
     var numberOfColumns = window.metrics.getNumberOfColumns();
     var statusToColor = {'perfect': color_green, 'green': color_green,
-                         'yellow': color_yellow,
-                         'yellow_with_action': color_yellow, 'red': color_red,
-                         'red_with_action': color_red, 'grey': color_grey};
+                         'yellow': color_yellow, 'red': color_red,
+                         'grey': color_grey};
     for (var row_index = 0; row_index < window.metrics.getNumberOfRows();
          row_index++) {
         var bg_color = statusToColor[window.metrics.getValue(row_index, METRICS_COLUMN_STATUS_TEXT)];
@@ -336,7 +331,7 @@ function show_table(table, section, view) {
             // Sort column remains unchanged.
         }
     }
-    var columns_to_hide_when_empty = [METRICS_COLUMN_TASK, METRICS_COLUMN_COMMENT];
+    var columns_to_hide_when_empty = [METRICS_COLUMN_COMMENT];
     for (var index = 0; index < columns_to_hide_when_empty.length; index++) {
         var column_index = columns_to_hide_when_empty[index];
         var distinct_values = view.getDistinctValues(column_index);
@@ -374,8 +369,7 @@ function table_view(section) {
     if (filtered_color !== 'filter_color_all') {
         var colored_rows = [];
         if (filtered_color === 'filter_color_red_and_yellow') {
-            var colors = ['yellow', 'yellow_with_action',
-                          'red', 'red_with_action'];
+            var colors = ['yellow', 'red'];
             for (var color_index = 0; color_index < colors.length; color_index++) {
                 var color_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
                                                         value: colors[color_index]}]);
@@ -450,30 +444,23 @@ function draw_column_chart(chart_div, sections) {
     data.addColumn('string', 'Versie');
     data.addColumn('number', 'Groen');
     data.addColumn('number', 'Geel');
-    data.addColumn('number', 'Geel met actie');
     data.addColumn('number', 'Rood');
-    data.addColumn('number', 'Rood met actie');
     data.addColumn('number', 'Grijs');
     for(var index = 0; index < sections.length; index++) {
         var version = sections[index];
         var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
-        var red_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red_with_action'}]);
         var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
-        var yellow_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow_with_action'}]);
         var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
         var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
         var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
         data.addRow([version, green_rows.length + perfect_rows.length,
-          yellow_rows.length, yellow_with_action_rows.length,
-          red_rows.length, red_with_action_rows.length,
-          grey_rows.length]);
+          yellow_rows.length, red_rows.length, grey_rows.length]);
     }
 
     var bg_color = chart_div.parentNode.getAttribute('bgcolor');
     var options = {
       series: {0: {color: COLOR_GREEN}, 1: {color: COLOR_YELLOW},
-               2: {color: COLOR_YELLOW_WITH_ACTION}, 3: {color: COLOR_RED},
-               4: {color: COLOR_RED_WITH_ACTION}, 5: {color: COLOR_GREY}},
+               2: {color: COLOR_RED}, 3: {color: COLOR_GREY}},
       //tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
       width: 80, height: 80,
@@ -493,9 +480,7 @@ function draw_pie_chart(section) {
     }
 
     var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
-    var red_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red_with_action'}]);
     var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
-    var yellow_with_action_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow_with_action'}]);
     var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
     var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
     var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
@@ -506,16 +491,13 @@ function draw_pie_chart(section) {
     data.addRows([
       ['Groen', green_rows.length + perfect_rows.length],
       ['Geel', yellow_rows.length],
-      ['Geel met actie', yellow_with_action_rows.length],
       ['Rood', red_rows.length],
-      ['Rood met actie', red_with_action_rows.length],
       ['Grijs', grey_rows.length]
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
       slices: [{color: COLOR_GREEN}, {color: COLOR_YELLOW},
-               {color: COLOR_YELLOW_WITH_ACTION}, {color: COLOR_RED},
-               {color: COLOR_RED_WITH_ACTION}, {color: COLOR_GREY}],
+               {color: COLOR_RED}, {color: COLOR_GREY}],
       pieSliceText: 'none',
       tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',

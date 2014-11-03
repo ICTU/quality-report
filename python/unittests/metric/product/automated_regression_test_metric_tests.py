@@ -74,8 +74,8 @@ class ARTCoverageJacocoTest(unittest.TestCase):
             metric_source_ids={self.__jacoco: 'jacoco_id'}, version='1.1')
         self.__project = domain.Project(metric_sources={metric_source.JaCoCo:
                                                         self.__jacoco})
-        self.__metric = metric.ARTCoverage(subject=self.__subject, 
-                                           project=self.__project)
+        self.__metric = metric.JaCoCoARTCoverage(subject=self.__subject, 
+                                                 project=self.__project)
 
     def test_value(self):
         ''' Test that value of the metric equals the coverage as reported by
@@ -94,19 +94,21 @@ class ARTCoverageJacocoTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has Jacoco and
             the product has a Jacoco id. '''
-        self.failUnless(metric.ARTCoverage.can_be_measured(self.__subject,
-                                                           self.__project))
+        self.failUnless(metric.JaCoCoARTCoverage.can_be_measured( \
+            self.__subject, self.__project))
 
     def test_cant_be_measured_without_jacoco(self):
         ''' Test that the metric can not be measured without Jacoco. '''
         project = domain.Project()
-        self.failIf(metric.ARTCoverage.can_be_measured(self.__subject, project))
+        self.failIf(metric.JaCoCoARTCoverage.can_be_measured(self.__subject,
+                                                             project))
 
     def test_cant_be_measured_without_jacoco_id(self):
         ''' Test that the metric can not be measured if the product has no 
             Jacoco id. '''
         subject = FakeSubject(version='1.1')
-        self.failIf(metric.ARTCoverage.can_be_measured(subject, self.__project))
+        self.failIf(metric.JaCoCoARTCoverage.can_be_measured(subject,
+                                                             self.__project))
 
 
 class ARTCoverageEmmaTest(unittest.TestCase):
@@ -117,8 +119,8 @@ class ARTCoverageEmmaTest(unittest.TestCase):
         self.__subject = FakeSubject(metric_source_ids={self.__emma: 'emma_id'})
         self.__project = domain.Project(metric_sources={metric_source.Emma:
                                                         self.__emma})
-        self.__metric = metric.ARTCoverage(subject=self.__subject, 
-                                           project=self.__project)
+        self.__metric = metric.EmmaARTCoverage(subject=self.__subject, 
+                                               project=self.__project)
 
     def test_value(self):
         ''' Test that value of the metric equals the coverage as reported by
@@ -137,19 +139,21 @@ class ARTCoverageEmmaTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has Emma and
             the product has an Emma id. '''
-        self.failUnless(metric.ARTCoverage.can_be_measured(self.__subject,
-                                                           self.__project))
+        self.failUnless(metric.EmmaARTCoverage.can_be_measured(self.__subject,
+                                                               self.__project))
 
     def test_cant_be_measured_without_jacoco(self):
         ''' Test that the metric can not be measured without Emma. '''
         project = domain.Project()
-        self.failIf(metric.ARTCoverage.can_be_measured(self.__subject, project))
+        self.failIf(metric.EmmaARTCoverage.can_be_measured(self.__subject,
+                                                           project))
 
     def test_cant_be_measured_without_jacoco_id(self):
         ''' Test that the metric can not be measured if the product has no 
             Emma id. '''
         subject = FakeSubject(version='1.1')
-        self.failIf(metric.ARTCoverage.can_be_measured(subject, self.__project))
+        self.failIf(metric.EmmaARTCoverage.can_be_measured(subject,
+                                                           self.__project))
 
 
 class FakeBirt(object):

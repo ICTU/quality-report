@@ -1,3 +1,12 @@
+2014-11-03  Release 1.14.0
+
+  * Task functionality has been removed, metric_source.Tasks no longer exists.
+  * Documents now need a Subversion metric source id (the Subversion path).
+  * The Pom metric source needs a reference to both Sonar and Subversion.
+  * The Sonar metric source needs a reference to Subversion.
+  * Add a blocker violations metric.
+
+
 2014-09-18  Release 1.13.2
 
   * Bug fix: use the language of a component to decide what the rule name is 

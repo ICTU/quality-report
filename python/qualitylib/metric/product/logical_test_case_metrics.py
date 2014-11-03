@@ -16,9 +16,9 @@ limitations under the License.
 
 from qualitylib.domain import LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import BirtMetricMixin, \
-    BirtTestDesignMetricMixin
+    BirtTestDesignMetricMixin, SubversionMetricMixin
 from qualitylib.metric.quality_attributes import TEST_COVERAGE, DOC_QUALITY
-from qualitylib import utils
+from qualitylib import utils, metric_info, metric_source
 import datetime
 
 
@@ -94,7 +94,8 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
         return self._birt.nr_ltcs_to_be_automated(self._birt_id())
 
 
-class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
+class ManualLogicalTestCases(BirtMetricMixin, SubversionMetricMixin,
+                             LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring how long ago the manual logical test cases
         have been tested. '''
@@ -112,12 +113,19 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
+    metric_source_classes = BirtMetricMixin.metric_source_classes + \
+        (metric_source.Subversion,)
 
     @classmethod
     def can_be_measured(cls, product, project):
         return super(ManualLogicalTestCases, cls).can_be_measured(product,
                                                                   project) and \
-            product.responsible_teams() 
+            product.responsible_teams()
+
+    def __init__(self, *args, **kwargs):
+        super(ManualLogicalTestCases, self).__init__(*args, **kwargs)
+        self.__subversion = self._project.metric_source( \
+            metric_source.Subversion)
 
     def target(self):
         if self._subject.product_version_type() == 'release':
@@ -133,7 +141,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     def value(self):
         date = self._date()
         if date == datetime.datetime.min:
-            date = self._subject.last_changed_date()
+            date = self.__last_changed_date()
         return (datetime.datetime.now() - date).days
 
     def url(self):
@@ -153,7 +161,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
             self._birt.nr_manual_ltcs_too_old(self._birt_id(), self.__version(),
                                               self.target())
         parameters['last_changed_date'] = \
-            utils.format_date(self._subject.last_changed_date())
+            utils.format_date(self.__last_changed_date())
         return parameters
 
     def _get_template(self):
@@ -165,3 +173,9 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         ''' Return the version number for the product this metric is reporting 
             on. '''
         return self._subject.product_version() or 'trunk'
+
+    def __last_changed_date(self):
+        ''' Return the date the subject was last changed. '''
+        subversion_product_info = metric_info.SubversionProductInfo( \
+                self.__subversion, self._subject)
+        return subversion_product_info.last_changed_date()

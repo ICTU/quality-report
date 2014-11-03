@@ -62,18 +62,3 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
     def technical_debt_target(metric_class):  # pylint: disable=unused-argument
         ''' Return the technical debt target. '''
         return None
-
-
-class FakeTasks(object):
-    ''' Class to fake an issue manager like Jira. '''
-    def __init__(self):
-        self.task_urls = []
-
-    def tasks(self, *args, **kwargs):  # pylint: disable=unused-argument
-        ''' Return the tasks for the specified metric. '''
-        return self.task_urls
-
-    @staticmethod  # pylint: disable=unused-argument
-    def new_task_url(*args):
-        ''' Return a url for creating new tasks. '''
-        return 'http://new'

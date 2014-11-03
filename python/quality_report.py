@@ -20,7 +20,7 @@ limitations under the License.
 
 
 from qualitylib import formatting, commandlineargs, report, metric_source, \
-    log, filesystem, VERSION
+    metric_info, log, filesystem, VERSION
 import import_file
 import logging
 import os
@@ -68,8 +68,11 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     def __add_latest_release_of_products(self):
         ''' Add the latest released version of each product. '''
+        subversion = self.__project.metric_source(metric_source.Subversion)
         for product in self.__project.products()[:]:
-            latest_version = product.latest_released_product_version()
+            subversion_product_info = metric_info.SubversionProductInfo( \
+                subversion, product)
+            latest_version = subversion_product_info.latest_released_product_version()
             if latest_version:
                 logging.info('Adding %s:%s to the project because it is the ' \
                          'latest version.', product.name(), latest_version)
@@ -116,6 +119,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.create_dir(report_dir)
         self.__create_html_file(quality_report, report_dir)
         self.__create_dependency_graph(quality_report, report_dir)
+        self.__create_metrics_graph(quality_report, report_dir)
         self.__create_resources(report_dir)
         self.__create_trend_images(quality_report, report_dir)
 
@@ -136,9 +140,20 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __create_dependency_graph(self, quality_report, report_dir):
         ''' Create and write the dependency graph. '''
         dot_filename = os.path.join(report_dir, 'dependency.dot')
-        self.__format_and_write_report(quality_report, formatting.DotFormatter,
+        self.__format_and_write_report(quality_report, 
+                                       formatting.DependencyFormatter,
                                        dot_filename, 'w', 'ascii')
         svg_filename = os.path.join(report_dir, 'dependency.svg')
+        os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
+        filesystem.make_file_readable(svg_filename)
+
+    def __create_metrics_graph(self, quality_report, report_dir):
+        ''' Create and write the metrics graph. '''
+        dot_filename = os.path.join(report_dir, 'metric_classes.dot')
+        self.__format_and_write_report(quality_report,
+                                       formatting.MetricClassesFormatter,
+                                       dot_filename, 'w', 'ascii')
+        svg_filename = os.path.join(report_dir, 'metric_classes.svg')
         os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
         filesystem.make_file_readable(svg_filename)
 

@@ -21,6 +21,7 @@ from qualitylib.domain.base import DomainObject
 class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     ''' Base class for metric sources. '''
     metric_source_name = ''
+    needs_metric_source_id = False
 
     def __init__(self, *args, **kwargs):
         if 'name' not in kwargs:

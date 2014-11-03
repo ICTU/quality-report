@@ -17,7 +17,8 @@ limitations under the License.
 # Package for report formatters.
 
 from qualitylib.formatting.base_formatter import Formatter
-from qualitylib.formatting.dot_formatter import DotFormatter
+from qualitylib.formatting.dot_formatter import DependencyFormatter, \
+    MetricClassesFormatter
 from qualitylib.formatting.html_formatter import HTMLFormatter
 from qualitylib.formatting.json_formatter import JSONFormatter
 from qualitylib.formatting.csv_formatter import CSVFormatter

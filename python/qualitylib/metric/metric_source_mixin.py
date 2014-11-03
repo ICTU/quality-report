@@ -21,6 +21,8 @@ from qualitylib import metric_source, metric_info
 
 class SonarMetricMixin(object):
     ''' Mixin class for metrics that use Sonar. '''
+    metric_source_classes = (metric_source.Sonar,)
+
     def __init__(self, *args, **kwargs):
         super(SonarMetricMixin, self).__init__(*args, **kwargs)
         self._sonar = self._project.metric_source(metric_source.Sonar)
@@ -30,10 +32,11 @@ class SonarMetricMixin(object):
     @classmethod
     def can_be_measured(cls, product, project):
         ''' Return whether the metric can be measured. The metric can be
-            measured when the project has Sonar. '''
+            measured when the project has Sonar and the product has a Sonar 
+            id. '''
         sonar = project.metric_source(metric_source.Sonar)
         return super(SonarMetricMixin, cls).can_be_measured(product, project) \
-            and sonar and cls.product_has_sonar_id(sonar, product)
+            and cls.product_has_sonar_id(sonar, product)
 
     @staticmethod
     def product_has_sonar_id(sonar, product):
@@ -71,33 +74,22 @@ class SonarViolationsMetricMixin(SonarMetricMixin):
 
 class JenkinsMetricMixin(object):
     ''' Mixin class for metrics that use Jenkins. '''
+
+    metric_source_classes = (metric_source.Jenkins,)
+
     def __init__(self, *args, **kwargs):
         super(JenkinsMetricMixin, self).__init__(*args, **kwargs)
         self._jenkins = self._project.metric_source(metric_source.Jenkins)
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        ''' Metrics that use the build server can be measured when the project 
-             has a build server. '''
-        return super(JenkinsMetricMixin, cls).can_be_measured(subject,
-                                                              project) \
-            and project.metric_source(metric_source.Jenkins)
-
 
 class BirtMetricMixin(object):
     ''' Mixin class for metrics that use Birt. '''
+
+    metric_source_classes = (metric_source.Birt,)
+
     def __init__(self, *args, **kwargs):
         super(BirtMetricMixin, self).__init__(*args, **kwargs)
         self._birt = self._project.metric_source(metric_source.Birt)
-
-    @classmethod
-    def can_be_measured(cls, product, project):
-        ''' Metrics that use Birt can be measured when the project has Birt
-            and the product has a Birt id so it can be found in Birt 
-            reports. '''
-        birt = project.metric_source(metric_source.Birt)
-        return super(BirtMetricMixin, cls).can_be_measured(product, project) \
-            and birt and product.metric_source_id(birt)
 
     def _birt_id(self):
         ''' Return the id of the subject in Birt. '''
@@ -123,45 +115,48 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
 
 class TrelloActionsBoardMetricMixin(object):
     ''' Mixin class for metrics that use Trello for an actions board. '''
+
+    metric_source_classes = (metric_source.TrelloActionsBoard,)
+
     def __init__(self, *args, **kwargs):
         super(TrelloActionsBoardMetricMixin, self).__init__(*args, **kwargs)
         self._trello_actions_board = \
             self._project.metric_source(metric_source.TrelloActionsBoard)
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        ''' Metrics that use the Trello actions board can be measured when
-            the project has a Trello actions board. '''
-        trello_actions_board = \
-            project.metric_source(metric_source.TrelloActionsBoard)
-        return super(TrelloActionsBoardMetricMixin, 
-                     cls).can_be_measured(subject, project) \
-            and trello_actions_board
-
 
 class JiraMetricMixin(object):
     ''' Mixin class for metrics that use Jira. '''
+
+    metric_source_classes = (metric_source.Jira,)
+
     def __init__(self, *args, **kwargs):
         super(JiraMetricMixin, self).__init__(*args, **kwargs)
         self._jira = self._project.metric_source(metric_source.Jira)
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        ''' Metrics that use Jira can be measured when the project has Jira. '''
-        return super(JiraMetricMixin, cls).can_be_measured(subject, project) \
-            and project.metric_source(metric_source.Jira)
-
 
 class SubversionMetricMixin(object):
     ''' Mixin class for metrics that use Subversion. '''
+
+    metric_source_classes = (metric_source.Subversion,)
+
     def __init__(self, *args, **kwargs):
         super(SubversionMetricMixin, self).__init__(*args, **kwargs)
         self._subversion = self._project.metric_source(metric_source.Subversion)
+        self.__subversion_product_info = metric_info.SubversionProductInfo( \
+            self._subversion, self._subject)
 
     @classmethod
-    def can_be_measured(cls, subject, project):
-        ''' Metrics that use Subversion can be measured when the project has 
-            Subversion. '''
-        return super(SubversionMetricMixin, cls).can_be_measured(subject, 
-                                                                 project) \
-            and project.metric_source(metric_source.Subversion)
+    def can_be_measured(cls, product, project):
+        ''' Return whether the metric can be measured. The metric can be
+            measured when the project has Subversion and the product has a
+            Subversion path. '''
+        subversion = project.metric_source(metric_source.Subversion)
+        subversion_product_info = metric_info.SubversionProductInfo(subversion,
+                                                                    product)
+        return super(SubversionMetricMixin, cls).can_be_measured(product, 
+                                                                 project) and \
+            subversion and subversion_product_info.svn_path()
+
+    def _svn_path(self):
+        ''' Return the Subversion path for the product. '''
+        return self.__subversion_product_info.svn_path()

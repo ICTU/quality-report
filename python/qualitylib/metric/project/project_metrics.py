@@ -37,16 +37,12 @@ class RiskLog(LowerIsBetterMetric):
     target_value = 14
     low_target_value = 28
     quality_attribute = PROJECT_MANAGEMENT
+    metric_source_classes = (metric_source.TrelloRiskBoard,)
 
     def __init__(self, *args, **kwargs):
         super(RiskLog, self).__init__(*args, **kwargs)
         self.__trello_risklog_board = \
             self._project.metric_source(metric_source.TrelloRiskBoard)
-
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        return super(RiskLog, cls).can_be_measured(subject, project) and \
-            project.metric_source(metric_source.TrelloRiskBoard)
 
     def value(self):
         return (datetime.datetime.now() - self._date()).days

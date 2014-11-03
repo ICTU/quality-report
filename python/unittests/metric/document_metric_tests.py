@@ -32,9 +32,11 @@ class DocumentAgeTest(unittest.TestCase):
     ''' Unit tests for the document age metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__document = domain.Document(name='Title', url='http://doc')
+        self.__subversion = FakeSubversion()
         self.__project = domain.Project(
-            metric_sources={metric_source.Subversion: FakeSubversion()})
+            metric_sources={metric_source.Subversion: self.__subversion})
+        self.__document = domain.Document(name='Title', url='http://doc',
+            metric_source_ids={self.__subversion: 'http://doc/'})
         self.__metric = metric.DocumentAge(subject=self.__document,
                                            project=self.__project)
 

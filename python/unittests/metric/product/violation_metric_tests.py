@@ -22,9 +22,15 @@ class FakeSonar(object):
     ''' Provide for a fake Sonar object so that the unit test don't need 
         access to an actual Sonar instance. '''
     # pylint: disable=unused-argument
-    def __init__(self, critical_violations=0, major_violations=0):
+    def __init__(self, blocker_violations=0, critical_violations=0,
+                 major_violations=0):
+        self.__blocker_violations = blocker_violations
         self.__critical_violations = critical_violations
         self.__major_violations = major_violations
+
+    def blocker_violations(self, *args):
+        ''' Return the number of blocker violations. '''
+        return self.__blocker_violations
 
     def critical_violations(self, *args):
         ''' Return the number of critical violations. '''
@@ -46,7 +52,8 @@ class ViolationsTestMixin(object):
 
     def setUp(self):  # pylint: disable=invalid-name,missing-docstring
         self.__nr_violations = 51
-        sonar = FakeSonar(critical_violations=self.__nr_violations, 
+        sonar = FakeSonar(blocker_violations=self.__nr_violations,
+                          critical_violations=self.__nr_violations,
                           major_violations=self.__nr_violations)
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         self.__subject = domain.Product(project, 'PR', name='FakeSubject')
@@ -85,7 +92,7 @@ class ViolationsTestMixin(object):
     def test_is_perfect(self):
         ''' Test that the metric is perfect when both the number of major and 
             the number of critical violations is zero. '''
-        sonar = FakeSonar(critical_violations=0, major_violations=0)
+        sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         violations = metric.CriticalViolations(subject=self.__subject, 
                                                project=project)
@@ -101,6 +108,14 @@ class ViolationsTestMixin(object):
             template. '''
         self.failUnless(self.metric_class.norm_template % \
                         self.metric_class.norm_template_default_values())
+
+
+class BlockerViolationsTest(ViolationsTestMixin, unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the BlockerViolations metric class. '''
+
+    metric_class = metric.BlockerViolations
+    violation_type = 'blocker'
 
 
 class CriticalViolationsTest(ViolationsTestMixin, unittest.TestCase):

@@ -81,17 +81,18 @@ class Report(object):
     ''' Fake a quality report. '''
 
     def __init__(self, products=None, metrics=None, teams=None,
-                 number_of_meta_metrics=5):
+                 number_of_meta_metrics=5, project_metric_sources=None):
         self.__products = products or []
         self.__metrics = metrics or []
         self.__teams = teams or []
         self.__meta_metrics = [fake_domain.Metric('MM-%d' % nr) for nr in \
                                range(1, number_of_meta_metrics)]
+        self.project_metric_sources = project_metric_sources or dict()
 
     @classmethod
     def metric_classes(cls):
         ''' Return a list of metric classes that the report can report on. '''
-        return [metric.ARTCoverage]
+        return [metric.JaCoCoARTCoverage]
 
     def products(self):
         ''' Return the products in the report. '''
@@ -146,10 +147,24 @@ class Report(object):
         ''' Return the columns and rows of the dashboard. '''
         return [('ME', 1)], [(('id', 'lightsteelblue'),), ]
 
-    @staticmethod
-    def project_resources():
+    def project(self):
         ''' Return the project resources. '''
-        return [('resource', 'url'), ('missing', None)]
+        class FakeProject(object):  # pylint: disable=too-few-public-methods
+            ''' Fake a project. '''
+            @staticmethod
+            def project_resources():
+                ''' Return the project's resources. '''
+                return [('resource', 'url'), ('missing', None)]
+
+            @staticmethod
+            def metric_source(metric_source_class):
+                # pylint: disable=unused-argument
+                ''' Return the metric source for the given metric source 
+                    class. '''
+                return self.project_metric_sources.get(metric_source_class,
+                                                       None)
+
+        return FakeProject()
 
     def get_meta_section(self):
         ''' Return the meta section of the report. '''

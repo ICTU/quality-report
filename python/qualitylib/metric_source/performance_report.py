@@ -26,6 +26,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     ''' Class representing the Performance report. '''
 
     metric_source_name = 'Jmeter performance report'
+    needs_metric_source_id = True
     COLUMN_90_PERC = 10
 
     def __init__(self, report_folder_url):

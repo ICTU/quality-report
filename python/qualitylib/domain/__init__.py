@@ -16,6 +16,7 @@ limitations under the License.
 
 # Package for domain objects.
 
+from qualitylib.domain.base import DomainObject
 
 from qualitylib.domain.measurement.metric import Metric, HigherIsBetterMetric, \
     HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric, \
@@ -26,11 +27,11 @@ from qualitylib.domain.measurement.metric_mixin import MetaMetricMixin
 from qualitylib.domain.measurement.target import TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
-from qualitylib.domain.base import DomainObject
-from qualitylib.domain.product import Product
-from qualitylib.domain.team import Team
-from qualitylib.domain.person import Person
-from qualitylib.domain.project import Project
-from qualitylib.domain.quality_attribute import QualityAttribute
-from qualitylib.domain.street import Street
-from qualitylib.domain.document import Document
+from qualitylib.domain.software_development.product import Product
+from qualitylib.domain.software_development.team import Team
+from qualitylib.domain.software_development.person import Person
+from qualitylib.domain.software_development.project import Project
+from qualitylib.domain.software_development.street import Street
+from qualitylib.domain.software_development.document import Document
+from qualitylib.domain.software_development.quality_attribute import \
+    QualityAttribute

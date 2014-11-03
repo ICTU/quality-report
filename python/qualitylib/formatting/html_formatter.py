@@ -35,7 +35,6 @@ class HTMLFormatter(base_formatter.Formatter):
                    """border="0" />'}""",
                    "'%(text)s'",
                    "'%(norm)s'",
-                   "'%(tasks)s'",
                    "'%(comment)s'",
                    "'%(version)s'",
                    "'%(quality_attribute)s'"]
@@ -244,12 +243,11 @@ class HTMLFormatter(base_formatter.Formatter):
                     datetime.datetime(2013, 3, 19, 23, 59, 59) else ''
         kwargs['hover'] += ' (sinds %s%s)' % (qualifier,
             utils.format_date(metric.status_start_date(), year=True))
-        kwargs['status'] = self.__metric_status(metric)
+        kwargs['status'] = metric.status()
         kwargs['metric_id'] = metric.id_string()
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['version'] = metric.product_version_type()
         kwargs['text'] = self.__format_metric_text(metric)
-        kwargs['tasks'] = self.__format_metric_tasks(metric)
         kwargs['norm'] = metric.norm()
         attribute_id = metric.quality_attribute.id_string()
         if attribute_id:
@@ -270,19 +268,6 @@ class HTMLFormatter(base_formatter.Formatter):
             or more links to the metric source(s) if available. '''
         return cls.__format_text_with_links(metric.report(), metric.url(), 
                                             metric.url_label())
-
-    @staticmethod
-    def __metric_status(metric):
-        ''' Return the status of the metric, including corrective actions. '''
-        status = metric.status()
-        if status in ('red', 'yellow') and metric.has_tasks():
-            status += '_with_action'
-        return status
-
-    @classmethod
-    def __format_metric_tasks(cls, metric):
-        ''' Return a HTML formatted version of the metric action(s). '''
-        return cls.__format_text_with_links('', metric.task_urls())
 
     @classmethod
     def __format_metric_comment(cls, metric):
@@ -410,9 +395,9 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __project_resources(report):
         ''' Return a HTML version of the project resources. '''
-        result = ['<h4>Project resources</h4>']
+        result = []
         result.append('<ul>')
-        for name, url in report.project_resources():
+        for name, url in report.project().project_resources():
             url_text = '<a href="%(url)s">%(url)s</a>' % dict(url=url) if url \
                 else '<font color="red">ontbreekt</font>'
             parameters = dict(name=name, url_text=url_text)

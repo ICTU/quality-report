@@ -22,6 +22,7 @@ from qualitylib.metric_source.jenkins import Jenkins, JenkinsTestReport
 from qualitylib.metric_source.sonar import Sonar
 from qualitylib.metric_source.performance_report import PerformanceReport
 from qualitylib.metric_source.wiki import Wiki
+from qualitylib.metric_source.coverage_report import CoverageReport
 from qualitylib.metric_source.emma import Emma
 from qualitylib.metric_source.jacoco import JaCoCo
 from qualitylib.metric_source.maven import Maven
@@ -34,5 +35,4 @@ from qualitylib.metric_source.release_archive import ReleaseArchive
 from qualitylib.metric_source.apache_directory import ApacheDirectory
 from qualitylib.metric_source.nexus_directory import NexusDirectory
 from qualitylib.metric_source.jira import Jira
-from qualitylib.metric_source.tasks import Tasks
 from qualitylib.metric_source.holiday_planner import HolidayPlanner

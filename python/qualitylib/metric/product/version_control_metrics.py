@@ -38,8 +38,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
         ''' Unmerged branches can only be measured for trunk versions of 
             products that are under version control. '''
         return super(UnmergedBranches, cls).can_be_measured(product, project) \
-            and product.svn_path() and not product.product_version() and not \
-            product.product_branch()
+            and not product.product_version() and not product.product_branch()
 
     def value(self):
         return len(self.__unmerged_branches())
@@ -71,7 +70,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     def __branch_and_nr_revs_urls(self, branches_and_revisions):
         ''' Return a list of branch urls. '''
         urls = dict()
-        svn_path_base, svn_path_postfix = self.__svn_path().split('/trunk/')
+        svn_path_base, svn_path_postfix = self._svn_path().split('/trunk/')
         for branch, nr_revisions in branches_and_revisions.items():
             label = '%s: %d ongemergde revisie(s)' % (branch, nr_revisions) 
             urls[label] = svn_path_base + '/branches/' + branch + '/' + \
@@ -81,7 +80,7 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     def __branch_urls(self, branches):
         ''' Return a list of branch urls. '''
         urls = dict()
-        svn_path_base, svn_path_postfix = self.__svn_path().split('/trunk/')
+        svn_path_base, svn_path_postfix = self._svn_path().split('/trunk/')
         for branch in branches:
             urls[branch] = svn_path_base + '/branches/' + branch + '/' + \
                            svn_path_postfix
@@ -89,25 +88,18 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
 
     def __branches(self):
         ''' Return a list of branches for the product. '''
-        return self._subversion.branches(self.__svn_path())
+        return self._subversion.branches(self._svn_path())
 
     def __unmerged_branches(self):
         ''' Return a dictionary of unmerged branch names and the number of 
             unmerged revisions for each branch. '''
         unmerged_branches = \
-            self._subversion.unmerged_branches(self.__svn_path())
+            self._subversion.unmerged_branches(self._svn_path())
         branches_to_ignore = self.__branches_to_ignore()
         for branch in unmerged_branches.copy():
             if branch in branches_to_ignore:
                 del unmerged_branches[branch]
         return unmerged_branches
-
-    def __svn_path(self):
-        ''' Return the Subversion path for the product. '''
-        svn_path = self._subject.svn_path()
-        # This metric only makes sense for trunk versions:
-        assert '/trunk/' in svn_path
-        return svn_path
 
     def __branches_to_ignore(self):
         ''' Return the branches to ignore for the measured product. '''

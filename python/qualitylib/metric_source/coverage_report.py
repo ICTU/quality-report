@@ -24,6 +24,7 @@ class CoverageReport(domain.MetricSource):
     # pylint: disable=abstract-class-not-used
     ''' Abstract class representing a coverage report. '''
     metric_source_name = 'Coverage report'
+    needs_metric_source_id = True
 
     def __init__(self, jenkins, job_url):
         self.__jenkins = jenkins

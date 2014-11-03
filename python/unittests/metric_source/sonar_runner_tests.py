@@ -33,7 +33,8 @@ class SonarRunnerTest(unittest.TestCase):
         analyses. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__runner = SonarRunnerUnderTest(Sonar('http://sonar/'), Maven())
+        self.__runner = SonarRunnerUnderTest(Sonar('http://sonar/'), Maven(),
+                                             'Fake subversion')
 
     def test_analyse_products(self):
         ''' Test that the runner analyses products. '''

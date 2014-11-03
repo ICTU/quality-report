@@ -56,12 +56,6 @@ def parse_uk_date_time(date_time_string):
     return datetime.datetime(year, month, day, hour, minute, second)
 
 
-def parse_iso_date_time(date_time_string):
-    ''' Parse an ISO format date/time string of the form
-        '2012-10-24T16:20:16.000+0200'. '''
-    return datetime.datetime.strptime(date_time_string, '%Y-%m-%dT%H:%M:%S.%f')
-
-
 def parse_iso_date(date_string):
     ''' Parse an ISO format date string of the form '2013-11-05'. '''
     year, month, day = date_string.split('-')

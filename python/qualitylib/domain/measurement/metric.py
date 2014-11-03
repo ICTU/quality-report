@@ -15,8 +15,8 @@ limitations under the License.
 '''
 
 from qualitylib import utils
-from qualitylib.domain.team import Team
-from qualitylib.domain.quality_attribute import QualityAttribute
+from qualitylib.domain.software_development.quality_attribute import \
+    QualityAttribute
 from qualitylib.domain.measurement import metric_mixin
 import logging
 import datetime
@@ -30,13 +30,20 @@ class Metric(object):
     old_age = datetime.timedelta.max
     max_old_age = datetime.timedelta.max
     quality_attribute = QualityAttribute('', name='')
+    metric_source_classes = []
 
     @classmethod
     def can_be_measured(cls, subject, project):
-        # pylint: disable=unused-argument
         ''' Return whether this metric can be measured for the specified
             subject, i.e. whether the necessary metric sources are 
             available. '''
+        for metric_source_class in cls.metric_source_classes:
+            metric_source_instance = project.metric_source(metric_source_class)
+            if not metric_source_instance:
+                return False
+            if metric_source_class.needs_metric_source_id:
+                if not subject.metric_source_id(metric_source_instance):
+                    return False
         return bool(subject)
 
     @classmethod
@@ -58,7 +65,6 @@ class Metric(object):
         from qualitylib import metric_source
         self._wiki = self._project.metric_source(metric_source.Wiki)
         self.__history = self._project.metric_source(metric_source.History)
-        self.__tasks = self._project.metric_source(metric_source.Tasks)
 
     def stable_id(self):
         ''' Return an id that doesn't depend on numbering/order of metrics. '''
@@ -243,25 +249,6 @@ class Metric(object):
         elif self.comment():
             urls['Wiki'] = self._wiki.comment_url()
         return urls
-
-    def task_urls(self):
-        ''' Return the urls for any tasks defined for this metric. '''
-        urls = {}
-        if self.__tasks:
-            task_urls = self.__tasks.tasks(self.id_string())
-            if task_urls:
-                for index, url in enumerate(task_urls):
-                    label = 'Correctieve actie'
-                    if index > 0:
-                        label += ' %d' % index
-                    urls[label] = url
-            elif self.status() not in ('green', 'perfect'):
-                urls['Maak taak'] = self.__tasks.new_task_url(self.id_string())
-        return urls
-
-    def has_tasks(self, recent_only=False):
-        ''' Return whether the metric has any corrective actions defined. '''
-        return bool(self.__tasks.tasks(self.id_string(), recent_only))
 
     def recent_history(self):
         ''' Return a list of recent values of the metric, to be used in e.g.
