@@ -68,11 +68,11 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     def __add_latest_release_of_products(self):
         ''' Add the latest released version of each product. '''
-        subversion = self.__project.metric_source(metric_source.Subversion)
+        vcs = self.__project.metric_source(metric_source.VersionControlSystem)
         for product in self.__project.products()[:]:
-            subversion_product_info = metric_info.SubversionProductInfo( \
-                subversion, product)
-            latest_version = subversion_product_info.latest_released_product_version()
+            vcs_product_info = metric_info.VersionControlSystemProductInfo( \
+                vcs, product)
+            latest_version = vcs_product_info.latest_released_product_version()
             if latest_version:
                 logging.info('Adding %s:%s to the project because it is the ' \
                          'latest version.', product.name(), latest_version)
@@ -184,8 +184,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 history = ''
             y_axis_range = self.__format_y_axis_range(metric.y_axis_range())
             url = "http://chart.apis.google.com/chart?" \
-                  "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:%(history)s&" \
-                  "chds=%(y_axis_range)s" % dict(history=history, 
+                  "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:{history}&" \
+                  "chds={y_axis_range}".format(history=history, 
                                                  y_axis_range=y_axis_range)
             try:
                 image = urllib2.urlopen(url).read()

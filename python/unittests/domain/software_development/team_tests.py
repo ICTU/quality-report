@@ -25,15 +25,15 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_scrum_team(self):
         ''' Test that a team is not a Scrum team by default. '''
-        self.failIf(self.__team.is_scrum_team())
+        self.assertFalse(self.__team.is_scrum_team())
 
     def test_default_support_team(self):
         ''' Test that a team is not a support team by default. '''
-        self.failIf(self.__team.is_support_team())
+        self.assertFalse(self.__team.is_support_team())
 
     def test_default_release_archives(self):
         ''' Test that a team has no release archives by default. '''
-        self.failIf(self.__team.release_archives())
+        self.assertFalse(self.__team.release_archives())
 
     def test_one_release_archive(self):
         ''' Test giving a team release archives. '''
@@ -66,19 +66,19 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_team_members(self):
         ''' Test that the team has no team members by default. '''
-        self.failIf(self.__team.members())
+        self.assertFalse(self.__team.members())
 
     def test_add_team_member(self):
         ''' Test that a person can be added as team member. '''
         piet = domain.Person(name='Piet Programmer')
         self.__team.add_member(piet)
-        self.failUnless(piet in self.__team.members())
+        self.assertTrue(piet in self.__team.members())
 
     def test_members_in_resources(self):
         ''' Test that team members are listed as team resource. '''
         piet = domain.Person(name='Piet Programmer')
         self.__team.add_member(piet)
-        self.failUnless(('Piet Programmer', '') in self.__team.team_resources())
+        self.assertTrue(('Piet Programmer', '') in self.__team.team_resources())
 
     def test_responsible_teams(self):
         ''' Test that a team is responsible for itself. '''

@@ -13,11 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils, domain
-from qualitylib.metric_source import beautifulsoup
+
 import datetime
 import logging
+
+
+from . import beautifulsoup
+from .. import utils, domain
 
 
 class BirtReport(beautifulsoup.BeautifulSoupOpener):
@@ -35,7 +39,7 @@ class SprintProgressReport(BirtReport):
     ''' Class representing the sprint progress Birt report. '''
 
     def url(self, team):  # pylint: disable=W0221
-        return super(SprintProgressReport, self).url() % team
+        return super(SprintProgressReport, self).url().format(proj=team)
 
     def actual_velocity(self, team):
         ''' Return the actual velocity (in points per day) of the team in the
@@ -146,17 +150,17 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         birt_report_url = birt_url + 'preview?__report=report/'
         self.__test_design_url = birt_report_url + 'test_design.rptdesign'
         self.__manual_test_execution_url = birt_report_url + \
-            'manual_test_execution_report.rptdesign&application=%s&version=%s'
+            'manual_test_execution_report.rptdesign&application={app}&version={ver}'
         self.__page_performance_url = birt_report_url + \
-            'perf.rptdesign&application=%s&version=%s'
+            'perf.rptdesign&application={app}&version={ver}'
         self.__whats_missing_url = birt_report_url + \
-            'whats_missing.rptdesign&application=%s'
+            'whats_missing.rptdesign&application={app}'
         sprint_progress_url = birt_report_url + \
-            'sprint_voortgang.rptdesign&project=%s'
+            'sprint_voortgang.rptdesign&project={proj}'
         self.__sprint_progress_report = \
             SprintProgressReport(sprint_progress_url)
         self.__art_performance_versions_url = birt_report_url + \
-            'art_performance_versions.rptdesign&Applicatie=%s'
+            'art_performance_versions.rptdesign&Applicatie={app}'
         self.__test_design_report = None
         self.__manual_test_report = None
 
@@ -173,7 +177,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def manual_test_execution_url(self, product, version='trunk'):
         ''' Return the url for the Birt manual test execution report. '''
-        return self.__manual_test_execution_url % (product, version)
+        return self.__manual_test_execution_url.format(app=product, ver=version)
 
     def sprint_progress_url(self, team):
         ''' Return the url for the Birt sprint progress report. '''
@@ -181,16 +185,16 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def whats_missing_url(self, product):
         ''' Return the What's missing report url for the product. '''
-        return self.__whats_missing_url % product
+        return self.__whats_missing_url.format(app=product)
 
     def page_performance_url(self, product, version):
         ''' Return the page performance report url for the product and 
             version. '''
-        return self.__page_performance_url % (product, version)
+        return self.__page_performance_url.format(app=product, ver=version)
 
     def relative_art_performance_url(self, product):
         ''' Return the relative page performance url for the product. '''
-        return self.__art_performance_versions_url % product
+        return self.__art_performance_versions_url.format(app=product)
 
     # Misc
 
@@ -212,7 +216,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             the ART performance, information about this product and version has
             to be available *and* on at least one older version to be able to
             compare response times. '''
-        soup = self.soup(self.__art_performance_versions_url % product)
+        soup = self.soup(self.__art_performance_versions_url.format(app=product))
         # Use a set because there may be multiple runs for one version
         available_versions = set([a.string for a in soup('a')])
         return version in available_versions and len(available_versions) >= 2
@@ -248,7 +252,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             ''' Replace the frameset with preview. '''
             return birt_frameset_link.replace('frameset', 'preview')
 
-        soup = self.soup(self.__art_performance_versions_url % product)
+        soup = self.soup(self.__art_performance_versions_url.format(app=product))
         version_link = previous_version_link = None
         for anchor in soup('a'):
             # First, look for the newest link for our version
@@ -369,7 +373,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __manual_test_dates(self, product, version):
         ''' Return the manual test cases. '''
-        soup = self.soup(self.__manual_test_execution_url % (product, version))
+        soup = self.soup(self.__manual_test_execution_url.format(app=product, ver=version))
         inner_table = soup('table')[0]('table')[0]
         rows = inner_table('tr')[1:]  # Skip header row
         test_dates = []
@@ -378,7 +382,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 last_test_date_string = row('td')[2]('div')[0].string
                 try:
                     last_test_date = utils.parse_iso_date(last_test_date_string)
-                except AttributeError:
+                except (TypeError, ValueError):
                     # No valid date at all. Test was never executed.
                     last_test_date = datetime.datetime.min
                 test_dates.append(last_test_date)
@@ -395,7 +399,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         def table(table_nr):
             ''' Return the table with the specified number. '''
             return self.__test_design_report('table',
-                                             id='__bookmark_%d' % table_nr)[0]
+                                             id='__bookmark_{nr}'.format(nr=table_nr))[0]
 
         def rows(table):
             ''' Return the rows in the table. '''

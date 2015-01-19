@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib import report, domain, metric, metric_source
+from qualitylib import report, domain, metric, metric_source, requirement
 
 
 class FakeMetric(object):
@@ -134,14 +134,14 @@ class SectionTest(unittest.TestCase):
     def test_has_no_history(self):
         ''' Test that the section has no history unless its id prefix is MM
             (for Meta Metrics). '''
-        self.failIf(self.__section.has_history())
+        self.assertFalse(self.__section.has_history())
 
     def test_has_history(self):
         ''' Test that the section has history when its id prefix is MM (for
             Meta Metrics). '''
         section = report.Section(report.SectionHeader('MM', 'title', 
                                                       'subtitle'), [])
-        self.failUnless(section.has_history())
+        self.assertTrue(section.has_history())
 
     def test_history(self):
         ''' Test that the section returns the history from the history metric 
@@ -174,7 +174,7 @@ class SectionTest(unittest.TestCase):
                 return 'trunk'
 
         section = report.Section(None, [], product=FakeProduct())
-        self.failUnless(section.contains_trunk_product())
+        self.assertTrue(section.contains_trunk_product())
 
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods
@@ -202,7 +202,7 @@ class QualityReportTest(unittest.TestCase):
     def test_title(self):
         ''' Test that the title of the report is equal to the title of the
             project. '''
-        self.failUnless(self.__project.name() in self.__report.title())
+        self.assertTrue(self.__project.name() in self.__report.title())
 
     def test_str_returns_title(self):
         ''' Test that casting the report to a string returns the title. '''
@@ -210,7 +210,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_report_date_is_now(self):
         ''' Test that the report date is now. '''
-        self.failUnless(datetime.datetime.now() - self.__report.date() < \
+        self.assertTrue(datetime.datetime.now() - self.__report.date() < \
                         datetime.timedelta(seconds=10))
 
     def test_sections(self):
@@ -220,7 +220,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_sections_twice(self):
         ''' Test that the sections are cached. '''
-        self.failUnless(self.__report.sections() is self.__report.sections())
+        self.assertTrue(self.__report.sections() is self.__report.sections())
 
     def test_get_section(self):
         ''' Test that a section can be retrieved by section id. '''
@@ -258,11 +258,11 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         section1 = quality_report.get_product_section(product)
         section2 = quality_report.get_product_section(product)
-        self.failUnless(section1 is section2)
+        self.assertTrue(section1 is section2)
 
     def test_get_meta_section(self):
         ''' Test that the report has no meta section by default. '''
-        self.failIf(self.__report.get_meta_section())
+        self.assertFalse(self.__report.get_meta_section())
 
     def test_dashboard(self):
         ''' Test that the report has an empty dashboard by default. '''
@@ -339,14 +339,19 @@ class FakeJenkinsTestReport(object):  # pylint: disable=too-few-public-methods
 
 class FakePom(object):  # pylint: disable=too-few-public-methods
     ''' Fake Pom retriever. '''
-    @staticmethod  # pylint: disable=unused-argument
-    def dependencies(*args):
-        ''' Return the dependencies. '''
-        return set()
+    pass
 
 
 class FakeSubversion(object):  # pylint: disable=too-few-public-methods
     ''' Fake Subversion repository. '''
+    @staticmethod
+    def normalize_path(svn_path):
+        ''' Return a normalized version of the path. '''
+        return svn_path
+
+
+class FakeJMeter(object):  # pylint: disable=too-few-public-methods
+    ''' Fake JMeter report. '''
     pass
 
 
@@ -361,6 +366,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__pom = FakePom()
         self.__subversion = FakeSubversion()
         self.__jenkins = FakeJenkinsTestReport()
+        self.__jmeter = FakeJMeter()
 
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs,
@@ -402,7 +408,7 @@ class QualityReportMetricsTest(unittest.TestCase):
                                               number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric \
                                     in quality_report.metrics()]
-        self.failUnless(included if include else not included)
+        self.assertTrue(included if include else not included)
 
     def test_team_progress(self):
         ''' Test that the team progress metric is added if possible. '''
@@ -554,8 +560,8 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the response times metric is added if possible. '''
         self.__assert_metric(metric.ResponseTimes,
             project_kwargs=dict(
-                metric_sources={metric_source.PerformanceReport: 'report'}),
-            product_kwargs=dict(metric_source_ids={'report': 'id'}))
+                metric_sources={metric_source.PerformanceReport: self.__jmeter}),
+            product_kwargs=dict(metric_source_ids={self.__jmeter: 'id'}))
 
     def test_relative_art_performance(self):
         ''' Test that the relative art performance metric is added if
@@ -622,17 +628,20 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_unmerged_branches(self):
         ''' Test that the unmerged branches metric is added if possible. '''
+        subversion = FakeSubversion()
         self.__assert_metric(metric.UnmergedBranches,
-            project_kwargs=dict(metric_sources={metric_source.Subversion:
-                                                'Subversion'}),
-            product_kwargs=dict(metric_source_ids={'Subversion': 'svn'}))
+            project_kwargs=dict(metric_sources={
+                metric_source.VersionControlSystem: subversion}),
+            product_kwargs=dict(metric_source_ids={subversion: 'svn'}))
 
     def test_art_unmerged_branches(self):
         ''' Test that the unmerged branches metric is added for the ART. '''
+        subversion = FakeSubversion()
         self.__assert_metric(metric.UnmergedBranches,
-            project_kwargs=dict(metric_sources={metric_source.Subversion:
-                                                'SVN'}),
-            product_kwargs=dict(art=dict(metric_source_ids={'SVN': 'svn'})))
+            project_kwargs=dict(metric_sources={
+                metric_source.VersionControlSystem:subversion}),
+            product_kwargs=dict(
+                art=dict(metric_source_ids={subversion: 'svn'})))
 
     def test_critical_violations(self):
         ''' Test that the critical violations metric is added if possible. '''
@@ -729,8 +738,9 @@ class QualityReportMetricsTest(unittest.TestCase):
         ''' Test that the snapshot dependencies metric is added if possible. '''
         self.__assert_metric(metric.SnapshotDependencies,
             project_kwargs=dict(
-                metric_sources={metric_source.Pom: self.__pom,
-                                metric_source.Subversion: self.__subversion}),
+                metric_sources={
+                    metric_source.Pom: self.__pom,
+                    metric_source.VersionControlSystem: self.__subversion}),
             product_kwargs=dict(short_name='dummy', product_version='1.1'))
 
     def test_java_duplication(self):
@@ -783,11 +793,12 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_document_age(self):
         ''' Test that the document age metric is added if possible. '''
+        subversion = FakeSubversion()
         document = domain.Document(name='Title', url='http://url/',
-            metric_source_ids={'Subversion': 'http://url/'})
+            metric_source_ids={subversion: 'http://url/'})
         self.__assert_metric(metric.DocumentAge,
-            project_kwargs=dict(metric_sources={metric_source.Subversion:
-                                                'Subversion'},
+            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem:
+                                                subversion},
                                 documents=[document]))
 
     def test_no_document_age(self):
@@ -800,5 +811,14 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_metric_classes(self):
         ''' Test that the report gives a list of metric classes. '''
-        self.failUnless(metric.EmmaARTCoverage in \
+        self.assertTrue(metric.EmmaARTCoverage in \
                         report.QualityReport.metric_classes())
+
+    def test_total_loc(self):
+        ''' Test that the total LOC metric is added if the project contains the
+        trusted product maintainability standard as requirement. '''
+        self.__assert_metric(metric.TotalLOC,
+            product_kwargs=dict(short_name='dummy'),
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar},
+                requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY]))

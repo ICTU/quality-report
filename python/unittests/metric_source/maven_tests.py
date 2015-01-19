@@ -22,7 +22,7 @@ class MavenTests(unittest.TestCase):  # pylint: disable=too-many-public-methods
     ''' Unit test for the Maven metric source. '''
     def test_create(self):
         ''' Test that we can create a Maven instance. '''
-        self.failUnless(metric_source.Maven())
+        self.assertTrue(metric_source.Maven())
 
     def test_default_binary(self):
         ''' Test the default binary for Maven. '''

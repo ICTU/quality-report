@@ -172,8 +172,49 @@ class TrelloCardTest(unittest.TestCase):
         self.assertEqual(None, self.__trello_card.due_date_time())
     
     def test_due_date_time(self):
-        ''' Test that an empty card has no due date time. '''
+        ''' Test the due date time. '''
         self.__json = '{"due": "2013-5-4T16:45:33.09Z"}'
         self.assertEqual(datetime.datetime(2013, 5, 4, 16, 45, 33), 
                          self.__trello_card.due_date_time())
-    
+
+    def test_over_due_time_delta(self):
+        ''' Test the age of an over due card. '''
+        def now():
+            return datetime.datetime(2014, 5, 4, 17, 45, 33)
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
+        self.assertEqual(datetime.timedelta(hours=1),
+                         self.__trello_card.over_due_time_delta(now=now))
+
+    def test_no_over_due_time_delta(self):
+        ''' Test the age of a card without due date. '''
+        self.assertEqual(datetime.timedelta(),
+                         self.__trello_card.over_due_time_delta())
+
+    def test_is_over_due(self):
+        ''' Test that an over due card is over due. '''
+        def now():
+            return datetime.datetime(2014, 5, 4, 17, 45, 33)
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
+        self.assertTrue(self.__trello_card.is_over_due(now=now))
+
+    def test_is_not_over_due(self):
+        ''' Test that a card with a due date in the future is not over due. '''
+        def now():
+            return datetime.datetime(2013, 5, 4, 17, 45, 33)
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
+        self.assertFalse(self.__trello_card.is_over_due(now=now))
+
+    def test_not_inactive_when_future_due_date(self):
+        ''' Test that a card with a due date in the future is not inactive. '''
+        def now():
+            return datetime.datetime(2013, 5, 4, 17, 45, 33)
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
+        self.assertFalse(self.__trello_card.is_inactive(15, now=now))
+
+    def test_not_inactive_when_recently_updated(self):
+        ''' Test that a card is not inactive when it has been updated
+            recently. '''
+        def now():
+            return datetime.datetime(2014, 5, 4, 17, 45, 33)
+        self.__json = '[{"date": "2014-5-4T16:45:33.09Z"}]'
+        self.assertFalse(self.__trello_card.is_inactive(15, now=now))

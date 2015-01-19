@@ -13,10 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.formatting import base_formatter
-from qualitylib import metric_info
+
 import logging
+
+
+from . import base_formatter
+from .. import metric_info
 
 
 class JSONFormatter(base_formatter.Formatter):
@@ -33,13 +37,16 @@ class JSONFormatter(base_formatter.Formatter):
         # Add the product versions of trunk versions to the prefix
         for product in report.products():
             if not product.product_version():
-                sonar_id = metric_info.SonarProductInfo(self.__sonar,
-                                                        product).sonar_id()
-                prefix_elements.append('"%s-version": "%s"' % (sonar_id,
-                                       report.latest_product_version(product)))
+                sonar_product_info = metric_info.SonarProductInfo(self.__sonar,
+                                                                  product)
+                sonar_id = sonar_product_info.sonar_id()
+                latest_version = sonar_product_info.latest_version()
+                prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,
+                                       version=latest_version))
         # Add the current date to the prefix
-        prefix_elements.append('"date": "%s"' % \
-                               report.date().strftime('%Y-%m-%d %H:%M:%S'))
+        prefix_elements.append('"date": "{date}"'.format(
+                                    date=report.date().strftime('%Y-%m-%d %H:%M:%S')
+                                ))
         return '{' + ', '.join(prefix_elements) + ', '
 
     @staticmethod
@@ -56,11 +63,13 @@ class JSONFormatter(base_formatter.Formatter):
         # Write numerical values without decimals.
         logging.info('Formatting metric %s.', metric.stable_id())
         try:
-            return '"%s": ("%.0f", "%s", "%s"), ' % (metric.stable_id(), 
-                                                     metric.numerical_value(),
-                                                     metric.status(),
-                                                     metric.status_start_date())
-        except TypeError:
+            return '"{sid}": ("{val:.0f}", "{stat}", "{date}"), '.format(
+                        sid=metric.stable_id(), 
+                        val=metric.numerical_value(),
+                        stat=metric.status(),
+                        date=metric.status_start_date()
+                    )
+        except ValueError:
             logging.error('Error formatting %s', metric.stable_id())
             raise
 

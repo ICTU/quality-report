@@ -13,8 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.formatting import base_formatter, html_formatter
+
+from . import base_formatter, html_formatter
 
 
 class DotFormatter(base_formatter.Formatter):
@@ -62,34 +64,37 @@ class DependencyFormatter(DotFormatter):
         for product in report.products():
             products_by_name.setdefault(product.name(), set()).add(product)
         subgraphs = []
-        node_template = '"%(label)s" [label="%(branch_version)s" ' \
-                        'style="filled" fillcolor="%(color)s" URL="%(url)s" ' \
+        node_template = '"{label}" [label="{branch_version}" ' \
+                        'style="filled" fillcolor="{color}" URL="{url}" ' \
                         'target="_top"]'
-        subgraph_template = '  subgraph "cluster-%s" {\n    label="%s"; ' \
-                            'fillcolor="lightgrey"; style="filled"\n    %s;' \
-                            '\n  };'
+        subgraph_template = '  subgraph "cluster-{name}" {{\n    label="{name}"; ' \
+                            'fillcolor="lightgrey"; style="filled"\n    {ns};' \
+                            '\n  }};'
         for name, products in products_by_name.items():
             nodes = []
             for product in products:
                 url = html_formatter.HTMLFormatter.product_url(product)
                 color = report.get_product_section(product).color()
-                parameters = dict(label=product.product_label(), 
+                nodes.append(node_template.format(
+                                  label=product.product_label(), 
                                   branch_version=product.branch_version_label(),
-                                  color=color, url=url)
-                nodes.append(node_template % parameters)
+                                  color=color,
+                                  url=url,
+                                  ))
             node_string = ';\n    '.join(nodes)
-            subgraphs.append(subgraph_template % (name, name, node_string))
+            subgraphs.append(subgraph_template.format(name=name, ns=node_string))
         return subgraphs
 
     def _edges(self, report):
         ''' Return the edges representing the dependencies between products in
             the report. '''
         edges = []
+        edge_template = '  "{prod}" -> "{dep}:{ver}";'
         for product in report.products():
             dependencies = product.dependencies(recursive=False)
             for dependency_name, dependency_version in dependencies:
-                edges.append('  "%s" -> "%s:%s";' % (product.product_label(),
-                             dependency_name, dependency_version or 'trunk'))
+                edges.append(edge_template.format(prod=product.product_label(),
+                             dep=dependency_name, ver=dependency_version or 'trunk'))
         return edges
 
 
@@ -109,34 +114,36 @@ class MetricClassesFormatter(DotFormatter):
 
     def _edges(self, report):
         edges = []
+        edge_template = '"{src}" -> "{metric}";'
         for metric_class in report.metric_classes():
             for metric_source_class in metric_class.metric_source_classes:
-                edges.append('"%s" -> "%s";' % \
-                    (metric_source_class.metric_source_name, metric_class.name))
+                edges.append(edge_template.format(
+                                src=metric_source_class.metric_source_name,
+                                metric=metric_class.name))
         return edges
 
     def __metric_source_nodes(self, report, project):
         ''' Return a list of metric source nodes. '''
         nodes = []
-        node_template = '"%(name)s" [style="filled" ' \
-                                    'fillcolor="%(color)s"%(url)s];'
+        node_template = '"{name}" [style="filled" ' \
+                                    'fillcolor="{color}"{url}];'
         for metric_source_class in self.__metric_source_classes(report):
             name = metric_source_class.metric_source_name
             metric_source = project.metric_source(metric_source_class)
-            url = ' URL="%s" target="_top"' % metric_source.url() \
+            url = ' URL="{}" target="_top"'.format(metric_source.url()) \
                 if metric_source else ''
             color = self.__color(project, metric_source_class)
-            nodes.append(node_template % dict(name=name, color=color, url=url))
+            nodes.append(node_template.format(name=name, color=color, url=url))
         return nodes
 
     def __metric_nodes(self, report, project):
         ''' Return a list of metric class nodes. '''
         nodes = []
-        node_template = '"%(name)s" [style="filled" fillcolor="%(color)s"];'
+        node_template = '"{name}" [style="filled" fillcolor="{color}"];'
         for metric_class in report.metric_classes():
             name = metric_class.name
             color = self.__color(project, *metric_class.metric_source_classes)
-            nodes.append(node_template % dict(name=name, color=color))
+            nodes.append(node_template.format(name=name, color=color))
         return nodes
 
     @staticmethod

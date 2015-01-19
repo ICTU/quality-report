@@ -46,6 +46,10 @@ class JenkinsTest(unittest.TestCase):
         ''' Test the number of failing jobs when there are no failing jobs. '''
         self.assertEqual({}, self.__jenkins.failing_jobs_url())
 
+    def test_no_default_team(self):
+        ''' Test that Jenkins has no default team by default. '''
+        self.failIf(self.__jenkins.default_team())
+
     def test_one_failing_job(self):
         ''' Test the failing jobs with one failing job. '''
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
@@ -85,6 +89,17 @@ class JenkinsTest(unittest.TestCase):
         ''' Test the failing jobs for a specific team. '''
         self.assertEqual({},
                          self.__jenkins.failing_jobs_url(Team(name='team 1')))
+
+    def test_failing_jobs_with_default_team(self):
+        ''' Test that a failing job without an explicitly assigned responsible
+            team is the responsibility of the default team. '''
+        team1 = Team(name='team 1')
+        jenkins = JenkinsUnderTest('http://jenkins/', 'username', 'password',
+                                   default_team=team1)
+        jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
+            '"description": "", "url": "http://url", "buildable": True}], ' \
+            '"id": "2013-04-01_12-00-00"}'
+        self.assertEqual(1, len(jenkins.failing_jobs_url(team1)))
 
     def test_failing_jobs_url(self):
         ''' Test that the failing jobs url dictionary contains the url for the
@@ -135,6 +150,15 @@ class JenkinsTest(unittest.TestCase):
             '"description": "", "url": "http://url"}]}'
         self.assertEqual(dict(job1='http://url'), 
                          self.__jenkins.unassigned_jobs_url())
+
+    def test_nr_of_assigned_jobs_with_default_team(self):
+        ''' Test that all unassigned jobs are a responsbility of the default
+            team when a default team has been specified. '''
+        jenkins = JenkinsUnderTest('http://jenkins/', 'username', 'password',
+                                   default_team=Team(name='team 1'))
+        jenkins.contents = '{"jobs": [{"name": "job1", '\
+            '"description": "", "url": "http://url"}]}'
+        self.assertEqual(1, jenkins.number_of_assigned_jobs())
 
     def test_nr_of_jobs(self):
         ''' Test the number of jobs. '''

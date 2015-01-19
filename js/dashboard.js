@@ -42,7 +42,7 @@ var METRICS_COLUMN_STATUS_TEXT = 2;
 var METRICS_COLUMN_TEAMS = 3;
 var METRICS_COLUMN_TREND = 4;
 var METRICS_COLUMN_STATUS_ICON = 5;
-var METRICS_COLUMN_SCORE = 6;
+var METRICS_COLUMN_MEASUREMENT = 6;
 var METRICS_COLUMN_NORM = 7;
 var METRICS_COLUMN_COMMENT = 8;
 var METRICS_COLUMN_VERSION = 9;
@@ -57,7 +57,7 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Teams');
     metrics.addColumn('string', 'Trend');
     metrics.addColumn('string', 'Status');
-    metrics.addColumn('string', 'Score');
+    metrics.addColumn('string', 'Meting');
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
     metrics.addColumn('string', 'Version');

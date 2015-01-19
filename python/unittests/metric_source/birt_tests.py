@@ -371,7 +371,7 @@ class BirtTest(unittest.TestCase):
             no test design information in Birt (i.e. user stories, logical 
             test cases, etc.). '''
         self.__birt.html = TEST_DESIGN_HTML
-        self.failIf(self.__birt.has_test_design('product does not exist'))
+        self.assertFalse(self.__birt.has_test_design('product does not exist'))
 
     def test_non_existing_product(self):
         ''' Test that metrics for non-existing products return -1. '''
@@ -383,7 +383,7 @@ class BirtTest(unittest.TestCase):
             test design information in Birt (i.e. user stories, logical 
             test cases, etc.).  '''
         self.__birt.html = TEST_DESIGN_HTML
-        self.failUnless(self.__birt.has_test_design('bulk'))
+        self.assertTrue(self.__birt.has_test_design('bulk'))
 
     def test_nr_user_stories_with_sufficient_ltcs(self):  
         # pylint: disable=invalid-name
@@ -462,7 +462,7 @@ class BirtTest(unittest.TestCase):
 
     def test_has_art_performance(self):
         ''' Test a product without performance measurements. '''
-        self.failIf(self.__birt.has_art_performance('abc', '1.0'))
+        self.assertFalse(self.__birt.has_art_performance('abc', '1.0'))
 
 
 class BirtSprintProgressReportUnderTest(SprintProgressReport):

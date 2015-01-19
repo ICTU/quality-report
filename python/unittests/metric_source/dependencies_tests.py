@@ -68,7 +68,7 @@ class DependenciesTest(unittest.TestCase):
         ''' Test that an empty file can be loaded. '''
         self.__file.contents = ''
         self.__dependencies.load()
-        self.failIf(self.__dependencies.has_dependencies('name', 'version'))
+        self.assertFalse(self.__dependencies.has_dependencies('name', 'version'))
         
     def test_repr(self):
         ''' Test that the contents of the dependencies cache can be printed. '''

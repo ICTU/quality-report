@@ -13,10 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
 
-from qualitylib.metric_source import url_opener
-from qualitylib import utils, domain
+from . import url_opener
+from .. import utils, domain
 
 
 class Jira(domain.MetricSource, url_opener.UrlOpener):
@@ -72,7 +73,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def __get_query_url(self, query_id, search=True):
         ''' Get the query url based on the query id. '''
-        url = self.__url + 'rest/api/2/filter/%d' % query_id
+        url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)
         json_string = self.url_open(url).read()
         url_type = 'searchUrl' if search else 'viewUrl'
         return utils.eval_json(json_string)[url_type]

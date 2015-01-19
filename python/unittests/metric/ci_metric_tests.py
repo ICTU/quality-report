@@ -24,6 +24,11 @@ class FakeJenkins(object):
 
     UNSTABLE_ARTS_URL = {}
 
+    @staticmethod
+    def default_team():
+        ''' The team that's responsible for unassigned jobs. '''
+        return None
+
     @classmethod
     def failing_jobs_url(cls, *args):
         ''' Return the url(s) of the failing job(s). '''
@@ -93,7 +98,7 @@ class ProjectFailingCIJobsTest(FailingCIJobsCommonTestsMixin,
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if there is a build server. '''
-        self.failUnless(metric.ProjectFailingCIJobs.\
+        self.assertTrue(metric.ProjectFailingCIJobs.\
                         can_be_measured(self._project, self._project))
 
     def test_cant_be_measured_without_build_server(self):
@@ -102,12 +107,12 @@ class ProjectFailingCIJobsTest(FailingCIJobsCommonTestsMixin,
         for index in range(2):
             team = domain.Team(name='Team %d' % index)
             project.add_team(team, responsible=True)
-        self.failIf(metric.ProjectFailingCIJobs.can_be_measured(team, project))
+        self.assertFalse(metric.ProjectFailingCIJobs.can_be_measured(team, project))
 
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.ProjectFailingCIJobs.norm_template % \
+        self.assertTrue(metric.ProjectFailingCIJobs.norm_template % \
                     metric.ProjectFailingCIJobs.norm_template_default_values())
 
 
@@ -132,7 +137,7 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has 
             multiple teams. '''
-        self.failUnless(metric.TeamFailingCIJobs.can_be_measured(self._subject, 
+        self.assertTrue(metric.TeamFailingCIJobs.can_be_measured(self._subject, 
                                                                  self._project))
 
     def test_wont_be_measured_unless_multiple_teams(self):
@@ -142,7 +147,7 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
                                                  FakeJenkins()})
         team = domain.Team(name='Single team')
         project.add_team(team, responsible=True)
-        self.failIf(metric.TeamFailingCIJobs.can_be_measured(team, project))
+        self.assertFalse(metric.TeamFailingCIJobs.can_be_measured(team, project))
 
     def test_cant_be_measured_without_build_server(self):
         ''' Test that the metric cannot be measured without build server. '''
@@ -150,12 +155,12 @@ class TeamFailingCIJobsTest(FailingCIJobsCommonTestsMixin, unittest.TestCase):
         for index in range(2):
             team = domain.Team(name='Team %d' % index)
             project.add_team(team, responsible=True)
-        self.failIf(metric.TeamFailingCIJobs.can_be_measured(team, project))
+        self.assertFalse(metric.TeamFailingCIJobs.can_be_measured(team, project))
 
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.TeamFailingCIJobs.norm_template % \
+        self.assertTrue(metric.TeamFailingCIJobs.norm_template % \
                         metric.TeamFailingCIJobs.norm_template_default_values())
 
 
@@ -200,7 +205,7 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project as multiple
             teams. '''
-        self.failUnless(metric.TeamUnusedCIJobs.can_be_measured(self.__team,
+        self.assertTrue(metric.TeamUnusedCIJobs.can_be_measured(self.__team,
                                                                 self._project))
 
     def test_wont_be_measured_unless_multiple_teams(self):
@@ -209,7 +214,7 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.Jenkins: 
                                                  FakeJenkins()})
         project.add_team(self.__team)
-        self.failIf(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
+        self.assertFalse(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
                                                             project))
 
     def test_cant_be_measured_without_build_server(self):
@@ -217,13 +222,13 @@ class TeamUnusedCIJobsTest(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
         project = domain.Project()
         project.add_team(self.__team)
         project.add_team(domain.Team(name='Another team'))
-        self.failIf(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
+        self.assertFalse(metric.TeamUnusedCIJobs.can_be_measured(self.__team, 
                                                             project))
 
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.TeamUnusedCIJobs.norm_template % \
+        self.assertTrue(metric.TeamUnusedCIJobs.norm_template % \
                     metric.TeamUnusedCIJobs.norm_template_default_values())
 
 
@@ -242,19 +247,19 @@ class ProjectUnusedCIJobs(UnusedCIJobsCommonTestsMixin, unittest.TestCase):
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if there is a build server. '''
-        self.failUnless(metric.ProjectUnusedCIJobs.\
+        self.assertTrue(metric.ProjectUnusedCIJobs.\
                         can_be_measured(self._project, self._project))
 
     def test_cant_be_measured_without_build_server(self):
         ''' Test that the metric cannot be measured without build server. '''
         project = domain.Project()
-        self.failIf(metric.ProjectUnusedCIJobs.can_be_measured(project, 
+        self.assertFalse(metric.ProjectUnusedCIJobs.can_be_measured(project, 
                                                                project))
 
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.ProjectUnusedCIJobs.norm_template % \
+        self.assertTrue(metric.ProjectUnusedCIJobs.norm_template % \
                     metric.ProjectUnusedCIJobs.norm_template_default_values())
 
 
@@ -364,14 +369,14 @@ class AssignedCIJobsTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has a build 
             server and the project has more than one team. '''
-        self.failUnless(metric.AssignedCIJobs.can_be_measured(self.__project, 
+        self.assertTrue(metric.AssignedCIJobs.can_be_measured(self.__project, 
                                                               self.__project))
 
     def test_cant_be_measured_without_build_server(self):
         ''' Test that the metric can be measured when the project has a build 
             server and the project has more than one team. '''
         project = domain.Project()
-        self.failIf(metric.AssignedCIJobs.can_be_measured(self.__project, 
+        self.assertFalse(metric.AssignedCIJobs.can_be_measured(self.__project, 
                                                           project))
 
     def test_cant_be_measured_without_multiple_teams(self):
@@ -379,4 +384,4 @@ class AssignedCIJobsTest(unittest.TestCase):
             server and the project has more than one team. '''
         project = domain.Project(metric_sources={metric_source.Jenkins:
                                                  FakeJenkins()})
-        self.failIf(metric.AssignedCIJobs.can_be_measured(project, project))
+        self.assertFalse(metric.AssignedCIJobs.can_be_measured(project, project))

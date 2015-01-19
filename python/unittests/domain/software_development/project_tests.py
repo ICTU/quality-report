@@ -68,7 +68,7 @@ class ProjectTest(unittest.TestCase):
 
     def test_products(self):
         ''' Test that a newly created project has no products. '''
-        self.failIf(self.__project.products())
+        self.assertFalse(self.__project.products())
 
     def test_add_product(self):
         ''' Test that a product can be added to the project. '''
@@ -90,7 +90,7 @@ class ProjectTest(unittest.TestCase):
             project. '''
         product = FakeProduct()
         self.__project.add_product(product)
-        self.failIf(self.__project.add_product_with_version('FakeProduct', ''))
+        self.assertFalse(self.__project.add_product_with_version('FakeProduct', ''))
         self.assertEqual([product], self.__project.products())
 
     def test_add_product_with_version_twice(self): 
@@ -114,7 +114,7 @@ class ProjectTest(unittest.TestCase):
             project. '''
         product = FakeProduct()
         self.__project.add_product(product)
-        self.failIf(self.__project.add_product_with_branch('FakeProduct', ''))
+        self.assertFalse(self.__project.add_product_with_branch('FakeProduct', ''))
         self.assertEqual([product], self.__project.products())
 
     def test_add_branch_to_missing_product(self):
@@ -133,7 +133,7 @@ class ProjectTest(unittest.TestCase):
         ''' Test that adding an existing branch does nothing. '''
         trunk = self.__project.add_product(FakeProduct())
         branch = self.__project.add_product_with_branch('FakeProduct', 'branch')
-        self.failIf(self.__project.add_product_with_branch('FakeProduct',
+        self.assertFalse(self.__project.add_product_with_branch('FakeProduct',
                                                            'branch'))
         self.assertEqual([trunk, branch], self.__project.products())
 
@@ -146,7 +146,7 @@ class ProjectTest(unittest.TestCase):
     def test_get_missing_product(self):
         ''' Test that a product that hasn't been added can't be found. '''
         self.__project.add_product(FakeProduct())
-        self.failIf(self.__project.get_product('Missing product'))
+        self.assertFalse(self.__project.get_product('Missing product'))
 
     def test_product_dependencies(self):
         ''' Test collecting the dependencies of products. '''
@@ -155,7 +155,7 @@ class ProjectTest(unittest.TestCase):
 
     def test_teams(self):
         ''' Test that a newly created project has no teams. '''
-        self.failIf(self.__project.teams())
+        self.assertFalse(self.__project.teams())
 
     def test_add_team(self):
         ''' Test that a team can be added to the project. '''
@@ -178,7 +178,7 @@ class ProjectTest(unittest.TestCase):
         ''' Test that a document can be added to the project. '''
         document = domain.Document(name='Title')
         self.__project.add_document(document)
-        self.failUnless(document in self.__project.documents())
+        self.assertTrue(document in self.__project.documents())
 
     def test_streets(self):
         ''' Test that a project has development streets. '''
@@ -191,7 +191,7 @@ class ProjectTest(unittest.TestCase):
     def test_unknown_metric_source(self):
         ''' Test that the project returns None for an unknown metric source
             class. '''
-        self.failIf(self.__project.metric_source(self.__class__))
+        self.assertFalse(self.__project.metric_source(self.__class__))
 
     def test_known_metric_source(self):
         ''' Test that the project returns the instance of a known metric
@@ -232,26 +232,26 @@ class ProjectResourcesTest(unittest.TestCase):
 
     def test_default_resources(self):
         ''' Test that the project has no resources by default. '''
-        self.failIf(self.project().project_resources())
+        self.assertFalse(self.project().project_resources())
 
     def test_wiki(self):
         ''' Test that the wiki is in the project resources. '''
         wiki = FakeResource('Wiki')
         project = self.project(metric_sources={metric_source.Wiki: wiki})
-        self.failUnless((wiki.name(), wiki.url()) in \
+        self.assertTrue((wiki.name(), wiki.url()) in \
                         project.project_resources())
 
     def test_jira(self):
         ''' Test that Jira is in the project resources. '''
         jira = metric_source.Jira('url', '', '')
         project = self.project(metric_sources={metric_source.Jira: jira})
-        self.failUnless(('Jira', 'url') in project.project_resources())
+        self.assertTrue(('Jira', 'url') in project.project_resources())
 
     def test_build_server(self):
         ''' Test that build server is in the project resources. '''
         jenkins = metric_source.Jenkins('url', '', '')
         project = self.project(metric_sources={metric_source.Jenkins: jenkins})
-        self.failUnless(('Jenkins build server', 'url') in \
+        self.assertTrue(('Jenkins build server', 'url') in \
                         project.project_resources())
 
     def test_sonar(self):
@@ -259,13 +259,13 @@ class ProjectResourcesTest(unittest.TestCase):
         sonar = metric_source.Sonar('url')
         project = domain.Project('', name='', 
             metric_sources={metric_source.Sonar: sonar})
-        self.failUnless(('SonarQube', 'url') in project.project_resources())
+        self.assertTrue(('SonarQube', 'url') in project.project_resources())
 
     def test_birt(self):
         ''' Test that Birt is in the project resources. '''
         birt = FakeResource('Birt reports')
         project = self.project(metric_sources={metric_source.Birt: birt})
-        self.failUnless(('Birt reports', birt.url()) in 
+        self.assertTrue(('Birt reports', birt.url()) in 
                         project.project_resources())
 
     def test_trello_risk_log(self):
@@ -273,7 +273,7 @@ class ProjectResourcesTest(unittest.TestCase):
         trello_risk_board = FakeResource('Trello risico log')
         project = self.project(
             metric_sources={metric_source.TrelloRiskBoard: trello_risk_board})
-        self.failUnless((trello_risk_board.name(), trello_risk_board.url()) in
+        self.assertTrue((trello_risk_board.name(), trello_risk_board.url()) in
                         project.project_resources())
 
     def test_trello_actions(self):
@@ -281,7 +281,7 @@ class ProjectResourcesTest(unittest.TestCase):
         actions = FakeResource('Trello acties')
         project = self.project(
             metric_sources={metric_source.TrelloActionsBoard: actions})
-        self.failUnless((actions.name(), actions.url()) in
+        self.assertTrue((actions.name(), actions.url()) in
                         project.project_resources())
 
     def test_performance_report(self):
@@ -289,55 +289,55 @@ class ProjectResourcesTest(unittest.TestCase):
         performance_report = FakeResource('Performance reports')
         project = self.project(metric_sources={metric_source.PerformanceReport:
                                                performance_report})
-        self.failUnless((performance_report.name(), performance_report.url()) in
+        self.assertTrue((performance_report.name(), performance_report.url()) in
                          project.project_resources())
 
     def test_emma(self):
         ''' Test that the Emma reports are in the project resources. '''
-        emma = metric_source.Emma(FakeResource(), '%s/')
+        emma = metric_source.Emma(FakeResource(), '{}/')
         project = self.project(metric_sources={metric_source.Emma: emma})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
         url = emma.get_coverage_url('emma_id')
-        self.failUnless(('Emma coverage report %s' % product.name(), url) in
+        self.assertTrue(('Emma coverage report %s' % product.name(), url) in
                          project.project_resources())
 
     def test_emma_only_for_trunk(self):
         ''' Test that only the Emma reports for trunk versions of products
             are included. '''
-        emma = metric_source.Emma(FakeResource(), '%s/')
+        emma = metric_source.Emma(FakeResource(), '{}/')
         project = self.project(metric_sources={metric_source.Emma: emma})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={emma: 'emma_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
         url = emma.get_coverage_url('emma_id')
-        self.failUnless(('Emma coverage report %s' % product.name(), url) in
+        self.assertTrue(('Emma coverage report %s' % product.name(), url) in
                          project.project_resources())
 
     def test_jacoco(self):
         ''' Test that the JacCoCo reports are in the project resources. '''
-        jacoco = metric_source.JaCoCo(FakeResource(), '%s/')
+        jacoco = metric_source.JaCoCo(FakeResource(), '{}/')
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
         url = jacoco.get_coverage_url('jacoco_id')
-        self.failUnless(('JaCoCo coverage report %s' % product.name(), url) in 
+        self.assertTrue(('JaCoCo coverage report %s' % product.name(), url) in 
                          project.project_resources())
 
     def test_jacoco_only_for_trunk(self):
         ''' Test that only the JaCoCo reports for trunk versions of products
             are included. '''
-        jacoco = metric_source.JaCoCo(FakeResource(), '%s/')
+        jacoco = metric_source.JaCoCo(FakeResource(), '{}/')
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
                                  metric_source_ids={jacoco: 'jacoco_id'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
         url = jacoco.get_coverage_url('jacoco_id')
-        self.failUnless(('JaCoCo coverage report %s' % product.name(), url) in 
+        self.assertTrue(('JaCoCo coverage report %s' % product.name(), url) in 
                          project.project_resources())
 
     def test_release_candidates(self):
@@ -346,7 +346,7 @@ class ProjectResourcesTest(unittest.TestCase):
         release_candidates = FakeResource('Release kandidaten')
         project = self.project(metric_sources={metric_source.ReleaseCandidates:
                                                release_candidates})
-        self.failUnless((release_candidates.name(), release_candidates.url()) in
+        self.assertTrue((release_candidates.name(), release_candidates.url()) in
                          project.project_resources())
 
     def test_release_archive(self):
@@ -354,7 +354,7 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project()
         team = domain.Team(name='A', release_archives=[FakeResource()])
         project.add_team(team)
-        self.failUnless(('Release archief team A', FakeResource().url()) in
+        self.assertTrue(('Release archief team A', FakeResource().url()) in
                          project.project_resources())
 
     def test_repository(self):
@@ -362,12 +362,12 @@ class ProjectResourcesTest(unittest.TestCase):
             resources. '''
         subversion = metric_source.Subversion()
         project = self.project(metric_sources={
-                                   metric_source.Subversion: subversion})
+                               metric_source.VersionControlSystem: subversion})
         svn_url = 'http://svn/product/trunk/'
         product = domain.Product(project, name='Name',
                                  metric_source_ids={subversion: svn_url})
         project.add_product(product)
-        self.failUnless(('Broncode repository Name', 
+        self.assertTrue(('Broncode repository Name', 
                          svn_url) in project.project_resources())
 
     def test_repositories(self):
@@ -375,7 +375,7 @@ class ProjectResourcesTest(unittest.TestCase):
             resources. '''
         subversion = metric_source.Subversion()
         project = self.project(metric_sources={
-                                   metric_source.Subversion: subversion})
+                            metric_source.VersionControlSystem: subversion})
         for index in range(1, 4):
             product = domain.Product(project, name='Product %d' % index, 
                 metric_source_ids={subversion: 
@@ -384,9 +384,9 @@ class ProjectResourcesTest(unittest.TestCase):
                 product.set_product_version('1.1')
             project.add_product(product)
         resources = project.project_resources()
-        self.failUnless(('Broncode repository Product 1', 
+        self.assertTrue(('Broncode repository Product 1', 
                          'https://svn/product1/trunk/') in resources)
-        self.failUnless(('Broncode repository Product 2',
+        self.assertTrue(('Broncode repository Product 2',
                          'https://svn/product2/trunk/') in resources)
 
     def test_additional_resources(self):
@@ -395,4 +395,10 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(additional_resources=[
             domain.MetricSource(name='Resource', url='http://url')])
         resources = project.project_resources()
-        self.failUnless(('Resource', 'http://url') in resources)
+        self.assertTrue(('Resource', 'http://url') in resources)
+
+    def test_requirements(self):
+        ''' Test that requirements can be given to a project. '''
+        requirement = domain.Requirement('A requirement')
+        project = self.project(requirements=[requirement])
+        self.assertTrue(requirement in project.requirements())

@@ -18,11 +18,20 @@ import unittest
 from qualitylib import metric_source, metric_info, domain
 
 
+class FakeSonar(object):
+    ''' Fake Sonar to return a fixed version number. '''
+    @staticmethod
+    def version(sonar_id):  # pylint: disable=unused-arg
+        ''' Return the version number of the product with the specified Sonar
+            id. '''
+        return '1.2'
+
+
 class SonarProductInfoTests(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     '''Unit tests for the Sonar product information class. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__sonar = None
+        self.__sonar = FakeSonar()
         self.__project = domain.Project('Organization', name='Project name',
             metric_sources={metric_source.Sonar: self.__sonar})
         self.__product = domain.Product(self.__project,
@@ -97,3 +106,25 @@ class SonarProductInfoTests(unittest.TestCase):
             jsf=domain.Product(self.__project))
         sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
         self.assertEqual(set(['sonar:id']), sonar_product_info.all_sonar_ids())
+
+    def test_latest_version_of_a_released_product(self):
+        ''' Test that the version number equals the set version. '''
+        product = domain.Product(self.__project)
+        product.set_product_version('1.1')
+        sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+        self.assertEqual('1.1', sonar_product_info.latest_version())
+
+    def test_latest_version_of_a_trunk_product(self):
+        ''' Test that the version number equals the version number as given
+            by Sonar. '''
+        product = domain.Product(self.__project,
+                                 metric_source_ids={self.__sonar: 'sonar:id'})
+        sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+        self.assertEqual('1.2', sonar_product_info.latest_version())
+
+    def test_latest_version_of_a_trunk_product_without_sonar(self):
+        ''' Test that the product has no version number if Sonar isn't
+            available. '''
+        product = domain.Product(self.__project)
+        sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+        self.assertEqual('', sonar_product_info.latest_version())

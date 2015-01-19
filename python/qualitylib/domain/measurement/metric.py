@@ -13,13 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils
-from qualitylib.domain.software_development.quality_attribute import \
-    QualityAttribute
-from qualitylib.domain.measurement import metric_mixin
 import logging
 import datetime
+
+from . import metric_mixin
+from ..software_development.quality_attribute import QualityAttribute
+from ... import utils
 
 
 class Metric(object):
@@ -45,6 +46,12 @@ class Metric(object):
                 if not subject.metric_source_id(metric_source_instance):
                     return False
         return bool(subject)
+
+    @classmethod
+    def should_be_measured(cls, project):
+        ''' Return whether this metric should be measured for the specified
+            project. '''
+        return cls in project.required_metric_classes()
 
     @classmethod
     def norm_template_default_values(cls):
@@ -87,20 +94,18 @@ class Metric(object):
     def target(self):
         ''' Return the target value for the metric. If the actual value of the
             metric is below the target value, the metric is not green. '''
-        if hasattr(self._subject, 'target'):
-            return self._subject.target(self.__class__) or self.target_value
-        else:
-            return self.target_value
+        subject_target = self._subject.target(self.__class__) \
+            if hasattr(self._subject, 'target') else None
+        return self.target_value if subject_target is None else subject_target
 
     def low_target(self):
         ''' Return the low target value for the metric. If the actual value
             is below the low target value, the metric needs immediate
             action and its status/color is red. '''
-        if hasattr(self._subject, 'low_target'):
-            return self._subject.low_target(self.__class__) or \
-                self.low_target_value
-        else:
-            return self.low_target_value
+        subject_low_target = self._subject.low_target(self.__class__) \
+            if hasattr(self._subject, 'low_target') else None
+        return self.low_target_value if subject_low_target is None else \
+            subject_low_target
 
     def __technical_debt_target(self):
         ''' Return the reduced target due to technical debt for the subject.
@@ -167,8 +172,8 @@ class Metric(object):
         name = self.__subject_name()
         if len(name) > max_subject_length:
             name = name[:max_subject_length] + '...'
-        logging.info('Reporting %s on %s', self.__class__.__name__, name)
-        return self._get_template() % self._parameters()
+        logging.info('Reporting {cls} on {name}'.format(cls=self.__class__.__name__, name=name))
+        return self._get_template().format(**self._parameters())
 
     def _get_template(self):
         ''' Return the template for the metric report. '''
@@ -181,16 +186,26 @@ class Metric(object):
             version = self._subject.product_version()
         except AttributeError:
             version = '<no version>'
-        return dict(name=self.__subject_name(), version=version,
-                    target=self.target(), low_target=self.low_target(), 
-                    value=self.value(), date=utils.format_date(self._date()),
+        return dict(
+                    name=self.__subject_name(),
+                    version=version,
+                    target=self.target(),
+                    low_target=self.low_target(), 
+                    value=self.value(),
+                    date=utils.format_date(self._date()),
                     old_age=utils.format_timedelta(self.old_age),
                     max_old_age=utils.format_timedelta(self.max_old_age),
-                    age=utils.format_timedelta(self.__age()))
+                    age=utils.format_timedelta(self.__age()),
+                    )
 
     def norm(self):
         ''' Return a description of the norm for the metric. '''
-        return self.norm_template % self._parameters()
+        try:
+            return self.norm_template.format(**self._parameters())
+        except KeyError:
+            logging.error('Key missing in parameters of %s: %s',
+                          self.__class__.__name__, self._parameters())
+            raise
 
     def url(self):  # pylint: disable=R0201
         ''' Return a dictionary of urls for the metric. The key is the anchor,

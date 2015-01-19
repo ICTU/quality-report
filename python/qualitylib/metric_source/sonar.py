@@ -13,12 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.metric_source import url_opener, sonar_runner
-from qualitylib.metric_source.maven import Maven
-from qualitylib import utils, domain
+
 import logging
 import urllib2
+
+
+from .maven import Maven
+from . import url_opener, sonar_runner
+from .. import utils, domain
 
 
 class Sonar(domain.MetricSource, url_opener.UrlOpener):
@@ -26,23 +30,25 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     metric_source_name = 'SonarQube'
 
-    def __init__(self, sonar_url, maven=None, subversion=None, *args, **kwargs):
+    def __init__(self, sonar_url, maven=None, version_control_system=None,
+                 *args, **kwargs):
         super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
         maven = maven or Maven()
-        self.__runner = sonar_runner.SonarRunner(self, maven, subversion, 
+        self.__runner = sonar_runner.SonarRunner(self, maven,
+                                                 version_control_system,
                                                  *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'drilldown/violations/'
-        self.__violations_api_url = sonar_url + 'api/resources?resource=%s&' \
+        self.__violations_api_url = sonar_url + 'api/resources?resource={resource}&' \
             'metrics=blocker_violations,critical_violations,major_violations,' \
             'minor_violations,info_violations&rules=true&includetrends=true'
-        self.__resource_api_url = sonar_url + 'api/resources?resource=%s'
-        self.__metrics_api_url = self.__resource_api_url + '&metrics=%s'
+        self.__resource_api_url = sonar_url + 'api/resources?resource={resource}'
+        self.__metrics_api_url = self.__resource_api_url + '&metrics={metrics}'
 
     @utils.memoized
     def version(self, product):
         ''' Return the version of the product. '''
-        json = self.url_open(self.__resource_api_url % product).read()
+        json = self.url_open(self.__resource_api_url.format(resource=product)).read()
         version = utils.eval_json(json)[0]['version']
         logging.debug('Retrieving Sonar version for %s -> %s', product, version)
         return version
@@ -52,27 +58,27 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def ncloc(self, product):
         ''' Non-comment lines of code. '''
-        return self.__metric(product, 'ncloc')
+        return int(self.__metric(product, 'ncloc'))
 
     def lines(self, product):
         ''' Bruto lines of code, including comments, whitespace, javadoc. '''
-        return self.__metric(product, 'lines')
+        return int(self.__metric(product, 'lines'))
 
     def major_violations(self, product):
         ''' Return the number of major violations for the product. '''
-        return self.__metric(product, 'major_violations')
+        return int(self.__metric(product, 'major_violations'))
 
     def critical_violations(self, product):
         ''' Return the number of critical violations for the product. '''
-        return self.__metric(product, 'critical_violations')
+        return int(self.__metric(product, 'critical_violations'))
 
     def blocker_violations(self, product):
         ''' Return the number of blocker violations for the product. '''
-        return self.__metric(product, 'blocker_violations')
+        return int(self.__metric(product, 'blocker_violations'))
 
     def duplicated_lines(self, product):
         ''' Return the number of duplicated lines for the product. '''
-        return self.__metric(product, 'duplicated_lines')
+        return int(self.__metric(product, 'duplicated_lines'))
  
     def line_coverage(self, product):
         ''' Return the line coverage of the unit tests for the product. '''
@@ -84,21 +90,21 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def unittests(self, product):
         ''' Return the number of unit tests for the product. '''
-        return self.__metric(product, 'tests')
+        return int(self.__metric(product, 'tests'))
 
     def failing_unittests(self, product):
         ''' Return the number of failing unit tests for the product. '''
-        return self.__metric(product, 'test_failures') + \
-               self.__metric(product, 'test_errors')
+        return int(self.__metric(product, 'test_failures') +
+                   self.__metric(product, 'test_errors'))
 
     def package_cycles(self, product):
         ''' Return the number of cycles in the package dependencies for the
             product. '''
-        return self.__metric(product, 'package_cycles')
+        return int(self.__metric(product, 'package_cycles'))
 
     def methods(self, product):
         ''' Return the number of methods/functions in the product. '''
-        return self.__metric(product, 'functions')
+        return int(self.__metric(product, 'functions'))
 
     def dashboard_url(self, product):
         ''' Return the url for the Sonar dashboard for the product. '''
@@ -159,7 +165,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def __metric(self, product, metric, default=0):
         ''' Return a specific metric value for the product. '''
         try:
-            json = self.__get_json(self.__metrics_api_url % (product, metric))
+            json = self.__get_json(self.__metrics_api_url.format(resource=product, metrics=metric))
         except urllib2.HTTPError:
             return default
         try:
@@ -173,7 +179,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def __violation(self, product, violation_name, default=0):
         ''' Return a specific violation value for the product. '''
         try:
-            json = self.__get_json(self.__violations_api_url % product)
+            json = self.__get_json(self.__violations_api_url.format(resource=product))
         except urllib2.HTTPError:
             return default
         try:
@@ -185,7 +191,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         for violation in violations:
             if violation_name in violation['rule_name'] or \
                violation_name in violation['rule_key']:
-                return violation['val']
+                return int(violation['val'])
         return default
 
     def __get_json(self, url):

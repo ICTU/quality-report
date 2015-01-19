@@ -13,12 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils
-from qualitylib.domain.measurement.measurable import MeasurableObject
+
 import copy
 import logging
 import urllib2
+
+
+from ..measurement.measurable import MeasurableObject
+from ... import utils
 
 
 class Product(MeasurableObject):
@@ -110,10 +114,10 @@ class Product(MeasurableObject):
         product_version = self.product_version()
         if product_version:
             from qualitylib import metric_source, metric_info
-            subversion = self.__project.metric_source(metric_source.Subversion)
-            subversion_product_info = metric_info.SubversionProductInfo(subversion,
-                                                                        self)
-            return product_version == subversion_product_info.latest_released_product_version()
+            vcs = self.__project.metric_source(metric_source.VersionControlSystem)
+            vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs,
+                                                                           self)
+            return product_version == vcs_product_info.latest_released_product_version()
         else:
             return False
 
@@ -197,12 +201,12 @@ class Product(MeasurableObject):
                 source = self.__project.metric_source(metric_source_class)
                 source_id = self.metric_source_id(source)
                 if source_id:
-                    resources.append(('%s %s' % (source.name(), 
-                                                 self.name()), 
+                    resources.append(('{src} {prd}'.format(src=source.name(), 
+                                                 prd=self.name()), 
                                       source.get_coverage_url(source_id)))
-            if self.__svn_path():
-                resources.append(('Broncode repository %s' % self.name(), 
-                                  self.__svn_path()))
+            if self.__vcs_path():
+                resources.append(('Broncode repository {prd}'.format(prd=self.name()), 
+                                  self.__vcs_path()))
         return resources
 
     @utils.memoized
@@ -267,7 +271,7 @@ class Product(MeasurableObject):
         if not pom:
             logging.warning('No pom retriever defined.')
             return set()
-        svn_path = self.__svn_path(version)
+        svn_path = self.__vcs_path(version)
         try:
             return pom.dependencies(svn_path, self.__project.products())
         except urllib2.HTTPError, reason:
@@ -282,10 +286,10 @@ class Product(MeasurableObject):
                               user.product_label())
             raise
 
-    def __svn_path(self, version=None, branch=None):
-        ''' Return the Subversion path of this product. '''
+    def __vcs_path(self, version=None, branch=None):
+        ''' Return the version control system path of this product. '''
         from qualitylib import metric_source, metric_info
-        subversion = self.__project.metric_source(metric_source.Subversion)
-        subversion_product_info = metric_info.SubversionProductInfo(subversion,
-                                                                    self)
-        return subversion_product_info.svn_path(version, branch)
+        vcs = self.__project.metric_source(metric_source.VersionControlSystem)
+        vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs,
+                                                                       self)
+        return vcs_product_info.vcs_path(version, branch)

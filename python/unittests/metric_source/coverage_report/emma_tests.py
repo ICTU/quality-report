@@ -53,7 +53,7 @@ class EmmaTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__jenkins = FakeJenkins()
-        self.__emma = Emma(self.__jenkins, '%s/')
+        self.__emma = Emma(self.__jenkins, '{}/')
 
     def test_coverage(self):
         ''' Test the coverage for a specific product. '''
@@ -79,4 +79,4 @@ class EmmaTest(unittest.TestCase):
         ''' Test that the date is now when Emma can't be reached. '''
         coverage_date = self.__emma.coverage_date('raise')
         age = datetime.datetime.now() - coverage_date
-        self.failUnless(age < datetime.timedelta(seconds=1))
+        self.assertTrue(age < datetime.timedelta(seconds=1))

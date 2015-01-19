@@ -13,12 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 import datetime
-from qualitylib.domain import Metric, LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import BirtMetricMixin
-from qualitylib.metric.quality_attributes import PROGRESS, SPIRIT
-from qualitylib import utils, metric_source
+
+from .metric_source_mixin import BirtMetricMixin
+from .quality_attributes import PROGRESS, SPIRIT
+from ..domain import Metric, LowerIsBetterMetric
+from .. import utils, metric_source
 
 
 class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
@@ -26,16 +29,16 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
 
     name = 'Team voortgang'
     norm_template = 'De vereiste velocity om het sprintdoel te halen is ' \
-        'lager dan of gelijk aan %(target_factor).1f maal de geplande ' \
+        'lager dan of gelijk aan {target_factor:.1f} maal de geplande ' \
         'velocity. Als de velocity die nodig is om het sprintdoel te halen ' \
-        'hoger wordt dan %(low_target_factor).1f maal de geplande velocity ' \
+        'hoger wordt dan {low_target_factor:.1f} maal de geplande velocity ' \
         'is deze metriek rood.'
-    template = 'Team %(name)s heeft een velocity van %(value).1f punt per ' \
-        'dag nodig om het sprintdoel van de huidige sprint (%(sprint_goal).1f '\
-        'punten) te halen. De geplande velocity is %(planned_velocity).1f ' \
-        'punt per dag. De tot nu toe (dag %(sprint_day)d van ' \
-        '%(sprint_length)d) gerealiseerde velocity is %(actual_velocity).1f ' \
-        'punt per dag (%(actual_points).1f punten).'
+    template = 'Team {name} heeft een velocity van {value:.1f} punt per ' \
+        'dag nodig om het sprintdoel van de huidige sprint ({sprint_goal:.1f} '\
+        'punten) te halen. De geplande velocity is {planned_velocity:.1f} ' \
+        'punt per dag. De tot nu toe (dag {sprint_day} van ' \
+        '{sprint_length}) gerealiseerde velocity is {actual_velocity:.1f} ' \
+        'punt per dag ({actual_points:.1f} punten).'
     quality_attribute = PROGRESS
     target_factor = 1.25
     low_target_factor = 1.5
@@ -90,7 +93,7 @@ class TeamSpirit(Metric):
     norm_template = 'Er is geen vaste norm; de stemming wordt door de ' \
         'kwaliteitsmanager periodiek bij de teams gepeild. De teams kiezen ' \
         'daarbij zelf een smiley.'
-    template = 'De stemming van team %(name)s was %(value)s op %(date)s.'
+    template = 'De stemming van team {name} was {value} op {date}.'
     target_value = ':-)'
     perfect_value = ':-)'
     low_target_value = ':-('
@@ -103,9 +106,10 @@ class TeamSpirit(Metric):
     def __init__(self, *args, **kwargs):
         super(TeamSpirit, self).__init__(*args, **kwargs)
         self.__wiki = self._project.metric_source(metric_source.Wiki)
+        self.__team_id = self._subject.metric_source_id(self.__wiki)
 
     def value(self):
-        return self.__wiki.team_spirit(self._subject) or '?'
+        return self.__wiki.team_spirit(self.__team_id) or '?'
 
     def numerical_value(self):
         return self.numerical_value_map[self.value()]
@@ -121,7 +125,7 @@ class TeamSpirit(Metric):
         return self.numerical_value() < max(self.numerical_value_map.values())
 
     def _date(self):
-        return self.__wiki.date_of_last_team_spirit_measurement(self._subject)
+        return self.__wiki.date_of_last_team_spirit_measurement(self.__team_id)
 
     def url(self):
         return dict(Wiki=self.__wiki.url())
@@ -131,9 +135,9 @@ class ReleaseAge(LowerIsBetterMetric):
     ''' Metric for measuring the age of the last release. '''
 
     name = 'Release leeftijd'
-    norm_template = 'De laatste release is niet ouder dan %(target)d ' \
-        'dagen. Ouder dan %(low_target)d dagen is rood.'
-    template = 'Release leeftijden: %(archive_ages)s.'
+    norm_template = 'De laatste release is niet ouder dan {target} ' \
+        'dagen. Ouder dan {low_target} dagen is rood.'
+    template = 'Release leeftijden: {archive_ages}.'
     target_value = 3 * 7
     low_target_value = 4 * 7
     quality_attribute = PROGRESS
@@ -149,14 +153,16 @@ class ReleaseAge(LowerIsBetterMetric):
     def url(self):
         urls = dict()
         for archive in self._subject.release_archives():
-            urls['Release-archief %s' % archive.name()] = archive.url()
+            urls['Release-archief {archive}'.format(archive=archive.name())] = archive.url()
         return urls
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(ReleaseAge, self)._parameters()
-        parameters['archive_ages'] = ', '.join(['%s is %d dag(en) oud' % 
-            (name, age) for name, age in self.__ages().items()])
+        parameters['archive_ages'] = ', '.join([
+                    '{name} is {age} dag(en) oud'.format(name=name, age=age) \
+                    for name, age in self.__ages().items()
+                    ])
         return parameters
 
     @utils.memoized
@@ -177,11 +183,11 @@ class TeamAbsence(LowerIsBetterMetric):
 
     name = 'Absentie'
     norm_template = 'Het aantal aaneengesloten dagen dat meerdere ' \
-        'teamleden tegelijk gepland afwezig zijn is lager dan %(target)d ' \
-        'werkdagen. Meer dan %(low_target)d werkdagen is rood.'
+        'teamleden tegelijk gepland afwezig zijn is lager dan {target} ' \
+        'werkdagen. Meer dan {low_target} werkdagen is rood.'
     template = 'De langste periode dat meerdere teamleden ' \
-        'tegelijk gepland afwezig zijn is %(value)d werkdagen ' \
-        '(%(start)s tot en met %(end)s).'
+        'tegelijk gepland afwezig zijn is {value} werkdagen ' \
+        '({start} tot en met {end}). Afwezig zijn: {members}.'
     perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
     target_value = 5
     low_target_value = 10
@@ -206,10 +212,12 @@ class TeamAbsence(LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamAbsence, self)._parameters()
-        length, start, end = self.__planner.days(self._subject)
+        length, start, end, members = self.__planner.days(self._subject)
         if length:
             parameters['start'] = start.isoformat()
             parameters['end'] = end.isoformat()
+            parameters['members'] = ', '.join(sorted([member.name() for member
+                                                      in members]))
         return parameters
 
     def _get_template(self):

@@ -44,9 +44,9 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
-        project = domain.Project(
+        self.__project = domain.Project(
             metric_sources={metric_source.History: FakeHistory()})
-        self.__metric = MetricUnderTest(self.__subject, project=project)
+        self.__metric = MetricUnderTest(self.__subject, project=self.__project)
 
     def test_stable_id(self):
         ''' Test that the metric has a stable id. '''
@@ -118,15 +118,15 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_url(self):
         ''' Test that the metric has no default url. '''
-        self.failIf(self.__metric.url())
+        self.assertFalse(self.__metric.url())
 
     def test_default_url_label(self):
         ''' Test that the metric has no default url label. '''
-        self.failIf(self.__metric.url_label())
+        self.assertFalse(self.__metric.url_label())
 
     def test_recent_history(self):
         ''' Test that the metric has no history by default. '''
-        self.failIf(self.__metric.recent_history())
+        self.assertFalse(self.__metric.recent_history())
 
     def test_default_y_axis_range(self):
         ''' Test that the default y axis range is 0-100. '''
@@ -167,7 +167,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_responsible_teams(self):
         ''' Test that the metric has no responsible teams by default. '''
-        self.failIf(self.__metric.responsible_teams())
+        self.assertFalse(self.__metric.responsible_teams())
 
     def test_passed_responsible_teams(self):
         ''' Test that the metric can be initialized with responsible teams. '''
@@ -201,7 +201,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_comment_url_label(self):
         ''' Test that the metric has no comment url label by default. '''
-        self.failIf(self.__metric.comment_url_label())
+        self.assertFalse(self.__metric.comment_url_label())
 
     def test_comment_technical_debt(self):
         ''' Test that the metric gets the comment from the subject when the
@@ -219,7 +219,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         # pylint: disable=attribute-defined-outside-init
         self.__subject.technical_debt_target = lambda metric: \
             domain.TechnicalDebtTarget(10, 'Comment')
-        self.failIf(self.__metric.comment_urls())
+        self.assertFalse(self.__metric.comment_urls())
 
     def test_comment_from_wiki_url(self):
         ''' Test that the comment urls include a link to the Wiki if the Wiki
@@ -249,11 +249,15 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_metric_can_be_measured(self):
         ''' Test that a metric can be measured if given a subject. '''
-        self.failUnless(domain.Metric.can_be_measured(FakeSubject(), None))
+        self.assertTrue(domain.Metric.can_be_measured(FakeSubject(), None))
 
     def test_metric_cant_be_measured(self):
         ''' Test that a metric cannot be measured if not given a subject. '''
-        self.failIf(domain.Metric.can_be_measured(None, None))
+        self.assertFalse(domain.Metric.can_be_measured(None, None))
+
+    def test_metric_should_be_measured(self):
+        ''' Test that a metric should not be measured be default. '''
+        self.assertFalse(domain.Metric.should_be_measured(self.__project))
 
 
 class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):

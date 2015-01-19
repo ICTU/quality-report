@@ -13,11 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import HigherIsBetterMetric, LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
-from qualitylib.metric.quality_attributes import TEST_COVERAGE, TEST_QUALITY
-from qualitylib import metric_info
+
+from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..quality_attributes import TEST_COVERAGE, TEST_QUALITY
+from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from ... import metric_info
 
 
 class UnittestMetricMixin(SonarDashboardMetricMixin):
@@ -48,8 +50,8 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
 
     name = 'Falende unit testen'
     norm_template = 'Alle unittests slagen.'
-    perfect_template = '%(passed_tests)d van de %(tests)d unittests slagen. '
-    template = '%(value)d van de %(tests)d unittests falen.'
+    perfect_template = '{passed_tests} van de {tests} unittests slagen. '
+    template = '{value} van de {tests} unittests falen.'
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
@@ -86,9 +88,9 @@ class UnittestLineCoverage(UnittestCoverage):
     ''' Metric for measuring the line coverage of unit tests for a product. '''
 
     name = 'Unit test broncode dekking (line coverage)'
-    norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
-        'door unittests. Lager dan %(low_target)d%% is rood.'
-    template = '%(name)s unittest line coverage is %(value)d%% (%(tests)d ' \
+    norm_template = 'Minimaal {target}% van de regels code wordt gedekt ' \
+        'door unittests. Lager dan {low_target}% is rood.'
+    template = '{name} unittest line coverage is {value:.0f}% ({tests} ' \
         'unittests).'
     target_value = 98
     low_target_value = 90
@@ -103,9 +105,9 @@ class UnittestBranchCoverage(UnittestCoverage):
         product. '''
 
     name = 'Unit test broncode dekking (branch coverage)'
-    norm_template = 'Minimaal %(target)d%% van de code branches wordt gedekt ' \
-        'door unittests. Lager dan %(low_target)d%% is rood.'
-    template = '%(name)s unittest branch coverage is %(value)d%% (%(tests)d ' \
+    norm_template = 'Minimaal {target}% van de code branches wordt gedekt ' \
+        'door unittests. Lager dan {low_target}% is rood.'
+    template = '{name} unittest branch coverage is {value:.0f}% ({tests} ' \
         'unittests).'
     target_value = 80
     low_target_value = 60

@@ -36,6 +36,11 @@ class FakeSubversion(object):
         ''' Return the latest tagged product version from Subversion. '''
         return '1.1'
 
+    @staticmethod
+    def normalize_path(svn_path):
+        ''' Return a normalized version of the path. '''
+        return svn_path
+
 
 class FakePom(object):  # pylint: disable=too-few-public-methods
     ''' Fake a pom file. '''
@@ -86,14 +91,14 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         project = domain.Project('Organization',
                                  metric_sources={metric_source.Pom: FakePom()})
         product = domain.Product(project)
-        self.failIf(product.dependencies())
+        self.assertFalse(product.dependencies())
 
     def test_version_without_dependencies(self):
         ''' Test a product version without dependencies. '''
         project = domain.Project('Organization',
             metric_sources={metric_source.Dependencies: FakeDependenciesDb()})
         product = domain.Product(project)
-        self.failIf(product.dependencies(version='1.1'))
+        self.assertFalse(product.dependencies(version='1.1'))
 
     def test_version_type_trunk(self):
         ''' Test that the product version type of a product without version
@@ -128,18 +133,18 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_trunk_is_not_latest_release(self):
         ''' Test that the trunk version of a product is not the latest 
             release. '''
-        self.failIf(self.__product.is_latest_release())
+        self.assertFalse(self.__product.is_latest_release())
 
     def test_is_latest_release(self):
         ''' Test that the product is the latest release if its product version
             is the same as the latest release returned by Subversion. '''
         subversion = FakeSubversion()
         project = domain.Project('Organization',
-            metric_sources={metric_source.Subversion: subversion})
+            metric_sources={metric_source.VersionControlSystem: subversion})
         product = domain.Product(project,
                                  metric_source_ids={subversion: 'http://svn/'})
         product.set_product_version('1.1')
-        self.failUnless(product.is_latest_release())
+        self.assertTrue(product.is_latest_release())
 
     def test_responsible_teams(self):
         ''' Test that the product has no responsible teams by default. '''
@@ -161,7 +166,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_unittests(self):
         ''' Test that products have no unit test component by default. '''
-        self.failIf(self.__product.unittests())
+        self.assertFalse(self.__product.unittests())
 
     def test_unittests(self):
         ''' Test that the unit test component can be retrieved. '''
@@ -179,7 +184,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_jsf(self):
         ''' Test that products have no jsf component by default. '''
-        self.failIf(self.__product.jsf())
+        self.assertFalse(self.__product.jsf())
 
     def test_jsf(self):
         ''' Test that the jsf component can be retrieved. '''
@@ -196,7 +201,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_default_art(self):
         ''' Test that products have no automated regression test by default. '''
-        self.failIf(self.__product.art())
+        self.assertFalse(self.__product.art())
 
     def test_art(self):
         ''' Test that the automated regression test can be retrieved. '''
@@ -238,7 +243,7 @@ class BranchProductTest(unittest.TestCase):
         ''' Test that the product returns no list of branches when it is a 
             branch itself. '''
         self.__product.set_product_branch('branch1')
-        self.failIf(self.__product.product_branches())
+        self.assertFalse(self.__product.product_branches())
 
     def test_branch_id(self):
         ''' Test that the id of the branch in  a metric source can be 

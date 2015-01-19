@@ -13,8 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import metric_source, metric_info
+
+from .. import metric_source, metric_info
 
 # pylint: disable=R0903
 
@@ -134,29 +136,29 @@ class JiraMetricMixin(object):
         self._jira = self._project.metric_source(metric_source.Jira)
 
 
-class SubversionMetricMixin(object):
-    ''' Mixin class for metrics that use Subversion. '''
+class VersionControlSystemMetricMixin(object):
+    ''' Mixin class for metrics that use a version control system. '''
 
-    metric_source_classes = (metric_source.Subversion,)
+    metric_source_classes = (metric_source.VersionControlSystem,)
 
     def __init__(self, *args, **kwargs):
-        super(SubversionMetricMixin, self).__init__(*args, **kwargs)
-        self._subversion = self._project.metric_source(metric_source.Subversion)
-        self.__subversion_product_info = metric_info.SubversionProductInfo( \
-            self._subversion, self._subject)
+        super(VersionControlSystemMetricMixin, self).__init__(*args, **kwargs)
+        self._vcs = self._project.metric_source(metric_source.VersionControlSystem)
+        self.__vcs_product_info = metric_info.VersionControlSystemProductInfo( \
+            self._vcs, self._subject)
 
     @classmethod
     def can_be_measured(cls, product, project):
         ''' Return whether the metric can be measured. The metric can be
             measured when the project has Subversion and the product has a
             Subversion path. '''
-        subversion = project.metric_source(metric_source.Subversion)
-        subversion_product_info = metric_info.SubversionProductInfo(subversion,
-                                                                    product)
-        return super(SubversionMetricMixin, cls).can_be_measured(product, 
+        vcs = project.metric_source(metric_source.VersionControlSystem)
+        vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs,
+                                                                       product)
+        return super(VersionControlSystemMetricMixin, cls).can_be_measured(product,
                                                                  project) and \
-            subversion and subversion_product_info.svn_path()
+            vcs and vcs_product_info.vcs_path()
 
-    def _svn_path(self):
+    def _vcs_path(self):
         ''' Return the Subversion path for the product. '''
-        return self.__subversion_product_info.svn_path()
+        return self.__vcs_product_info.vcs_path()

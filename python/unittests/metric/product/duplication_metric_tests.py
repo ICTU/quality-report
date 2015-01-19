@@ -68,36 +68,26 @@ class JsfDuplicationTest(unittest.TestCase):
         sonar = FakeSonar()
         self.__project = domain.Project(
             metric_sources={metric_source.Sonar: sonar})
-        jsf = domain.Product(self.__project, 'JS',
+        self.__jsf = domain.Product(self.__project, 'JS',
             metric_source_ids={sonar: 'sonar id'})
-        self.__subject = domain.Product(self.__project, 'PR',
-                                        name='FakeSubject', jsf=jsf)
-        self._metric = metric.JsfDuplication(subject=self.__subject,
+        self._metric = metric.JsfDuplication(subject=self.__jsf,
                                              project=self.__project)
  
     def test_can_be_measured_(self):
         ''' Test that the JSF duplication can be measured for a JSF 
             component. '''
-        self.failUnless(metric.JsfDuplication.can_be_measured(self.__subject,
+        self.assertTrue(metric.JsfDuplication.can_be_measured(self.__jsf,
                                                               self.__project))
  
     def test_cant_be_measured_without_sonar(self):
         ''' Test that the JSF duplication cannot be measured without Sonar. '''
         project = domain.Project()
-        self.failIf(metric.JsfDuplication.can_be_measured(self.__subject,
+        self.assertFalse(metric.JsfDuplication.can_be_measured(self.__jsf,
                                                           project))
 
     def test_cant_be_measured_without_jsf(self):
-        ''' Test that the JSF duplication cannot be measured if the product
-            has no JSF component. '''
-        product = domain.Product(self.__project)
-        self.failIf(metric.JsfDuplication.can_be_measured(product, 
-                                                          self.__project))
-
-    def test_cant_be_measured_without_jsf_sonar_id(self):
-        ''' Test that the JSF duplication cannot be measured if the product
-            has no JSF Sonar id. '''
+        ''' Test that the JSF duplication cannot be measured if the JSF
+            component has no Sonar id. '''
         jsf = domain.Product(self.__project)
-        product = domain.Product(self.__project, jsf=jsf)
-        self.failIf(metric.JsfDuplication.can_be_measured(product, 
+        self.assertFalse(metric.JsfDuplication.can_be_measured(jsf,
                                                           self.__project))

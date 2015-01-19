@@ -13,9 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import metric, utils, metric_source, metric_info
+
 import datetime
+
+
+from . import metric, utils, metric_source, metric_info
 
 
 class SectionHeader(object):
@@ -53,8 +57,9 @@ class Section(object):
         self.__history = history
         self.__product = product
         for index, each_metric in enumerate(self.__metrics):
-            each_metric.set_id_string('%s-%d' % (self.__header.id_prefix(),
-                                                 index + 1))
+            each_metric.set_id_string('{pref}-{nr}'.format(
+                                            pref=self.__header.id_prefix(),
+                                            nr=index + 1))
 
     def __str__(self):
         return self.title()
@@ -146,6 +151,7 @@ class QualityReport(object):
                                    metric.TeamUnusedCIJobs)
     META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
                            metric.YellowMetaMetric, metric.GreyMetaMetric)
+    ADDITIONAL_METRIC_CLASSES = ( metric.LifeUniverseAndEverything, )
 
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + \
         BUILD_SERVER_METRIC_CLASSES + BUGS_METRIC_CLASSES
@@ -166,8 +172,9 @@ class QualityReport(object):
 
     def __init__(self, project):
         self.__project = project
-        self.__title = 'Kwaliteitsrapportage %s/%s' % (project.organization(), 
-                                                       project.name())
+        self.__title = 'Kwaliteitsrapportage {org}/{proj}'.format(
+                                    org=project.organization(), 
+                                    proj=project.name())
         self.__products = sorted(project.products(),
                                  key=lambda product: (product.name(),
                                                       product.short_name()))
@@ -216,6 +223,7 @@ class QualityReport(object):
         for section in self.sections():
             if section_id == section.id_prefix():
                 return section
+        return None
 
     def get_product_section(self, product):
         ''' Return the section for a specific product. '''
@@ -249,21 +257,10 @@ class QualityReport(object):
                 if product.name() == product_name and \
                 product.product_version() == product_version][0]
 
-    def latest_product_version(self, product):
+    def __latest_product_version(self, product):
         ''' Return the most recent version of the product. '''
-        version = product.product_version()
         sonar = self.__project.metric_source(metric_source.Sonar)
-        sonar_id = metric_info.SonarProductInfo(sonar, product).sonar_id()
-        if version:
-            return version
-        elif sonar_id:
-            # Product is a branch or trunk version, get the SNAPSHOT version 
-            # number from Sonar
-            sonar_version = sonar.version(sonar_id)
-            branch = product.product_branch()
-            return branch + ':' + sonar_version if branch else sonar_version
-        else:
-            return ''
+        return metric_info.SonarProductInfo(sonar, product).latest_version()
 
     def __process_section(self):
         ''' Return the process section. '''
@@ -279,9 +276,9 @@ class QualityReport(object):
 
     def __overall_products_section(self):
         ''' Return the products overall section. '''
-        metrics = [metric.TotalLOC([product for product in self.__products if \
-                                    product.product_version_type() == 'trunk'],
-                                   project=self.__project)]
+        metrics = []
+        if metric.TotalLOC.should_be_measured(self.__project):
+            metrics.append(metric.TotalLOC(project=self.__project))
         metrics.append(metric.DependencyQuality(report=self,
                                                 project=self.__project))
         for document in self.__project.documents():
@@ -298,7 +295,8 @@ class QualityReport(object):
         for metric_class in self.TEST_COVERAGE_METRIC_CLASSES + \
                             self.TEST_DESIGN_METRIC_CLASSES + \
                             self.JAVA_METRIC_CLASSES + \
-                            self.PERFORMANCE_METRIC_CLASSES:
+                            self.PERFORMANCE_METRIC_CLASSES + \
+                            self.ADDITIONAL_METRIC_CLASSES:
             if metric_class.can_be_measured(product, self.__project):
                 metrics.append(metric_class(product, project=self.__project))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
@@ -320,14 +318,14 @@ class QualityReport(object):
         if metric.UnmergedBranches.can_be_measured(art, self.__project):
             metrics.append(metric.UnmergedBranches(subject=art,
                                                    project=self.__project))
-        metrics.extend(self.__jsf_metrics(product))
+        metrics.extend(self.__jsf_metrics(product.jsf()))
         if metric.UnmergedBranches.can_be_measured(product, self.__project):
             metrics.append(metric.UnmergedBranches(product,
                                                    project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(),
                                      'Product ' + product.name(),
-                                     self.latest_product_version(product)),
+                                     self.__latest_product_version(product)),
                        metrics, product=product)
 
     def __team_section(self, team):
@@ -351,15 +349,13 @@ class QualityReport(object):
         return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,
             history=self.__project.metric_source(metric_source.History))
 
-    def __jsf_metrics(self, product):
+    def __jsf_metrics(self, jsf):
         ''' Return a list of JSF metrics for the (JSF) product. '''
         metrics = []
-        if metric.JsfDuplication.can_be_measured(product, self.__project):
-            metrics.append(metric.JsfDuplication(product.jsf(), 
-                                                 project=self.__project))
-        if metric.ProductLOC.can_be_measured(product.jsf(), self.__project):
-            metrics.append(metric.ProductLOC(product.jsf(), 
-                                             project=self.__project))
+        if metric.JsfDuplication.can_be_measured(jsf, self.__project):
+            metrics.append(metric.JsfDuplication(jsf, project=self.__project))
+        if metric.ProductLOC.can_be_measured(jsf, self.__project):
+            metrics.append(metric.ProductLOC(jsf, project=self.__project))
         return metrics
 
     def __java_metrics(self, product):

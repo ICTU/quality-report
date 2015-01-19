@@ -19,14 +19,6 @@ import datetime
 import unittest
 
 
-class FakeSubject(object):  # pylint:disable=too-few-public-methods
-    ''' Fake subject (team). '''
-    @staticmethod
-    def name():
-        ''' Return product name. '''
-        return 'FakeSubject'
-
-
 class FakeBirt(object):
     ''' Fake Birt so we can return fake velocity information. '''
     # pylint: disable=unused-argument
@@ -105,30 +97,30 @@ class TeamProgressTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has Birt and
             the team has a Birt id. '''
-        self.failUnless(metric.TeamProgress.can_be_measured(self.__team,
+        self.assertTrue(metric.TeamProgress.can_be_measured(self.__team,
                                                             self.__project))
 
     def test_can_only_be_measured_for_scrum_teams(self):
         ''' Test that the metric cannot be measured if the team is not a Scrum
             team. '''
         team = domain.Team(name='ABC', metric_source_ids={self.__birt: 'abc'})
-        self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
+        self.assertFalse(metric.TeamProgress.can_be_measured(team, self.__project))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric cannot be measured if the team has no Birt 
             id. '''
         team = domain.Team(name='Team', is_scrum_team=True)
-        self.failIf(metric.TeamProgress.can_be_measured(team, self.__project))
+        self.assertFalse(metric.TeamProgress.can_be_measured(team, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric cannot be measured without Birt. '''
         project = domain.Project()
-        self.failIf(metric.TeamProgress.can_be_measured(self.__team, project))
+        self.assertFalse(metric.TeamProgress.can_be_measured(self.__team, project))
 
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.TeamProgress.norm_template % \
+        self.assertTrue(metric.TeamProgress.norm_template % \
                         metric.TeamProgress.norm_template_default_values())
 
 
@@ -156,8 +148,8 @@ class TeamSpiritTest(unittest.TestCase):
     ''' Unit tests for the ARTstability metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__team = FakeSubject()
         self.__wiki = FakeWiki()
+        self.__team = domain.Team(metric_source_ids={self.__wiki: 'team'})
         self.__project = domain.Project(metric_sources={metric_source.Wiki:
                                                         self.__wiki})
         self.__metric = metric.TeamSpirit(subject=self.__team, 
@@ -166,7 +158,7 @@ class TeamSpiritTest(unittest.TestCase):
     def test_value(self):
         ''' Test that the value of the metric equals the team spirit reported
             by the wiki. '''
-        self.assertEqual(self.__wiki.team_spirit(FakeSubject()),
+        self.assertEqual(self.__wiki.team_spirit('team'),
                          self.__metric.value())
 
     def test_numerical_value(self):
@@ -187,13 +179,13 @@ class TeamSpiritTest(unittest.TestCase):
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has a Wiki. '''
-        self.failUnless(metric.TeamSpirit.can_be_measured(self.__team,
+        self.assertTrue(metric.TeamSpirit.can_be_measured(self.__team,
                                                           self.__project))
 
     def test_cant_be_measured_without_wiki(self):
         ''' Test that the metric cannot be measured without a Wiki. '''
         project = domain.Project()
-        self.failIf(metric.TeamSpirit.can_be_measured(self.__team, project))
+        self.assertFalse(metric.TeamSpirit.can_be_measured(self.__team, project))
 
 
 class ReleaseAgeTest(unittest.TestCase):
@@ -242,14 +234,14 @@ class ReleaseAgeTest(unittest.TestCase):
             archives. '''
         team = domain.Team(name='Team', release_archives=['Archive'])
         project = domain.Project()
-        self.failUnless(metric.ReleaseAge.can_be_measured(team, project))
+        self.assertTrue(metric.ReleaseAge.can_be_measured(team, project))
 
     def test_cant_be_measured_without_release_archive(self):
         ''' Test that the metric cannot be measured if the team has no
             release archives. '''
         team = domain.Team(name='Team')
         project = domain.Project()
-        self.failIf(metric.ReleaseAge.can_be_measured(team, project))
+        self.assertFalse(metric.ReleaseAge.can_be_measured(team, project))
 
 
 class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
@@ -262,7 +254,8 @@ class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
         ''' Return the number of consecutive days more than one team member
             is absent. '''
         return (self.period, datetime.date.today(), 
-                datetime.date.today() + datetime.timedelta(days=self.period))
+                datetime.date.today() + datetime.timedelta(days=self.period),
+                team.members())
 
     @staticmethod
     def url():
@@ -292,9 +285,10 @@ class TeamAbsenceTest(unittest.TestCase):
         today = datetime.date.today()
         start = today.isoformat()
         end = (today + datetime.timedelta(days=6)).isoformat()
-        self.assertEqual('De langste periode dat meerdere teamleden tegelijk ' \
+        self.assertEqual('De langste periode dat meerdere teamleden tegelijk '
                          'gepland afwezig zijn is 6 werkdagen '
-                         '(%s tot en met %s).' % (start, end), 
+                         '(%s tot en met %s). Afwezig zijn: Derk Designer, '
+                         'Piet Programmer.' % (start, end),
                          self.__metric.report())
 
     def test_report_without_absence(self):
@@ -311,18 +305,18 @@ class TeamAbsenceTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has a 
             holiday planner. '''
-        self.failUnless(metric.TeamAbsence.can_be_measured(self.__team,
+        self.assertTrue(metric.TeamAbsence.can_be_measured(self.__team,
                                                            self.__project))
 
     def test_cant_be_measured_without_holiday_planner(self):
         ''' Test that the metric can't be measured without a holiday 
             planner metric source. '''
         project = domain.Project()
-        self.failIf(metric.TeamAbsence.can_be_measured(self.__team, project))
+        self.assertFalse(metric.TeamAbsence.can_be_measured(self.__team, project))
 
     def test_cant_be_measured_without_sufficient_team_members(self):
         ''' Test that the metric can't be measured without more than one team
             member. '''
         team = domain.Team(name='Team')
         team.add_member(domain.Person(name='Piet Programmer'))
-        self.failIf(metric.TeamAbsence.can_be_measured(team, self.__project))
+        self.assertFalse(metric.TeamAbsence.can_be_measured(team, self.__project))

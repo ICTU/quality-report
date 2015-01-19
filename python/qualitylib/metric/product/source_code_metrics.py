@@ -13,11 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerPercentageIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin, \
+
+from ...domain import LowerPercentageIsBetterMetric
+from ..metric_source_mixin import \
+    SonarDashboardMetricMixin, \
     SonarViolationsMetricMixin
-from qualitylib.metric.quality_attributes import CODE_QUALITY
+from ..quality_attributes import CODE_QUALITY
 
 
 class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
@@ -26,10 +29,10 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
         out. '''
 
     name = 'Uitgecommentarieerde broncode'
-    norm_template = 'Maximaal %(target)d%% van de regels code is ' \
-        'uitgecommentarieerd. Meer dan %(low_target)d%% is rood.'
-    template = '%(name)s heeft %(value)d%% (%(numerator)d van ' \
-        '%(denominator)d) uitgecommentarieerde regels code.'
+    norm_template = 'Maximaal {target}% van de regels code is ' \
+        'uitgecommentarieerd. Meer dan {low_target}% is rood.'
+    template = '{name} heeft {value}% ({numerator} van ' \
+        '{denominator}) uitgecommentarieerde regels code.'
     target_value = 1
     low_target_value = 5
     quality_attribute = CODE_QUALITY
@@ -47,10 +50,10 @@ class MethodQualityMetric(SonarViolationsMetricMixin,
     ''' Base class for metrics that measure what percentage of methods doesn't
         violate a certain criterium. '''
 
-    norm_template = 'Maximaal %(target)d%% van de methoden heeft ' \
-        '%(attribute)s. Meer dan %(low_target)d%% is rood.'
-    template = '%(value)d%% van de methoden (%(numerator)d van ' \
-        '%(denominator)d) van %(name)s heeft %(attribute)s.'
+    norm_template = 'Maximaal {target}% van de methoden heeft ' \
+        '{attribute}. Meer dan {low_target}% is rood.'
+    template = '{value:.0f}% van de methoden ({numerator} van ' \
+        '{denominator}) van {name} heeft {attribute}.'
     attribute = 'Subclass responsibility'
     target_value = 0
     low_target_value = 5

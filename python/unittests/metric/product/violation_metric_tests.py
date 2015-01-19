@@ -106,7 +106,7 @@ class ViolationsTestMixin(object):
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(self.metric_class.norm_template % \
+        self.assertTrue(self.metric_class.norm_template % \
                         self.metric_class.norm_template_default_values())
 
 

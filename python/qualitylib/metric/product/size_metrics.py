@@ -13,12 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SonarMetricMixin, \
+
+from ..metric_source_mixin import \
+    SonarMetricMixin, \
     SonarDashboardMetricMixin
-from qualitylib.metric.quality_attributes import SIZE
-from qualitylib import metric_info
+from ..quality_attributes import SIZE
+from ...domain import LowerIsBetterMetric
+from ... import metric_info
 
 
 class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
@@ -26,8 +29,8 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
         product. '''
 
     name = 'Component omvang'
-    norm_template = 'Maximaal %(target)d regels (Java) code.'
-    template = '%(name)s heeft %(value)d regels code.'
+    norm_template = 'Maximaal {target} regels (Java) code.'
+    template = '{name} heeft {value} regels code.'
     target_value = 50000
     low_target_value = 100000
     quality_attribute = SIZE
@@ -41,9 +44,9 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
         several products. '''
 
     name = 'Totale omvang'
-    norm_template = 'Maximaal %(target)d regels (Java) code. Meer dan ' \
-        '%(low_target)s regels (Java) code (herbouwtijd 30 jaar) is rood.'
-    template = 'Het totaal aantal LOC voor alle producten is %(value)d ' \
+    norm_template = 'Maximaal {target} regels (Java) code. Meer dan ' \
+        '{low_target} regels (Java) code (herbouwtijd 30 jaar) is rood.'
+    template = 'Het totaal aantal LOC voor alle producten is {value} ' \
         'regels code.'
     target_value = 160000
     # Maximum number of LOC Java to be eligible for 4 stars, see
@@ -53,7 +56,9 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         total = 0
-        for product in self._subject:
+        for product in self._project.products():
+            if product.product_version_type() != 'trunk':
+                continue
             sonar_id = metric_info.SonarProductInfo(self._sonar, 
                                                     product).sonar_id()
             if sonar_id:

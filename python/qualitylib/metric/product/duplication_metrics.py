@@ -13,21 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerPercentageIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
-from qualitylib.metric.quality_attributes import CODE_QUALITY
-from qualitylib import metric_info
+
+from ...domain import LowerPercentageIsBetterMetric
+from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..quality_attributes import CODE_QUALITY
 
 
 class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the percentage of duplicated lines of code. '''
 
-    norm_template = 'Maximaal %(target)d%% gedupliceerde regels code. ' \
-        'Meer dan %(low_target)d%% is rood.'
-    template = '%(name)s heeft %(value)d%% (%(numerator)d op ' \
-        '%(denominator)d) duplicatie.'
+    norm_template = 'Maximaal {target}% gedupliceerde regels code. ' \
+        'Meer dan {low_target}% is rood.'
+    template = '{name} heeft {value}% ({numerator} op ' \
+        '{denominator}) duplicatie.'
     quality_attribute = CODE_QUALITY
 
     def _numerator(self):
@@ -56,7 +57,3 @@ class JsfDuplication(Duplication):
     target_value = 10
     low_target_value = 20
 
-    @staticmethod
-    def product_has_sonar_id(sonar, product):
-        jsf_sonar_info = metric_info.SonarProductInfo(sonar, product.jsf())
-        return product.jsf() and jsf_sonar_info.sonar_id()

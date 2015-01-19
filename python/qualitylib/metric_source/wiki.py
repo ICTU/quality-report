@@ -13,12 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils, domain
+
 import datetime
 import logging
 import time
+
+
+from . import beautifulsoup
+from .. import utils, domain
 
 
 class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
@@ -32,24 +36,24 @@ class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     # Team spirit
 
     @utils.memoized
-    def team_spirit(self, team):
+    def team_spirit(self, team_id):
         ''' Return the team spirit of the team. Team spirit is either :-), :-|,
             or :-( '''
         soup = self.soup(self.url())
         try:
-            row = soup('tr', id='smiley_%s' % team.id_string())[0]('td')
+            row = soup('tr', id=team_id)[0]('td')
         except IndexError:
-            logging.error("Could not find %s in wiki", team.id_string())
+            logging.error("Could not find %s in wiki", team_id)
             raise
         latest_smiley = row[-1].string
         return latest_smiley.strip() if latest_smiley else ''
 
     @utils.memoized
-    def date_of_last_team_spirit_measurement(self, team):
+    def date_of_last_team_spirit_measurement(self, team_id):
         ''' Return the date that the team spirit of the team was last
             measured. '''
         soup = self.soup(self.url())
-        columns = len(soup('tr', id='smiley_%s' % team.id_string())[0]('td'))
+        columns = len(soup('tr', id=team_id)[0]('td'))
         date_text = soup('th')[columns - 1].string.strip()
         return self.__parse_date(date_text)
 

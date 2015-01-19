@@ -14,21 +14,22 @@ MAVEN = metric_source.Maven(binary='mvn3')
 SUBVERSION = metric_source.Subversion()
 SONAR = metric_source.Sonar('http://sonar/', username='sonar_user',
                             password='sonar_admin', maven=MAVEN,
-                            subversion=SUBVERSION)
+                            version_control_system=SUBVERSION)
 HISTORY = metric_source.History('quality-data/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() + 'job/%s/lastSuccessfulBuild/'
                               'artifact/trunk/coveragereport/index.html', 
                               BUILD_SERVER.username(), BUILD_SERVER.password())
-POM = metric_source.Pom(sonar=SONAR, subversion=SUBVERSION)
+POM = metric_source.Pom(sonar=SONAR, version_control_system=SUBVERSION)
 
 # The project
 PROJECT = Project('Organization name', name='Quality Report', 
-                  metric_sources={metric_source.Jenkins: BUILD_SERVER,
-                                  metric_source.Subversion: SUBVERSION,
-                                  metric_source.Sonar: SONAR,
-                                  metric_source.JaCoCo: JACOCO,
-                                  metric_source.Pom: POM,
-                                  metric_source.History: HISTORY},
+                  metric_sources={
+                      metric_source.Jenkins: BUILD_SERVER,
+                      metric_source.VersionControlSystem: SUBVERSION,
+                      metric_source.Sonar: SONAR,
+                      metric_source.JaCoCo: JACOCO,
+                      metric_source.Pom: POM,
+                      metric_source.History: HISTORY},
                   additional_resources=[
                       MetricSource(name='GitHub Quality Report',
                                url='https://github.com/ICTU/quality-report')])

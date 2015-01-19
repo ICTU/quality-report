@@ -13,15 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils, metric_source
-from qualitylib.metric import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import \
-    TrelloActionsBoardMetricMixin, JiraMetricMixin
-from qualitylib.metric_source import TrelloUnreachableException
-from qualitylib.metric.quality_attributes import PROJECT_MANAGEMENT, PROGRESS, \
-    TEST_QUALITY, SECURITY
+
 import datetime
+
+
+from ..metric_source_mixin import \
+    TrelloActionsBoardMetricMixin, \
+    JiraMetricMixin
+from ..quality_attributes import \
+    PROJECT_MANAGEMENT, \
+    PROGRESS, \
+    TEST_QUALITY, \
+    SECURITY
+from .. import LowerIsBetterMetric
+from ...metric_source import TrelloUnreachableException
+from ... import utils, metric_source
 
 
 class RiskLog(LowerIsBetterMetric):
@@ -29,10 +37,10 @@ class RiskLog(LowerIsBetterMetric):
         updated. '''
 
     name = 'Actualiteit risico log'
-    norm_template = 'Het risicolog wordt minimaal een keer per %(target)d ' \
-        'dagen bijgewerkt. Meer dan %(low_target)d dagen niet bijgewerkt is ' \
+    norm_template = 'Het risicolog wordt minimaal een keer per {target} ' \
+        'dagen bijgewerkt. Meer dan {low_target} dagen niet bijgewerkt is ' \
         'rood.'
-    template = 'Het risicolog is %(value)d dagen geleden (op %(date)s) voor ' \
+    template = 'Het risicolog is {value} dagen geleden (op {date}) voor ' \
         'het laatst bijgewerkt.'
     target_value = 14
     low_target_value = 28
@@ -67,10 +75,10 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 
     name = 'Actualiteit actielijst'
     norm_template = 'De actie- en besluitenlijst wordt minimaal een keer ' \
-        'per %(target)d dagen bijgewerkt. Meer dan %(low_target)d dagen ' \
+        'per {target} dagen bijgewerkt. Meer dan {low_target} dagen ' \
         'niet bijgewerkt is rood.'
-    template = 'De actie- en besluitenlijst is %(value)d dagen geleden ' \
-        '(op %(date)s) voor het laatst bijgewerkt.'
+    template = 'De actie- en besluitenlijst is {value} dagen geleden ' \
+        '(op {date}) voor het laatst bijgewerkt.'
     target_value = 7
     low_target_value = 14
     quality_attribute = PROJECT_MANAGEMENT
@@ -98,9 +106,9 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     name = 'Tijdigheid acties'
     norm_template = 'Geen van de acties en besluiten in de actie- en ' \
         'besluitenlijst is te laat of te lang (14 dagen) niet bijgewerkt. ' \
-        'Meer dan %(low_target)d acties te laat of te lang niet bijgewerkt ' \
+        'Meer dan {low_target} acties te laat of te lang niet bijgewerkt ' \
         'is rood.'
-    template = '%(value)d acties uit de actie- en besluitenlijst zijn te ' \
+    template = '{value} acties uit de actie- en besluitenlijst zijn te ' \
         'laat of te lang (14 dagen) niet bijgewerkt.'
     target_value = 0
     low_target_value = 3
@@ -126,9 +134,9 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of open bug reports. '''
 
     name = 'Open bugreports'
-    norm_template = 'Het aantal open bug reports is minder dan %(target)d. ' \
-       'Meer dan %(low_target)d is rood.'
-    template = 'Het aantal open bug reports is %(value)d.'
+    norm_template = 'Het aantal open bug reports is minder dan {target}. ' \
+       'Meer dan {low_target} is rood.'
+    template = 'Het aantal open bug reports is {value}.'
     target_value = 50
     low_target_value = 100
     quality_attribute = PROGRESS
@@ -151,10 +159,10 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
 
     name = 'Open beveiligingsbugreports'
     norm_template = 'Het aantal beveiliging bug reports dat meer dan een ' \
-        'sprint open staat is minder dan %(target)d. Meer dan %(low_target)d ' \
+        'sprint open staat is minder dan {target}. Meer dan {low_target} ' \
         'is rood.'
     template = 'Het aantal beveiliging bug reports dat meer dan een sprint ' \
-        'open staat is %(value)d.'
+        'open staat is {value}.'
     target_value = 0
     low_target_value = 3
     quality_attribute = SECURITY
@@ -179,9 +187,9 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
 
     name = 'Aantal blokkerende testbevindingen'
     norm_template = 'Het aantal geopende blokkerende testbevindingen is ' \
-        'maximaal %(target)d. Meer dan %(low_target)d is rood.'
+        'maximaal {target}. Meer dan {low_target} is rood.'
     template = 'Het aantal geopende blokkerende testbevindingen in de vorige ' \
-        'maand (%(month)s) was %(value)d.'
+        'maand ({month}) was {value}.'
     target_value = 0
     low_target_value = 1
     quality_attribute = TEST_QUALITY

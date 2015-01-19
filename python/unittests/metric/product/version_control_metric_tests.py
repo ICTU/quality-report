@@ -35,6 +35,16 @@ class FakeSubversion(object):
         ''' Return the tags folder for the version. '''
         return 'http://tags/'
 
+    @staticmethod  # pylint: disable=unused-argument
+    def branch_folder_for_branch(*args):
+        ''' Return the branch folder for the branch. '''
+        return 'http://branch/'
+
+    @staticmethod
+    def normalize_path(svn_path):
+        ''' Return a normalized version of the path. '''
+        return svn_path
+
 
 class UnmergedBranchesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -43,7 +53,8 @@ class UnmergedBranchesTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(
-            metric_sources={metric_source.Subversion: self.__subversion})
+            metric_sources={
+                metric_source.VersionControlSystem: self.__subversion})
         self.__subject = domain.Product(self.__project, name='Product',
             short_name='PR',
             metric_source_ids={self.__subversion: 'http://svn/trunk/foo/'},
@@ -70,8 +81,7 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_url(self):
         ''' Test that the unmerged branches are listed. '''
-        self.assertEqual({'branch2: 1 ongemergde revisie(s)': 
-                          'http://svn/branches/branch2/foo/'}, 
+        self.assertEqual({'branch2: 1 ongemergde revisie(s)': 'http://branch/'},
                          self.__metric.url())
 
     def test_url_label(self):
@@ -80,8 +90,7 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_comment_urls(self):
         ''' Test that the comment urls include a link to ignored branches. '''
-        self.assertEqual({'ignored branch': 
-                          'http://svn/branches/ignored branch/foo/'}, 
+        self.assertEqual({'ignored branch': 'http://branch/'},
                          self.__metric.comment_urls())
 
     def test_comment_urls_no_ignored_branches(self):
@@ -100,26 +109,26 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can only be measured if the product is under
             version control and is the trunk version. '''
-        self.failUnless(metric.UnmergedBranches.can_be_measured(self.__subject,
+        self.assertTrue(metric.UnmergedBranches.can_be_measured(self.__subject,
                                                                 self.__project))
 
     def test_cant_be_measured_if_releases(self):
         ''' Test that the metric can not be measured if the product is 
             a released version. '''
         self.__subject.set_product_version('1.1')
-        self.failIf(metric.UnmergedBranches.can_be_measured(self.__subject,
+        self.assertFalse(metric.UnmergedBranches.can_be_measured(self.__subject,
                                                             self.__project))
 
     def test_cant_be_measured_if_branch(self):
         ''' Test that the metric can not be measured if the product is 
             a released version. '''
         self.__subject.set_product_branch('branch')
-        self.failIf(metric.UnmergedBranches.can_be_measured(self.__subject,
+        self.assertFalse(metric.UnmergedBranches.can_be_measured(self.__subject,
                                                             self.__project))
 
     def test_cant_be_measured_without_subversion(self):
         ''' Test that the metric can not be measured if the project has 
             no Subversion. '''
         project = domain.Project()
-        self.failIf(metric.UnmergedBranches.can_be_measured(self.__subject,
+        self.assertFalse(metric.UnmergedBranches.can_be_measured(self.__subject,
                                                             project))

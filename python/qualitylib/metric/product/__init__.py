@@ -13,17 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 # pylint: disable=wildcard-import
 
-from qualitylib.metric.product.source_code_metrics import *
-from qualitylib.metric.product.size_metrics import *
-from qualitylib.metric.product.duplication_metrics import *
-from qualitylib.metric.product.violation_metrics import *
-from qualitylib.metric.product.unittest_metrics import *
-from qualitylib.metric.product.user_story_metrics import *
-from qualitylib.metric.product.logical_test_case_metrics import *
-from qualitylib.metric.product.dependency_metrics import *
-from qualitylib.metric.product.version_control_metrics import *
-from qualitylib.metric.product.automated_regression_test_metrics import *
-from qualitylib.metric.product.performance_metrics import *
+from .automated_regression_test_metrics import *
+from .dependency_metrics import *
+from .duplication_metrics import *
+from .logical_test_case_metrics import *
+from .performance_metrics import *
+from .size_metrics import *
+from .source_code_metrics import *
+from .unittest_metrics import *
+from .user_story_metrics import *
+from .version_control_metrics import *
+from .violation_metrics import *

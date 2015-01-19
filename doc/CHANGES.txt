@@ -1,3 +1,16 @@
+2015-01-19  Release 1.15.0
+
+  * Allow for requirements to be added to a project. The requirements
+    will determine what needs to be measured later on.
+  * Introduce a abstract version control system class with Subversion and Git
+    as concrete instances.
+  * Use metric source id mapping to find teams in the Wiki.
+  * Allow for adding a default team to a Jenkins instance. The default team is
+    responsible for all jobs that have not explicitly been assigned to a team.
+  * Bug fix: if a product or team has a target or low target of 0 specified in
+    the project definition, don't ignore it.
+
+
 2014-11-03  Release 1.14.0
 
   * Task functionality has been removed, metric_source.Tasks no longer exists.

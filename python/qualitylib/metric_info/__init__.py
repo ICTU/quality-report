@@ -13,10 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 # <MetricSource><DomainObject>Info classes provide bridges between metric
 # sources and domain objects. They make it possible that domain objects have
 # no knowledge of metric sources and vice versa.
 
-from sonar_product_info import SonarProductInfo
-from subversion_product_info import SubversionProductInfo
+from .sonar_product_info import SonarProductInfo
+from .verson_control_system_product_info import VersionControlSystemProductInfo

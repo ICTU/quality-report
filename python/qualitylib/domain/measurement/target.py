@@ -13,9 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 import datetime
-from qualitylib.utils import format_date
+
+
+from ...utils import format_date
 
 
 class TechnicalDebtTarget(object):
@@ -34,7 +38,7 @@ class TechnicalDebtTarget(object):
     def explanation(self):
         ''' Return the explanation for the technical debt. '''
         explanation = 'De op dit moment geaccepteerde technische ' \
-            'schuld is %s%s.' % (self.target_value(), self._unit)
+            'schuld is {val}{unit}.'.format(val=self.target_value(), unit=self._unit)
         if self.__explanation:
             explanation += ' ' + self.__explanation
         return explanation
@@ -69,10 +73,12 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
     def explanation(self):
         start_date = format_date(self.__initial_datetime, year=True)
         end_date = format_date(self.__end_datetime, year=True)
-        explanation = 'Het doel is dat de technische schuld vermindert van ' \
-            '%s%s op %s naar %s%s op %s.' % (self.__initial_target_value,
-                                             self._unit, start_date, 
-                                             self.__end_target_value, 
-                                             self._unit, end_date)
+        explanation = 'Het doel is dat de technische schuld vermindert ' \
+            'van {old_val}{unit} op {old_date} ' \
+            'naar {new_val}{unit} op {new_date}.'.format(unit=self._unit,
+                                                         old_val=self.__initial_target_value,
+                                                         old_date=start_date,
+                                                         new_val=self.__end_target_value,
+                                                         new_date=end_date)
         return explanation + ' ' + \
             super(DynamicTechnicalDebtTarget, self).explanation()

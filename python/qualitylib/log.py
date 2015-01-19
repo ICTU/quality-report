@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 import logging
 
@@ -25,11 +27,10 @@ class SuppressRepeatMessages(object):  # pylint: disable=too-few-public-methods
     def filter(self, record):
         ''' Decide whether the record should be logged. '''
         message = record.getMessage()
-        if message in self.__messages_seen:
-            return False
-        else:
+        is_new_message = message not in self.__messages_seen
+        if is_new_message:
             self.__messages_seen.add(message)
-            return True
+        return is_new_message
 
 
 def init_logging(log_level):

@@ -37,6 +37,11 @@ class FakeSubversion(object):
         ''' Return the date the path was last changed in Subversion. '''
         return datetime.datetime(2000, 1, 1)
 
+    @staticmethod
+    def normalize_path(svn_path):
+        ''' Return the normalized version of the path. '''
+        return svn_path
+
 
 class SubversionProductInfoTests(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -48,14 +53,14 @@ class SubversionProductInfoTests(unittest.TestCase):
         self.__product = domain.Product(self.__project,
             metric_source_ids={self.__subversion: 'http://svn/product/trunk/'},
             product_branches={'branch1': {self.__subversion: 'br1'}})
-        self.__subversion_product_info = metric_info.SubversionProductInfo( \
+        self.__subversion_product_info = metric_info.VersionControlSystemProductInfo( \
             self.__subversion, self.__product)
 
     def test_svn_path(self):
         ''' Test that the Subversion path of the product equals the passed 
             path. '''
         self.assertEqual('http://svn/product/trunk/',
-                         self.__subversion_product_info.svn_path())
+                         self.__subversion_product_info.vcs_path())
 
     def test_old_svn_path(self):
         ''' Test that the old Subversion path is returned, if any. '''
@@ -63,18 +68,18 @@ class SubversionProductInfoTests(unittest.TestCase):
             old_metric_source_ids={self.__subversion: {'1.1':
                                                        'http://svn/old/'}})
         product.set_product_version('1.1')
-        subversion_product_info = metric_info.SubversionProductInfo( \
+        subversion_product_info = metric_info.VersionControlSystemProductInfo( \
             self.__subversion, product)
         self.assertEqual('http://svn/old/',
-                         subversion_product_info.svn_path())
+                         subversion_product_info.vcs_path())
 
     def test_svn_path_of_branch(self):
         ''' Test that the subversion path is the branch folder. '''
         self.__product.set_product_branch('branch1')
-        subversion_product_info = metric_info.SubversionProductInfo( \
+        subversion_product_info = metric_info.VersionControlSystemProductInfo( \
             self.__subversion, self.__product)
         self.assertEqual('http://svn/product/branches/br1/', 
-                         subversion_product_info.svn_path())
+                         subversion_product_info.vcs_path())
 
     def test_latest_released_product_version(self):
         ''' Test that the latest release product version is retrieved from
@@ -85,19 +90,19 @@ class SubversionProductInfoTests(unittest.TestCase):
     def test_latest_release_product_version_without_svn_path(self):
         ''' Test that a product without Subversion path doesn't have a latest
             released product version. '''
-        subversion_product_info = metric_info.SubversionProductInfo( \
+        subversion_product_info = metric_info.VersionControlSystemProductInfo( \
             self.__subversion, domain.Product(self.__project))
-        self.failIf(subversion_product_info.latest_released_product_version())
+        self.assertFalse(subversion_product_info.latest_released_product_version())
 
     def test_is_latest_release(self):
         ''' Test that the product is the latest release if its product version
             is the same as the latest release returned by Subversion. '''
         self.__product.set_product_version('1.1')
-        self.failUnless(self.__subversion_product_info.is_latest_release())
+        self.assertTrue(self.__subversion_product_info.is_latest_release())
 
     def test_is_not_lastest_release(self):
         ''' Test that trunk versions are never the latest release. '''
-        self.failIf(self.__subversion_product_info.is_latest_release())
+        self.assertFalse(self.__subversion_product_info.is_latest_release())
 
     def test_last_changed_date(self):
         ''' Test that the date the product was last changed is the date

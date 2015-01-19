@@ -13,11 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils, domain
-from BeautifulSoup import BeautifulSoup
+
 import datetime
 import urllib2
+from BeautifulSoup import BeautifulSoup
+
+
+from ... import utils, domain
 
 
 class CoverageReport(domain.MetricSource):
@@ -65,7 +69,7 @@ class CoverageReport(domain.MetricSource):
 
     def get_coverage_url(self, product):
         ''' Return the url for the coverage report for the product. '''
-        return self.url() % self.__jenkins.resolve_job_name(product)
+        return self.url().format(self.__jenkins.resolve_job_name(product))
 
     def get_coverage_date_url(self, product):
         ''' Return the url for the date when the coverage of the product

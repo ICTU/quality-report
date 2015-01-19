@@ -14,8 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import domain
 import unittest
+
+
+from qualitylib import domain
+import qualitylib.metric_source
 
 
 class MetricSourceTests(unittest.TestCase):

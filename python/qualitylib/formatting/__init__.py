@@ -13,12 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 # Package for report formatters.
 
-from qualitylib.formatting.base_formatter import Formatter
-from qualitylib.formatting.dot_formatter import DependencyFormatter, \
+from .base_formatter import Formatter
+from .csv_formatter import CSVFormatter
+from .dot_formatter import \
+    DependencyFormatter, \
     MetricClassesFormatter
-from qualitylib.formatting.html_formatter import HTMLFormatter
-from qualitylib.formatting.json_formatter import JSONFormatter
-from qualitylib.formatting.csv_formatter import CSVFormatter
+from .html_formatter import HTMLFormatter
+from .json_formatter import JSONFormatter

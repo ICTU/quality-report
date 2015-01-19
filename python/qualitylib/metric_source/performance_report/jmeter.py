@@ -14,23 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from qualitylib import utils, domain
-from qualitylib.metric_source import beautifulsoup
+from __future__ import absolute_import
+
 import datetime
 import logging
 import re
 import time
 
+from ..abstract import performance_report
+from .. import beautifulsoup
+from ... import utils
 
-class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
-    ''' Class representing the Performance report. '''
+
+class JMeter(performance_report.PerformanceReport,
+             beautifulsoup.BeautifulSoupOpener):
+    ''' Class representing the JMeter performance report. '''
 
     metric_source_name = 'Jmeter performance report'
     needs_metric_source_id = True
     COLUMN_90_PERC = 10
 
     def __init__(self, report_folder_url):
-        super(PerformanceReport, self).__init__(url=report_folder_url)
+        super(JMeter, self).__init__(url=report_folder_url)
 
     def queries(self, product, version):
         ''' Return the number of performance queries. '''
@@ -41,7 +46,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             response time. '''
         return self.__queries_violating_response_time(product, version, 'red')
 
-    def queries_violating_wished_reponsetime(self, product, version):
+    def queries_violating_wished_responsetime(self, product, version):
         ''' Return the number of performance queries that violate the maximum
             response time we'd like to meet. '''
         return self.__queries_violating_response_time(product, version,
@@ -50,7 +55,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def __queries_violating_response_time(self, product, version, color):
         ''' Return the number of queries that are violating either the maximum
             or the desired response time. '''
-        return len([row for row in self.__query_rows(product, version) \
+        return len([row for row in self.__query_rows(product, version)
                     if row('td')[self.COLUMN_90_PERC]['class'] == color])
 
     @utils.memoized

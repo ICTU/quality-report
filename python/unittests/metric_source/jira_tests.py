@@ -51,7 +51,7 @@ class JiraTest(unittest.TestCase):
 
     def test_has_open_bugs_query(self):
         ''' Test that the Jira under test has an open bugs query. '''
-        self.failUnless(self.__jira.has_open_bugs_query())
+        self.assertTrue(self.__jira.has_open_bugs_query())
 
     def test_nr_open_bugs(self):
         ''' Test that the number of open bugs is correct. '''
@@ -64,7 +64,7 @@ class JiraTest(unittest.TestCase):
 
     def test_has_open_security_bugs_query(self):
         ''' Test that the Jira under test has an open security bugs query. '''
-        self.failUnless(self.__jira.has_open_security_bugs_query())
+        self.assertTrue(self.__jira.has_open_security_bugs_query())
 
     def test_nr_open_security_bugs(self):
         ''' Test that the number of open security bugs is correct. '''
@@ -78,7 +78,7 @@ class JiraTest(unittest.TestCase):
 
     def test_has_test_issues_query(self):
         ''' Test that the Jira under test has a blocking test issues query. '''
-        self.failUnless(self.__jira.has_blocking_test_issues_query())
+        self.assertTrue(self.__jira.has_blocking_test_issues_query())
 
     def test_blocking_test_issues(self):
         ''' Test that the number of blocking test issues is correct. '''

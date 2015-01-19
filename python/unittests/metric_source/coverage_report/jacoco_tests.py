@@ -60,7 +60,7 @@ class JacocoTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__jenkins = FakeJenkins()
-        self.__jacoco = JaCoCo(self.__jenkins, '%s/index.html')
+        self.__jacoco = JaCoCo(self.__jenkins, '{}/index.html')
 
     def test_coverage(self):
         ''' Test the coverage for a specific product. '''
@@ -93,7 +93,7 @@ class JacocoTest(unittest.TestCase):
         ''' Test that the date is now when JaCoCo can't be reached. '''
         coverage_date = self.__jacoco.coverage_date('raise')
         age = datetime.datetime.now() - coverage_date
-        self.failUnless(age < datetime.timedelta(seconds=1))
+        self.assertTrue(age < datetime.timedelta(seconds=1))
 
     def test_coverage_date_url(self):
         ''' Test that the coverage date url is different than the coverage

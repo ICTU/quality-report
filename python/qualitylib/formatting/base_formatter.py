@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 import logging
 
@@ -75,5 +77,5 @@ class Formatter(object):  # pylint: disable=R0921
         ''' Report progress on formatting the section. '''
         title = section.title()
         if section.subtitle():  # pragma: no branch
-            title += ":%s" % section.subtitle()
+            title += ":{sec}".format(sec=section.subtitle())
         logging.info('%s formatting section "%s"', cls.__name__, title)

@@ -64,7 +64,7 @@ class PomTest(unittest.TestCase):
         self.__sonar = metric_source.Sonar('http://sonar')
         self.__subversion = metric_source.Subversion()
         self.__pom = PomUnderTest(sonar=self.__sonar,
-                                  subversion=self.__subversion)
+                                  version_control_system=self.__subversion)
 
     def test_no_dependencies(self):
         ''' Test pom without dependencies. '''

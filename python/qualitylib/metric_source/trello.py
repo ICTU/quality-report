@@ -13,13 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils, domain
+
 import datetime
 import httplib
 import logging
 import time
 import urllib2
+
+
+from .. import utils, domain
 
 
 class TrelloUnreachableException(Exception):
@@ -30,8 +34,8 @@ class TrelloUnreachableException(Exception):
 class TrelloObject(domain.MetricSource):
     ''' Base class for Trello objects. '''
 
-    url_template = 'https://api.trello.com/1/%(object_type)s/%(object_id)s' \
-                   '%(argument)s?key=%(appkey)s&token=%(token)s%(parameters)s'
+    url_template = 'https://api.trello.com/1/{object_type}/{object_id}' \
+                   '{argument}?key={appkey}&token={token}{parameters}'
 
     def __init__(self, object_id, appkey, token, urlopen=urllib2.urlopen):
         self._appkey = appkey
@@ -53,7 +57,7 @@ class TrelloObject(domain.MetricSource):
         ''' Return the JSON at url. '''
         parameters = self._parameters.copy()
         parameters.update(dict(argument=argument, parameters=extra_parameters))
-        url = self.url_template % parameters
+        url = self.url_template.format(**parameters)
         try:
             json_string = self.__urlopen(url).read()
         except (urllib2.URLError, httplib.BadStatusLine), reason:
@@ -102,30 +106,29 @@ class TrelloCard(TrelloObject):
                 return self.date_time_from_string(date_time_string)
         return None
 
-    def over_due_time_delta(self):
+    def over_due_time_delta(self, now=datetime.datetime.now):
         ''' Return the amount of time the card is over due. '''
         if self.due_date_time():
-            return datetime.datetime.now() - self.due_date_time()
+            return now() - self.due_date_time()
         else:
             return datetime.timedelta()
 
-    def is_over_due(self):
+    def is_over_due(self, now=datetime.datetime.now):
         ''' Return whether the card is over due. '''
         due_date_time = self.due_date_time()
         if due_date_time:
-            return due_date_time < datetime.datetime.now()
+            return due_date_time < now()
         else:
             return False
 
-    def is_inactive(self, days):
+    def is_inactive(self, days, now=datetime.datetime.now):
         ''' Return whether the card has been inactive for the specified number
             of days. '''
-        now = datetime.datetime.now()
-        if self.due_date_time() and self.due_date_time() > now:
+        if self.due_date_time() and self.due_date_time() > now():
             return False
         else:
             max_age = datetime.timedelta(days=days)
-            return now - self.date_of_last_update() > max_age
+            return now() - self.date_of_last_update() > max_age
 
 
 class TrelloBoard(TrelloObject):
@@ -145,7 +148,7 @@ class TrelloBoard(TrelloObject):
     def over_due_or_inactive_cards(self, days=14):
         ''' Return the (non-archived) cards on this Trello board that are
             over due or inactive. '''
-        return [card for card in self.__cards() \
+        return [card for card in self.__cards()
                 if card.is_over_due() or card.is_inactive(days)]
 
     def over_due_or_inactive_cards_url(self, days=14):
@@ -156,11 +159,12 @@ class TrelloBoard(TrelloObject):
             remarks = []
             if card.is_over_due():
                 time_delta = utils.format_timedelta(card.over_due_time_delta())
-                remarks.append('%s te laat' % time_delta)
+                remarks.append('{time_delta} te laat'.format(time_delta=time_delta))
             if card.is_inactive(days):
                 time_delta = utils.format_timedelta(card.last_update_time_delta())
-                remarks.append('%s niet bijgewerkt' % time_delta)
-            label = card.name() + ' (%s)' % ' en '.join(remarks)
+                remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
+            label = u'{card} ({remarks})'.format(card=card.name(),
+                                                 remarks=u' en '.join(remarks))
             urls[label] = card.url()
         return urls
 
@@ -168,7 +172,7 @@ class TrelloBoard(TrelloObject):
     def __cards(self):
         ''' Return the (non-archived) cards on this Trello board. '''
         try:
-            return [self.__create_card(card['id']) \
+            return [self.__create_card(card['id'])
                     for card in self._json(argument='/cards')]
         except TrelloUnreachableException, reason:
             logging.warning("Couldn't get cards from Trello board: %s", reason)

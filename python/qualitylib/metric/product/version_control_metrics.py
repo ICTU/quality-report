@@ -13,21 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-
-from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SubversionMetricMixin
-from qualitylib.metric.quality_attributes import CODE_QUALITY
+from __future__ import absolute_import
 
 
-class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
+from ..metric_source_mixin import VersionControlSystemMetricMixin
+from ..quality_attributes import CODE_QUALITY
+from ...domain import LowerIsBetterMetric
+
+
+class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of unmerged branches. '''
 
     name = 'Ongemergde branches'
     norm_template = 'Geen branches die ongemergde code hebben.'
-    perfect_template = 'Geen van de %(nr_branches)d branches van %(name)s ' \
+    perfect_template = 'Geen van de {nr_branches} branches van {name} ' \
         'heeft revisies die niet met de trunk zijn gemerged.'
-    template = '%(value)d van de %(nr_branches)d branches van %(name)s ' \
+    template = '{value} van de {nr_branches} branches van {name} ' \
         'hebben revisies die niet met de trunk zijn gemerged.'
     quality_attribute = CODE_QUALITY
     target_value = 0
@@ -70,31 +72,29 @@ class UnmergedBranches(SubversionMetricMixin, LowerIsBetterMetric):
     def __branch_and_nr_revs_urls(self, branches_and_revisions):
         ''' Return a list of branch urls. '''
         urls = dict()
-        svn_path_base, svn_path_postfix = self._svn_path().split('/trunk/')
         for branch, nr_revisions in branches_and_revisions.items():
-            label = '%s: %d ongemergde revisie(s)' % (branch, nr_revisions) 
-            urls[label] = svn_path_base + '/branches/' + branch + '/' + \
-                          svn_path_postfix
+            label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
+            urls[label] = self._vcs.branch_folder_for_branch(self._vcs_path(),
+                                                             branch)
         return urls
 
     def __branch_urls(self, branches):
         ''' Return a list of branch urls. '''
         urls = dict()
-        svn_path_base, svn_path_postfix = self._svn_path().split('/trunk/')
         for branch in branches:
-            urls[branch] = svn_path_base + '/branches/' + branch + '/' + \
-                           svn_path_postfix
+            urls[branch] = self._vcs.branch_folder_for_branch(self._vcs_path(),
+                                                              branch)
         return urls
 
     def __branches(self):
         ''' Return a list of branches for the product. '''
-        return self._subversion.branches(self._svn_path())
+        return self._vcs.branches(self._vcs_path())
 
     def __unmerged_branches(self):
         ''' Return a dictionary of unmerged branch names and the number of 
             unmerged revisions for each branch. '''
         unmerged_branches = \
-            self._subversion.unmerged_branches(self._svn_path())
+            self._vcs.unmerged_branches(self._vcs_path())
         branches_to_ignore = self.__branches_to_ignore()
         for branch in unmerged_branches.copy():
             if branch in branches_to_ignore:

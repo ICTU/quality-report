@@ -14,24 +14,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
+from __future__ import absolute_import
+
+
 # Package for domain objects.
 
-from qualitylib.domain.base import DomainObject
+from .base import DomainObject
 
-from qualitylib.domain.measurement.metric import Metric, HigherIsBetterMetric, \
-    HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric, \
+from .measurement.metric import \
+    Metric, \
+    HigherIsBetterMetric, \
+    HigherPercentageIsBetterMetric, \
+    LowerPercentageIsBetterMetric, \
     LowerIsBetterMetric
-from qualitylib.domain.measurement.metric_source import MetricSource, \
+from .measurement.metric_source import \
+    MetricSource, \
     MissingMetricSource
-from qualitylib.domain.measurement.metric_mixin import MetaMetricMixin
-from qualitylib.domain.measurement.target import TechnicalDebtTarget, \
+from .measurement.metric_mixin import \
+    MetaMetricMixin
+
+from .measurement.target import \
+    TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
-from qualitylib.domain.software_development.product import Product
-from qualitylib.domain.software_development.team import Team
-from qualitylib.domain.software_development.person import Person
-from qualitylib.domain.software_development.project import Project
-from qualitylib.domain.software_development.street import Street
-from qualitylib.domain.software_development.document import Document
-from qualitylib.domain.software_development.quality_attribute import \
+from .software_development.product import Product
+from .software_development.team import Team
+from .software_development.person import Person
+from .software_development.project import Project
+from .software_development.requirement import Requirement
+from .software_development.street import Street
+from .software_development.document import Document
+from .software_development.quality_attribute import \
     QualityAttribute

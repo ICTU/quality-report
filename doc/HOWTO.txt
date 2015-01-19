@@ -31,8 +31,7 @@ How to add a new project to the quality system.
 
    project = Project('Organization', name='New Project', 
                      metric_sources={metric_source.Jira: JIRA, 
-                                     metric_source.History: HISTORY, 
-                                     metric_source.Wiki: WIKI})
+                                     metric_source.History: HISTORY})
 
    The doc/example_project_definitions folder contains a number of project 
    definition examples.
@@ -110,7 +109,7 @@ PROJECT = Project('Organization', name='Project name',
                       metric_source.Sonar: SONAR,
                       metric_source.Jenkins: BUILD_SERVER,
                       metric_source.History: HISTORY,
-                      metric_source.Subversion: SUBVERSION})
+                      metric_source.VersionControlSystem: SUBVERSION})
 
 # Create the teams of the project. In this example we have two Scrum teams and
 # one support team that's responsible for the releases.

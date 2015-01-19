@@ -13,14 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 # CI: Continuous integration metrics.
 
-from qualitylib.domain import Metric, LowerIsBetterMetric, \
-    HigherPercentageIsBetterMetric
-from qualitylib.metric.metric_source_mixin import JenkinsMetricMixin
-from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY, \
+from .metric_source_mixin import JenkinsMetricMixin
+from .quality_attributes import \
+    ENVIRONMENT_QUALITY, \
     TEST_QUALITY
+from ..domain import \
+    Metric, \
+    LowerIsBetterMetric, \
+    HigherPercentageIsBetterMetric
 
 
 class ARTStability(JenkinsMetricMixin, Metric):
@@ -30,14 +35,14 @@ class ARTStability(JenkinsMetricMixin, Metric):
 
     name = 'Stabiliteit van automatische regressietest'
     norm_template = 'Alle regressietesten en integratietesten hebben de ' \
-        'laatste %(target)d dagen minimaal eenmaal succesvol gedraaid. Rood ' \
-        'als er testen meer dan %(low_target)d dagen niet succesvol ' \
+        'laatste {target} dagen minimaal eenmaal succesvol gedraaid. Rood ' \
+        'als er testen meer dan {low_target} dagen niet succesvol ' \
         'hebben gedraaid.'
-    above_target_template = 'Alle ARTs hebben de afgelopen %(target)d dagen ' \
-        'succesvol gedraaid in de "%(street)s"-straat.'
-    below_target_template = '%(value)d ARTs hebben de ' \
-        'afgelopen %(target)d dagen niet succesvol gedraaid in de ' \
-        '"%(street)s"-straat.'
+    above_target_template = 'Alle ARTs hebben de afgelopen {target} dagen ' \
+        'succesvol gedraaid in de "{street}"-straat.'
+    below_target_template = '{value} ARTs hebben de ' \
+        'afgelopen {target} dagen niet succesvol gedraaid in de ' \
+        '"{street}"-straat.'
     target_value = 3
     low_target_value = 7
     quality_attribute = TEST_QUALITY
@@ -74,7 +79,7 @@ class ARTStability(JenkinsMetricMixin, Metric):
                                                     days=self.target()))
         street_url = self._subject.url()
         if street_url:
-            urls['"%s"-straat' % self.__street_name()] = street_url
+            urls['"{street}"-straat'.format(street=self.__street_name())] = street_url
         return urls
 
     def __street_name(self):
@@ -91,12 +96,12 @@ class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of continuous integration jobs
         that fail. '''
 
-    norm_template = 'Maximaal %(target)d van de CI-jobs%(responsible_team)s ' \
-        'faalt. Meer dan %(low_target)d is rood. Een CI-job faalt als de ' \
+    norm_template = 'Maximaal {target} van de CI-jobs{responsible_team} ' \
+        'faalt. Meer dan {low_target} is rood. Een CI-job faalt als de ' \
         'laatste bouwpoging niet is geslaagd en er de afgelopen 24 uur geen ' \
         'geslaagde bouwpogingen zijn geweest.'
-    template = '%(value)d van de %(number_of_jobs)d ' \
-        'CI-jobs%(responsible_team)s faalt.'
+    template = '{value} van de {number_of_jobs} ' \
+        'CI-jobs{responsible_team} faalt.'
     target_value = 0
     low_target_value = 2
     quality_attribute = ENVIRONMENT_QUALITY
@@ -154,7 +159,7 @@ class TeamFailingCIJobs(FailingCIJobs):
         return (self._subject,)
 
     def _responsible_team_text(self):
-        return ' waarvoor team %s verantwoordelijk is' % self._subject
+        return ' waarvoor team {team} verantwoordelijk is'.format(team=self._subject)
 
 
 class ProjectFailingCIJobs(FailingCIJobs):
@@ -182,12 +187,12 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     ''' Metric for measuring the number of continuous integration jobs
         that are not used. '''
 
-    norm_template = 'Maximaal %(target)d van de CI-jobs%(responsible_team)s ' \
-        'is ongebruikt. Meer dan %(low_target)d is rood. Een CI-job is ' \
+    norm_template = 'Maximaal {target} van de CI-jobs{responsible_team} ' \
+        'is ongebruikt. Meer dan {low_target} is rood. Een CI-job is ' \
         'ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn ' \
         'geweest.'
-    template = '%(value)d van de %(number_of_jobs)d ' \
-        'CI-jobs%(responsible_team)s is ongebruikt.'
+    template = '{value} van de {number_of_jobs} ' \
+        'CI-jobs{responsible_team} is ongebruikt.'
     target_value = 0
     low_target_value = 2
     quality_attribute = ENVIRONMENT_QUALITY
@@ -259,7 +264,7 @@ class TeamUnusedCIJobs(UnusedCIJobs):
         return values
 
     def _responsible_team_text(self):
-        return ' waarvoor team %s verantwoordelijk is' % self._subject 
+        return ' waarvoor team {team} verantwoordelijk is'.format(team=self._subject) 
 
 
 class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
@@ -269,11 +274,12 @@ class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
         "[RESPONSIBLE=<team name>]" in the description of the job. '''
 
     name = 'Toegewezen CI-jobs'
-    norm_template = 'Minimaal %(target)d%% van de CI-jobs is toegewezen aan ' \
-        'een team. Minder dan %(low_target)d%% is rood. Wijs een CI-job toe ' \
+    norm_template = 'Minimaal {target}% van de CI-jobs is toegewezen aan ' \
+        'een team. Minder dan {low_target}% is rood. Wijs een CI-job toe ' \
         'aan een team door "[RESPONSIBLE=teamnaam]" in de beschrijving ' \
-        'van een CI-job op te nemen.'
-    template = '%(value)d%% (%(numerator)d van %(denominator)d) van de ' \
+        'van een CI-job op te nemen. Niet expliciet toegewezen CI-jobs zijn ' \
+        'de verantwoordelijkheid van team: {default_team}.'
+    template = '{value:.0f}% ({numerator} van {denominator}) van de ' \
         'CI-jobs is toegewezen aan een team.'
     target_value = 95
     low_target_value = 90
@@ -283,6 +289,20 @@ class AssignedCIJobs(JenkinsMetricMixin, HigherPercentageIsBetterMetric):
     def can_be_measured(cls, subject, project):
         return super(AssignedCIJobs, cls).can_be_measured(subject, project) \
             and len(project.teams()) > 1
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(AssignedCIJobs, cls).norm_template_default_values()
+        values['default_team'] = 'Default'
+        return values
+
+    def _parameters(self):
+        parameters = super(AssignedCIJobs, self)._parameters()
+        default_team = self._jenkins.default_team()
+        name = default_team.name() if default_team else \
+            'Geen default team toegewezen'
+        parameters['default_team'] = name
+        return parameters
 
     def _numerator(self):
         return self._jenkins.number_of_assigned_jobs()

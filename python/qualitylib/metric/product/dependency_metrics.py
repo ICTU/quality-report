@@ -13,12 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
-from qualitylib.metric.quality_attributes import DEPENDENCY_QUALITY
-from qualitylib import utils, metric_source
-from qualitylib.formatting import HTMLFormatter
+
+from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..quality_attributes import DEPENDENCY_QUALITY
+from ...domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
+from ...formatting import HTMLFormatter
+from ... import utils, metric_source
 
 
 class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
@@ -26,9 +28,9 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     ''' Return the number of cyclic dependencies between packages. '''
 
     name = 'Cyclische afhankelijkheden'
-    norm_template = 'Maximaal %(target)d cyclische afhankelijkheden tussen ' \
+    norm_template = 'Maximaal {target} cyclische afhankelijkheden tussen ' \
         'packages. Meer dan 10 is rood.'
-    template = '%(name)s heeft %(value)d cyclische afhankelijkheden.'
+    template = '{name} heeft {value} cyclische afhankelijkheden.'
     target_value = 0
     low_target_value = 10
     quality_attribute = DEPENDENCY_QUALITY
@@ -42,14 +44,15 @@ class SnapshotDependencies(LowerIsBetterMetric):
     ''' Metric for measuring the number of the dependencies on snapshot versions
         of other products. '''
     name = 'Snapshot afhankelijkheden'
-    norm_template = 'Maximaal %(target)d afhankelijkheden op snapshot ' \
-        'versies van andere producten. Meer dan %(low_target)d is rood.'
-    template = '%(name)s heeft %(value)d afhankelijkheden op snapshot ' \
+    norm_template = 'Maximaal {target} afhankelijkheden op snapshot ' \
+        'versies van andere producten. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} afhankelijkheden op snapshot ' \
         'versies van andere producten.'
     target_value = 0
     low_target_value = 2
     quality_attribute = DEPENDENCY_QUALITY
-    metric_source_classes = (metric_source.Subversion, metric_source.Pom)
+    metric_source_classes = (metric_source.VersionControlSystem,
+                             metric_source.Pom)
 
     @classmethod
     def can_be_measured(cls, product, project):
@@ -69,7 +72,7 @@ class SnapshotDependencies(LowerIsBetterMetric):
         urls = dict()
         for dependency in self.__snapshot_dependencies():
             product = self.__report.get_product(*dependency)
-            label = '%s:%s' % (dependency[0], dependency[1] or 'trunk')
+            label = '{}:{}'.format(dependency[0], dependency[1] or 'trunk')
             urls[label] = HTMLFormatter.product_url(product)
         return urls
  
@@ -84,15 +87,16 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
     ''' Metric for measuring the quality of the dependencies of the project. '''
 
     name = 'Kwaliteit van afhankelijkheden'
-    norm_template = 'Maximaal %(target)d%% van de afhankelijkheden tussen ' \
+    norm_template = 'Maximaal {target}% van de afhankelijkheden tussen ' \
         'componenten is naar componenten die "rode" metrieken hebben. ' \
-        'Meer dan %(low_target)d%% is rood.'
-    template = '%(value)d%% van de afhankelijkheden (%(nr_not_ok_deps)d van ' \
-        'de %(nr_deps)d) is naar componenten die "rode" metrieken hebben.'
+        'Meer dan {low_target}% is rood.'
+    template = '{value:.0f}% van de afhankelijkheden ({nr_not_ok_deps} van ' \
+        'de {nr_deps}) is naar componenten die "rode" metrieken hebben.'
     target_value = 10
     low_target_value = 20
     quality_attribute = DEPENDENCY_QUALITY
-    metric_source_classes = (metric_source.Pom, metric_source.Subversion)
+    metric_source_classes = (metric_source.Pom,
+                             metric_source.VersionControlSystem)
 
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')
@@ -125,7 +129,7 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         for product in self.__report.products():
             for dependency in product.dependencies(recursive=False):
                 product = self.__report.get_product(*dependency)
-                label = '%s:%s' % (dependency[0], dependency[1] or 'trunk')
+                label = '{}:{}'.format(dependency[0], dependency[1] or 'trunk')
                 urls[label] = HTMLFormatter.product_url(product)
         return urls
 

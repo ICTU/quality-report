@@ -13,23 +13,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils, metric_info
+
 import copy
 import logging
 import os
 import urllib2
 
 
+from . import beautifulsoup
+from .. import utils, metric_info
+
+
 class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     ''' Class for creating and removing Sonar analyses. '''
 
-    def __init__(self, sonar, maven, subversion, *args, **kwargs):
+    def __init__(self, sonar, maven, version_control_system, *args, **kwargs):
         super(SonarRunner, self).__init__(*args, **kwargs)
         self.__sonar = sonar
         self.__maven = maven
-        self.__subversion = subversion
+        self.__vcs = version_control_system
         self.__sonar_url = sonar.url()
 
     def analyse_products(self, products):
@@ -47,9 +51,11 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         if not self.__product_sonar_id(product):
             return
         if not self.__analysis_exists(product):
-            users = ', '.join(['%s:%s' % (user.name(), 
-                                          user.product_version() or 'trunk') \
-                               for user in product.users()])
+            users = ', '.join([
+                               '{usr}:{ver}'.format(usr=user.name(), \
+                                                    ver=user.product_version() or 'trunk') \
+                                for user in product.users()
+                               ])
             logging.info('Check out and run sonar on %s '
                          '(dependency of %s)', product.product_label(), 
                          users or 'none')
@@ -67,7 +73,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __analysis_exists(self, product):
         ''' Return whether a Sonar analysis for this product already exists. '''
-        sonar_id = '"%s"' % self.__product_sonar_id(product)
+        sonar_id = '"{prod}"'.format(prod=self.__product_sonar_id(product))
         result = sonar_id in str(self.soup(self.__sonar_url + 'api/resources'))
         logging.info('Sonar analysis for %s %s', sonar_id,
                       {True: 'exists', False: 'does not exist'}[result])
@@ -92,8 +98,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                sonar_id not in sonar_analyses_to_keep and \
                sonar_id.rsplit(':', 1)[0] in sonar_analyses_to_keep:
                 try:
-                    self.url_delete(self.__sonar_url + 'api/projects/%s' % \
-                                    sonar_id)
+                    self.url_delete(self.__sonar_url + \
+                                    'api/projects/{sonar}'.format(sonar=sonar_id))
                     logging.info('Removed Sonar analysis for %s', sonar_id)
                 except urllib2.HTTPError, reason:
                     logging.warn("Can't remove Sonar analysis for %s: %s", 
@@ -127,14 +133,16 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                     sonar_options['branch'] += ':' + version
                 else:
                     sonar_options['branch'] = version
-        sonar_options_string = ' '.join(['-Dsonar.%s=%s' % item \
+        sonar_options_string = ' '.join(['-Dsonar.{}={}'.format(*item) \
                                          for item in sonar_options.items()])
         utils.rmtree(folder)  # Remove any left over checkouts
         self.__check_out(product, folder)
         os.putenv('MAVEN_OPTS', '-Xmx2048m -XX:MaxPermSize=512m')
-        maven_command = ('%s --fail-never clean install sonar:sonar ' % \
-                         self.__maven.binary()) + \
-                         sonar_options_string + ' ' + maven_options_string
+        maven_command = '{maven} --fail-never clean install sonar:sonar {sopt} {mopt}'.format(
+                             maven=self.__maven.binary(),
+                             sopt=sonar_options_string,
+                             mopt=maven_options_string,
+                         )
         logging.info(maven_command)
         original_working_dir = os.getcwd()
         os.chdir(folder)
@@ -149,6 +157,6 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     def __check_out(self, product, folder):
         ''' Check out the product in the folder. '''
-        subversion_product_info = metric_info.SubversionProductInfo( \
-            self.__subversion, product)
-        self.__subversion.check_out(subversion_product_info.svn_path(), folder)
+        vcs_product_info = metric_info.VersionControlSystemProductInfo( \
+            self.__vcs, product)
+        self.__vcs.check_out(vcs_product_info.vcs_path(), folder)

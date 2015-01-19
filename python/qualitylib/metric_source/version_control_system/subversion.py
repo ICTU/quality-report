@@ -13,63 +13,33 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils, domain
-from qualitylib.metric_source import release_archive
-from BeautifulSoup import BeautifulSoup
+
 import datetime
 import logging
 import re
-import subprocess
+
+from BeautifulSoup import BeautifulSoup
 
 
-class SubversionFolder(release_archive.ReleaseArchive):
-    ''' Class representing a specific directory served by Subversion. '''
-
-    metric_source_name = 'Subversion folder'
-
-    def __init__(self, name, url, run_shell_command=subprocess.check_output):
-        self.__run_shell_command = run_shell_command
-        super(SubversionFolder, self).__init__(name, url)
-
-    @utils.memoized
-    def date_of_most_recent_file(self):
-        ''' Return the date and time of the most recent file listed. '''
-        output = self.__svn_info()
-        regular_expression = 'Last Changed Date: ([^ ]+) ([^ ]+) '
-        last_changed_date_time = re.search(regular_expression, output)
-        date_text = last_changed_date_time.group(1)
-        time_text = last_changed_date_time.group(2)
-        year, month, day = date_text.split('-')
-        hour, minute, second = time_text.split(':')
-        return datetime.datetime(int(year), int(month), int(day), int(hour),
-                                 int(minute), int(second))
-
-    def __svn_info(self):
-        ''' Run the svn info command and return its output. '''
-        return self.__run_shell_command(['svn', 'info', self.url()])
+from ..abstract import version_control_system
+from ... import utils
 
 
-class Subversion(domain.MetricSource):
+class Subversion(version_control_system.VersionControlSystem):
     ''' Class representing the Subversion repository. '''
 
     metric_source_name = 'Subversion'
 
-    def __init__(self, username=None, password=None, url=None,
-                 run_shell_command=subprocess.check_output):
-        self.__username = username
-        self.__password = password
-        self.__shell_command = run_shell_command
-        super(Subversion, self).__init__(url=url)
-
     def check_out(self, svn_path, folder):
         ''' Check out the subversion path into the folder. '''
         shell_command = ['svn', 'co', svn_path, folder]
-        if self.__username and self.__password:
+        if self._username and self._password:
             shell_command.extend(['--no-auth-cache', 
-                                  '--username', self.__username, 
-                                  '--password', self.__password])
-        self.__run_shell_command(shell_command, log_level=logging.ERROR)
+                                  '--username', self._username,
+                                  '--password', self._password])
+        self._run_shell_command(shell_command, log_level=logging.ERROR)
 
     @utils.memoized
     def latest_tagged_product_version(self, product_url):
@@ -102,11 +72,20 @@ class Subversion(domain.MetricSource):
         return cls.__branches_folder(trunk_url) + branch + '/' + \
             trunk_url.split('/trunk/')[1]
 
+    @staticmethod
+    def normalize_path(svn_path):
+        ''' Return a normalized version of the path. '''
+        if not svn_path.endswith('/'):
+            svn_path += '/'
+        if not '/trunk/' in svn_path:
+            svn_path += 'trunk/'
+        return svn_path
+
     @utils.memoized
     def last_changed_date(self, url):
         ''' Return the date when the url was last changed in Subversion. ''' 
-        svn_info_xml = str(self.__run_shell_command(['svn', 'info', '--xml', 
-                                                     url]))
+        svn_info_xml = str(self._run_shell_command(['svn', 'info', '--xml',
+                                                    url]))
         try:
             date = BeautifulSoup(svn_info_xml)('date')[0].string
         except IndexError:
@@ -128,8 +107,9 @@ class Subversion(domain.MetricSource):
         ''' Return whether the branch has unmerged revisions. '''
         branch_url = self.__branches_folder(product_url) + branch_name
         trunk_url = product_url
-        revisions = str(self.__run_shell_command(['svn', 'mergeinfo', 
-            '--show-revs', 'eligible', branch_url, trunk_url])).strip()
+        revisions = str(self._run_shell_command(['svn', 'mergeinfo',
+                                                 '--show-revs', 'eligible',
+                                                 branch_url, trunk_url])).strip()
         logging.debug('Unmerged revisions from %s to %s: "%s"', branch_url, 
                      trunk_url, revisions)
         # Number of revisions is one more than the number of line breaks, if 
@@ -148,9 +128,9 @@ class Subversion(domain.MetricSource):
 
     def __revision_url(self, branch_url, revision_number):
         ''' Return the url for a specific revision number. '''
-        svn_info_xml = str(self.__run_shell_command(['svn', 'info', branch_url,
-                                                     '--xml',
-                                                     '-r', revision_number]))
+        svn_info_xml = str(self._run_shell_command(['svn', 'info', branch_url,
+                                                    '--xml',
+                                                    '-r', revision_number]))
         return BeautifulSoup(svn_info_xml)('url')[0].string
 
     @utils.memoized
@@ -193,16 +173,5 @@ class Subversion(domain.MetricSource):
     def __svn_list(self, url):
         ''' Return a list of sub folder names. '''
         shell_command = ['svn', 'list', '--xml', url]
-        svn_info_xml = str(self.__run_shell_command(shell_command))
+        svn_info_xml = str(self._run_shell_command(shell_command))
         return [name.string for name in BeautifulSoup(svn_info_xml)('name')]
-
-    def __run_shell_command(self, shell_command, log_level=logging.WARNING):
-        ''' Invoke a shell and run the command. '''
-        try:
-            return self.__shell_command(shell_command)
-        except subprocess.CalledProcessError, reason:
-            # No need to include the shell command in the log, because the 
-            # reason contains the shell command.
-            logging.log(log_level, 'Shell command failed: %s', reason)
-            if log_level > logging.WARNING:
-                raise

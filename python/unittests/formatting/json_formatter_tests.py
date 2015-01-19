@@ -20,17 +20,24 @@ from unittests.formatting import fake_report, fake_domain
 import unittest
 
 
+class FakeSonar(object):
+    ''' Fake Sonar for unit testing purposes. '''
+    @staticmethod
+    def version(*args):  # pylint: disable=unused-argument
+        ''' Return the version number of the component. '''
+        return '2'
+
+
 class JSONFormatterTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit test for the dot report formatter class. '''
     def setUp(self):  # pylint: disable=invalid-name
-        self.__formatter = JSONFormatter(
-                               sonar=metric_source.Sonar('http://sonar'))
+        self.__formatter = JSONFormatter(sonar=FakeSonar())
 
     def test_process(self):
         ''' Test that the report is processed correctly. '''
-        self.assertEqual('{"date": "2012-01-01 12:00:00", ' \
-            '"metric_id": ("15", "red", "2012-01-01 12:00:00"), ' \
+        self.assertEqual('{"date": "2012-01-01 12:00:00", '
+            '"metric_id": ("15", "red", "2012-01-01 12:00:00"), '
             '"metric_id": ("15", "red", "2012-01-01 12:00:00"), }\n',
             self.__formatter.process(fake_report.Report()))
 
@@ -44,7 +51,7 @@ class JSONFormatterTest(unittest.TestCase):
             not have been released (i.e. the version of the trunk). '''
         report = fake_report.Report([fake_domain.Product(version=''), 
                                      fake_domain.Product()])
-        self.assertEqual('{"Product-version": "2", "date": ' \
+        self.assertEqual('{"Product-version": "2", "date": '
                          '"2012-01-01 12:00:00", ', 
                          self.__formatter.prefix(report))
 
@@ -52,8 +59,9 @@ class JSONFormatterTest(unittest.TestCase):
         ''' Test that formatting a non-numerical value raises a type error. '''
 
         class BuggyMetric(object):  # pylint: disable-msg=too-few-public-methods
-            ''' A metric that returns a dummy string for every method called. '''
+            ''' A metric that returns a dummy string for every method
+                called. '''
             def __getattr__(self, attr):
                 return lambda *args: 'dummy'
 
-        self.assertRaises(TypeError, self.__formatter.metric, BuggyMetric())
+        self.assertRaises(ValueError, self.__formatter.metric, BuggyMetric())

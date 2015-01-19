@@ -13,9 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.formatting import base_formatter
+
 import logging
+
+
+from . import base_formatter
 
 
 class CSVFormatter(base_formatter.Formatter):
@@ -49,4 +53,4 @@ class CSVFormatter(base_formatter.Formatter):
         return self.sep.join(result) + '\n'
 
     def metric(self, metric_instance):
-        return '%s' % metric_instance.value()
+        return '{val}'.format(val=metric_instance.value())

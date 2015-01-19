@@ -13,10 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 import datetime
-from qualitylib import domain, utils
-from qualitylib.metric_source import url_opener
+
+
+from . import url_opener
+from .. import domain, utils
 
 
 class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
@@ -51,19 +55,38 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
                     longest_end = day
                 current_stretch = 0
                 current_start = None
-        return longest_stretch, longest_start, longest_end
+        return longest_stretch, longest_start, longest_end, \
+               self.__absent_in_period(team, longest_start, longest_end)
 
     def __absence_days(self, team):
         ''' Return the days one or more team members are absent. '''
-        member_ids = [member.metric_source_id(self) \
-                      for member in team.members()]
-        json = utils.eval_json(self.url_open(self.__api_url).read())
-        absence_list = json['afwezig']
-        # Filter out people not in the team and absences other than whole days
-        absence_list = [absence for absence in absence_list \
-                        if absence[1] in member_ids and absence[3] == '3']
+        absence_list = self.__absence_list(team)
         days = {}
         for absence in absence_list:
             date = absence[2]
             days[date] = days.get(date, 0) + 1
         return days
+
+    def __absent_in_period(self, team, start, end):
+        ''' Return the team members absent in the specified period. '''
+        if not start:
+            return []
+        absence_list = self.__absence_list(team)
+        start, end = start.isoformat(), end.isoformat()
+        absent_members = set()
+        for absence in absence_list:
+            member, date = absence[1], absence[2]
+            if start <= date <= end:
+                absent_members.add(member)
+        return [member for member in team.members()
+                if member.metric_source_id(self) in absent_members]
+
+    def __absence_list(self, team):
+        ''' Return the list of absences. '''
+        member_ids = [member.metric_source_id(self)
+                      for member in team.members()]
+        json = utils.eval_json(self.url_open(self.__api_url).read())
+        absence_list = json['afwezig']
+        # Filter out people not in the team and absences other than whole days
+        return [absence for absence in absence_list
+                if absence[1] in member_ids and absence[3] == '3']

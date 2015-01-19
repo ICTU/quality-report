@@ -13,13 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import HigherIsBetterMetric, LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import BirtMetricMixin
-from qualitylib.metric.quality_attributes import TEST_COVERAGE, PERFORMANCE, \
-   TEST_QUALITY
-from qualitylib import metric_source
+
 import datetime
+
+
+from ..metric_source_mixin import BirtMetricMixin
+from ..quality_attributes import TEST_COVERAGE, PERFORMANCE, \
+   TEST_QUALITY
+from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from ... import metric_source
 
 
 class FailingRegressionTests(LowerIsBetterMetric):
@@ -28,8 +32,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
 
     name = 'Falende regressietesten'
     norm_template = 'Alle regressietesten slagen.'
-    perfect_template = 'Alle %(tests)d regressietesten van %(name)s slagen.'
-    template = '%(value)d van de %(tests)d regressietesten van %(name)s ' \
+    perfect_template = 'Alle {tests} regressietesten van {name} slagen.'
+    template = '{value} van de {tests} regressietesten van {name} ' \
         'slagen niet.'
     target_value = 0
     low_target_value = 0
@@ -70,7 +74,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
         else:
             urls = {}
             for jenkins_id in jenkins_ids:
-                urls['Jenkins test report %s' % jenkins_id] = \
+                urls['Jenkins test report {jid}'.format(jid=jenkins_id)] = \
                     self.__jenkins_test_report.test_report_url(jenkins_id)
             return urls
 
@@ -81,11 +85,11 @@ class ARTCoverage(HigherIsBetterMetric):
         for a product. '''
 
     name = 'Automatic regression test coverage'
-    norm_template = 'Minimaal %(target)d%% van de regels code wordt gedekt ' \
+    norm_template = 'Minimaal {target}% van de regels code wordt gedekt ' \
            'door geautomatiseerde functionele tests. ' \
-           'Minder dan %(low_target)d%% is rood.'
-    template = '%(name)s ART coverage is %(value)d%% ' \
-               '(%(date)s, %(age)s geleden).'
+           'Minder dan {low_target}% is rood.'
+    template = '{name} ART coverage is {value}% ' \
+               '({date}, {age} geleden).'
     perfect_value = 100
     target_value = 80
     low_target_value = 70
@@ -100,10 +104,10 @@ class ARTCoverage(HigherIsBetterMetric):
             # Trunk version, ART coverage measurement should not be too old.
             self.old_age = datetime.timedelta(hours=3 * 24)
             self.max_old_age = datetime.timedelta(hours=5 * 24)
-            self.norm_template = 'Minimaal %(target)d%% van de regels code ' \
+            self.norm_template = 'Minimaal {target}% van de regels code ' \
                 'wordt gedekt door geautomatiseerde functionele tests en de ' \
-                'coverage meting is niet ouder dan %(old_age)s. Minder dan ' \
-                '%(low_target)d%% of meting ouder dan %(max_old_age)s is rood.'
+                'coverage meting is niet ouder dan {old_age}. Minder dan ' \
+                '{low_target}% of meting ouder dan {max_old_age} is rood.'
 
     def value(self):
         coverage_id = self._subject.metric_source_id(self.__coverage_report)
@@ -147,10 +151,10 @@ class RelativeARTPerformance(BirtMetricMixin, LowerIsBetterMetric):
         running of an automated regression test than during a previous ART. '''
 
     name = 'Automatic regression test relative performance'
-    norm_template = 'Maximaal %(target)d van de paginas laadt langzamer dan ' \
+    norm_template = 'Maximaal {target} van de paginas laadt langzamer dan ' \
         'tijdens de vorige automatische regressie test. ' \
-        'Meer dan %(low_target)d is rood.'
-    template = '%(value)d van de paginas van %(name)s laadt langzamer ' \
+        'Meer dan {low_target} is rood.'
+    template = '{value} van de paginas van {name} laadt langzamer ' \
         'bij het uitvoeren van de laatste test dan bij de voorlaatste test.'
     target_value = 0
     low_target_value = 5

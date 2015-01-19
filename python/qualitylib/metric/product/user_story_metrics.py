@@ -13,10 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import BirtTestDesignMetricMixin
-from qualitylib.metric.quality_attributes import TEST_COVERAGE, DOC_QUALITY 
+
+from ..metric_source_mixin import BirtTestDesignMetricMixin
+from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY 
+from ...domain import LowerIsBetterMetric
 
 
 class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
@@ -51,10 +53,10 @@ class UserStoriesNotReviewedAndApproved(UserStoryMetric):
         reviewed and approved. '''
 
     name = 'Goedkeuring user stories'
-    norm_template = 'Maximaal %(target)d van de user stories is niet ' \
-        'gereviewd en/of niet goedgekeurd. Meer dan %(low_target)d is rood.'
-    template = '%(name)s heeft %(value)d niet gereviewde en/of niet ' \
-        'goedgekeurde user stories van in totaal %(total)d user stories.'
+    norm_template = 'Maximaal {target} van de user stories is niet ' \
+        'gereviewd en/of niet goedgekeurd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet gereviewde en/of niet ' \
+        'goedgekeurde user stories van in totaal {total} user stories.'
     target_value = 3
     low_target_value = 5
     quality_attribute = DOC_QUALITY
@@ -69,10 +71,10 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
         logical test cases. '''
 
     name = 'Voldoende logische testgevallen per user story'
-    norm_template = 'Maximaal %(target)d van de user stories heeft ' \
-        'onvoldoende logische testgevallen. Meer dan %(low_target)d is rood.'
-    template = '%(name)s heeft %(value)d user stories met een onvoldoende ' \
-        'aantal logische testgevallen van in totaal %(total)d user stories.'
+    norm_template = 'Maximaal {target} van de user stories heeft ' \
+        'onvoldoende logische testgevallen. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} user stories met een onvoldoende ' \
+        'aantal logische testgevallen van in totaal {total} user stories.'
     target_value = 3
     low_target_value = 5
     quality_attribute = TEST_COVERAGE

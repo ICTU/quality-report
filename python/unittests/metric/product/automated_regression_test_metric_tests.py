@@ -88,26 +88,26 @@ class ARTCoverageJacocoTest(unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.failUnless(self.__metric.report().startswith('FakeSubject ART ' \
+        self.assertTrue(self.__metric.report().startswith('FakeSubject ART ' \
                                                           'coverage is 98%'))
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has Jacoco and
             the product has a Jacoco id. '''
-        self.failUnless(metric.JaCoCoARTCoverage.can_be_measured( \
+        self.assertTrue(metric.JaCoCoARTCoverage.can_be_measured( \
             self.__subject, self.__project))
 
     def test_cant_be_measured_without_jacoco(self):
         ''' Test that the metric can not be measured without Jacoco. '''
         project = domain.Project()
-        self.failIf(metric.JaCoCoARTCoverage.can_be_measured(self.__subject,
+        self.assertFalse(metric.JaCoCoARTCoverage.can_be_measured(self.__subject,
                                                              project))
 
     def test_cant_be_measured_without_jacoco_id(self):
         ''' Test that the metric can not be measured if the product has no 
             Jacoco id. '''
         subject = FakeSubject(version='1.1')
-        self.failIf(metric.JaCoCoARTCoverage.can_be_measured(subject,
+        self.assertFalse(metric.JaCoCoARTCoverage.can_be_measured(subject,
                                                              self.__project))
 
 
@@ -133,26 +133,26 @@ class ARTCoverageEmmaTest(unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.failUnless(self.__metric.report().startswith('FakeSubject ART ' \
+        self.assertTrue(self.__metric.report().startswith('FakeSubject ART ' \
                                                           'coverage is 98%'))
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has Emma and
             the product has an Emma id. '''
-        self.failUnless(metric.EmmaARTCoverage.can_be_measured(self.__subject,
+        self.assertTrue(metric.EmmaARTCoverage.can_be_measured(self.__subject,
                                                                self.__project))
 
     def test_cant_be_measured_without_jacoco(self):
         ''' Test that the metric can not be measured without Emma. '''
         project = domain.Project()
-        self.failIf(metric.EmmaARTCoverage.can_be_measured(self.__subject,
+        self.assertFalse(metric.EmmaARTCoverage.can_be_measured(self.__subject,
                                                            project))
 
     def test_cant_be_measured_without_jacoco_id(self):
         ''' Test that the metric can not be measured if the product has no 
             Emma id. '''
         subject = FakeSubject(version='1.1')
-        self.failIf(metric.EmmaARTCoverage.can_be_measured(subject,
+        self.assertFalse(metric.EmmaARTCoverage.can_be_measured(subject,
                                                            self.__project))
 
 
@@ -174,7 +174,7 @@ class FakeBirt(object):
     @staticmethod
     def relative_art_performance_url(product):
         ''' Return the url for the relative art performance report. '''
-        return 'http://birt/performance/%s/' % product
+        return 'http://birt/performance/{prod}/'.format(prod=product)
 
 
 class RelativeARTPerformanceTest(unittest.TestCase):
@@ -209,13 +209,13 @@ class RelativeARTPerformanceTest(unittest.TestCase):
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric cannot be measured without Birt. '''
-        self.failIf(metric.RelativeARTPerformance.can_be_measured(
+        self.assertFalse(metric.RelativeARTPerformance.can_be_measured(
             self.__subject, domain.Project()))
 
     def test_can_be_measured(self):
         ''' Test that metric can be measured when Birt is available and Birt
             has relative ART performance data for the product. '''
-        self.failUnless(metric.RelativeARTPerformance.can_be_measured(
+        self.assertTrue(metric.RelativeARTPerformance.can_be_measured(
             self.__subject, self.__project))
 
 
@@ -297,18 +297,18 @@ class FailingRegressionTestsTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that metric can be measured when Jenkins is available and the 
             product has a Jenkins job. '''
-        self.failUnless(
+        self.assertTrue(
             metric.FailingRegressionTests.can_be_measured(self.__subject, 
                                                           self.__project))
 
     def test_cant_be_measured_without_jenkins(self):
         ''' Test that the metric cannot be measured without Jenkins. '''
-        self.failIf(
+        self.assertFalse(
             metric.FailingRegressionTests.can_be_measured(self.__subject, 
                                                           domain.Project()))
 
     def test_cant_be_measured_without_jenkins_job(self):
         ''' Test that the metric cannot be measured without Jenkins job. '''
-        self.failIf(
+        self.assertFalse(
             metric.FailingRegressionTests.can_be_measured(FakeSubject(), 
                                                           self.__project))

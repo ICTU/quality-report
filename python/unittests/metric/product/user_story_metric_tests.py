@@ -104,27 +104,27 @@ class UserStoriesNotReviewedAndApprovedTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can  be measured when the project has Birt and
             the product has a Birt id and is a trunk version. '''
-        self.failUnless(metric.UserStoriesNotReviewedAndApproved.\
+        self.assertTrue(metric.UserStoriesNotReviewedAndApproved.\
                         can_be_measured(self.__subject, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric can not be measured when the project has no
             Birt. '''
-        self.failIf(metric.UserStoriesNotReviewedAndApproved.\
+        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
                     can_be_measured(self.__subject, domain.Project()))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric can not be measured when the product has no
             Birt id. '''
         product = FakeSubject(birt_id=False)
-        self.failIf(metric.UserStoriesNotReviewedAndApproved.\
+        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
                     can_be_measured(product, self.__project))
 
     def test_cant_be_measured_for_released_product(self):
         ''' Test that the metric can only be measured for trunk versions. '''
         product = self.__subject
         product.version = '1.1'
-        self.failIf(metric.UserStoriesNotReviewedAndApproved.\
+        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
                     can_be_measured(product, self.__project))
 
     def test_cant_be_measured_without_test_design(self):
@@ -132,7 +132,7 @@ class UserStoriesNotReviewedAndApprovedTest(unittest.TestCase):
             test design report in Birt. '''
         birt = FakeBirt(test_design=False)
         project = domain.Project(metric_sources={metric_source.Birt: birt})
-        self.failIf(metric.UserStoriesNotReviewedAndApproved.\
+        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
                     can_be_measured(self.__subject, project))
 
 
@@ -161,25 +161,25 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can  be measured when the project has Birt and
             the product has a Birt id and is a trunk version. '''
-        self.failUnless(metric.UserStoriesWithTooFewLogicalTestCases.\
+        self.assertTrue(metric.UserStoriesWithTooFewLogicalTestCases.\
                         can_be_measured(self.__subject, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric can not be measured when the project has no
             Birt. '''
-        self.failIf(metric.UserStoriesWithTooFewLogicalTestCases.\
+        self.assertFalse(metric.UserStoriesWithTooFewLogicalTestCases.\
                     can_be_measured(self.__subject, domain.Project()))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric can not be measured when the product has no
             Birt id. '''
         product = FakeSubject(birt_id=False)
-        self.failIf(metric.UserStoriesWithTooFewLogicalTestCases.\
+        self.assertFalse(metric.UserStoriesWithTooFewLogicalTestCases.\
                     can_be_measured(product, self.__project))
 
     def test_cant_be_measured_for_released_product(self):
         ''' Test that the metric can only be measured for trunk versions. '''
         product = self.__subject
         product.version = '1.1'
-        self.failIf(metric.UserStoriesWithTooFewLogicalTestCases.\
+        self.assertFalse(metric.UserStoriesWithTooFewLogicalTestCases.\
                     can_be_measured(product, self.__project))

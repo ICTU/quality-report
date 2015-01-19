@@ -13,21 +13,26 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
+
 
 import copy
 import logging
-from qualitylib.domain.measurement import metric_source
-from qualitylib.domain.base import DomainObject
+
+
+from ..base import DomainObject
+from ..measurement import metric_source
 
 
 class Project(DomainObject):
     ''' Class representing a software development/maintenance project. '''
 
     def __init__(self, organization='Unnamed organization', 
-                 metric_sources=None, additional_resources=None,
-                 *args, **kwargs):
+                 metric_sources=None, requirements=None,
+                 additional_resources=None, *args, **kwargs):
         self.__organization = organization
         self.__metric_sources = metric_sources or dict()
+        self.__requirements = requirements or set()
         self.__additional_resources = additional_resources or []
         self.__products = []
         self.__teams = []
@@ -45,6 +50,18 @@ class Project(DomainObject):
         ''' Return the metric source instance for the metric source class. '''
         return self.__metric_sources.get(metric_source_class, 
                                          metric_source.MissingMetricSource())
+
+    def requirements(self):
+        ''' Return the requirements of the project. '''
+        return self.__requirements
+
+    def required_metric_classes(self):
+        ''' Return the metrics that need to be measured as a consequence of the
+            project requirements. '''
+        classes = set()
+        for requirement in self.__requirements:
+            classes.update(set(requirement.metric_classes()))
+        return classes
 
     def additional_resources(self):
         ''' Return the additional resources of the project. '''

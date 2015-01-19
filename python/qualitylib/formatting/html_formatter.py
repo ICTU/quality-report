@@ -13,32 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import utils
-from qualitylib.formatting import base_formatter
+
 import datetime
+import logging
 import os
 import re
 import pkg_resources
 
 
+from . import base_formatter
+from .. import utils
+
+
 class HTMLFormatter(base_formatter.Formatter):
     ''' Format the report in HTML. '''
 
-    column_list = ["{f: '%(metric_id)s', v: '%(metric_number)s'}",
-                   "'%(section)s'",
-                   "'%(status)s'",
-                   "'%(teams)s'",
-                   """'<img src="img/%(metric_id)s.png" border="0" width="100" height="25" />'""",
-                   """{v: '%(status_nr)d', f: '<img src="img/%(image)s.png" """
-                   """alt="%(alt)s" width="48" height="48" title="%(hover)s" """
-                   """border="0" />'}""",
-                   "'%(text)s'",
-                   "'%(norm)s'",
-                   "'%(comment)s'",
-                   "'%(version)s'",
-                   "'%(quality_attribute)s'"]
-    columns = '[' + ', '.join(column_list) + ']'
+    column_list = [u"{{f: '{metric_id}', v: '{metric_number}'}}",
+                   u"'{section}'",
+                   u"'{status}'",
+                   u"'{teams}'",
+                   u"""'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
+                   u"""{{v: '{status_nr}', f: '<img src="img/{image}.png" """
+                   u"""alt="{alt}" width="48" height="48" title="{hover}" """
+                   u"""border="0" />'}}""",
+                   u"'{text}'",
+                   u"'{norm}'",
+                   u"'{comment}'",
+                   u"'{version}'",
+                   u"'{quality_attribute}'"]
+    columns = u'[' + u', '.join(column_list) + u']'
 
     def __init__(self, *args, **kwargs):
         self.__latest_software_version = kwargs.pop('latest_software_version', 
@@ -67,23 +72,24 @@ class HTMLFormatter(base_formatter.Formatter):
         for metric in report.metrics():
             data = self.__metric_data(metric)
             metric_number = int(data['metric_id'].split('-')[1])
-            data['metric_number'] = '%s-%02d' % (data['section'],
-                                                 metric_number)
-            metrics.append(self.columns % data)
+            data['metric_number'] = '{sec}-{num:02d}'.format(sec=data['section'],
+                                                 num=metric_number)
+            metrics.append(self.columns.format(**data))
         parameters['metrics'] = '[' + ',\n'.join(metrics) + ']'
         prefix = self.__get_html_fragment('prefix')
-        return prefix % parameters
+        return prefix.format(**parameters)
 
     @staticmethod
     def __get_html_fragment(name):
         ''' Read and return a HTML fragment from the html folder. '''
         module_path = os.path.dirname(os.path.abspath(__file__))
-        filename = module_path + '/../../../html/%s.html' % name
+        filename = module_path + '/../../../html/{name}.html'.format(name=name)
         try:
-            return file(filename).read()
+            fragment = file(filename).read()
         except IOError:
-            return pkg_resources.ResourceManager().\
-                resource_string(__name__, 'html/%s.html' % name)
+            fragment = pkg_resources.ResourceManager().\
+                resource_string(__name__, 'html/{name}.html'.format(name=name))
+        return unicode(fragment)
 
     def section(self, report, section):
         ''' Return a HTML formatted version of the section. '''
@@ -93,7 +99,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters = dict(title=section.title(), id=section.id_prefix(),
                           subtitle=subtitle, product_meta_data=meta_data,
                           product_links=links)
-        return self.__get_html_fragment('section') % parameters
+        return self.__get_html_fragment('section').format(**parameters)
 
     def metric(self, metric):
         ''' Return a HTML formatted version of the metric. '''
@@ -104,19 +110,22 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Return the menu for jumping to specific sections. '''
         menu_items = []
 
+        menu_item_template = '<li><a ' \
+                'class="link_section_{section_id}" ' \
+                'href="#section_{section_id}">{menu_label}</a></li>'
+        sub_menu_template = '<li class="dropdown-submenu"> ' \
+                '<a tabindex="-1" href="#">{title}</a>' \
+                '<ul class="dropdown-menu">'
+
         def add_menu_item(section_id, menu_label):
             ''' Add a menu item that links to the specified section. '''
-            menu_items.append('<li><a ' \
-                'class="link_section_%(section_id)s" ' \
-                'href="#section_%(section_id)s">%(menu_label)s</a></li>' % \
-                dict(section_id=section_id, menu_label=menu_label))
+            menu_items.append(menu_item_template.format(section_id=section_id,
+                                                        menu_label=menu_label))
 
         def add_sub_menu(sections, title):
             ''' Add a sub menu with menu items that link to the specified
                 sections. '''
-            menu_items.append('<li class="dropdown-submenu"> ' \
-                '<a tabindex="-1" href="#">%s</a>' \
-                '<ul class="dropdown-menu">' % title)
+            menu_items.append( sub_menu_template.format(title=title))
             for section in sections:
                 add_menu_item(section.id_prefix(), section.subtitle())
             menu_items.append('</ul></li>')
@@ -145,30 +154,28 @@ class HTMLFormatter(base_formatter.Formatter):
         quality_attributes = set([metric.quality_attribute \
                                   for metric in report.metrics() \
                                   if metric.quality_attribute])
-        quality_attributes = sorted(list(quality_attributes))
         menu_item_template = '''
             <li>
                 <a class="filter_quality_attribute"
-                   id="filter_quality_attribute_%(attribute_id)s" 
+                   id="filter_quality_attribute_{attribute_id}" 
                    href="#">
-                    <i class=""></i> Alleen %(attribute_name)s-metingen
+                    <i class=""></i> Alleen {attribute_name}-metingen
                 </a>
             </li>'''
-        menu_items = [menu_item_template % \
-                      dict(attribute_id=attribute.id_string(),
-                           attribute_name=attribute.name()) \
-                      for attribute in quality_attributes]
+        menu_items = [menu_item_template.format(attribute_id=attribute.id_string(),
+                                                attribute_name=attribute.name()) \
+                      for attribute in sorted(quality_attributes)]
         return '\n'.join(menu_items)
 
     @staticmethod
     def __team_filter_menu(report):
         ''' Return the menu for filtering on team. '''
-        team_filter_menu_items = []
-        for team in report.teams():
-            team_filter_menu_items.append('<li><a class="filter_team" ' \
-                'id="filter_team_%(team_id)s" href="#"><i class=""></i> ' \
-                "Alleen metingen van team %(team)s</a></li>" % \
-                dict(team=team, team_id=team.id_string()))
+        team_filter_template = '<li><a class="filter_team" ' \
+                'id="filter_team_{team_id}" href="#"><i class=""></i> ' \
+                "Alleen metingen van team {team}</a></li>"
+        team_filter_menu_items = [team_filter_template.format(team=team,
+                                                              team_id=team.id_string()) \
+                                  for team in report.teams()]
         return '\n'.join(team_filter_menu_items)
 
     def __trend_data(self, meta_metrics_section):
@@ -190,8 +197,9 @@ class HTMLFormatter(base_formatter.Formatter):
             percentages = self.__percentages(history_record, green_id, red_id,
                                              yellow_id, grey_id)
             history_table.append(\
-                '[new Date(%s, %s, %s, %s, %s, %s), %s, %s, %s, %s]' % \
-                (date_and_time + percentages))
+                '[new Date({}, {}, {}, {}, {}, {}), {}, {}, {}, {}]'.format(
+                                        *(date_and_time + percentages)
+                        ))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod
@@ -241,8 +249,8 @@ class HTMLFormatter(base_formatter.Formatter):
         kwargs = kwargs_by_status[status]
         qualifier = 'tenminste ' if metric.status_start_date() <= \
                     datetime.datetime(2013, 3, 19, 23, 59, 59) else ''
-        kwargs['hover'] += ' (sinds %s%s)' % (qualifier,
-            utils.format_date(metric.status_start_date(), year=True))
+        kwargs['hover'] += ' (sinds {qual}{date})'.format(qual=qualifier,
+            date=utils.format_date(metric.status_start_date(), year=True))
         kwargs['status'] = metric.status()
         kwargs['metric_id'] = metric.id_string()
         kwargs['section'] = metric.id_string().split('-')[0]
@@ -254,7 +262,7 @@ class HTMLFormatter(base_formatter.Formatter):
             attribute_id = 'filter_quality_attribute_' + attribute_id
         kwargs['quality_attribute'] = attribute_id
         kwargs['comment'] = self.__format_metric_comment(metric)
-        kwargs['teams'] = ','.join(['filter_team_%s' % team.id_string() \
+        kwargs['teams'] = ','.join(['filter_team_{team}'.format(team=team.id_string()) \
                                     for team in metric.responsible_teams()])
         return kwargs
 
@@ -287,59 +295,66 @@ class HTMLFormatter(base_formatter.Formatter):
             if url_label:
                 url_label += ': '
             sep = ', '
-            text = '%(text)s [%(url_label)s%(links)s]' % dict(text=text,
+            text = u'{text} [{url_label}{links}]'.format(text=text,
                 url_label=url_label, links=sep.join(sorted(links)))
         return text
 
     @staticmethod
     def __format_subtitle(subtitle):
         ''' Return a HTML formatted subtitle. '''
-        return ' <small>%s</small>' % subtitle if subtitle else ''
+        template = u' <small>{sub}</small>'
+        return template.format(sub=subtitle) if subtitle else ''
 
     @staticmethod
     def __format_url(anchor, href):
         ''' Return a HTML formatted url. '''
-        return '<a href="%(href)s" target="_blank">%(anchor)s</a>' % \
-            dict(href=href, anchor=utils.html_escape(anchor))
+        template = u'<a href="{href}" target="_blank">{anchor}</a>'
+        return template.format(href=href, anchor=utils.html_escape(anchor))
 
     @classmethod
     def __format_product_links(cls, report, product):
         ''' Return a HTML formatted paragraph with the dependencies and users
             of the product. '''
-        result = ''
         if not product:
-            return result
-        product_label = '%s:%s' % (product.name(),
-                                   product.product_version() or 'trunk')
+            return ''
+        product_label = '{prod}:{ver}'.format(prod=product.name(),
+                                   ver=product.product_version() or 'trunk')
         dependencies = product.dependencies(recursive=False)
         users = [(user.name(), user.product_version()) \
                   for user in product.users(recursive=False)]
+        product_template = '<p>{prod} {rel}: {links}</p>'
+        result = []
         for linked_products, link_text in ((dependencies, 'gebruikt'),
                                            (users, 'wordt gebruikt door')):
             if not linked_products:
                 continue
-            links = []
-            for name, version in sorted(linked_products):
-                link = cls.__format_product_link(report, name, version)
-                links.append(link)
-            result += '<p>%s %s: %s</p>\n' % (product_label, link_text,
-                                              ', '.join(links))
-        return result
+            links = [cls.__format_product_link(report, name, version) \
+                     for name, version in sorted(linked_products)]
+            result.append(product_template.format(prod=product_label,
+                                                  rel=link_text,
+                                                  links=', '.join(links)))
+        if result:
+            result.append('')
+        return '\n'.join(result)
 
     @classmethod
     def __format_product_meta_data(cls, product):
         ''' Return a HTML formatted paragraph with meta data about the 
             product. '''
-        result = ''
         if not product:
-            return result
-        product_label = '%s:%s' % (product.name(),
-                                   product.product_version() or 'trunk')
+            return ''
+        product_label = '{prod}:{ver}'.format(prod=product.name(),
+                                   ver=product.product_version() or 'trunk')
+        latest_release_template    = '<p>{prod} is de meest recente versie.</p>'
+        release_candidate_template = '<p>{prod} is een releasekandidaat.</p>'
+        result = []
         if product.is_latest_release():
-            result += '<p>%s is de meest recente versie.</p>\n' % product_label
+            result.append(latest_release_template.format(prod=product_label))
         if product.is_release_candidate():
-            result += '<p>%s is een releasekandidaat.</p>\n' % product_label
-        return result
+            result.append(release_candidate_template.format(prod=product_label))
+        if result:
+            result.append('')
+        return '\n'.join(result)
 
     @classmethod
     def __format_product_link(cls, report, product_name, product_version):
@@ -349,48 +364,51 @@ class HTMLFormatter(base_formatter.Formatter):
         color = section.color()
         color = 'gold' if color == 'yellow' else color
         section_id = section.id_prefix()
-        return '<span class="link_section_%s" title="%s:%s" ' \
-               'style="color: %s;"></span>' % (section_id, product_name, 
-                                               product_version or 'trunk', 
-                                               color)
+        return '<span class="link_section_{sec}" title="{prd}:{ver}" ' \
+               'style="color: {clr};"></span>'.format(sec=section_id,
+                                                      prd=product_name,
+                                                      ver=product_version or 'trunk',
+                                                      clr=color)
 
     @staticmethod
     def __dashboard(report):
         ''' Return a HTML formatted dashboard. '''
-        dashboard = '<table width="100%%" border="1">\n'
         table_indent = ' ' * 24
-        tr_indent = table_indent + '    '
-        td_indent = tr_indent + '    '
-        dashboard += tr_indent + \
-            '<tr style="color: white; font-weight: bold;">\n'
+        tr_indent = table_indent + ' '*4
+        td_indent = tr_indent + ' '*4
+        th_template = td_indent + '<th colspan="{span}" align="center" ' \
+                                        'bgcolor="#2c2c2c">{sec}' \
+                                  '</th>'
+        td_template = td_indent + '<td colspan={colspan} rowspan={rowspan} ' \
+                                        'align="center" bgcolor="{bg_color}">\n' \
+                                        '<div class="link_section_{ID}" title="{title}"></div>' \
+                                        '<div id="section_summary_chart_{ID}"></div>' \
+                                        '<div id="section_summary_trunk_chart_{ID}"></div>' \
+                                   '</td>'
         dashboard_header, dashboard_rows = report.dashboard()
+        dashboard = []
+        dashboard.append('<table width="100%" border="1">')
+        dashboard.append(tr_indent + '<tr style="color: white; font-weight: bold;">')
         for section_type, colspan in dashboard_header:
-            dashboard += td_indent + '<th colspan="%d" align="center" ' \
-                'bgcolor="#2c2c2c">%s</th>\n' % (colspan, section_type)
-        dashboard += tr_indent + '</tr>\n'
+            th = th_template.format(span=colspan, sec=section_type)
+            dashboard.append(th)
+        dashboard.append(tr_indent + '</tr>')
         for row in dashboard_rows:
-            dashboard += tr_indent + '<tr>\n'
+            dashboard.append(tr_indent + '<tr>')
             for column in row:
                 try:
                     section_id = column[0].short_name()
                 except AttributeError:
                     section_id = column[0].upper()
-                title = report.get_section(section_id).title() or '???'
-                row_parameters = dict(ID=section_id, title=title,
-                                      bg_color=column[1])
+                section = report.get_section(section_id)
+                title = ( section and section.title() ) or '???'
                 colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
-                row_parameters['colspan'] = colspan
-                row_parameters['rowspan'] = rowspan
-                dashboard += td_indent + '<td colspan=%(colspan)d ' \
-                    'rowspan=%(rowspan)d align="center" ' \
-                    'bgcolor="%(bg_color)s">\n' \
-                    '<div class="link_section_%(ID)s" title="%(title)s">' \
-                    '</div><div id="section_summary_chart_%(ID)s"></div>' \
-                    '<div id="section_summary_trunk_chart_%(ID)s"></div>' \
-                    '</td>\n' % row_parameters
-            dashboard += tr_indent + '</tr>\n'
-        dashboard += table_indent + '</table>'
-        return dashboard
+                td = td_template.format(ID=section_id, title=title, bg_color=column[1],
+                                        colspan=colspan, rowspan=rowspan)
+                dashboard.append(td)
+            dashboard.append(tr_indent + '</tr>')
+        dashboard.append(table_indent + '</table>')
+        return '\n'.join(dashboard)
 
     @staticmethod
     def __project_resources(report):
@@ -398,10 +416,9 @@ class HTMLFormatter(base_formatter.Formatter):
         result = []
         result.append('<ul>')
         for name, url in report.project().project_resources():
-            url_text = '<a href="%(url)s">%(url)s</a>' % dict(url=url) if url \
+            url_text = '<a href="{url}">{url}</a>'.format(url=url) if url \
                 else '<font color="red">ontbreekt</font>'
-            parameters = dict(name=name, url_text=url_text)
-            result.append('<li>%(name)s: %(url_text)s</li>' % parameters)
+            result.append('<li>{name}: {url_text}</li>'.format(name=name, url_text=url_text))
         result.append('</ul>')
         return '\n'.join(result)
 
@@ -416,11 +433,15 @@ class HTMLFormatter(base_formatter.Formatter):
             name = metric_class.name
             class_name = metric_class.__name__
             quality_attribute = metric_class.quality_attribute.name()
-            norm = metric_class.norm_template % \
-                metric_class.norm_template_default_values()
-            result.append('<tr><td>%s</td><td>%s</td>' \
-                          '<td>%s</td><td>%s</td></tr>' % (name, class_name,
-                          quality_attribute, norm))
+            try:
+                norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
+            except ValueError:
+                logging.error('Metric class %s had faulty norm template', metric_class.__name__)
+                raise
+            result.append(
+                    '<tr><td>{name}</td><td>{cls}</td><td>{qattr}</td><td>{norm}</td></tr>'.format(
+                        name=name, cls=class_name, qattr=quality_attribute, norm=norm
+                    ))
         result.append('</table>')
         return '\n'.join(result)
 
@@ -428,11 +449,11 @@ class HTMLFormatter(base_formatter.Formatter):
     def product_url(product):
         ''' Return a url to the product section in the HTML report for the
             specified product. '''
-        return 'index.html#section_%s' % product.short_name()
+        return 'index.html#section_{prd}'.format(prd=product.short_name())
 
     def __new_release_text(self):
         ''' Return a line of text if there is a new version of the software
             available. '''
         latest = self.__latest_software_version
         current = self.__current_software_version
-        return ' Versie %s is beschikbaar.' % latest if latest > current else ''
+        return ' Versie {ver} is beschikbaar.'.format(ver=latest) if latest > current else ''

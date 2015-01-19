@@ -88,14 +88,14 @@ class RiskLogTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the risk log can be measured if there is a Trello 
             board. '''
-        self.failUnless(metric.RiskLog.can_be_measured(self.__project, 
+        self.assertTrue(metric.RiskLog.can_be_measured(self.__project, 
                                                        self.__project))
 
     def test_cant_be_measured_without_risklog(self):
         ''' Test that the risk log can't be measured if there is no Trello 
             board. '''
         project = domain.Project()
-        self.failIf(metric.RiskLog.can_be_measured(project, project))
+        self.assertFalse(metric.RiskLog.can_be_measured(project, project))
 
 
 class UnreachableRiskLogTest(unittest.TestCase):
@@ -139,14 +139,14 @@ class ActionActivityTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has a 
             action list. '''
-        self.failUnless(metric.ActionActivity.can_be_measured(self.__project, 
+        self.assertTrue(metric.ActionActivity.can_be_measured(self.__project, 
                                                               self.__project))
 
     def test_cant_be_measured(self):
         ''' Test that the metric can not be measured when the project has no 
             action list. '''
         project = domain.Project()
-        self.failIf(metric.ActionActivity.can_be_measured(project, project))
+        self.assertFalse(metric.ActionActivity.can_be_measured(project, project))
 
 
 class UnreachableActionActivityTest(unittest.TestCase):
@@ -193,19 +193,19 @@ class ActionAgeTest(unittest.TestCase):
 
     def test_url_label(self):
         ''' Test that the metric has a url label. '''
-        self.failUnless(self.__metric.url_label())
+        self.assertTrue(self.__metric.url_label())
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has a 
             action list. '''
-        self.failUnless(metric.ActionAge.can_be_measured(self.__project, 
+        self.assertTrue(metric.ActionAge.can_be_measured(self.__project, 
                                                          self.__project))
 
     def test_cant_be_measured(self):
         ''' Test that the metric can not be measured when the project has no 
             action list. '''
         project = domain.Project()
-        self.failIf(metric.ActionAge.can_be_measured(project, project))
+        self.assertFalse(metric.ActionAge.can_be_measured(project, project))
 
 
 class UnreachableActionAgeTest(unittest.TestCase):
@@ -295,20 +295,20 @@ class OpenBugsTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has Jira,
             and Jira has an open bugs query. '''
-        self.failUnless(metric.OpenBugs.can_be_measured(self.__project,
+        self.assertTrue(metric.OpenBugs.can_be_measured(self.__project,
                                                         self.__project))
 
     def test_cant_be_measured_without_jira(self):
         ''' Test that the metric cannot be measured without Jira. '''
         project = domain.Project()
-        self.failIf(metric.OpenBugs.can_be_measured(self.__project, project))
+        self.assertFalse(metric.OpenBugs.can_be_measured(self.__project, project))
 
     def test_cant_be_measured_without_open_bugs_query(self):
         ''' Test that the metric cannot be measured without an open bugs query 
             in Jira. '''
         project = domain.Project(metric_sources={metric_source.Jira: 
                                                  FakeJira(has_queries=False)})
-        self.failIf(metric.OpenBugs.can_be_measured(self.__project, project))
+        self.assertFalse(metric.OpenBugs.can_be_measured(self.__project, project))
 
 
 class OpenSecurityBugsTest(unittest.TestCase):
@@ -333,13 +333,13 @@ class OpenSecurityBugsTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has Jira,
             and Jira has an open bugs query. '''
-        self.failUnless(metric.OpenSecurityBugs.can_be_measured(self.__project,
+        self.assertTrue(metric.OpenSecurityBugs.can_be_measured(self.__project,
                                                                 self.__project))
 
     def test_cant_be_measured_without_jira(self):
         ''' Test that the metric cannot be measured without Jira. '''
         project = domain.Project()
-        self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project, 
+        self.assertFalse(metric.OpenSecurityBugs.can_be_measured(self.__project, 
                                                             project))
 
     def test_cant_be_measured_without_open_bugs_query(self):
@@ -347,7 +347,7 @@ class OpenSecurityBugsTest(unittest.TestCase):
             in Jira. '''
         jira = FakeJira(has_queries=False)
         project = domain.Project(metric_sources={metric_source.Jira: jira})
-        self.failIf(metric.OpenSecurityBugs.can_be_measured(self.__project,
+        self.assertFalse(metric.OpenSecurityBugs.can_be_measured(self.__project,
                                                             project))
 
 
@@ -380,13 +380,13 @@ class BlockingTestIssuesTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured when the project has Jira,
             and Jira has an blocking test issues query. '''
-        self.failUnless(metric.BlockingTestIssues.can_be_measured( \
+        self.assertTrue(metric.BlockingTestIssues.can_be_measured( \
                         self.__project, self.__project))
 
     def test_cant_be_measured_without_jira(self):
         ''' Test that the metric cannot be measured without Jira. '''
         project = domain.Project()
-        self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project, 
+        self.assertFalse(metric.BlockingTestIssues.can_be_measured(self.__project, 
                                                               project))
 
     def test_cant_be_measured_without_open_bugs_query(self):
@@ -394,5 +394,5 @@ class BlockingTestIssuesTest(unittest.TestCase):
             in Jira. '''
         jira = FakeJira(has_queries=False)
         project = domain.Project(metric_sources={metric_source.Jira: jira})
-        self.failIf(metric.BlockingTestIssues.can_be_measured(self.__project,
+        self.assertFalse(metric.BlockingTestIssues.can_be_measured(self.__project,
                                                               project))

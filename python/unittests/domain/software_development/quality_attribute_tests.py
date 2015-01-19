@@ -28,12 +28,12 @@ class QualityAttributeTest(unittest.TestCase):
 
     def test_valid(self):
         ''' Test that the attribute is True when casted to boolean. '''
-        self.failUnless(domain.QualityAttribute('id'))
+        self.assertTrue(domain.QualityAttribute('id'))
 
     def test_not_valid(self):
         ''' Test that the attribute is False when it doesn't have a id 
             string. '''
-        self.failIf(domain.QualityAttribute(''))
+        self.assertFalse(domain.QualityAttribute(''))
 
     def test_equality(self):
         ''' Test that two quality attributes are equal when their id strings
@@ -43,5 +43,5 @@ class QualityAttributeTest(unittest.TestCase):
 
     def test_sort(self):
         ''' Test that quality attributes are sorted by id string. '''
-        self.failUnless(domain.QualityAttribute('a', name='B') < \
+        self.assertTrue(domain.QualityAttribute('a', name='B') < \
                         domain.QualityAttribute('b', name='A'))

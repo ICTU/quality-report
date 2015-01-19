@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-from qualitylib.metric_source import PerformanceReport
+from qualitylib.metric_source import JMeter
 
 
 HTML = '''
@@ -113,8 +113,8 @@ HTML = '''
 </table>'''
 
 
-class PerformanceReportUnderTest(PerformanceReport):
-    ''' Override the performance report to return the url as report 
+class JMeterUnderTest(JMeter):
+    ''' Override the JMeter performance report to return the url as report
         contents.'''
     def url_open(self, url):
         return HTML
@@ -124,12 +124,12 @@ class PerformanceReportUnderTest(PerformanceReport):
         return ['http://report/1'] if product != 'product' else []
 
 
-class PerformanceReportTest(unittest.TestCase):
+class JMeterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the JMeter performance report metric source. '''
     
     def setUp(self):  # pylint: disable=invalid-name
-        self.__performance_report = PerformanceReportUnderTest('http://report/')
+        self.__performance_report = JMeterUnderTest('http://report/')
         
     def test_url(self):
         ''' Test that the url is correct. '''
@@ -158,7 +158,7 @@ class PerformanceReportTest(unittest.TestCase):
         ''' Test that the number of queries violating the wished response
             times is zero. '''
         self.assertEqual(0, self.__performance_report.
-                         queries_violating_wished_reponsetime(('01', 'lrk-pp'), 
+                         queries_violating_wished_responsetime(('01', 'lrk-pp'),
                                                               '12.5.5'))
         
     def test_date_of_last_measurement(self):

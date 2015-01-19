@@ -15,7 +15,7 @@ limitations under the License.
 '''
 
 import unittest
-from qualitylib import metric, domain, metric_source
+from qualitylib import metric, domain, metric_source, requirement
 
 
 class FakeSonar(object):
@@ -76,22 +76,40 @@ class TotalLOCTest(unittest.TestCase):
                             metric_source.History: FakeHistory()})
         product = domain.Product(project, 'PR', name='FakeSubject',
                                  metric_source_ids={sonar: 'sonar id'})
-        product_without_sonar_id = domain.Product(project, 'PW', 
+        product_without_sonar_id = domain.Product(project, 'PW',
                                                   name='ProductWithoutSonarId')
-        self.__metric = metric.TotalLOC(subject=[product, product,
-                                                 product_without_sonar_id],
-                                        project=project)
+        project.add_product(product)
+        # Add products that should be ignored:
+        project.add_product(product_without_sonar_id)
+        project.add_product_with_version('FakeSubject', '1.1')
+        self.__metric = metric.TotalLOC(project=project)
 
     def test_value(self):
         ''' Test that the value of the metric equals the sum of the NCLOC 
             returned by Sonar. '''
-        self.assertEqual(FakeSonar().ncloc() * 2, self.__metric.value())
+        self.assertEqual(FakeSonar().ncloc(), self.__metric.value())
  
     def test_url(self):
         ''' Test that the url refers to Sonar. '''
         self.assertEqual(dict(Sonar=FakeSonar().url()), self.__metric.url())
 
+    def test_report(self):
+        ''' Test that the report is correct. '''
+        self.assertEqual('Het totaal aantal LOC voor alle producten is '
+                         '123 regels code.', self.__metric.report())
+
     def test_recent_history(self):
-        ''' Test that the recent history substracts the minimum value of 
+        ''' Test that the recent history subtracts the minimum value of
             each value so that more data can be plotted. '''
         self.assertEqual([0, 100], self.__metric.recent_history())
+
+    def test_should_be_measured(self):
+        ''' Test that the metric should be measured if the project
+            requires it. '''
+        project = domain.Project(
+            requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY])
+        self.assertTrue(metric.TotalLOC.should_be_measured(project))
+
+    def test_should_not_be_measured(self):
+        ''' Test that the metric should not be measured by default. '''
+        self.assertFalse(metric.TotalLOC.should_be_measured(domain.Project()))

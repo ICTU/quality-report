@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
 
 class SonarProductInfo(object):
@@ -45,3 +46,17 @@ class SonarProductInfo(object):
                 if component_sonar_info.sonar_id():
                     sonar_ids.add(component_sonar_info.sonar_id())
         return sonar_ids
+
+    def latest_version(self):
+        ''' Return the latest version of the product. '''
+        version = self.__product.product_version()
+        if version:
+            return version
+        elif self.sonar_id():
+            # Product is a branch or trunk version, get the SNAPSHOT version
+            # number from Sonar
+            sonar_version = self.__sonar.version(self.sonar_id())
+            branch = self.__product.product_branch()
+            return branch + ':' + sonar_version if branch else sonar_version
+        else:
+            return ''

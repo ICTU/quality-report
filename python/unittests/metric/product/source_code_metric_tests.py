@@ -109,8 +109,10 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.CyclomaticComplexity.norm_template % \
-            metric.CyclomaticComplexity.norm_template_default_values())
+        self.assertTrue(
+            metric.CyclomaticComplexity.norm_template.format(
+                **metric.CyclomaticComplexity.norm_template_default_values()
+            ))
 
 
 class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
@@ -138,8 +140,10 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.LongMethods.norm_template % \
-            metric.LongMethods.norm_template_default_values())
+        self.assertTrue(
+            metric.LongMethods.norm_template.format(
+                **metric.LongMethods.norm_template_default_values()
+            ))
 
 
 class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
@@ -165,5 +169,7 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.ManyParameters.norm_template % \
-            metric.ManyParameters.norm_template_default_values())
+        self.assertTrue(
+            metric.ManyParameters.norm_template.format(
+                **metric.ManyParameters.norm_template_default_values()
+            ))

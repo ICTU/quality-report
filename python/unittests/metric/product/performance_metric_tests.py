@@ -24,12 +24,12 @@ class FakePerformanceReport(object):
     # pylint: disable=unused-argument, invalid-name
 
     def __init__(self, queries=0, queries_violating_max_responsetime=0,
-                 queries_violating_wished_reponsetime=0):
+                 queries_violating_wished_responsetime=0):
         self.__queries = queries
         self.__queries_violating_max_responsetime = \
             queries_violating_max_responsetime
-        self.__queries_violating_wished_reponsetime = \
-            queries_violating_wished_reponsetime
+        self.__queries_violating_wished_responsetime = \
+            queries_violating_wished_responsetime
 
     def queries(self, *args):
         ''' Return the number of queries for the product. '''
@@ -40,10 +40,10 @@ class FakePerformanceReport(object):
             response times. '''
         return self.__queries_violating_max_responsetime
 
-    def queries_violating_wished_reponsetime(self, *args):
+    def queries_violating_wished_responsetime(self, *args):
         ''' Return the number of queries that violate the wished response 
             times . '''
-        return self.__queries_violating_wished_reponsetime
+        return self.__queries_violating_wished_responsetime
     
     @staticmethod
     def urls(*args):
@@ -99,7 +99,7 @@ class ResponseTimesTestsMixin(object):
         self.__subject = FakeSubject(self.product_version)
         report = FakePerformanceReport(queries=10, 
             queries_violating_max_responsetime=self.expected_max_violations,
-            queries_violating_wished_reponsetime=self.expected_wish_violations)
+            queries_violating_wished_responsetime=self.expected_wish_violations)
         self.__project = domain.Project(
             metric_sources={metric_source.PerformanceReport: report})
         self._metric = metric.ResponseTimes(subject=self.__subject,
@@ -107,14 +107,14 @@ class ResponseTimesTestsMixin(object):
 
     def test_can_be_measured(self):
         ''' Test that the metric can be measured. '''
-        self.failUnless(metric.ResponseTimes.can_be_measured(self.__subject,
+        self.assertTrue(metric.ResponseTimes.can_be_measured(self.__subject,
                                                              self.__project))
 
     def test_cant_be_measured(self):
         ''' Test that the metric can't be measured without performance 
             report. '''
         subject = FakeSubject(performance_report_id=None)
-        self.failIf(metric.ResponseTimes.can_be_measured(subject, 
+        self.assertFalse(metric.ResponseTimes.can_be_measured(subject, 
                                                          domain.Project()))
 
     def test_value(self):
@@ -143,7 +143,7 @@ class ResponseTimesTestsMixin(object):
 
     def test_report(self):
         ''' Test the report is correct. '''
-        self.failUnless(self._metric.report().startswith(self.expected_report))
+        self.assertTrue(self._metric.report().startswith(self.expected_report))
 
     def test_missing_performance_report(self):
         ''' Test the metric report when the performance report is missing. '''
@@ -165,7 +165,7 @@ class ResponseTimesTestsMixin(object):
             metric_sources={
                 metric_source.PerformanceReport: MissingPerformanceReport()})
         rt_metric = metric.ResponseTimes(subject=FakeSubject(), project=project)
-        self.failUnless(rt_metric.report().startswith('Er is geen ' \
+        self.assertTrue(rt_metric.report().startswith('Er is geen ' \
             'performancetestrapport voor'))
 
 

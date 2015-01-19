@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>%(title)s</title>
+        <title>{title}</title>
         <meta http-equiv="cache-control" content="no-cache" />
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="expires" content="0" />
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <style type="text/css">
-            body {
+            body {{
                 padding-top: 60px;
                 padding-bottom: 40px;
-            }
+            }}
         </style>
         <link href="css/bootstrap-responsive.min.css" rel="stylesheet" />
         <link href="css/quality_report.css" rel="stylesheet" />
-        <style type="text/css" media="print">.navbar { visibility: hidden; }</style>
+        <style type="text/css" media="print">.navbar {{ visibility: hidden; }}</style>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -22,14 +22,14 @@
         <script type="text/javascript" src="js/cookie.js"></script>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript">
-            google.setOnLoadCallback(function() {create_dashboard(%(metrics)s, %(history)s)});
+            google.setOnLoadCallback(function() {{create_dashboard({metrics}, {history})}});
         </script>
     </head>
     <body>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
-                    <a class="brand" href="#">%(title)s</a>
+                    <a class="brand" href="#">{title}</a>
                     <ul class="nav" role="navigation">
                         <li class="dropdown">
                             <a id="navigation_menu" class="dropdown-toggle" 
@@ -44,7 +44,7 @@
                                         Dashboard
                                     </a>
                                 </li>
-                                %(section_menu)s
+                                {section_menu}
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -120,7 +120,7 @@
                                         <i class=""></i> KPI's voor alle kwaliteitsattributen
                                     </a>
                                 </li>
-                                %(quality_attribute_filter_menu)s
+                                {quality_attribute_filter_menu}
                                 <li class="divider"></li>
                                 <li>
                                     <a class="filter_team" 
@@ -129,7 +129,7 @@
                                         <i class=""></i> KPI's voor alle teams
                                     </a>
                                 </li>
-                                %(team_filter_menu)s
+                                {team_filter_menu}
                             </ul>
                         </li>
                         <li>
@@ -140,7 +140,7 @@
                         </li>
                     </ul>
                     <p class="navbar-text pull-right">
-                        Rapportage van %(date)s
+                        Rapportage van {date}
                     </p>
                 </div><!-- /.container-fluid -->
             </div><!-- /.navbar-inner -->
@@ -153,7 +153,7 @@
             </div>
             <div class="modal-body">
                 <p>
-                    <em>Quality-report versie %(current_version)s.%(new_version_available)s</em>
+                    <em>Quality-report versie {current_version}.{new_version_available}</em>
                 <p>
                     Het ICTU kwaliteitssysteem is een geautomatiseerd systeem 
                     dat frequent (momenteel elke 15 minuten tijdens
@@ -233,7 +233,7 @@
                 <h4>
                   Lijst van metrieken die het kwaliteitssysteem kan meten
                 </h4>
-                %(metric_classes)s
+                {metric_classes}
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
@@ -259,7 +259,7 @@
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="piecharts_tab">
-                                %(dashboard)s
+                                {dashboard}
                             </div>
                             <div class="tab-pane" id="dependency_tab">
                                 <!-- put an embed tag inside the object tag to 
@@ -273,7 +273,7 @@
                             </div>
                             <div class="tab-pane" id="project_resources_tab">
                                 <h4>Project resources</h4>
-                                %(project_resources)s
+                                {project_resources}
                                 <h4>Geconfigureerde metriekbronnen</h4>
                                 <p>Onderstaande figuur laat zien welke metriekbronnen
                                 zijn geconfigureerd in de project definitie van dit project. Groene

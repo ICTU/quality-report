@@ -13,18 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import SonarDashboardMetricMixin
-from qualitylib.metric.quality_attributes import CODE_QUALITY
+
+from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..quality_attributes import CODE_QUALITY
+from ...domain import LowerIsBetterMetric
 
 
 class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the amount of violations reported by Sonar. '''
-    norm_template = 'Maximaal %(target)d %(violation_type)s violations. ' \
-        'Meer dan %(low_target)d %(violation_type)s violations is rood.'
-    template = '%(name)s heeft %(value)d %(violation_type)s violations.'
+    norm_template = 'Maximaal {target} {violation_type} violations. ' \
+        'Meer dan {low_target} {violation_type} violations is rood.'
+    template = '{name} heeft {value} {violation_type} violations.'
     quality_attribute = CODE_QUALITY
     violation_type = 'Subclass responsibility'
 

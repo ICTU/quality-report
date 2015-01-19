@@ -102,7 +102,7 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         product = FakeSubject(self.__sonar)
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar})
-        self.failUnless(metric.FailingUnittests.can_be_measured(product,
+        self.assertTrue(metric.FailingUnittests.can_be_measured(product,
                                                                 project))
 
     def test_cant_be_measured_without_unittests(self):
@@ -111,14 +111,14 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         product = FakeSubject()
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar})
-        self.failIf(metric.FailingUnittests.can_be_measured(product, project))
+        self.assertFalse(metric.FailingUnittests.can_be_measured(product, project))
 
     def test_cant_be_measured_without_sonar(self):
         ''' Test that the metric can only be measured when the project has
             Sonar. '''
         product = FakeSubject(self.__sonar)
         project = domain.Project()
-        self.failIf(metric.FailingUnittests.can_be_measured(product, project))
+        self.assertFalse(metric.FailingUnittests.can_be_measured(product, project))
 
 
 class UnittestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
@@ -149,7 +149,7 @@ class UnittestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         product = FakeSubject(self.__sonar)
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar})
-        self.failUnless(metric.UnittestLineCoverage.can_be_measured(product, 
+        self.assertTrue(metric.UnittestLineCoverage.can_be_measured(product, 
                                                                     project))
 
     def test_cant_be_measured_without_unittests(self):
@@ -158,7 +158,7 @@ class UnittestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar})
         product = domain.Product(project)
-        self.failIf(metric.UnittestLineCoverage.can_be_measured(product,
+        self.assertFalse(metric.UnittestLineCoverage.can_be_measured(product,
                                                                 project))
 
     def test_cant_be_measured_without_sonar(self):
@@ -166,7 +166,7 @@ class UnittestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
             Sonar. '''
         product = FakeSubject(self.__sonar)
         project = domain.Project()
-        self.failIf(metric.UnittestLineCoverage.can_be_measured(product,
+        self.assertFalse(metric.UnittestLineCoverage.can_be_measured(product,
                                                                 project))
 
 
@@ -197,7 +197,7 @@ class UnittestBranchCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         product = FakeSubject(self.__sonar)
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar})
-        self.failUnless(metric.UnittestBranchCoverage.can_be_measured(product, 
+        self.assertTrue(metric.UnittestBranchCoverage.can_be_measured(product, 
                                                                      project))
 
     def test_cant_be_measured_without_unittests(self):
@@ -206,7 +206,7 @@ class UnittestBranchCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         product = FakeSubject()
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar})
-        self.failIf(metric.UnittestBranchCoverage.can_be_measured(product,
+        self.assertFalse(metric.UnittestBranchCoverage.can_be_measured(product,
                                                                   project))
 
     def test_cant_be_measured_without_sonar(self):
@@ -214,5 +214,5 @@ class UnittestBranchCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
             Sonar. '''
         product = FakeSubject(self.__sonar)
         project = domain.Project()
-        self.failIf(metric.UnittestBranchCoverage.can_be_measured(product,
+        self.assertFalse(metric.UnittestBranchCoverage.can_be_measured(product,
                                                                   project))

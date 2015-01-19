@@ -13,10 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib import domain, metric_source
-from qualitylib.metric.quality_attributes import PERFORMANCE
+
 import datetime
+
+
+from ..quality_attributes import PERFORMANCE
+from ... import domain, metric_source
 
 
 class ResponseTimes(domain.Metric):
@@ -28,22 +32,22 @@ class ResponseTimes(domain.Metric):
     norm_template = 'Geen van de performancetestqueries ' \
         'overschrijdt de gewenste responsetijd. Als een of meer queries de ' \
         'maximum responsetijd overschrijden is de score rood, anders geel.'
-    above_target_template = 'Alle %(nr_queries)d performancetestqueries ' \
-        'draaien in 90%% van de gevallen binnen de gewenste responsetijd ' \
-        '(meting %(date)s, %(age)s geleden).'
-    below_max_target_template = '%(value_max)d van de %(nr_queries)d ' \
-        'performancetestqueries draaien niet in 90%% van de gevallen binnen ' \
-        'de maximale responsetijd (meting %(date)s, %(age)s geleden).'
-    below_wish_target_template = '%(value_wish)d van de %(nr_queries)d ' \
-        'performancetestqueries draaien niet in 90%% van de gevallen binnen ' \
-        'de gewenste responsetijd (meting %(date)s, %(age)s geleden).'
-    below_both_targets_template = '%(value_max)d van de %(nr_queries)d ' \
-        'performancetestqueries draaien niet in 90%% van de gevallen binnen ' \
-        'de maximale responsetijd en %(value_wish)d van de %(nr_queries)d ' \
-        'queries draaien niet in 90%% van de gevallen binnen de gewenste ' \
-        'responsetijd (meting %(date)s, %(age)s geleden).'
+    above_target_template = 'Alle {nr_queries} performancetestqueries ' \
+        'draaien in 90% van de gevallen binnen de gewenste responsetijd ' \
+        '(meting {date}, {age} geleden).'
+    below_max_target_template = '{value_max} van de {nr_queries} ' \
+        'performancetestqueries draaien niet in 90% van de gevallen binnen ' \
+        'de maximale responsetijd (meting {date}, {age} geleden).'
+    below_wish_target_template = '{value_wish} van de {nr_queries} ' \
+        'performancetestqueries draaien niet in 90% van de gevallen binnen ' \
+        'de gewenste responsetijd (meting {date}, {age} geleden).'
+    below_both_targets_template = '{value_max} van de {nr_queries} ' \
+        'performancetestqueries draaien niet in 90% van de gevallen binnen ' \
+        'de maximale responsetijd en {value_wish} van de {nr_queries} ' \
+        'queries draaien niet in 90% van de gevallen binnen de gewenste ' \
+        'responsetijd (meting {date}, {age} geleden).'
     missing_report_template = 'Er is geen performancetestrapport voor ' \
-        '%(name)s:%(version)s.'
+        '{name}:{version}.'
     perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
@@ -60,9 +64,9 @@ class ResponseTimes(domain.Metric):
             self.norm_template = 'Geen van de ' \
                 'performancetestqueries overschrijdt de gewenste ' \
                 'responsetijd en de performancemeting is niet ouder dan ' \
-                '%(old_age)s. Als een of meer queries de maximum ' \
+                '{old_age}. Als een of meer queries de maximum ' \
                 'responsetijd overschrijden of als de meting ouder is dan ' \
-                '%(max_old_age)s, is de score rood, anders geel.'
+                '{max_old_age}, is de score rood, anders geel.'
 
     def value(self):
         return None  # We use max_violations and wish_violations as value
@@ -73,14 +77,14 @@ class ResponseTimes(domain.Metric):
     def __max_violations(self):
         ''' The number of performance queries that is slower than the maximum
             response time. '''
-        return self.__performance_report.queries_violating_max_responsetime(\
-                                                        *self.__product_id())
+        return self.__performance_report.\
+            queries_violating_max_responsetime(*self.__product_id())
 
     def __wish_violations(self):
         ''' The number of performance queries that is slower than the
             wished for response time. '''
-        return self.__performance_report.queries_violating_wished_reponsetime(\
-                                                    *self.__product_id())
+        return self.__performance_report.\
+            queries_violating_wished_responsetime(*self.__product_id())
 
     def _is_perfect(self):
         return self.__max_violations() == self.__wish_violations() == 0 and \
@@ -129,7 +133,7 @@ class ResponseTimes(domain.Metric):
         total = len(urls)
         labeled_urls = {}
         for index, url in enumerate(sorted(urls)):
-            label = 'Wekelijkse performancemeting (%d/%d)' % (index + 1, total)
+            label = 'Wekelijkse performancemeting ({}/{})'.format(index + 1, total)
             labeled_urls[label] = url
         return labeled_urls
 

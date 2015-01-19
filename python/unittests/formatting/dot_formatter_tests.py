@@ -75,7 +75,7 @@ class MetricClassFormatterTest(CommonDotFormatterTestsMixin, unittest.TestCase):
 
     def test_prefix(self):
         ''' Test that the formatter returns the correct prefix. '''
-        self.failUnless(' rankdir=LR;' in self._formatter.prefix(None))
+        self.assertTrue(' rankdir=LR;' in self._formatter.prefix(None))
 
     def test_body(self):
         ''' Test that the metrics of the report are listed. '''

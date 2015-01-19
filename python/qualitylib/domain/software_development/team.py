@@ -13,8 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain.measurement.measurable import MeasurableObject
+
+from ..measurement.measurable import MeasurableObject
 
 
 class Team(MeasurableObject):
@@ -69,7 +71,7 @@ class Team(MeasurableObject):
         ''' Return the resources of the team. '''
         resources = []
         for release_archive in self.release_archives():
-            resources.append(('Release archief team %s' % self.name(), 
+            resources.append(('Release archief team {team}'.format(team=self.name()), 
                               release_archive.url()))
         for member in self.members():
             resources.append((member.name(), member.url()))

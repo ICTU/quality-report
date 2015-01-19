@@ -13,11 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.metric_source import beautifulsoup
-from qualitylib import utils, domain, metric_info
+
 import logging
 import urllib2
+
+
+from . import beautifulsoup
+from .. import utils, domain, metric_info
 
 
 class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
@@ -27,7 +31,7 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __init__(self, *args, **kwargs):
         self.__sonar = kwargs.pop('sonar')
-        self.__subversion = kwargs.pop('subversion')
+        self.__vcs = kwargs.pop('version_control_system')
         super(Pom, self).__init__(*args, **kwargs)
 
     @utils.memoized
@@ -191,7 +195,7 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         return sonar_product_info.sonar_id()
 
     def __product_svn_path(self, product):
-        ''' Return the product's Subversion path. '''
-        subversion_product_info = metric_info.SubversionProductInfo( \
-            self.__subversion, product)
-        return subversion_product_info.svn_path()
+        ''' Return the product's version control system path. '''
+        vcs_product_info = metric_info.VersionControlSystemProductInfo( \
+            self.__vcs, product)
+        return vcs_product_info.vcs_path()

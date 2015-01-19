@@ -13,19 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.metric_source import url_opener
-from qualitylib import utils, domain
+
 import datetime
 import re
 import urllib2
 import logging
 
 
+from . import url_opener
+from .. import utils, domain
+
+
 class UnknownAge(object):  # pylint: disable=too-few-public-methods
     ''' Fake age that is larger than any concrete age. '''
 
-    def __gt__(self, other):
+    def __gt__(self, other):  # pylint: disable=unused-argument
         return True
 
     days = '?'
@@ -39,21 +43,27 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     jobs_api_postfix = api_postfix + \
                        '?tree=jobs[name,description,color,url,buildable]'
 
-    def __init__(self, url, username, password, job_re=''):
+    def __init__(self, url, username, password, job_re='', default_team=None):
         super(Jenkins, self).__init__(url=url, username=username, 
                                       password=password)
         self.__job_re = re.compile(job_re)
-        self.__job_url = url + 'job/%s/'
+        self.__job_url = url + 'job/{job}/'
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self.__job_api_url = self.__job_url + self.api_postfix
         self._jobs_api_url = url + self.jobs_api_postfix
+        self.__default_team = default_team
+
+    def default_team(self):
+        ''' Return the team that is responsible for Jenkins jobs that have not
+            been explicitly assigned to a team. '''
+        return self.__default_team
 
     def number_of_assigned_jobs(self):
         ''' Return the number of Jenkins jobs that has been assigned to one or
             more teams. '''
-        return len(self.__assigned_jobs())
+        return len(self.__jobs()) - len(self.__unassigned_jobs())
 
     @utils.memoized
     def number_of_jobs(self, *teams):
@@ -68,7 +78,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         for failing_job in self.__failing_jobs(*teams):
             failing_job_description = failing_job['name']
             age = self.__age_of_last_stable_build(failing_job)
-            failing_job_description += ' (%s dagen)' % age.days
+            failing_job_description += ' ({days} dagen)'.format(days=age.days)
             urls[failing_job_description] = failing_job['url']
         return urls
 
@@ -78,13 +88,13 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         for unused_job in self.__unused_jobs(*teams):
             unused_job_description = unused_job['name']
             age = self.__age_of_last_stable_build(unused_job)
-            unused_job_description += ' (%s dagen)' % age.days
+            unused_job_description += ' ({days} dagen)'.format(days=age.days)
             urls[unused_job_description] = unused_job['url']
         return urls
 
     def unassigned_jobs_url(self):
         ''' Return the urls for the unassigned Jenkins jobs. '''
-        return dict([(job['name'], job['url']) \
+        return dict([(job['name'], job['url'])
                      for job in self.__unassigned_jobs()])
 
     @utils.memoized
@@ -116,24 +126,20 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def __unused_jobs(self, *teams):
         ''' Return the Jenkins jobs that are unused. '''
         old = datetime.timedelta(days=180)
-        return [job for job in self.__jobs(*teams) if \
+        return [job for job in self.__jobs(*teams) if
                 self.__age_of_last_completed_build(job) > old]
-
-    @utils.memoized
-    def __assigned_jobs(self):
-        ''' Return the Jenkins jobs that have been assigned to one or more
-            teams. '''
-        jobs = self.__jobs()
-        return [job for job in jobs if job['description'] \
-                and "[responsible=" in job['description'].lower()]
 
     @utils.memoized
     def __unassigned_jobs(self):
         ''' Return the Jenkins jobs that have not been assigned to one or more
             teams. '''
-        jobs = self.__jobs()
-        return [job for job in jobs if not(job['description'] \
-                and "[responsible=" in job['description'].lower())]
+        if self.__default_team:
+            # Jobs not explicitly assigned belong to the default team, so all
+            # jobs are always assigned if there is a default team.
+            return []
+        else:
+            return [job for job in self.__jobs() if not(job['description']
+                    and "[responsible=" in job['description'].lower())]
 
     @utils.memoized
     def __jobs(self, *teams):
@@ -145,8 +151,11 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             jobs = list()
             for team in teams:
                 name = team.name().lower()
-                jobs.extend([job for job in all_jobs if job['description'] and \
+                jobs.extend([job for job in all_jobs if job['description'] and
                              name in job['description'].lower()])
+                if self.__default_team and team == self.__default_team:
+                    jobs.extend([job for job in all_jobs if not(job['description']
+                                and "[responsible=" in job['description'].lower())])
         else:
             jobs = all_jobs
         return jobs
@@ -163,8 +172,8 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         for art in arts:
             age = self.__age_of_last_stable_build(art)
             if age > max_age:
-                art_description = art['name'] + ' (%s dagen)' % age.days
-                unstable[art_description] = self.__job_url % art['name']
+                art_description = art['name'] + ' ({days} dagen)'.format(days=age.days)
+                unstable[art_description] = self.__job_url.format(job=art['name'])
         return unstable
 
     def __age_of_last_completed_build(self, job):
@@ -179,7 +188,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         ''' Return the age of the last completed or stable build of the job. '''
         builds_api_postfix = self.api_postfix + '?tree=id'
         try:
-            timestamp = self._api(url % job['name'] + builds_api_postfix)['id']
+            timestamp = self._api(url.format(job=job['name']) + builds_api_postfix)['id']
         except (KeyError, urllib2.HTTPError):
             return UnknownAge()
         date_text, time_text = timestamp.split('_')
@@ -265,7 +274,7 @@ class JenkinsTestReport(Jenkins):
         ''' Return the number of tests with the specified result in the test
             report of a job. '''
         job_name = self.resolve_job_name(job_name)
-        url = self.__test_report_api_url % job_name
+        url = self.__test_report_api_url.format(job=job_name)
         try:
             report_dict = self._api(url)
         except urllib2.HTTPError, reason:
@@ -276,4 +285,4 @@ class JenkinsTestReport(Jenkins):
 
     def test_report_url(self, job_name):
         ''' Return the url of the job. '''
-        return self.__test_report_url % self.resolve_job_name(job_name)
+        return self.__test_report_url.format(job=self.resolve_job_name(job_name))

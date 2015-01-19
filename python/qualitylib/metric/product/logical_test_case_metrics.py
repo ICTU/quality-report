@@ -13,13 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from __future__ import absolute_import
 
-from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import BirtMetricMixin, \
-    BirtTestDesignMetricMixin, SubversionMetricMixin
-from qualitylib.metric.quality_attributes import TEST_COVERAGE, DOC_QUALITY
-from qualitylib import utils, metric_info, metric_source
 import datetime
+
+from ..metric_source_mixin import (BirtMetricMixin, BirtTestDesignMetricMixin,
+                                   VersionControlSystemMetricMixin)
+from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY
+from ...domain import LowerIsBetterMetric
+from ... import metric_source
 
 
 class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
@@ -55,10 +57,10 @@ class LogicalTestCasesNotReviewedAndApproved(LogicalTestCaseMetric):
         not been reviewed and/or approved. '''
 
     name = 'Goedkeuring van logische testgevallen'
-    norm_template = 'Maximaal %(target)d van de logische testgevallen is ' \
-        'niet gereviewd en/of goedgekeurd. Meer dan %(low_target)d is rood.'
-    template = '%(name)s heeft %(value)d niet gereviewde en/of niet ' \
-        'goedgekeurde logische testgevallen van in totaal %(total)d ' \
+    norm_template = 'Maximaal {target} van de logische testgevallen is ' \
+        'niet gereviewd en/of goedgekeurd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet gereviewde en/of niet ' \
+        'goedgekeurde logische testgevallen van in totaal {total} ' \
         'logische testgevallen.'
     target_value = 9
     low_target_value = 15
@@ -77,11 +79,11 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
         be automated that has actually been automated. '''
 
     name = 'Automatisering van logische testgevallen'
-    norm_template = 'Maximaal %(target)d van de te automatiseren logische ' \
+    norm_template = 'Maximaal {target} van de te automatiseren logische ' \
         'testgevallen is niet geautomatiseerd. ' \
-        'Meer dan %(low_target)d is rood.'
-    template = '%(name)s heeft %(value)d nog te automatiseren logische ' \
-        'testgevallen, van in totaal %(total)d geautomatiseerde logische ' \
+        'Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} nog te automatiseren logische ' \
+        'testgevallen, van in totaal {total} geautomatiseerde logische ' \
         'testgevallen.'
     target_value = 9
     low_target_value = 15
@@ -94,7 +96,7 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
         return self._birt.nr_ltcs_to_be_automated(self._birt_id())
 
 
-class ManualLogicalTestCases(BirtMetricMixin, SubversionMetricMixin,
+class ManualLogicalTestCases(BirtMetricMixin, VersionControlSystemMetricMixin,
                              LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring how long ago the manual logical test cases
@@ -102,30 +104,24 @@ class ManualLogicalTestCases(BirtMetricMixin, SubversionMetricMixin,
 
     name = 'Tijdige uitvoering van handmatige logische testgevallen'
     norm_template = 'Alle handmatige logische testgevallen zijn minder dan ' \
-        '%(target)d dagen geleden uitgevoerd. Langer dan %(low_target)d ' \
+        '{target} dagen geleden uitgevoerd. Langer dan {low_target} ' \
         'dagen geleden is rood.'
-    template = '%(nr_manual_ltcs_too_old)d van de %(nr_manual_ltcs)d ' \
-        'handmatige logische testgevallen van %(name)s zijn te lang geleden '\
-        '(meest recente %(value)d dag(en), op %(date)s) uitgevoerd.'
-    never_template = 'De %(nr_manual_ltcs)d handmatige logische testgevallen ' \
-        'van %(name)s zijn nog nooit uitgevoerd. %(name)s is voor het laatst ' \
-        'op %(last_changed_date)s gewijzigd.'
+    template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} ' \
+        'handmatige logische testgevallen van {name} zijn te lang geleden '\
+        '(meest recente {value} dag(en), op {date}) uitgevoerd.'
+    never_template = 'De {nr_manual_ltcs} handmatige logische testgevallen ' \
+        'van {name} zijn nog niet allemaal uitgevoerd.'
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
     metric_source_classes = BirtMetricMixin.metric_source_classes + \
-        (metric_source.Subversion,)
+        (metric_source.VersionControlSystem,)
 
     @classmethod
     def can_be_measured(cls, product, project):
         return super(ManualLogicalTestCases, cls).can_be_measured(product,
                                                                   project) and \
             product.responsible_teams()
-
-    def __init__(self, *args, **kwargs):
-        super(ManualLogicalTestCases, self).__init__(*args, **kwargs)
-        self.__subversion = self._project.metric_source( \
-            metric_source.Subversion)
 
     def target(self):
         if self._subject.product_version_type() == 'release':
@@ -139,10 +135,7 @@ class ManualLogicalTestCases(BirtMetricMixin, SubversionMetricMixin,
         return self.target() + 7
 
     def value(self):
-        date = self._date()
-        if date == datetime.datetime.min:
-            date = self.__last_changed_date()
-        return (datetime.datetime.now() - date).days
+        return (datetime.datetime.now() - self._date()).days
 
     def url(self):
         return dict(Birt=self._birt.manual_test_execution_url(self._birt_id(),
@@ -160,8 +153,6 @@ class ManualLogicalTestCases(BirtMetricMixin, SubversionMetricMixin,
         parameters['nr_manual_ltcs_too_old'] = \
             self._birt.nr_manual_ltcs_too_old(self._birt_id(), self.__version(),
                                               self.target())
-        parameters['last_changed_date'] = \
-            utils.format_date(self.__last_changed_date())
         return parameters
 
     def _get_template(self):
@@ -173,9 +164,3 @@ class ManualLogicalTestCases(BirtMetricMixin, SubversionMetricMixin,
         ''' Return the version number for the product this metric is reporting 
             on. '''
         return self._subject.product_version() or 'trunk'
-
-    def __last_changed_date(self):
-        ''' Return the date the subject was last changed. '''
-        subversion_product_info = metric_info.SubversionProductInfo( \
-                self.__subversion, self._subject)
-        return subversion_product_info.last_changed_date()

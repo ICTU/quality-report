@@ -21,10 +21,17 @@ import datetime
 
 class FakeSubversion(object):  # pylint: disable=too-few-public-methods
     ''' Fake Subversion for unit tests. '''
+    metric_source_name = 'Subversion'
+
     @staticmethod
     def last_changed_date(url):  # pylint: disable=unused-argument
         ''' Return the date the url was last changed. '''
         return datetime.datetime.now() - datetime.timedelta(days=2.1)
+
+    @staticmethod
+    def normalize_path(svn_path):
+        ''' Return a normalized version of the path. '''
+        return svn_path
 
 
 class DocumentAgeTest(unittest.TestCase):
@@ -34,7 +41,8 @@ class DocumentAgeTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(
-            metric_sources={metric_source.Subversion: self.__subversion})
+            metric_sources={
+                metric_source.VersionControlSystem: self.__subversion})
         self.__document = domain.Document(name='Title', url='http://doc',
             metric_source_ids={self.__subversion: 'http://doc/'})
         self.__metric = metric.DocumentAge(subject=self.__document,
@@ -57,26 +65,26 @@ class DocumentAgeTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can be measured if the project has Subversion
             and the document has an url. '''
-        self.failUnless(metric.DocumentAge.can_be_measured(self.__document,
+        self.assertTrue(metric.DocumentAge.can_be_measured(self.__document,
                                                            self.__project))
 
     def test_cant_be_measured_without_url(self):
         ''' Test that the metric cannot be measured if the document has no 
             url. '''
         document = domain.Document(name='Title')
-        self.failIf(metric.DocumentAge.can_be_measured(document, 
+        self.assertFalse(metric.DocumentAge.can_be_measured(document, 
                                                        self.__project))
 
     def test_cant_be_measured_without_subversion(self):
         ''' Test that the metric cannot be measured without Subversion. '''
         project = domain.Project()
-        self.failIf(metric.DocumentAge.can_be_measured(self.__document,
+        self.assertFalse(metric.DocumentAge.can_be_measured(self.__document,
                                                        project))
 
     def test_norm_template_default_values(self):
         ''' Test that the right values are returned to fill in the norm 
             template. '''
-        self.failUnless(metric.DocumentAge.norm_template % \
+        self.assertTrue(metric.DocumentAge.norm_template % \
                         metric.DocumentAge.norm_template_default_values())
 
     def test_document_overrides_target(self):
@@ -104,7 +112,7 @@ class MissingDocumentAgeTest(unittest.TestCase):
         self.__document = domain.Document(name='Title', url='http://doc')
         self.__project = domain.Project(
             metric_sources={
-                metric_source.Subversion: FakeSubversionForMissingDocument()})
+                metric_source.VersionControlSystem: FakeSubversionForMissingDocument()})
         self.__metric = metric.DocumentAge(subject=self.__document,
                                            project=self.__project)
 

@@ -35,7 +35,7 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_no_target(self):
         ''' Test that there is no target for an unknown class. '''
-        self.failIf(self.__measurable.target(''.__class__))
+        self.assertFalse(self.__measurable.target(''.__class__))
 
     def test_target(self):
         ''' Test the target for a known class. '''
@@ -43,7 +43,7 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_no_low_target(self):
         ''' Test that there is no low target for an unknown class. '''
-        self.failIf(self.__measurable.low_target(''.__class__))
+        self.assertFalse(self.__measurable.low_target(''.__class__))
 
     def test_low_target(self):
         ''' Test the low target for a known class. '''
@@ -51,7 +51,7 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_no_technical_debt(self):
         ''' Test that there is no technical debt for an unknown class. '''
-        self.failIf(self.__measurable.technical_debt_target(''.__class__))
+        self.assertFalse(self.__measurable.technical_debt_target(''.__class__))
 
     def test_technical_debt(self):
         ''' Test the technical debt for a known class. '''
@@ -60,7 +60,7 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_no_metric_source_id(self):
         ''' Test the metric source id for an unknown class. '''
-        self.failIf(self.__measurable.metric_source_id(''.__class__))
+        self.assertFalse(self.__measurable.metric_source_id(''.__class__))
 
     def test_metric_source_id(self):
         ''' Test the metric source id for a known class. '''
@@ -69,7 +69,7 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_no_old_metric_source_id(self):
         ''' Test the old metric source id for an unknown class. '''
-        self.failIf(self.__measurable.old_metric_source_id(''.__class__, '1'))
+        self.assertFalse(self.__measurable.old_metric_source_id(''.__class__, '1'))
 
     def test_old_metric_source_id(self):
         ''' Test the old metric source id for a known class and version. '''
@@ -80,11 +80,11 @@ class MeasurableObjectTests(unittest.TestCase):
     def test_old_metric_source_id_unknown_version(self):
         ''' Test the old metric source id for a known class but an unknown 
             version. '''
-        self.failIf(self.__measurable.old_metric_source_id(self.__class__, '2'))
+        self.assertFalse(self.__measurable.old_metric_source_id(self.__class__, '2'))
 
     def test_no_metric_source_option(self):
         ''' Test the metric source option for an unknown class. '''
-        self.failIf(self.__measurable.metric_source_options(''.__class__))
+        self.assertFalse(self.__measurable.metric_source_options(''.__class__))
 
     def test_metric_source_options(self):
         ''' Test the metric source options for a known class. '''
@@ -93,7 +93,7 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_no_metric_option(self):
         ''' Test the metric option for an unknown class. '''
-        self.failIf(self.__measurable.metric_options(''.__class__))
+        self.assertFalse(self.__measurable.metric_options(''.__class__))
 
     def test_metric_options(self):
         ''' Test the metric options for a known class. '''
