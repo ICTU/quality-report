@@ -52,7 +52,7 @@ class GitTests(unittest.TestCase):
         ''' Test that Git correctly reports the date a path was last
             changed. '''
         self.__shell_command_results.append('''1416471398\n''')
-        self.assertEqual(datetime.datetime(2014, 11, 20, 9, 16, 38),
+        self.assertEqual(datetime.datetime.fromtimestamp(1416471398),
                          self.__git.last_changed_date('path'))
 
     def test_latest_tagged_product_version(self):

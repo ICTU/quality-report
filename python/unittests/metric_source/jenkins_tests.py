@@ -55,7 +55,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", '\
             '"description": "", "url": "http://url", "buildable": True}], ' \
             '"id": "2013-04-01_12-00-00"}'
-        expected_days_ago = (datetime.datetime.now() -  \
+        expected_days_ago = (datetime.datetime.now() -
                              datetime.datetime(2013, 4, 1, 12, 0, 0)).days
         self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'}, 
                          self.__jenkins.failing_jobs_url())
