@@ -16,22 +16,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from ez_setup import use_setuptools
-use_setuptools()
-
 import glob
 import os
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
+from pip.download import PipSession
 from qualitylib import VERSION
-
-
-class ParseRequirementsOptions(object):
-    # pylint: disable=too-few-public-methods
-    ''' Work around a bug in parse_requirements. The options argument is 
-       optional, but the code still accesses the skip_requirements_regex
-       attribute on the options object, even when it is None. '''
-    skip_requirements_regex = None
 
 
 setup(name='quality_report',
@@ -47,9 +37,9 @@ setup(name='quality_report',
                    glob.glob(os.path.join('..', folder, files))) for folder,
                   files in (('img', '*.png'), ('js', '*.js'), 
                             ('html', '*.html'), ('css', '*.css'))],
-      install_requires=[str(requirement.req) for requirement in \
+      install_requires=[str(requirement.req) for requirement in
                         parse_requirements('requirements.txt', 
-                                           options=ParseRequirementsOptions)],
+                                           session=PipSession())],
       test_suite='unittests',
       classifiers=[
           'Development Status :: 5 - Production/Stable',
@@ -62,3 +52,4 @@ setup(name='quality_report',
           'Programming Language :: JavaScript',
           'Programming Language :: Unix Shell',
           'Topic :: Software Development :: Quality Assurance'])
+
