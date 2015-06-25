@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         return (datetime.datetime.now() - self.__changed_date()).days
 
     def url(self):
-        return {self._vcs.metric_source_name: self._subject.url()}
+        return {self._vcs_product_info.metric_source_name: self._subject.url()}
 
     def _get_template(self):
         # pylint: disable=protected-access
@@ -57,7 +57,7 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def __changed_date(self):
         ''' Return the date that the document was last changed. '''
-        return self._vcs.last_changed_date(self._subject.url())
+        return self._vcs_product_info.last_changed_date(self._subject.url())
 
     def __document_not_found(self):
         ''' Return whether the age of the document could be established. '''

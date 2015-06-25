@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ from __future__ import absolute_import
 # Package for report formatters.
 
 from .base_formatter import Formatter
-from .csv_formatter import CSVFormatter
 from .dot_formatter import \
     DependencyFormatter, \
     MetricClassesFormatter

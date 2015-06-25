@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ def _parse_date_time( date_time_re, date_time_string):
         am_pm - used insensitive to case
         '''
     if not isinstance(date_time_string,basestring):
-        raise TypeError("date_time_string should be a string, " \
+        raise TypeError("date_time_string should be a string, "
                         "not {cls!r}".format(cls=date_time_string.__class__.__name__))
 
     m = re.search( date_time_re, date_time_string )
@@ -98,7 +98,7 @@ def _parse_date_time( date_time_re, date_time_string):
     hour   = int(m.group('hour'))
     minute = int(m.group('minute'))
     second = int(m.group('second'))
-    if m.groupdict().get('am_pm','').lower() == 'pm' and hour < 12:
+    if m.groupdict().get('am_pm', '').lower() == 'pm' and hour < 12:
         hour += 12
 
     return datetime.datetime(year, month, day, hour, minute, second)
@@ -131,23 +131,6 @@ def parse_iso_date(date_string):
     day    = int(m.group('day'))
 
     return datetime.datetime(year, month, day)
-
-
-def parse_time_string(time_string):
-    ''' Parse a time string of the form '22:10:34'. '''
-    if not isinstance(time_string,basestring):
-        raise TypeError("time_string should be a string, " \
-                        "not {cls!r}".format(cls=time_string.__class__.__name__))
-
-    m = re.search( _TIME_RE, time_string )
-    if m is None:
-        raise ValueError("time_string {t!r} not matched".format(t=time_string))
-
-    hour   = int(m.group('hour'))
-    minute = int(m.group('minute'))
-    second = int(m.group('second'))
-
-    return hour, minute, second
 
 
 def parse_us_int(string):

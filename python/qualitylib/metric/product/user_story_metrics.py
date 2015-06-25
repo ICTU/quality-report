@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -47,22 +47,44 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
         return parameters
 
 
-class UserStoriesNotReviewedAndApproved(UserStoryMetric):
+class UserStoriesNotReviewed(UserStoryMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the percentage of user stories that have been
-        reviewed and approved. '''
+    ''' Metric for measuring the percentage of user stories that not have been
+        reviewed. '''
 
-    name = 'Goedkeuring user stories'
+    name = 'Review user stories'
     norm_template = 'Maximaal {target} van de user stories is niet ' \
-        'gereviewd en/of niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet gereviewde en/of niet ' \
-        'goedgekeurde user stories van in totaal {total} user stories.'
-    target_value = 3
+        'gereviewd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet gereviewde ' \
+        'user stories van in totaal {total} user stories.'
+    target_value = 0
     low_target_value = 5
     quality_attribute = DOC_QUALITY
 
     def _nr_user_stories_ok(self):
+        return self._birt.reviewed_user_stories(self._birt_id())
+
+
+class UserStoriesNotApproved(UserStoryMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the percentage of user stories that not have been
+        approved. '''
+
+    name = 'Goedgekeuring user stories'
+    norm_template = 'Maximaal {target} van de user stories is niet ' \
+        'goedgekeurd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet goedgekeurde ' \
+        'user stories van in totaal {total} gereviewde user stories.'
+    target_value = 0
+    low_target_value = 3
+    quality_attribute = DOC_QUALITY
+
+    def _nr_user_stories_ok(self):
         return self._birt.approved_user_stories(self._birt_id())
+
+    def _nr_user_stories(self):
+        ''' Override the total number of user stories. '''
+        return self._birt.reviewed_user_stories(self._birt_id())
 
 
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):

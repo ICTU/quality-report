@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,21 +33,14 @@ from .version_control_system.git import Git
 from .version_control_system.subversion import \
     Subversion
 
-# Release archive
-from .abstract.release_archive import ReleaseArchive
-from .release_archive.apache_directory import \
-    ApacheDirectory
-from .release_archive.nexus_directory import \
-    NexusDirectory
-from .release_archive.subversion_directory import \
-    SubversionDirectory
 
 # Other metric sources
 from .birt import Birt
 from .dependencies import Dependencies
 from .history import History
 from .holiday_planner import HolidayPlanner
-from .jenkins import Jenkins, JenkinsTestReport
+from .jenkins import Jenkins, JenkinsTestReport, JenkinsOWASPDependencyReport, \
+    JenkinsYmorPerformanceReport
 from .jira import Jira
 from .maven import Maven
 from .no_metric_source_yet import NoMetricSourceYet

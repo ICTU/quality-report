@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -143,9 +143,9 @@ class VersionControlSystemMetricMixin(object):
 
     def __init__(self, *args, **kwargs):
         super(VersionControlSystemMetricMixin, self).__init__(*args, **kwargs)
-        self._vcs = self._project.metric_source(metric_source.VersionControlSystem)
-        self.__vcs_product_info = metric_info.VersionControlSystemProductInfo( \
-            self._vcs, self._subject)
+        self.__vcs = self._project.metric_source(metric_source.VersionControlSystem)
+        self._vcs_product_info = metric_info.VersionControlSystemProductInfo(
+            self.__vcs, self._subject)
 
     @classmethod
     def can_be_measured(cls, product, project):
@@ -161,4 +161,4 @@ class VersionControlSystemMetricMixin(object):
 
     def _vcs_path(self):
         ''' Return the Subversion path for the product. '''
-        return self.__vcs_product_info.vcs_path()
+        return self._vcs_product_info.vcs_path()

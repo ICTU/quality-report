@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -307,18 +307,36 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         ''' Return the number of user stories for the product. '''
         return self.__test_design_metric(product, table_nr=2, column_nr=1)
 
+    def reviewed_user_stories(self, product):
+        ''' Return the number of reviewed user stories for the product. '''
+        return self.__test_design_metric(product, table_nr=2, column_nr=2)
+
     def approved_user_stories(self, product):
         ''' Return the number of approved user stories for the product. '''
         return self.__test_design_metric(product, table_nr=2, column_nr=3)
+
+    def not_approved_user_stories(self, product):
+        ''' Return the number of not approved user stories for the product. '''
+        return self.__test_design_metric(product, table_nr=2, column_nr=4)
 
     def nr_ltcs(self, product):
         ''' Return the number of logical test cases for the product. '''
         return self.__test_design_metric(product, table_nr=2, column_nr=6)
 
+    def reviewed_ltcs(self, product):
+        ''' Return the number of reviewed logical test cases for the
+            product. '''
+        return self.__test_design_metric(product, table_nr=2, column_nr=7)
+
     def approved_ltcs(self, product):
         ''' Return the number of approved logical test cases for the
             product. '''
         return self.__test_design_metric(product, table_nr=2, column_nr=8)
+
+    def not_approved_ltcs(self, product):
+        ''' Return the number of not approved logical test cases for the
+            product. '''
+        return self.__test_design_metric(product, table_nr=2, column_nr=9)
 
     def nr_ltcs_to_be_automated(self, product):
         ''' Return the number of logical test cases for the product that
@@ -388,6 +406,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 test_dates.append(last_test_date)
             except IndexError:
                 continue  # Skip empty row
+        logging.info("Manual test dates for %s:%s are: %s.", product, version, test_dates)
         return test_dates
 
     @utils.memoized
@@ -418,4 +437,8 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         for row in rows(table(table_nr)):
             if row_contains_product(row, product):
                 return int(cell(row, column_nr))
+
+        logging.warn( "Could not obtain product %s from column# %d of table# %d in Birt report: %s",
+                      product, column_nr, table_nr, self.__test_design_url )
+
         return -1  # Product not found

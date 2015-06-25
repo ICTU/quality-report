@@ -1,3 +1,29 @@
+2015-05-??  Release 1.16.0
+
+  * Add an OWASP dependency metric that uses the Jenkins OWASP dependency
+    check plugin to check for dependencies with OWASP issues.
+  * Products take an optional is_main boolean parameter. Set it to False to have
+    the size of a product be ignored in the Total LOC metric.
+  * Don't report CI-jobs without builds as failing.
+  * Allow for overriding the total LOC metric via the project.
+  * Split the metric for measuring the number of user stories not approved or
+    not reviewed into separate metrics for not approved and not reviewed user
+    stories.
+  * Split the metric for measuring the number of logical test cases not approved
+    or not reviewed into separate metrics for not approved and not reviewed
+    logical test cases.
+  * Remove support for writing a summary to the summary.csv file.
+  * Remove support for filtering metrics by team.
+  * Remove release age metric.
+  * Bug fix: make the team spirit yellow or red when the measurement date gets
+    old.
+  * Bug fix: HTML escape comments retrieved from the Wiki.
+  * Bug fix: Make LowerIsBetterMetrics red when the measured value is invalid
+    (below zero).
+  * Bug fix: Have Git check remote branches for unmerged commits instead of just
+    local branches.
+
+
 2015-01-19  Release 1.15.0
 
   * Allow for requirements to be added to a project. The requirements

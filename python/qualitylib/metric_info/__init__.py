@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,4 +21,4 @@ from __future__ import absolute_import
 # no knowledge of metric sources and vice versa.
 
 from .sonar_product_info import SonarProductInfo
-from .verson_control_system_product_info import VersionControlSystemProductInfo
+from .version_control_system_product_info import VersionControlSystemProductInfo

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -46,39 +46,61 @@ class Git(VersionControlSystem):
 
     def branches(self, path):
         ''' Return a list of branch names for the master branch. '''
-        branches = self._run_shell_command(['git', 'branch', '--list',
-                                            '--no-color'],
-                                           folder=self.__repo_folder)
-        return [branch.strip() for branch in branches.strip().split('\n')[1:]]
+        return self.__get_branches()
 
-    def unmerged_branches(self, path):
+    @utils.memoized
+    def unmerged_branches(self, path, branches_to_ignore=None):
         ''' Return a dictionary of branch names and number of unmerged
             commits for each branch that has any unmerged commits. '''
-        branches = [(branch, self.__nr_unmerged_commits(path, branch)) \
-                    for branch in self.branches(path)]
-        unmerged_branches = [(branch, nr_commits) for (branch, nr_commits) \
-                             in branches if nr_commits > 0]
-        return dict(unmerged_branches)
+        branches_to_ignore = branches_to_ignore or []
+        unmerged_branches = [branch for branch in
+                             self.__get_branches(unmerged_only=True)
+                             if branch not in branches_to_ignore]
+        branches_and_commits = [(branch, self.__nr_unmerged_commits(branch))
+                                for branch in unmerged_branches]
+        return dict(branches_and_commits)
 
-    def __nr_unmerged_commits(self, path, branch_name):
+    @classmethod
+    def branch_folder_for_branch(cls, trunk_url, branch):
+        ''' Return the branch folder for the specified branch. '''
+        return trunk_url + '/' + branch
+
+    def __get_branches(self, unmerged_only=False):
+        ''' Get the (remote) branches for the repository. '''
+        def valid_branch_name(name):
+            ''' Return whether name is a valid branch name. '''
+            return name and not ' -> ' in name and not 'origin/master' in name
+
+        command = ['git', 'branch', '--list', '--remote', '--no-color']
+        if unmerged_only:
+            command.append('--no-merged')
+        branches = self._run_shell_command(command, folder=self.__repo_folder)
+        return [branch.strip() for branch in branches.strip().split('\n')
+                if valid_branch_name(branch.strip())]
+
+    def __nr_unmerged_commits(self, branch_name):
         ''' Return whether the branch has unmerged commits. '''
-        commits = self._run_shell_command(['git', 'cherry', 'master',
-                                           branch_name],
-                                          folder=self.__repo_folder)
-        return commits.count('\n')
+        logging.info('Checking for unmerged commits in branch %s.', branch_name)
+        command = ['git', 'cherry', 'origin/master', branch_name]
+        commits = self._run_shell_command(command, folder=self.__repo_folder)
+        nr_commits = commits.count('\n')
+        logging.info('Branch %s has %d unmerged commits.', branch_name,
+                     nr_commits)
+        return nr_commits
 
     def __get_repo(self):
-        ''' Clone the repository if not necessary, else pull it. '''
-        self.__repo_folder = os.path.join(os.getcwd(), 'repo')
+        ''' Clone the repository if necessary, else pull it. '''
+        self.__repo_folder = self.__determine_repo_folder_name()
         if os.path.exists(self.__repo_folder):
             logging.info('Updating Git repo %s in %s', self.url(),
-                         os.getcwd())
+                         self.__repo_folder)
             self._run_shell_command(['git', 'pull'], folder=self.__repo_folder)
         else:
             logging.info('Cloning Git repo %s in %s', self.url(),
                          self.__repo_folder)
             # TODO: Add --no-checkout? --quiet? --depth 1?
-            self._run_shell_command(['git', 'clone', self.__full_url(), 'repo'])
+            self._run_shell_command(['git', 'clone', self.__full_url(),
+                                     self.__repo_folder])
 
     def __full_url(self):
         ''' Return the Git repository url with username and password. '''
@@ -90,3 +112,7 @@ class Git(VersionControlSystem):
                               password=self._password)
         else:
             return self.url()
+
+    def __determine_repo_folder_name(self):
+        url_parts = [part for part in self.url().split('/') if part]
+        return os.path.join(os.getcwd(), 'repos', url_parts[-1])

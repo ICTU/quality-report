@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ class MeasurableObjectTests(unittest.TestCase):
             metric_source_ids={self.__class__: 'id'},
             old_metric_source_ids={self.__class__: {'1': 'old_id'}},
             metric_source_options={self.__class__: 'options'},
-            metric_options={self.__class__: 'metric options'},
-            responsible_teams=[Team(name='A')])
+            metric_options={self.__class__: 'metric options'})
 
     def test_no_target(self):
         ''' Test that there is no target for an unknown class. '''
@@ -99,8 +98,3 @@ class MeasurableObjectTests(unittest.TestCase):
         ''' Test the metric options for a known class. '''
         self.assertEqual('metric options', 
                          self.__measurable.metric_options(self.__class__))
-
-    def test_responsible_teams(self):
-        ''' Test that the street has responsible teams. '''
-        self.assertEqual([Team(name='A')],
-                         self.__measurable.responsible_teams())

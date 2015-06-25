@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,5 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-from __future__ import absolute_import
 
+
+class MetricSources(dict):
+
+    def __init__(self, keys_and_values):
+        new_keys_and_values = {key: MetricSources.__ensureList(key, value) for key, value in keys_and_values.items()}
+        super(MetricSources, self).__init__(new_keys_and_values)
+
+    @staticmethod
+    def __ensureList(key, value):
+        if hasattr(key, 'needs_values_as_list') and key.needs_values_as_list and type(value) != type([]):
+            return [value]
+        return value

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import urllib2
 import logging
 
 
-from . import url_opener
+from . import url_opener, beautifulsoup
 from .. import utils, domain
 
 
@@ -43,7 +43,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     jobs_api_postfix = api_postfix + \
                        '?tree=jobs[name,description,color,url,buildable]'
 
-    def __init__(self, url, username, password, job_re='', default_team=None):
+    def __init__(self, url, username, password, job_re=''):
         super(Jenkins, self).__init__(url=url, username=username, 
                                       password=password)
         self.__job_re = re.compile(job_re)
@@ -53,62 +53,36 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self.__job_api_url = self.__job_url + self.api_postfix
         self._jobs_api_url = url + self.jobs_api_postfix
-        self.__default_team = default_team
-
-    def default_team(self):
-        ''' Return the team that is responsible for Jenkins jobs that have not
-            been explicitly assigned to a team. '''
-        return self.__default_team
-
-    def number_of_assigned_jobs(self):
-        ''' Return the number of Jenkins jobs that has been assigned to one or
-            more teams. '''
-        return len(self.__jobs()) - len(self.__unassigned_jobs())
+        self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
 
     @utils.memoized
-    def number_of_jobs(self, *teams):
-        ''' Return the total number of Jenkins jobs the specified team is
-            responsible for, or the total number of jobs if no team is
-            specified. '''
-        return len(self.__jobs(*teams))
+    def number_of_jobs(self):
+        ''' Return the total number of Jenkins jobs. '''
+        return len(self.__jobs())
 
-    def failing_jobs_url(self, *teams):
+    def failing_jobs_url(self):
         ''' Return the urls for the failing Jenkins jobs. '''
         urls = {}
-        for failing_job in self.__failing_jobs(*teams):
+        for failing_job in self.__failing_jobs():
             failing_job_description = failing_job['name']
             age = self.__age_of_last_stable_build(failing_job)
             failing_job_description += ' ({days} dagen)'.format(days=age.days)
             urls[failing_job_description] = failing_job['url']
         return urls
 
-    def unused_jobs_url(self, *teams):
-        ''' Return the urls for the unused Jenkin jobs. '''
+    def unused_jobs_url(self):
+        ''' Return the urls for the unused Jenkins jobs. '''
         urls = {}
-        for unused_job in self.__unused_jobs(*teams):
+        for unused_job in self.__unused_jobs():
             unused_job_description = unused_job['name']
             age = self.__age_of_last_stable_build(unused_job)
             unused_job_description += ' ({days} dagen)'.format(days=age.days)
             urls[unused_job_description] = unused_job['url']
         return urls
 
-    def unassigned_jobs_url(self):
-        ''' Return the urls for the unassigned Jenkins jobs. '''
-        return dict([(job['name'], job['url'])
-                     for job in self.__unassigned_jobs()])
-
     @utils.memoized
-    def __failing_jobs(self, *teams):
+    def __failing_jobs(self):
         ''' Return the Jenkins jobs that are failing. '''
-
-        def grace_time(job):
-            ''' Return the grace time for the job. '''
-            # Don't consider projects to have failed until their last successful
-            # build was longer ago than the grace time.
-            description = job['description'] or ''
-            match = re.search(r'\[gracedays=(\d+)\]', description.lower())
-            days = int(match.group(1)) if match else 1
-            return datetime.timedelta(days=days)
 
         def failing(job):
             ''' Return whether the job is failing. '''
@@ -118,47 +92,31 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         def old(job):
             ''' Return whether the build age of the job is considered to be
                 long ago. '''
-            return self.__age_of_last_stable_build(job) > grace_time(job)
+            return self.__age_of_last_stable_build(job) > datetime.timedelta(days=1)
 
-        return [job for job in self.__jobs(*teams) if failing(job) and old(job)]
+        return [job for job in self.__jobs() if self.__has_builds(job) and
+                failing(job) and old(job)]
 
     @utils.memoized
-    def __unused_jobs(self, *teams):
+    def __unused_jobs(self):
         ''' Return the Jenkins jobs that are unused. '''
-        old = datetime.timedelta(days=180)
-        return [job for job in self.__jobs(*teams) if
-                self.__age_of_last_completed_build(job) > old]
+        def grace_time(job, default=180):
+            ''' Return the grace time for the job. '''
+            # Don't consider projects to be old until their last successful
+            # build was longer ago than the grace time.
+            description = job['description'] or ''
+            match = re.search(r'\[gracedays=(\d+)\]', description.lower())
+            days = int(match.group(1)) if match else default
+            return datetime.timedelta(days=days)
+
+        return [job for job in self.__jobs() if
+                self.__age_of_last_completed_build(job) > grace_time(job)]
 
     @utils.memoized
-    def __unassigned_jobs(self):
-        ''' Return the Jenkins jobs that have not been assigned to one or more
-            teams. '''
-        if self.__default_team:
-            # Jobs not explicitly assigned belong to the default team, so all
-            # jobs are always assigned if there is a default team.
-            return []
-        else:
-            return [job for job in self.__jobs() if not(job['description']
-                    and "[responsible=" in job['description'].lower())]
-
-    @utils.memoized
-    def __jobs(self, *teams):
-        ''' Return the Jenkins jobs the specified teams are responsible for, or
-            all jobs if no teams are specified. '''
+    def __jobs(self):
+        ''' Return all Jenkins jobs that match our job regular expression. '''
         all_jobs = self._api(self._jobs_api_url)['jobs']
-        all_jobs = [job for job in all_jobs if self.__job_re.match(job['name'])]
-        if teams:
-            jobs = list()
-            for team in teams:
-                name = team.name().lower()
-                jobs.extend([job for job in all_jobs if job['description'] and
-                             name in job['description'].lower()])
-                if self.__default_team and team == self.__default_team:
-                    jobs.extend([job for job in all_jobs if not(job['description']
-                                and "[responsible=" in job['description'].lower())])
-        else:
-            jobs = all_jobs
-        return jobs
+        return [job for job in all_jobs if self.__job_re.match(job['name'])]
 
     @utils.memoized
     def unstable_arts_url(self, projects, days):
@@ -186,22 +144,32 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __age_of_build(self, job, url):
         ''' Return the age of the last completed or stable build of the job. '''
-        builds_api_postfix = self.api_postfix + '?tree=id'
+        builds_url = url.format(job=job['name']) + self.api_postfix
         try:
-            timestamp = self._api(url.format(job=job['name']) + builds_api_postfix)['id']
+            timestamp = self._api(builds_url)['timestamp']
         except (KeyError, urllib2.HTTPError):
             return UnknownAge()
-        date_text, time_text = timestamp.split('_')
-        year, month, day = date_text.split('-')
-        hour, minute, second = time_text.split('-')
-        return datetime.datetime.today() - \
-            datetime.datetime(int(year), int(month), int(day), 
-                              int(hour), int(minute), int(second))
+        try:
+            build_time = datetime.datetime.utcfromtimestamp(float(timestamp)/1000)
+        except ValueError:
+            logging.warn("Couldn't convert timestamp %s from %s to datetime.",
+                         timestamp, builds_url)
+            return UnknownAge()
+        return datetime.datetime.utcnow() - build_time
+
+    def __has_builds(self, job):
+        ''' Return whether the job has builds or not. '''
+        return len(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
 
     @utils.memoized
     def _api(self, url):
         ''' Return the result of the API call at the url. '''
-        return eval(self.url_open(url).read())
+        data = self.url_open(url).read()
+        try:
+            return eval(data)
+        except:
+            logging.warning("Couldn't evaluate {} from {}".format(data, url))
+            raise
 
     def url_open(self, url):
         ''' Override to safely quote the url, needed because Jenkins may return
@@ -229,8 +197,8 @@ class JenkinsTestReport(Jenkins):
 
     def __init__(self, *args, **kwargs):
         super(JenkinsTestReport, self).__init__(*args, **kwargs)
-        self.__test_report_url = self._last_successful_build_url + 'testReport/'
-        self.__test_report_api_url = self.__test_report_url + self.api_postfix
+        self.__report_url = self._last_successful_build_url + 'testReport/'
+        self.__report_api_url = self.__report_url + self.api_postfix
 
     def passed_tests(self, job_names):
         ''' Return the number of passed tests as reported by the test report
@@ -274,7 +242,7 @@ class JenkinsTestReport(Jenkins):
         ''' Return the number of tests with the specified result in the test
             report of a job. '''
         job_name = self.resolve_job_name(job_name)
-        url = self.__test_report_api_url.format(job=job_name)
+        url = self.__report_api_url.format(job=job_name)
         try:
             report_dict = self._api(url)
         except urllib2.HTTPError, reason:
@@ -285,4 +253,111 @@ class JenkinsTestReport(Jenkins):
 
     def test_report_url(self, job_name):
         ''' Return the url of the job. '''
-        return self.__test_report_url.format(job=self.resolve_job_name(job_name))
+        return self.__report_url.format(job=self.resolve_job_name(job_name))
+
+
+class JenkinsOWASPDependencyReport(Jenkins):
+    ''' Class representing OWASP dependency reports in Jenkins jobs. '''
+    needs_metric_source_id = True
+
+    def __init__(self, *args, **kwargs):
+        super(JenkinsOWASPDependencyReport, self).__init__(*args, **kwargs)
+        self.__report_url = self._last_successful_build_url + \
+                            'dependency-check-jenkins-pluginResult/'
+        self.__report_api_url = self.__report_url + self.api_postfix
+
+    def nr_high_priority_warnings(self, job_names):
+        ''' Return the number of high priority warnings in the jobs. '''
+        return sum([self.__nr_warnings(job_name, 'High')
+                    for job_name in job_names])
+
+    def nr_normal_priority_warnings(self, job_names):
+        ''' Return the number of normal priority warnings in the jobs. '''
+        return sum([self.__nr_warnings(job_name, 'Normal')
+                    for job_name in job_names])
+
+    def nr_low_priority_warnings(self, job_names):
+        ''' Return the number of low priority warnings in the jobs. '''
+        return sum([self.__nr_warnings(job_name, 'Low')
+                    for job_name in job_names])
+
+    def __nr_warnings(self, job_name, warning_type):
+        ''' Return the number of warnings of the specified type in the job. '''
+        job_name = self.resolve_job_name(job_name)
+        url = self.__report_api_url.format(job=job_name)
+        try:
+            report_dict = self._api(url)
+        except urllib2.HTTPError, reason:
+            logging.warn("Couldn't open %s to read warning count %s: %s", url,
+                         warning_type, reason)
+            return 0
+        return int(report_dict['numberOf{}PriorityWarnings'.format(warning_type)])
+
+    def report_url(self, job_name):
+        ''' Return the url of the job. '''
+        return self.__report_url.format(job=self.resolve_job_name(job_name))
+
+
+class JenkinsYmorPerformanceReport(Jenkins):
+    ''' Class representing Ymor performance reports in Jenkins jobs. '''
+    needs_metric_source_id = True
+    COLUMN_90_PERC = 5
+
+    def __init__(self, *args, **kwargs):
+        super(JenkinsYmorPerformanceReport, self).__init__(*args, **kwargs)
+        self.__report_url = self._last_successful_build_url + \
+            'Performance_Test_Report/'
+
+    def queries(self, job_names):
+        ''' Return the number of performance queries. '''
+        return len(self.__query_rows(job_names))
+
+    def queries_violating_max_responsetime(self, job_names):
+        ''' Return the number of performance queries that violate the maximum
+            response time. '''
+        return self.__queries_violating_response_time(job_names, 'red')
+
+    def queries_violating_wished_responsetime(self, job_names):
+        ''' Return the number of performance queries that violate the maximum
+            response time we'd like to meet. '''
+        return self.__queries_violating_response_time(job_names, 'yellow')
+
+    def __queries_violating_response_time(self, job_names, color):
+        ''' Return the number of queries that are violating either the maximum
+            or the desired response time. '''
+        return len([row for row in self.__query_rows(job_names)
+                    if row('td')[self.COLUMN_90_PERC]['class'] == color])
+
+    @utils.memoized
+    def __query_rows(self, job_names):
+        ''' Return the queries for the specified product and version. '''
+        rows = []
+        for job_name in job_names:
+            job_name = self.resolve_job_name(job_name)
+            url = self.__report_url.format(job=job_name)
+            # Open the frame and get the Subversion url of the report
+            # FIXME: why not get the quality report from the Jenkins job instead
+            # FIXME: of going to Subversion?
+            soup = beautifulsoup.BeautifulSoupOpener().soup(url)
+            subversion_path = soup('li', attrs={'id': 'tab1'})[0]['value']
+            subversion_url = 'http://' + subversion_path[2:]  # Strip './'
+            # Next, open the performance report itself
+            soup = beautifulsoup.BeautifulSoupOpener().soup(subversion_url)
+            table = soup('table', attrs={'class': 'details'})[0]
+            for row in table('tr'):
+                try:
+                    column_90_perc = row('td')[self.COLUMN_90_PERC]
+                except IndexError:
+                    continue  # No 90 perc column
+                if not column_90_perc.has_key('class'):
+                    continue  # No color in 90 perc column
+                rows.append(row)
+        return rows
+
+    def report_url(self, job_names):
+        ''' Return the url of the job. '''
+        return self.__report_url.format(job=self.resolve_job_name(job_names[0]))
+
+    def date(self, job_name):
+        ''' Return the date of the report. '''
+        return datetime.datetime.now()

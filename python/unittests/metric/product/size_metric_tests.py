@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -70,19 +70,25 @@ class TotalLOCTest(unittest.TestCase):
     ''' Unit tests for the total LOC metric. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        sonar = FakeSonar()
+        self.__sonar = FakeSonar()
         project = domain.Project(
-            metric_sources={metric_source.Sonar: sonar,
-                            metric_source.History: FakeHistory()})
+            metric_sources={metric_source.Sonar: self.__sonar,
+                            metric_source.History: FakeHistory()},
+            targets={metric.TotalLOC: 1000000},
+            low_targets={metric.TotalLOC: 2000000})
         product = domain.Product(project, 'PR', name='FakeSubject',
-                                 metric_source_ids={sonar: 'sonar id'})
+                                 metric_source_ids={self.__sonar: 'sonar id'})
         product_without_sonar_id = domain.Product(project, 'PW',
                                                   name='ProductWithoutSonarId')
+        test_product = domain.Product(project, 'TP', is_main=False,
+                                      metric_source_ids={
+                                          self.__sonar: 'sonar id'})
         project.add_product(product)
         # Add products that should be ignored:
         project.add_product(product_without_sonar_id)
         project.add_product_with_version('FakeSubject', '1.1')
-        self.__metric = metric.TotalLOC(project=project)
+        project.add_product(test_product)
+        self.__metric = metric.TotalLOC(subject=project, project=project)
 
     def test_value(self):
         ''' Test that the value of the metric equals the sum of the NCLOC 
@@ -95,8 +101,9 @@ class TotalLOCTest(unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.assertEqual('Het totaal aantal LOC voor alle producten is '
-                         '123 regels code.', self.__metric.report())
+        self.assertEqual('Het totaal aantal LOC voor de producten '
+            'FakeSubject:trunk, ProductWithoutSonarId:trunk is '
+            '123 regels code.', self.__metric.report())
 
     def test_recent_history(self):
         ''' Test that the recent history subtracts the minimum value of
@@ -113,3 +120,26 @@ class TotalLOCTest(unittest.TestCase):
     def test_should_not_be_measured(self):
         ''' Test that the metric should not be measured by default. '''
         self.assertFalse(metric.TotalLOC.should_be_measured(domain.Project()))
+
+    def test_override_target(self):
+        ''' Test that the target can be overridden via the project. '''
+        self.assertEqual(1000000, self.__metric.target())
+
+    def test_override_low_target(self):
+        ''' Test that the low target can be overridden via the project. '''
+        self.assertEqual(2000000, self.__metric.low_target())
+
+    def test_technical_debt(self):
+        ''' Test that technical debt can be specified via the project. '''
+        project = domain.Project(
+            metric_sources={metric_source.Sonar: self.__sonar,
+                            metric_source.History: FakeHistory()},
+            targets={metric.TotalLOC: 100},
+            low_targets={metric.TotalLOC: 110},
+            technical_debt_targets={metric.TotalLOC:
+                                        domain.TechnicalDebtTarget(150)})
+        product = domain.Product(project, 'PR', name='FakeSubject',
+                                 metric_source_ids={self.__sonar: 'sonar id'})
+        project.add_product(product)
+        total_loc = metric.TotalLOC(subject=project, project=project)
+        self.assertEqual('grey', total_loc.status())

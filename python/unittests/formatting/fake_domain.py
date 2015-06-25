@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -83,13 +83,10 @@ class Product(object):
         ''' Return whether this product version is a release candidate. '''
         return self.__is_release_candidate
 
-
-class Team(object):  # pylint: disable=too-few-public-methods
-    ''' Fake a team class. '''
     @staticmethod
-    def id_string():
-        ''' Return the id string of the team. '''
-        return 'team_id'
+    def metric_source_options(metric_source):  # pylint: disable=unused-argument
+        ''' Return metric source options. '''
+        return None
 
 
 class Metric(object):
@@ -158,11 +155,6 @@ class Metric(object):
     def comment_url_label():
         ''' Return the label for the urls. '''
         return ''
-
-    @staticmethod
-    def responsible_teams():
-        ''' Return the teams responsible for the metric. '''
-        return []
 
     @staticmethod
     def product_version_type():

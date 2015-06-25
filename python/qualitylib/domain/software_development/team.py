@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,16 +23,13 @@ class Team(MeasurableObject):
     ''' Class for representing a team. '''
 
     def __init__(self, short_name=None, is_scrum_team=False,
-                 is_support_team=False, release_archives=None,
-                 days_per_sprint=21, *args, **kwargs):
+                 release_archives=None, *args, **kwargs):
         super(Team, self).__init__(*args, **kwargs)
         if short_name:
             assert len(short_name) == 2
         self.__short_name = short_name or self.name()[:2].upper()
         self.__release_archives = release_archives or []
         self.__is_scrum_team = is_scrum_team
-        self.__is_support_team = is_support_team
-        self.__days_per_sprint = days_per_sprint
         self.__members = set()
 
     def __eq__(self, other):
@@ -58,15 +55,6 @@ class Team(MeasurableObject):
             doing product development. '''
         return self.__is_scrum_team
 
-    def is_support_team(self):
-        ''' Return whether this team is a support team, which means it is not
-            doing direct product development. '''
-        return self.__is_support_team
-
-    def days_per_sprint(self):
-        ''' Return the sprint length in days that the team uses. '''
-        return self.__days_per_sprint
-
     def team_resources(self):
         ''' Return the resources of the team. '''
         resources = []
@@ -84,7 +72,3 @@ class Team(MeasurableObject):
     def add_member(self, person):
         ''' Add the person as a team member. '''
         self.__members.add(person)
-
-    def responsible_teams(self, metric_class=None):
-        teams = super(Team, self).responsible_teams(metric_class)
-        return teams or [self]

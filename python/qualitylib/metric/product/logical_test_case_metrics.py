@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@ from __future__ import absolute_import
 
 import datetime
 
-from ..metric_source_mixin import (BirtMetricMixin, BirtTestDesignMetricMixin,
-                                   VersionControlSystemMetricMixin)
-from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY
-from ...domain import LowerIsBetterMetric
-from ... import metric_source
+from ..metric_source_mixin import BirtMetricMixin, BirtTestDesignMetricMixin
+from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY, TEST_QUALITY
+from ...domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
 
 
 class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
@@ -51,26 +49,48 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
         return parameters
 
 
-class LogicalTestCasesNotReviewedAndApproved(LogicalTestCaseMetric):
+class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring the number of logical test cases that has
-        not been reviewed and/or approved. '''
+        not been reviewed. '''
+
+    name = 'Review van logische testgevallen'
+    norm_template = 'Maximaal {target} van de logische testgevallen is ' \
+        'niet gereviewd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet gereviewde ' \
+        'logische testgevallen van in totaal {total} ' \
+        'logische testgevallen.'
+    target_value = 0
+    low_target_value = 15
+    quality_attribute = DOC_QUALITY
+
+    def _nr_ltcs_ok(self):
+        return self._birt.reviewed_ltcs(self._birt_id())
+
+    def _nr_ltcs(self):
+        return self._birt.nr_ltcs(self._birt_id())
+
+
+class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of logical test cases that has
+        not been approved. '''
 
     name = 'Goedkeuring van logische testgevallen'
     norm_template = 'Maximaal {target} van de logische testgevallen is ' \
-        'niet gereviewd en/of goedgekeurd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet gereviewde en/of niet ' \
-        'goedgekeurde logische testgevallen van in totaal {total} ' \
-        'logische testgevallen.'
-    target_value = 9
-    low_target_value = 15
+        'niet goedgekeurd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet goedgekeurde ' \
+        'logische testgevallen van in totaal {total} ' \
+        'gereviewde logische testgevallen.'
+    target_value = 0
+    low_target_value = 10
     quality_attribute = DOC_QUALITY
 
     def _nr_ltcs_ok(self):
         return self._birt.approved_ltcs(self._birt_id())
 
     def _nr_ltcs(self):
-        return self._birt.nr_ltcs(self._birt_id())
+        return self._birt.reviewed_ltcs(self._birt_id())
 
 
 class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
@@ -96,8 +116,7 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
         return self._birt.nr_ltcs_to_be_automated(self._birt_id())
 
 
-class ManualLogicalTestCases(BirtMetricMixin, VersionControlSystemMetricMixin,
-                             LowerIsBetterMetric):
+class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Metric for measuring how long ago the manual logical test cases
         have been tested. '''
@@ -114,22 +133,12 @@ class ManualLogicalTestCases(BirtMetricMixin, VersionControlSystemMetricMixin,
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
-    metric_source_classes = BirtMetricMixin.metric_source_classes + \
-        (metric_source.VersionControlSystem,)
-
-    @classmethod
-    def can_be_measured(cls, product, project):
-        return super(ManualLogicalTestCases, cls).can_be_measured(product,
-                                                                  project) and \
-            product.responsible_teams()
 
     def target(self):
         if self._subject.product_version_type() == 'release':
             return 0  # Release candidates should already be tested
         else:
-            teams = self._subject.responsible_teams()
-            sprint_length = min([team.days_per_sprint() for team in teams])
-            return sprint_length
+            return self.target_value
 
     def low_target(self):
         return self.target() + 7
@@ -164,3 +173,22 @@ class ManualLogicalTestCases(BirtMetricMixin, VersionControlSystemMetricMixin,
         ''' Return the version number for the product this metric is reporting 
             on. '''
         return self._subject.product_version() or 'trunk'
+
+
+class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of manual logical test cases. '''
+
+    name = 'Aantal handmatige logische testgevallen'
+    norm_template = 'Maximaal {target} van de logische testgevallen is ' \
+        'handmatig. Meer dan {low_target} is rood.'
+    template = '{value} van de {total} logische testgevallen zijn handmatig.'
+    target_value = 10
+    low_target_value = 50
+    quality_attribute = TEST_QUALITY
+
+    def _nr_ltcs_ok(self):
+        return self._nr_ltcs() - self._birt.nr_manual_ltcs(self._birt_id())
+
+    def _nr_ltcs(self):
+        return self._birt.nr_ltcs(self._birt_id())

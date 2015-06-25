@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -95,15 +95,6 @@ class DocumentAgeTest(unittest.TestCase):
         self.assertEqual(document.target(metric.DocumentAge), age.target())
 
 
-class FakeSubversionForMissingDocument(object):
-    # pylint: disable=too-few-public-methods
-    ''' Fake Subversion for unit tests with a missing document. '''
-    @staticmethod
-    def last_changed_date(url):  # pylint: disable=unused-argument
-        ''' Return the date the url was last changed. '''
-        return datetime.datetime.min
-
-
 class MissingDocumentAgeTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the document age metric when the document is missing. '''
@@ -112,7 +103,7 @@ class MissingDocumentAgeTest(unittest.TestCase):
         self.__document = domain.Document(name='Title', url='http://doc')
         self.__project = domain.Project(
             metric_sources={
-                metric_source.VersionControlSystem: FakeSubversionForMissingDocument()})
+                metric_source.VersionControlSystem: FakeSubversion()})
         self.__metric = metric.DocumentAge(subject=self.__document,
                                            project=self.__project)
 

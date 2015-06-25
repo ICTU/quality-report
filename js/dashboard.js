@@ -1,4 +1,4 @@
-/* Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+/* Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,13 @@ var BG_COLOR_GREY = '#CCCCCC';
 // Column indices. FIXME: lookup instead of hard coding.
 var METRICS_COLUMN_SECTION = 1;
 var METRICS_COLUMN_STATUS_TEXT = 2;
-var METRICS_COLUMN_TEAMS = 3;
-var METRICS_COLUMN_TREND = 4;
-var METRICS_COLUMN_STATUS_ICON = 5;
-var METRICS_COLUMN_MEASUREMENT = 6;
-var METRICS_COLUMN_NORM = 7;
-var METRICS_COLUMN_COMMENT = 8;
-var METRICS_COLUMN_VERSION = 9;
-var METRICS_COLUMN_QUALITY_ATTRIBUTE = 10;
+var METRICS_COLUMN_TREND = 3;
+var METRICS_COLUMN_STATUS_ICON = 4;
+var METRICS_COLUMN_MEASUREMENT = 5;
+var METRICS_COLUMN_NORM = 6;
+var METRICS_COLUMN_COMMENT = 7;
+var METRICS_COLUMN_VERSION = 8;
+var METRICS_COLUMN_QUALITY_ATTRIBUTE = 9;
 
 function create_metrics_table(metrics_data) {
     var metrics = new google.visualization.DataTable();
@@ -54,7 +53,6 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'ID');
     metrics.addColumn('string', 'Section');
     metrics.addColumn('string', 'Status text');
-    metrics.addColumn('string', 'Teams');
     metrics.addColumn('string', 'Trend');
     metrics.addColumn('string', 'Status');
     metrics.addColumn('string', 'Meting');
@@ -94,7 +92,6 @@ function create_dashboard(metrics_data, history_data) {
     draw_area_chart('meta_metrics_history_graph', history_data);
 
     set_radio_indicator('filter_color', settings.filter_color);
-    set_radio_indicator('filter_team', settings.filter_team);
     set_radio_indicator('filter_quality_attribute',
                         settings.filter_quality_attribute);
     set_radio_indicator('filter_version', settings.filter_version);
@@ -148,31 +145,6 @@ function create_dashboard(metrics_data, history_data) {
         })();
     }
 
-    // Extract the possible teams from the metrics table
-    var list_of_responsible_teams = window.metrics.getDistinctValues(METRICS_COLUMN_TEAMS);
-    var teams = ['filter_team_all'];
-    for (list_index = 0; list_index < list_of_responsible_teams.length;
-         list_index++) {
-        var responsible_teams = list_of_responsible_teams[list_index].split(',');
-        for (team_index = 0; team_index < responsible_teams.length;
-             team_index++) {
-            var responsible_team = responsible_teams[team_index];
-            if (responsible_team && teams.indexOf(responsible_team) === -1) {
-                teams.push(responsible_team);
-            }
-        }
-    }
-
-    // Event handlers for the filter by team menu items
-    for (index = 0; index < teams.length; index++) {
-        document.getElementById(teams[index]).onclick = (function() {
-            var team = teams[index];
-            return function() {
-                set_filter('filter_team', team, tables);
-            };
-        })();
-    }
-
     // Extract the possible quality attributes from the metrics table
     var list_of_quality_attributes = window.metrics.getDistinctValues(METRICS_COLUMN_QUALITY_ATTRIBUTE);
     var quality_attributes = ['filter_quality_attribute_all'];
@@ -197,7 +169,6 @@ function create_dashboard(metrics_data, history_data) {
 
 function read_settings_from_cookies() {
     settings.filter_color = read_cookie('filter_color', 'filter_color_all');
-    settings.filter_team = read_cookie('filter_team', 'filter_team_all');
     settings.filter_quality_attribute = read_cookie('filter_quality_attribute', 'filter_quality_attribute_all');
     settings.filter_version = read_cookie('filter_version', 'filter_version_all');
     settings.show_dashboard = read_cookie('show_dashboard', 'true') === 'true';
@@ -315,7 +286,7 @@ function show_table(table, section, view) {
     document.getElementById('section_' + section).style.display = 'block';
     show_links_to(section);
     var is_tagged_product = ['tag', 'release'].indexOf(view.getValue(0, METRICS_COLUMN_VERSION)) > -1;
-    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_TEAMS, METRICS_COLUMN_VERSION, METRICS_COLUMN_QUALITY_ATTRIBUTE];
+    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_VERSION, METRICS_COLUMN_QUALITY_ATTRIBUTE];
     var sort_column = settings.table_sort_column;
     if (is_tagged_product) {
         // Hide the trend column since this table, showing a tagged product,
@@ -396,18 +367,6 @@ function table_view(section) {
             filtered_rows = filtered_rows.concat(release_rows);
         }
         rows = intersection(rows, filtered_rows);
-    }
-
-    // Team
-    if (settings.filter_team !== 'filter_team_all') {
-        var team_combinations = window.metrics.getDistinctValues(METRICS_COLUMN_TEAMS);
-        var team_rows = [];
-        for (var team_index = 0; team_index < team_combinations.length; team_index++) {
-            if (team_combinations[team_index] === settings.filter_team) {
-                team_rows = team_rows.concat(window.metrics.getFilteredRows([{column: METRICS_COLUMN_TEAMS, value: team_combinations[team_index]}]));
-            }
-        }
-        rows = intersection(rows, team_rows);
     }
 
     // Quality attribute

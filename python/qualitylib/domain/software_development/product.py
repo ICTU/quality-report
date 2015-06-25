@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,23 +30,20 @@ class Product(MeasurableObject):
         maintained. '''
 
     def __init__(self, project, short_name='', 
-                 unittests=None, jsf=None, art=None,
-                 metric_responsibility=None, 
+                 unittests=None, jsf=None, art=None, is_main=True,
                  product_branches=None, product_version='', product_branch='',
                  **kwargs):
-
-        ''' metric_responsibility: dictionary of metric classes mapped to lists
-                of teams responsible for the product/metric combination. '''
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
         self.__unittests = unittests
         self.__jsf = jsf
         self.__art = art
+        # Is this product part of the main system or is it support code?
+        self.__is_main = is_main
         self.__product_version = product_version
         self.__product_branch = product_branch
         self.__product_branches = product_branches or {}
-        self.__metric_responsibility = metric_responsibility or {}
 
     def __eq__(self, other):
         return self.product_label() == other.product_label()
@@ -91,6 +88,14 @@ class Product(MeasurableObject):
             return 'branch'
         else:
             return 'trunk'
+
+    def is_main(self):
+        ''' Return whether this product is part of the main system or it is to
+            be considered support code. In the latter case it doesn't count
+            towards the total number of lines of code of the whole system. '''
+        if self.product_branch() or self.product_version():
+            return False
+        return self.__is_main
 
     def product_label(self):
         ''' Name, version, branch combination. '''
@@ -180,16 +185,6 @@ class Product(MeasurableObject):
         except KeyError:
             return super(Product, self).technical_debt_target(metric_class)
 
-    def responsible_teams(self, metric_class=None):
-        ''' Return the list of teams responsible for this product. '''
-        if metric_class in self.__metric_responsibility:
-            return self.__metric_responsibility[metric_class]
-        responsible_teams = super(Product, self).responsible_teams()
-        if responsible_teams:
-            return responsible_teams
-        else:
-            return self.__project.responsible_teams()
-
     def product_resources(self):
         ''' Return the resources of the product. '''
         from qualitylib import metric_source
@@ -220,7 +215,7 @@ class Product(MeasurableObject):
             dependency = self.__project.get_product(dependency_name)
             if dependency and dependency.name() != self.name():
                 if recursive:
-                    recursive_dependencies.update(\
+                    recursive_dependencies.update(
                         dependency.dependencies(version=dependency_version,
                                                 user=self))
             else:
@@ -276,7 +271,7 @@ class Product(MeasurableObject):
             return pom.dependencies(svn_path, self.__project.products())
         except urllib2.HTTPError, reason:
             logging.warn("Couldn't retrieve dependencies for %s: %s",
-                          self.product_label(), reason)
+                         self.product_label(), reason)
             return set()
         except (ValueError, IndexError), reason:
             logging.error("Couldn't parse dependencies for %s: %s",

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ class HTMLFormatter(base_formatter.Formatter):
     column_list = [u"{{f: '{metric_id}', v: '{metric_number}'}}",
                    u"'{section}'",
                    u"'{status}'",
-                   u"'{teams}'",
                    u"""'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
                    u"""{{v: '{status_nr}', f: '<img src="img/{image}.png" """
                    u"""alt="{alt}" width="48" height="48" title="{hover}" """
@@ -62,7 +61,6 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['section_menu'] = self.__section_navigation_menu(report)
         parameters['quality_attribute_filter_menu'] = \
             self.__quality_attribute_filter_menu(report)
-        parameters['team_filter_menu'] = self.__team_filter_menu(report)
         parameters['dashboard'] = self.__dashboard(report)
         parameters['project_resources'] = self.__project_resources(report)
         parameters['metric_classes'] = self.__metric_classes(report)
@@ -73,7 +71,7 @@ class HTMLFormatter(base_formatter.Formatter):
             data = self.__metric_data(metric)
             metric_number = int(data['metric_id'].split('-')[1])
             data['metric_number'] = '{sec}-{num:02d}'.format(sec=data['section'],
-                                                 num=metric_number)
+                                                             num=metric_number)
             metrics.append(self.columns.format(**data))
         parameters['metrics'] = '[' + ',\n'.join(metrics) + ']'
         prefix = self.__get_html_fragment('prefix')
@@ -163,20 +161,9 @@ class HTMLFormatter(base_formatter.Formatter):
                 </a>
             </li>'''
         menu_items = [menu_item_template.format(attribute_id=attribute.id_string(),
-                                                attribute_name=attribute.name()) \
+                                                attribute_name=attribute.name())
                       for attribute in sorted(quality_attributes)]
         return '\n'.join(menu_items)
-
-    @staticmethod
-    def __team_filter_menu(report):
-        ''' Return the menu for filtering on team. '''
-        team_filter_template = '<li><a class="filter_team" ' \
-                'id="filter_team_{team_id}" href="#"><i class=""></i> ' \
-                "Alleen metingen van team {team}</a></li>"
-        team_filter_menu_items = [team_filter_template.format(team=team,
-                                                              team_id=team.id_string()) \
-                                  for team in report.teams()]
-        return '\n'.join(team_filter_menu_items)
 
     def __trend_data(self, meta_metrics_section):
         ''' Return a JSON representation of the history in the meta metrics
@@ -196,7 +183,7 @@ class HTMLFormatter(base_formatter.Formatter):
             date_and_time = self.__date_and_time(history_record)
             percentages = self.__percentages(history_record, green_id, red_id,
                                              yellow_id, grey_id)
-            history_table.append(\
+            history_table.append(
                 '[new Date({}, {}, {}, {}, {}, {}), {}, {}, {}, {}]'.format(
                                         *(date_and_time + percentages)
                         ))
@@ -262,8 +249,6 @@ class HTMLFormatter(base_formatter.Formatter):
             attribute_id = 'filter_quality_attribute_' + attribute_id
         kwargs['quality_attribute'] = attribute_id
         kwargs['comment'] = self.__format_metric_comment(metric)
-        kwargs['teams'] = ','.join(['filter_team_{team}'.format(team=team.id_string()) \
-                                    for team in metric.responsible_teams()])
         return kwargs
 
     def postfix(self):  # pylint: disable=arguments-differ
@@ -289,7 +274,8 @@ class HTMLFormatter(base_formatter.Formatter):
     def __format_text_with_links(cls, text, url_dict, url_label=''):
         ''' Format a text paragraph with optional urls and label for the 
             urls. '''
-        links = [cls.__format_url(anchor, href) \
+        text = utils.html_escape(text)
+        links = [cls.__format_url(anchor, href)
                  for (anchor, href) in url_dict.items()]
         if links:
             if url_label:
@@ -417,8 +403,9 @@ class HTMLFormatter(base_formatter.Formatter):
         result.append('<ul>')
         for name, url in report.project().project_resources():
             url_text = '<a href="{url}">{url}</a>'.format(url=url) if url \
-                else '<font color="red">ontbreekt</font>'
-            result.append('<li>{name}: {url_text}</li>'.format(name=name, url_text=url_text))
+                else 'Geen url geconfigureerd'
+            result.append('<li>{name}: {url_text}</li>'.format(name=name,
+                                                               url_text=url_text))
         result.append('</ul>')
         return '\n'.join(result)
 

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -116,6 +116,12 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test the default norm. '''
         self.assertEqual('Subclass responsibility', self.__metric.norm())
 
+    def test_missing_norm_parameter(self):
+        ''' Test that the norm method raises an exception when not all
+            parameters for the norm description are supplied. '''
+        self.__metric.norm_template += '{missing_parameter}'
+        self.assertRaises(KeyError, self.__metric.norm)
+
     def test_default_url(self):
         ''' Test that the metric has no default url. '''
         self.assertFalse(self.__metric.url())
@@ -164,32 +170,6 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         # pylint: disable=attribute-defined-outside-init
         self.__subject.low_target = lambda metric: 'Subject specific target'
         self.assertEqual('Subject specific target', self.__metric.low_target())
-
-    def test_default_responsible_teams(self):
-        ''' Test that the metric has no responsible teams by default. '''
-        self.assertFalse(self.__metric.responsible_teams())
-
-    def test_passed_responsible_teams(self):
-        ''' Test that the metric can be initialized with responsible teams. '''
-        self.assertEqual(['Team'], MetricUnderTest(project=domain.Project(), 
-                         responsible_teams=['Team']).responsible_teams())
-
-    def test_subject_responsible_teams(self):
-        ''' Test that the responsible teams for the metric equal those of the
-            subject if it has responsible teams. '''
-        # pylint: disable=attribute-defined-outside-init
-        subject = FakeSubject()
-        subject.responsible_teams = lambda metric: 'Teams'
-        project = domain.Project()
-        self.assertEqual('Teams', MetricUnderTest(subject, 
-                                  project=project).responsible_teams())
-
-    def test_team_is_responsible_for_itself(self):
-        ''' Test that if the metric is measuring a team, that team is 
-            responsible for the metric. '''
-        team = domain.Team(name='Team')
-        metric = MetricUnderTest(team, project=domain.Project())
-        self.assertEqual([team], metric.responsible_teams())
 
     def test_default_comment(self):
         ''' Test that the metric has no comment by default. '''
@@ -264,8 +244,12 @@ class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     ''' Override LowerIsBetterMetric to implement abstract methods that are 
         needed for running the unit tests. '''
+    def __init__(self, *args, **kwargs):
+        self.__value = kwargs.pop('value', 0)
+        super(LowerIsBetterMetricUnderTest, self).__init__(*args, **kwargs)
+
     def value(self):
-        return 0
+        return self.__value
 
 
 class LowerIsBetterMetricTest(unittest.TestCase):  
@@ -274,14 +258,21 @@ class LowerIsBetterMetricTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
-        project = domain.Project(
+        self.__project = domain.Project(
             metric_sources={metric_source.History: FakeHistory()})
-        self.__metric = LowerIsBetterMetricUnderTest(self.__subject, 
-                                                     project=project)
 
     def test_default_status(self):
         ''' Test that the default status is perfect. '''
-        self.assertEqual('perfect', self.__metric.status())
+        metric = LowerIsBetterMetricUnderTest(self.__subject,
+                                              project=self.__project)
+        self.assertEqual('perfect', metric.status())
+
+    def test_impossible_value(self):
+        ''' Test that the status is red if the value is below zero. '''
+        metric = LowerIsBetterMetricUnderTest(self.__subject,
+                                              project=self.__project,
+                                              value=-1)
+        self.assertEqual('red', metric.status())
 
 
 class HigherIsBetterMetricUnderTest(domain.HigherIsBetterMetric):

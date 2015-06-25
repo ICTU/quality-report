@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -337,6 +337,12 @@ class FakeJenkinsTestReport(object):  # pylint: disable=too-few-public-methods
     pass
 
 
+class FakeJenkinsOWASPDependencyReport(object):
+    # pylint: disable=too-few-public-methods
+    ''' Fake Jenkins. '''
+    pass
+
+
 class FakePom(object):  # pylint: disable=too-few-public-methods
     ''' Fake Pom retriever. '''
     pass
@@ -344,6 +350,9 @@ class FakePom(object):  # pylint: disable=too-few-public-methods
 
 class FakeSubversion(object):  # pylint: disable=too-few-public-methods
     ''' Fake Subversion repository. '''
+
+    metric_source_name = 'FakeSubversion'
+
     @staticmethod
     def normalize_path(svn_path):
         ''' Return a normalized version of the path. '''
@@ -366,6 +375,8 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__pom = FakePom()
         self.__subversion = FakeSubversion()
         self.__jenkins = FakeJenkinsTestReport()
+        self.__jenkins_owasp_dependency_report = \
+            FakeJenkinsOWASPDependencyReport()
         self.__jmeter = FakeJMeter()
 
     @staticmethod
@@ -418,11 +429,6 @@ class QualityReportMetricsTest(unittest.TestCase):
             team_kwargs=dict(is_scrum_team=True,
                              metric_source_ids={self.__birt: 'team'}))
 
-    def test_release_age(self):
-        ''' Test that the release age metric is added if possible. '''
-        self.__assert_metric(metric.ReleaseAge, dict(),
-                             team_kwargs=dict(release_archives=['Archive']))
-
     def test_art_stability(self):
         ''' Test that the ART stability metric is added if possible. '''
         self.__assert_metric(metric.ARTStability,
@@ -438,20 +444,6 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.TeamAbsence, 
             project_kwargs=dict(metric_sources={metric_source.HolidayPlanner: 
                                                 'Planner'}))
-
-    def test_failing_ci_jobs_team(self):
-        ''' Test that the failing CI jobs metric per team is added if 
-            possible. '''
-        self.__assert_metric(metric.TeamFailingCIJobs, number_of_teams=2,
-            project_kwargs=dict(metric_sources={metric_source.Jenkins:
-                                                'Jenkins'}))
-
-    def test_unused_ci_jobs_team(self):
-        ''' Test that the unused CI jobs metric per team is added if 
-            possible. '''
-        self.__assert_metric(metric.TeamUnusedCIJobs, number_of_teams=2,
-            project_kwargs=dict(metric_sources={metric_source.Jenkins:
-                                                'Jenkins'}))
 
     def test_failing_unittests(self):
         ''' Test that the failing unit tests metric is added if possible. '''
@@ -521,22 +513,92 @@ class QualityReportMetricsTest(unittest.TestCase):
                 product_kwargs=dict(
                     art=dict(metric_source_ids={self.__sonar: 'id'})))
 
-    def test_reviewed_and_approved_us(self):
-        ''' Test that the reviewed and approved user stories metric is added
-            if possible. '''
-        self.__assert_metric(metric.UserStoriesNotReviewedAndApproved,
+    def test_reviewed_us(self):
+        ''' Test that the reviewed user stories metric is added if possible. '''
+        self.__assert_metric(metric.UserStoriesNotReviewed,
             project_kwargs=dict(metric_sources={metric_source.Birt:
                                                 self.__birt}),
             product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
 
-    def test_no_reviewed_approved_us(self):
-        ''' Test that the reviewed and approved user stories metric is not added
+    def test_approved_us(self):
+        ''' Test that the approved user stories metric is added if possible. '''
+        self.__assert_metric(metric.UserStoriesNotApproved,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+
+    def test_no_reviewed_us(self):
+        ''' Test that the reviewed user stories metric is not added
             when the product is not a trunk version. '''
-        self.__assert_metric(metric.UserStoriesNotReviewedAndApproved,
+        self.__assert_metric(metric.UserStoriesNotReviewed,
             project_kwargs=dict(metric_sources={metric_source.Birt:
                                                 self.__birt}),
             product_kwargs=dict(product_version='1.1',
                                 metric_source_ids={self.__birt: 'birt'}), 
+            include=False)
+
+    def test_no_approved_us(self):
+        ''' Test that the approved user stories metric is not added
+            when the product is not a trunk version. '''
+        self.__assert_metric(metric.UserStoriesNotApproved,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(product_version='1.1',
+                                metric_source_ids={self.__birt: 'birt'}),
+            include=False)
+
+    def test_reviewed_ltcs(self):
+        ''' Test that the reviewed logical test case metric is added if
+            possible. '''
+        self.__assert_metric(metric.LogicalTestCasesNotReviewed,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+
+    def test_approved_ltcs(self):
+        ''' Test that the approved logical test case metric is added if
+            possible. '''
+        self.__assert_metric(metric.LogicalTestCasesNotApproved,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+
+    def test_no_reviewed_ltcs(self):
+        ''' Test that the reviewed logical test case metric is not added
+            when the product is not a trunk version. '''
+        self.__assert_metric(metric.LogicalTestCasesNotReviewed,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(product_version='1.1',
+                                metric_source_ids={self.__birt: 'birt'}),
+            include=False)
+
+    def test_no_approved_ltcs(self):
+        ''' Test that the approved logical test case metric is not added
+            when the product is not a trunk version. '''
+        self.__assert_metric(metric.LogicalTestCasesNotApproved,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(product_version='1.1',
+                                metric_source_ids={self.__birt: 'birt'}),
+            include=False)
+
+    def test_percentage_manual_ltcs(self):
+        ''' Test that the number of manual logical test case metric is added
+            if possible. '''
+        self.__assert_metric(metric.NumberOfManualLogicalTestCases,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+
+    def test_no_percentage_manual_ltcs(self):
+        ''' Test that the number of manual logical test case metric is not
+            added when the product is not a trunk version. '''
+        self.__assert_metric(metric.NumberOfManualLogicalTestCases,
+            project_kwargs=dict(metric_sources={metric_source.Birt:
+                                                self.__birt}),
+            product_kwargs=dict(product_version='1.1',
+                                metric_source_ids={self.__birt: 'birt'}),
             include=False)
 
     def test_jsf_duplication(self):
@@ -591,22 +653,15 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_failing_ci_jobs(self):
         ''' Test that the failing CI jobs metric is added if possible. '''
-        self.__assert_metric(metric.ProjectFailingCIJobs, 
+        self.__assert_metric(metric.FailingCIJobs,
             project_kwargs=dict(metric_sources={metric_source.Jenkins:
                                                 'Jenkins'}))
 
     def test_unused_ci_jobs(self):
         ''' Test that the unused CI jobs metric is added if possible. '''
-        self.__assert_metric(metric.ProjectUnusedCIJobs, 
+        self.__assert_metric(metric.UnusedCIJobs,
             project_kwargs=dict(metric_sources={metric_source.Jenkins:
                                                 'Jenkins'}))
-
-    def test_assigned_ci_jobs(self):
-        ''' Test that the (un)assigned CI jobs metric is added if possible. '''
-        self.__assert_metric(metric.AssignedCIJobs, 
-            project_kwargs=dict(metric_sources={metric_source.Jenkins:
-                                                'Jenkins'}),
-            number_of_teams=2)
 
     def test_action_activity(self):
         ''' Test that the action activity metric is added if possible. '''
@@ -742,6 +797,17 @@ class QualityReportMetricsTest(unittest.TestCase):
                     metric_source.Pom: self.__pom,
                     metric_source.VersionControlSystem: self.__subversion}),
             product_kwargs=dict(short_name='dummy', product_version='1.1'))
+
+    def test_owasp_dependencies(self):
+        ''' Test that the OWASP dependencies metric is added if possible. '''
+        self.__assert_metric(metric.OWASPDependencies,
+            project_kwargs=dict(
+                metric_sources={
+                    metric_source.JenkinsOWASPDependencyReport:
+                        self.__jenkins_owasp_dependency_report}),
+            product_kwargs=dict(
+                metric_source_ids={
+                    self.__jenkins_owasp_dependency_report: 'job'}))
 
     def test_java_duplication(self):
         ''' Test that the Java duplication metric is added if possible. '''

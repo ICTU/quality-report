@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -59,11 +59,11 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
                self.__absent_in_period(team, longest_start, longest_end)
 
     def __absence_days(self, team):
-        ''' Return the days one or more team members are absent. '''
+        ''' Return the days two or more team members are absent. '''
         absence_list = self.__absence_list(team)
         days = {}
         for absence in absence_list:
-            date = absence[2]
+            date = absence[1]
             days[date] = days.get(date, 0) + 1
         return days
 
@@ -75,7 +75,7 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
         start, end = start.isoformat(), end.isoformat()
         absent_members = set()
         for absence in absence_list:
-            member, date = absence[1], absence[2]
+            member, date = absence[0], absence[1]
             if start <= date <= end:
                 absent_members.add(member)
         return [member for member in team.members()
@@ -87,6 +87,7 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
                       for member in team.members()]
         json = utils.eval_json(self.url_open(self.__api_url).read())
         absence_list = json['afwezig']
-        # Filter out people not in the team and absences other than whole days
-        return [absence for absence in absence_list
-                if absence[1] in member_ids and absence[3] == '3']
+        # Filter out people not in the team, absences other than whole days, and
+        # duplicates
+        return set([tuple(absence[1:]) for absence in absence_list
+                if absence[1] in member_ids and absence[3] == '3'])

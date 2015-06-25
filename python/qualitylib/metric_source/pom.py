@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -196,6 +196,7 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __product_svn_path(self, product):
         ''' Return the product's version control system path. '''
-        vcs_product_info = metric_info.VersionControlSystemProductInfo( \
-            self.__vcs, product)
+        vcs_product_info = metric_info.VersionControlSystemProductInfo(
+            [self.__vcs] if type(self.__vcs) != type([]) else self.__vcs,
+            product)
         return vcs_product_info.vcs_path()

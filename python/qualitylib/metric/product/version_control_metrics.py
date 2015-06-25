@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -73,33 +73,29 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         ''' Return a list of branch urls. '''
         urls = dict()
         for branch, nr_revisions in branches_and_revisions.items():
-            label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
-            urls[label] = self._vcs.branch_folder_for_branch(self._vcs_path(),
-                                                             branch)
+            label = '{branch}: {nr} ongemergde revisie(s)'.format(
+                branch=branch, nr=nr_revisions)
+            urls[label] = self._vcs_product_info.branch_folder_for_branch(
+                self._vcs_path(), branch)
         return urls
 
     def __branch_urls(self, branches):
         ''' Return a list of branch urls. '''
         urls = dict()
         for branch in branches:
-            urls[branch] = self._vcs.branch_folder_for_branch(self._vcs_path(),
-                                                              branch)
+            urls[branch] = self._vcs_product_info.branch_folder_for_branch(
+                self._vcs_path(), branch)
         return urls
 
     def __branches(self):
         ''' Return a list of branches for the product. '''
-        return self._vcs.branches(self._vcs_path())
+        return self._vcs_product_info.branches(self._vcs_path())
 
     def __unmerged_branches(self):
         ''' Return a dictionary of unmerged branch names and the number of 
             unmerged revisions for each branch. '''
-        unmerged_branches = \
-            self._vcs.unmerged_branches(self._vcs_path())
-        branches_to_ignore = self.__branches_to_ignore()
-        for branch in unmerged_branches.copy():
-            if branch in branches_to_ignore:
-                del unmerged_branches[branch]
-        return unmerged_branches
+        return self._vcs_product_info.unmerged_branches(self._vcs_path(),
+            self.__branches_to_ignore())
 
     def __branches_to_ignore(self):
         ''' Return the branches to ignore for the measured product. '''

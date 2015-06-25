@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -56,18 +56,13 @@ class Metric(object):
     @classmethod
     def norm_template_default_values(cls):
         ''' Return the default values for parameters in the norm template. '''
-        return dict(target=cls.target_value, low_target=cls.low_target_value)
+        return dict(target=cls.target_value, low_target=cls.low_target_value,
+                    old_age=utils.format_timedelta(cls.old_age),
+                    max_old_age=utils.format_timedelta(cls.max_old_age))
 
-    def __init__(self, subject=None, responsible_teams=None, project=None):
+    def __init__(self, subject=None, project=None):
         self._subject = subject
         self.__id_string = self.stable_id()
-        if responsible_teams:
-            self.__responsible_teams = responsible_teams
-        elif self._subject and hasattr(self._subject, 'responsible_teams'):
-            self.__responsible_teams = \
-                self._subject.responsible_teams(self.__class__)
-        else:
-            self.__responsible_teams = []
         self._project = project
         from qualitylib import metric_source
         self._wiki = self._project.metric_source(metric_source.Wiki)
@@ -117,6 +112,7 @@ class Metric(object):
         except AttributeError:
             return None
 
+    @utils.memoized
     def status(self):
         ''' Return the status/color of the metric. '''
         below_target = self._is_below_target()
@@ -283,10 +279,6 @@ class Metric(object):
         else:
             return minimum, maximum
 
-    def responsible_teams(self):
-        ''' Return the list of teams that are responsible for this metric. '''
-        return self.__responsible_teams
-
     def numerical_value(self):
         ''' Return a numerical version of the metric value for use in graphs.
             By default this simply returns the regular value, assuming it is
@@ -326,18 +318,20 @@ class LowerIsBetterMetric(Metric):
         # The metric is below target when the actual value is *higher*
         # than the target value, because the target value is the maximum value
         # pylint: disable=protected-access
-        return self.value() > self.target() or \
+        value = self.value()
+        return value < self.perfect_value or value > self.target() or \
             super(LowerIsBetterMetric, self)._is_below_target()  
 
     def _needs_immediate_action(self):
         ''' Return whether the metric scores so bad that immediate action is
             required. '''
         # pylint: disable=protected-access
-        return self.value() > self.low_target() or \
+        value = self.value()
+        return value < self.perfect_value or value > self.low_target() or \
             super(LowerIsBetterMetric, self)._needs_immediate_action()
 
     def _is_value_better_than(self, target):
-        return self.value() <= target
+        return self.perfect_value <= self.value() <= target
 
 
 class HigherIsBetterMetric(Metric):

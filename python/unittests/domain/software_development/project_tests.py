@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -161,13 +161,6 @@ class ProjectTest(unittest.TestCase):
         ''' Test that a team can be added to the project. '''
         self.__project.add_team('Team')
         self.assertEqual(['Team'], self.__project.teams())
-
-    def test_add_responsible_team(self):
-        ''' Test that a team can be added to the project as responsible 
-            team. '''
-        self.__project.add_team('Responsible team', responsible=True)
-        self.assertEqual(['Responsible team'], 
-                         self.__project.responsible_teams())
 
     def test_dashboard(self):
         ''' Test that a dashboard can be set. '''

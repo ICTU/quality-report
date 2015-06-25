@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ class VersionControlSystem(domain.MetricSource):
         Git. '''
 
     metric_source_name = 'Version control system'
+    needs_values_as_list = True
 
     def __init__(self, username=None, password=None, url=None,
                  run_shell_command=subprocess.check_output):
@@ -52,10 +53,15 @@ class VersionControlSystem(domain.MetricSource):
         ''' Return a list of branch names for the specified path. '''
         raise NotImplementedError  # pragma: no cover
 
-    def unmerged_branches(self, path):
+    def unmerged_branches(self, path, branches_to_ignore=None):
         # pylint: disable=unused-arguments
         ''' Return a dictionary of branch names and number of unmerged
             revisions for each branch that has any unmerged revisions. '''
+        raise NotImplementedError  # pragma: no cover
+
+    @classmethod
+    def branch_folder_for_branch(cls, trunk_url, branch):
+        ''' Return the branch folder for the specified branch. '''
         raise NotImplementedError  # pragma: no cover
 
     def normalize_path(self, path):

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ class MeasurableObject(DomainObject):  # pylint: disable=too-few-public-methods
     def __init__(self, targets=None, low_targets=None, 
                  technical_debt_targets=None, metric_source_ids=None,
                  old_metric_source_ids=None, metric_source_options=None,
-                 metric_options=None, responsible_teams=None, *args, **kwargs):
+                 metric_options=None, *args, **kwargs):
         self._targets = targets or dict()
         self.__low_targets = low_targets or dict()
         self._technical_debt_targets = technical_debt_targets or dict()
@@ -33,7 +33,6 @@ class MeasurableObject(DomainObject):  # pylint: disable=too-few-public-methods
         self.__old_metric_source_ids = old_metric_source_ids or dict()
         self.__metric_source_options = metric_source_options or dict()
         self.__metric_options = metric_options or dict()
-        self.__responsible_teams = responsible_teams or []
         super(MeasurableObject, self).__init__(*args, **kwargs)
 
     def target(self, metric_class):
@@ -70,7 +69,3 @@ class MeasurableObject(DomainObject):  # pylint: disable=too-few-public-methods
         ''' Return the options of this object for the metric class. Options
             can be any information that is needed for the metric. '''
         return self.__metric_options.get(metric_class, None)
-
-    def responsible_teams(self, metric_class=None):
-        ''' Return the teams responsible for the measurable object. '''
-        return self.__responsible_teams

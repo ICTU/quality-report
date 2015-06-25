@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,15 +20,18 @@ from qualitylib import metric, domain, metric_source
 
 class FakeSubversion(object):
     ''' Provide for a fake Subversion metric source. '''
+
+    metric_source_name = 'FakeSubversion'
+
     @staticmethod  # pylint: disable=unused-argument
     def unmerged_branches(*args):
         ''' Return the branches that have not been merged to the trunk. '''
-        return {'branch2': 1, 'ignored branch': 2}
+        return {'branch2': 1}
 
     @staticmethod  # pylint: disable=unused-argument
     def branches(*args):
         ''' Return the branches for a product. '''
-        return ['branch1', 'branch2', 'ignored branch']
+        return ['branch1', 'branch2']
 
     @staticmethod  # pylint: disable=unused-argument    
     def tags_folder_for_version(*args):
@@ -67,15 +70,12 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_value(self):
         ''' Test that the value of the metric equals the number of unmerged 
             branches reported by Subversion. '''
-        metric_options = self.__subject.metric_options(metric.UnmergedBranches)
-        branches_to_ignore = metric_options['branches_to_ignore']
-        unmerged_branches = self.__subversion.unmerged_branches()
-        expected_value = len(unmerged_branches) - len(branches_to_ignore)
+        expected_value = len(self.__subversion.unmerged_branches())
         self.assertEqual(expected_value, self.__metric.value())
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.assertEqual('1 van de 3 branches van Product hebben ' \
+        self.assertEqual('1 van de 2 branches van Product hebben ' \
                          'revisies die niet met de trunk zijn gemerged.', 
                          self.__metric.report())
 

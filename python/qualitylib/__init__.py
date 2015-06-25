@@ -16,4 +16,4 @@ limitations under the License.
 from __future__ import absolute_import
 
 
-VERSION = '1.15.0'
+VERSION = '1.15.1'

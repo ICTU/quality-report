@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 from __future__ import absolute_import
+import logging
+import datetime
 
 
 class VersionControlSystemProductInfo(object):
     ''' Class to represent information that Subversion has about a product. '''
     def __init__(self, version_control_system, product):
-        self.__vcs = version_control_system
+        self.__vcs = self.__find_repo(version_control_system, product)
         self.__product = product
+        if self.__vcs:
+            self.metric_source_name = self.__vcs.metric_source_name
 
     def vcs_path(self, version=None, branch=None):
         ''' Return the version control system path of the product. '''
@@ -48,7 +52,7 @@ class VersionControlSystemProductInfo(object):
         return self.__vcs.latest_tagged_product_version(vcs_path)
 
     def is_latest_release(self):
-        ''' Return whether the version of the product is the latest 
+        ''' Return whether the version of the product is the latest
             released version. '''
         product_version = self.__product.product_version()
         if product_version:
@@ -56,6 +60,31 @@ class VersionControlSystemProductInfo(object):
         else:
             return False
 
-    def last_changed_date(self):
-        ''' Return the date the product was last changed. '''
-        return self.__vcs.last_changed_date(self.vcs_path())
+    def branch_folder_for_branch(self, result, branch):
+        return self.__vcs.branch_folder_for_branch(result, branch)
+
+    def last_changed_date(self, path=None):
+        if path is None:
+            path = self.vcs_path()
+        if self.__vcs is None:
+            return datetime.datetime.min
+        else:
+            return self.__vcs.last_changed_date(path)
+
+    def unmerged_branches(self, path, branches_to_ignore=None):
+        return self.__vcs.unmerged_branches(path, branches_to_ignore)
+
+    def branches(self, path):
+        return self.__vcs.branches(path)
+
+    @staticmethod
+    def __find_repo(vcs, product):
+        """Loops through all VCS instances when vcs is a list and returns the instance linked to the product.
+        If vcs is not a list but a single instance, that instance is returned.
+        If the product is None, None is returned"""
+        if product:
+            try:
+                return [repo for repo in vcs if product.metric_source_id(repo)][0]
+            except IndexError:
+                logging.warn('Unable to find VCS for %s', product.name() if hasattr(product, 'name') else product)
+        return None

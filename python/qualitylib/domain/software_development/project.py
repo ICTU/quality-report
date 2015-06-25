@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,23 +20,22 @@ import copy
 import logging
 
 
-from ..base import DomainObject
-from ..measurement import metric_source
+from ..measurement import metric_source, measurable
+from ..measurement.metric_sources import MetricSources
 
 
-class Project(DomainObject):
+class Project(measurable.MeasurableObject):
     ''' Class representing a software development/maintenance project. '''
 
     def __init__(self, organization='Unnamed organization', 
                  metric_sources=None, requirements=None,
                  additional_resources=None, *args, **kwargs):
         self.__organization = organization
-        self.__metric_sources = metric_sources or dict()
+        self.__metric_sources = MetricSources(metric_sources or dict())
         self.__requirements = requirements or set()
         self.__additional_resources = additional_resources or []
         self.__products = []
         self.__teams = []
-        self.__responsible_teams = []
         self.__streets = []
         self.__documents = []
         self.__dashboard = [], []  # rows, columns
@@ -139,23 +138,13 @@ class Project(DomainObject):
             result.update(product.dependencies(recursive=True))
         return result
 
-    def add_team(self, team, responsible=False):
+    def add_team(self, team):
         ''' Add a team to the project. '''
         self.__teams.append(team)
-        if responsible:
-            self.__responsible_teams.append(team)
 
     def teams(self):
         ''' Return the teams that work on the project. '''
         return self.__teams
-
-    def responsible_teams(self, metric_class=None):
-        # pylint: disable=unused-argument
-        ''' Return the teams that are responsible for the products. '''
-        # The metric_class argument is used in other domain objects that may 
-        # have teams responsible for them. Maybe we should create an explicit 
-        # "Responsibility" interface.
-        return self.__responsible_teams
 
     def add_street(self, street):
         ''' Add a development street to the project. '''
@@ -185,7 +174,7 @@ class Project(DomainObject):
         ''' Return all resources of the project. '''
         resources = []
         for source in self.__metric_sources.values():
-            resources.append((source.name(), source.url()))
+            self.__add_metric_source_to_resources(source, resources)
         for team in self.teams():
             resources.extend(team.team_resources())
         for product in self.products():
@@ -194,3 +183,10 @@ class Project(DomainObject):
             resources.append((additional_resource.name(),
                               additional_resource.url()))
         return resources
+
+    def __add_metric_source_to_resources(self, source, resources):
+        if type(source) == type([]):
+            for subsource in source:
+                resources.append((subsource.name(), subsource.url()))
+        else:
+            resources.append((source.name(), source.url()))

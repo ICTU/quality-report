@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,6 +44,11 @@ class FakeBirt(object):
         return 120
 
     @staticmethod
+    def reviewed_ltcs(birt_id):  # pylint: disable=unused-argument
+        ''' Return the number of reviewed logical test cases. '''
+        return 110
+
+    @staticmethod
     def whats_missing_url(product):  # pylint: disable=unused-argument
         ''' Return the url for the what's missing report. '''
         return 'http://whats_missing'
@@ -83,18 +88,6 @@ class FakeBirt(object):
         return 'http://manual_tests'
 
 
-class FakeSubversion(object):
-    ''' Fake Subversion so unit tests don't touch the file system. '''
-    def tags_folder_for_version(self, *args):  # pylint: disable=unused-argument
-        ''' Return the tags folder. '''
-        return 'tags/'
-
-    @staticmethod
-    def normalize_path(svn_path):
-        ''' Return a normalized version of the path. '''
-        return svn_path
-
-
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
     version = ''
@@ -115,11 +108,6 @@ class FakeSubject(object):
         ''' Return the Birt id of the subject. '''
         return 'birt id' if self.__birt_id else ''
 
-    def old_metric_source_id(self, *args):
-        # pylint: disable=unused-argument
-        ''' Return the old metric source id of the subject. '''
-        return ''
-
     def product_version(self):
         ''' Return the version of the subject. '''
         return self.version
@@ -127,15 +115,6 @@ class FakeSubject(object):
     def product_version_type(self):
         ''' Return the version type of the product. '''
         return self.version_type
-
-    def product_branch_id(self, subversion):  # pylint: disable=unused-argument
-        ''' Return the branch id of the product. '''
-        return ''
-
-    def responsible_teams(self, *args):  # pylint: disable=unused-argument
-        ''' Return the responsible teams for this product. '''
-        return [domain.Team(name='Team', is_scrum_team=self.__scrum_team)] if \
-            self.__team else []
 
 
 class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
@@ -146,7 +125,7 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__project = domain.Project(metric_sources={metric_source.Birt:
                                                         self.__birt})
-        self.__metric = metric.LogicalTestCasesNotAutomated( \
+        self.__metric = metric.LogicalTestCasesNotAutomated(
             subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -162,46 +141,45 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
     def test_can_be_measured(self):
         ''' Test that the metric can  be measured when the project has Birt and
             the product has a Birt id and is a trunk version. '''
-        self.assertTrue(metric.LogicalTestCasesNotAutomated.\
+        self.assertTrue(metric.LogicalTestCasesNotAutomated.
                         can_be_measured(self.__subject, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric can not be measured when the project has no
             Birt. '''
-        self.assertFalse(metric.LogicalTestCasesNotAutomated.\
+        self.assertFalse(metric.LogicalTestCasesNotAutomated.
                     can_be_measured(self.__subject, domain.Project()))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric can not be measured when the product has no
             Birt id. '''
         product = FakeSubject(birt_id=False)
-        self.assertFalse(metric.LogicalTestCasesNotAutomated.\
+        self.assertFalse(metric.LogicalTestCasesNotAutomated.
                     can_be_measured(product, self.__project))
 
     def test_cant_be_measured_for_released_product(self):
         ''' Test that the metric can only be measured for trunk versions. '''
         product = FakeSubject(birt_id=False)
         product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotAutomated.\
+        self.assertFalse(metric.LogicalTestCasesNotAutomated.
                     can_be_measured(product, self.__project))
 
 
-class LogicalTestCasesNotReviewedAndApprovedTest(unittest.TestCase):
+class LogicalTestCasesNotReviewedTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
-    ''' Unit tests for the unapproved and/or unreviewed logical test cases 
-        metric. '''
+    ''' Unit tests for the unreviewed logical test cases metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__project = domain.Project(metric_sources={metric_source.Birt:
                                                         birt})
-        self.__metric = metric.LogicalTestCasesNotReviewedAndApproved( \
+        self.__metric = metric.LogicalTestCasesNotReviewed(
             subject=self.__subject, project=self.__project)
 
     def test_value(self):
-        ''' Test that the value of the metric is the number of not approved
+        ''' Test that the value of the metric is the number of not reviewed
             logical test cases as reported by Birt. '''
-        self.assertEqual(20, self.__metric.value())
+        self.assertEqual(10, self.__metric.value())
 
     def test_url(self):
         ''' Test the url is correct. '''
@@ -209,43 +187,104 @@ class LogicalTestCasesNotReviewedAndApprovedTest(unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.assertEqual('FakeSubject heeft 20 niet gereviewde en/of niet '
-                         'goedgekeurde logische testgevallen van in totaal 120 '
+        self.assertEqual('FakeSubject heeft 10 niet gereviewde '
+                         'logische testgevallen van in totaal 120 '
                          'logische testgevallen.', self.__metric.report())
 
     def test_can_be_measured(self):
         ''' Test that the metric can  be measured when the project has Birt and
             the product has a Birt id and is a trunk version. '''
-        self.assertTrue(metric.LogicalTestCasesNotReviewedAndApproved.\
-                        can_be_measured(self.__subject, self.__project))
+        self.assertTrue(metric.LogicalTestCasesNotReviewed.can_be_measured(
+            self.__subject, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric can not be measured when the project has no
             Birt. '''
-        self.assertFalse(metric.LogicalTestCasesNotReviewedAndApproved.\
-                    can_be_measured(self.__subject, domain.Project()))
+        self.assertFalse(metric.LogicalTestCasesNotReviewed.can_be_measured(
+            self.__subject, domain.Project()))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric can not be measured when the product has no
             Birt id. '''
         product = FakeSubject(birt_id=False)
-        self.assertFalse(metric.LogicalTestCasesNotReviewedAndApproved.\
-                    can_be_measured(product, self.__project))
+        self.assertFalse(metric.LogicalTestCasesNotReviewed.can_be_measured(
+            product, self.__project))
 
     def test_cant_be_measured_for_released_product(self):
         ''' Test that the metric can only be measured for trunk versions. '''
         product = self.__subject
         product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotReviewedAndApproved.\
-                    can_be_measured(product, self.__project))
+        self.assertFalse(metric.LogicalTestCasesNotReviewed.can_be_measured(
+            product, self.__project))
 
     def test_cant_be_measured_without_test_design(self):
         ''' Test that the metric can not be measured if the product has no
             test design report in Birt. '''
         birt = FakeBirt(test_design=False)
         project = domain.Project(metric_sources={metric_source.Birt: birt})
-        self.assertFalse(metric.LogicalTestCasesNotReviewedAndApproved.\
-                    can_be_measured(self.__subject, project))
+        self.assertFalse(metric.LogicalTestCasesNotReviewed.can_be_measured(
+            self.__subject, project))
+
+
+class LogicalTestCasesNotApprovedTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the unapproved logical test case metric. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        birt = FakeBirt()
+        self.__subject = FakeSubject()
+        self.__project = domain.Project(metric_sources={metric_source.Birt:
+                                                        birt})
+        self.__metric = metric.LogicalTestCasesNotApproved(
+            subject=self.__subject, project=self.__project)
+
+    def test_value(self):
+        ''' Test that the value of the metric is the number of not approved
+            logical test cases as reported by Birt. '''
+        self.assertEqual(10, self.__metric.value())
+
+    def test_url(self):
+        ''' Test the url is correct. '''
+        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+
+    def test_report(self):
+        ''' Test that the report is correct. '''
+        self.assertEqual('FakeSubject heeft 10 niet goedgekeurde logische '
+                         'testgevallen van in totaal 110 gereviewde logische '
+                         'testgevallen.', self.__metric.report())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can  be measured when the project has Birt and
+            the product has a Birt id and is a trunk version. '''
+        self.assertTrue(metric.LogicalTestCasesNotApproved.can_be_measured(
+            self.__subject, self.__project))
+
+    def test_cant_be_measured_without_birt(self):
+        ''' Test that the metric can not be measured when the project has no
+            Birt. '''
+        self.assertFalse(metric.LogicalTestCasesNotApproved.can_be_measured(
+            self.__subject, domain.Project()))
+
+    def test_cant_be_measured_without_birt_id(self):
+        ''' Test that the metric can not be measured when the product has no
+            Birt id. '''
+        product = FakeSubject(birt_id=False)
+        self.assertFalse(metric.LogicalTestCasesNotApproved.can_be_measured(
+            product, self.__project))
+
+    def test_cant_be_measured_for_released_product(self):
+        ''' Test that the metric can only be measured for trunk versions. '''
+        product = self.__subject
+        product.version = '1.1'
+        self.assertFalse(metric.LogicalTestCasesNotApproved.can_be_measured(
+            product, self.__project))
+
+    def test_cant_be_measured_without_test_design(self):
+        ''' Test that the metric can not be measured if the product has no
+            test design report in Birt. '''
+        birt = FakeBirt(test_design=False)
+        project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.assertFalse(metric.LogicalTestCasesNotApproved.can_be_measured(
+            self.__subject, project))
 
 
 class ManualLogicalTestCasesTest(unittest.TestCase):
@@ -253,12 +292,10 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
     ''' Unit tests for the ManualLogicalTestCases metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
-        self.__subversion = FakeSubversion()
         self.__subject = FakeSubject()
         self.__project = domain.Project(metric_sources={
-            metric_source.Birt: self.__birt,
-            metric_source.VersionControlSystem: self.__subversion})
-        self.__metric = metric.ManualLogicalTestCases( \
+            metric_source.Birt: self.__birt})
+        self.__metric = metric.ManualLogicalTestCases(
             subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -276,8 +313,8 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.assertTrue('5 van de 10 handmatige logische testgevallen van ' \
-                        'FakeSubject zijn te lang geleden ' \
+        self.assertTrue('5 van de 10 handmatige logische testgevallen van '
+                        'FakeSubject zijn te lang geleden '
                         '(meest recente 5 dag(en), ' in self.__metric.report())
 
     def test_report_with_untested(self):
@@ -285,15 +322,15 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
             never been tested. '''
         self.__birt.date_of_last_manual_tests = datetime.datetime.now() - \
                                                 datetime.timedelta(days=60)
-        self.assertTrue(self.__metric.report().startswith('5 van de 10 ' \
-            'handmatige logische testgevallen van FakeSubject zijn te lang ' \
+        self.assertTrue(self.__metric.report().startswith('5 van de 10 '
+            'handmatige logische testgevallen van FakeSubject zijn te lang '
             'geleden (meest recente 60 dag(en), '))
 
     def test_report_when_untested(self):
         ''' Test that the report uses the correct template when the manual
             tests have not been executed at all. '''
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
-        self.assertEqual('De 10 handmatige logische testgevallen van ' \
+        self.assertEqual('De 10 handmatige logische testgevallen van '
                          'FakeSubject zijn nog niet allemaal uitgevoerd.',
             self.__metric.report())
 
@@ -312,32 +349,82 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         ''' Test that the metric can  be measured when the project has Birt and
             the product has a Birt id, the project has Subversion and the
             product has a Subversion id and the product is a trunk version. '''
-        self.assertTrue(metric.ManualLogicalTestCases.\
+        self.assertTrue(metric.ManualLogicalTestCases.
                         can_be_measured(self.__subject, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric can not be measured when the project has no
             Birt. '''
-        self.assertFalse(metric.ManualLogicalTestCases.\
-                    can_be_measured(self.__subject, domain.Project()))
+        self.assertFalse(metric.ManualLogicalTestCases.
+                         can_be_measured(self.__subject, domain.Project()))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric can not be measured when the product has no
             Birt id. '''
         product = FakeSubject(birt_id=False)
-        self.assertFalse(metric.ManualLogicalTestCases.\
-                    can_be_measured(product, self.__project))
+        self.assertFalse(metric.ManualLogicalTestCases.
+                         can_be_measured(product, self.__project))
 
     def test_can_be_measured_for_released_product(self):
         ''' Test that the metric can only be measured for trunk versions. '''
         product = self.__subject
         product.version = '1.1'
-        self.assertTrue(metric.ManualLogicalTestCases.\
+        self.assertTrue(metric.ManualLogicalTestCases.
                         can_be_measured(product, self.__project))
 
-    def test_cant_be_measured_without_responsible_teams(self):
-        ''' Test that the metric can not be measured without responsible 
-            team. '''
-        product = FakeSubject(team=False)
-        self.assertFalse(metric.ManualLogicalTestCases.\
-                    can_be_measured(product, self.__project))
+
+class PercentageManualLogicalTestCasesTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the PercentageManualLogicalTestCases metric. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__birt = FakeBirt()
+        self.__subject = FakeSubject()
+        self.__project = domain.Project(metric_sources={
+            metric_source.Birt: self.__birt})
+        self.__metric = metric.NumberOfManualLogicalTestCases(
+            subject=self.__subject, project=self.__project)
+
+    def test_value(self):
+        ''' Test that the value of the metric is the percentage of manual
+            logical test cases. '''
+        self.assertEqual(10, self.__metric.value())
+
+    def test_report(self):
+        ''' Test the metric report. '''
+        self.assertEqual('10 van de 120 logische testgevallen zijn handmatig.',
+                         self.__metric.report())
+
+    def test_norm(self):
+        ''' Test the norm text. '''
+        self.assertEqual('Maximaal 10 van de logische testgevallen is '
+            'handmatig. Meer dan 50 is rood.', self.__metric.norm())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can  be measured when the project has Birt and
+            the product has a Birt id, and the product is a trunk version. '''
+        self.assertTrue(metric.NumberOfManualLogicalTestCases.
+                        can_be_measured(self.__subject, self.__project))
+
+    def test_cant_be_measured_without_birt(self):
+        ''' Test that the metric can not be measured when the project has no
+            Birt. '''
+        self.assertFalse(metric.NumberOfManualLogicalTestCases.
+                         can_be_measured(self.__subject, domain.Project()))
+
+    def test_cant_be_measured_without_birt_id(self):
+        ''' Test that the metric can not be measured when the product has no
+            Birt id. '''
+        product = FakeSubject(birt_id=False)
+        self.assertFalse(metric.NumberOfManualLogicalTestCases.
+                         can_be_measured(product, self.__project))
+
+    def test_cant_be_measured_for_released_product(self):
+        ''' Test that the metric can only be measured for trunk versions. '''
+        product = self.__subject
+        product.version = '1.1'
+        self.assertFalse(metric.NumberOfManualLogicalTestCases.
+                         can_be_measured(product, self.__project))
+
+    def test_url(self):
+        ''' Test the url is correct. '''
+        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())

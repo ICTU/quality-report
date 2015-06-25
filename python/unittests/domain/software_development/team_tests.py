@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,10 +26,6 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_default_scrum_team(self):
         ''' Test that a team is not a Scrum team by default. '''
         self.assertFalse(self.__team.is_scrum_team())
-
-    def test_default_support_team(self):
-        ''' Test that a team is not a support team by default. '''
-        self.assertFalse(self.__team.is_support_team())
 
     def test_default_release_archives(self):
         ''' Test that a team has no release archives by default. '''
@@ -60,10 +56,6 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the string formatting of a team equals the team name. '''
         self.assertEqual(self.__team.name(), str(self.__team))
 
-    def test_default_sprint_length(self):
-        ''' Test the default sprint length of the team. '''
-        self.assertEqual(21, self.__team.days_per_sprint())
-
     def test_default_team_members(self):
         ''' Test that the team has no team members by default. '''
         self.assertFalse(self.__team.members())
@@ -79,7 +71,3 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         piet = domain.Person(name='Piet Programmer')
         self.__team.add_member(piet)
         self.assertTrue(('Piet Programmer', '') in self.__team.team_resources())
-
-    def test_responsible_teams(self):
-        ''' Test that a team is responsible for itself. '''
-        self.assertEqual([self.__team], self.__team.responsible_teams())

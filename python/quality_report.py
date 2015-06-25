@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ limitations under the License.
 
 from qualitylib import formatting, commandlineargs, report, metric_source, \
     metric_info, log, filesystem, VERSION
-import import_file
 import logging
 import os
 import pkg_resources
 import xmlrpclib
 import socket
 import urllib2
+import sys
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -35,17 +35,28 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     PROJECT_DEFINITION_FILENAME = 'project_definition.py'
     HISTORY_FILENAME = 'history.json'
-    CSV_FILENAME = 'summary.csv'
     EMPTY_HISTORY_PNG = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
 
     def __init__(self, project_folder):
-        project_definition_filename = os.path.join(project_folder,
-                                           self.PROJECT_DEFINITION_FILENAME)
-        project_module = import_file.import_file(project_definition_filename)
-        self.__project = project_module.PROJECT
-        self.__history_filename = os.path.join(project_folder, 
+        self.__project = self.__import_project(project_folder,
+                                               self.PROJECT_DEFINITION_FILENAME)
+        self.__history_filename = os.path.join(project_folder,
                                                self.HISTORY_FILENAME)
-        self.__csv_filename = os.path.join(project_folder, self.CSV_FILENAME)
+
+    @staticmethod
+    def __import_project(project_folder, project_definition_filename):
+        ''' Import the project from the project definition file in the project
+            folder. '''
+        # Add the parent folder of the project folder to the python path so the
+        # project definition can import shared resources from other folders.
+        sys.path.insert(0, os.path.abspath(os.path.join(project_folder, '..')))
+        # Add the project folder itself to the python path so that we can import
+        # the project definition itself.
+        sys.path.insert(0, project_folder)
+        # Import the project definition and get the project from it.
+        module_name = project_definition_filename[:-len('.py')]
+        project_definition_module = __import__(module_name)
+        return project_definition_module.PROJECT
 
     def create_report(self, report_folder):
         ''' Create, format, and write the quality report. '''
@@ -59,10 +70,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__format_and_write_report(quality_report, formatting.JSONFormatter,
             self.__history_filename, 'a', 'ascii',
             sonar=self.__project.metric_source(metric_source.Sonar))
-        if os.path.exists(self.__csv_filename):
-            self.__format_and_write_report(quality_report,
-                                           formatting.CSVFormatter,
-                                           self.__csv_filename, 'a', 'ascii')
         self.__create_report(quality_report, report_folder)
         metric_source.History(self.__history_filename).clean_history()
 

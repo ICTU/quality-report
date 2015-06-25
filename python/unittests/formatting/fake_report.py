@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -107,11 +107,6 @@ class Report(object):
         ''' Return a fake section. '''
         return self.get_meta_section()
 
-    @staticmethod
-    def latest_product_version(product):  # pylint: disable=unused-argument
-        ''' Return the latest version number of the product. '''
-        return '2'
-
     def get_product_section(self, product_label):
         # pylint: disable=unused-argument
         ''' Return a fake section. '''
@@ -137,10 +132,6 @@ class Report(object):
     def metrics(self):
         ''' Return the metrics in the report. '''
         return self.__metrics + self.__meta_metrics
-
-    def teams(self):
-        ''' Return the teams in the report. '''
-        return self.__teams
 
     @staticmethod
     def dashboard():

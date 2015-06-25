@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
     def _numerator(self):
         ''' Return the numerator (the number above the divider) for the
             meta metric. '''
-        return len([metric for metric in self._subject \
+        return len([metric for metric in self._subject
                     if metric.status() in self.metric_statuses])
 
     def _denominator(self):

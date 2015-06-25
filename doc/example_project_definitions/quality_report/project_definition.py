@@ -32,17 +32,19 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.History: HISTORY},
                   additional_resources=[
                       MetricSource(name='GitHub Quality Report',
-                               url='https://github.com/ICTU/quality-report')])
+                               url='https://github.com/ICTU/quality-report')],
+                  # Override the total loc metric targets:
+                  targets={metric.TotalLOC: 1000000},
+                  low_targets={metric.TotalLOC: 1200000})
 
 # Teams of the project.
-QUALITY_TEAM = Team(name='Quality team', is_support_team=True)
-PROJECT.add_team(QUALITY_TEAM, responsible=True)
+QUALITY_TEAM = Team(name='Quality team')
+PROJECT.add_team(QUALITY_TEAM)
 
 # Documents of the project.
 QUALITY_PLAN_URL = SVN_BASE + 'http://svn/commons/docs/quality_plan.doc'
 PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
-    metric_source_ids={SUBVERSION: QUALITY_PLAN_URL},
-    responsible_teams=[QUALITY_TEAM]))
+    metric_source_ids={SUBVERSION: QUALITY_PLAN_URL}))
 
 # Products the project(s) develop(s).
 QUALITY_REPORT_UNITTESTS = \

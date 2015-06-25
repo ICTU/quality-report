@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
             return
         if not self.__analysis_exists(product):
             users = ', '.join([
-                               '{usr}:{ver}'.format(usr=user.name(), \
-                                                    ver=user.product_version() or 'trunk') \
+                               '{usr}:{ver}'.format(usr=user.name(),
+                                                    ver=user.product_version() or 'trunk')
                                 for user in product.users()
                                ])
             logging.info('Check out and run sonar on %s '
@@ -76,7 +76,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         sonar_id = '"{prod}"'.format(prod=self.__product_sonar_id(product))
         result = sonar_id in str(self.soup(self.__sonar_url + 'api/resources'))
         logging.info('Sonar analysis for %s %s', sonar_id,
-                      {True: 'exists', False: 'does not exist'}[result])
+                     {True: 'exists', False: 'does not exist'}[result])
         return result
 
     def __remove_old_analyses(self, sonar_analyses_to_keep):
@@ -85,12 +85,12 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
         def sonar_id_contains_version(sonar_id):
             ''' Return whether the Sonar id contains a version number. '''
             last_part = sonar_id.split(':')[-1]
-            return len(last_part) > 0 and (last_part[0].isdigit() or \
+            return len(last_part) > 0 and (last_part[0].isdigit() or
                                            last_part[-1].isdigit())
 
         logging.debug('Removing Sonar analyses, keeping %s', 
                       sonar_analyses_to_keep)
-        analyses = utils.eval_json(self.url_open(self.__sonar_url + \
+        analyses = utils.eval_json(self.url_open(self.__sonar_url +
                                                  'api/resources').read())
         for analysis in analyses:
             sonar_id = analysis['key']
@@ -98,7 +98,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                sonar_id not in sonar_analyses_to_keep and \
                sonar_id.rsplit(':', 1)[0] in sonar_analyses_to_keep:
                 try:
-                    self.url_delete(self.__sonar_url + \
+                    self.url_delete(self.__sonar_url +
                                     'api/projects/{sonar}'.format(sonar=sonar_id))
                     logging.info('Removed Sonar analysis for %s', sonar_id)
                 except urllib2.HTTPError, reason:
@@ -133,7 +133,7 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
                     sonar_options['branch'] += ':' + version
                 else:
                     sonar_options['branch'] = version
-        sonar_options_string = ' '.join(['-Dsonar.{}={}'.format(*item) \
+        sonar_options_string = ' '.join(['-Dsonar.{}={}'.format(*item)
                                          for item in sonar_options.items()])
         utils.rmtree(folder)  # Remove any left over checkouts
         self.__check_out(product, folder)
@@ -157,6 +157,8 @@ class SonarRunner(beautifulsoup.BeautifulSoupOpener):
 
     def __check_out(self, product, folder):
         ''' Check out the product in the folder. '''
-        vcs_product_info = metric_info.VersionControlSystemProductInfo( \
-            self.__vcs, product)
+        vcs_product_info = metric_info.VersionControlSystemProductInfo(
+            [self.__vcs] if type(self.__vcs) != type([]) else self.__vcs,
+            product)
+        # FIXME: This assumes self.__vcs is not a list.
         self.__vcs.check_out(vcs_product_info.vcs_path(), folder)

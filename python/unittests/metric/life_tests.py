@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,28 +19,24 @@ from unittests.domain.measurement.fake import FakeSubject
 import unittest
 
 
-
-class LifeUniverseAndEverythingUnderTest(metric.LifeUniverseAndEverything):
-    # pylint: disable=too-many-public-methods
-    ''' Override LowerIsBetterMetric to implement abstract methods that are 
-        needed for running the unit tests. '''
-    pass
-
-
 class LifeUniverseAndEverythingTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
-    ''' Test case for the LowerIsBetterMetric domain class. '''
+    ''' Test case for the Life metric. '''
 
     def setUp(self):  # pylint: disable=C0103
         self.__subject = FakeSubject()
-        self.__subject.metric_source_id = lambda x: 'x'  # method not provided by FakeSubject
         self.__project = domain.Project()
-        self.__metric = LifeUniverseAndEverythingUnderTest(subject=self.__subject, 
-                                                     project=self.__project)
-
+        self.__metric = metric.LifeUniverseAndEverything(subject=self.__subject,
+                                                         project=self.__project)
 
     def test_default_status(self):
-        ''' Test that the default status is perfect. '''
+        ''' Test that the default status is red. '''
         self.assertEqual('red', self.__metric.status())
 
+    def test_value(self):
+        ''' Test that the metric value is 42. '''
+        self.assertEqual(None, self.__metric.value())
 
+    def test_url(self):
+        ''' Test that the url links to Deep Thought. '''
+        self.assertEqual({'Deep Thought': 'http://google.com/'}, self.__metric.url())

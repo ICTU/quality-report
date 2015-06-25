@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ class HolidayPlannerUnderTest(HolidayPlanner):
                         '["3555","piepo","{year}-{month:02d}-17","3"],' \
                         '["3555","piepo","{year}-{month:02d}-18","3"],' \
                         '["3555","piepo","{year}-{month:02d}-19","3"],' \
+                        '["3550","alale","{year}-{month:02d}-20","3"],' \
+                        '["3550","alale","{year}-{month:02d}-20","3"],' \
                         '["3556","desmi","{year}-{month:02d}-25","3"],' \
                         '["3597","erkat","{year}-{month:02d}-27","3"],' \
                         '["3598","erkat","{year}-{month:02d}-03","3"],' \
@@ -84,3 +86,20 @@ class HolidayPlannerTests(unittest.TestCase):
         ''' Test that the absent team members are returned. '''
         self.assertEqual(sorted([self.__derk, self.__piet]),
                          sorted(self.__planner.days(self.__team)[3]))
+
+    def test_value_when_no_multiple_team_members_absent(self):
+        ''' Test that at least two people need to be absent on the same day. '''
+        team = domain.Team()
+        team.add_member(self.__piet)
+        team.add_member(domain.Person('No Holiday',
+                        metric_source_ids={self.__planner: 'nohol'}))
+        self.assertEqual((0, None, None, []), self.__planner.days(team))
+
+    def test_value_when_same_day_listed_multiple_times_for_team_member(self):
+        ''' Test that listing the same day as holiday multiple times is ignored.
+        '''
+        team = domain.Team()
+        team.add_member(self.__piet)
+        team.add_member(domain.Person('Alex Alexander',
+                        metric_source_ids={self.__planner: 'alale'}))
+        self.assertEqual((0, None, None, []), self.__planner.days(team))

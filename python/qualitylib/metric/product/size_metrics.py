@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -46,19 +46,24 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     name = 'Totale omvang'
     norm_template = 'Maximaal {target} regels (Java) code. Meer dan ' \
         '{low_target} regels (Java) code (herbouwtijd 30 jaar) is rood.'
-    template = 'Het totaal aantal LOC voor alle producten is {value} ' \
-        'regels code.'
+    template = 'Het totaal aantal LOC voor de producten {products} is ' \
+        '{value} regels code.'
     target_value = 160000
     # Maximum number of LOC Java to be eligible for 4 stars, see
     # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/  # pylint: disable=C0301
     low_target_value = 175000
     quality_attribute = SIZE
 
+    def _parameters(self):
+        parameters = super(TotalLOC, self)._parameters()
+        products = self.__main_products()
+        parameters['products'] = ', '.join([product.product_label() for product
+                                            in products])
+        return parameters
+
     def value(self):
         total = 0
-        for product in self._project.products():
-            if product.product_version_type() != 'trunk':
-                continue
+        for product in self.__main_products():
             sonar_id = metric_info.SonarProductInfo(self._sonar, 
                                                     product).sonar_id()
             if sonar_id:
@@ -71,3 +76,8 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
         historic_values = super(TotalLOC, self).recent_history()
         minimum_value = min(historic_values) if historic_values else 0
         return [value - minimum_value for value in historic_values]
+
+    def __main_products(self):
+        ''' Return the main products. '''
+        return [product for product in self._project.products() if
+                product.is_main()]

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -125,30 +125,34 @@ class QualityReport(object):
                                     metric.FailingRegressionTests,
                                     metric.EmmaARTCoverage,
                                     metric.JaCoCoARTCoverage)
-    TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewedAndApproved,
-                                  metric.LogicalTestCasesNotReviewedAndApproved,
+    TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewed,
+                                  metric.UserStoriesNotApproved,
+                                  metric.LogicalTestCasesNotReviewed,
+                                  metric.LogicalTestCasesNotApproved,
                                   metric.UserStoriesWithTooFewLogicalTestCases,
                                   metric.LogicalTestCasesNotAutomated,
-                                  metric.ManualLogicalTestCases)
+                                  metric.ManualLogicalTestCases,
+                                  metric.NumberOfManualLogicalTestCases)
     JAVA_METRIC_CLASSES = (metric.BlockerViolations, metric.CriticalViolations,
                            metric.MajorViolations, metric.CyclomaticComplexity,
                            metric.CyclicDependencies, metric.JavaDuplication,
                            metric.ProductLOC, metric.LongMethods,
                            metric.ManyParameters, metric.CommentedLOC)
+    DEPENDENCY_METRIC_CLASSES = (metric.DependencyQuality,
+                                 metric.SnapshotDependencies,
+                                 metric.OWASPDependencies)
     PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes,
+                                  metric.YmorResponseTimes,
                                   metric.RelativeARTPerformance)
     MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, 
                                  metric.RiskLog)
-    BUILD_SERVER_METRIC_CLASSES = (metric.ProjectFailingCIJobs,
-                                   metric.ProjectUnusedCIJobs,
-                                   metric.AssignedCIJobs)
+    BUILD_SERVER_METRIC_CLASSES = (metric.FailingCIJobs,
+                                   metric.UnusedCIJobs)
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
                            metric.BlockingTestIssues)
     DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
-    TEAM_METRIC_CLASSES = (metric.ReleaseAge, metric.TeamProgress,
-                                   metric.TeamSpirit, metric.TeamAbsence,
-                                   metric.TeamFailingCIJobs,
-                                   metric.TeamUnusedCIJobs)
+    TEAM_METRIC_CLASSES = (metric.TeamProgress, metric.TeamSpirit,
+                           metric.TeamAbsence)
     META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
                            metric.YellowMetaMetric, metric.GreyMetaMetric)
     ADDITIONAL_METRIC_CLASSES = ( metric.LifeUniverseAndEverything, )
@@ -166,9 +170,8 @@ class QualityReport(object):
             cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
             cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + \
-            (metric.TotalLOC, metric.DependencyQuality, 
-             metric.SnapshotDependencies, metric.UnmergedBranches,
-             metric.ARTStability)
+            cls.DEPENDENCY_METRIC_CLASSES + \
+            (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
 
     def __init__(self, project):
         self.__project = project
@@ -278,7 +281,8 @@ class QualityReport(object):
         ''' Return the products overall section. '''
         metrics = []
         if metric.TotalLOC.should_be_measured(self.__project):
-            metrics.append(metric.TotalLOC(project=self.__project))
+            metrics.append(metric.TotalLOC(subject=self.__project,
+                                           project=self.__project))
         metrics.append(metric.DependencyQuality(report=self,
                                                 project=self.__project))
         for document in self.__project.documents():
@@ -299,6 +303,9 @@ class QualityReport(object):
                             self.ADDITIONAL_METRIC_CLASSES:
             if metric_class.can_be_measured(product, self.__project):
                 metrics.append(metric_class(product, project=self.__project))
+        if metric.OWASPDependencies.can_be_measured(product, self.__project):
+            metrics.append(metric.OWASPDependencies(product,
+                                                    project=self.__project))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
             metrics.append(metric.SnapshotDependencies(product, report=self,
                                                        project=self.__project))

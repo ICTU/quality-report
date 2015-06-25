@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,6 +31,11 @@ class FakeBirt(object):
     def approved_user_stories(birt_id):  # pylint: disable=unused-argument
         ''' Return the number of approved user stories. '''
         return 20
+
+    @staticmethod
+    def reviewed_user_stories(birt_id):  # pylint: disable=unused-argument
+        ''' Return the number of reviewed user stories. '''
+        return 23
 
     @staticmethod
     def nr_user_stories(birt_id):  # pylint: disable=unused-argument
@@ -73,28 +78,26 @@ class FakeSubject(object):
         return self.version
 
 
-class UserStoriesNotReviewedAndApprovedTest(unittest.TestCase):
+class UserStoriesNotReviewedTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
-    ''' Unit tests for the user stories that are not reviewed and not approved
-        metric. '''
+    ''' Unit tests for the user stories that are not reviewed. '''
     def setUp(self):  # pylint: disable=invalid-name
         birt = FakeBirt()
         self.__subject = FakeSubject()
         self.__project = domain.Project(metric_sources={metric_source.Birt:
                                                         birt})
-        self.__metric = metric.UserStoriesNotReviewedAndApproved( \
-            subject=self.__subject, project=self.__project)
+        self.__metric = metric.UserStoriesNotReviewed(subject=self.__subject,
+                                                      project=self.__project)
 
     def test_value(self):
-        ''' Test that the value of the metric is the number of not approved
+        ''' Test that the value of the metric is the number of not reviewed
             user stories as reported by Birt. '''
-        self.assertEqual(5, self.__metric.value())
+        self.assertEqual(2, self.__metric.value())
 
     def test_report(self):
         ''' Test that the report is correct. '''
-        self.assertEqual('FakeSubject heeft 5 niet gereviewde en/of niet '
-                         'goedgekeurde user stories van in totaal 25 user '
-                         'stories.', 
+        self.assertEqual('FakeSubject heeft 2 niet gereviewde user stories '
+                         'van in totaal 25 user stories.',
                          self.__metric.report())
 
     def test_url(self):
@@ -102,38 +105,99 @@ class UserStoriesNotReviewedAndApprovedTest(unittest.TestCase):
         self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
 
     def test_can_be_measured(self):
-        ''' Test that the metric can  be measured when the project has Birt and
+        ''' Test that the metric can be measured when the project has Birt and
             the product has a Birt id and is a trunk version. '''
-        self.assertTrue(metric.UserStoriesNotReviewedAndApproved.\
-                        can_be_measured(self.__subject, self.__project))
+        self.assertTrue(metric.UserStoriesNotReviewed.can_be_measured(
+            self.__subject, self.__project))
 
     def test_cant_be_measured_without_birt(self):
         ''' Test that the metric can not be measured when the project has no
             Birt. '''
-        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
-                    can_be_measured(self.__subject, domain.Project()))
+        self.assertFalse(metric.UserStoriesNotReviewed.can_be_measured(
+            self.__subject, domain.Project()))
 
     def test_cant_be_measured_without_birt_id(self):
         ''' Test that the metric can not be measured when the product has no
             Birt id. '''
         product = FakeSubject(birt_id=False)
-        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
-                    can_be_measured(product, self.__project))
+        self.assertFalse(metric.UserStoriesNotReviewed.can_be_measured(
+            product, self.__project))
 
     def test_cant_be_measured_for_released_product(self):
         ''' Test that the metric can only be measured for trunk versions. '''
         product = self.__subject
         product.version = '1.1'
-        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
-                    can_be_measured(product, self.__project))
+        self.assertFalse(metric.UserStoriesNotReviewed.can_be_measured(
+            product, self.__project))
 
     def test_cant_be_measured_without_test_design(self):
         ''' Test that the metric can not be measured if the product has no
             test design report in Birt. '''
         birt = FakeBirt(test_design=False)
         project = domain.Project(metric_sources={metric_source.Birt: birt})
-        self.assertFalse(metric.UserStoriesNotReviewedAndApproved.\
-                    can_be_measured(self.__subject, project))
+        self.assertFalse(metric.UserStoriesNotReviewed.can_be_measured(
+            self.__subject, project))
+
+
+class UserStoriesNotApprovedTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the user stories that are not approved. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        birt = FakeBirt()
+        self.__subject = FakeSubject()
+        self.__project = domain.Project(metric_sources={metric_source.Birt:
+                                                        birt})
+        self.__metric = metric.UserStoriesNotApproved(subject=self.__subject,
+                                                      project=self.__project)
+
+    def test_value(self):
+        ''' Test that the value of the metric is the number of not approved
+            user stories as reported by Birt. '''
+        self.assertEqual(3, self.__metric.value())
+
+    def test_report(self):
+        ''' Test that the report is correct. '''
+        self.assertEqual('FakeSubject heeft 3 niet goedgekeurde user stories '
+                         'van in totaal 23 gereviewde user stories.',
+                         self.__metric.report())
+
+    def test_url(self):
+        ''' Test the url is correct. '''
+        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has Birt and
+            the product has a Birt id and is a trunk version. '''
+        self.assertTrue(metric.UserStoriesNotApproved.can_be_measured(
+            self.__subject, self.__project))
+
+    def test_cant_be_measured_without_birt(self):
+        ''' Test that the metric can not be measured when the project has no
+            Birt. '''
+        self.assertFalse(metric.UserStoriesNotApproved.can_be_measured(
+            self.__subject, domain.Project()))
+
+    def test_cant_be_measured_without_birt_id(self):
+        ''' Test that the metric can not be measured when the product has no
+            Birt id. '''
+        product = FakeSubject(birt_id=False)
+        self.assertFalse(metric.UserStoriesNotApproved.can_be_measured(
+            product, self.__project))
+
+    def test_cant_be_measured_for_released_product(self):
+        ''' Test that the metric can only be measured for trunk versions. '''
+        product = self.__subject
+        product.version = '1.1'
+        self.assertFalse(metric.UserStoriesNotApproved.can_be_measured(
+            product, self.__project))
+
+    def test_cant_be_measured_without_test_design(self):
+        ''' Test that the metric can not be measured if the product has no
+            test design report in Birt. '''
+        birt = FakeBirt(test_design=False)
+        project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.assertFalse(metric.UserStoriesNotApproved.can_be_measured(
+            self.__subject, project))
 
 
 class UserStoriesWithEnoughLTCsTest(unittest.TestCase):

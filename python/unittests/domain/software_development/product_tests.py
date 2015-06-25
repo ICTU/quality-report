@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ class FakeBirt(object):  # pylint: disable=too-few-public-methods
 
 
 class FakeSubversion(object):
+
+    metric_source_name = 'FakeSubversion'
+
     ''' Fake a Subversion repository. '''
     @staticmethod
     def latest_tagged_product_version(svn_path):  
@@ -146,24 +149,6 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product.set_product_version('1.1')
         self.assertTrue(product.is_latest_release())
 
-    def test_responsible_teams(self):
-        ''' Test that the product has no responsible teams by default. '''
-        self.assertEqual([], self.__product.responsible_teams())
-
-    def test_set_responsible_team(self):
-        ''' Test that the responsible teams can be set. '''
-        product = domain.Product(domain.Project(), 
-                                 responsible_teams=['Team'])
-        self.assertEqual(['Team'], product.responsible_teams())
-
-    def test_project_responsible_teams(self):
-        ''' Test that the project's responsible teams are used if no
-            responsible teams have been set for the product. '''
-        project = domain.Project()
-        project.add_team('Team', responsible=True)
-        product = domain.Product(project)
-        self.assertEqual(['Team'], product.responsible_teams())
-
     def test_default_unittests(self):
         ''' Test that products have no unit test component by default. '''
         self.assertFalse(self.__product.unittests())
@@ -216,6 +201,16 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product.set_product_version('1.1')
         self.assertEqual('1.1', product.art().product_version())
 
+    def test_is_main(self):
+        ''' Test that the product is part of the main system by default. '''
+        self.assertTrue(self.__product.is_main())
+
+    def test_is_main_version(self):
+        ''' Test that the product is not part of the main system if it has a
+            version. '''
+        self.__product.set_product_version('1.1')
+        self.assertFalse(self.__product.is_main())
+
 
 class BranchProductTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -266,3 +261,8 @@ class BranchProductTest(unittest.TestCase):
         self.__product.set_product_branch('branch1')
         self.__product.set_product_version('1.1')
         self.assertEqual('Product:branch1:1.1', self.__product.product_label())
+
+    def test_is_main(self):
+        ''' Test that a branch product is not part of the main system. '''
+        self.__product.set_product_branch('branch1')
+        self.assertFalse(self.__product.is_main())

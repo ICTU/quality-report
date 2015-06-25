@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,24 +23,11 @@ from qualitylib.metric_source import no_metric_source_yet
 
 
 class NoMetricSourceYetTest(unittest.TestCase):
-
-
+    ''' Unit tests for Deep Thought, the fake metric source. '''
     def setUp(self):
         self.__metric_source = no_metric_source_yet.NoMetricSourceYet()
 
-
-    def tearDown(self):
-        pass
-
-
     def test_ultimate_answer(self):
-        """
-        the ultimate answer is 42, no matter what
-        """
-        for arg in ( '', [], {}, 2, None, self, lambda x: x ):
-            self.assertEqual( self.__metric_source.ultimate_answer(arg), 42 )
-
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()
+        ''' The answer is always 42, no matter what. '''
+        for arg in ('', [], {}, 2, None, self, lambda x: x):  # pragma: no branch
+            self.assertEqual(42, self.__metric_source.ultimate_answer(arg))

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -93,13 +93,15 @@ class Subversion(version_control_system.VersionControlSystem):
         return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     @utils.memoized
-    def unmerged_branches(self, product_url):
+    def unmerged_branches(self, product_url, branches_to_ignore=None):
         ''' Return a dictionary of branch names and number of unmerged 
             revisions for each branch that has any unmerged revisions. '''
-        branches = [(branch, self.__nr_unmerged_revisions(product_url, 
-                                                          branch)) \
-                    for branch in self.branches(product_url)]
-        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) \
+        branches_to_ignore = branches_to_ignore or []
+        branches = [branch for branch in self.branches(product_url)
+                    if branch not in branches_to_ignore]
+        branches = [(branch, self.__nr_unmerged_revisions(product_url, branch))
+                    for branch in branches]
+        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions)
                              in branches if nr_revisions > 0]
         return dict(unmerged_branches)
 

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -368,6 +368,14 @@ class ParseUSDateTimeTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2013, 4, 9, 12, 2, 43),
                          utils.parse_us_date_time('Apr 9, 2013 12:02:43 PM'))
 
+    def test_non_string(self):
+        ''' Test that parsing a non-string throws an exception. '''
+        self.assertRaises(TypeError, utils.parse_us_date_time, None)
+
+    def test_invalid(self):
+        ''' Test that parsing an invalid string throws an exception. '''
+        self.assertRaises(ValueError, utils.parse_us_date_time, 'Apr -1')
+
 
 class ParseUKDateTimeTest(unittest.TestCase):
     ''' Unit tests for the parse UK date time method. '''
@@ -393,3 +401,7 @@ class ParseISODateTest(unittest.TestCase):
         ''' Test that parsing a random date works. '''
         self.assertEqual(datetime.datetime(2013, 11, 5), 
                          utils.parse_iso_date('2013-11-05'))
+
+    def test_invalid(self):
+        ''' Test that parsing an invalid string throws an exception. '''
+        self.assertRaises(ValueError, utils.parse_iso_date, 'Apr -1')

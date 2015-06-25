@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,4 +21,4 @@ from . import jmeter
 
 class Ymor(jmeter.JMeter):
     ''' The Ymor performance report is a variant of a JMeter report. '''
-    pass
+    COLUMN_90_PERC = 5

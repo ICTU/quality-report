@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -129,11 +129,13 @@ class MetricClassesFormatter(DotFormatter):
                                     'fillcolor="{color}"{url}];'
         for metric_source_class in self.__metric_source_classes(report):
             name = metric_source_class.metric_source_name
-            metric_source = project.metric_source(metric_source_class)
-            url = ' URL="{}" target="_top"'.format(metric_source.url()) \
-                if metric_source else ''
-            color = self.__color(project, metric_source_class)
-            nodes.append(node_template.format(name=name, color=color, url=url))
+            metric_sourcex = project.metric_source(metric_source_class)
+            metric_sources = metric_sourcex if type(metric_sourcex) == type([]) else [metric_sourcex]
+            for metric_source in metric_sources:
+                url = ' URL="{}" target="_top"'.format(metric_source.url()) \
+                    if metric_source else ''
+                color = self.__color(project, metric_source_class)
+                nodes.append(node_template.format(name=name, color=color, url=url))
         return nodes
 
     def __metric_nodes(self, report, project):

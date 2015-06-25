@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -258,7 +258,7 @@ class FailingRegressionTestsTest(unittest.TestCase):
     def test_value(self):
         ''' Test that value of the metric equals the failing tests as reported
             by Jenkins. '''
-        self.assertEqual(self.__jenkins.failed_tests('jenkins_job') + \
+        self.assertEqual(self.__jenkins.failed_tests('jenkins_job') +
                          self.__jenkins.skipped_tests('jenkins_job'), 
                          self.__metric.value())
 

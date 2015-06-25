@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     ''' Base class for metric sources. '''
     metric_source_name = ''
     needs_metric_source_id = False
+    needs_values_as_list = False
 
     def __init__(self, *args, **kwargs):
         if 'name' not in kwargs:

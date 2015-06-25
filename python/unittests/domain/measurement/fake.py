@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,3 +62,8 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
     def technical_debt_target(metric_class):  # pylint: disable=unused-argument
         ''' Return the technical debt target. '''
         return None
+
+    @staticmethod
+    def metric_source_id(metric_source):  # pylint: disable-unused-argument
+        ''' Return the metric source id for the specified metric source. '''
+        return 'fake_id'

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -91,15 +91,16 @@ class TeamSpirit(Metric):
 
     name = 'Team stemming'
     norm_template = 'Er is geen vaste norm; de stemming wordt door de ' \
-        'kwaliteitsmanager periodiek bij de teams gepeild. De teams kiezen ' \
-        'daarbij zelf een smiley.'
+        'teams zelf bepaald. De teams kiezen daarbij zelf een smiley. Als de ' \
+        'meting ouder is dan {old_age} dagen is de status geel, ouder dan ' \
+        '{max_old_age} is rood.'
     template = 'De stemming van team {name} was {value} op {date}.'
     target_value = ':-)'
     perfect_value = ':-)'
     low_target_value = ':-('
     numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2, '?': 2}
-    old_age = datetime.timedelta(hours=7 * 24)
-    max_old_age = datetime.timedelta(hours=14 * 24)
+    old_age = datetime.timedelta(days=21)
+    max_old_age = 2 * old_age
     quality_attribute = SPIRIT
     metric_source_classes = (metric_source.Wiki,)
 
@@ -119,62 +120,26 @@ class TeamSpirit(Metric):
         return min(values), max(values)
 
     def _needs_immediate_action(self):
-        return self.value() == self.low_target()
+        # First check whether the metric needs immediate action because it was
+        # measured too long ago. If not, check whether the spirit is too low.
+        if super(TeamSpirit, self)._needs_immediate_action():
+            return True
+        else:
+            return self.value() == self.low_target()
 
     def _is_below_target(self):
-        return self.numerical_value() < max(self.numerical_value_map.values())
+        # First check whether the metric needs action because it was
+        # measured too long ago. If not, check whether the spirit is low.
+        if super(TeamSpirit, self)._is_below_target():
+            return True
+        else:
+            return self.numerical_value() < max(self.numerical_value_map.values())
 
     def _date(self):
         return self.__wiki.date_of_last_team_spirit_measurement(self.__team_id)
 
     def url(self):
         return dict(Wiki=self.__wiki.url())
-
-
-class ReleaseAge(LowerIsBetterMetric):
-    ''' Metric for measuring the age of the last release. '''
-
-    name = 'Release leeftijd'
-    norm_template = 'De laatste release is niet ouder dan {target} ' \
-        'dagen. Ouder dan {low_target} dagen is rood.'
-    template = 'Release leeftijden: {archive_ages}.'
-    target_value = 3 * 7
-    low_target_value = 4 * 7
-    quality_attribute = PROGRESS
-
-    @classmethod
-    def can_be_measured(cls, team, project):
-        return super(ReleaseAge, cls).can_be_measured(team, project) and \
-            team.release_archives()
-
-    def value(self):
-        return max(self.__ages().values())
-
-    def url(self):
-        urls = dict()
-        for archive in self._subject.release_archives():
-            urls['Release-archief {archive}'.format(archive=archive.name())] = archive.url()
-        return urls
-
-    def _parameters(self):
-        # pylint: disable=protected-access
-        parameters = super(ReleaseAge, self)._parameters()
-        parameters['archive_ages'] = ', '.join([
-                    '{name} is {age} dag(en) oud'.format(name=name, age=age) \
-                    for name, age in self.__ages().items()
-                    ])
-        return parameters
-
-    @utils.memoized
-    def __ages(self):
-        ''' Return the ages in days of the last release in each release 
-            archive. '''
-        ages = dict()
-        now = datetime.datetime.now()
-        for archive in self._subject.release_archives():
-            release_date = archive.date_of_most_recent_file()
-            ages[archive.name()] = (now - release_date).days
-        return ages
 
 
 class TeamAbsence(LowerIsBetterMetric):
@@ -184,10 +149,11 @@ class TeamAbsence(LowerIsBetterMetric):
     name = 'Absentie'
     norm_template = 'Het aantal aaneengesloten dagen dat meerdere ' \
         'teamleden tegelijk gepland afwezig zijn is lager dan {target} ' \
-        'werkdagen. Meer dan {low_target} werkdagen is rood.'
+        'werkdagen. Meer dan {low_target} werkdagen is rood. Het team ' \
+        'bestaat uit {team}.'
     template = 'De langste periode dat meerdere teamleden ' \
         'tegelijk gepland afwezig zijn is {value} werkdagen ' \
-        '({start} tot en met {end}). Afwezig zijn: {members}.'
+        '({start} tot en met {end}). Afwezig zijn: {absentees}.'
     perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
     target_value = 5
     low_target_value = 10
@@ -198,6 +164,12 @@ class TeamAbsence(LowerIsBetterMetric):
     def can_be_measured(cls, team, project):
         return super(TeamAbsence, cls).can_be_measured(team, project) and \
             len(team.members()) > 1
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(TeamAbsence, cls).norm_template_default_values()
+        values['team'] = '(Lijst van teamleden)'
+        return values
 
     def __init__(self, *args, **kwargs):
         super(TeamAbsence, self).__init__(*args, **kwargs)
@@ -212,12 +184,14 @@ class TeamAbsence(LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamAbsence, self)._parameters()
+        parameters['team'] = ', '.join([member.name() for member in
+                                        self._subject.members()])
         length, start, end, members = self.__planner.days(self._subject)
         if length:
             parameters['start'] = start.isoformat()
             parameters['end'] = end.isoformat()
-            parameters['members'] = ', '.join(sorted([member.name() for member
-                                                      in members]))
+            parameters['absentees'] = ', '.join(sorted([member.name() for member
+                                                        in members]))
         return parameters
 
     def _get_template(self):

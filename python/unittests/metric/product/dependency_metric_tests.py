@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,6 +38,9 @@ class FakeSonar(object):
 class FakeSubject(object):
     ''' Provide for a fake subject. '''
 
+    def __init__(self, metric_source_ids=None):
+        self.__metric_source_ids = metric_source_ids or dict()
+
     @staticmethod
     def name():
         ''' Return the name of the subject. '''
@@ -52,6 +55,10 @@ class FakeSubject(object):
     def dependencies(**kwargs):
         ''' Return the dependencies of the subject. '''
         return [('product1', 'product1_version'), ('product2', '')]
+
+    def metric_source_id(self, the_metric_source):
+        ''' Return the id of the subject for the metric source. '''
+        return self.__metric_source_ids.get(the_metric_source, None)
 
 
 class FakeReport(object):
@@ -152,3 +159,99 @@ class CyclicDependenciesTest(unittest.TestCase):
         ''' Test that the url is correct. '''
         self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), 
                          self._metric.url())
+
+
+class FakeJenkinsOWASPDependenciesReport(object):
+    ''' Fake a Jenkins OWASP dependency report for unit test purposes. '''
+    @staticmethod
+    def nr_high_priority_warnings(job_names):  # pylint: disable=unused-argument
+        ''' Return the number of high priority warnings tests for the jobs. '''
+        return 4
+
+    @staticmethod
+    def nr_normal_priority_warnings(job_names):  # pylint: disable=unused-argument
+        ''' Return the number of normal priority warnings tests for the jobs. '''
+        return 2
+
+    @staticmethod
+    def nr_low_priority_warnings(job_names):  # pylint: disable=unused-argument
+        ''' Return the number of low priority warnings tests for the jobs. '''
+        return 14
+
+    @staticmethod
+    def report_url(job_name):
+        ''' Return the url for the job. '''
+        return 'http://jenkins/%s' % job_name
+
+
+class OWASPDependenciesTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the OWASP dependencies metric. '''
+
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__jenkins = FakeJenkinsOWASPDependenciesReport()
+        self.__subject = FakeSubject(
+            metric_source_ids={self.__jenkins: 'jenkins_job'})
+        self.__project = domain.Project(metric_sources={
+            metric_source.JenkinsOWASPDependencyReport: self.__jenkins})
+        self.__metric = metric.OWASPDependencies(subject=self.__subject,
+                                                 project=self.__project)
+
+    def test_value(self):
+        ''' Test that value of the metric equals the failing tests as reported
+            by Jenkins. '''
+        self.assertEqual(self.__jenkins.nr_high_priority_warnings('jenkins_job') +
+                         self.__jenkins.nr_normal_priority_warnings('jenkins_job'),
+                         self.__metric.value())
+
+    def test_value_multiple_jobs(self):
+        ''' Test that the value of the metric equals to total number of
+            failing tests if there are multiple test reports. '''
+        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
+        failing_tests = metric.OWASPDependencies(subject=subject,
+                                                 project=self.__project)
+        expected = self.__jenkins.nr_high_priority_warnings(['a', 'b']) + \
+                   self.__jenkins.nr_normal_priority_warnings(['a', 'b'])
+        self.assertEqual(expected, failing_tests.value())
+
+    def test_report(self):
+        ''' Test that the report for the metric is correct. '''
+        self.assertEqual('Dependencies van FakeSubject hebben 4 high priority, '
+                         '2 normal priority en 14 low priority warnings.',
+                         self.__metric.report())
+
+    def test_url(self):
+        ''' Test that the url points to the Jenkins job. '''
+        self.assertEqual({'Jenkins OWASP dependency report':
+                          self.__jenkins.report_url('jenkins_job')},
+                         self.__metric.url())
+
+    def test_url_multiple_jobs(self):
+        ''' Test that the url points to the Jenkins jobs. '''
+        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
+        dependencies = metric.OWASPDependencies(subject=subject,
+                                                project=self.__project)
+        self.assertEqual({'Jenkins OWASP dependency report a':
+                              self.__jenkins.report_url('a'),
+                          'Jenkins OWASP dependency report b':
+                              self.__jenkins.report_url('b')},
+                         dependencies.url())
+
+    def test_can_be_measured(self):
+        ''' Test that metric can be measured when Jenkins is available and the
+            product has a Jenkins job. '''
+        self.assertTrue(
+            metric.OWASPDependencies.can_be_measured(self.__subject,
+                                                     self.__project))
+
+    def test_cant_be_measured_without_jenkins(self):
+        ''' Test that the metric cannot be measured without Jenkins. '''
+        self.assertFalse(
+            metric.OWASPDependencies.can_be_measured(self.__subject,
+                                                     domain.Project()))
+
+    def test_cant_be_measured_without_jenkins_job(self):
+        ''' Test that the metric cannot be measured without Jenkins job. '''
+        self.assertFalse(
+            metric.OWASPDependencies.can_be_measured(FakeSubject(),
+                                                     self.__project))

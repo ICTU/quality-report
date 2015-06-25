@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -126,16 +126,19 @@ class TeamProgressTest(unittest.TestCase):
 
 class FakeWiki(object):
     ''' Fake a wiki metric source. '''
+
+    def __init__(self):
+        self.date_of_last_measurement = datetime.datetime.now()
+
     @staticmethod  # pylint: disable=unused-argument
     def team_spirit(*args):
         ''' Return a fake team spirit. '''
         return ':-)'
 
-    @staticmethod  # pylint: disable=unused-argument
-    def date_of_last_team_spirit_measurement(*args):  
-        # pylint: disable=invalid-name
+    def date_of_last_team_spirit_measurement(self, *args):
+        # pylint: disable=unused-argument, invalid-name
         ''' Return a fake date. '''
-        return datetime.datetime.now()
+        return self.date_of_last_measurement
 
     @staticmethod
     def url():
@@ -187,61 +190,23 @@ class TeamSpiritTest(unittest.TestCase):
         project = domain.Project()
         self.assertFalse(metric.TeamSpirit.can_be_measured(self.__team, project))
 
+    def test_too_old(self):
+        ''' Test that the metric becomes red when too old. '''
+        self.__wiki.date_of_last_measurement = datetime.datetime(2000, 1, 1)
+        self.assertEqual('red', self.__metric.status())
 
-class ReleaseAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    ''' Unit tests for the release age metric. '''
+    def test_old(self):
+        ''' Test that the metric becomes yellow when old. '''
+        self.__wiki.date_of_last_measurement = datetime.datetime.now() - \
+            metric.TeamSpirit.old_age - datetime.timedelta(hours=1)
+        self.assertEqual('yellow', self.__metric.status())
 
-    class FakeArchive(object):
-        ''' Fake a release archive. '''
-        @staticmethod
-        def date_of_most_recent_file():
-            ''' Return the date of the most recent file in the archive. '''
-            return datetime.datetime.now() - datetime.timedelta(minutes=1)
-
-        @staticmethod
-        def url():
-            ''' Return a fake url. '''
-            return 'http://archive'
-
-        @staticmethod
-        def name():
-            ''' Return a fake name. '''
-            return 'ABC'
-
-    def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project()
-        team = domain.Team(name='Team', 
-                           release_archives=[ReleaseAgeTest.FakeArchive()])
-        self.__metric = metric.ReleaseAge(team, project=project)
-
-    def test_value(self):
-        ''' Test that the value is correct. '''
-        self.assertEqual(0, self.__metric.value())
-
-    def test_url(self):
-        ''' Test that the url is correct. '''
-        self.assertEqual({'Release-archief ABC': 'http://archive'}, 
-                         self.__metric.url())
-
-    def test_report(self):
-        ''' Test that the report is correct. '''
-        self.assertEqual('Release leeftijden: ABC is 0 dag(en) oud.', 
-                         self.__metric.report())
-
-    def test_can_be_measured(self):
-        ''' Test that the metric can be measured if the team has release
-            archives. '''
-        team = domain.Team(name='Team', release_archives=['Archive'])
-        project = domain.Project()
-        self.assertTrue(metric.ReleaseAge.can_be_measured(team, project))
-
-    def test_cant_be_measured_without_release_archive(self):
-        ''' Test that the metric cannot be measured if the team has no
-            release archives. '''
-        team = domain.Team(name='Team')
-        project = domain.Project()
-        self.assertFalse(metric.ReleaseAge.can_be_measured(team, project))
+    def test_norm(self):
+        ''' Test that the norm mentions measurement age. '''
+        self.assertEqual('Er is geen vaste norm; de stemming wordt door de '
+            'teams zelf bepaald. De teams kiezen daarbij zelf een smiley. '
+            'Als de meting ouder is dan 21 dagen dagen is de status geel, '
+            'ouder dan 42 dagen is rood.', self.__metric.norm())
 
 
 class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
@@ -294,7 +259,7 @@ class TeamAbsenceTest(unittest.TestCase):
     def test_report_without_absence(self):
         ''' Test that the report is correct when there are no absences. '''
         self.__planner.period = 0
-        self.assertEqual('Er zijn geen teamleden tegelijk gepland afwezig.', 
+        self.assertEqual('Er zijn geen teamleden tegelijk gepland afwezig.',
                          self.__metric.report())
 
     def test_url(self):
@@ -320,3 +285,12 @@ class TeamAbsenceTest(unittest.TestCase):
         team = domain.Team(name='Team')
         team.add_member(domain.Person(name='Piet Programmer'))
         self.assertFalse(metric.TeamAbsence.can_be_measured(team, self.__project))
+
+    def test_default_norm(self):
+        ''' Test that the norm can be shown without instantiating the class. '''
+        defaults = metric.TeamAbsence.norm_template_default_values()
+        self.assertEqual('Het aantal aaneengesloten dagen dat meerdere '
+            'teamleden tegelijk gepland afwezig zijn is lager dan 5 '
+            'werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit '
+            '(Lijst van teamleden).',
+                         metric.TeamAbsence.norm_template.format(**defaults))

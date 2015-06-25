@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -139,3 +139,53 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         parameters['nr_not_ok_deps'] = self._numerator()
         parameters['nr_deps'] = self._denominator()
         return parameters
+
+
+class OWASPDependencies(LowerIsBetterMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring the number of external dependencies of the project
+        that have OWASP issues. '''
+
+    name = 'OWASP dependency kwaliteit'
+    norm_template = 'Dependencies van het product hebben geen normal of high ' \
+        'OWASP issues.'
+    template = 'Dependencies van {name} hebben {high} high priority, ' \
+        '{normal} normal priority en {low} low priority warnings.'
+    target_value = 0
+    low_target_value = 3
+    quality_attribute = DEPENDENCY_QUALITY
+    metric_source_classes = (metric_source.JenkinsOWASPDependencyReport,)
+
+    def __init__(self, *args, **kwargs):
+        super(OWASPDependencies, self).__init__(*args, **kwargs)
+        self.__jenkins_report = self._project.metric_source(
+            metric_source.JenkinsOWASPDependencyReport)
+
+    def value(self):
+        return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) + \
+               self.__jenkins_report.nr_normal_priority_warnings(self.__jenkins_ids())
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(OWASPDependencies, self)._parameters()
+        parameters['high'] = self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids())
+        parameters['normal'] = self.__jenkins_report.nr_normal_priority_warnings(self.__jenkins_ids())
+        parameters['low'] = self.__jenkins_report.nr_low_priority_warnings(self.__jenkins_ids())
+        return parameters
+
+    def __jenkins_ids(self):
+        ''' Return the Jenkins report ids (job names). '''
+        report = self._subject.metric_source_id(self.__jenkins_report)
+        return [report] if type(report) == type('') else report
+
+    def url(self):
+        jenkins_ids = self.__jenkins_ids()
+        if len(jenkins_ids) == 1:
+            return {'Jenkins OWASP dependency report':
+                    self.__jenkins_report.report_url(jenkins_ids[0])}
+        else:
+            urls = {}
+            for jenkins_id in jenkins_ids:
+                urls['Jenkins OWASP dependency report {jid}'.format(jid=jenkins_id)] = \
+                    self.__jenkins_report.report_url(jenkins_id)
+            return urls

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2014 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -57,9 +57,9 @@ TEST_DESIGN_HTML = '''
             <td><div>1</div></td>
             <td><div>7</div></td>
             <td><div>6</div></td>
-            <td><div>6</div></td>
-            <td><div>6</div></td>
-            <td><div>0</div></td>
+            <td><div>5</div></td>
+            <td><div>4</div></td>
+            <td><div>1</div></td>
         </tr>
     </table>    
     <table id="__bookmark_3">
@@ -403,20 +403,41 @@ class BirtTest(unittest.TestCase):
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(10, self.__birt.nr_user_stories('bulk'))
 
+    def test_reviewed_user_stories(self):
+        ''' Test that the number of reviewed user stories is correct. '''
+        self.__birt.html = TEST_DESIGN_HTML
+        self.assertEqual(9, self.__birt.reviewed_user_stories('bulk'))
+
     def test_approved_user_stories(self):
         ''' Test that the number of approved user stories is correct. '''
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(8, self.__birt.approved_user_stories('bulk'))
+
+    def test_not_approved_user_stories(self):
+        ''' Test that the number of not approved user stories is correct. '''
+        self.__birt.html = TEST_DESIGN_HTML
+        self.assertEqual(1, self.__birt.not_approved_user_stories('bulk'))
 
     def test_nr_ltcs(self):
         ''' Test that the number of logical test cases is correct. '''
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(6, self.__birt.nr_ltcs('bulk'))
 
+    def test_reviewed_ltcs(self):
+        ''' Test that the number of reviewed logical test cases is correct. '''
+        self.__birt.html = TEST_DESIGN_HTML
+        self.assertEqual(5, self.__birt.reviewed_ltcs('bulk'))
+
     def test_approved_ltcs(self):
         ''' Test that the number of approved logical test cases is correct. '''
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(6, self.__birt.approved_ltcs('bulk'))
+        self.assertEqual(4, self.__birt.approved_ltcs('bulk'))
+
+    def test_not_approved_ltcs(self):
+        ''' Test that the number of not approved logical test cases is
+            correct. '''
+        self.__birt.html = TEST_DESIGN_HTML
+        self.assertEqual(1, self.__birt.not_approved_ltcs('bulk'))
 
     def test_nr_ltcs_to_be_automated(self):
         ''' Test that the number of logical test cases to be automated is 
