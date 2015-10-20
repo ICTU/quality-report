@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from ..metric_source_mixin import VersionControlSystemMetricMixin
 from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerIsBetterMetric
+from ... import utils
 
 
 class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
@@ -91,6 +92,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         ''' Return a list of branches for the product. '''
         return self._vcs_product_info.branches(self._vcs_path())
 
+    @utils.memoized
     def __unmerged_branches(self):
         ''' Return a dictionary of unmerged branch names and the number of 
             unmerged revisions for each branch. '''

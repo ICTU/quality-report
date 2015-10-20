@@ -22,6 +22,7 @@ from BeautifulSoup import BeautifulSoup
 
 
 from ... import utils, domain
+from .. import url_opener
 
 
 class CoverageReport(domain.MetricSource):
@@ -30,33 +31,47 @@ class CoverageReport(domain.MetricSource):
     metric_source_name = 'Coverage report'
     needs_metric_source_id = True
 
-    def __init__(self, jenkins, job_url):
-        self.__jenkins = jenkins
-        super(CoverageReport, self).__init__(url=jenkins.url() + job_url)
+    def __init__(self, url_open=None, **kwargs):
+        self.__url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+        super(CoverageReport, self).__init__()
 
     @utils.memoized
-    def coverage(self, product):
-        ''' Return the ART coverage for a specific product. '''
-        coverage_url = self.get_coverage_url(product)
+    def statement_coverage(self, coverage_url):
+        ''' Return the ART statement coverage for a specific product. '''
         try:
-            soup = BeautifulSoup(self.__jenkins.url_open(coverage_url))
+            soup = self.__get_report_soup(coverage_url)
         except urllib2.HTTPError:
             coverage = -1
         else:
-            coverage = self._parse_coverage_percentage(soup)
+            coverage = self._parse_statement_coverage_percentage(soup)
         return coverage
 
-    def _parse_coverage_percentage(self, soup):
+    def _parse_statement_coverage_percentage(self, soup):
         ''' Parse the coverage percentage from the soup. '''
         raise NotImplementedError  # pragma: no cover
 
     @utils.memoized
-    def coverage_date(self, product, now=datetime.datetime.now):
+    def branch_coverage(self, coverage_url):
+        ''' Return the ART branch coverage for a specific product. '''
+        try:
+            soup = self.__get_report_soup(coverage_url)
+        except urllib2.HTTPError:
+            coverage = -1
+        else:
+            coverage = self._parse_branch_coverage_percentage(soup)
+        return coverage
+
+    def _parse_branch_coverage_percentage(self, soup):
+        ''' Parse the coverage percentage from the soup. '''
+        raise NotImplementedError  # pragma: no cover
+
+    @utils.memoized
+    def coverage_date(self, coverage_url, now=datetime.datetime.now):
         ''' Return the date when the ART coverage for a specific product
             was last successfully measured. '''
-        coverage_url = self.get_coverage_date_url(product)
+        coverage_date_url = self._get_coverage_date_url(coverage_url)
         try:
-            soup = BeautifulSoup(self.__jenkins.url_open(coverage_url))
+            soup = BeautifulSoup(self.__url_open(coverage_date_url))
         except urllib2.HTTPError:
             coverage_date = now()
         else:
@@ -67,11 +82,12 @@ class CoverageReport(domain.MetricSource):
         ''' Parse the coverage date from the soup. '''
         raise NotImplementedError  # pragma: no cover
 
-    def get_coverage_url(self, product):
-        ''' Return the url for the coverage report for the product. '''
-        return self.url().format(self.__jenkins.resolve_job_name(product))
-
-    def get_coverage_date_url(self, product):
+    def _get_coverage_date_url(self, coverage_url):
         ''' Return the url for the date when the coverage of the product
             was last measured. '''
-        return self.get_coverage_url(product)
+        return coverage_url
+
+    @utils.memoized
+    def __get_report_soup(self, coverage_url):
+        ''' Get a beautiful soup of the coverage report. '''
+        return BeautifulSoup(self.__url_open(coverage_url))

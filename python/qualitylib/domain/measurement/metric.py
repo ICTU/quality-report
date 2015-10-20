@@ -115,6 +115,8 @@ class Metric(object):
     @utils.memoized
     def status(self):
         ''' Return the status/color of the metric. '''
+        if self._missing():
+            return 'missing'
         below_target = self._is_below_target()
         if below_target and self.__is_above_technical_debt_target():
             return 'grey'
@@ -137,6 +139,10 @@ class Metric(object):
         target = self.__technical_debt_target()
         return self._is_value_better_than(target.target_value()) if target \
             else False
+
+    def _missing(self):
+        ''' Return whether the metric source is missing. '''
+        return self.value() == -1
 
     def _needs_immediate_action(self):
         ''' Return whether the metric needs immediate action, i.e. its actual

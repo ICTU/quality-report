@@ -1,4 +1,4 @@
-2015-05-??  Release 1.16.0
+2015-09-??  Release 1.16.0
 
   * Add an OWASP dependency metric that uses the Jenkins OWASP dependency
     check plugin to check for dependencies with OWASP issues.
@@ -15,6 +15,7 @@
   * Remove support for writing a summary to the summary.csv file.
   * Remove support for filtering metrics by team.
   * Remove release age metric.
+  * Remove support for Emma.
   * Bug fix: make the team spirit yellow or red when the measurement date gets
     old.
   * Bug fix: HTML escape comments retrieved from the Wiki.

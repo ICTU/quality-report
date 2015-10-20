@@ -16,30 +16,34 @@ limitations under the License.
 from __future__ import absolute_import
 
 
+# Test report
+from .abstract.test_report import TestReport
+from .test_report.jasmine_html_report import JasmineHTMLReport
+from .test_report.jenkins_test_report import JenkinsTestReport
+
 # Coverage report
 from .abstract.coverage_report import CoverageReport
-from .coverage_report.emma import Emma
 from .coverage_report.jacoco import JaCoCo
+from .coverage_report.ncover import NCover
 
 # Performance report
-from .abstract.performance_report import \
-    PerformanceReport
+from .abstract.performance_report import PerformanceReport
 from .performance_report.jmeter import JMeter
 
 # Version control system
-from .abstract.version_control_system import \
-    VersionControlSystem
+from .abstract.version_control_system import VersionControlSystem
 from .version_control_system.git import Git
-from .version_control_system.subversion import \
-    Subversion
+from .version_control_system.subversion import Subversion
 
 
 # Other metric sources
+from .ansible_config_report import AnsibleConfigReport
 from .birt import Birt
+from .birt2 import Birt2
 from .dependencies import Dependencies
 from .history import History
 from .holiday_planner import HolidayPlanner
-from .jenkins import Jenkins, JenkinsTestReport, JenkinsOWASPDependencyReport, \
+from .jenkins import Jenkins, JenkinsOWASPDependencyReport, \
     JenkinsYmorPerformanceReport
 from .jira import Jira
 from .maven import Maven

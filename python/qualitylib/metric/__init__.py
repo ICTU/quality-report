@@ -20,10 +20,10 @@ from __future__ import absolute_import
 
 from .product import *
 from .project import *
+from .team import *
+from .document import *
+from .environment import *
 
-from .ci_metrics import *
-from .team_metrics import *
-from .document_metrics import *
 from .meta_metrics import *
 from .quality_attributes import *
 from .life import *

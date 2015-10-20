@@ -79,18 +79,17 @@ class MetricClassFormatterTest(CommonDotFormatterTestsMixin, unittest.TestCase):
 
     def test_body(self):
         ''' Test that the metrics of the report are listed. '''
-        self.assertEqual('''"JaCoCo coverage report" [style="filled" fillcolor="red"];
-"Automatic regression test coverage" [style="filled" fillcolor="red"];
-"JaCoCo coverage report" -> "Automatic regression test coverage";''', 
+        self.assertEqual('''"Coverage report" [style="filled" fillcolor="red"];
+"Automatic regression test statement coverage" [style="filled" fillcolor="red"];
+"Coverage report" -> "Automatic regression test statement coverage";''',
                          self._formatter.body(fake_report.Report()))
 
     def test_body_green(self):
         ''' Test that a metric is green when all metric sources are present. '''
-        jenkins = metric_source.Jenkins('http://jenkins/', 'user', 'password')
-        jacoco = metric_source.JaCoCo(jenkins, 'jacoco')
+        jacoco = metric_source.JaCoCo()
         report = fake_report.Report(project_metric_sources={
-            metric_source.JaCoCo: jacoco})
-        self.assertEqual('''"JaCoCo coverage report" [style="filled" fillcolor="green" URL="http://jenkins/jacoco" target="_top"];
-"Automatic regression test coverage" [style="filled" fillcolor="green"];
-"JaCoCo coverage report" -> "Automatic regression test coverage";''', 
+            metric_source.CoverageReport: jacoco})
+        self.assertEqual('''"Coverage report" [style="filled" fillcolor="green" URL="" target="_top"];
+"Automatic regression test statement coverage" [style="filled" fillcolor="green"];
+"Coverage report" -> "Automatic regression test statement coverage";''',
                          self._formatter.body(report))

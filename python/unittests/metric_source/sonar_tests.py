@@ -22,24 +22,51 @@ from qualitylib.metric_source import Sonar
 class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
     ''' Override the url open method to be able to return test data. '''
 
-    json = '''
+    metrics_json = '''
 [
     {"version": "4.2",
      "lang": "java",
      "msr": 
          [
+            {"val": 100, "key": "critical_violations"},
+            {"val": 100, "key": "blocker_violations"},
+            {"val": 100, "key": "major_violations"},
+            {"val": 100, "key": "branch_coverage"},
+            {"val": 100, "key": "commented_loc"},
+            {"val": 100, "key": "duplicated_lines"},
+            {"val": 100, "key": "test_failures"},
+            {"val": 100, "key": "test_errors"},
+            {"val": 100, "key": "line_coverage"},
+            {"val": 100, "key": "lines"},
+            {"val": 100, "key": "ncloc"},
+            {"val": 100, "key": "functions"},
+            {"val": 100, "key": "tests"},
+            {"val": 100, "key": "package_cycles"}
+        ]
+    }
+]'''
+
+    violations_json = '''
+[
+    {"version": "4.2",
+     "lang": "java",
+     "msr":
+         [
             {"val": 100, "rule_name": "", "rule_key": ""}, 
-            {"val": 50, "rule_name": "Cyclomatic complexity", "rule_key": ""},
-            {"val": 50, "rule_name": "Ncss Method Count", "rule_key": ""},
-            {"val": 50, "rule_name": "Parameter Number", "rule_key": ""},
+            {"val": 50, "rule_name": "Cyclomatic complexity",
+             "rule_key": "squid:MethodCyclomaticComplexity"},
+            {"val": 50, "rule_name": "JavaNCSS",
+             "rule_key": "checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck"},
+            {"val": 50, "rule_name": "Parameter Number", "rule_key": "squid:S00107"},
             {"val": 40, "rule_name": "Avoid commented-out lines of code",
-             "rule_key": ""}
+             "rule_key": "squid:CommentedOutCodeLine"}
         ]
     }
 ]'''
 
     def url_open(self, url):
-        return StringIO.StringIO(self.json)
+        json = self.metrics_json if 'metrics=true' in url else self.violations_json
+        return StringIO.StringIO(json)
 
 
 class SonarTest(unittest.TestCase):
@@ -48,6 +75,14 @@ class SonarTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = SonarUnderTest('http://sonar/')
+        self.__no_violations_json = '''
+[
+    {"version": "4.2",
+     "lang": "java",
+     "msr":
+         []
+    }
+]'''
 
     def test_url(self):
         ''' Test the url. '''
@@ -137,23 +172,35 @@ class SonarTest(unittest.TestCase):
     def test_commented_loc_cs(self):
         ''' Test that the number of commented loc equals the number of
             commented loc returned by the dashboard. '''
-        self.__sonar.json = '''
+        self.__sonar.violations_json = '''
 [
     {"version": "4.2",
      "lang": "cs",
-     "msr": 
+     "msr":
          [
             {"val": 30, "rule_name": "Comment should not include code",
-             "rule_key": "CommentedCode"}
+             "rule_key": "csharpsquid:CommentedCode"}
         ]
     }
 ]'''
         self.assertEqual(30, self.__sonar.commented_loc('product'))
 
+    def test_commented_loc_missing(self):
+        ''' Test that the number of commented loc is zero when none of
+            the rules return a result. '''
+        self.__sonar.violations_json = self.__no_violations_json
+        self.assertEqual(0, self.__sonar.commented_loc('product'))
+
     def test_complex_methods(self):
         ''' Test that the number of complex methods equals the number of 
             complex methods returned by the violations page. '''
         self.assertEqual(50, self.__sonar.complex_methods('product'))
+
+    def test_complex_methods_missing(self):
+        ''' Test that the number of complex methods is zero when none
+            of the rules return a result. '''
+        self.__sonar.violations_json = self.__no_violations_json
+        self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_long_methods(self):
         ''' Test that the number of long methods equals the number of long
@@ -166,12 +213,35 @@ class SonarTest(unittest.TestCase):
             page. '''
         self.assertEqual(50, self.__sonar.many_parameters_methods('product'))
 
+    def test_many_parameters_methods_missing(self):
+        ''' Test that the number of methods with many parameters is zero
+            when none of the rules return a result. '''
+        self.__sonar.violations_json = self.__no_violations_json
+        self.assertEqual(0, self.__sonar.many_parameters_methods('product'))
+
     def test_missing_metric_value(self):
         ''' Test that the default value is returned for missing values. '''
-        self.__sonar.json = '[{"msr": []}]'
+        self.__sonar.metrics_json = '[{"msr": []}]'
         self.assertEqual(0, self.__sonar.unittests('product'))
 
     def test_missing_violation_value(self):
         ''' Test that the default value is returned for missing violations. '''
-        self.__sonar.json = '[{"lang": "java"}]'
+        self.__sonar.violations_json = '[{"lang": "java"}]'
         self.assertEqual(0, self.__sonar.long_methods('product'))
+
+    def test_no_sonar(self):
+        ''' Test that by default the number of no sonar violations is zero. '''
+        self.assertEqual(0, self.__sonar.no_sonar('product'))
+
+    def test_no_sonar_found(self):
+        ''' Test that no sonar violations. '''
+        self.__sonar.violations_json = '''
+[
+    {"msr":
+         [
+            {"val": 10, "rule_key": "squid:NoSonar",
+             "rule_name": "Avoid use of //NOSONAR marker"}
+        ]
+    }
+]'''
+        self.assertEqual(10, self.__sonar.no_sonar('product'))

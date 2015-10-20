@@ -49,7 +49,7 @@ class SectionHeader(object):
 class Section(object):
     ''' Section within a report. '''
 
-    ORDERED_STATUS_COLORS = ('red', 'yellow', 'grey', 'green', 'perfect')
+    ORDERED_STATUS_COLORS = ('missing', 'red', 'yellow', 'grey', 'green', 'perfect')
 
     def __init__(self, header, metrics, history=None, product=None):
         self.__header = header
@@ -95,6 +95,8 @@ class Section(object):
             color = 'white'
         if color == 'perfect':
             color = 'green'
+        if color == 'missing':
+            color = 'red'
         return color
 
     def has_history(self):
@@ -123,8 +125,8 @@ class QualityReport(object):
                                     metric.UnittestLineCoverage, 
                                     metric.UnittestBranchCoverage, 
                                     metric.FailingRegressionTests,
-                                    metric.EmmaARTCoverage,
-                                    metric.JaCoCoARTCoverage)
+                                    metric.ARTStatementCoverage,
+                                    metric.ARTBranchCoverage)
     TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewed,
                                   metric.UserStoriesNotApproved,
                                   metric.LogicalTestCasesNotReviewed,
@@ -137,28 +139,31 @@ class QualityReport(object):
                            metric.MajorViolations, metric.CyclomaticComplexity,
                            metric.CyclicDependencies, metric.JavaDuplication,
                            metric.ProductLOC, metric.LongMethods,
-                           metric.ManyParameters, metric.CommentedLOC)
+                           metric.ManyParameters, metric.CommentedLOC,
+                           metric.NoSonar)
     DEPENDENCY_METRIC_CLASSES = (metric.DependencyQuality,
                                  metric.SnapshotDependencies,
                                  metric.OWASPDependencies)
     PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes,
-                                  metric.YmorResponseTimes,
-                                  metric.RelativeARTPerformance)
+                                  metric.YmorResponseTimes)
     MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, 
                                  metric.RiskLog)
-    BUILD_SERVER_METRIC_CLASSES = (metric.FailingCIJobs,
-                                   metric.UnusedCIJobs)
+    ENVIRONMENT_METRIC_CLASSES = (metric.FailingCIJobs,
+                                  metric.UnusedCIJobs,
+                                  metric.JavaVersionConsistency)
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
                            metric.BlockingTestIssues)
     DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
     TEAM_METRIC_CLASSES = (metric.TeamProgress, metric.TeamSpirit,
                            metric.TeamAbsence)
     META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
-                           metric.YellowMetaMetric, metric.GreyMetaMetric)
-    ADDITIONAL_METRIC_CLASSES = ( metric.LifeUniverseAndEverything, )
+                           metric.YellowMetaMetric, metric.GreyMetaMetric,
+                           metric.MissingMetaMetric)
+    ADDITIONAL_METRIC_CLASSES = (metric.LifeUniverseAndEverything, )
 
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + \
-        BUILD_SERVER_METRIC_CLASSES + BUGS_METRIC_CLASSES
+        ENVIRONMENT_METRIC_CLASSES + BUGS_METRIC_CLASSES + (metric.DurationOfManualLogicalTestCases,
+                                                            metric.ManualLogicalTestCasesWithoutDuration)
     META_SECTION_METRIC_CLASSES = META_METRIC_CLASSES
     TEAM_SECTION_METRIC_CLASSES = TEAM_METRIC_CLASSES
 
@@ -168,7 +173,7 @@ class QualityReport(object):
         return cls.TEST_COVERAGE_METRIC_CLASSES + \
             cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + \
-            cls.BUILD_SERVER_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
+            cls.ENVIRONMENT_METRIC_CLASSES + cls.BUGS_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + \
             cls.DEPENDENCY_METRIC_CLASSES + \
             (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
@@ -270,7 +275,7 @@ class QualityReport(object):
         metrics = []
         for metric_class in self.PROCESS_SECTION_METRIC_CLASSES:
             if metric_class.can_be_measured(self.__project, self.__project):
-                metrics.append(metric_class(project=self.__project))
+                metrics.append(metric_class(self.__project, project=self.__project))
         for street in self.__project.streets():
             metrics.append(metric.ARTStability(street, project=self.__project))
         self.__metrics.extend(metrics)
@@ -315,10 +320,9 @@ class QualityReport(object):
             # because we currently can only report on the trunk version of the
             # ART.
             metrics.extend(self.__java_metrics(art))
-            for art_metric_class in (metric.EmmaARTCoverage,
-                                     metric.JaCoCoARTCoverage,
-                                     metric.FailingRegressionTests,
-                                     metric.RelativeARTPerformance):
+            for art_metric_class in (metric.ARTStatementCoverage,
+                                     metric.ARTBranchCoverage,
+                                     metric.FailingRegressionTests):
                 if art_metric_class.can_be_measured(art, self.__project):
                     metrics.append(art_metric_class(art,
                                                     project=self.__project))
@@ -350,7 +354,7 @@ class QualityReport(object):
         metrics = []
         for section in sections:
             metrics.extend(section.metrics())
-        meta_metrics = [meta_metric_class(metrics, project=self.__project) for \
+        meta_metrics = [meta_metric_class(metrics, project=self.__project) for
                         meta_metric_class in self.META_SECTION_METRIC_CLASSES]
         self.__metrics.extend(meta_metrics)
         return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,

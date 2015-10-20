@@ -16,7 +16,7 @@
   <modules>
     <module>python</module>
     <module>js</module>
-    <module>html</module>
+    <!-- <module>html</module> Turn off analysis of html files because Sonar chokes on partial html files? -->
   </modules>
 
   <developers>

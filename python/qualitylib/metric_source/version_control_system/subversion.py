@@ -51,6 +51,7 @@ class Subversion(version_control_system.VersionControlSystem):
         versions.sort()
         return versions[-1][1]  # Return the text version of the highest number
 
+    @utils.memoized
     def tags_folder_for_version(self, trunk_url, version):
         ''' Return the tags folder for the specified version. '''
         tags = self.tags(trunk_url)

@@ -27,19 +27,13 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that a team is not a Scrum team by default. '''
         self.assertFalse(self.__team.is_scrum_team())
 
-    def test_default_release_archives(self):
-        ''' Test that a team has no release archives by default. '''
-        self.assertFalse(self.__team.release_archives())
-
-    def test_one_release_archive(self):
-        ''' Test giving a team release archives. '''
-        team = domain.Team(name='The B-team',
-                           release_archives=['Release archive'])
-        self.assertEqual(['Release archive'], team.release_archives())
-
     def test_id_string(self):
         ''' Test that the id string is the team name as identifier. '''
         self.assertEqual('the_a-team', self.__team.id_string())
+
+    def test_eq(self):
+        ''' Test that teams are equal when their id strings are. '''
+        self.assertEqual(self.__team, domain.Team(name='The a-team'))
 
     def test_default_short_name(self):
         ''' Test that the default short name of the team equals the first two

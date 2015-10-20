@@ -5,6 +5,7 @@
         <meta http-equiv="cache-control" content="no-cache" />
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="expires" content="0" />
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <style type="text/css">
             body {{
@@ -123,11 +124,26 @@
                                 {quality_attribute_filter_menu}
                             </ul>
                         </li>
-                        <li>
-                            <a id="help_menu" href="#modal_help_dialog" 
-                               data-toggle="modal">
-                               <i class=""></i> Help
+                        <li class="dropdown">
+                            <a id="help_menu" class="dropdown-toggle"
+                               data-toggle="dropdown" href="#">
+                                Help<b class="caret"></b>
                             </a>
+                            <ul class="dropdown-menu"
+                                aria-labelledby="help_menu">
+                                <li>
+                                    <a id="help_dialog" href="#modal_help_dialog"
+                                       data-toggle="modal">
+                                       <i class=""></i> Over het kwaliteitssysteem
+                                     </a>
+                                </li>
+                                <li>
+                                    <a id="help_configuration" href="#modal_help_configuration_dialog"
+                                       data-toggle="modal">
+                                       <i class=""></i> Configuratie
+                                     </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                     <p class="navbar-text pull-right">
@@ -136,6 +152,71 @@
                 </div><!-- /.container-fluid -->
             </div><!-- /.navbar-inner -->
         </div><!-- /.navbar navbar-fixed-top -->
+        <div class="modal hide modal-wide" id="modal_help_configuration_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h3 id="myModalLabel">Configuratie van het kwaliteitssysteem</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    De configuratie van het kwaliteitssysteem vindt grotendeels
+                    plaats met behulp van een project definitie die beschreven
+                    wordt in een <tt>project_definition.py</tt> python bestand.
+                    Zie <a href="https://github.com/ICTU/quality-report">Github</a>
+                    voor meer informatie en voorbeelden.
+                </p>
+                <p>
+                    Sommige zaken kunnen geconfigureerd worden door in de bronsystemen
+                    van het kwaliteitssysteem aanpassingen te doen. Hieronder de
+                    instructies daarvoor.
+                </p>
+                <h3>
+                    Jenkins jobs negeren die ongebruikt zijn
+                </h3>
+                <p>
+                    Standaard rapporteert het kwaliteitssysteem ongebruikte Jenkins jobs
+                    na 180 dagen als ongebruikt. Deze periode kan voor specifieke Jenkins
+                    jobs langer gemaakt worden door in de beschrijving van de job
+                    de periode op te nemen gedurende welke de job niet als ongebruikt
+                    moet worden geschouwd. De syntax is als volgt:
+                    <pre>[gracedays=365]</pre>
+                    Het getal is de periode in dagen.
+                </p>
+                <h3>
+                    Het toevoegen van een beveiligingsissues KPI
+                </h3>
+                <ol>
+                    <li>Maak een filter in Jira aan, bijvoorbeeld:
+                        <pre>
+project = CSK AND labels = beveiliging_bevinding AND status in (Open, "In Progress", Reopened) AND created <= -3w
+				        </pre>
+                    </li>
+				    <li>
+                        Sla het filter op met een zinnige naam, bijvoorbeeld <tt>CS open beveiligingsbevindingen</tt>
+				    </li>
+				    <li>
+                        Zorg dat het filter beschikbaar is: klik <tt>Details - Edit permissions - Add Shares</tt>,
+                        voeg toe <tt>Everyone</tt>
+				    </li>
+				    <li>
+                        Voeg het query id toe aan de project definitie. Het query id zie je in de url in Jira
+                        <tt>https://jira.lrgirko.nl/jira/issues/?filter=13152</tt>.
+                        Zet het query id in de projectdefinitie op de relevante plaatsen:
+					<pre>JIRA = metric_source.Jira('https://jira.lrgirko.nl/jira/',
+username='vul jira username in', password=vul jira password in,
+open_security_bug_query_id=13152)
+
+PROJECT = Project('ICTU', name='CSKF2',
+metric_sources={{
+metric_source.Jira: JIRA,</pre>
+                    </li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+            </div>
+        </div>
         <div class="modal hide modal-wide" id="modal_help_dialog" tabindex="-1" 
              role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">

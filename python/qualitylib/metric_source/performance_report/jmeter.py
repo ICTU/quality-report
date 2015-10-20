@@ -19,7 +19,6 @@ from __future__ import absolute_import
 import datetime
 import logging
 import re
-import time
 
 from ..abstract import performance_report
 from .. import beautifulsoup
@@ -62,7 +61,7 @@ class JMeter(performance_report.PerformanceReport,
     def __query_rows(self, product, version):
         ''' Return the queries for the specified product and version. '''
         rows = []
-        product_query_id = product[0]
+        product_query_re = re.compile(product[0])
         urls = self.urls(product, version)
         for url in urls:
             soup = self.soup(url)
@@ -71,7 +70,7 @@ class JMeter(performance_report.PerformanceReport,
                 if not query_names:
                     continue  # Header row
                 query_name = query_names[0].string
-                if not re.match(product_query_id, query_name):
+                if not product_query_re.match(query_name):
                     continue  # Not our product
                 if not row('td')[self.COLUMN_90_PERC].has_key('class'):
                     continue  # No color in 90 perc column
@@ -86,7 +85,7 @@ class JMeter(performance_report.PerformanceReport,
             url = list(urls)[0]  # Any url is fine
             soup = self.soup(url)
             try:
-                date_text = soup('h2')[0].string.split(' - ')[1].split(' ')[0]
+                date_text = soup('h2')[0].string.split(' End: ')[1]
             except IndexError:
                 logging.warning("Can't get date from performance report %s", 
                                 url)
@@ -104,17 +103,24 @@ class JMeter(performance_report.PerformanceReport,
     def urls(self, product, version):
         ''' Return the url(s) of the performance report for the specified
             product and version. '''
-        soup = self.soup(self.url())
         urls = {0: set()}  # {test_run_number: set(of urls)}
-        for list_item in soup('li'):
-            filename = list_item('a')[0].string
-            if not filename.endswith('.html'):
-                continue
-            url = self.url() + filename
+        for filename, url in self.__report_urls():
             if self.__report_covers_product_and_version(url, product, version):
                 urls.setdefault(self.__test_run_number(filename), 
                                 set()).add(url)
         return urls[max(urls.keys())]  # Return the latest test run
+
+    @utils.memoized
+    def __report_urls(self):
+        ''' Return the url(s) for the performance reports in the report folder. '''
+        urls = []
+        base_url = self.url()
+        soup = self.soup(base_url)
+        for list_item in soup('li'):
+            filename = list_item('a')[0].string
+            if filename.endswith('.html'):
+                urls.append((filename, base_url + filename))
+        return urls
 
     @utils.memoized
     def __report_covers_product_and_version(self, url, product, version):
@@ -140,12 +146,10 @@ class JMeter(performance_report.PerformanceReport,
     def __report_contains_queries(soup, product_query_id):
         ''' Return whether the performance report contains queries with the
             specified query id. '''
-        for row in soup('tr'):
-            query_names = row('td', attrs={'class': 'name'})
-            if not query_names:
-                continue  # Header row
-            query_name = query_names[0].string
-            if re.match(product_query_id, query_name):
+        product_query_re = re.compile(product_query_id)
+        query_names = soup('td', attrs={'class': 'name'})
+        for query_name in query_names:
+            if product_query_re.match(query_name.string):
                 return True
         return False
 
@@ -157,5 +161,4 @@ class JMeter(performance_report.PerformanceReport,
     @staticmethod
     def __parse_date(date_text):
         ''' Return a parsed version of the date text. '''
-        year, month, day = time.strptime(date_text, '%Y-%m-%d')[:3]
-        return datetime.datetime(year, month, day)
+        return utils.parse_uk_date_time_year_last(date_text)

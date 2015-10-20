@@ -16,7 +16,7 @@ limitations under the License.
 from __future__ import absolute_import
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin
 from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerIsBetterMetric
 
@@ -83,3 +83,17 @@ class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
 
     def value(self):
         return self._sonar.major_violations(self._sonar_id())
+
+
+class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
+    ''' Metric for measuring the number of times //NOSONAR is used to
+        suppress violations. '''
+    norm_template = 'Violations worden maximaal {target} keer onderdrukt met //NOSONAR. ' \
+        'Meer dan {low_target} keer is rood.'
+    template = '{name} bevat {value} keer //NOSONAR.'
+    quality_attribute = CODE_QUALITY
+    target_value = 25
+    low_target_value = 50
+
+    def value(self):
+        return self._sonar.no_sonar(self._sonar_id())

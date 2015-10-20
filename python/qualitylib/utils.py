@@ -68,8 +68,10 @@ _TIMEZONE_RE  = "(?P<tzname>[A-Z]{3,4})"
 
 # US format: 'Apr 5, 2013 10:04:10 AM'
 _US_DATE_TIME_RE = _MONTHNAME_RE + "\s+" + _DAY_RE + ",\s+" + _YEAR_RE + "\s+" + _TIME_RE + "\s+" + _AM_PM_RE
-# UK format: 'Tue Apr 5 22:10:10 CEST 2013'
-_UK_DATE_TIME_RE = _DAYNAME_RE + "\s+" + _MONTHNAME_RE + "\s+" + _DAY_RE + "\s+" + _TIME_RE + "\s+" + _TIMEZONE_RE + "\s+" + _YEAR_RE
+# UK format: 'Tue Apr 5 2013 22:10:10 CEST'
+_UK_DATE_TIME_RE = _DAYNAME_RE + "\s+" + _MONTHNAME_RE + "\s+" + _DAY_RE + "\s+" + _YEAR_RE + "\s+" + _TIME_RE + "\s+" + _TIMEZONE_RE
+# UK format, year last: 'Tue Apr 5 22:10:10 CEST 2013'
+_UK_DATE_TIME_YEAR_LAST_RE = _DAYNAME_RE + "\s+" + _MONTHNAME_RE + "\s+" + _DAY_RE + "\s+" + _TIME_RE + "\s+" + _TIMEZONE_RE + "\s+" + _YEAR_RE
 # ISO date: '2013-11-05'
 _ISO_DATE_RE = _YEAR_RE + "-" + _MONTH_RE + "-" + _DAY_RE
 
@@ -107,19 +109,25 @@ def _parse_date_time( date_time_re, date_time_string):
 def parse_us_date_time(date_time_string):
     ''' Parse a US format date/time string of the form 
         'Apr 5, 2013 10:04:10 AM'. '''
-    return _parse_date_time( _US_DATE_TIME_RE, date_time_string )
+    return _parse_date_time(_US_DATE_TIME_RE, date_time_string)
 
 
 def parse_uk_date_time(date_time_string):
-    ''' Parse a UK format date/time string of the form 
-        'Tue Apr 5 22:10:10 CEST 2013'. '''
-    return _parse_date_time( _UK_DATE_TIME_RE, date_time_string )
+    ''' Parse a UK format date/time string of the form
+        'Mon Aug 24 2015 16:05:55 CEST'. '''
+    return _parse_date_time(_UK_DATE_TIME_RE, date_time_string)
+
+
+def parse_uk_date_time_year_last(date_time_string):
+    ''' Parse a UK format date/time string of the form
+        'Mon Aug 24 2015 16:05:55 CEST'. '''
+    return _parse_date_time(_UK_DATE_TIME_YEAR_LAST_RE, date_time_string)
 
 
 def parse_iso_date(date_string):
     ''' Parse an ISO format date string of the form '2013-11-05'. '''
-    if not isinstance(date_string,basestring):
-        raise TypeError("date_string should be a string, " \
+    if not isinstance(date_string, basestring):
+        raise TypeError("date_string should be a string, "
                         "not {cls!r}".format(cls=date_string.__class__.__name__))
 
     m = re.search( _ISO_DATE_RE, date_string )
@@ -131,6 +139,11 @@ def parse_iso_date(date_string):
     day    = int(m.group('day'))
 
     return datetime.datetime(year, month, day)
+
+
+def parse_iso_datetime(datetime_string):
+    ''' Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. '''
+    return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
 def parse_us_int(string):

@@ -382,17 +382,17 @@ class ParseUKDateTimeTest(unittest.TestCase):
     def test_am(self):
         ''' Test that parsing an AM time works. '''
         self.assertEqual(datetime.datetime(2013, 4, 5, 10, 0, 0), 
-            utils.parse_uk_date_time('Tue Apr 5 10:00:00 CEST 2013'))
+            utils.parse_uk_date_time('Tue Apr 5 2013 10:00:00 CEST'))
 
     def test_pm(self):
         ''' Test that parsing a PM time works. '''
         self.assertEqual(datetime.datetime(2013, 4, 5, 22, 0, 0), 
-            utils.parse_uk_date_time('Tue Apr 5 22:00:00 CEST 2013'))
+            utils.parse_uk_date_time('Tue Apr 5 2013 22:00:00 CEST'))
 
     def test_12pm(self):
         ''' Test that parsing 12 PM works. '''
         self.assertEqual(datetime.datetime(2013, 4, 9, 12, 2, 43),
-            utils.parse_uk_date_time('Tue Apr 9 12:02:43 CEST 2013'))
+            utils.parse_uk_date_time('Tue Apr 9 2013 12:02:43 CEST'))
 
 
 class ParseISODateTest(unittest.TestCase):
@@ -405,3 +405,15 @@ class ParseISODateTest(unittest.TestCase):
     def test_invalid(self):
         ''' Test that parsing an invalid string throws an exception. '''
         self.assertRaises(ValueError, utils.parse_iso_date, 'Apr -1')
+
+
+class ParseISODateTimeTest(unittest.TestCase):
+    ''' Unit tests for the parse ISO date time method. '''
+    def test_some_datetime(self):
+        ''' Test that parsing a random date time works. '''
+        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1),
+                         utils.parse_iso_datetime('2015-10-06T15:00:01Z'))
+
+    def test_invalid(self):
+        ''' Test that parsing an invalid string throws an exception. '''
+        self.assertRaises(ValueError, utils.parse_iso_datetime, 'Apr -1')

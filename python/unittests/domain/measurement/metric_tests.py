@@ -27,10 +27,11 @@ class MetricUnderTest(domain.Metric):
         running the unit tests. '''
     def __init__(self, *args, **kwargs):
         self.date = None
+        self.value_to_return = 0
         super(MetricUnderTest, self).__init__(*args, **kwargs)
 
     def value(self):
-        return 0
+        return self.value_to_return
 
     def _date(self):
         if self.date:
@@ -187,19 +188,19 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that the metric gets the comment from the subject when the
             subject has a reduced technical debt target. '''
         # pylint: disable=attribute-defined-outside-init
-        self.__subject.technical_debt_target = lambda metric: \
-            domain.TechnicalDebtTarget(10, 'Comment')
-        self.assertEqual('De op dit moment geaccepteerde technische schuld ' \
-                         'is 10. Comment', self.__metric.comment())
+        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
+        comment = self.__metric.comment()
+        self.assertEqual('De op dit moment geaccepteerde technische schuld '
+                         'is 10. Comment', comment)
 
     def test_comment_technical_debt_url(self):
         ''' Test that the metric has no comment url when the subject has a 
             reduced technical debt target because the reduced technical debt
             target is specified in the project definition. '''
         # pylint: disable=attribute-defined-outside-init
-        self.__subject.technical_debt_target = lambda metric: \
-            domain.TechnicalDebtTarget(10, 'Comment')
-        self.assertFalse(self.__metric.comment_urls())
+        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
+        urls = self.__metric.comment_urls()
+        self.assertFalse(urls)
 
     def test_comment_from_wiki_url(self):
         ''' Test that the comment urls include a link to the Wiki if the Wiki
@@ -239,6 +240,11 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         ''' Test that a metric should not be measured be default. '''
         self.assertFalse(domain.Metric.should_be_measured(self.__project))
 
+    def test_metric_missing(self):
+        ''' Test that the metric status is missing when the value is -1. '''
+        self.__metric.value_to_return = -1
+        self.assertEqual('missing', self.__metric.status())
+
 
 class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
@@ -268,11 +274,11 @@ class LowerIsBetterMetricTest(unittest.TestCase):
         self.assertEqual('perfect', metric.status())
 
     def test_impossible_value(self):
-        ''' Test that the status is red if the value is below zero. '''
+        ''' Test that the status is missing if the value is below zero. '''
         metric = LowerIsBetterMetricUnderTest(self.__subject,
                                               project=self.__project,
                                               value=-1)
-        self.assertEqual('red', metric.status())
+        self.assertEqual('missing', metric.status())
 
 
 class HigherIsBetterMetricUnderTest(domain.HigherIsBetterMetric):

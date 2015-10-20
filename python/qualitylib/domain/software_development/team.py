@@ -23,12 +23,11 @@ class Team(MeasurableObject):
     ''' Class for representing a team. '''
 
     def __init__(self, short_name=None, is_scrum_team=False,
-                 release_archives=None, *args, **kwargs):
+                 *args, **kwargs):
         super(Team, self).__init__(*args, **kwargs)
         if short_name:
             assert len(short_name) == 2
         self.__short_name = short_name or self.name()[:2].upper()
-        self.__release_archives = release_archives or []
         self.__is_scrum_team = is_scrum_team
         self.__members = set()
 
@@ -46,10 +45,6 @@ class Team(MeasurableObject):
         ''' Return an abbreviation of the team name. '''
         return self.__short_name
 
-    def release_archives(self):
-        ''' Return the release archives of the team. '''
-        return self.__release_archives
-
     def is_scrum_team(self):
         ''' Return whether this team is a Scrum team, which means it is
             doing product development. '''
@@ -58,9 +53,6 @@ class Team(MeasurableObject):
     def team_resources(self):
         ''' Return the resources of the team. '''
         resources = []
-        for release_archive in self.release_archives():
-            resources.append(('Release archief team {team}'.format(team=self.name()), 
-                              release_archive.url()))
         for member in self.members():
             resources.append((member.name(), member.url()))
         return resources

@@ -42,7 +42,10 @@ class Git(VersionControlSystem):
         timestamp = self._run_shell_command(['git', 'log', '--format="%ct"',
                                              '-n', '1', path],
                                             folder=self.__repo_folder)
-        return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
+        if timestamp:
+            return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
+        else:
+            return datetime.datetime.min
 
     def branches(self, path):
         ''' Return a list of branch names for the master branch. '''
@@ -74,7 +77,12 @@ class Git(VersionControlSystem):
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
             command.append('--no-merged')
+        logging.debug( ">>> VCS:Git::__get_branches" )
+        logging.debug( "running '%s'", " ".join(command) )
         branches = self._run_shell_command(command, folder=self.__repo_folder)
+        logging.debug( "--- output:" )
+        logging.debug( branches )
+        logging.debug( "<<< VCS:Git::__get_branches" )
         return [branch.strip() for branch in branches.strip().split('\n')
                 if valid_branch_name(branch.strip())]
 
@@ -82,8 +90,13 @@ class Git(VersionControlSystem):
         ''' Return whether the branch has unmerged commits. '''
         logging.info('Checking for unmerged commits in branch %s.', branch_name)
         command = ['git', 'cherry', 'origin/master', branch_name]
+        logging.debug( ">>> VCS:Git::__nr_unmerged_commits" )
+        logging.debug( "running '%s'", " ".join(command) )
         commits = self._run_shell_command(command, folder=self.__repo_folder)
         nr_commits = commits.count('\n')
+        logging.debug( "--- output:" )
+        logging.debug( commits )
+        logging.debug( "<<< VCS:Git::__nr_unmerged_commits" )
         logging.info('Branch %s has %d unmerged commits.', branch_name,
                      nr_commits)
         return nr_commits
@@ -94,13 +107,20 @@ class Git(VersionControlSystem):
         if os.path.exists(self.__repo_folder):
             logging.info('Updating Git repo %s in %s', self.url(),
                          self.__repo_folder)
-            self._run_shell_command(['git', 'pull'], folder=self.__repo_folder)
+            command = ['git', 'pull']
+            logging.debug( ">>> VCS:Git::__get_repo" )
+            logging.debug( "running '%s'", " ".join(command) )
+            self._run_shell_command( command, folder=self.__repo_folder )
+            logging.debug( "<<< VCS:Git::__get_repo" )
         else:
             logging.info('Cloning Git repo %s in %s', self.url(),
                          self.__repo_folder)
             # TODO: Add --no-checkout? --quiet? --depth 1?
-            self._run_shell_command(['git', 'clone', self.__full_url(),
-                                     self.__repo_folder])
+            command = ['git', 'clone', self.__full_url(), self.__repo_folder]
+            logging.debug( ">>> VCS:Git::__get_repo" )
+            logging.debug( "running '%s'", " ".join(command) )
+            self._run_shell_command( command )
+            logging.debug( "<<< VCS:Git::__get_repo" )
 
     def __full_url(self):
         ''' Return the Git repository url with username and password. '''

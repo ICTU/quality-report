@@ -52,16 +52,17 @@ class FakeWiki(object):
 
 class FakeSubject(object):  # pylint: disable=too-few-public-methods
     ''' Class to fake a metric subject. '''
+    def __init__(self):
+        self.debt_target = None
 
     @staticmethod
     def name():
         ''' Return the name of the subject. '''
         return 'FakeSubject'
 
-    @staticmethod
-    def technical_debt_target(metric_class):  # pylint: disable=unused-argument
+    def technical_debt_target(self, metric_class):  # pylint: disable=unused-argument
         ''' Return the technical debt target. '''
-        return None
+        return self.debt_target
 
     @staticmethod
     def metric_source_id(metric_source):  # pylint: disable-unused-argument

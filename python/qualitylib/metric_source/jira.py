@@ -26,11 +26,15 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def __init__(self, url, username, password, open_bug_query_id=None, 
                  open_security_bug_query_id=None,
-                 blocking_test_issues_query_id=None):
+                 blocking_test_issues_query_id=None,
+                 manual_test_cases_query_id=None,
+                 manual_test_cases_duration_field='customfield_11700'):
         self.__url = url
         self.__open_bug_query_id = open_bug_query_id
         self.__open_security_bug_query_id = open_security_bug_query_id
         self.__blocking_test_issues_query_id = blocking_test_issues_query_id
+        self.__manual_test_cases_query_id = manual_test_cases_query_id
+        self.__manual_test_cases_duration_field = manual_test_cases_duration_field
         super(Jira, self).__init__(username=username, password=password)
 
     @utils.memoized
@@ -60,8 +64,29 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def has_blocking_test_issues_query(self):
         ''' Return whether Jira has a query for the number of blocking test 
-            isuees reported last month. '''
+            issues reported last month. '''
         return self.__blocking_test_issues_query_id
+
+    @utils.memoized
+    def manual_test_cases_time(self):
+        ''' Return the number of minutes spend on manual test cases. '''
+        return self.__query_sum(self.__manual_test_cases_query_id,
+                                self.__manual_test_cases_duration_field)
+
+    @utils.memoized
+    def nr_manual_test_cases(self):
+        ''' Return the number of manual test cases. '''
+        return self.__query_total(self.__manual_test_cases_query_id)
+
+    @utils.memoized
+    def nr_manual_test_cases_not_measured(self):
+        ''' Return the number of manual test cases whose duration has not been measured. '''
+        return self.__query_field_empty(self.__manual_test_cases_query_id,
+                                        self.__manual_test_cases_duration_field)
+
+    def has_manual_test_cases_query(self):
+        ''' Return whether Jira has a query for the manual test cases in a project. '''
+        return self.__manual_test_cases_query_id
 
     @utils.memoized
     def __query_total(self, query_id):
@@ -69,6 +94,32 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         query_url = self.__get_query_url(query_id)
         json_string = self.url_open(query_url).read()
         return int(utils.eval_json(json_string)['total'])
+
+    def __query_sum(self, query_id, field):
+        ''' Return the sum of the fields as returned by the query. '''
+        query_url = self.__get_query_url(query_id)
+        json_string = utils.eval_json(self.url_open(query_url).read())
+        total = 0
+        issues = json_string['issues']
+        for issue in issues:
+            try:
+                total += int(issue['fields'][field])
+            except TypeError:
+                pass  # field is null
+        return total
+
+    def __query_field_empty(self, query_id, field):
+        ''' Return the number of query results with field empty (null). '''
+        query_url = self.__get_query_url(query_id)
+        json_string = utils.eval_json(self.url_open(query_url).read())
+        total = 0
+        issues = json_string['issues']
+        for issue in issues:
+            try:
+                int(issue['fields'][field])
+            except TypeError:
+                total += 1
+        return total
 
     @utils.memoized
     def __get_query_url(self, query_id, search=True):
@@ -84,13 +135,15 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def nr_open_security_bugs_url(self):
         ''' Return the url for the nr of open security bug reports query. '''
-        return self.__get_query_url(self.__open_security_bug_query_id, 
-                                    search=False)
+        return self.__get_query_url(self.__open_security_bug_query_id, search=False)
 
     def nr_blocking_test_issues_url(self):
         ''' Return the url for the number of blocking test issues query. '''
-        return self.__get_query_url(self.__blocking_test_issues_query_id, 
-                                    search=False)
+        return self.__get_query_url(self.__blocking_test_issues_query_id, search=False)
+
+    def manual_test_cases_url(self):
+        ''' Return the url for the manual test cases query. '''
+        return self.__get_query_url(self.__manual_test_cases_query_id, search=False)
 
     def url(self):
         ''' Return the url of the Jira instance. '''

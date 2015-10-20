@@ -18,4 +18,5 @@ from __future__ import absolute_import
 
 # pylint: disable=wildcard-import
 
-from .project_metrics import *
+from .project_management_metrics import *
+from .bug_metrics import *

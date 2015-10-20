@@ -27,17 +27,22 @@ class JaCoCo(coverage_report.CoverageReport):
     ''' Class representing an JaCoCo coverage report. '''
     metric_source_name = 'JaCoCo coverage report'
 
-    def get_coverage_date_url(self, product):
-        url = super(JaCoCo, self).get_coverage_date_url(product)
-        return url[:-len('index.html')] + '.sessions.html'
+    def _get_coverage_date_url(self, coverage_url):
+        return coverage_url[:-len('index.html')] + '.sessions.html'
 
-    def _parse_coverage_percentage(self, soup):
-        instructions_text = soup('tfoot')[0]('td')[1].string
-        missed_instructions, total_instructions = (utils.parse_us_int(text) \
-            for text in instructions_text.split(' of '))
-        if total_instructions > 0:
-            return round(100 * (total_instructions - missed_instructions) / 
-                         float(total_instructions))
+    def _parse_statement_coverage_percentage(self, soup):
+        return self.__parse_coverage_percentage(soup, 1)
+
+    def _parse_branch_coverage_percentage(self, soup):
+        return self.__parse_coverage_percentage(soup, 3)
+
+    @staticmethod
+    def __parse_coverage_percentage(soup, td_index):
+        ''' Return the statement or branch coverage percentage. '''
+        coverage_text = soup('tfoot')[0]('td')[td_index].string
+        missed, total = (utils.parse_us_int(text) for text in coverage_text.split(' of '))
+        if total > 0:
+            return round(100 * (total - missed) / float(total))
         else:
             return 0
 

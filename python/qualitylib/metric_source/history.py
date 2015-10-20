@@ -165,7 +165,8 @@ class History(domain.MetricSource):
                     GreenMetaMetric=record.get('GreenMetaMetric', 0),
                     RedMetaMetric=record.get('RedMetaMetric', 0),
                     YellowMetaMetric=record.get('YellowMetaMetric', 0),
-                    GreyMetaMetric=record.get('GreyMetaMetric', 0))
+                    GreyMetaMetric=record.get('GreyMetaMetric', 0),
+                    MissingMetaMetric=record.get('MissingMetaMetric', 0))
                 lines[index] = str(new_record)
         self.__write_history(lines)
         logging.info('Cleaning the history file %s: removed details from '

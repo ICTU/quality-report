@@ -20,8 +20,7 @@ import urllib2
 from qualitylib.metric_source import JaCoCo
 
 
-class FakeJenkins(object):
-    ''' Fake Jenkins to provide fixed data. '''
+class FakeUrlOpener(object):
     html = '<tfoot><tr><td>Total</td><td class="bar">1,162 of 6,293</td>' \
         '<td class="ctr2">82%</td><td class="bar">161 of 422</td>' \
         '<td class="ctr2">62%</td><td class="ctr1">287</td>' \
@@ -35,11 +34,6 @@ class FakeJenkins(object):
         '1f82fbab</span></td><td>Apr 4, 2013 4:43:39 PM</td><td>Apr 5, 2013 ' \
         '10:34:55 AM</td></tr></tbody>'
 
-    @staticmethod
-    def url():
-        ''' Return the Jenkins url. '''
-        return 'http://jenkins/'
-
     def url_open(self, url):
         ''' Open a url. '''
         if 'raise' in url:
@@ -48,28 +42,23 @@ class FakeJenkins(object):
             html = self.html if url.endswith('index.html') else self.date_html
             return html
 
-    @staticmethod
-    def resolve_job_name(job_re):
-        ''' Resolve the job regular expression to a concrete job name. '''
-        return job_re
-
 
 class JacocoTest(unittest.TestCase):  
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the Jacoco class. '''
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__jenkins = FakeJenkins()
-        self.__jacoco = JaCoCo(self.__jenkins, '{}/index.html')
+        self.__opener = FakeUrlOpener()
+        self.__jacoco = JaCoCo(url_open=self.__opener.url_open)
 
-    def test_coverage(self):
-        ''' Test the coverage for a specific product. '''
+    def test_statement_coverage(self):
+        ''' Test the statement coverage for a specific product. '''
         self.assertEqual(round(100 * (6293 - 1162) / 6293.), 
-                         self.__jacoco.coverage('product'))
+                         self.__jacoco.statement_coverage('http://jacoco/index.html'))
 
-    def test_zero_coverage(self):
-        ''' Test zero coverage. '''
-        self.__jenkins.html = '<tfoot><tr>' \
+    def test_zero_statement_coverage(self):
+        ''' Test zero statement coverage. '''
+        self.__opener.html = '<tfoot><tr>' \
             '<td>Total</td><td class="bar">0 of 0</td>' \
             '<td class="ctr2">0%</td><td class="bar">0 of 0</td>' \
             '<td class="ctr2">0%</td><td class="ctr1">0</td>' \
@@ -77,26 +66,48 @@ class JacocoTest(unittest.TestCase):
             '<td class="ctr2">0</td><td class="ctr1">0</td>' \
             '<td class="ctr2">0</td><td class="ctr1">0</td>' \
             '<td class="ctr2">0</td></tr></tfoot>'
-        self.assertEqual(0, self.__jacoco.coverage('product'))
+        self.assertEqual(0, self.__jacoco.statement_coverage('http://jacoco/index.html'))
 
-    def test_coverage_on_error(self):
-        ''' Test that the reported coverage is -1 when Jacoco can't be 
+    def test_statement_coverage_on_error(self):
+        ''' Test that the reported statement coverage is -1 when Jacoco can't be
             reached. '''
-        self.assertEqual(-1, self.__jacoco.coverage('raise'))
+        self.assertEqual(-1, self.__jacoco.statement_coverage('raise'))
+
+    def test_branch_coverage(self):
+        ''' Test the branch coverage for a specific product. '''
+        self.assertEqual(round(100 * (422 - 161) / 422.),
+                         self.__jacoco.branch_coverage('http://jacoco/index.html'))
+
+    def test_zero_branch_coverage(self):
+        ''' Test zero branch coverage. '''
+        self.__opener.html = '<tfoot><tr>' \
+            '<td>Total</td><td class="bar">0 of 0</td>' \
+            '<td class="ctr2">0%</td><td class="bar">0 of 0</td>' \
+            '<td class="ctr2">0%</td><td class="ctr1">0</td>' \
+            '<td class="ctr2">0</td><td class="ctr1">0</td>' \
+            '<td class="ctr2">0</td><td class="ctr1">0</td>' \
+            '<td class="ctr2">0</td><td class="ctr1">0</td>' \
+            '<td class="ctr2">0</td></tr></tfoot>'
+        self.assertEqual(0, self.__jacoco.branch_coverage('http://jacoco/index.html'))
+
+    def test_branch_coverage_on_error(self):
+        ''' Test that the reported branch coverage is -1 when Jacoco can't be
+            reached. '''
+        self.assertEqual(-1, self.__jacoco.branch_coverage('raise'))
 
     def test_coverage_date(self):
         ''' Test the date of the coverage report. '''
         expected = datetime.datetime(2013, 4, 5, 10, 34, 55)
-        self.assertEqual(expected, self.__jacoco.coverage_date('product'))
+        self.assertEqual(expected, self.__jacoco.coverage_date('http://jacoco'))
 
     def test_coverage_date_on_error(self):
         ''' Test that the date is now when JaCoCo can't be reached. '''
-        coverage_date = self.__jacoco.coverage_date('raise')
+        coverage_date = self.__jacoco.coverage_date('raise/index.html')
         age = datetime.datetime.now() - coverage_date
         self.assertTrue(age < datetime.timedelta(seconds=1))
 
     def test_coverage_date_url(self):
         ''' Test that the coverage date url is different than the coverage
             url for JaCoCo. '''
-        self.assertEqual('http://jenkins/product/.sessions.html', 
-                         self.__jacoco.get_coverage_date_url('product'))
+        self.assertEqual('coverage_report/.sessions.html',
+                         self.__jacoco._get_coverage_date_url('coverage_report/index.html'))

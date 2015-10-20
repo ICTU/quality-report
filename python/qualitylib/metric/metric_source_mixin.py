@@ -150,15 +150,13 @@ class VersionControlSystemMetricMixin(object):
     @classmethod
     def can_be_measured(cls, product, project):
         ''' Return whether the metric can be measured. The metric can be
-            measured when the project has Subversion and the product has a
-            Subversion path. '''
+            measured when the project has a version control system and the product has a
+            version control system path. '''
         vcs = project.metric_source(metric_source.VersionControlSystem)
-        vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs,
-                                                                       product)
-        return super(VersionControlSystemMetricMixin, cls).can_be_measured(product,
-                                                                 project) and \
+        vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs, product)
+        return super(VersionControlSystemMetricMixin, cls).can_be_measured(product, project) and \
             vcs and vcs_product_info.vcs_path()
 
     def _vcs_path(self):
-        ''' Return the Subversion path for the product. '''
+        ''' Return the version control system path for the product. '''
         return self._vcs_product_info.vcs_path()

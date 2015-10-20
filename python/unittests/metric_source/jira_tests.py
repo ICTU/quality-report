@@ -28,8 +28,8 @@ class JiraUnderTest(Jira):
     ISSUES = '[]'
 
     def url_open(self, url):
-        return StringIO.StringIO( \
-            '{"searchUrl": "http://search", "viewUrl": "%s", "total": %d, ' \
+        return StringIO.StringIO(
+            '{"searchUrl": "http://search", "viewUrl": "%s", "total": %d, '
             '"issues": %s}' % (self.VIEW_URL, self.NR_QUERY_RESULTS,
                                self.ISSUES))
 
@@ -43,7 +43,8 @@ class JiraTest(unittest.TestCase):
         self.__jira = JiraUnderTest(self.__jira_url, 'username', 'password', 
                                     open_bug_query_id=123,
                                     open_security_bug_query_id=456,
-                                    blocking_test_issues_query_id=321)
+                                    blocking_test_issues_query_id=321,
+                                    manual_test_cases_query_id=654)
 
     def test_url(self):
         ''' Test the Jira url. '''
@@ -89,3 +90,29 @@ class JiraTest(unittest.TestCase):
         ''' Test that the url is correct. '''
         self.assertEqual(self.__jira.VIEW_URL, 
                          self.__jira.nr_blocking_test_issues_url())
+
+    def test_has_manual_tests_query(self):
+        ''' Test that the Jira under test has a manual test cases query. '''
+        self.assertTrue(self.__jira.has_manual_test_cases_query())
+
+    def test_nr_manual_tests(self):
+        ''' Test that the correct number of manual test cases is returned. '''
+        self.assertEqual(5, self.__jira.nr_manual_test_cases())
+
+    def test_manual_test_time(self):
+        ''' Test that the total number of minutes spend on manual test cases is correct. '''
+        self.__jira.ISSUES = '[{"fields": {"customfield_11700": "20"}},' \
+                             ' {"fields": {"customfield_11700": 100}},' \
+                             ' {"fields": {"customfield_11700": null}}]'
+        self.assertEqual(120, self.__jira.manual_test_cases_time())
+
+    def test_nr_manual_tests_not_measured(self):
+        ''' Test that the number of manual test cases not measured is correct. '''
+        self.__jira.ISSUES = '[{"fields": {"customfield_11700": "20"}},' \
+                             ' {"fields": {"customfield_11700": 100}},' \
+                             ' {"fields": {"customfield_11700": null}}]'
+        self.assertEqual(1, self.__jira.nr_manual_test_cases_not_measured())
+
+    def test_manual_test_time_url(self):
+        ''' Test that the url is correct. '''
+        self.assertEqual(self.__jira.VIEW_URL, self.__jira.manual_test_cases_url())

@@ -17,9 +17,10 @@ from __future__ import absolute_import
 
 import datetime
 
-from ..metric_source_mixin import BirtMetricMixin, BirtTestDesignMetricMixin
+from ..metric_source_mixin import BirtMetricMixin, BirtTestDesignMetricMixin, JiraMetricMixin
 from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY, TEST_QUALITY
-from ...domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
+from ...domain import LowerIsBetterMetric
+from ... import metric_source
 
 
 class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
@@ -192,3 +193,65 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
 
     def _nr_ltcs(self):
         return self._birt.nr_ltcs(self._birt_id())
+
+
+class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring how long it takes to execute the manual logical test cases. '''
+
+    name = 'Uitvoeringstijd handmatige logische testgevallen'
+    norm_template = 'De uitvoering van de handmatige logische testgevallen kost ' \
+        'maximaal {target} minuten. Meer dan {low_target} is rood.'
+    template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} minuten.'
+    target_value = 120
+    low_target_value = 240
+    quality_attribute = TEST_QUALITY
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        jira = project.metric_source(metric_source.Jira)
+        return super(DurationOfManualLogicalTestCases, cls).can_be_measured(subject, project) and \
+            jira.has_manual_test_cases_query()
+
+    def value(self):
+        return self._jira.manual_test_cases_time()
+
+    def url(self):
+        return {'Jira': self._jira.manual_test_cases_url()}
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(DurationOfManualLogicalTestCases, self)._parameters()
+        parameters['total'] = total = self._jira.nr_manual_test_cases()
+        parameters['measured'] = total - self._jira.nr_manual_test_cases_not_measured()
+        return parameters
+
+
+class ManualLogicalTestCasesWithoutDuration(JiraMetricMixin, LowerIsBetterMetric):
+    # pylint: disable=too-many-public-methods
+    ''' Metric for measuring how many of the manual test cases have not been measured for duration. '''
+
+    name = 'Uitvoeringstijd handmatige logische testgevallen niet ingevuld'
+    norm_template = 'Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld.'
+    template = 'Van {value} van de {total} handmatige logische testgevallen is de uitvoeringstijd niet ingevuld.'
+    target_value = 0
+    low_target_value = 5
+    quality_attribute = TEST_QUALITY
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        jira = project.metric_source(metric_source.Jira)
+        return super(ManualLogicalTestCasesWithoutDuration, cls).can_be_measured(subject, project) and \
+            jira.has_manual_test_cases_query()
+
+    def value(self):
+        return self._jira.nr_manual_test_cases_not_measured()
+
+    def url(self):
+        return {'Jira': self._jira.manual_test_cases_url()}
+
+    def _parameters(self):
+        # pylint: disable=protected-access
+        parameters = super(ManualLogicalTestCasesWithoutDuration, self)._parameters()
+        parameters['total'] = self._jira.nr_manual_test_cases()
+        return parameters

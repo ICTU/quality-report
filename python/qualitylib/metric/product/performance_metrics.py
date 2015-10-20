@@ -69,7 +69,7 @@ class ResponseTimes(domain.Metric):
                 '{max_old_age}, is de score rood, anders geel.'
 
     def value(self):
-        return None  # We use max_violations and wish_violations as value
+        return None
 
     def numerical_value(self):
         return self.__max_violations() + self.__wish_violations()
@@ -85,6 +85,9 @@ class ResponseTimes(domain.Metric):
             wished for response time. '''
         return self.__performance_report.\
             queries_violating_wished_responsetime(*self.__product_id())
+
+    def _missing(self):
+        return self.numerical_value() < 0
 
     def _is_perfect(self):
         return self.__max_violations() == self.__wish_violations() == 0 and \

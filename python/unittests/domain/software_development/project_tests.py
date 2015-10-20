@@ -207,11 +207,6 @@ class FakeResource(object):
         ''' Return the name of the resource. '''
         return self.__name
 
-    @staticmethod
-    def resolve_job_name(job_re):
-        ''' Resolve the job regular expression to a concrete job name. '''
-        return job_re
-
 
 class ProjectResourcesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
@@ -285,52 +280,49 @@ class ProjectResourcesTest(unittest.TestCase):
         self.assertTrue((performance_report.name(), performance_report.url()) in
                          project.project_resources())
 
-    def test_emma(self):
-        ''' Test that the Emma reports are in the project resources. '''
-        emma = metric_source.Emma(FakeResource(), '{}/')
-        project = self.project(metric_sources={metric_source.Emma: emma})
+    def test_ncover(self):
+        ''' Test that the NCover reports are in the project resources. '''
+        ncover = metric_source.NCover()
+        project = self.project(metric_sources={metric_source.CoverageReport: ncover})
         product = domain.Product(project, 'Short name',
-                                 metric_source_ids={emma: 'emma_id'})
+                                 metric_source_ids={ncover: 'ncover_url'})
         project.add_product(product)
-        url = emma.get_coverage_url('emma_id')
-        self.assertTrue(('Emma coverage report %s' % product.name(), url) in
-                         project.project_resources())
+        print ' >>>>> ', project.project_resources()
+        self.assertTrue(('NCover coverage report %s' % product.name(), 'ncover_url') in
+                        project.project_resources())
 
-    def test_emma_only_for_trunk(self):
-        ''' Test that only the Emma reports for trunk versions of products
+    def test_ncover_only_for_trunk(self):
+        ''' Test that only the NCover reports for trunk versions of products
             are included. '''
-        emma = metric_source.Emma(FakeResource(), '{}/')
-        project = self.project(metric_sources={metric_source.Emma: emma})
+        ncover = metric_source.NCover()
+        project = self.project(metric_sources={metric_source.CoverageReport: ncover})
         product = domain.Product(project, 'Short name',
-                                 metric_source_ids={emma: 'emma_id'})
+                                 metric_source_ids={ncover: 'ncover_url'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        url = emma.get_coverage_url('emma_id')
-        self.assertTrue(('Emma coverage report %s' % product.name(), url) in
-                         project.project_resources())
+        self.assertTrue(('NCover coverage report %s' % product.name(), 'ncover_url') in
+                        project.project_resources())
 
     def test_jacoco(self):
         ''' Test that the JacCoCo reports are in the project resources. '''
-        jacoco = metric_source.JaCoCo(FakeResource(), '{}/')
+        jacoco = metric_source.JaCoCo()
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
-                                 metric_source_ids={jacoco: 'jacoco_id'})
+                                 metric_source_ids={jacoco: 'jacoco_url'})
         project.add_product(product)
-        url = jacoco.get_coverage_url('jacoco_id')
-        self.assertTrue(('JaCoCo coverage report %s' % product.name(), url) in 
-                         project.project_resources())
+        self.assertTrue(('JaCoCo coverage report %s' % product.name(), 'jacoco_url') in
+                        project.project_resources())
 
     def test_jacoco_only_for_trunk(self):
         ''' Test that only the JaCoCo reports for trunk versions of products
             are included. '''
-        jacoco = metric_source.JaCoCo(FakeResource(), '{}/')
+        jacoco = metric_source.JaCoCo()
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name',
-                                 metric_source_ids={jacoco: 'jacoco_id'})
+                                 metric_source_ids={jacoco: 'jacoco_url'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        url = jacoco.get_coverage_url('jacoco_id')
-        self.assertTrue(('JaCoCo coverage report %s' % product.name(), url) in 
+        self.assertTrue(('JaCoCo coverage report %s' % product.name(), 'jacoco_url') in
                          project.project_resources())
 
     def test_release_candidates(self):
@@ -340,14 +332,6 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(metric_sources={metric_source.ReleaseCandidates:
                                                release_candidates})
         self.assertTrue((release_candidates.name(), release_candidates.url()) in
-                         project.project_resources())
-
-    def test_release_archive(self):
-        ''' Test that the release archive is in the project resources. '''
-        project = self.project()
-        team = domain.Team(name='A', release_archives=[FakeResource()])
-        project.add_team(team)
-        self.assertTrue(('Release archief team A', FakeResource().url()) in
                          project.project_resources())
 
     def test_repository(self):
@@ -395,3 +379,12 @@ class ProjectResourcesTest(unittest.TestCase):
         requirement = domain.Requirement('A requirement')
         project = self.project(requirements=[requirement])
         self.assertTrue(requirement in project.requirements())
+
+    def test_team_resources(self):
+        ''' Test that team resources are added as well. '''
+        project = self.project()
+        team = domain.Team()
+        member = domain.Person(name='Name', url='http://url')
+        team.add_member(member)
+        project.add_team(team)
+        self.assertTrue(('Name', 'http://url') in project.project_resources())

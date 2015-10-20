@@ -125,7 +125,7 @@ class ResponseTimesTestsMixin(object):
     def test_numerical_value(self):
         ''' Test that the numerical value of the metric equals to number of
             queries that are below the wished and maximal response times. '''
-        self.assertEqual(self.expected_max_violations + \
+        self.assertEqual(self.expected_max_violations +
                          self.expected_wish_violations, 
                          self._metric.numerical_value())
 
@@ -165,7 +165,7 @@ class ResponseTimesTestsMixin(object):
             metric_sources={
                 metric_source.PerformanceReport: MissingPerformanceReport()})
         rt_metric = metric.ResponseTimes(subject=FakeSubject(), project=project)
-        self.assertTrue(rt_metric.report().startswith('Er is geen ' \
+        self.assertTrue(rt_metric.report().startswith('Er is geen '
             'performancetestrapport voor'))
 
 

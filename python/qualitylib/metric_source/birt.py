@@ -151,16 +151,12 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         self.__test_design_url = birt_report_url + 'test_design.rptdesign'
         self.__manual_test_execution_url = birt_report_url + \
             'manual_test_execution_report.rptdesign&application={app}&version={ver}'
-        self.__page_performance_url = birt_report_url + \
-            'perf.rptdesign&application={app}&version={ver}'
         self.__whats_missing_url = birt_report_url + \
             'whats_missing.rptdesign&application={app}'
         sprint_progress_url = birt_report_url + \
             'sprint_voortgang.rptdesign&project={proj}'
         self.__sprint_progress_report = \
             SprintProgressReport(sprint_progress_url)
-        self.__art_performance_versions_url = birt_report_url + \
-            'art_performance_versions.rptdesign&Applicatie={app}'
         self.__test_design_report = None
         self.__manual_test_report = None
 
@@ -187,17 +183,9 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         ''' Return the What's missing report url for the product. '''
         return self.__whats_missing_url.format(app=product)
 
-    def page_performance_url(self, product, version):
-        ''' Return the page performance report url for the product and 
-            version. '''
-        return self.__page_performance_url.format(app=product, ver=version)
-
-    def relative_art_performance_url(self, product):
-        ''' Return the relative page performance url for the product. '''
-        return self.__art_performance_versions_url.format(app=product)
-
     # Misc
 
+    @utils.memoized
     def has_test_design(self, product):
         ''' Return whether the product has a test design (i.e. user stories,
             logical test cases, reviews of user stories and logical test
@@ -209,17 +197,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             if product_name == product:
                 return True
         return False
-
-    def has_art_performance(self, product, version):
-        ''' Return whether ART performance information is available on the 
-            specified product and version. Note that to be able to report on
-            the ART performance, information about this product and version has
-            to be available *and* on at least one older version to be able to
-            compare response times. '''
-        soup = self.soup(self.__art_performance_versions_url.format(app=product))
-        # Use a set because there may be multiple runs for one version
-        available_versions = set([a.string for a in soup('a')])
-        return version in available_versions and len(available_versions) >= 2
 
     # Metrics calculated from other metrics:
 
@@ -234,67 +211,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             as automated tests. '''
         return int(self.nr_ltcs_to_be_automated(product)) - \
                int(self.__nr_missing_automated_ltcs(product))
-
-    def nr_slower_pages_art(self, product, version):
-        ''' Return the number of pages that are slower in the last run of the
-            automated regression test for the product and version as compared
-            to the last run of the automated regression test for the product and
-            a previous version. '''
-        version_link, previous_version_link = self.__load_times_links(product,
-                                                                      version)
-        load_times = self.__load_times(version_link)
-        previous_load_times = self.__load_times(previous_version_link)
-        return self.__nr_slower_pages(load_times, previous_load_times)
-
-    def __load_times_links(self, product, version):
-        ''' Return the links for the last and previous load times. '''
-        def remove_frameset(birt_frameset_link):
-            ''' Replace the frameset with preview. '''
-            return birt_frameset_link.replace('frameset', 'preview')
-
-        soup = self.soup(self.__art_performance_versions_url.format(app=product))
-        version_link = previous_version_link = None
-        for anchor in soup('a'):
-            # First, look for the newest link for our version
-            if not version_link and anchor.string == version:
-                version_link = remove_frameset(anchor['href'])
-            # Next, look for the newest link for the previous version
-            if version_link and anchor.string != version:
-                previous_version_link = remove_frameset(anchor['href'])
-                break
-        logging.info('URLs for ART load times of %s:%s are %s and %s.', 
-                     product, version or 'trunk', version_link, 
-                     previous_version_link)
-        return version_link, previous_version_link
-
-    def __load_times(self, link):
-        ''' Read the average load times and return them as a dictionary mapping
-            pages to average load times. '''
-        load_times = dict()
-        if not link:
-            return load_times
-        load_times_soup = self.soup(link)
-        for row in load_times_soup('tr'):
-            try:
-                page = row('td')[0]('div')[0].string
-                avg_load_time = int(row('td')[2]('div')[0].string)
-                load_times[page] = avg_load_time
-            except IndexError:
-                continue  # Skip rows without performance data
-            except ValueError, message:
-                logging.warn("Can't parse '%s' in Birt report: %s", row, 
-                             message)
-        return load_times
-
-    @staticmethod
-    def __nr_slower_pages(load_times, previous_load_times):
-        ''' Compare the load times in the two sets and return the number of 
-            pages that loaded slower in the latest run of the test. '''
-        nr_slower = 0
-        for page, avg_load_time in load_times.iteritems():
-            if previous_load_times.get(page, float("inf")) < avg_load_time:
-                nr_slower += 1
-        return nr_slower
 
     # Metrics available directly in Birt:
 
@@ -343,23 +259,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             have to be automated. '''
         return self.__test_design_metric(product, table_nr=3, column_nr=2)
 
-    def nr_performance_pages(self, product, version):
-        ''' Return the number of pages reported in the performance report. '''
-        return len(self.__performance_pages(product, version))
-
-    def nr_slow_performance_pages(self, product, version):
-        ''' Return the number of pages reported in the performance report that
-            load too slow on average. '''
-        rows = self.__performance_pages(product, version)
-        too_slow = [row for row in rows if 'style' in dict(row('td')[1].attrs)]
-        return len(too_slow)
-
-    def __performance_pages(self, product, version):
-        ''' Return the rows with page performance numbers. '''
-        soup = self.soup(self.page_performance_url(product, version))
-        inner_table = soup('table')[0]('table')[0]
-        return inner_table('tr')[1:]  # Skip header row
-
     def nr_manual_ltcs(self, product, version='trunk'):
         ''' Return the number of logical test cases for the product that are
             executed manually. '''
@@ -382,7 +281,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def date_of_last_manual_test(self, product, version='trunk'):
         ''' Return the date when the product/version was last tested
             manually. '''
-        test_dates = self.__manual_test_dates(product, version)
+        test_dates = self.__manual_test_dates(product, version)[:]
         # Add today's date so that we report today if there are no manual test
         # cases at all.
         test_dates.append(datetime.datetime.now())
@@ -406,7 +305,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 test_dates.append(last_test_date)
             except IndexError:
                 continue  # Skip empty row
-        logging.info("Manual test dates for %s:%s are: %s.", product, version, test_dates)
         return test_dates
 
     @utils.memoized

@@ -183,55 +183,6 @@ class JenkinsTest(unittest.TestCase):
         self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
 
 
-class JenkinsTestReportUnderTest(JenkinsTestReport):
-    ''' Override the url_open method to return a fixed HTML fragment. '''
-    contents = '{"jobs": []}'
-
-    def url_open(self, url):
-        if 'raise' in self.contents:
-            raise urllib2.HTTPError(None, None, None, None, None)
-        else:
-            return StringIO.StringIO(self.contents)
-
-
-class JenkinsTestReportTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    ''' Unit tests for the Jenkins test report class. '''
-    def setUp(self):  # pylint: disable=invalid-name
-        self.__jenkins = JenkinsTestReportUnderTest('http://jenkins/', 
-                                                    'username', 'password')
-
-    def test_testreport(self):
-        ''' Test retrieving a Jenkins test report. '''
-        self.__jenkins.contents = '{"failCount":2, "passCount":9, ' \
-                                  '"skipCount":1}'
-        self.assertEqual(2, self.__jenkins.failed_tests(['job']))
-        self.assertEqual(9, self.__jenkins.passed_tests(['job']))
-        self.assertEqual(1, self.__jenkins.skipped_tests(['job']))
-
-    def test_testreport_without_pass_count(self):
-        ''' Test retrieving a Jenkins test report that has no pass count. 
-            Apparently that field is not present when there are no tests. '''
-        self.__jenkins.contents = '{"failCount":0, "skipCount":0, ' \
-                                  '"totalCount":8}'
-        self.assertEqual(0, self.__jenkins.failed_tests(['job']))
-        self.assertEqual(8, self.__jenkins.passed_tests(['job']))
-        self.assertEqual(0, self.__jenkins.skipped_tests(['job']))
-
-    def test_url(self):
-        ''' Test the url for a test report. '''
-        self.assertEqual(
-            'http://jenkins/job/job_name/lastSuccessfulBuild/testReport/',
-            self.__jenkins.test_report_url('job_name'))
-
-    def test_http_error(self):
-        ''' Test that the default is returned when a HTTP error occurs. '''
-        self.__jenkins.contents = 'raise'
-        self.assertEqual(0, self.__jenkins.failed_tests(['job']))
-        self.assertEqual(0, self.__jenkins.passed_tests(['job']))
-        self.assertEqual(0, self.__jenkins.skipped_tests(['job']))
-
-
 class JenkinsOWASPDependencyReportUnderTest(JenkinsOWASPDependencyReport):
     ''' Override the url_open method to return a fixed HTML fragment. '''
     contents = '{"jobs": []}'

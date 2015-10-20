@@ -83,11 +83,6 @@ class Product(object):
         ''' Return whether this product version is a release candidate. '''
         return self.__is_release_candidate
 
-    @staticmethod
-    def metric_source_options(metric_source):  # pylint: disable=unused-argument
-        ''' Return metric source options. '''
-        return None
-
 
 class Metric(object):
     ''' Fake a metric class. '''

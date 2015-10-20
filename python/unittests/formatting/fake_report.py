@@ -92,7 +92,7 @@ class Report(object):
     @classmethod
     def metric_classes(cls):
         ''' Return a list of metric classes that the report can report on. '''
-        return [metric.JaCoCoARTCoverage]
+        return [metric.ARTStatementCoverage]
 
     def products(self):
         ''' Return the products in the report. '''

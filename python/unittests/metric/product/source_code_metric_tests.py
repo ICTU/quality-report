@@ -52,6 +52,11 @@ class FakeSonar(object):
         ''' Return the number of methods. '''
         return 100
 
+    @staticmethod
+    def no_sonar(*args):
+        ''' Return the number of //NOSONAR usages. '''
+        return 4
+
 
 class SonarViolationsUrlTestMixin(object):
     # pylint: disable=too-few-public-methods
@@ -163,7 +168,7 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report of the metric is correct. '''
-        self.assertEqual('5% van de methoden (5 van 100) van FakeSubject ' \
+        self.assertEqual('5% van de methoden (5 van 100) van FakeSubject '
                          'heeft meer dan 5 parameters.', self._metric.report())
 
     def test_norm_template_default_values(self):
@@ -173,3 +178,31 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
             metric.ManyParameters.norm_template.format(
                 **metric.ManyParameters.norm_template_default_values()
             ))
+
+
+class NoSonarTest(SonarViolationsUrlTestMixin, unittest.TestCase):
+     # pylint: disable=too-many-public-methods
+    ''' Unit tests for the no sonar metric. '''
+
+    def setUp(self):  # pylint: disable=invalid-name
+        subject = domain.Product(domain.Project(), 'PR', name='FakeSubject')
+        project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
+        self._metric = metric.NoSonar(subject=subject, project=project)
+
+    def test_value(self):
+        ''' Test that the value of the metric equals the number of
+            times //NOSONAR was used. '''
+        self.assertEqual(4, self._metric.value())
+
+    def test_report(self):
+        ''' Test that the report of the metric is correct. '''
+        self.assertEqual('FakeSubject bevat 4 keer //NOSONAR.', self._metric.report())
+
+    def test_norm_template_default_values(self):
+        ''' Test that the right values are returned to fill in the norm
+            template. '''
+        self.assertTrue(
+            metric.NoSonar.norm_template.format(
+                **metric.NoSonar.norm_template_default_values()
+            ))
+

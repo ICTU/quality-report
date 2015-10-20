@@ -42,7 +42,7 @@ HTML = '''
     </tr>
   </tbody>
 </table>
-<h2>Response times (ms): stable period (2013-01-31 15:57:57 - 2013-01-31 16:25:11)</h2>
+<h2>Response times (ms): stable period - Begin: Fri Aug 28 13:40:30 CEST 2015 - End: Fri Aug 28 15:41:30 CEST 2015</h2>
 <table class="details">
   <tr>
     <th>Id</th>
@@ -164,7 +164,7 @@ class JMeterTest(unittest.TestCase):
     def test_date_of_last_measurement(self):
         ''' Test that the date of the last measurement is correctly parsed
             from the report. '''
-        self.assertEqual(datetime.datetime(2013, 1, 31), 
+        self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30),
                          self.__performance_report.date(('01', 'lrk-pp'), 
                                                               '12.5.5'))
         

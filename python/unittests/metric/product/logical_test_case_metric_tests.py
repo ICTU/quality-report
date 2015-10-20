@@ -373,9 +373,9 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
                         can_be_measured(product, self.__project))
 
 
-class PercentageManualLogicalTestCasesTest(unittest.TestCase):
+class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
-    ''' Unit tests for the PercentageManualLogicalTestCases metric. '''
+    ''' Unit tests for the NumberOfManualLogicalTestCases metric. '''
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
         self.__subject = FakeSubject()
@@ -385,7 +385,7 @@ class PercentageManualLogicalTestCasesTest(unittest.TestCase):
             subject=self.__subject, project=self.__project)
 
     def test_value(self):
-        ''' Test that the value of the metric is the percentage of manual
+        ''' Test that the value of the metric is the number of manual
             logical test cases. '''
         self.assertEqual(10, self.__metric.value())
 
@@ -400,7 +400,7 @@ class PercentageManualLogicalTestCasesTest(unittest.TestCase):
             'handmatig. Meer dan 50 is rood.', self.__metric.norm())
 
     def test_can_be_measured(self):
-        ''' Test that the metric can  be measured when the project has Birt and
+        ''' Test that the metric can be measured when the project has Birt and
             the product has a Birt id, and the product is a trunk version. '''
         self.assertTrue(metric.NumberOfManualLogicalTestCases.
                         can_be_measured(self.__subject, self.__project))
@@ -428,3 +428,131 @@ class PercentageManualLogicalTestCasesTest(unittest.TestCase):
     def test_url(self):
         ''' Test the url is correct. '''
         self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+
+
+class FakeJira(object):
+    ''' A fake Jira for testing purposes. '''
+    has_query = True
+
+    def has_manual_test_cases_query(self):
+        ''' Return whether jira has a query for manual test cases. '''
+        return self.has_query
+
+    @staticmethod
+    def manual_test_cases_time():
+        ''' Return a fake duration of manual tests. '''
+        return 110
+
+    @staticmethod
+    def manual_test_cases_url():
+        ''' Return the url for the manual test case query. '''
+        return 'http://jira'
+
+    @staticmethod
+    def nr_manual_test_cases():
+        ''' Return the number of manual test cases. '''
+        return 5
+
+    @staticmethod
+    def nr_manual_test_cases_not_measured():
+        ''' Return the number of manual test cases whose duration hasn't been measured. '''
+        return 2
+
+
+class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the DurationOfManualLogicalTestCases metric. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__jira = FakeJira()
+        self.__project = domain.Project(metric_sources={
+            metric_source.Jira: self.__jira})
+        self.__metric = metric.DurationOfManualLogicalTestCases(
+            subject=self.__project, project=self.__project)
+
+    def test_value(self):
+        ''' Test that the value of the metric is the duration of the manual
+            logical test cases. '''
+        self.assertEqual(110, self.__metric.value())
+
+    def test_report(self):
+        ''' Test the metric report. '''
+        self.assertEqual('De uitvoering van 3 van de 5 handmatige logische testgevallen kost 110 minuten.',
+                         self.__metric.report())
+
+    def test_norm(self):
+        ''' Test the norm text. '''
+        self.assertEqual('De uitvoering van de handmatige logische testgevallen kost maximaal 120 minuten. '
+                         'Meer dan 240 is rood.', self.__metric.norm())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has Jira and
+            Jira has a manual test cases query. '''
+        self.assertTrue(metric.DurationOfManualLogicalTestCases.
+                        can_be_measured(self.__project, self.__project))
+
+    def test_cant_be_measured_without_jira(self):
+        ''' Test that the metric can not be measured when the project has no Jira. '''
+        project = domain.Project()
+        self.assertFalse(metric.DurationOfManualLogicalTestCases.
+                         can_be_measured(project, project))
+
+    def test_cant_be_measured_without_manual_test_cases_query(self):
+        ''' Test that the metric can not be measured when Jira has no
+            manual test cases query. '''
+        self.__jira.has_query = False
+        self.assertFalse(metric.DurationOfManualLogicalTestCases.
+                         can_be_measured(self.__project, self.__project))
+
+    def test_url(self):
+        ''' Test the url is correct. '''
+        self.assertEqual({'Jira': 'http://jira'}, self.__metric.url())
+
+
+class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
+    # pylint: disable=too-many-public-methods
+    ''' Unit tests for the ManualLogicalTestCasesMeasured metric. '''
+    def setUp(self):  # pylint: disable=invalid-name
+        self.__jira = FakeJira()
+        self.__project = domain.Project(metric_sources={
+            metric_source.Jira: self.__jira})
+        self.__metric = metric.ManualLogicalTestCasesWithoutDuration(
+            subject=self.__project, project=self.__project)
+
+    def test_value(self):
+        ''' Test that the value of the metric is the number of
+            logical test cases not measured for duration. '''
+        self.assertEqual(2, self.__metric.value())
+
+    def test_report(self):
+        ''' Test the metric report. '''
+        self.assertEqual('Van 2 van de 5 handmatige logische testgevallen is de uitvoeringstijd niet ingevuld.',
+                         self.__metric.report())
+
+    def test_norm(self):
+        ''' Test the norm text. '''
+        self.assertEqual('Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld.',
+                         self.__metric.norm())
+
+    def test_can_be_measured(self):
+        ''' Test that the metric can be measured when the project has Jira and
+            Jira has a manual test cases query. '''
+        self.assertTrue(metric.ManualLogicalTestCasesWithoutDuration.
+                        can_be_measured(self.__project, self.__project))
+
+    def test_cant_be_measured_without_jira(self):
+        ''' Test that the metric can not be measured when the project has no Jira. '''
+        project = domain.Project()
+        self.assertFalse(metric.ManualLogicalTestCasesWithoutDuration.
+                         can_be_measured(project, project))
+
+    def test_cant_be_measured_without_manual_test_cases_query(self):
+        ''' Test that the metric can not be measured when Jira has no
+            manual test cases query. '''
+        self.__jira.has_query = False
+        self.assertFalse(metric.ManualLogicalTestCasesWithoutDuration.
+                         can_be_measured(self.__project, self.__project))
+
+    def test_url(self):
+        ''' Test the url is correct. '''
+        self.assertEqual({'Jira': 'http://jira'}, self.__metric.url())
+

@@ -69,3 +69,15 @@ class GreyMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
         '{denominator}) scoort grijs.'
     target_value = 2
     low_target_value = 5
+
+
+class MissingMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
+    ''' Metric for measuring the percentage of metrics that can't be measured. '''
+
+    metric_statuses = ('missing',)
+    norm_template = 'Maximaal {target}% van de metrieken kan niet gemeten worden. ' \
+        'Meer dan {low_target}% is rood.'
+    template = '{value}% van de metrieken ({numerator} van de ' \
+        '{denominator}) kan niet gemeten worden.'
+    target_value = 0
+    low_target_value = 5

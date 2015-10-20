@@ -61,7 +61,7 @@ class SectionTest(unittest.TestCase):
         self.__header = report.SectionHeader('TE', 'title', 'subtitle')
         self.__metrics = [FakeMetric('green'), FakeMetric('perfect'), 
                           FakeMetric('yellow'), FakeMetric('grey'),
-                          FakeMetric('red')]
+                          FakeMetric('red'), FakeMetric('missing')]
         self.__section = report.Section(self.__header, self.__metrics)
 
     def test_title(self):
@@ -312,23 +312,17 @@ class FakeBirt(object):
             design. '''
         return True
 
-    @staticmethod
-    def has_art_performance(birt_id, version):
-        # pylint: disable=unused-argument
-        ''' Return whether the product with the specified birt id has relative
-            performance data. '''
-        return True
-
 
 class FakeJira(object):  # pylint: disable=too-few-public-methods
     ''' Fake Jira. '''
+
     @staticmethod
     def has_open_bugs_query():
         ''' Return whether Jira has a query to report the number of open bug
             reports. '''
         return True
 
-    has_open_security_bugs_query = has_blocking_test_issues_query = \
+    has_manual_test_cases_query = has_open_security_bugs_query = has_blocking_test_issues_query = \
         has_open_bugs_query
 
 
@@ -459,7 +453,7 @@ class QualityReportMetricsTest(unittest.TestCase):
             possible. '''
         self.__assert_metric(metric.FailingRegressionTests,
             product_kwargs=dict(metric_source_ids={self.__jenkins: 'id'}),
-            project_kwargs=dict(metric_sources={metric_source.JenkinsTestReport:
+            project_kwargs=dict(metric_sources={metric_source.TestReport:
                                                 self.__jenkins}))
 
     def test_failing_regression_tests_art(self):
@@ -468,7 +462,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.FailingRegressionTests,
             product_kwargs=dict(
                 art=dict(metric_source_ids={self.__jenkins: 'id'})),
-            project_kwargs=dict(metric_sources={metric_source.JenkinsTestReport:
+            project_kwargs=dict(metric_sources={metric_source.TestReport:
                                                 self.__jenkins}))
 
     def test_unittest_line_coverage(self):
@@ -491,18 +485,31 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(
                 metric_sources={metric_source.Sonar: self.__sonar}))
 
-    def test_art_coverage(self):
-        ''' Test that the ART coverage metric is added if possible. '''
-        self.__assert_metric(metric.EmmaARTCoverage,
-            project_kwargs=dict(metric_sources={metric_source.Emma: 'Emma'}), 
-            product_kwargs=dict(metric_source_ids={'Emma': 'emma'}))
+    def test_art_statement_coverage(self):
+        ''' Test that the ART statement coverage metric is added if possible. '''
+        self.__assert_metric(metric.ARTStatementCoverage,
+            project_kwargs=dict(metric_sources={metric_source.CoverageReport: 'NCover'}),
+            product_kwargs=dict(metric_source_ids={'NCover': 'ncover'}))
 
-    def test_art_coverage_via_art(self):
-        ''' Test that the ART coverage metric is added if the ART product
+    def test_art_statement_coverage_via_art(self):
+        ''' Test that the ART statement coverage metric is added if the ART product
             has the coverage report. '''
-        self.__assert_metric(metric.EmmaARTCoverage, 
-            project_kwargs=dict(metric_sources={metric_source.Emma: 'Emma'}),
-            product_kwargs=dict(art=dict(metric_source_ids={'Emma': 'emma'})))
+        self.__assert_metric(metric.ARTStatementCoverage,
+            project_kwargs=dict(metric_sources={metric_source.CoverageReport: 'NCover'}),
+            product_kwargs=dict(art=dict(metric_source_ids={'NCover': 'ncover'})))
+
+    def test_art_branch_coverage(self):
+        ''' Test that the ART statement coverage metric is added if possible. '''
+        self.__assert_metric(metric.ARTBranchCoverage,
+            project_kwargs=dict(metric_sources={metric_source.CoverageReport: 'NCover'}),
+            product_kwargs=dict(metric_source_ids={'NCover': 'ncover'}))
+
+    def test_art_branch_coverage_via_art(self):
+        ''' Test that the ART statement coverage metric is added if the ART product
+            has the coverage report. '''
+        self.__assert_metric(metric.ARTBranchCoverage,
+            project_kwargs=dict(metric_sources={metric_source.CoverageReport: 'NCover'}),
+            product_kwargs=dict(art=dict(metric_source_ids={'NCover': 'ncover'})))
 
     def test_art_critical_violations(self):
         ''' Test that the critical violations is added for the ART. '''
@@ -583,7 +590,7 @@ class QualityReportMetricsTest(unittest.TestCase):
                                 metric_source_ids={self.__birt: 'birt'}),
             include=False)
 
-    def test_percentage_manual_ltcs(self):
+    def test_number_manual_ltcs(self):
         ''' Test that the number of manual logical test case metric is added
             if possible. '''
         self.__assert_metric(metric.NumberOfManualLogicalTestCases,
@@ -591,7 +598,7 @@ class QualityReportMetricsTest(unittest.TestCase):
                                                 self.__birt}),
             product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
 
-    def test_no_percentage_manual_ltcs(self):
+    def test_no_number_manual_ltcs(self):
         ''' Test that the number of manual logical test case metric is not
             added when the product is not a trunk version. '''
         self.__assert_metric(metric.NumberOfManualLogicalTestCases,
@@ -600,6 +607,26 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(product_version='1.1',
                                 metric_source_ids={self.__birt: 'birt'}),
             include=False)
+
+    def test_duration_manual_ltcs(self):
+        ''' Test that the duration of manual logical test case metric is added if possible. '''
+        self.__assert_metric(metric.DurationOfManualLogicalTestCases,
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+
+    def test_no_duration_manual_ltcs(self):
+        ''' Test that the duration of manual logical test case metric is not added without Jira. '''
+        self.__assert_metric(metric.DurationOfManualLogicalTestCases,
+            project_kwargs=dict(), include=False)
+
+    def test_manual_ltcs_without_duration(self):
+        ''' Test that the manual logical test case without duration metric is added if possible. '''
+        self.__assert_metric(metric.ManualLogicalTestCasesWithoutDuration,
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+
+    def test_no_manual_ltcs_without_duration(self):
+        ''' Test that the manual logical test case without duration metric is not added without Jira. '''
+        self.__assert_metric(metric.ManualLogicalTestCasesWithoutDuration,
+            project_kwargs=dict(), include=False)
 
     def test_jsf_duplication(self):
         ''' Test that the jsf duplication metric is added if possible. '''
@@ -624,14 +651,6 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(
                 metric_sources={metric_source.PerformanceReport: self.__jmeter}),
             product_kwargs=dict(metric_source_ids={self.__jmeter: 'id'}))
-
-    def test_relative_art_performance(self):
-        ''' Test that the relative art performance metric is added if
-            possible. '''
-        self.__assert_metric(metric.RelativeARTPerformance,
-            project_kwargs=dict(
-                metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(metric_source_ids={self.__birt: 'id'}))
 
     def test_open_bugs(self):
         ''' Test that the open bugs metric is added if possible. '''
@@ -662,6 +681,12 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.UnusedCIJobs,
             project_kwargs=dict(metric_sources={metric_source.Jenkins:
                                                 'Jenkins'}))
+
+    def test_configuration_consistency(self):
+        ''' Test that the configuration consistency metric is added if possible. '''
+        self.__assert_metric(metric.JavaVersionConsistency,
+            project_kwargs=dict(metric_sources={metric_source.AnsibleConfigReport:
+                                                'Ansible'}))
 
     def test_action_activity(self):
         ''' Test that the action activity metric is added if possible. '''
@@ -849,9 +874,25 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_commented_loc(self):
-        ''' Test that the commented LOC metric is not added if the 
+        ''' Test that the commented LOC metric is not added if the
             product has no Sonar id. '''
         self.__assert_metric(metric.CommentedLOC,
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(short_name='dummy'),
+            include=False)
+
+    def test_no_sonar(self):
+        ''' Test that the NoSonar metric is added if possible. '''
+        self.__assert_metric(metric.NoSonar,
+            project_kwargs=dict(
+                metric_sources={metric_source.Sonar: self.__sonar}),
+            product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
+
+    def test_no_no_sonar(self):
+        ''' Test that the NoSonar metric is not added if the
+            product has no Sonar id. '''
+        self.__assert_metric(metric.NoSonar,
             project_kwargs=dict(
                 metric_sources={metric_source.Sonar: self.__sonar}),
             product_kwargs=dict(short_name='dummy'),
@@ -877,8 +918,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_metric_classes(self):
         ''' Test that the report gives a list of metric classes. '''
-        self.assertTrue(metric.EmmaARTCoverage in \
-                        report.QualityReport.metric_classes())
+        self.assertTrue(metric.ARTStatementCoverage in report.QualityReport.metric_classes())
 
     def test_total_loc(self):
         ''' Test that the total LOC metric is added if the project contains the

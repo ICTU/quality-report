@@ -21,6 +21,7 @@ import logging
 import os
 import re
 import pkg_resources
+import codecs
 
 
 from . import base_formatter
@@ -83,7 +84,7 @@ class HTMLFormatter(base_formatter.Formatter):
         module_path = os.path.dirname(os.path.abspath(__file__))
         filename = module_path + '/../../../html/{name}.html'.format(name=name)
         try:
-            fragment = file(filename).read()
+            fragment = codecs.open(filename, 'r', 'utf-8').read()
         except IOError:
             fragment = pkg_resources.ResourceManager().\
                 resource_string(__name__, 'html/{name}.html'.format(name=name))
@@ -169,7 +170,7 @@ class HTMLFormatter(base_formatter.Formatter):
         ''' Return a JSON representation of the history in the meta metrics
            section. '''
         history_table = []
-        grey_id = yellow_id = ''
+        missing_id = grey_id = yellow_id = ''
         for metric in meta_metrics_section.metrics():
             if metric.id_string() == 'MM-1':
                 green_id = metric.stable_id()
@@ -179,12 +180,14 @@ class HTMLFormatter(base_formatter.Formatter):
                 yellow_id = metric.stable_id()
             elif metric.id_string() == 'MM-4':
                 grey_id = metric.stable_id()
+            elif metric.id_string() == 'MM-5':
+                missing_id = metric.stable_id()
         for history_record in meta_metrics_section.history():
             date_and_time = self.__date_and_time(history_record)
             percentages = self.__percentages(history_record, green_id, red_id,
-                                             yellow_id, grey_id)
+                                             yellow_id, grey_id, missing_id)
             history_table.append(
-                '[new Date({}, {}, {}, {}, {}, {}), {}, {}, {}, {}]'.format(
+                '[new Date({}, {}, {}, {}, {}, {}), {}, {}, {}, {}, {}]'.format(
                                         *(date_and_time + percentages)
                         ))
         return '[' + ',\n'.join(history_table) + ']'
@@ -200,7 +203,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __percentages(history_record, green_id, red_id, yellow_id, grey_id):
+    def __percentages(history_record, green_id, red_id, yellow_id, grey_id, missing_id):
         ''' Return the percentages red, yellow and green of the
             history record. '''
         percentage_green = history_record[green_id]
@@ -214,8 +217,12 @@ class HTMLFormatter(base_formatter.Formatter):
             percentage_grey = history_record[grey_id]
         except KeyError:
             percentage_grey = 0
+        try:
+            percentage_missing = history_record[missing_id]
+        except KeyError:
+            percentage_missing = 0
         return (percentage_green, percentage_yellow, percentage_red,
-                percentage_grey)
+                percentage_grey, percentage_missing)
 
     def __metric_data(self, metric):
         ''' Return the metric data as a dictionary, so it can be used in string
@@ -232,7 +239,9 @@ class HTMLFormatter(base_formatter.Formatter):
             perfect=dict(image='biggrin', alt=':-D', status_nr=3,
                          hover='Perfect: score kan niet beter'),
             grey=dict(image='ashamed', alt=':-o', status_nr=4,
-                      hover='Technische schuld: lossen we later op'))
+                      hover='Technische schuld: lossen we later op'),
+            missing=dict(image='missing', alt='x', status_nr=5,
+                         hover='Ontbrekend: metriek kan niet gemeten worden'))
         kwargs = kwargs_by_status[status]
         qualifier = 'tenminste ' if metric.status_start_date() <= \
                     datetime.datetime(2013, 3, 19, 23, 59, 59) else ''

@@ -191,14 +191,14 @@ class Product(MeasurableObject):
         resources = []
         if not self.product_version():
         # Only include these resources for trunk versions:
-            for metric_source_class in [metric_source.Emma,
+            for metric_source_class in [metric_source.CoverageReport,
+                                        metric_source.NCover,
                                         metric_source.JaCoCo]:
                 source = self.__project.metric_source(metric_source_class)
-                source_id = self.metric_source_id(source)
-                if source_id:
+                coverage_url = self.metric_source_id(source)
+                if coverage_url:
                     resources.append(('{src} {prd}'.format(src=source.name(), 
-                                                 prd=self.name()), 
-                                      source.get_coverage_url(source_id)))
+                                                 prd=self.name()), coverage_url))
             if self.__vcs_path():
                 resources.append(('Broncode repository {prd}'.format(prd=self.name()), 
                                   self.__vcs_path()))

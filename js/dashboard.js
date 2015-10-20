@@ -31,10 +31,12 @@ var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
 var COLOR_GREY = '#808080';
+var COLOR_MISSING = '#F8F8F8';
 var BG_COLOR_GREEN = '#E6F8E0';
 var BG_COLOR_YELLOW = '#F8F8C0';
 var BG_COLOR_RED = '#F8E0E0';
 var BG_COLOR_GREY = '#CCCCCC';
+var BG_COLOR_MISSING = '#F8F8F8';
 
 // Column indices. FIXME: lookup instead of hard coding.
 var METRICS_COLUMN_SECTION = 1;
@@ -61,7 +63,7 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Version');
     metrics.addColumn('string', 'Quality attribute');
     metrics.addRows(metrics_data);
-    color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY);
+    color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
 function create_dashboard(metrics_data, history_data) {
@@ -170,7 +172,7 @@ function create_dashboard(metrics_data, history_data) {
 function read_settings_from_cookies() {
     settings.filter_color = read_cookie('filter_color', 'filter_color_all');
     settings.filter_quality_attribute = read_cookie('filter_quality_attribute', 'filter_quality_attribute_all');
-    settings.filter_version = read_cookie('filter_version', 'filter_version_all');
+    settings.filter_version = read_cookie('filter_version', 'filter_version_trunk');
     settings.show_dashboard = read_cookie('show_dashboard', 'true') === 'true';
     settings.show_multiple_tables = read_cookie('show_multiple_tables', 'true') === 'true';
     settings.table_sort_column = parseInt(read_cookie('table_sort_column', '0'), 10);
@@ -228,11 +230,11 @@ function show_section_summary_charts(filter_value) {
     }
 }
 
-function color_metrics(color_green, color_yellow, color_red, color_grey) {
+function color_metrics(color_green, color_yellow, color_red, color_grey, color_missing) {
     var numberOfColumns = window.metrics.getNumberOfColumns();
     var statusToColor = {'perfect': color_green, 'green': color_green,
                          'yellow': color_yellow, 'red': color_red,
-                         'grey': color_grey};
+                         'grey': color_grey, 'missing': color_missing};
     for (var row_index = 0; row_index < window.metrics.getNumberOfRows();
          row_index++) {
         var bg_color = statusToColor[window.metrics.getValue(row_index, METRICS_COLUMN_STATUS_TEXT)];
@@ -405,6 +407,7 @@ function draw_column_chart(chart_div, sections) {
     data.addColumn('number', 'Geel');
     data.addColumn('number', 'Rood');
     data.addColumn('number', 'Grijs');
+    data.addColumn('number', 'Ontbrekend');
     for(var index = 0; index < sections.length; index++) {
         var version = sections[index];
         var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
@@ -412,14 +415,16 @@ function draw_column_chart(chart_div, sections) {
         var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
         var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
         var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
+        var missing_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing'}]);
         data.addRow([version, green_rows.length + perfect_rows.length,
-          yellow_rows.length, red_rows.length, grey_rows.length]);
+          yellow_rows.length, red_rows.length, grey_rows.length, missing_rows.length]);
     }
 
     var bg_color = chart_div.parentNode.getAttribute('bgcolor');
     var options = {
       series: {0: {color: COLOR_GREEN}, 1: {color: COLOR_YELLOW},
-               2: {color: COLOR_RED}, 3: {color: COLOR_GREY}},
+               2: {color: COLOR_RED}, 3: {color: COLOR_GREY},
+               4: {color: COLOR_MISSING}},
       //tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
       width: 80, height: 80,
@@ -443,6 +448,7 @@ function draw_pie_chart(section) {
     var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
     var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
     var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
+    var missing_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing'}]);
 
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Status');
@@ -451,12 +457,13 @@ function draw_pie_chart(section) {
       ['Groen', green_rows.length + perfect_rows.length],
       ['Geel', yellow_rows.length],
       ['Rood', red_rows.length],
-      ['Grijs', grey_rows.length]
+      ['Grijs', grey_rows.length],
+      ['Ontbrekend', missing_rows.length]
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
       slices: [{color: COLOR_GREEN}, {color: COLOR_YELLOW},
-               {color: COLOR_RED}, {color: COLOR_GREY}],
+               {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}],
       pieSliceText: 'none',
       tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
@@ -476,12 +483,13 @@ function draw_area_chart(section, history) {
     data.addColumn('number', '% gele KPIs');
     data.addColumn('number', '% rode KPIs');
     data.addColumn('number', '% grijze KPIs');
+    data.addColumn('number', '% ontbrekende KPIs');
     data.addRows(history);
     var options = {
       width: 1200, height: 400,
       isStacked: true,
       hAxis: {format:'d-M-yy'},
-      colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY]
+      colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
     chart.draw(data, options);

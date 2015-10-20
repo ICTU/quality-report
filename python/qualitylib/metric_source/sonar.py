@@ -115,39 +115,53 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def complex_methods(self, product):
         ''' Return the number of methods that violate the Cyclomatic complexity
             threshold. '''
-        nr_complex_methods = 0
-        violation_names = ('Cyclomatic', 'FunctionComplexity')
+        violation_names = ('squid:MethodCyclomaticComplexity',
+                           'pmd:CyclomaticComplexity',
+                           'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
+                           'FunctionComplexity')
         for violation_name in violation_names:
-            nr_complex_methods += self.__violation(product, violation_name)
-        return nr_complex_methods
+            nr_complex_methods = self.__violation(product, violation_name)
+            if nr_complex_methods > 0:
+                return nr_complex_methods
+        return 0
 
     def long_methods(self, product):
         ''' Return the number of methods in the product that have to many
             non-comment statements. '''
-        nr_long_methods = 0
-        violation_names = ('Ncss', 'AvoidLongMethodsRule', 'S138')
+        violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
+                           'AvoidLongMethodsRule')
         for violation_name in violation_names:
-            nr_long_methods += self.__violation(product, violation_name)
-        return nr_long_methods
+            nr_long_methods = self.__violation(product, violation_name)
+            if nr_long_methods > 0:
+                return nr_long_methods
+        return 0
 
     def many_parameters_methods(self, product):
         ''' Return the number of methods in the product that have too many
             parameters. '''
-        nr_many_parameters = 0
-        violation_names = ('Parameter Number', 'AvoidLongParameterListsRule',
-                           'ExcessiveParameterList')
+        violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck',
+                           'pmd:ExcessiveParameterList',
+                           'squid:S00107',
+                           'AvoidLongParameterListsRule',)
         for violation_name in violation_names:
-            nr_many_parameters += self.__violation(product, violation_name)
-        return nr_many_parameters
+            nr_many_parameters = self.__violation(product, violation_name)
+            if nr_many_parameters > 0:
+                return nr_many_parameters
+        return 0
 
     def commented_loc(self, product):
         ''' Return the number of commented out lines in the source code of
             the product. '''
-        nr_commented_loc = 0
-        violation_names = ('commented-out', 'CommentedCode')
+        violation_names = ('csharpsquid:CommentedCode', 'squid:CommentedOutCodeLine')
         for violation_name in violation_names:
-            nr_commented_loc += self.__violation(product, violation_name)
-        return nr_commented_loc
+            nr_commented_loc = self.__violation(product, violation_name)
+            if nr_commented_loc > 0:
+                return nr_commented_loc
+        return 0
+
+    def no_sonar(self, product):
+        ''' Return the number of NOSONAR usages in the source code of the product. '''
+        return self.__violation(product, 'squid:NoSonar')
 
     def violations_url(self, product):
         ''' Return the url for the violations of the product. '''
@@ -162,18 +176,23 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Helper methods
 
     @utils.memoized
-    def __metric(self, product, metric, default=0):
+    def __metric(self, product, metric_name, default=0):
         ''' Return a specific metric value for the product. '''
-        try:
-            json = self.__get_json(self.__metrics_api_url.format(resource=product, metrics=metric))
-        except urllib2.HTTPError:
-            return default
-        try:
-            return json[0]['msr'][0]['val']
-        except IndexError:
-            logging.warning("Can't get %s value for %s from %s", metric, 
-                            product, json)
+        json = self.__all_metrics(product)
+        for metric in json[0]['msr']:
+            if metric['key'] == metric_name:
+                return metric['val']
+        logging.warning("Can't get %s value for %s from %s", metric_name,
+                        product, json)
         return default
+
+    @utils.memoized
+    def __all_metrics(self, product):
+        ''' Return all available metric values for the product. '''
+        try:
+            return self.__get_json(self.__metrics_api_url.format(resource=product, metrics='true'))
+        except urllib2.HTTPError:
+            return [{'msr': []}]
 
     @utils.memoized
     def __violation(self, product, violation_name, default=0):
@@ -188,12 +207,14 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             logging.warning("Can't get %s value for %s from %s", violation_name,
                             product, json)
             return default
+        violation_name = violation_name.lower()
         for violation in violations:
-            if violation_name in violation['rule_name'] or \
-               violation_name in violation['rule_key']:
+            if violation_name in violation['rule_name'].lower() or \
+               violation_name in violation['rule_key'].lower():
                 return int(violation['val'])
         return default
 
+    @utils.memoized
     def __get_json(self, url):
         ''' Get and evaluate the json from the url. '''
         try:

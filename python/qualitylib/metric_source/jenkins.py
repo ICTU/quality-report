@@ -191,6 +191,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         return job_name
 
 
+"""
 class JenkinsTestReport(Jenkins):
     ''' Class representing test reports in Jenkins jobs. '''
     needs_metric_source_id = True
@@ -248,13 +249,13 @@ class JenkinsTestReport(Jenkins):
         except urllib2.HTTPError, reason:
             logging.warn("Couldn't open %s to read test count %s: %s", url, 
                          result_type, reason)
-            return 0
+            return -1
         return int(report_dict[result_type])
 
     def test_report_url(self, job_name):
         ''' Return the url of the job. '''
         return self.__report_url.format(job=self.resolve_job_name(job_name))
-
+"""
 
 class JenkinsOWASPDependencyReport(Jenkins):
     ''' Class representing OWASP dependency reports in Jenkins jobs. '''
@@ -358,6 +359,22 @@ class JenkinsYmorPerformanceReport(Jenkins):
         ''' Return the url of the job. '''
         return self.__report_url.format(job=self.resolve_job_name(job_names[0]))
 
-    def date(self, job_name):
+    def date(self, job_names):
         ''' Return the date of the report. '''
-        return datetime.datetime.now()
+        dates = []
+        for job_name in job_names:
+            job_name = self.resolve_job_name(job_name)
+            url = self.__report_url.format(job=job_name)
+            # Open the frame and get the Subversion url of the report
+            # FIXME: why not get the quality report from the Jenkins job instead
+            # FIXME: of going to Subversion?
+            soup = beautifulsoup.BeautifulSoupOpener().soup(url)
+            subversion_path = soup('li', attrs={'id': 'tab1'})[0]['value']
+            subversion_url = 'http://' + subversion_path[2:]  # Strip './'
+            # Next, open the performance report itself
+            soup = beautifulsoup.BeautifulSoupOpener().soup(subversion_url)
+            table = soup('table', attrs={'class': 'config'})[0]
+            date_string = table('tr')[2]('td')[1].string
+            date_parts = [int(part) for part in date_string.split('.')]
+            dates.append(datetime.datetime(*date_parts))
+        return min(dates) if dates else datetime.datetime.now()

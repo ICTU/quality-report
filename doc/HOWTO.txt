@@ -100,8 +100,6 @@ SONAR = metric_source.Sonar('http://sonar/', username='user,
                             password='password')
 HISTORY = metric_source.History('quality-data/history.json')
 SUBVERSION = metric_source.Subversion()
-RELEASE_ARCHIVES = [metric_source.SubversionFolder('Project', 
-                                                   'http://releases/')]
 
 # Create the project itself and pass it its metric sources:
 PROJECT = Project('Organization', name='Project name',
@@ -112,13 +110,12 @@ PROJECT = Project('Organization', name='Project name',
                       metric_source.VersionControlSystem: SUBVERSION})
 
 # Create the teams of the project. In this example we have two Scrum teams and
-# one support team that's responsible for the releases.
+# one support team.
 TEAM_1 = domain.Team(name='First team', is_scrum_team=True)
 PROJECT.add_team(TEAM_1)
 TEAM_2 = domain.Team(name='Second team', is_scrum_team=True)
 PROJECT.add_team(TEAM_2)
-TEAM_3 = domain.Team(name='Third team', is_scrum_team=False, 
-                     release_archives=RELEASE_ARCHIVES)
+TEAM_3 = domain.Team(name='Third team', is_scrum_team=False)
 PROJECT.add_team(TEAM_3)
 
 # Create the documents that we want to monitor. Some documents are expected to

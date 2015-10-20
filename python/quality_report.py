@@ -77,11 +77,11 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         ''' Add the latest released version of each product. '''
         vcs = self.__project.metric_source(metric_source.VersionControlSystem)
         for product in self.__project.products()[:]:
-            vcs_product_info = metric_info.VersionControlSystemProductInfo( \
+            vcs_product_info = metric_info.VersionControlSystemProductInfo(
                 vcs, product)
             latest_version = vcs_product_info.latest_released_product_version()
             if latest_version:
-                logging.info('Adding %s:%s to the project because it is the ' \
+                logging.info('Adding %s:%s to the project because it is the '
                          'latest version.', product.name(), latest_version)
                 self.__project.add_product_with_version(product.name(),
                                                         latest_version)
@@ -92,7 +92,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         for product in self.__project.products()[:]:
             release_candidate = product.release_candidate()
             if release_candidate:
-                logging.info('Adding %s:%s to the project because it is a ' \
+                logging.info('Adding %s:%s to the project because it is a '
                          'release candidate.', product.name(), 
                          release_candidate)
                 self.__project.add_product_with_version(product.name(),
@@ -102,14 +102,14 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         ''' Add the branches of the products that have to be monitored. '''
         for product in self.__project.products()[:]:
             for branch in product.product_branches():
-                logging.info('Adding %s:%s to the project because it is a ' \
+                logging.info('Adding %s:%s to the project because it is a '
                              'branch to be monitored.', product.name(), branch)
                 self.__project.add_product_with_branch(product.name(), branch)
 
     def __add_dependencies(self):
         ''' Add product versions that other products depend on. '''
         for name, version in self.__project.product_dependencies():
-            logging.info('Adding %s:%s to the project because it is a ' \
+            logging.info('Adding %s:%s to the project because it is a '
                          'dependency.', name, version)
             self.__project.add_product_with_version(name, version)
 
