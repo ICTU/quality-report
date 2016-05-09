@@ -1,3 +1,8 @@
+2016-05-09  Release 1.16.1
+
+  * Include requirements.txt in source distribution.
+
+
 2016-05-09  Release 1.16.0
 
   * Lots of undocumented changes.
