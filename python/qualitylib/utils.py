@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,12 +12,11 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
-from __future__ import absolute_import
+"""
+
 from __future__ import division
 
 
-import calendar
 import datetime
 import logging
 import os
@@ -31,7 +30,7 @@ MONTHS = {
     2: 'februari',
     3: 'maart',
     4: 'april',
-    5: 'mei', 
+    5: 'mei',
     6: 'juni',
     7: 'juli',
     8: 'augustus',
@@ -44,7 +43,7 @@ MONTHS = {
 ABBREVIATED_MONTHS = {
     'jan':  1,
     'feb':  2,
-    'mar':  3,
+    'mar':  3, 'mrt': 3,
     'apr':  4,
     'may':  5, 'mei':  5,
     'jun':  6,
@@ -53,31 +52,33 @@ ABBREVIATED_MONTHS = {
     'sep':  9,
     'oct': 10, 'okt': 10,
     'nov': 11,
-    'dec': 12,
+    'dec': 12
 }
 
 
-_YEAR_RE      = "(?P<year>[0-9]{4})"
+_YEAR_RE = "(?P<year>[0-9]{4})"
 _MONTHNAME_RE = "(?P<monthname>[A-Z][a-z][a-z])"
-_MONTH_RE     = "(?P<month>[0-9]{1,2})"
-_DAY_RE       = "(?P<day>[0-9]{1,2})"
-_DAYNAME_RE   = "(?P<dayname>[A-Z][a-z]*)"
-_TIME_RE      = "(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{2}):(?P<second>[0-9]{2})"
-_AM_PM_RE     = "(?P<am_pm>[AP]M)"
-_TIMEZONE_RE  = "(?P<tzname>[A-Z]{3,4})"
+_MONTH_RE = "(?P<month>[0-9]{1,2})"
+_DAY_RE = "(?P<day>[0-9]{1,2})"
+_DAYNAME_RE = "(?P<dayname>[A-Z][a-z]*)"
+_TIME_RE = "(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{2}):(?P<second>[0-9]{2})"
+_AM_PM_RE = "(?P<am_pm>[AP]M)"
+_TIMEZONE_RE = "(?P<tzname>[A-Z]{3,4})"
 
 # US format: 'Apr 5, 2013 10:04:10 AM'
-_US_DATE_TIME_RE = _MONTHNAME_RE + "\s+" + _DAY_RE + ",\s+" + _YEAR_RE + "\s+" + _TIME_RE + "\s+" + _AM_PM_RE
+_US_DATE_TIME_RE = _MONTHNAME_RE + r"\s+" + _DAY_RE + r",\s+" + _YEAR_RE + r"\s+" + _TIME_RE + r"\s+" + _AM_PM_RE
 # UK format: 'Tue Apr 5 2013 22:10:10 CEST'
-_UK_DATE_TIME_RE = _DAYNAME_RE + "\s+" + _MONTHNAME_RE + "\s+" + _DAY_RE + "\s+" + _YEAR_RE + "\s+" + _TIME_RE + "\s+" + _TIMEZONE_RE
+_UK_DATE_TIME_RE = _DAYNAME_RE + r"\s+" + _MONTHNAME_RE + r"\s+" + _DAY_RE + r"\s+" + _YEAR_RE + r"\s+" + _TIME_RE + \
+                   r"\s+" + _TIMEZONE_RE
 # UK format, year last: 'Tue Apr 5 22:10:10 CEST 2013'
-_UK_DATE_TIME_YEAR_LAST_RE = _DAYNAME_RE + "\s+" + _MONTHNAME_RE + "\s+" + _DAY_RE + "\s+" + _TIME_RE + "\s+" + _TIMEZONE_RE + "\s+" + _YEAR_RE
+_UK_DATE_TIME_YEAR_LAST_RE = _DAYNAME_RE + r"\s+" + _MONTHNAME_RE + r"\s+" + _DAY_RE + r"\s+" + _TIME_RE + r"\s+" + \
+                             _TIMEZONE_RE + r"\s+" + _YEAR_RE
 # ISO date: '2013-11-05'
 _ISO_DATE_RE = _YEAR_RE + "-" + _MONTH_RE + "-" + _DAY_RE
 
 
-def _parse_date_time( date_time_re, date_time_string):
-    ''' Parse a date/time string using a regular expression.
+def _parse_date_time(date_time_re, date_time_string):
+    """ Parse a date/time string using a regular expression.
         The regular expression must contain named match groups:
         year - the year in four digits
         monthname - the abbreviate name of the month
@@ -85,85 +86,66 @@ def _parse_date_time( date_time_re, date_time_string):
         hour, minute, second - the time
         and optional:
         am_pm - used insensitive to case
-        '''
-    if not isinstance(date_time_string,basestring):
-        raise TypeError("date_time_string should be a string, "
-                        "not {cls!r}".format(cls=date_time_string.__class__.__name__))
-
-    m = re.search( date_time_re, date_time_string )
-    if m is None:
+        """
+    match = re.search(date_time_re, date_time_string)
+    if match is None:
         raise ValueError("date_time_string {s!r} not matched".format(s=date_time_string))
 
-    year   = int(m.group('year'))
-    month  = ABBREVIATED_MONTHS[m.group('monthname').lower()]
-    day    = int(m.group('day'))
-    hour   = int(m.group('hour'))
-    minute = int(m.group('minute'))
-    second = int(m.group('second'))
-    if m.groupdict().get('am_pm', '').lower() == 'pm' and hour < 12:
+    year = int(match.group('year'))
+    month = ABBREVIATED_MONTHS[match.group('monthname').lower()]
+    day = int(match.group('day'))
+    hour = int(match.group('hour'))
+    minute = int(match.group('minute'))
+    second = int(match.group('second'))
+    if match.groupdict().get('am_pm', '').lower() == 'pm' and hour < 12:
         hour += 12
 
     return datetime.datetime(year, month, day, hour, minute, second)
 
 
 def parse_us_date_time(date_time_string):
-    ''' Parse a US format date/time string of the form 
-        'Apr 5, 2013 10:04:10 AM'. '''
+    """ Parse a US format date/time string of the form
+        'Apr 5, 2013 10:04:10 AM'. """
     return _parse_date_time(_US_DATE_TIME_RE, date_time_string)
 
 
-def parse_uk_date_time(date_time_string):
-    ''' Parse a UK format date/time string of the form
-        'Mon Aug 24 2015 16:05:55 CEST'. '''
-    return _parse_date_time(_UK_DATE_TIME_RE, date_time_string)
-
-
 def parse_uk_date_time_year_last(date_time_string):
-    ''' Parse a UK format date/time string of the form
-        'Mon Aug 24 2015 16:05:55 CEST'. '''
+    """ Parse a UK format date/time string of the form
+        'Mon Aug 24 2015 16:05:55 CEST'. """
     return _parse_date_time(_UK_DATE_TIME_YEAR_LAST_RE, date_time_string)
 
 
 def parse_iso_date(date_string):
-    ''' Parse an ISO format date string of the form '2013-11-05'. '''
-    if not isinstance(date_string, basestring):
-        raise TypeError("date_string should be a string, "
-                        "not {cls!r}".format(cls=date_string.__class__.__name__))
-
-    m = re.search( _ISO_DATE_RE, date_string )
-    if m is None:
+    """ Parse an ISO format date string of the form '2013-11-05'. """
+    match = re.search(_ISO_DATE_RE, date_string)
+    if match is None:
         raise ValueError("date_string {s!r} not matched".format(s=date_string))
 
-    year   = int(m.group('year'))
-    month  = int(m.group('month'))
-    day    = int(m.group('day'))
+    year = int(match.group('year'))
+    month = int(match.group('month'))
+    day = int(match.group('day'))
 
     return datetime.datetime(year, month, day)
 
 
 def parse_iso_datetime(datetime_string):
-    ''' Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. '''
+    """ Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. """
     return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
-def parse_us_int(string):
-    ''' Remove , from US format integers. '''
-    return int(string.replace(',', ''))
-
-
 def percentage(numerator, denominator, zero_divided_by_zero_is_zero=False):
-    ''' Return numerator / denominator * 100. '''
+    """ Return numerator / denominator * 100. """
     if float(denominator) == 0.0:
         if float(numerator) == 0.0 and zero_divided_by_zero_is_zero:
             return 0
-        else: 
+        else:
             return 100
     else:
         return int(round((numerator / denominator) * 100))
 
 
 def format_date(date_time, year=None):
-    ''' Return a (Dutch) formatted version of the datetime. '''
+    """ Return a (Dutch) formatted version of the datetime. """
     if date_time:
         formatted_date = '{day} {month}'.format(day=date_time.day, month=MONTHS[date_time.month])
         if year:
@@ -174,15 +156,15 @@ def format_date(date_time, year=None):
 
 
 def format_month(date):
-    ''' Return a (Dutch) formatted version of the month and year. '''
+    """ Return a (Dutch) formatted version of the month and year. """
     return '{month} {year}'.format(month=MONTHS[date.month], year=date.year)
 
 
 def format_timedelta(timedelta):
-    ''' Return a (Dutch) formatted version of the timedelta. '''
+    """ Return a (Dutch) formatted version of the timedelta. """
 
-    days    =  timedelta.days
-    hours   =  timedelta.seconds // 3600
+    days = timedelta.days
+    hours = timedelta.seconds // 3600
     minutes = (timedelta.seconds % 3600) // 60
 
     if days > 1:
@@ -207,15 +189,15 @@ def format_timedelta(timedelta):
 
 
 def month_ago(date=None, day_correction=0):
-    ''' Return the date that is one month earlier on the same day of the 
-        month (or earlier if needed to prevent invalid days). '''
-    date  = date or datetime.date.today()
+    """ Return the date that is one month earlier on the same day of the
+        month (or earlier if needed to prevent invalid days). """
+    date = date or datetime.date.today()
     month = date.month - 1
-    year  = date.year
-    day   = date.day - day_correction
+    year = date.year
+    day = date.day - day_correction
     while month < 1:
         month += 12
-        year  -=  1
+        year -= 1
 
     try:
         return date.replace(year=year, month=month, day=day)
@@ -223,28 +205,18 @@ def month_ago(date=None, day_correction=0):
         return month_ago(date, day_correction + 1)
 
 
-def last_day_of_month(date):
-    ''' Return the day number of the last of the month. '''
-    if date.month == 2:
-        return 29 if calendar.isleap(date.year) else 28
-    else:
-        return 31 if date.month in (1, 3, 5, 7, 8, 10, 12) else 30
-
-
 def workdays_in_period(start_date, end_date):
-    ''' Return the number of work days in the period. All days between
+    """ Return the number of work days in the period. All days between
         start date and end date are considered, including the start date and
-        end date themselves. '''
-    return sum( 1
-                for ordinal in range(start_date.toordinal(), end_date.toordinal() + 1)
-                if datetime.date.fromordinal(ordinal).isoweekday() <= 5
-              )
+        end date themselves. """
+    return sum(1 for ordinal in range(start_date.toordinal(), end_date.toordinal() + 1)
+               if datetime.date.fromordinal(ordinal).isoweekday() <= 5)
 
 
-class memoized(object):  # pylint: disable=C0103,R0903
-    ''' Decorator. Caches a function's return value each time it is called.
+class memoized(object):  # pylint: disable=invalid-name,too-few-public-methods
+    """ Decorator. Caches a function's return value each time it is called.
         If called later with the same arguments, the cached value is returned
-        (not reevaluated). '''
+        (not reevaluated). """
 
     def __init__(self, func):
         self.__func = func
@@ -256,8 +228,7 @@ class memoized(object):  # pylint: disable=C0103,R0903
         return self
 
     def __call__(self, *args, **kwargs):
-        key = (id(self.__instance),) + args + \
-              tuple([kwargs[key] for key in sorted(kwargs)])
+        key = (id(self.__instance),) + args + tuple([kwargs[key] for key in sorted(kwargs)])
         try:
             return self.__cache[key]
         except KeyError:
@@ -270,29 +241,36 @@ class memoized(object):  # pylint: disable=C0103,R0903
             return self.__func(self.__instance, *args, **kwargs)
 
     def __repr__(self):
-        ''' Return the function's docstring. '''
+        """ Return the function's docstring. """
         return self.__func.__doc__
 
 
 def rmtree(folder, remove_tree=shutil.rmtree, exists=os.path.exists):
-    ''' Remove folder recursively. '''
+    """ Remove folder recursively. """
     if exists(folder):
         try:
             remove_tree(folder)
-        except OSError, reason:
-            logging.warning("Couldn't remove {}: {}".format(folder, reason))
+        except OSError as reason:
+            logging.warning("Couldn't remove %s: %s", folder, reason)
 
 
 def html_escape(text):
-    '''Return the text with all HTML characters escaped. '''
-    text = text.replace('&', '&amp;')
-    text = text.replace('"', '&quot;')
-    text = text.replace("'", '&#39;')
-    text = text.replace(">", '&gt;')
-    text = text.replace("<", '&lt;')
+    """ Return the text with all HTML characters escaped. """
+    for character, html_code in [('&', '&amp;'), ('"', '&quot;'), ("'", '&#39;'), (">", '&gt;'), ("<", '&lt;')]:
+        text = text.replace(character, html_code)
     return text
 
 
 def eval_json(json_string):
-    ''' Return an evaluated version of the json string. '''
+    """ Return an evaluated version of the json string. """
     return json.loads(json_string)
+
+
+def version_number_to_numerical(version_number_tuple):
+    """ Transform the first three parts (major, minor, patch) of the version number into a numerical value.
+        We assume each part is not larger than 100, so that 10000 * major + 100 * minor + patch results in a number
+        for which holds that numerical_value(a.b.c.) > numerical_value(d.e.f) iff a.b.c > d.e.f. """
+    result = 0
+    for part, factor in zip(version_number_tuple[:3], (10000, 100, 1)):
+        result += part * factor
+    return result

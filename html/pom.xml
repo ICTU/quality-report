@@ -18,7 +18,6 @@
   
   <properties>
     <sonar.language>web</sonar.language>
-    <sonar.profile>Default Web Profile</sonar.profile>  
     <sonar.web.fileExtensions>html</sonar.web.fileExtensions>
   </properties>
 

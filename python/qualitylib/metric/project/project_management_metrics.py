@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -103,6 +103,7 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
         'is rood.'
     template = '{value} acties uit de actie- en besluitenlijst zijn te ' \
         'laat of te lang (14 dagen) niet bijgewerkt.'
+    url_label_text = 'Niet bijgewerkte of te late acties'
     target_value = 0
     low_target_value = 3
     quality_attribute = PROJECT_MANAGEMENT
@@ -118,6 +119,3 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
             return self._trello_actions_board.over_due_or_inactive_cards_url()
         except TrelloUnreachableException:
             return dict(Trello='http://trello.com')
-
-    def url_label(self):
-        return 'Niet bijgewerkte of te late acties'

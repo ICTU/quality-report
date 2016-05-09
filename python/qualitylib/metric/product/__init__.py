@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -29,3 +29,4 @@ from .unittest_metrics import *
 from .user_story_metrics import *
 from .version_control_metrics import *
 from .violation_metrics import *
+from .analysis_age import *

@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
 import datetime
@@ -24,7 +24,7 @@ from .. import utils, domain
 
 
 class AnsibleConfigReport(domain.MetricSource):
-    ''' Class for Ansible config reports. '''
+    """ Class for Ansible config reports. """
     metric_source_name = 'Ansible config report'
 
     def __init__(self, url_open=None, **kwargs):
@@ -32,7 +32,7 @@ class AnsibleConfigReport(domain.MetricSource):
         super(AnsibleConfigReport, self).__init__()
 
     def java_versions(self, url):
-        ''' Return the number of Java versions. '''
+        """ Return the number of Java versions. """
         versions = set()
         json = self.__get_json(url)
         if not json:
@@ -42,7 +42,7 @@ class AnsibleConfigReport(domain.MetricSource):
         return len(versions)
 
     def app_server_versions(self, url):
-        ''' Return the number of App server versions. '''
+        """ Return the number of App server versions. """
         versions = set()
         json = self.__get_json(url)
         if not json:
@@ -52,7 +52,7 @@ class AnsibleConfigReport(domain.MetricSource):
         return len(versions)
 
     def date(self, url):
-        ''' Return the date of the report. '''
+        """ Return the date of the report. """
         json = self.__get_json(url)
         if not json:
             return datetime.datetime.min
@@ -65,8 +65,10 @@ class AnsibleConfigReport(domain.MetricSource):
 
     @utils.memoized
     def __get_json(self, url):
-        ''' Get the json from the url. '''
+        """ Get the json from the url. """
         try:
             return utils.eval_json(self.__url_open(url).read())
         except urllib2.HTTPError, reason:
             logging.warn("Couldn't open %s: %s", url, reason)
+        except ValueError, reason:
+            logging.error("Couldn't parse JSON from %s: %s", url, reason)

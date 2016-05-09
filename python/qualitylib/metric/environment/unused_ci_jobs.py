@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,11 +27,12 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
         that are not used. '''
 
     name = 'Ongebruikte CI-jobs'
-    norm_template = 'Maximaal {target} van de CI-jobs ' \
+    norm_template = 'Maximaal {target} van de actieve CI-jobs ' \
         'is ongebruikt. Meer dan {low_target} is rood. Een CI-job is ' \
         'ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn ' \
-        'geweest.'
-    template = '{value} van de {number_of_jobs} CI-jobs is ongebruikt.'
+        'geweest. Inactieve CI-jobs worden genegeerd.'
+    template = '{value} van de {number_of_jobs} actieve CI-jobs is ongebruikt.'
+    url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2
     quality_attribute = ENVIRONMENT_QUALITY
@@ -48,9 +49,6 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     def url(self):
         return self._jenkins.unused_jobs_url()
 
-    def url_label(self):
-        return 'Ongebruikte jobs'
-
     def __number_of_jobs(self):
-        ''' Return the total number of jobs. '''
-        return self._jenkins.number_of_jobs()
+        ''' Return the total number of active jobs. '''
+        return self._jenkins.number_of_active_jobs()

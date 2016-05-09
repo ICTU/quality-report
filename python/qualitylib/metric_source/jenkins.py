@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -56,9 +56,9 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
 
     @utils.memoized
-    def number_of_jobs(self):
-        ''' Return the total number of Jenkins jobs. '''
-        return len(self.__jobs())
+    def number_of_active_jobs(self):
+        ''' Return the total number of active Jenkins jobs. '''
+        return len(self.__active_jobs())
 
     def failing_jobs_url(self):
         ''' Return the urls for the failing Jenkins jobs. '''
@@ -82,7 +82,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     @utils.memoized
     def __failing_jobs(self):
-        ''' Return the Jenkins jobs that are failing. '''
+        ''' Return the active Jenkins jobs that are failing. '''
 
         def failing(job):
             ''' Return whether the job is failing. '''
@@ -94,12 +94,12 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
                 long ago. '''
             return self.__age_of_last_stable_build(job) > datetime.timedelta(days=1)
 
-        return [job for job in self.__jobs() if self.__has_builds(job) and
+        return [job for job in self.__active_jobs() if self.__has_builds(job) and
                 failing(job) and old(job)]
 
     @utils.memoized
     def __unused_jobs(self):
-        ''' Return the Jenkins jobs that are unused. '''
+        ''' Return the active Jenkins jobs that are unused. '''
         def grace_time(job, default=180):
             ''' Return the grace time for the job. '''
             # Don't consider projects to be old until their last successful
@@ -109,8 +109,12 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             days = int(match.group(1)) if match else default
             return datetime.timedelta(days=days)
 
-        return [job for job in self.__jobs() if
+        return [job for job in self.__active_jobs() if
                 self.__age_of_last_completed_build(job) > grace_time(job)]
+
+    def __active_jobs(self):
+        ''' Return all active Jenkins jobs. '''
+        return [job for job in self.__jobs() if job['buildable']]
 
     @utils.memoized
     def __jobs(self):
@@ -191,72 +195,6 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         return job_name
 
 
-"""
-class JenkinsTestReport(Jenkins):
-    ''' Class representing test reports in Jenkins jobs. '''
-    needs_metric_source_id = True
-
-    def __init__(self, *args, **kwargs):
-        super(JenkinsTestReport, self).__init__(*args, **kwargs)
-        self.__report_url = self._last_successful_build_url + 'testReport/'
-        self.__report_api_url = self.__report_url + self.api_postfix
-
-    def passed_tests(self, job_names):
-        ''' Return the number of passed tests as reported by the test report
-            of a job. '''
-        return sum([self.__passed_tests(job_name) for job_name in job_names])
-
-    def failed_tests(self, job_names):
-        ''' Return the number of failed tests as reported by the test report 
-            of a job. '''
-        return sum([self.__failed_tests(job_name) for job_name in job_names])
-
-    def skipped_tests(self, job_names):
-        ''' Return the number of skipped tests as reported by the test report
-            of a job. '''
-        return sum([self.__skipped_tests(job_name) for job_name in job_names])
-
-    def __passed_tests(self, job_name):
-        ''' Return the number of passed tests reported by the test report of
-            one Jenkins job. '''
-        try:
-            return self.__test_count(job_name, 'passCount')
-        except KeyError:
-            # Surefire reports don't have a pass count, calculate it:
-            total = self.__test_count(job_name, 'totalCount')
-            skipped = self.__skipped_tests(job_name)
-            failed = self.__failed_tests(job_name)
-            return total - skipped - failed
-
-    def __failed_tests(self, job_name):
-        ''' Return the number of failed tests reported by the test report of
-            one Jenkins job. '''
-        return self.__test_count(job_name, 'failCount')
-
-    def __skipped_tests(self, job_name):
-        ''' Return the number of skipped tests reported by the test report of
-            one Jenkins job. '''
-        return self.__test_count(job_name, 'skipCount')
-
-    @utils.memoized
-    def __test_count(self, job_name, result_type):
-        ''' Return the number of tests with the specified result in the test
-            report of a job. '''
-        job_name = self.resolve_job_name(job_name)
-        url = self.__report_api_url.format(job=job_name)
-        try:
-            report_dict = self._api(url)
-        except urllib2.HTTPError, reason:
-            logging.warn("Couldn't open %s to read test count %s: %s", url, 
-                         result_type, reason)
-            return -1
-        return int(report_dict[result_type])
-
-    def test_report_url(self, job_name):
-        ''' Return the url of the job. '''
-        return self.__report_url.format(job=self.resolve_job_name(job_name))
-"""
-
 class JenkinsOWASPDependencyReport(Jenkins):
     ''' Class representing OWASP dependency reports in Jenkins jobs. '''
     needs_metric_source_id = True
@@ -269,18 +207,23 @@ class JenkinsOWASPDependencyReport(Jenkins):
 
     def nr_high_priority_warnings(self, job_names):
         ''' Return the number of high priority warnings in the jobs. '''
-        return sum([self.__nr_warnings(job_name, 'High')
-                    for job_name in job_names])
+        return self.__sum_warnings(job_names, 'High')
 
     def nr_normal_priority_warnings(self, job_names):
         ''' Return the number of normal priority warnings in the jobs. '''
-        return sum([self.__nr_warnings(job_name, 'Normal')
-                    for job_name in job_names])
+        return self.__sum_warnings(job_names, 'Normal')
 
     def nr_low_priority_warnings(self, job_names):
         ''' Return the number of low priority warnings in the jobs. '''
-        return sum([self.__nr_warnings(job_name, 'Low')
-                    for job_name in job_names])
+        return self.__sum_warnings(job_names, 'Low')
+
+    def __sum_warnings(self, job_names, warning_type):
+        ''' Return the sum of the number of warnings of the specified type in the jobs. '''
+        warnings = [self.__nr_warnings(job_name, warning_type) for job_name in job_names]
+        if -1 in warnings:
+            return -1
+        else:
+            return sum(warnings)
 
     def __nr_warnings(self, job_name, warning_type):
         ''' Return the number of warnings of the specified type in the job. '''
@@ -291,7 +234,7 @@ class JenkinsOWASPDependencyReport(Jenkins):
         except urllib2.HTTPError, reason:
             logging.warn("Couldn't open %s to read warning count %s: %s", url,
                          warning_type, reason)
-            return 0
+            return -1
         return int(report_dict['numberOf{}PriorityWarnings'.format(warning_type)])
 
     def report_url(self, job_name):

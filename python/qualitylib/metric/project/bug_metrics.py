@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -104,3 +104,28 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
         parameters = super(BlockingTestIssues, self)._parameters()
         parameters['month'] = utils.format_month(utils.month_ago())
         return parameters
+
+
+class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
+    ''' Metric for measuring the number of technical debt issues. '''
+
+    name = 'Aantal technische schuld issues'
+    norm_template = 'Het aantal technische schuld issues is ' \
+        'maximaal {target}. Meer dan {low_target} is rood.'
+    template = 'Het aantal aantal technische schuld issues is {value}.'
+    target_value = 10
+    low_target_value = 50
+    quality_attribute = PROGRESS
+
+    @classmethod
+    def can_be_measured(cls, subject, project):
+        jira = project.metric_source(metric_source.Jira)
+        return super(TechnicalDebtIssues, cls).can_be_measured(subject,
+                                                               project) and \
+            jira.has_technical_debt_issues_query()
+
+    def value(self):
+        return self._jira.nr_technical_debt_issues()
+
+    def url(self):
+        return {'Jira': self._jira.nr_technical_debt_issues_url()}

@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,14 +12,14 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 
 import datetime
 import unittest
+
 from qualitylib.metric_source import JMeter
 
-
-HTML = '''
+HTML = """
 <table>
   <caption>Applicaties op n-das-pp-perf.lrk.org</caption>
   <tbody>
@@ -110,65 +110,51 @@ HTML = '''
     <td class="green">0</td>
     <td>N</td>
   </tr>
-</table>'''
+</table>"""
 
 
 class JMeterUnderTest(JMeter):
-    ''' Override the JMeter performance report to return the url as report
-        contents.'''
+    """ Override the JMeter performance report to return the url as report contents."""
     def url_open(self, url):
         return HTML
-    
+
     def urls(self, product, version):  # pylint: disable=unused-argument
-        ''' Return a list of urls for the performance report. '''
+        """ Return a list of urls for the performance report. """
         return ['http://report/1'] if product != 'product' else []
 
 
 class JMeterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
-    ''' Unit tests for the JMeter performance report metric source. '''
-    
+    """ Unit tests for the JMeter performance report metric source. """
+
     def setUp(self):  # pylint: disable=invalid-name
         self.__performance_report = JMeterUnderTest('http://report/')
-        
+
     def test_url(self):
-        ''' Test that the url is correct. '''
+        """ Test that the url is correct. """
         self.assertEqual('http://report/', self.__performance_report.url())
 
     def test_queries_non_existing(self):
-        ''' Test that the number of queries for a product/version that is not
-            found is zero. '''
-        self.assertEqual(0, self.__performance_report.queries('product', 
-                                                              'version'))
+        """ Test that the number of queries for a product/version that is not found is zero. """
+        self.assertEqual(0, self.__performance_report.queries('product', 'version'))
 
     def test_queries(self):
-        ''' Test that the total number of queries for a product/version that
-            is in the report. '''
-        self.assertEqual(2, self.__performance_report.queries(('01', 'lrk-pp'), 
-                                                              '12.5.5'))
-        
+        """ Test that the total number of queries for a product/version that is in the report. """
+        self.assertEqual(2, self.__performance_report.queries(('01', 'lrk-pp'), '12.5.5'))
+
     def test_queries_violating_max_responsetime(self):
-        ''' Test that the number of queries violating the maximum response
-            times is zero. '''
-        self.assertEqual(1, self.__performance_report.
-                         queries_violating_max_responsetime(('01', 'lrk-pp'), 
-                                                              '12.5.5'))
-        
+        """ Test that the number of queries violating the maximum response times is zero. """
+        self.assertEqual(1, self.__performance_report.queries_violating_max_responsetime(('01', 'lrk-pp'), '12.5.5'))
+
     def test_queries_violating_wished_reponsetime(self):
-        ''' Test that the number of queries violating the wished response
-            times is zero. '''
-        self.assertEqual(0, self.__performance_report.
-                         queries_violating_wished_responsetime(('01', 'lrk-pp'),
-                                                              '12.5.5'))
-        
+        """ Test that the number of queries violating the wished response times is zero. """
+        self.assertEqual(0, self.__performance_report.queries_violating_wished_responsetime(('01', 'lrk-pp'), '12.5.5'))
+
     def test_date_of_last_measurement(self):
-        ''' Test that the date of the last measurement is correctly parsed
-            from the report. '''
+        """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30),
-                         self.__performance_report.date(('01', 'lrk-pp'), 
-                                                              '12.5.5'))
-        
+                         self.__performance_report.date(('01', 'lrk-pp'), '12.5.5'))
+
     def test_date_product_not_found(self):
-        ''' Test the date when the product/version is not in the report. '''
-        self.assertEqual(datetime.datetime.min, 
-                         self.__performance_report.date('product', 'version'))
+        """ Test the date when the product/version is not in the report. """
+        self.assertEqual(datetime.datetime.min, self.__performance_report.date('product', 'version'))

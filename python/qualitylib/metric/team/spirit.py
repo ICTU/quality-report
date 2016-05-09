@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,10 +28,9 @@ class TeamSpirit(Metric):
         picks a smiley. '''
 
     name = 'Team stemming'
-    norm_template = 'Er is geen vaste norm; de stemming wordt door de ' \
-        'teams zelf bepaald. De teams kiezen daarbij zelf een smiley. Als de ' \
-        'meting ouder is dan {old_age} dagen is de status geel, ouder dan ' \
-        '{max_old_age} is rood.'
+    norm_template = 'De stemming wordt door het team zelf bepaald door het kiezen van een smiley. ' \
+        'De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood. ' \
+        'Als de meting ouder is dan {old_age} dagen is de status geel, ouder dan {max_old_age} dagen is rood.'
     template = 'De stemming van team {name} was {value} op {date}.'
     target_value = ':-)'
     perfect_value = ':-)'

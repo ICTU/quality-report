@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -60,6 +60,10 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
             product_branches={'branch1': {self.__subversion: 'br1'}})
         self.__subversion_product_info = metric_info.VersionControlSystemProductInfo(
             [self.__subversion], self.__product)
+
+    def test_vcs(self):
+        ''' Test the the vcs can be retrieved. '''
+        self.assertEqual(self.__subversion, self.__subversion_product_info.vcs())
 
     def test_svn_path(self):
         ''' Test that the Subversion path of the product equals the passed

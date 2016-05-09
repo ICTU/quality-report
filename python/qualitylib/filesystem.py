@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,20 +12,19 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
-
-import os
 import codecs
+import os
 import stat
 
 
 class FileSystem(object):
-    ''' Class for methods that manipulate the file system. '''
+    """ Class for methods that manipulate the file system. """
     @staticmethod
     def write_file(contents, filename, mode, encoding):
-        ''' Write the contents to the specified file. '''
+        """ Write the contents to the specified file. """
         if os.path.exists(filename):
             FileSystem.make_file_readable(filename)
         output_file = codecs.open(filename, mode, encoding)
@@ -35,18 +34,15 @@ class FileSystem(object):
 
     @staticmethod
     def create_dir(dir_name):
-        ''' Create a directory and make it accessible. '''
+        """ Create a directory and make it accessible. """
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
-        os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | \
-                 stat.S_IRUSR | stat.S_IWUSR)
+        os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | stat.S_IRUSR | stat.S_IWUSR)
 
     @staticmethod
     def make_file_readable(filename):
-        ''' Make the file readable and writeable for the user and readable
-            for everyone else. '''
-        os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | \
-                 stat.S_IROTH)
+        """ Make the file readable and writeable for the user and readable for everyone else. """
+        os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
 
 
 # pylint: disable=invalid-name

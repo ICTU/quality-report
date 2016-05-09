@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -91,8 +91,7 @@ class SprintProgressReport(BirtReport):
     def __nr_points_to_do(self, team):
         ''' Return the number of points to be realized in the current sprint
             of the specified team. '''
-        return max(0, self.nr_points_planned(team) -
-                      self.nr_points_realized(team))
+        return max(0, self.nr_points_planned(team) - self.nr_points_realized(team))
 
     def __sprint_start_date(self, team):
         ''' Return the start date of the current sprint of the team. '''
@@ -107,23 +106,31 @@ class SprintProgressReport(BirtReport):
         ''' Return a specific cell from the sprint progress table in the sprint
             progress Birt report. '''
         summary_table = self.__summary_table(team)
-        row = summary_table('tr')[row_index]
-        cell = row('td')[column_index]
-        return cell('div')[0].string
+        if summary_table:
+            row = summary_table('tr')[row_index]
+            cell = row('td')[column_index]
+            return cell('div')[0].string
+        else:
+            return ''
 
     @utils.memoized
     def __summary_table(self, team):
         ''' Return the sprint progress table in the sprint progress Birt
             report. '''
-        soup = self.soup(self.url(team))
-        return soup('table')[0]('table')[0]('table')[0]
+        url = self.url(team)
+        soup = self.soup(url)
+        try:
+            return soup('table')[0]('table')[0]('table')[0]
+        except IndexError:
+            logging.warning("There's no active sprint for team %s in the sprint progress report at %s", team, url)
+            return
 
     @staticmethod
     def __parse_date(date_string):
         ''' Parse the date string and return a date object. '''
         try:
             day, month, year = date_string.split('-')
-        except AttributeError:
+        except (AttributeError, ValueError):
             return None
         try:
             return datetime.date(int(year), int(month), int(day))

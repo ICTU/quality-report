@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ class FakeJenkins(object):
     # pylint: disable=unused-argument
 
     @staticmethod
-    def number_of_jobs(*args):
-        ''' Return the total number of CI jobs. '''
+    def number_of_active_jobs(*args):
+        ''' Return the total number of active CI jobs. '''
         return 2
 
     @classmethod
@@ -37,7 +37,7 @@ class UnusedCIJobsTests(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     ''' Unit tests for the unused CI jobs metric. '''
 
-    expected_report = '1 van de 2 CI-jobs is ongebruikt.'
+    expected_report = '1 van de 2 actieve CI-jobs is ongebruikt.'
 
     def setUp(self):  # pylint: disable=invalid-name
         ''' Create the text fixture. '''

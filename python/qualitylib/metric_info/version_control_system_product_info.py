@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,22 +12,26 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 import logging
 import datetime
 
 
 class VersionControlSystemProductInfo(object):
-    ''' Class to represent information that Subversion has about a product. '''
+    """ Class to represent information that the version control system has about a product. """
     def __init__(self, version_control_system, product):
         self.__vcs = self.__find_repo(version_control_system, product)
         self.__product = product
         if self.__vcs:
             self.metric_source_name = self.__vcs.metric_source_name
 
+    def vcs(self):
+        """ Return the version control system where the product lives. """
+        return self.__vcs
+
     def vcs_path(self, version=None, branch=None):
-        ''' Return the version control system path of the product. '''
+        """ Return the version control system path of the product. """
         version = version or self.__product.product_version()
         branch = branch or self.__product.product_branch_id(self.__vcs)
         old_vcs_path = self.__product.old_metric_source_id(self.__vcs, version)
@@ -44,7 +48,7 @@ class VersionControlSystemProductInfo(object):
         return result
 
     def latest_released_product_version(self):
-        ''' Return the latest released version of the product. '''
+        """ Return the latest released version of the product. """
         vcs_path = self.__product.metric_source_id(self.__vcs)
         if not vcs_path:
             return ''
@@ -52,8 +56,8 @@ class VersionControlSystemProductInfo(object):
         return self.__vcs.latest_tagged_product_version(vcs_path)
 
     def is_latest_release(self):
-        ''' Return whether the version of the product is the latest
-            released version. '''
+        """ Return whether the version of the product is the latest
+            released version. """
         product_version = self.__product.product_version()
         if product_version:
             return product_version == self.latest_released_product_version()
@@ -79,12 +83,13 @@ class VersionControlSystemProductInfo(object):
 
     @staticmethod
     def __find_repo(vcs, product):
-        """Loops through all VCS instances when vcs is a list and returns the instance linked to the product.
-        If vcs is not a list but a single instance, that instance is returned.
-        If the product is None, None is returned"""
+        """ Loops through all VCS instances when vcs is a list and returns the instance linked to the product.
+            If vcs is not a list but a single instance, that instance is returned.
+            If the product is None, None is returned. """
         if product:
             try:
                 return [repo for repo in vcs if product.metric_source_id(repo)][0]
             except IndexError:
-                logging.warn('Unable to find VCS for %s', product.name() if hasattr(product, 'name') else product)
+                logging.warn('There is no VCS configured for %s',
+                             product.name() if hasattr(product, 'name') else product)
         return None

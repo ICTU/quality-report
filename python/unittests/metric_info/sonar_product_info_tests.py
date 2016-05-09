@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class SonarProductInfoTests(unittest.TestCase):
         ''' Test that the Sonar id includes the branch and version. '''
         self.__product.set_product_branch('product-branch')
         self.__product.set_product_version('1.2.3')
-        self.assertEqual('sonar:id:product-branch:1.2.3',
+        self.assertEqual('sonar:id:product-branch_1.2.3',
                          self.__sonar_product_info.sonar_id())
 
     def test_old_sonar_id(self):

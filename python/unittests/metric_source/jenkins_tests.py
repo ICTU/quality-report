@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -129,9 +129,9 @@ class JenkinsTest(unittest.TestCase):
         self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'},
                          self.__jenkins.unused_jobs_url())
 
-    def test_nr_of_jobs(self):
-        ''' Test the number of jobs. '''
-        self.assertEqual(0, self.__jenkins.number_of_jobs())
+    def test_nr_of_active_jobs(self):
+        ''' Test the number of active jobs. '''
+        self.assertEqual(0, self.__jenkins.number_of_active_jobs())
 
     def test_unstable_arts_none(self):
         ''' Test the number of unstable ARTs. '''
@@ -225,6 +225,6 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     def test_http_error(self):
         ''' Test that the default is returned when a HTTP error occurs. '''
         self.__jenkins.contents = 'raise'
-        self.assertEqual(0, self.__jenkins.nr_high_priority_warnings(['job']))
-        self.assertEqual(0, self.__jenkins.nr_normal_priority_warnings(['job']))
-        self.assertEqual(0, self.__jenkins.nr_low_priority_warnings(['job']))
+        self.assertEqual(-1, self.__jenkins.nr_high_priority_warnings(['job']))
+        self.assertEqual(-1, self.__jenkins.nr_normal_priority_warnings(['job']))
+        self.assertEqual(-1, self.__jenkins.nr_low_priority_warnings(['job']))

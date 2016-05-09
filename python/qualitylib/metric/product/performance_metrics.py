@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,12 +12,10 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
-
 import datetime
-
 
 from ..quality_attributes import PERFORMANCE
 from ... import domain, metric_source
@@ -25,8 +23,7 @@ from ... import domain, metric_source
 
 class ResponseTimes(domain.Metric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring reponsetimes as determined in the performance
-        tests. '''
+    """ Metric for measuring reponsetimes as determined in the performance tests. """
 
     name = 'Responsetijden'
     norm_template = 'Geen van de performancetestqueries ' \
@@ -75,16 +72,12 @@ class ResponseTimes(domain.Metric):
         return self.__max_violations() + self.__wish_violations()
 
     def __max_violations(self):
-        ''' The number of performance queries that is slower than the maximum
-            response time. '''
-        return self.__performance_report.\
-            queries_violating_max_responsetime(*self.__product_id())
+        """ The number of performance queries that is slower than the maximum response time. """
+        return self.__performance_report.queries_violating_max_responsetime(*self.__product_id())
 
     def __wish_violations(self):
-        ''' The number of performance queries that is slower than the
-            wished for response time. '''
-        return self.__performance_report.\
-            queries_violating_wished_responsetime(*self.__product_id())
+        """ The number of performance queries that is slower than the wished for response time. """
+        return self.__performance_report.queries_violating_wished_responsetime(*self.__product_id())
 
     def _missing(self):
         return self.numerical_value() < 0
@@ -95,14 +88,11 @@ class ResponseTimes(domain.Metric):
 
     def _needs_immediate_action(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or \
-            super(ResponseTimes, self)._is_too_old() or \
-            not self.__report_exists()
+        return self.__max_violations() > 0 or super(ResponseTimes, self)._is_too_old() or not self.__report_exists()
 
     def _is_below_target(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or self.__wish_violations() > 0 \
-            or super(ResponseTimes, self)._is_old() or \
+        return self.__max_violations() > 0 or self.__wish_violations() > 0 or super(ResponseTimes, self)._is_old() or \
             not self.__report_exists()
 
     def _get_template(self):
@@ -141,29 +131,25 @@ class ResponseTimes(domain.Metric):
         return labeled_urls
 
     def __report_exists(self):
-        ''' Return whether a performance report exists for the product and
-            version this metric reports on. '''
+        """ Return whether a performance report exists for the product and version this metric reports on. """
         return self.__performance_report.exists(*self.__product_id())
 
     def __nr_queries(self):
-        ''' Return the number of performance queries in the performance
-            report for the product. '''
+        """ Return the number of performance queries in the performance report for the product. """
         return self.__performance_report.queries(*self.__product_id())
 
     def __product_id(self):
-        ''' Return the performance report id and version of the product. '''
-        return (self.__performance_report_id(),
-                self._subject.product_version())
+        """ Return the performance report id and version of the product. """
+        return self.__performance_report_id(), self._subject.product_version()
 
     def __performance_report_id(self):
-        ''' Return the performance report id of the product. '''
+        """ Return the performance report id of the product. """
         return self._subject.metric_source_id(self.__performance_report)
 
 
 class YmorResponseTimes(domain.Metric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring reponsetimes as determined in the Ymor performance
-        report. '''
+    """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
     name = 'Responsetijden (obv Ymor performance rapportage)'
     norm_template = 'Geen van de performancetestqueries ' \
         'overschrijdt de gewenste responsetijd. Als een of meer queries de ' \
@@ -209,30 +195,23 @@ class YmorResponseTimes(domain.Metric):
         return self.__max_violations() + self.__wish_violations()
 
     def __max_violations(self):
-        ''' The number of performance queries that is slower than the maximum
-            response time. '''
-        return self.__performance_report.\
-            queries_violating_max_responsetime(self.__performance_report_id())
+        """ The number of performance queries that is slower than the maximum response time. """
+        return self.__performance_report.queries_violating_max_responsetime(self.__performance_report_id())
 
     def __wish_violations(self):
-        ''' The number of performance queries that is slower than the
-            wished for response time. '''
-        return self.__performance_report.\
-            queries_violating_wished_responsetime(self.__performance_report_id())
+        """ The number of performance queries that is slower than the wished for response time. """
+        return self.__performance_report.queries_violating_wished_responsetime(self.__performance_report_id())
 
     def _is_perfect(self):
-        return self.__max_violations() == self.__wish_violations() == 0 and \
-            not self._is_old()
+        return self.__max_violations() == self.__wish_violations() == 0 and not self._is_old()
 
     def _needs_immediate_action(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or \
-            super(YmorResponseTimes, self)._is_too_old()
+        return self.__max_violations() > 0 or super(YmorResponseTimes, self)._is_too_old()
 
     def _is_below_target(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or self.__wish_violations() > 0 \
-            or super(YmorResponseTimes, self)._is_old()
+        return self.__max_violations() > 0 or self.__wish_violations() > 0 or super(YmorResponseTimes, self)._is_old()
 
     def _get_template(self):
         max_violations = self.__max_violations()
@@ -262,10 +241,9 @@ class YmorResponseTimes(domain.Metric):
         return {'Performance report': url}
 
     def __nr_queries(self):
-        ''' Return the number of performance queries in the performance
-            report for the product. '''
+        """ Return the number of performance queries in the performance report for the product. """
         return self.__performance_report.queries(self.__performance_report_id())
 
     def __performance_report_id(self):
-        ''' Return the performance report id of the product. '''
+        """ Return the performance report id of the product. """
         return [self._subject.metric_source_id(self.__performance_report)]

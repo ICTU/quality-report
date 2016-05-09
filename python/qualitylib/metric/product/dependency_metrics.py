@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class SnapshotDependencies(LowerIsBetterMetric):
             label = '{}:{}'.format(dependency[0], dependency[1] or 'trunk')
             urls[label] = HTMLFormatter.product_url(product)
         return urls
- 
+
     def __snapshot_dependencies(self):
         ''' Return a list of snapshot dependencies of this product. '''
         return [dependency for dependency in self._subject.dependencies() if \
@@ -92,6 +92,7 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         'Meer dan {low_target}% is rood.'
     template = '{value:.0f}% van de afhankelijkheden ({nr_not_ok_deps} van ' \
         'de {nr_deps}) is naar componenten die "rode" metrieken hebben.'
+    url_label_text = 'Componenten die "rode" metrieken hebben'
     target_value = 10
     low_target_value = 20
     quality_attribute = DEPENDENCY_QUALITY
@@ -119,9 +120,6 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
                 color = self.__report.get_product_section(product).color()
                 colors.append(color)
         return colors
-
-    def url_label(self):
-        return 'Componenten die "rode" metrieken hebben'
 
     def url(self):
         # pylint: disable=star-args

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,10 +30,17 @@ class SonarProductInfo(object):
             sonar_id = self.__product.metric_source_id(self.__sonar) or ''
         branch = self.__product.product_branch()
         if sonar_id:
-            if branch:
-                sonar_id += ':' + branch
-            if version:
-                sonar_id += ':' + version
+            if sonar_id.endswith(':jsf') or sonar_id.endswith(':ut'):
+                sep = '_'
+            else:
+                sep = ':'
+            if branch and version:
+                sonar_id += sep + branch + '_' + version
+            else:
+                if branch:
+                    sonar_id += sep + branch
+                if version:
+                    sonar_id += sep + version
         return sonar_id
 
     def all_sonar_ids(self):

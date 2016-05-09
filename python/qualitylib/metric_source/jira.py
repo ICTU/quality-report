@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,13 +28,19 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
                  open_security_bug_query_id=None,
                  blocking_test_issues_query_id=None,
                  manual_test_cases_query_id=None,
-                 manual_test_cases_duration_field='customfield_11700'):
+                 user_stories_ready_query_id=None,
+                 technical_debt_issues_query_id=None,
+                 manual_test_cases_duration_field='customfield_11700',
+                 user_story_points_field='customfield_10002'):
         self.__url = url
         self.__open_bug_query_id = open_bug_query_id
         self.__open_security_bug_query_id = open_security_bug_query_id
         self.__blocking_test_issues_query_id = blocking_test_issues_query_id
         self.__manual_test_cases_query_id = manual_test_cases_query_id
         self.__manual_test_cases_duration_field = manual_test_cases_duration_field
+        self.__user_stories_ready_query_id = user_stories_ready_query_id
+        self.__user_story_points_field = user_story_points_field
+        self.__technical_debt_issues_query_id = technical_debt_issues_query_id
         super(Jira, self).__init__(username=username, password=password)
 
     @utils.memoized
@@ -68,6 +74,15 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         return self.__blocking_test_issues_query_id
 
     @utils.memoized
+    def nr_technical_debt_issues(self):
+        ''' Return the number of technical debt issues. '''
+        return self.__query_total(self.__technical_debt_issues_query_id)
+
+    def has_technical_debt_issues_query(self):
+        ''' Return whether Jira has a query for the number of technical debt issues. '''
+        return self.__technical_debt_issues_query_id
+
+    @utils.memoized
     def manual_test_cases_time(self):
         ''' Return the number of minutes spend on manual test cases. '''
         return self.__query_sum(self.__manual_test_cases_query_id,
@@ -89,6 +104,16 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         return self.__manual_test_cases_query_id
 
     @utils.memoized
+    def nr_story_points_ready(self):
+        ''' Return the number of user story points ready. '''
+        return self.__query_sum(self.__user_stories_ready_query_id,
+                                self.__user_story_points_field)
+
+    def has_user_stories_ready_query(self):
+        ''' Return whether Jira has a query for ready user stories. '''
+        return self.__user_stories_ready_query_id
+
+    @utils.memoized
     def __query_total(self, query_id):
         ''' Return the number of results of the specified query. '''
         query_url = self.__get_query_url(query_id)
@@ -103,7 +128,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         issues = json_string['issues']
         for issue in issues:
             try:
-                total += int(issue['fields'][field])
+                total += float(issue['fields'][field])
             except TypeError:
                 pass  # field is null
         return total
@@ -144,6 +169,14 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     def manual_test_cases_url(self):
         ''' Return the url for the manual test cases query. '''
         return self.__get_query_url(self.__manual_test_cases_query_id, search=False)
+
+    def user_stories_ready_url(self):
+        ''' Return the url for the ready user stories query. '''
+        return self.__get_query_url(self.__user_stories_ready_query_id, search=False)
+
+    def nr_technical_debt_issues_url(self):
+        ''' Return the url for the technical debt issues query. '''
+        return self.__get_query_url(self.__technical_debt_issues_query_id, search=False)
 
     def url(self):
         ''' Return the url of the Jira instance. '''

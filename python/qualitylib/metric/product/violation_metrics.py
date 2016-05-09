@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ limitations under the License.
 from __future__ import absolute_import
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin
+from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin, SonarMetricMixin
 from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerIsBetterMetric
 
@@ -97,3 +97,20 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         return self._sonar.no_sonar(self._sonar_id())
+
+
+class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
+    ''' Metric for measuring the number of issues marked as false positive. '''
+    norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. ' \
+        'Meer dan {low_target} is rood.'
+    template = '{name} bevat {value} violations die zijn gemarkeerd als false positive.'
+    quality_attribute = CODE_QUALITY
+    target_value = 25
+    low_target_value = 50
+
+    def value(self):
+        return self._sonar.false_positives(self._sonar_id())
+
+    def _sonar_url(self):
+        ''' Return the url to the Sonar violations. '''
+        return self._sonar.false_positives_url(self._sonar_id())

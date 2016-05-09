@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -137,8 +137,8 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
     def test_report(self):
         ''' Test that the report of the metric is correct. '''
-        self.assertEqual('5% van de methoden (5 van 100) van FakeSubject ' \
-                         'heeft een lengte van meer dan 20 NCSS ' \
+        self.assertEqual('5% van de methoden (5 van 100) van FakeSubject '
+                         'heeft een lengte van meer dan 20 NCSS '
                          '(Non-Comment Source Statements).', 
                          self._metric.report())
 

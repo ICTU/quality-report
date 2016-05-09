@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
 
@@ -28,12 +28,12 @@ from ... import utils
 
 
 class Subversion(version_control_system.VersionControlSystem):
-    ''' Class representing the Subversion repository. '''
+    """ Class representing the Subversion repository. """
 
     metric_source_name = 'Subversion'
 
     def check_out(self, svn_path, folder):
-        ''' Check out the subversion path into the folder. '''
+        """ Check out the subversion path into the folder. """
         shell_command = ['svn', 'co', svn_path, folder]
         if self._username and self._password:
             shell_command.extend(['--no-auth-cache', 
@@ -42,21 +42,11 @@ class Subversion(version_control_system.VersionControlSystem):
         self._run_shell_command(shell_command, log_level=logging.ERROR)
 
     @utils.memoized
-    def latest_tagged_product_version(self, product_url):
-        ''' Return the latest version as tagged in Subversion. '''
-        tags = self.tags(product_url)
-        if not tags:
-            return
-        versions = [self.__parse_version(tag) for tag in tags]
-        versions.sort()
-        return versions[-1][1]  # Return the text version of the highest number
-
-    @utils.memoized
     def tags_folder_for_version(self, trunk_url, version):
-        ''' Return the tags folder for the specified version. '''
+        """ Return the tags folder for the specified version. """
         tags = self.tags(trunk_url)
         # Mapping from version numbers to tags:
-        folders = dict([(self.__parse_version(tag)[1], tag) for tag in tags])
+        folders = dict([(self._parse_version(tag)[1], tag) for tag in tags])
         # Look up the tag by its version number and return the tag folder
         tags_folder = self.__tags_folder(trunk_url)
         if version in folders:
@@ -69,13 +59,13 @@ class Subversion(version_control_system.VersionControlSystem):
 
     @classmethod
     def branch_folder_for_branch(cls, trunk_url, branch):
-        ''' Return the branch folder for the specified branch. '''
+        """ Return the branch folder for the specified branch. """
         return cls.__branches_folder(trunk_url) + branch + '/' + \
             trunk_url.split('/trunk/')[1]
 
     @staticmethod
     def normalize_path(svn_path):
-        ''' Return a normalized version of the path. '''
+        """ Return a normalized version of the path. """
         if not svn_path.endswith('/'):
             svn_path += '/'
         if not '/trunk/' in svn_path:
@@ -84,7 +74,7 @@ class Subversion(version_control_system.VersionControlSystem):
 
     @utils.memoized
     def last_changed_date(self, url):
-        ''' Return the date when the url was last changed in Subversion. ''' 
+        """ Return the date when the url was last changed in Subversion. """
         svn_info_xml = str(self._run_shell_command(['svn', 'info', '--xml',
                                                     url]))
         try:
@@ -95,8 +85,8 @@ class Subversion(version_control_system.VersionControlSystem):
 
     @utils.memoized
     def unmerged_branches(self, product_url, branches_to_ignore=None):
-        ''' Return a dictionary of branch names and number of unmerged 
-            revisions for each branch that has any unmerged revisions. '''
+        """ Return a dictionary of branch names and number of unmerged
+            revisions for each branch that has any unmerged revisions. """
         branches_to_ignore = branches_to_ignore or []
         branches = [branch for branch in self.branches(product_url)
                     if branch not in branches_to_ignore]
@@ -107,7 +97,7 @@ class Subversion(version_control_system.VersionControlSystem):
         return dict(unmerged_branches)
 
     def __nr_unmerged_revisions(self, product_url, branch_name):
-        ''' Return whether the branch has unmerged revisions. '''
+        """ Return whether the branch has unmerged revisions. """
         branch_url = self.__branches_folder(product_url) + branch_name
         trunk_url = product_url
         revisions = str(self._run_shell_command(['svn', 'mergeinfo',
@@ -130,7 +120,7 @@ class Subversion(version_control_system.VersionControlSystem):
         return nr_revisions
 
     def __revision_url(self, branch_url, revision_number):
-        ''' Return the url for a specific revision number. '''
+        """ Return the url for a specific revision number. """
         svn_info_xml = str(self._run_shell_command(['svn', 'info', branch_url,
                                                     '--xml',
                                                     '-r', revision_number]))
@@ -138,43 +128,26 @@ class Subversion(version_control_system.VersionControlSystem):
 
     @utils.memoized
     def branches(self, trunk_url):
-        ''' Return a list of branch names for the specified trunk url. '''
+        """ Return a list of branch names for the specified trunk url. """
         return self.__svn_list(self.__branches_folder(trunk_url))
 
     @utils.memoized
     def tags(self, trunk_url):
-        ''' Return a list of tags for the specified trunk url. '''
+        """ Return a list of tags for the specified trunk url. """
         return self.__svn_list(self.__tags_folder(trunk_url))
 
     @staticmethod
     def __tags_folder(trunk_url):
-        ''' Return the tags folder for the trunk url. '''
+        """ Return the tags folder for the trunk url. """
         return trunk_url.split('/trunk/')[0] + '/tags/'
 
     @staticmethod
     def __branches_folder(trunk_url):
-        ''' Return the branches folder for the trunk url. '''
+        """ Return the branches folder for the trunk url. """
         return trunk_url.split('/trunk/')[0] + '/branches/'
 
-    @staticmethod
-    def __parse_version(tag):
-        ''' Parse and return the version number from the tag. Returns the 
-            version as a two-tuple. The first element of the tuple is the
-            version number as tuple of integers (for sorting). The second
-            element of the tuple is the version number as text, including
-            any postfix elements (e.g. 1.2.3-beta). '''
-        versions_in_tag = re.findall(r'[0-9]+(?:\.[0-9]+)+', tag)
-        if versions_in_tag and not 'emma' in tag.lower():
-            numbers = versions_in_tag[0].split('.')
-            version_integer_tuple = tuple(int(number) for number in numbers)
-            version_text = re.findall(r'[0-9].*', tag)[0]
-        else:
-            version_integer_tuple = (0, 0, 0)
-            version_text = ''
-        return version_integer_tuple, version_text
-
     def __svn_list(self, url):
-        ''' Return a list of sub folder names. '''
+        """ Return a list of sub folder names. """
         shell_command = ['svn', 'list', '--xml', url]
         svn_info_xml = str(self._run_shell_command(shell_command))
         return [name.string for name in BeautifulSoup(svn_info_xml)('name')]

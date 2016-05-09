@@ -1,5 +1,5 @@
-'''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+"""
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
 
@@ -25,8 +25,8 @@ from ..quality_attributes import CODE_QUALITY
 
 class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the percentage of lines of code that are commented
-        out. '''
+    """ Metric for measuring the percentage of lines of code that are commented
+        out. """
 
     name = 'Uitgecommentarieerde broncode'
     norm_template = 'Maximaal {target}% van de regels code is ' \
@@ -47,8 +47,8 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
 class MethodQualityMetric(SonarViolationsMetricMixin, 
                           LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Base class for metrics that measure what percentage of methods doesn't
-        violate a certain criterium. '''
+    """ Base class for metrics that measure what percentage of methods doesn't
+        violate a certain criterium. """
 
     norm_template = 'Maximaal {target}% van de methoden heeft ' \
         '{attribute}. Meer dan {low_target}% is rood.'
@@ -80,8 +80,8 @@ class MethodQualityMetric(SonarViolationsMetricMixin,
 
 class CyclomaticComplexity(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    ''' Return the percentage of method whose cyclomatic complexity is too
-        high. '''
+    """ Return the percentage of method whose cyclomatic complexity is too
+        high. """
 
     name = 'Cyclomatische complexiteit'
     attribute = 'een cyclomatische complexiteit van 10 of hoger'
@@ -92,7 +92,7 @@ class CyclomaticComplexity(MethodQualityMetric):
 
 class LongMethods(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    ''' Metric for measuring the percentage of methods that is too long. '''
+    """ Metric for measuring the percentage of methods that is too long. """
 
     name = 'Lange methoden'
     attribute = 'een lengte van meer dan 20 NCSS ' \
@@ -104,8 +104,8 @@ class LongMethods(MethodQualityMetric):
 
 class ManyParameters(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    ''' Metric for measuring the percentage of methods that have too many
-        parameters. '''
+    """ Metric for measuring the percentage of methods that have too many
+        parameters. """
 
     name = 'Methoden met te veel parameters'
     attribute = 'meer dan 5 parameters'

@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ from __future__ import absolute_import
 from .abstract.test_report import TestReport
 from .test_report.jasmine_html_report import JasmineHTMLReport
 from .test_report.jenkins_test_report import JenkinsTestReport
+from .test_report.junit_test_report import JunitTestReport
 
 # Coverage report
 from .abstract.coverage_report import CoverageReport
@@ -29,6 +30,7 @@ from .coverage_report.ncover import NCover
 # Performance report
 from .abstract.performance_report import PerformanceReport
 from .performance_report.jmeter import JMeter
+from .performance_report.ymor import Ymor
 
 # Version control system
 from .abstract.version_control_system import VersionControlSystem

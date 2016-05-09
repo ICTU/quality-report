@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ from __future__ import absolute_import
 import datetime
 import logging
 import time
+import re
 
 
 from . import beautifulsoup
@@ -45,8 +46,7 @@ class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except IndexError:
             logging.error("Could not find %s in wiki", team_id)
             raise
-        latest_smiley = row[-1].string
-        return latest_smiley.strip() if latest_smiley else ''
+        return re.sub('[^:\-()|]', '', row[-1].string)
 
     @utils.memoized
     def date_of_last_team_spirit_measurement(self, team_id):

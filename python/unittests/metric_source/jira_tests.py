@@ -1,5 +1,5 @@
 '''
-Copyright 2012-2015 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,7 +44,9 @@ class JiraTest(unittest.TestCase):
                                     open_bug_query_id=123,
                                     open_security_bug_query_id=456,
                                     blocking_test_issues_query_id=321,
-                                    manual_test_cases_query_id=654)
+                                    manual_test_cases_query_id=654,
+                                    technical_debt_issues_query_id=444,
+                                    user_stories_ready_query_id=555)
 
     def test_url(self):
         ''' Test the Jira url. '''
@@ -116,3 +118,30 @@ class JiraTest(unittest.TestCase):
     def test_manual_test_time_url(self):
         ''' Test that the url is correct. '''
         self.assertEqual(self.__jira.VIEW_URL, self.__jira.manual_test_cases_url())
+
+    def test_points_ready(self):
+        ''' Test that the total number points of ready user stories is correct. '''
+        self.__jira.ISSUES = '[{"fields": {"customfield_10002": "1.0"}},' \
+                             ' {"fields": {"customfield_10002": "8.0"}},' \
+                             ' {"fields": {"customfield_10002": null}}]'
+        self.assertEqual(9, self.__jira.nr_story_points_ready())
+
+    def test_technical_debt_issues(self):
+        ''' Test that the Jira under test has a technical debt issues query. '''
+        self.assertTrue(self.__jira.has_technical_debt_issues_query())
+
+    def test_nr_technical_debt_issues(self):
+        ''' Test that the correct number of technical debt issues is returned. '''
+        self.assertEqual(5, self.__jira.nr_technical_debt_issues())
+
+    def test_technical_debt_issues_url(self):
+        ''' Test that the url is correct. '''
+        self.assertEqual(self.__jira.VIEW_URL, self.__jira.nr_technical_debt_issues_url())
+
+    def test_user_stories_ready(self):
+        ''' Test that the Jira under test has a user stories ready query. '''
+        self.assertTrue(self.__jira.has_user_stories_ready_query())
+
+    def test_user_stories_ready_url(self):
+        ''' Test that the url is correct. '''
+        self.assertEqual(self.__jira.VIEW_URL, self.__jira.user_stories_ready_url())
