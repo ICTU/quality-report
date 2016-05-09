@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,16 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 
 import glob
 import os
-from setuptools import setup, find_packages
-from pip.req import parse_requirements
-from pip.download import PipSession
-from qualitylib import VERSION
 
+from pip.download import PipSession
+from pip.req import parse_requirements
+from setuptools import setup, find_packages
+
+from qualitylib import VERSION
 
 setup(name='quality_report',
       version=VERSION,
@@ -34,12 +35,10 @@ setup(name='quality_report',
       packages=find_packages(),
       scripts=['quality_report.py'],
       data_files=[(os.path.join('qualitylib', 'formatting', folder),
-                   glob.glob(os.path.join('..', folder, files))) for folder,
-                  files in (('img', '*.png'), ('js', '*.js'), 
-                            ('html', '*.html'), ('css', '*.css'))],
-      install_requires=[str(requirement.req) for requirement in
-                        parse_requirements('requirements.txt', 
-                                           session=PipSession())],
+                   glob.glob(os.path.join('..', folder, files))) for folder, files in
+                  (('img', '*.png'), ('js', '*.js'), ('html', '*.html'), ('css', '*.css'))],
+      install_requires=[str(requirement.req) for requirement in parse_requirements('requirements.txt',
+                                                                                   session=PipSession())],
       test_suite='unittests',
       classifiers=[
           'Development Status :: 5 - Production/Stable',
