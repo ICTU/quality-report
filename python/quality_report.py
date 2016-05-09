@@ -15,8 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# Python script to retrieve metrics from different back-end systems,
-# like Sonar and Jenkins.
+# Python script to retrieve metrics from different back-end systems, like Sonar and Jenkins.
 
 
 import logging
@@ -33,9 +32,13 @@ from qualitylib import formatting, commandlineargs, report, metric_source, metri
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
     """ Class for creating the quality report for a specific project. """
+
     PROJECT_DEFINITION_FILENAME = 'project_definition.py'
     HISTORY_FILENAME = 'history.json'
-    EMPTY_HISTORY_PNG = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
+    EMPTY_HISTORY_PNG = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00" \
+                        "\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 " \
+                        "IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00" \
+                        "\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
 
     def __init__(self, project_folder):
         self.__project = self.__import_project(project_folder, self.PROJECT_DEFINITION_FILENAME)
@@ -43,13 +46,11 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def __import_project(project_folder, project_definition_filename):
-        """ Import the project from the project definition file in the project
-            folder. """
+        """ Import the project from the project definition file in the project folder. """
         # Add the parent folder of the project folder to the python path so the
         # project definition can import shared resources from other folders.
         sys.path.insert(0, os.path.abspath(os.path.join(project_folder, '..')))
-        # Add the project folder itself to the python path so that we can import
-        # the project definition itself.
+        # Add the project folder itself to the python path so that we can import the project definition itself.
         sys.path.insert(0, project_folder)
         # Import the project definition and get the project from it.
         module_name = project_definition_filename[:-len('.py')]
@@ -77,8 +78,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs, product)
             latest_version = vcs_product_info.latest_released_product_version()
             if latest_version:
-                logging.info('Adding %s:%s to the project because it is the latest version.', product.name(),
-                             latest_version)
+                logging.info('Adding %s:%s to the project because it is the latest version.',
+                             product.name(), latest_version)
                 self.__project.add_product_with_version(product.name(), latest_version)
 
     def __add_release_candidates_of_products(self):
@@ -87,16 +88,16 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         for product in self.__project.products()[:]:
             release_candidate = product.release_candidate()
             if release_candidate:
-                logging.info('Adding %s:%s to the project because it is a release candidate.', product.name(),
-                             release_candidate)
+                logging.info('Adding %s:%s to the project because it is a release candidate.',
+                             product.name(), release_candidate)
                 self.__project.add_product_with_version(product.name(), release_candidate)
 
     def __add_branches_of_products(self):
         """ Add the branches of the products that have to be monitored. """
         for product in self.__project.products()[:]:
             for branch in product.product_branches():
-                logging.info('Adding %s:%s to the project because it is a branch to be monitored.', product.name(),
-                             branch)
+                logging.info('Adding %s:%s to the project because it is a branch to be monitored.',
+                             product.name(), branch)
                 self.__project.add_product_with_branch(product.name(), branch)
 
     def __add_dependencies(self):
@@ -111,42 +112,47 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         if sonar:
             sonar.analyse_products(self.__project.products())
 
-    def __create_report(self, quality_report, report_dir):
+    @classmethod
+    def __create_report(cls, quality_report, report_dir):
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        self.__create_html_file(quality_report, report_dir)
-        self.__create_dependency_graph(quality_report, report_dir)
-        self.__create_metrics_graph(quality_report, report_dir)
-        self.__create_resources(report_dir)
-        self.__create_trend_images(quality_report, report_dir)
+        cls.__create_html_file(quality_report, report_dir)
+        cls.__create_dependency_graph(quality_report, report_dir)
+        cls.__create_metrics_graph(quality_report, report_dir)
+        cls.__create_resources(report_dir)
+        cls.__create_trend_images(quality_report, report_dir)
 
-    def __create_html_file(self, quality_report, report_dir):
+    @classmethod
+    def __create_html_file(cls, quality_report, report_dir):
         """ Create the html file with the report. """
         tmp_filename = os.path.join(report_dir, 'tmp.html')
-        latest_software_version = self.__latest_software_version()
-        self.__format_and_write_report(quality_report, formatting.HTMLFormatter, tmp_filename, 'w', 'utf-8',
-                                       latest_software_version=latest_software_version,
-                                       current_software_version=VERSION)
+        latest_software_version = cls.__latest_software_version()
+        cls.__format_and_write_report(quality_report, formatting.HTMLFormatter, tmp_filename, 'w', 'utf-8',
+                                      latest_software_version=latest_software_version,
+                                      current_software_version=VERSION)
         html_filename = os.path.join(report_dir, 'index.html')
         if os.path.exists(html_filename):
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)
         filesystem.make_file_readable(html_filename)
 
-    def __create_dependency_graph(self, quality_report, report_dir):
+    @classmethod
+    def __create_dependency_graph(cls, quality_report, report_dir):
         """ Create and write the dependency graph. """
-        dot_filename = os.path.join(report_dir, 'dependency.dot')
-        self.__format_and_write_report(quality_report, formatting.DependencyFormatter, dot_filename, 'w', 'ascii')
-        svg_filename = os.path.join(report_dir, 'dependency.svg')
-        os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
-        filesystem.make_file_readable(svg_filename)
+        cls.__create_graph(quality_report, report_dir, formatting.DependencyFormatter, 'dependency')
 
-    def __create_metrics_graph(self, quality_report, report_dir):
+    @classmethod
+    def __create_metrics_graph(cls, quality_report, report_dir):
         """ Create and write the metrics graph. """
-        dot_filename = os.path.join(report_dir, 'metric_classes.dot')
-        self.__format_and_write_report(quality_report, formatting.MetricClassesFormatter, dot_filename, 'w', 'ascii')
-        svg_filename = os.path.join(report_dir, 'metric_classes.svg')
+        cls.__create_graph(quality_report, report_dir, formatting.MetricClassesFormatter, 'metric_classes')
+
+    @classmethod
+    def __create_graph(cls, quality_report, report_dir, formatter, filename):
+        """ Create and write a graph using the passed formatter. """
+        dot_filename = os.path.join(report_dir, filename + '.dot')
+        cls.__format_and_write_report(quality_report, formatter, dot_filename, 'w', 'ascii')
+        svg_filename = os.path.join(report_dir, filename + '.svg')
         os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
         filesystem.make_file_readable(svg_filename)
 
@@ -164,7 +170,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 mode = 'w' if encoding else 'wb'
                 filesystem.write_file(contents, filename, mode, encoding)
 
-    def __create_trend_images(self, quality_report, report_dir):
+    @classmethod
+    def __create_trend_images(cls, quality_report, report_dir):
         """ Retrieve and write the trend images. """
         for metric in quality_report.metrics():
             if metric.product_version_type() in ('tag', 'release'):
@@ -173,7 +180,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 history = ','.join([str(value) for value in metric.recent_history()])
             except ValueError:
                 history = ''
-            y_axis_range = self.__format_y_axis_range(metric.y_axis_range())
+            y_axis_range = cls.__format_y_axis_range(metric.y_axis_range())
             url = "http://chart.apis.google.com/chart?" \
                   "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:{history}&" \
                   "chds={y_axis_range}".format(history=history, y_axis_range=y_axis_range)
@@ -181,12 +188,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 image = urllib2.urlopen(url).read()
             except urllib2.URLError as reason:
                 logging.warn("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
-                image = self.EMPTY_HISTORY_PNG
+                image = cls.EMPTY_HISTORY_PNG
             filename = os.path.join(report_dir, 'img', '%s.png' % metric.id_string())
             filesystem.write_file(image, filename, mode='wb', encoding=None)
 
-    @classmethod
-    def __format_and_write_report(cls, quality_report, report_formatter, filename, mode, encoding, **kwargs):
+    @staticmethod
+    def __format_and_write_report(quality_report, report_formatter, filename, mode, encoding, **kwargs):
         """ Format the report using the formatter and write it to the specified file. """
         formatted_report = report_formatter(**kwargs).process(quality_report)
         filesystem.write_file(formatted_report, filename, mode, encoding)
