@@ -18,12 +18,21 @@ limitations under the License.
 
 import glob
 import os
+import shutil
 
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
 from qualitylib import VERSION
+
+
+for src_files in ('../html/*.html', '../js/*.js', '../css/*.css', '../img/*.png'):
+    destination_dir = os.path.join('qualitylib', 'formatting', src_files.split('/')[1])
+    if not os.path.exists(destination_dir):
+        os.mkdir(destination_dir)
+    for src_file in glob.glob(src_files):
+        shutil.copy(src_file, destination_dir)
 
 setup(name='quality_report',
       version=VERSION,
@@ -34,9 +43,7 @@ setup(name='quality_report',
       license='Apache License, Version 2.0',
       packages=find_packages(),
       scripts=['quality_report.py'],
-      data_files=[(os.path.join('qualitylib', 'formatting', folder),
-                   glob.glob(os.path.join('..', folder, files))) for folder, files in
-                  (('img', '*.png'), ('js', '*.js'), ('html', '*.html'), ('css', '*.css'))],
+      include_package_data=True,
       install_requires=[str(requirement.req) for requirement in parse_requirements('requirements.txt',
                                                                                    session=PipSession())],
       test_suite='unittests',

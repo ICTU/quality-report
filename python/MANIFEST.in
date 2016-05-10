@@ -1,1 +1,5 @@
 include requirements.txt
+include qualitylib/formatting/html/*.html
+include qualitylib/formatting/css/*.css
+include qualitylib/formatting/js/*.js
+include qualitylib/formatting/img/*.png

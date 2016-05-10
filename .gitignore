@@ -10,5 +10,14 @@ python/.coverage
 python/htmlcov
 python/test-reports
 
+# Ignore build and distribution files:
+python/build
+python/dist
+python/quality_report.egg-info
+python/qualitylib/formatting/css
+python/qualitylib/formatting/html
+python/qualitylib/formatting/img
+python/qualitylib/formatting/js
+
 # Ignore the virtual python environment created by virtual env:
 .pyenv
