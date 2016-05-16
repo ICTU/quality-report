@@ -15,11 +15,10 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
 from ..metric_source_mixin import VersionControlSystemMetricMixin
 from ..quality_attributes import CODE_QUALITY
-from ...domain import LowerIsBetterMetric
 from ... import utils
+from ...domain import LowerIsBetterMetric
 
 
 class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
@@ -28,10 +27,9 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     name = 'Ongemergde branches'
     norm_template = 'Maximaal {target} branches met ongemergde code. Meer dan {low_target} is rood.'
-    perfect_template = 'Geen van de {nr_branches} branches van {name} ' \
-        'heeft revisies die niet met de trunk zijn gemerged.'
-    template = '{value} van de {nr_branches} branches van {name} ' \
-        'hebben revisies die niet met de trunk zijn gemerged.'
+    perfect_template = 'Geen van de {nr_branches} branches van {name} heeft revisies die niet met de trunk zijn ' \
+        'gemerged.'
+    template = '{value} van de {nr_branches} branches van {name} hebben revisies die niet met de trunk zijn gemerged.'
     url_label_text = 'Niet gemergde branches'
     comment_url_label_text = 'Genegeerde branches'
     quality_attribute = CODE_QUALITY
@@ -40,8 +38,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, product, project):
-        """ Unmerged branches can only be measured for trunk versions of
-            products that are under version control. """
+        """ Unmerged branches can only be measured for trunk versions of products that are under version control. """
         return super(UnmergedBranches, cls).can_be_measured(product, project) \
             and not product.product_version() and not product.product_branch()
 
@@ -56,8 +53,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def _get_template(self):
         # pylint: disable=protected-access
-        return self.perfect_template if self._is_perfect() else \
-            super(UnmergedBranches, self)._get_template()
+        return self.perfect_template if self._is_perfect() else super(UnmergedBranches, self)._get_template()
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -69,18 +65,15 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         """ Return a list of branch urls. """
         urls = dict()
         for branch, nr_revisions in branches_and_revisions.items():
-            label = '{branch}: {nr} ongemergde revisie(s)'.format(
-                branch=branch, nr=nr_revisions)
-            urls[label] = self._vcs_product_info.branch_folder_for_branch(
-                self._vcs_path(), branch)
+            label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
+            urls[label] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
         return urls
 
     def __branch_urls(self, branches):
         """ Return a list of branch urls. """
         urls = dict()
         for branch in branches:
-            urls[branch] = self._vcs_product_info.branch_folder_for_branch(
-                self._vcs_path(), branch)
+            urls[branch] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
         return urls
 
     def __branches(self):
@@ -89,10 +82,8 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     @utils.memoized
     def __unmerged_branches(self):
-        """ Return a dictionary of unmerged branch names and the number of
-            unmerged revisions for each branch. """
-        return self._vcs_product_info.unmerged_branches(self._vcs_path(),
-                                                        self.__branches_to_ignore())
+        """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
+        return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__branches_to_ignore())
 
     def __branches_to_ignore(self):
         """ Return the branches to ignore for the measured product. """

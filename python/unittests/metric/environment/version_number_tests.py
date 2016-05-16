@@ -16,13 +16,13 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from qualitylib import metric, domain, metric_source
 import unittest
+
+from qualitylib import metric, domain, metric_source
 
 
 class FakeSonar(object):
-    """ Provide for a fake Sonar object so that the unit test don't need
-        access to an actual Sonar instance. """
+    """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
 
     @staticmethod
     def version_number():
@@ -42,7 +42,7 @@ class FakeSonar(object):
 
 class SonarVersionTest(unittest.TestCase):
     """ Unit tests for the SonarVersion metric. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
         self.__metric = metric.SonarVersion(project=project)
 
@@ -67,15 +67,20 @@ class SonarVersionTest(unittest.TestCase):
         self.assertEqual(50401, self.__metric.numerical_value())
 
 
-class SonarPluginVersionJavaTest(unittest.TestCase):
+class SonarPluginVersionTest(unittest.TestCase):
     """ Unit tests for the SonarPluginVersion class and its subclasses. """
-    def setUp(self):  # pylint: disable=invalid-name
-        project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self.__metric = metric.SonarPluginVersionJava(project=project)
+    def setUp(self):
+        self.__project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
+        self.__metric = metric.SonarPluginVersionJava(project=self.__project)
 
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(FakeSonar().plugin_version(self.__metric.plugin_key), self.__metric.value())
+
+    def test_value_when_missing(self):
+        """ Test that the value is '0.0' when the plugin is missing. """
+        version = metric.SonarPluginVersionCSharp(project=self.__project)
+        self.assertEqual(FakeSonar().plugin_version(version.plugin_key), version.value())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -92,3 +97,9 @@ class SonarPluginVersionJavaTest(unittest.TestCase):
     def test_numerical_value(self):
         """ Test that the numerical value is a weighted sum of the first three version number parts. """
         self.assertEqual(110400, self.__metric.numerical_value())
+
+    def test_norm_template(self):
+        """ Test that the plugin name is filled in correctly in the norm template. """
+        values = metric.SonarPluginVersionJava.norm_template_default_values()
+        self.assertEqual('Sonar plugin Java heeft minimaal versie 3.13.1, lager dan versie 3.12 is rood.',
+                         metric.SonarPluginVersionJava.norm_template.format(**values))

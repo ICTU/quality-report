@@ -112,7 +112,7 @@ class Metric(object):
         return 'red'
 
     def status_start_date(self):
-        """ Return the start date of the curent status. """
+        """ Return the start date of the current status. """
         return self.__status_start_date
 
     @staticmethod

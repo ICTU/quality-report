@@ -62,9 +62,8 @@ class JunitTestReport(test_report.TestReport):
         """ Return the number of tests with the specified result in the test report. """
         try:
             contents = self._url_open(report_url).read()
-        except urllib2.HTTPError, reason:
-            logging.warn("Couldn't open %s to read test count %s: %s", report_url,
-                         result_type, reason)
+        except urllib2.HTTPError as reason:
+            logging.warn("Couldn't open %s to read test count %s: %s", report_url, result_type, reason)
             return -1
         root = xml.etree.ElementTree.fromstring(contents)
         test_suites = [root] if root.tag == 'testsuite' else root.findall('testsuite')

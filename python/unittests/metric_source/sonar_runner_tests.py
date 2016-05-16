@@ -30,7 +30,7 @@ class FakeSonar(Sonar):  # pylint: disable=too-few-public-methods
         return io.StringIO(u'{}')
 
 
-class FakeVCS(VersionControlSystem):
+class FakeVCS(VersionControlSystem):  # pylint: disable=too-few-public-methods
     """ Fake a VCS for testing purposes. """
     @staticmethod
     def check_out(*args):
@@ -65,10 +65,9 @@ class FakeProduct(object):  # pylint: disable=too-few-public-methods
 
 
 class SonarRunnerTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the Sonar runner that creates and deletes Sonar analyses. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__runner = SonarRunner(FakeSonar('http://sonar/'), Maven(), FakeVCS())
 
     def test_analyse_no_products(self):

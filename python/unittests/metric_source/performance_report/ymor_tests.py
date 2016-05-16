@@ -19,7 +19,7 @@ import unittest
 
 from qualitylib.metric_source import Ymor
 
-HTML = """
+HTML = r"""
 <html>
     <head>
     <title>CS Performancetest Summary [2016.04.19.02.44.48]</title>
@@ -330,11 +330,14 @@ HTML = """
 
 
 class YmorUnderTest(Ymor):
-    """ Override the Ymor performance report to return the url as report contents."""
+    """ Override the Ymor performance report to return the url as report contents. """
+    # pylint: disable=unused-argument,no-self-use
+
     def url_open(self, url):
+        """ Return the static html. """
         return HTML
 
-    def urls(self, product, version):  # pylint: disable=unused-argument
+    def urls(self, product, version):
         """ Return a list of urls for the performance report. """
         return ['http://report/1'] if product != 'product' else []
 
@@ -343,7 +346,7 @@ class JMeterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the JMeter performance report metric source. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__performance_report = YmorUnderTest('http://report/')
 
     def test_url(self):

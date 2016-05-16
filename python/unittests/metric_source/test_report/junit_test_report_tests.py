@@ -14,34 +14,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import io
 import unittest
 import urllib2
-import StringIO
 
 from qualitylib.metric_source import JunitTestReport
 
 
-class FakeUrlOpener(object):
+class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake URL opener. """
-    contents = ''
+    contents = u''
 
     def url_open(self, url):
+        """ Return the html or raise an exception. """
         if 'raise' in url:
             raise urllib2.HTTPError(None, None, None, None, None)
         else:
-            return StringIO.StringIO(self.contents)
+            return io.StringIO(self.contents)
 
 
-class JunitTestReportTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
+class JunitTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Unit tests for the Junit test report class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__opener = FakeUrlOpener()
         self.__jenkins = JunitTestReport(url_open=self.__opener.url_open)
 
     def test_test_report(self):
         """ Test retrieving a Junit test report. """
-        self.__opener.contents = '<testsuites>' \
+        self.__opener.contents = u'<testsuites>' \
                                  '  <testsuite tests="12" failures="2" errors="0" skipped="1" disabled="0">' \
                                  '  </testsuite>' \
                                  '</testsuites>'
@@ -51,7 +51,7 @@ class JunitTestReportTest(unittest.TestCase):
 
     def test_multiple_test_suites(self):
         """ Test retrieving a Junit test report with multiple suites. """
-        self.__opener.contents = '<testsuites>' \
+        self.__opener.contents = u'<testsuites>' \
                                  '  <testsuite tests="5" failures="1" errors="0" skipped="1" disabled="1">' \
                                  '  </testsuite>' \
                                  '  <testsuite tests="3" failures="1" errors="1" skipped="0" disabled="0">' \
@@ -69,5 +69,5 @@ class JunitTestReportTest(unittest.TestCase):
 
     def test_incomplete_xml(self):
         """ Test that the default is returned when the xml is incomplete. """
-        self.__opener.contents = '<testsuites></testsuites>'
+        self.__opener.contents = u'<testsuites></testsuites>'
         self.assertEqual(-1, self.__jenkins.failed_tests('url'))

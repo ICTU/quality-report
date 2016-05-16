@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,20 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
-
+from .. import LowerIsBetterMetric
 from ..metric_source_mixin import JiraMetricMixin
 from ..quality_attributes import PROGRESS, TEST_QUALITY, SECURITY
-from .. import LowerIsBetterMetric
 from ... import utils, metric_source
 
 
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
-    ''' Metric for measuring the number of open bug reports. '''
+    """ Metric for measuring the number of open bug reports. """
 
     name = 'Open bugreports'
-    norm_template = 'Het aantal open bug reports is minder dan {target}. ' \
-       'Meer dan {low_target} is rood.'
+    norm_template = 'Het aantal open bug reports is minder dan {target}. Meer dan {low_target} is rood.'
     template = 'Het aantal open bug reports is {value}.'
     target_value = 50
     low_target_value = 100
@@ -36,8 +34,7 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     @classmethod
     def can_be_measured(cls, subject, project):
         jira = project.metric_source(metric_source.Jira)
-        return super(OpenBugs, cls).can_be_measured(subject, project) and \
-            jira.has_open_bugs_query()
+        return super(OpenBugs, cls).can_be_measured(subject, project) and jira.has_open_bugs_query()
 
     def value(self):
         return self._jira.nr_open_bugs()
@@ -47,12 +44,11 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
 
 
 class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
-    ''' Metric for measuring the number of open security bugs. '''
+    """ Metric for measuring the number of open security bugs. """
 
     name = 'Open beveiligingsbugreports'
     norm_template = 'Het aantal beveiliging bug reports met prioriteit major of hoger dat meer dan een ' \
-        'sprint open staat is minder dan {target}. Meer dan {low_target} ' \
-        'is rood.'
+        'sprint open staat is minder dan {target}. Meer dan {low_target} is rood.'
     template = 'Het aantal beveiliging bug reports met prioriteit major of hoger dat meer dan een sprint ' \
         'open staat is {value}.'
     target_value = 0
@@ -62,9 +58,7 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     @classmethod
     def can_be_measured(cls, subject, project):
         jira = project.metric_source(metric_source.Jira)
-        return super(OpenSecurityBugs, cls).can_be_measured(subject, 
-                                                            project) and \
-            jira.has_open_security_bugs_query()
+        return super(OpenSecurityBugs, cls).can_be_measured(subject, project) and jira.has_open_security_bugs_query()
 
     def value(self):
         return self._jira.nr_open_security_bugs()
@@ -74,14 +68,12 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
 
 
 class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
-    ''' Metric for measuring the number of blocking test issues opened the
-        previous month. '''
+    """ Metric for measuring the number of blocking test issues opened the previous month. """
 
     name = 'Aantal blokkerende testbevindingen'
-    norm_template = 'Het aantal geopende blokkerende testbevindingen is ' \
-        'maximaal {target}. Meer dan {low_target} is rood.'
-    template = 'Het aantal geopende blokkerende testbevindingen in de vorige ' \
-        'maand ({month}) was {value}.'
+    norm_template = 'Het aantal geopende blokkerende testbevindingen is maximaal {target}. ' \
+        'Meer dan {low_target} is rood.'
+    template = 'Het aantal geopende blokkerende testbevindingen in de vorige maand ({month}) was {value}.'
     target_value = 0
     low_target_value = 1
     quality_attribute = TEST_QUALITY
@@ -89,8 +81,7 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
     @classmethod
     def can_be_measured(cls, subject, project):
         jira = project.metric_source(metric_source.Jira)
-        return super(BlockingTestIssues, cls).can_be_measured(subject, 
-                                                              project) and \
+        return super(BlockingTestIssues, cls).can_be_measured(subject, project) and \
             jira.has_blocking_test_issues_query()
 
     def value(self):
@@ -107,11 +98,10 @@ class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
 
 
 class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
-    ''' Metric for measuring the number of technical debt issues. '''
+    """ Metric for measuring the number of technical debt issues. """
 
     name = 'Aantal technische schuld issues'
-    norm_template = 'Het aantal technische schuld issues is ' \
-        'maximaal {target}. Meer dan {low_target} is rood.'
+    norm_template = 'Het aantal technische schuld issues is maximaal {target}. Meer dan {low_target} is rood.'
     template = 'Het aantal aantal technische schuld issues is {value}.'
     target_value = 10
     low_target_value = 50
@@ -120,8 +110,7 @@ class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
     @classmethod
     def can_be_measured(cls, subject, project):
         jira = project.metric_source(metric_source.Jira)
-        return super(TechnicalDebtIssues, cls).can_be_measured(subject,
-                                                               project) and \
+        return super(TechnicalDebtIssues, cls).can_be_measured(subject, project) and \
             jira.has_technical_debt_issues_query()
 
     def value(self):

@@ -88,8 +88,8 @@ class DependencyFormatter(DotFormatter):
         for product in report.products():
             dependencies = product.dependencies(recursive=False)
             for dependency_name, dependency_version in dependencies:
-                edges.append(edge_template.format(prod=product.product_label(),
-                             dep=dependency_name, ver=dependency_version or 'trunk'))
+                edges.append(edge_template.format(prod=product.product_label(), dep=dependency_name,
+                                                  ver=dependency_version or 'trunk'))
         return edges
 
 

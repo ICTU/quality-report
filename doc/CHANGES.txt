@@ -1,3 +1,8 @@
+2016-05-16  Release 1.17.0
+
+  * Add metrics to measure SonarQube plugin version.
+
+
 2016-05-10  Release 1.16.2
 
   * Include HTML, CSS, JavaScript, and image resources in the source distribution.

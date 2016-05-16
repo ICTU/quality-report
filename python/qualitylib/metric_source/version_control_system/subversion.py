@@ -18,7 +18,6 @@ from __future__ import absolute_import
 
 import datetime
 import logging
-import re
 
 from BeautifulSoup import BeautifulSoup
 
@@ -36,9 +35,7 @@ class Subversion(version_control_system.VersionControlSystem):
         """ Check out the subversion path into the folder. """
         shell_command = ['svn', 'co', svn_path, folder]
         if self._username and self._password:
-            shell_command.extend(['--no-auth-cache', 
-                                  '--username', self._username,
-                                  '--password', self._password])
+            shell_command.extend(['--no-auth-cache', '--username', self._username, '--password', self._password])
         self._run_shell_command(shell_command, log_level=logging.ERROR)
 
     @utils.memoized
@@ -50,33 +47,29 @@ class Subversion(version_control_system.VersionControlSystem):
         # Look up the tag by its version number and return the tag folder
         tags_folder = self.__tags_folder(trunk_url)
         if version in folders:
-            return tags_folder + folders[version] + '/' + \
-                   trunk_url.split('/trunk/')[1]
+            return tags_folder + folders[version] + '/' + trunk_url.split('/trunk/')[1]
         else:
-            logging.warn('No tag folder for %s version %s in %s', trunk_url,
-                         version, tags_folder)
+            logging.warn('No tag folder for %s version %s in %s', trunk_url, version, tags_folder)
             return ''
 
     @classmethod
     def branch_folder_for_branch(cls, trunk_url, branch):
         """ Return the branch folder for the specified branch. """
-        return cls.__branches_folder(trunk_url) + branch + '/' + \
-            trunk_url.split('/trunk/')[1]
+        return cls.__branches_folder(trunk_url) + branch + '/' + trunk_url.split('/trunk/')[1]
 
     @staticmethod
     def normalize_path(svn_path):
         """ Return a normalized version of the path. """
         if not svn_path.endswith('/'):
             svn_path += '/'
-        if not '/trunk/' in svn_path:
+        if '/trunk/' not in svn_path:
             svn_path += 'trunk/'
         return svn_path
 
     @utils.memoized
     def last_changed_date(self, url):
         """ Return the date when the url was last changed in Subversion. """
-        svn_info_xml = str(self._run_shell_command(['svn', 'info', '--xml',
-                                                    url]))
+        svn_info_xml = str(self._run_shell_command(['svn', 'info', '--xml', url]))
         try:
             date = BeautifulSoup(svn_info_xml)('date')[0].string
         except IndexError:
@@ -88,29 +81,22 @@ class Subversion(version_control_system.VersionControlSystem):
         """ Return a dictionary of branch names and number of unmerged
             revisions for each branch that has any unmerged revisions. """
         branches_to_ignore = branches_to_ignore or []
-        branches = [branch for branch in self.branches(product_url)
-                    if branch not in branches_to_ignore]
-        branches = [(branch, self.__nr_unmerged_revisions(product_url, branch))
-                    for branch in branches]
-        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions)
-                             in branches if nr_revisions > 0]
+        branches = [branch for branch in self.branches(product_url) if branch not in branches_to_ignore]
+        branches = [(branch, self.__nr_unmerged_revisions(product_url, branch)) for branch in branches]
+        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) in branches if nr_revisions > 0]
         return dict(unmerged_branches)
 
     def __nr_unmerged_revisions(self, product_url, branch_name):
         """ Return whether the branch has unmerged revisions. """
         branch_url = self.__branches_folder(product_url) + branch_name
         trunk_url = product_url
-        revisions = str(self._run_shell_command(['svn', 'mergeinfo',
-                                                 '--show-revs', 'eligible',
+        revisions = str(self._run_shell_command(['svn', 'mergeinfo', '--show-revs', 'eligible',
                                                  branch_url, trunk_url])).strip()
-        logging.debug('Unmerged revisions from %s to %s: "%s"', branch_url, 
-                     trunk_url, revisions)
-        # Number of revisions is one more than the number of line breaks, if 
-        # there is any output:
+        logging.debug('Unmerged revisions from %s to %s: "%s"', branch_url, trunk_url, revisions)
+        # Number of revisions is one more than the number of line breaks, if there is any output:
         nr_revisions = revisions.count('\n') + 1 if revisions else 0
-        # If there is a small number of revisions, it may be caused by the Maven
-        # release plugin committing to a tag before creating the branch.
-        # Check for that and ignore those revisions if that's the case. 
+        # If there is a small number of revisions, it may be caused by the Maven release plugin committing to a tag
+        # before creating the branch. Check for that and ignore those revisions if that's the case.
         if 1 <= nr_revisions <= 3:
             # Create a list of revision numbers and remove the initial 'r'
             revisions = [revision[1:].strip() for revision in revisions.split('\n')]
@@ -121,9 +107,7 @@ class Subversion(version_control_system.VersionControlSystem):
 
     def __revision_url(self, branch_url, revision_number):
         """ Return the url for a specific revision number. """
-        svn_info_xml = str(self._run_shell_command(['svn', 'info', branch_url,
-                                                    '--xml',
-                                                    '-r', revision_number]))
+        svn_info_xml = str(self._run_shell_command(['svn', 'info', branch_url, '--xml', '-r', revision_number]))
         return BeautifulSoup(svn_info_xml)('url')[0].string
 
     @utils.memoized

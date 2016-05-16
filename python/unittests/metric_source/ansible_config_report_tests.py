@@ -22,9 +22,9 @@ import urllib2
 from qualitylib.metric_source import AnsibleConfigReport
 
 
-class FakeUrlOpener(object):
+class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake the url opener class to return a fixed json object. """
-    # pylint: disable=too-few-public-methods
+
     json = u"""
 [
   {
@@ -65,11 +65,10 @@ class FakeUrlOpener(object):
             return io.StringIO(u"invalid.json" if 'invalid' in url else self.json)
 
 
-class AnsibleConfigReportTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
+class AnsibleConfigReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Unit tests for the Ansible config report class. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__config = AnsibleConfigReport(url_open=FakeUrlOpener().url_open)
 
     def test_java_versions(self):

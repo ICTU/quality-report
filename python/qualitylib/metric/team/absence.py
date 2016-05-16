@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,26 +12,21 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
-
 from ..quality_attributes import PROGRESS
-from ...domain import LowerIsBetterMetric
 from ... import metric_source
+from ...domain import LowerIsBetterMetric
 
 
 class TeamAbsence(LowerIsBetterMetric):
-    ''' Metric for measuring the number of consecutive days that multiple
-        team members are absent. '''
+    """ Metric for measuring the number of consecutive days that multiple team members are absent. """
 
     name = 'Absentie'
-    norm_template = 'Het aantal aaneengesloten dagen dat meerdere ' \
-        'teamleden tegelijk gepland afwezig zijn is lager dan {target} ' \
-        'werkdagen. Meer dan {low_target} werkdagen is rood. Het team ' \
-        'bestaat uit {team}.'
-    template = 'De langste periode dat meerdere teamleden ' \
-        'tegelijk gepland afwezig zijn is {value} werkdagen ' \
+    norm_template = 'Het aantal aaneengesloten dagen dat meerdere teamleden tegelijk gepland afwezig zijn is ' \
+        'lager dan {target} werkdagen. Meer dan {low_target} werkdagen is rood. Het team bestaat uit {team}.'
+    template = 'De langste periode dat meerdere teamleden tegelijk gepland afwezig zijn is {value} werkdagen ' \
         '({start} tot en met {end}). Afwezig zijn: {absentees}.'
     perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
     target_value = 5
@@ -41,8 +36,7 @@ class TeamAbsence(LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, team, project):
-        return super(TeamAbsence, cls).can_be_measured(team, project) and \
-            len(team.members()) > 1
+        return super(TeamAbsence, cls).can_be_measured(team, project) and len(team.members()) > 1
 
     @classmethod
     def norm_template_default_values(cls):
@@ -63,17 +57,14 @@ class TeamAbsence(LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamAbsence, self)._parameters()
-        parameters['team'] = ', '.join([member.name() for member in
-                                        self._subject.members()])
+        parameters['team'] = ', '.join([member.name() for member in self._subject.members()])
         length, start, end, members = self.__planner.days(self._subject)
         if length:
             parameters['start'] = start.isoformat()
             parameters['end'] = end.isoformat()
-            parameters['absentees'] = ', '.join(sorted([member.name() for member
-                                                        in members]))
+            parameters['absentees'] = ', '.join(sorted([member.name() for member in members]))
         return parameters
 
     def _get_template(self):
         # pylint: disable=protected-access
-        return self.perfect_template if self._is_perfect() else \
-            super(TeamAbsence, self)._get_template()
+        return self.perfect_template if self._is_perfect() else super(TeamAbsence, self)._get_template()

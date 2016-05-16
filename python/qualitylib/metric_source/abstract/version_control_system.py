@@ -24,15 +24,12 @@ from ... import domain, utils
 
 
 class VersionControlSystem(domain.MetricSource):
-    # pylint: disable=abstract-class-not-used
-    """ Abstract base class for version control systems such as Subversion and
-        Git. """
+    """ Abstract base class for version control systems such as Subversion and Git. """
 
     metric_source_name = 'Version control system'
     needs_values_as_list = True
 
-    def __init__(self, username=None, password=None, url=None,
-                 run_shell_command=subprocess.check_output):
+    def __init__(self, username=None, password=None, url=None, run_shell_command=subprocess.check_output):
         self._username = username
         self._password = password
         self._shell_command = run_shell_command
@@ -56,48 +53,43 @@ class VersionControlSystem(domain.MetricSource):
         versions.sort()
         return versions[-1][1]  # Return the text version of the highest number
 
-    def branches(self, path):
-        # pylint: disable=unused-arguments
+    def branches(self, path):  # pylint: disable=unused-argument
         """ Return a list of branch names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
-    def tags(self, path):
-        # pylint: disable=unused-arguments
+    def tags(self, path):  # pylint: disable=unused-argument
         """ Return a list of tag names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
-    def unmerged_branches(self, path, branches_to_ignore=None):
-        # pylint: disable=unused-arguments
+    def unmerged_branches(self, path, branches_to_ignore=None):  # pylint: disable=unused-argument
         """ Return a dictionary of branch names and number of unmerged
             revisions for each branch that has any unmerged revisions. """
         raise NotImplementedError  # pragma: no cover
 
     @classmethod
-    def branch_folder_for_branch(cls, trunk_url, branch):
+    def branch_folder_for_branch(cls, trunk_url, branch):  # pylint: disable=unused-argument
         """ Return the branch folder for the specified branch. """
         raise NotImplementedError  # pragma: no cover
 
     @classmethod
-    def tags_folder_for_version(cls, trunk_url, version):
+    def tags_folder_for_version(cls, trunk_url, version):  # pylint: disable=unused-argument
         """ Return the tags folder for the specified version. """
         return ''  # pragma: no cover
 
-    def normalize_path(self, path):
+    @staticmethod
+    def normalize_path(path):
         """ Return a normalized version of the path. """
         return path
 
-    def _run_shell_command(self, shell_command, folder=None,
-                           log_level=logging.WARNING):
-        """ Invoke a shell and run the command. If a folder is specified,
-            run the command in that folder. """
+    def _run_shell_command(self, shell_command, folder=None, log_level=logging.WARNING):
+        """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         original_working_dir = os.getcwd()
         if folder:
             os.chdir(folder)
         try:
             return self._shell_command(shell_command)
         except subprocess.CalledProcessError as reason:
-            # No need to include the shell command in the log, because the
-            # reason contains the shell command.
+            # No need to include the shell command in the log, because the reason contains the shell command.
             logging.log(log_level, 'Shell command failed: %s', reason)
             if log_level > logging.WARNING:
                 raise
@@ -106,11 +98,9 @@ class VersionControlSystem(domain.MetricSource):
 
     @staticmethod
     def _parse_version(tag):
-        """ Parse and return the version number from the tag. Returns the
-            version as a two-tuple. The first element of the tuple is the
-            version number as tuple of integers (for sorting). The second
-            element of the tuple is the version number as text, including
-            any postfix elements (e.g. 1.2.3-beta). """
+        """ Parse and return the version number from the tag. Returns the version as a two-tuple. The first
+            element of the tuple is the version number as tuple of integers (for sorting). The second element
+            of the tuple is the version number as text, including any postfix elements (e.g. 1.2.3-beta). """
         versions_in_tag = re.findall(r'[0-9]+(?:\.[0-9]+)+', tag)
         if versions_in_tag and 'emma' not in tag.lower():
             numbers = versions_in_tag[0].split('.')

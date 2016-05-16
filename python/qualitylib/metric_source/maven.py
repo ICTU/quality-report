@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,14 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
-
 
 from .. import domain
 
 
 class Maven(domain.MetricSource):  # pylint: disable=too-few-public-methods
-    ''' Object representing Maven. '''
+    """ Object representing Maven. """
     metric_source_name = 'Maven'
 
     def __init__(self, binary='mvn'):
@@ -28,5 +27,5 @@ class Maven(domain.MetricSource):  # pylint: disable=too-few-public-methods
         super(Maven, self).__init__()
 
     def binary(self):
-        ''' Return the Maven binary. '''
+        """ Return the Maven binary. """
         return self.__binary

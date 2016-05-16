@@ -26,7 +26,8 @@ class JaCoCo(coverage_report.CoverageReport):
     """ Class representing an JaCoCo coverage report. """
     metric_source_name = 'JaCoCo coverage report'
 
-    def _get_coverage_date_url(self, coverage_url):
+    @staticmethod
+    def _get_coverage_date_url(coverage_url):
         return coverage_url[:-len('index.html')] + '.sessions.html'
 
     def _parse_statement_coverage_percentage(self, soup):

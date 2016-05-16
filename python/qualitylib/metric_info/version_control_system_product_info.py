@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from __future__ import absolute_import
-import logging
+
 import datetime
+import logging
 
 
 class VersionControlSystemProductInfo(object):
@@ -64,10 +65,12 @@ class VersionControlSystemProductInfo(object):
         else:
             return False
 
-    def branch_folder_for_branch(self, result, branch):
-        return self.__vcs.branch_folder_for_branch(result, branch)
+    def branch_folder_for_branch(self, path, branch):
+        """ Return the folder for the branch. """
+        return self.__vcs.branch_folder_for_branch(path, branch)
 
     def last_changed_date(self, path=None):
+        """ Return the date the path was last changed. """
         if path is None:
             path = self.vcs_path()
         if self.__vcs is None:
@@ -76,9 +79,11 @@ class VersionControlSystemProductInfo(object):
             return self.__vcs.last_changed_date(path)
 
     def unmerged_branches(self, path, branches_to_ignore=None):
+        """ Return a list of branches that haven't been merged with the trunk. """
         return self.__vcs.unmerged_branches(path, branches_to_ignore)
 
     def branches(self, path):
+        """ Return a list of branches. """
         return self.__vcs.branches(path)
 
     @staticmethod

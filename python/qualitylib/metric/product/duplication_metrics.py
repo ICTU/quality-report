@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +12,20 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
-
-from ...domain import LowerPercentageIsBetterMetric
 from ..metric_source_mixin import SonarDashboardMetricMixin
 from ..quality_attributes import CODE_QUALITY
+from ...domain import LowerPercentageIsBetterMetric
 
 
 class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the percentage of duplicated lines of code. '''
+    """ Metric for measuring the percentage of duplicated lines of code. """
 
-    norm_template = 'Maximaal {target}% gedupliceerde regels code. ' \
-        'Meer dan {low_target}% is rood.'
-    template = '{name} heeft {value}% ({numerator} op ' \
-        '{denominator}) duplicatie.'
+    norm_template = 'Maximaal {target}% gedupliceerde regels code. Meer dan {low_target}% is rood.'
+    template = '{name} heeft {value}% ({numerator} op {denominator}) duplicatie.'
     quality_attribute = CODE_QUALITY
 
     def _numerator(self):
@@ -40,8 +37,7 @@ class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
 
 class JavaDuplication(Duplication):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    ''' Metric for measuring the percentage of duplicated lines of code in 
-        Java code. '''
+    """ Metric for measuring the percentage of duplicated lines of code in Java code. """
 
     name = 'Duplicatie van Java broncode'
     target_value = 0
@@ -50,8 +46,7 @@ class JavaDuplication(Duplication):
 
 class JsfDuplication(Duplication):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    ''' Metric for measuring the percentage of duplicated lines of code in 
-        JSF code. '''
+    """ Metric for measuring the percentage of duplicated lines of code in JSF code. """
 
     name = 'Duplicatie van JSF broncode'
     target_value = 10

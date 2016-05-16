@@ -15,18 +15,14 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
-from ..metric_source_mixin import \
-    SonarMetricMixin, \
-    SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarMetricMixin, SonarDashboardMetricMixin
 from ..quality_attributes import SIZE
-from ...domain import LowerIsBetterMetric
 from ... import metric_info
+from ...domain import LowerIsBetterMetric
 
 
 class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
-    """ Metric for measuring the size (in number of lines of code) of a
-        product. """
+    """ Metric for measuring the size (in number of lines of code) of a product. """
 
     name = 'Component omvang'
     norm_template = 'Maximaal {target} regels (Java) code.'
@@ -40,16 +36,15 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
 
 
 class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
-    """ Metric for measuring the total size (in number of lines of code) of
-        several products. """
+    """ Metric for measuring the total size (in number of lines of code) of several products. """
 
     name = 'Totale omvang'
-    norm_template = 'Maximaal {target} regels (Java) code. Meer dan ' \
-        '{low_target} regels (Java) code (herbouwtijd 30 jaar) is rood.'
+    norm_template = 'Maximaal {target} regels (Java) code. Meer dan {low_target} regels (Java) code ' \
+        '(herbouwtijd 30 jaar) is rood.'
     template = 'Het totaal aantal LOC voor de producten {products} is {value} regels code.'
     target_value = 160000
     # Maximum number of LOC Java to be eligible for 4 stars, see
-    # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/  # pylint: disable=C0301
+    # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/
     low_target_value = 175000
     quality_attribute = SIZE
 
@@ -68,8 +63,7 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
         return total
 
     def recent_history(self):
-        """ Subtract the minimum value from all values so that we can send
-            more data to the Google Chart API. """
+        """ Subtract the minimum value from all values so that we can send more data to the Google Chart API. """
         historic_values = super(TotalLOC, self).recent_history()
         minimum_value = min(historic_values) if historic_values else 0
         return [value - minimum_value for value in historic_values]

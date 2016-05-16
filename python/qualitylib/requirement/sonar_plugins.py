@@ -22,14 +22,14 @@ from .. import metric
 
 JAVA_SONAR_PLUGINS = Requirement(
     name='SonarQube Java plugins',
-    metric_classes={metric.SonarPluginVersionJava})
+    metric_classes={metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
+                    metric.SonarPluginVersionFindBugs})
 
-'''
 DOT_NET_SONAR_PLUGINS = Requirement(
     name='SonarQube DotNet plugins',
-    metric_classes=set([metric.SonarPluginVersionDotNet]))
+    metric_classes={metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
+                    metric.SonarPluginVersionReSharper})
 
-JAVASCRIOT_SONAR_PLUGINS = Requirement(
-    name='SonarQube JavaScript plugins',
-    metric_classes=set([metric.SonarPluginVersionDotNet]))
-'''
+WEB_SONAR_PLUGINS = Requirement(
+    name='SonarQube Web plugins',
+    metric_classes={metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS})

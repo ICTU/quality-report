@@ -49,7 +49,7 @@ class JacocoTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the Jacoco class. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__opener = FakeUrlOpener()
         self.__jacoco = JaCoCo(url_open=self.__opener.url_open)
 
@@ -107,10 +107,10 @@ class JacocoTest(unittest.TestCase):
     def test_coverage_date_non_us(self):
         """ Test the date of the coverage report when it's not a US date/time. """
         self.__opener.date_html = '<tbody><tr><td><span class="el_session">na-node1-reg-' \
-        '1196e1b5</span></td><td>4-apr-2013 16:41:29</td><td>5-apr-2013 ' \
-        '10:34:54</td></tr><tr><td><span class="el_session">na-node2-reg-' \
-        '1f82fbab</span></td><td>4-apr-2013 16:43:39</td><td>5-apr-2013 ' \
-        '10:34:55</td></tr></tbody>'
+            '1196e1b5</span></td><td>4-apr-2013 16:41:29</td><td>5-apr-2013 ' \
+            '10:34:54</td></tr><tr><td><span class="el_session">na-node2-reg-' \
+            '1f82fbab</span></td><td>4-apr-2013 16:43:39</td><td>5-apr-2013 ' \
+            '10:34:55</td></tr></tbody>'
         expected = datetime.datetime(2013, 4, 5, 10, 34, 55)
         self.assertEqual(expected, self.__jacoco.coverage_date('http://jacoco'))
 

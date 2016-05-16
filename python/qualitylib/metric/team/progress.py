@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
 
@@ -23,19 +23,15 @@ from ... import metric_source
 
 
 class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
-    ''' Metric for measuring the progress of a team. '''
+    """ Metric for measuring the progress of a team. """
 
     name = 'Team voortgang'
-    norm_template = 'De vereiste velocity om het sprintdoel te halen is ' \
-        'lager dan of gelijk aan {target_factor:.1f} maal de geplande ' \
-        'velocity. Als de velocity die nodig is om het sprintdoel te halen ' \
-        'hoger wordt dan {low_target_factor:.1f} maal de geplande velocity ' \
-        'is deze metriek rood.'
-    template = 'Team {name} heeft een velocity van {value:.1f} punt per ' \
-        'dag nodig om het sprintdoel van de huidige sprint ({sprint_goal:.1f} '\
-        'punten) te halen. De geplande velocity is {planned_velocity:.1f} ' \
-        'punt per dag. De tot nu toe (dag {sprint_day} van ' \
-        '{sprint_length}) gerealiseerde velocity is {actual_velocity:.1f} ' \
+    norm_template = 'De vereiste velocity om het sprintdoel te halen is lager dan of gelijk aan {target_factor:.1f} ' \
+        'maal de geplande velocity. Als de velocity die nodig is om het sprintdoel te halen hoger wordt dan ' \
+        '{low_target_factor:.1f} maal de geplande velocity is deze metriek rood.'
+    template = 'Team {name} heeft een velocity van {value:.1f} punt per dag nodig om het sprintdoel van de huidige ' \
+        'sprint ({sprint_goal:.1f} punten) te halen. De geplande velocity is {planned_velocity:.1f} punt per dag. ' \
+        'De tot nu toe (dag {sprint_day} van {sprint_length}) gerealiseerde velocity is {actual_velocity:.1f} ' \
         'punt per dag ({actual_points:.1f} punten).'
     quality_attribute = PROGRESS
     target_factor = 1.25
@@ -44,8 +40,7 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
 
     @classmethod
     def can_be_measured(cls, team, project):
-        return super(TeamProgress, cls).can_be_measured(team, project) and \
-            team.is_scrum_team()
+        return super(TeamProgress, cls).can_be_measured(team, project) and team.is_scrum_team()
 
     @classmethod
     def norm_template_default_values(cls):

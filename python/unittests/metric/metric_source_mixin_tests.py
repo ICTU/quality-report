@@ -73,6 +73,12 @@ class BirtMetricMixinTest(unittest.TestCase):
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
         self.assertEqual('birt id', BirtMetricUnderTest(project=project, subject=product)._birt_id())
 
+    def test_no_matching_birt(self):
+        """ Test that no Birt id is returned when there is no Birt instance for the product. """
+        project = domain.Project(metric_sources={metric_source.Birt: ['Birt1']})
+        product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
+        self.failIf(BirtMetricUnderTest(project=project, subject=product)._birt_id())
+
 
 class BirtTestDesignMetricUnderTest(metric.BirtTestDesignMetricMixin, domain.Metric):
     """ Create a testable class by mixing the mixin class with a metric class. """

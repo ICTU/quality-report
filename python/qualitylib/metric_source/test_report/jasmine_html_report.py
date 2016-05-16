@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +12,23 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
 import re
 import urllib2
 
-from ..abstract import test_report
 from .. import beautifulsoup
+from ..abstract import test_report
 
 
 class JasmineHTMLReport(test_report.TestReport):
-    ''' Class representing Jasmine HTML test reports. '''
+    """ Class representing Jasmine HTML test reports. """
     metric_source_name = 'Jasmine HTML testreport'
     needs_metric_source_id = True
 
-
     def _passed_tests(self, report_url):
-        ''' Return the number of passed tests as reported by the test report. '''
+        """ Return the number of passed tests as reported by the test report. """
         try:
             soup = beautifulsoup.BeautifulSoup(self._url_open(report_url))
         except urllib2.HTTPError:
@@ -39,7 +38,7 @@ class JasmineHTMLReport(test_report.TestReport):
         return nr_passed
 
     def _failed_tests(self, report_url):
-        ''' Return the number of failed tests as reported by the test report. '''
+        """ Return the number of failed tests as reported by the test report. """
         try:
             soup = beautifulsoup.BeautifulSoup(self._url_open(report_url))
         except urllib2.HTTPError:
@@ -49,17 +48,19 @@ class JasmineHTMLReport(test_report.TestReport):
         return nr_failed
 
     def _skipped_tests(self, report_url):
-        ''' Return the number of skipped tests as reported by the test report. '''
+        """ Return the number of skipped tests as reported by the test report. """
         return 0  # Jasmine reports don't have skipped tests.
 
-    def __parse_passed_tests(self, soup):
-        ''' Get the number of passed tests from the HTML soup. '''
+    @staticmethod
+    def __parse_passed_tests(soup):
+        """ Get the number of passed tests from the HTML soup. """
         last_div_string = str(soup('div')[-1])
-        match = re.search('<b>Total tests passed</b>: (\d+) ', last_div_string)
+        match = re.search(r'<b>Total tests passed</b>: (\d+) ', last_div_string)
         return int(match.group(1)) if match else -1
 
-    def __parse_failed_tests(self, soup):
-        ''' Get the number of failed tests from the HTML soup. '''
+    @staticmethod
+    def __parse_failed_tests(soup):
+        """ Get the number of failed tests from the HTML soup. """
         last_div_string = str(soup('div')[-1])
-        match = re.search('<b>Total tests failed</b>: (\d+) ', last_div_string)
+        match = re.search(r'<b>Total tests failed</b>: (\d+) ', last_div_string)
         return int(match.group(1)) if match else -1

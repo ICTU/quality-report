@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,17 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 
-import BeautifulSoup
 import datetime
 import unittest
+
+import BeautifulSoup
+
 from qualitylib.metric_source import Birt2
 from qualitylib.metric_source.birt2 import SprintProgressReport
 
-
-TEST_DESIGN_HTML = '''
+TEST_DESIGN_HTML = """
 <html>
     <body class="style_0" style=" margin:0px;">
         <table cellpadding="0" style="empty-cells: show; border-collapse:collapse; width:100%;">
@@ -196,9 +197,9 @@ TEST_DESIGN_HTML = '''
         </table>
     </body>
 </html>
-'''
+"""
 
-SPRINT_PROGRESS_REPORT_HTML = '''
+SPRINT_PROGRESS_REPORT_HTML = """
 <table>
     <table>
         <table>
@@ -229,9 +230,9 @@ SPRINT_PROGRESS_REPORT_HTML = '''
         </table>
     </table>
 </table>
-'''
+"""
 
-SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA = '''
+SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA = """
 <html>
     <body class="style_0" style=" margin:0px;">
         <table cellpadding="0" style="empty-cells: show; border-collapse:collapse; width:284.29999999999995mm; overflow: hidden; table-layout:fixed;">
@@ -356,9 +357,9 @@ SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA = '''
             </tr>
         </table>
     </body>
-</html>'''
+</html>"""
 
-MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED = '''
+MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED = """
 <html>
     <body class="style_0" style=" margin:0px;">
         <table cellpadding="0" style="empty-cells: show; border-collapse:collapse; width:100%;">
@@ -577,9 +578,9 @@ MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED = '''
         </table>
     </body>
 </html>
-'''
+"""
 
-MANUAL_TEST_EXECUTION_HTML = '''
+MANUAL_TEST_EXECUTION_HTML = """
 <html>
     <body class="style_0" style=" margin:0px;">
         <table cellpadding="0" style="empty-cells: show; border-collapse:collapse; width:100%;">
@@ -674,185 +675,171 @@ MANUAL_TEST_EXECUTION_HTML = '''
             </tr>
         </table>
     </body>
-</html>'''
+</html>"""
 
 
-class BirtUnderTest(Birt2):
-    ''' Override the soup method to return a fixed HTML fragment. '''
+class BirtUnderTest(Birt2):  # pylint: disable=too-few-public-methods
+    """ Override the soup method to return a fixed HTML fragment. """
     html = ''
 
-    def soup(self, url):
+    def soup(self, url):  # pylint: disable=unused-argument
+        """ Return the static html. """
         return BeautifulSoup.BeautifulSoup(self.html)
 
 
-class BirtTest(unittest.TestCase):  
-    # pylint: disable=too-many-public-methods
-    ''' Unit tests for the Birt class. '''
+class BirtTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+    """ Unit tests for the Birt class. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__birt = BirtUnderTest('http://birt/')
 
     def test_url(self):
-        ''' Test the url. '''
+        """ Test the url. """
         self.assertEqual('http://birt/birt/', self.__birt.url())
 
     def test_test_design_url(self):
-        ''' Test the test design url. '''
-        self.assertEqual('http://birt/birt/preview?__report=reports/'
-                         'test_design.rptdesign', self.__birt.test_design_url())
+        """ Test the test design url. """
+        self.assertEqual('http://birt/birt/preview?__report=reports/test_design.rptdesign',
+                         self.__birt.test_design_url())
 
     def test_whats_missing_url(self):
-        ''' Test the what's missing report url. '''
-        self.assertEqual('http://birt/birt/preview?__report=reports/'
-                         'whats_missing.rptdesign',
+        """ Test the what's missing report url. """
+        self.assertEqual('http://birt/birt/preview?__report=reports/whats_missing.rptdesign',
                          self.__birt.whats_missing_url('product'))
 
     def test_manual_test_url_trunk(self):
-        ''' Test the manual test execution url for the trunk. '''
-        self.assertEqual('http://birt/birt/preview?__report=reports/'
-                         'manual_test_execution_report.rptdesign&'
-                         'version=trunk',
-                         self.__birt.manual_test_execution_url('product'))
+        """ Test the manual test execution url for the trunk. """
+        self.assertEqual(
+            'http://birt/birt/preview?__report=reports/manual_test_execution_report.rptdesign&version=trunk',
+            self.__birt.manual_test_execution_url('product'))
 
     def test_manual_test_url_version(self):
-        ''' Test the manual test execution url with a specific version. '''
-        self.assertEqual('http://birt/birt/preview?__report=reports/'
-                         'manual_test_execution_report.rptdesign&'
-                         'version=1',
+        """ Test the manual test execution url with a specific version. """
+        self.assertEqual('http://birt/birt/preview?__report=reports/manual_test_execution_report.rptdesign&version=1',
                          self.__birt.manual_test_execution_url('product', '1'))
 
     def test_sprint_progress_url(self):
-        ''' Test the sprint progress url. '''
-        self.assertEqual('http://birt/birt/preview?__report=reports/'
-                         'sprint_voortgang.rptdesign',
+        """ Test the sprint progress url. """
+        self.assertEqual('http://birt/birt/preview?__report=reports/sprint_voortgang.rptdesign',
                          self.__birt.sprint_progress_url('team'))
 
     def test_has_test_design(self):
-        ''' Test that has_test_design always returns true, because the product
-            parameter is ignored in Birt2.  '''
+        """ Test that has_test_design always returns true, because the product parameter is ignored in Birt2.  """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertTrue(self.__birt.has_test_design('whatever'))
 
-    def test_nr_user_stories_with_sufficient_ltcs(self):  
-        # pylint: disable=invalid-name
-        ''' Test that the number of user stories with sufficient number of 
-            logical test cases is correct. '''
+    def test_nr_user_stories_with_sufficient_ltcs(self):
+        """ Test that the number of user stories with sufficient number of logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(22, self.__birt.nr_user_stories_with_sufficient_ltcs('bulk'))
 
     def test_nr_automated_ltcs(self):
-        ''' Test the number of automated logical test cases is correct. '''
+        """ Test the number of automated logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(111, self.__birt.nr_automated_ltcs('bulk'))
 
     def test_nr_user_stories(self):
-        ''' Test that the number of user stories is correct. '''
+        """ Test that the number of user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(23, self.__birt.nr_user_stories('bulk'))
 
     def test_reviewed_user_stories(self):
-        ''' Test that the number of reviewed user stories is correct. '''
+        """ Test that the number of reviewed user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(23, self.__birt.reviewed_user_stories('bulk'))
 
     def test_approved_user_stories(self):
-        ''' Test that the number of approved user stories is correct. '''
+        """ Test that the number of approved user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(23, self.__birt.approved_user_stories('bulk'))
 
     def test_not_approved_user_stories(self):
-        ''' Test that the number of not approved user stories is correct. '''
+        """ Test that the number of not approved user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(0, self.__birt.not_approved_user_stories('bulk'))
 
     def test_nr_ltcs(self):
-        ''' Test that the number of logical test cases is correct. '''
+        """ Test that the number of logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(182, self.__birt.nr_ltcs('bulk'))
 
     def test_reviewed_ltcs(self):
-        ''' Test that the number of reviewed logical test cases is correct. '''
+        """ Test that the number of reviewed logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(182, self.__birt.reviewed_ltcs('bulk'))
 
     def test_approved_ltcs(self):
-        ''' Test that the number of approved logical test cases is correct. '''
+        """ Test that the number of approved logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(182, self.__birt.approved_ltcs('bulk'))
 
     def test_not_approved_ltcs(self):
-        ''' Test that the number of not approved logical test cases is
-            correct. '''
+        """ Test that the number of not approved logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(0, self.__birt.not_approved_ltcs('bulk'))
 
     def test_nr_ltcs_to_be_automated(self):
-        ''' Test that the number of logical test cases to be automated is 
-            correct. '''
+        """ Test that the number of logical test cases to be automated is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(165, self.__birt.nr_ltcs_to_be_automated('bulk'))
 
     def test_nr_manual_ltcs(self):
-        ''' Test that the number of manual logical test cases is correct. '''
+        """ Test that the number of manual logical test cases is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         self.assertEqual(3, self.__birt.nr_manual_ltcs('bulk'))
 
     def test_nr_manual_ltcs_too_old(self):
-        ''' Test that the number of manual logical test cases that have not
-            been tested recently is correct. '''
+        """ Test that the number of manual logical test cases that have not been tested recently is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
-        self.assertEqual(3, self.__birt.nr_manual_ltcs_too_old('bulk',
-                                                               'trunk', 7))
+        self.assertEqual(3, self.__birt.nr_manual_ltcs_too_old('bulk', 'trunk', 7))
 
     def test_no_date_manual_tests(self):
-        ''' Test that the date of the last manual test execution is correct. '''
+        """ Test that the date of the last manual test execution is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED
         date = self.__birt.date_of_last_manual_test('bulk')
         self.assertEqual(datetime.datetime(1, 1, 1), date)
 
     def test_late_date_manual_tests(self):
-        ''' Test that the date of the last manual test execution is correct. '''
+        """ Test that the date of the last manual test execution is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         date = self.__birt.date_of_last_manual_test('bulk')
         self.assertEqual(datetime.datetime(2015, 8, 19), date)
 
 
-class BirtSprintProgressReportUnderTest(SprintProgressReport):
-    ''' Override the soup method to return a fixed HTML fragment. '''
+class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disable=too-few-public-methods
+    """ Override the soup method to return a fixed HTML fragment. """
     html = ''
 
-    def soup(self, url):
+    def soup(self, url):  # pylint: disable=unused-argument
+        """ Return the static html. """
         return BeautifulSoup.BeautifulSoup(self.html)
 
 
-class BirtSprintProgressReportTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    ''' Unit tests for the Birt sprint progress report. '''
+class BirtSprintProgressReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+    """ Unit tests for the Birt sprint progress report. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__birt = BirtSprintProgressReportUnderTest('http://birt/%s')
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML
 
     def test_actual_velocity(self):
-        ''' Test that the actual velocity is the number of points realized
-            per day so far. '''
+        """ Test that the actual velocity is the number of points realized per day so far. """
         self.assertEqual(20 / 14., self.__birt.actual_velocity('birt_id'))
 
     def test_planned_velocity(self):
-        ''' Test that the planned velocity is correct. '''
+        """ Test that the planned velocity is correct. """
         self.assertEqual(23.5 / 15, self.__birt.planned_velocity('birt_id'))
 
     def test_required_velocity(self):
-        ''' Test that the required velocity is correct. '''
+        """ Test that the required velocity is correct. """
         self.assertEqual(3.5 / 2, self.__birt.required_velocity('birt_id'))
 
     def test_days_in_sprint_no_end_date(self):
-        ''' Test that the days in the sprint is zero when the end date is
-            unknown. '''
+        """ Test that the days in the sprint is zero when the end date is unknown. """
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
         self.assertEqual(0, self.__birt.days_in_sprint('birt_id'))
 
     def test_missing_velocity(self):
-        ''' Test that the actual velocity is zero when the data is missing. '''
+        """ Test that the actual velocity is zero when the data is missing. """
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
         self.assertEqual(0., self.__birt.actual_velocity('birt_id'))

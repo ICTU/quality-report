@@ -21,8 +21,7 @@ from . import metric, utils, metric_source, metric_info
 
 
 class SectionHeader(object):
-    """ Header for a section, consisting of two-letter prefix, title and an
-        optional subtitle. """
+    """ Header for a section, consisting of two-letter prefix, title and an optional subtitle. """
 
     def __init__(self, id_prefix, title, subtitle=''):
         self.__id_prefix = id_prefix
@@ -142,22 +141,25 @@ class QualityReport(object):
                                  metric.OWASPDependencies)
     PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes,
                                   metric.YmorResponseTimes)
-    MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge,
-                                 metric.RiskLog)
     ENVIRONMENT_METRIC_CLASSES = (metric.FailingCIJobs,
                                   metric.UnusedCIJobs,
                                   metric.JavaVersionConsistency,
                                   metric.SonarVersion)
-    BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
-                           metric.BlockingTestIssues, metric.TechnicalDebtIssues)
     DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
     TEAM_METRIC_CLASSES = (metric.TeamProgress, metric.TeamSpirit,
                            metric.TeamAbsence)
     META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
                            metric.YellowMetaMetric, metric.GreyMetaMetric,
                            metric.MissingMetaMetric)
-    ADDITIONAL_METRIC_CLASSES = (metric.LifeUniverseAndEverything,)
-
+    SONAR_PLUGIN_METRIC_CLASSES = (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle,
+                                   metric.SonarPluginVersionPMD, metric.SonarPluginVersionFindBugs,
+                                   metric.SonarPluginVersionCSharp, metric.SonarPluginVersionJS,
+                                   metric.SonarPluginVersionReSharper, metric.SonarPluginVersionStyleCop,
+                                   metric.SonarPluginVersionWeb)
+    MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge,
+                                 metric.RiskLog)
+    BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
+                           metric.BlockingTestIssues, metric.TechnicalDebtIssues)
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + BUGS_METRIC_CLASSES + \
                                      (metric.DurationOfManualLogicalTestCases,
                                       metric.ManualLogicalTestCasesWithoutDuration,
@@ -169,9 +171,9 @@ class QualityReport(object):
     def metric_classes(cls):
         """ Return a list of metric classes that the report can measure. """
         return cls.TEST_COVERAGE_METRIC_CLASSES + cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
-               cls.PERFORMANCE_METRIC_CLASSES + cls.MANAGEMENT_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
-               cls.BUGS_METRIC_CLASSES + cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + \
-               cls.DEPENDENCY_METRIC_CLASSES + (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
+            cls.PERFORMANCE_METRIC_CLASSES + cls.PROCESS_SECTION_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
+            cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + cls.DEPENDENCY_METRIC_CLASSES + \
+            cls.SONAR_PLUGIN_METRIC_CLASSES + (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
 
     def __init__(self, project):
         self.__project = project
@@ -280,6 +282,9 @@ class QualityReport(object):
         for metric_class in self.ENVIRONMENT_METRIC_CLASSES:
             if metric_class.can_be_measured(self.__project, self.__project):
                 metrics.append(metric_class(self.__project, project=self.__project))
+        for metric_class in self.SONAR_PLUGIN_METRIC_CLASSES:
+            if metric_class.should_be_measured(self.__project):
+                metrics.append(metric_class(subject=self.__project, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
 
@@ -299,7 +304,7 @@ class QualityReport(object):
         """ Return the section for the product. """
         metrics = []
         for metric_class in self.TEST_COVERAGE_METRIC_CLASSES + self.TEST_DESIGN_METRIC_CLASSES + \
-                self.JAVA_METRIC_CLASSES + self.PERFORMANCE_METRIC_CLASSES + self.ADDITIONAL_METRIC_CLASSES:
+                self.JAVA_METRIC_CLASSES + self.PERFORMANCE_METRIC_CLASSES:
             if metric_class.can_be_measured(product, self.__project):
                 metrics.append(metric_class(product, project=self.__project))
         if metric.OWASPDependencies.can_be_measured(product, self.__project):

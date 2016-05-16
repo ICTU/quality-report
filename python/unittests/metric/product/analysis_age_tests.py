@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
+
 from qualitylib import metric, domain, metric_source
 
 
@@ -45,7 +46,7 @@ class SonarAnalysisAgeTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the sonar analysis age metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
         subject = domain.Product(project, 'PR', name='FakeSubject')

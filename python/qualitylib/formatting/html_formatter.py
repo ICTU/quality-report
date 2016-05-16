@@ -58,7 +58,7 @@ class HTMLFormatter(base_formatter.Formatter):
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
         parameters['quality_attribute_filter_menu'] = self.__quality_attribute_filter_menu(report)
-        parameters['dashboard'] = self.__dashboard(report)
+        parameters['dashboard'] = DashboardFormatter.format(report)
         parameters['project_resources'] = self.__project_resources(report)
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['history'] = self.__trend_data(report.get_meta_section())
@@ -230,9 +230,10 @@ class HTMLFormatter(base_formatter.Formatter):
         kwargs['comment'] = self.__format_metric_comment(metric)
         return kwargs
 
-    def postfix(self):  # pylint: disable=arguments-differ
+    @staticmethod
+    def postfix():
         """ Return a HTML formatted version of the report postfix. """
-        return self.__get_html_fragment('postfix')
+        return HTMLFormatter.__get_html_fragment('postfix')
 
     @classmethod
     def __format_metric_text(cls, metric):
@@ -321,44 +322,6 @@ class HTMLFormatter(base_formatter.Formatter):
                                                       clr=color)
 
     @staticmethod
-    def __dashboard(report):
-        """ Return a HTML formatted dashboard. """
-        table_indent = ' ' * 24
-        tr_indent = table_indent + ' ' * 4
-        td_indent = tr_indent + ' ' * 4
-        th_template = td_indent + '<th colspan="{span}" align="center" bgcolor="#2c2c2c">{sec}</th>'
-        td_template = td_indent + '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
-                                        <div class="link_section_{ID}" title="{title}"></div>
-                                        <div id="section_summary_chart_{ID}"></div>
-                                        <div id="section_summary_trunk_chart_{ID}"></div>
-                                    </td>
-'''
-        dashboard_header, dashboard_rows = report.dashboard()
-        dashboard = list()
-        dashboard.append('<table width="100%" border="1">')
-        dashboard.append(tr_indent + '<tr style="color: white; font-weight: bold;">')
-        for section_type, colspan in dashboard_header:
-            th = th_template.format(span=colspan, sec=section_type)
-            dashboard.append(th)
-        dashboard.append(tr_indent + '</tr>')
-        for row in dashboard_rows:
-            dashboard.append(tr_indent + '<tr>')
-            for column in row:
-                try:
-                    section_id = column[0].short_name()
-                except AttributeError:
-                    section_id = column[0].upper()
-                section = report.get_section(section_id)
-                title = (section and section.title()) or '???'
-                colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
-                td = td_template.format(ID=section_id, title=title, bg_color=column[1],
-                                        colspan=colspan, rowspan=rowspan)
-                dashboard.append(td)
-            dashboard.append(tr_indent + '</tr>')
-        dashboard.append(table_indent + '</table>')
-        return '\n'.join(dashboard)
-
-    @staticmethod
     def __project_resources(report):
         """ Return a HTML version of the project resources. """
         result = list()
@@ -385,10 +348,8 @@ class HTMLFormatter(base_formatter.Formatter):
             except ValueError:
                 logging.error('Metric class %s had faulty norm template', metric_class.__name__)
                 raise
-            result.append(
-                    '<tr><td>{name}</td><td>{cls}</td><td>{qattr}</td><td>{norm}</td></tr>'.format(
-                        name=name, cls=class_name, qattr=quality_attribute, norm=norm
-                    ))
+            result.append('<tr><td>{name}</td><td>{cls}</td><td>{qattr}</td><td>{norm}</td></tr>'.format(
+                name=name, cls=class_name, qattr=quality_attribute, norm=norm))
         result.append('</table>')
         return '\n'.join(result)
 
@@ -402,3 +363,60 @@ class HTMLFormatter(base_formatter.Formatter):
         latest = self.__latest_software_version
         current = self.__current_software_version
         return ' Versie {ver} is beschikbaar.'.format(ver=latest) if latest > current else ''
+
+
+class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
+    """ Return a HTML formatted dashboard for the quality report. """
+    @classmethod
+    def format(cls, report):
+        """ Return a HTML formatted dashboard. """
+        table_indent = ' ' * 24
+        tr_indent = table_indent + ' ' * 4
+        td_indent = tr_indent + ' ' * 4
+
+        dashboard = list()
+        dashboard.append(table_indent + '<table width="100%" border="1">')
+        dashboard.extend(cls.__dashboard_headers(report, tr_indent, td_indent))
+        dashboard.extend(cls.__dashboard_rows(report, tr_indent, td_indent))
+        dashboard.append(table_indent + '</table>')
+        return '\n'.join(dashboard)
+
+    @staticmethod
+    def __dashboard_headers(report, tr_indent, td_indent):
+        """ Return the headers of the dashboard. """
+        dashboard_headers = report.dashboard()[0]
+        th_template = td_indent + '<th colspan="{span}" align="center" bgcolor="#2c2c2c">{sec}</th>'
+        rows = list()
+        rows.append(tr_indent + '<tr style="color: white; font-weight: bold;">')
+        for section_type, colspan in dashboard_headers:
+            table_header = th_template.format(span=colspan, sec=section_type)
+            rows.append(table_header)
+        rows.append(tr_indent + '</tr>')
+        return rows
+
+    @staticmethod
+    def __dashboard_rows(report, tr_indent, td_indent):
+        """ Return the rows of the dashboard. """
+        dashboard_rows = report.dashboard()[1]
+        td_template = td_indent + '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
+                                        <div class="link_section_{ID}" title="{title}"></div>
+                                        <div id="section_summary_chart_{ID}"></div>
+                                        <div id="section_summary_trunk_chart_{ID}"></div>
+                                    </td>
+'''
+        rows = list()
+        for row in dashboard_rows:
+            rows.append(tr_indent + '<tr>')
+            for column in row:
+                try:
+                    section_id = column[0].short_name()
+                except AttributeError:
+                    section_id = column[0].upper()
+                section = report.get_section(section_id)
+                title = (section and section.title()) or '???'
+                colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
+                table_data = td_template.format(ID=section_id, title=title, bg_color=column[1],
+                                                colspan=colspan, rowspan=rowspan)
+                rows.append(table_data)
+            rows.append(tr_indent + '</tr>')
+        return rows

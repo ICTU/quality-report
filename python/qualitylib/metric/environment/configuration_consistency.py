@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,19 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
 import datetime
 
 from qualitylib import metric_source
-from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 from qualitylib.domain import LowerIsBetterMetric
+from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 
 
 class JavaVersionConsistency(LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the number of inconsistencies in an environment. '''
+    """ Metric for measuring the number of inconsistencies in an environment. """
 
     name = 'Java versie consistentie'
     norm_template = 'Er is precies een versie van Java in gebruik. Meer dan {low_target} versies is rood. ' \
@@ -50,5 +50,5 @@ class JavaVersionConsistency(LowerIsBetterMetric):
         return {'Ansible configuration report': self.__report_url}
 
     def _date(self):
-        ''' Return the last measurement date. '''
+        """ Return the last measurement date. """
         return self.__report.date(self.__report_url)

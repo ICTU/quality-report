@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,18 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
-
 
 import datetime
 
 from ..quality_attributes import SPIRIT
-from ...domain import Metric
 from ... import metric_source
+from ...domain import Metric
 
 
 class TeamSpirit(Metric):
-    ''' Metric for measuring the spirit of a specific team. The team simply
-        picks a smiley. '''
+    """ Metric for measuring the spirit of a specific team. The team simply picks a smiley. """
 
     name = 'Team stemming'
     norm_template = 'De stemming wordt door het team zelf bepaald door het kiezen van een smiley. ' \
@@ -57,16 +55,16 @@ class TeamSpirit(Metric):
         return min(values), max(values)
 
     def _needs_immediate_action(self):
-        # First check whether the metric needs immediate action because it was
-        # measured too long ago. If not, check whether the spirit is too low.
+        # First check whether the metric needs immediate action because it was measured too long ago.
+        # If not, check whether the spirit is too low.
         if super(TeamSpirit, self)._needs_immediate_action():
             return True
         else:
             return self.value() == self.low_target()
 
     def _is_below_target(self):
-        # First check whether the metric needs action because it was
-        # measured too long ago. If not, check whether the spirit is low.
+        # First check whether the metric needs action because it was measured too long ago.
+        # If not, check whether the spirit is low.
         if super(TeamSpirit, self)._is_below_target():
             return True
         else:

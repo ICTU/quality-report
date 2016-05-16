@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +12,22 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
-
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
 from ..quality_attributes import DEPENDENCY_QUALITY
+from ... import utils, metric_source
 from ...domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
 from ...formatting import HTMLFormatter
-from ... import utils, metric_source
 
 
 class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Return the number of cyclic dependencies between packages. '''
+    """ Return the number of cyclic dependencies between packages. """
 
     name = 'Cyclische afhankelijkheden'
-    norm_template = 'Maximaal {target} cyclische afhankelijkheden tussen ' \
-        'packages. Meer dan 10 is rood.'
+    norm_template = 'Maximaal {target} cyclische afhankelijkheden tussen packages. Meer dan 10 is rood.'
     template = '{name} heeft {value} cyclische afhankelijkheden.'
     target_value = 0
     low_target_value = 10
@@ -41,24 +39,20 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
 
 class SnapshotDependencies(LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the number of the dependencies on snapshot versions
-        of other products. '''
+    """ Metric for measuring the number of the dependencies on snapshot versions of other products. """
     name = 'Snapshot afhankelijkheden'
-    norm_template = 'Maximaal {target} afhankelijkheden op snapshot ' \
-        'versies van andere producten. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} afhankelijkheden op snapshot ' \
-        'versies van andere producten.'
+    norm_template = 'Maximaal {target} afhankelijkheden op snapshot versies van andere producten. ' \
+        'Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} afhankelijkheden op snapshot versies van andere producten.'
     target_value = 0
     low_target_value = 2
     quality_attribute = DEPENDENCY_QUALITY
-    metric_source_classes = (metric_source.VersionControlSystem,
-                             metric_source.Pom)
+    metric_source_classes = (metric_source.VersionControlSystem, metric_source.Pom)
 
     @classmethod
     def can_be_measured(cls, product, project):
-        return super(SnapshotDependencies, cls).can_be_measured(product,
-                                                              project) and \
-            product.product_version()  # Only report for released versions
+        # Only report for released versions:
+        return super(SnapshotDependencies, cls).can_be_measured(product, project) and product.product_version()
 
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')
@@ -68,7 +62,6 @@ class SnapshotDependencies(LowerIsBetterMetric):
         return len(self.__snapshot_dependencies())
 
     def url(self):
-        # pylint: disable=star-args
         urls = dict()
         for dependency in self.__snapshot_dependencies():
             product = self.__report.get_product(*dependency)
@@ -77,27 +70,24 @@ class SnapshotDependencies(LowerIsBetterMetric):
         return urls
 
     def __snapshot_dependencies(self):
-        ''' Return a list of snapshot dependencies of this product. '''
-        return [dependency for dependency in self._subject.dependencies() if \
-                not dependency[1]]
+        """ Return a list of snapshot dependencies of this product. """
+        return [dependency for dependency in self._subject.dependencies() if not dependency[1]]
 
 
 class DependencyQuality(LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the quality of the dependencies of the project. '''
+    """ Metric for measuring the quality of the dependencies of the project. """
 
     name = 'Kwaliteit van afhankelijkheden'
-    norm_template = 'Maximaal {target}% van de afhankelijkheden tussen ' \
-        'componenten is naar componenten die "rode" metrieken hebben. ' \
-        'Meer dan {low_target}% is rood.'
+    norm_template = 'Maximaal {target}% van de afhankelijkheden tussen componenten is naar componenten die ' \
+        '"rode" metrieken hebben. Meer dan {low_target}% is rood.'
     template = '{value:.0f}% van de afhankelijkheden ({nr_not_ok_deps} van ' \
         'de {nr_deps}) is naar componenten die "rode" metrieken hebben.'
     url_label_text = 'Componenten die "rode" metrieken hebben'
     target_value = 10
     low_target_value = 20
     quality_attribute = DEPENDENCY_QUALITY
-    metric_source_classes = (metric_source.Pom,
-                             metric_source.VersionControlSystem)
+    metric_source_classes = (metric_source.Pom, metric_source.VersionControlSystem)
 
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')
@@ -111,8 +101,7 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
 
     @utils.memoized
     def __dependency_colors(self):
-        ''' Return the colors of all dependencies in the project. '''
-        # pylint: disable=star-args
+        """ Return the colors of all dependencies in the project. """
         colors = []
         for product in self.__report.products():
             for dependency in product.dependencies(recursive=False):
@@ -122,7 +111,6 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
         return colors
 
     def url(self):
-        # pylint: disable=star-args
         urls = dict()
         for product in self.__report.products():
             for dependency in product.dependencies(recursive=False):
@@ -141,12 +129,10 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
 
 class OWASPDependencies(LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    ''' Metric for measuring the number of external dependencies of the project
-        that have OWASP issues. '''
+    """ Metric for measuring the number of external dependencies of the project that have OWASP issues. """
 
     name = 'OWASP dependency kwaliteit'
-    norm_template = 'Dependencies van het product hebben geen normal of high ' \
-        'OWASP issues.'
+    norm_template = 'Dependencies van het product hebben geen normal of high OWASP issues.'
     template = 'Dependencies van {name} hebben {high} high priority, ' \
         '{normal} normal priority en {low} low priority warnings.'
     target_value = 0
@@ -156,8 +142,7 @@ class OWASPDependencies(LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(OWASPDependencies, self).__init__(*args, **kwargs)
-        self.__jenkins_report = self._project.metric_source(
-            metric_source.JenkinsOWASPDependencyReport)
+        self.__jenkins_report = self._project.metric_source(metric_source.JenkinsOWASPDependencyReport)
 
     def value(self):
         return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) + \
@@ -172,18 +157,17 @@ class OWASPDependencies(LowerIsBetterMetric):
         return parameters
 
     def __jenkins_ids(self):
-        ''' Return the Jenkins report ids (job names). '''
+        """ Return the Jenkins report ids (job names). """
         report = self._subject.metric_source_id(self.__jenkins_report)
-        return [report] if type(report) == type('') else report
+        return report if isinstance(report, list) else [report]
 
     def url(self):
         jenkins_ids = self.__jenkins_ids()
         if len(jenkins_ids) == 1:
-            return {'Jenkins OWASP dependency report':
-                    self.__jenkins_report.report_url(jenkins_ids[0])}
+            return {'Jenkins OWASP dependency report': self.__jenkins_report.report_url(jenkins_ids[0])}
         else:
             urls = {}
             for jenkins_id in jenkins_ids:
-                urls['Jenkins OWASP dependency report {jid}'.format(jid=jenkins_id)] = \
-                    self.__jenkins_report.report_url(jenkins_id)
+                label = 'Jenkins OWASP dependency report {jid}'.format(jid=jenkins_id)
+                urls[label] = self.__jenkins_report.report_url(jenkins_id)
             return urls

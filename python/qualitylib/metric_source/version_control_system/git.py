@@ -15,13 +15,11 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
 import datetime
-import os
 import logging
+import os
 
-from ..abstract.version_control_system import \
-    VersionControlSystem
+from ..abstract.version_control_system import VersionControlSystem
 from ... import utils
 
 
@@ -51,11 +49,11 @@ class Git(VersionControlSystem):
         else:
             return datetime.datetime.min
 
-    def branches(self, path):  # pylint: disable=unused-arguments
+    def branches(self, path):  # pylint: disable=unused-argument
         """ Return a list of branch names for the master branch. """
         return self.__get_branches()
 
-    def tags(self, path):  # pylint: disable=unused-arguments
+    def tags(self, path):  # pylint: disable=unused-argument
         """ Return a list of tags for the repo. """
         def valid_tag_name(name):
             """ Return whether name is a valid tag name. """
@@ -66,8 +64,8 @@ class Git(VersionControlSystem):
 
     @utils.memoized
     def unmerged_branches(self, path, branches_to_ignore=None):
-        """ Return a dictionary of branch names and number of unmerged
-            commits for each branch that has any unmerged commits. """
+        """ Return a dictionary of branch names and number of unmerged commits for each branch that has
+            any unmerged commits. """
         branches_to_ignore = branches_to_ignore or []
         unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True)
                              if branch not in branches_to_ignore]
@@ -89,8 +87,7 @@ class Git(VersionControlSystem):
         if unmerged_only:
             command.append('--no-merged')
         branches = self._run_shell_command(command, folder=self.__repo_folder)
-        return [branch.strip() for branch in branches.strip().split('\n')
-                if valid_branch_name(branch.strip())]
+        return [branch.strip() for branch in branches.strip().split('\n') if valid_branch_name(branch.strip())]
 
     def __nr_unmerged_commits(self, branch_name):
         """ Return whether the branch has unmerged commits. """

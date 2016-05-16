@@ -22,14 +22,14 @@ from qualitylib.metric_source import Git
 
 class GitUnderTest(Git):
     """ Override the Git class to prevent it from running shell commands. """
-    def _run_shell_command(self, *args, **kwargs):
+    def _run_shell_command(self, command, *args, **kwargs):
+        self.last_command = command
         return ''
 
 
-class GitTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
+class GitTests(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Unit tests for the Git class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__git = GitUnderTest(url='http://git/')
 
     def test_last_changed_date(self):
@@ -40,7 +40,27 @@ class GitTests(unittest.TestCase):
         """ Test that there are no tags by default. """
         self.failIf(self.__git.tags('path'))
 
+    def test_no_tags_folder_for_version(self):
+        """ Test that there is no tags folder by default. """
+        self.assertEqual('', self.__git.tags_folder_for_version('http://git/master', '1.1'))
+
     def test_branches(self):
         """ Test that there are no branches by default. """
         self.failIf(self.__git.branches('path'))
 
+    def test_unmerged_branches(self):
+        """ Test that there are no unmerged branches by default. """
+        self.assertEqual({}, self.__git.unmerged_branches('http://git/'))
+
+    def test_normalize_path(self):
+        """ Test path that needs no changes. """
+        self.assertEqual('http://git/master/', self.__git.normalize_path('http://git/master/'))
+
+    def test_normalize_path_does_not_add_trailing_slash(self):
+        """ Test that the normalized path has a trailing slash. """
+        self.assertEqual('http://git/master', self.__git.normalize_path('http://git/master'))
+
+    def test_checkout(self):
+        """ Test the check out command. """
+        self.__git.check_out('http://git/master/', 'folder')
+        self.assertEqual(['git', 'clone', 'http://git/'], self.__git.last_command[:3])

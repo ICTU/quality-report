@@ -15,14 +15,12 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
+import datetime
 import logging
 import urllib2
-import datetime
 
-
-from .maven import Maven
 from . import url_opener, sonar_runner
+from .maven import Maven
 from .. import utils, domain
 
 
@@ -125,7 +123,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def duplicated_lines(self, product):
         """ Return the number of duplicated lines for the product. """
         return int(self.__metric(product, 'duplicated_lines'))
- 
+
     def line_coverage(self, product):
         """ Return the line coverage of the unit tests for the product. """
         return self.__metric(product, 'line_coverage')
@@ -143,8 +141,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return int(self.__metric(product, 'test_failures') + self.__metric(product, 'test_errors'))
 
     def package_cycles(self, product):
-        """ Return the number of cycles in the package dependencies for the
-            product. """
+        """ Return the number of cycles in the package dependencies for the product. """
         return int(self.__metric(product, 'package_cycles'))
 
     def methods(self, product):
@@ -158,8 +155,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Violations
 
     def complex_methods(self, product):
-        """ Return the number of methods that violate the Cyclomatic complexity
-            threshold. """
+        """ Return the number of methods that violate the Cyclomatic complexity threshold. """
         violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
                            'pmd:CyclomaticComplexity',
                            'squid:MethodCyclomaticComplexity',
@@ -173,8 +169,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return 0
 
     def long_methods(self, product):
-        """ Return the number of methods in the product that have to many
-            non-comment statements. """
+        """ Return the number of methods in the product that have to many non-comment statements. """
         violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
                            'AvoidLongMethodsRule',
                            'Pylint:R0915')
@@ -185,8 +180,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return 0
 
     def many_parameters_methods(self, product):
-        """ Return the number of methods in the product that have too many
-            parameters. """
+        """ Return the number of methods in the product that have too many parameters. """
         violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck',
                            'pmd:ExcessiveParameterList',
                            'csharpsquid:S107',
@@ -200,8 +194,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return 0
 
     def commented_loc(self, product):
-        """ Return the number of commented out lines in the source code of
-            the product. """
+        """ Return the number of commented out lines in the source code of the product. """
         violation_names = ('csharpsquid:CommentedCode', 'squid:CommentedOutCodeLine',
                            'javascript:CommentedCode', 'python:S125')
         for violation_name in violation_names:
@@ -287,8 +280,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return default
         violation_name = violation_name.lower()
         for violation in violations:
-            if violation_name in violation['rule_name'].lower() or \
-               violation_name in violation['rule_key'].lower():
+            if violation_name in violation['rule_name'].lower() or violation_name in violation['rule_key'].lower():
                 return int(violation['val'])
         return default
 

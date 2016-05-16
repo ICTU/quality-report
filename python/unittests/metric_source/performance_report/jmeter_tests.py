@@ -114,11 +114,14 @@ HTML = """
 
 
 class JMeterUnderTest(JMeter):
-    """ Override the JMeter performance report to return the url as report contents."""
+    """ Override the JMeter performance report to return the url as report contents. """
+    # pylint: disable=unused-argument,no-self-use
+
     def url_open(self, url):
+        """ Return the static HTML. """
         return HTML
 
-    def urls(self, product, version):  # pylint: disable=unused-argument
+    def urls(self, product, version):
         """ Return a list of urls for the performance report. """
         return ['http://report/1'] if product != 'product' else []
 
@@ -127,7 +130,7 @@ class JMeterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the JMeter performance report metric source. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__performance_report = JMeterUnderTest('http://report/')
 
     def test_url(self):
@@ -158,3 +161,11 @@ class JMeterTest(unittest.TestCase):
     def test_date_product_not_found(self):
         """ Test the date when the product/version is not in the report. """
         self.assertEqual(datetime.datetime.min, self.__performance_report.date('product', 'version'))
+
+    def test_urls(self):
+        """ Test the urls. """
+        self.assertEqual(['http://report/1'], self.__performance_report.urls(('01', 'lrk-pp'), '12.5.5'))
+
+    def test_exists(self):
+        """ Test that the report exists. """
+        self.failUnless(self.__performance_report.exists(('01', 'lrk-pp'), '12.5.5'))

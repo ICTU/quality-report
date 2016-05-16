@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,16 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 
 from __future__ import absolute_import
 
-
-from ... import domain
 from .. import url_opener
+from ... import domain
 
 
 class TestReport(domain.MetricSource):
-    # pylint: disable=abstract-class-not-used
-    ''' Abstract class representing a test report. '''
+    """ Abstract class representing a test report. """
     metric_source_name = 'Test report'
     needs_metric_source_id = True
 
@@ -32,25 +30,25 @@ class TestReport(domain.MetricSource):
         super(TestReport, self).__init__()
 
     def passed_tests(self, *report_urls):
-        ''' Return the number of passed tests. '''
+        """ Return the number of passed tests. """
         return sum([self._passed_tests(report_url) for report_url in report_urls])
 
     def failed_tests(self, *report_urls):
-        ''' Return the number of failed tests. '''
+        """ Return the number of failed tests. """
         return sum([self._failed_tests(report_url) for report_url in report_urls])
 
     def skipped_tests(self, *report_urls):
-        ''' Return the number of skipped tests. '''
+        """ Return the number of skipped tests. """
         return sum([self._skipped_tests(report_url) for report_url in report_urls])
 
     def _passed_tests(self, report_url):
-        ''' Return the number of passed tests as reported by the test report. '''
+        """ Return the number of passed tests as reported by the test report. """
         raise NotImplementedError  # pragma: nocover
 
     def _failed_tests(self, report_url):
-        ''' Return the number of failed tests as reported by the test report. '''
+        """ Return the number of failed tests as reported by the test report. """
         raise NotImplementedError  # pragma: nocover
 
     def _skipped_tests(self, report_url):
-        ''' Return the number of skipped tests as reported by the test report. '''
+        """ Return the number of skipped tests as reported by the test report. """
         raise NotImplementedError  # pragma: nocover

@@ -921,3 +921,29 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(
                 metric_sources={metric_source.Sonar: self.__sonar},
                 requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY]))
+
+    def test_java_sonar_plugins(self):
+        """ Test that the Java related Sonar plugin version metrics are added if the project contains Java Sonar plugins
+            as requirement. """
+        for metric_class in (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle,
+                             metric.SonarPluginVersionPMD, metric.SonarPluginVersionFindBugs):
+            self.__assert_metric(
+                metric_class,
+                project_kwargs=dict(requirements=[requirement.JAVA_SONAR_PLUGINS]))
+
+    def test_dotnet_sonar_plugins(self):
+        """ Test that the DotNet related Sonar plugin version metrics are added if the project contains DotNet Sonar
+            plugins as requirement. """
+        for metric_class in (metric.SonarPluginVersionCSharp, metric.SonarPluginVersionReSharper,
+                             metric.SonarPluginVersionStyleCop):
+            self.__assert_metric(
+                metric_class,
+                project_kwargs=dict(requirements=[requirement.DOT_NET_SONAR_PLUGINS]))
+
+    def test_web_sonar_plugins(self):
+        """ Test that the Web related Sonar plugin version metrics are added if the project contains Web Sonar
+            plugins as requirement. """
+        for metric_class in (metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS):
+            self.__assert_metric(
+                metric_class,
+                project_kwargs=dict(requirements=[requirement.WEB_SONAR_PLUGINS]))

@@ -15,6 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import logging
+
 from .. import metric_source, metric_info
 
 
@@ -29,17 +31,16 @@ class SonarMetricMixin(object):
 
     @classmethod
     def can_be_measured(cls, product, project):
-        """ Return whether the metric can be measured. The metric can be
-            measured when the project has Sonar and the product has a Sonar
-            id. """
+        """ Return whether the metric can be measured. The metric can be measured when the project has Sonar
+            and the product has a Sonar id. """
         sonar = project.metric_source(metric_source.Sonar)
-        return super(SonarMetricMixin, cls).can_be_measured(product, project) \
-            and cls.product_has_sonar_id(sonar, product)
+        return super(SonarMetricMixin, cls).can_be_measured(product, project) and \
+            cls.product_has_sonar_id(sonar, product)
 
     @staticmethod
     def product_has_sonar_id(sonar, product):
-        """ Return whether the product has a Sonar id. Can be overridden to
-            for example check a subcomponent for a Sonar id. """
+        """ Return whether the product has a Sonar id. Can be overridden to for example check a subcomponent
+            for a Sonar id. """
         product_sonar_info = metric_info.SonarProductInfo(sonar, product)
         return product_sonar_info.sonar_id()
 
@@ -81,9 +82,8 @@ class JenkinsMetricMixin(object):
         self._jenkins = self._project.metric_source(metric_source.Jenkins)
 
 
-class BirtMetricMixin(object):
+class BirtMetricMixin(object):  # pylint: disable=too-few-public-methods
     """ Mixin class for metrics that use Birt. """
-    # pylint: disable=too-few-public-methods
 
     metric_source_classes = (metric_source.Birt,)
 
@@ -95,6 +95,9 @@ class BirtMetricMixin(object):
                 if self._subject.metric_source_id(birt_instance):
                     self._birt = birt_instance
                     break
+            else:
+                logging.warn("Couldn't find Birt instance for %s.", self._subject)
+                self._birt = None
         else:
             self._birt = birt
 
@@ -117,9 +120,8 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
         return super(BirtTestDesignMetricMixin, cls).can_be_measured(product, project) and has_test_design
 
     def url(self):
-        """ Return the url for the What's Missing report instead of the
-            Birt test design report since the What's Missing report allows
-            users to click to the user stories and test cases in Jira. """
+        """ Return the url for the What's Missing report instead of the Birt test design report since the
+            What's Missing report allows users to click to the user stories and test cases in Jira. """
         return dict(Birt=self._birt.whats_missing_url(self._birt_id()))
 
 
@@ -145,9 +147,8 @@ class JiraMetricMixin(object):
         self._jira = self._project.metric_source(metric_source.Jira)
 
 
-class VersionControlSystemMetricMixin(object):
+class VersionControlSystemMetricMixin(object):  # pylint: disable=too-few-public-methods
     """ Mixin class for metrics that use a version control system. """
-    # pylint: disable=too-few-public-methods
 
     metric_source_classes = (metric_source.VersionControlSystem,)
 
@@ -158,9 +159,8 @@ class VersionControlSystemMetricMixin(object):
 
     @classmethod
     def can_be_measured(cls, product, project):
-        """ Return whether the metric can be measured. The metric can be
-            measured when the project has a version control system and the product has a
-            version control system path. """
+        """ Return whether the metric can be measured. The metric can be measured when the project has a
+            version control system and the product has a version control system path. """
         vcs = project.metric_source(metric_source.VersionControlSystem)
         vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs, product)
         return super(VersionControlSystemMetricMixin, cls).can_be_measured(product, project) and vcs \

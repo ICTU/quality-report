@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 
 from __future__ import absolute_import
 
@@ -20,14 +20,14 @@ import datetime
 import logging
 import re
 
-from ..abstract import performance_report
 from .. import beautifulsoup
+from ..abstract import performance_report
 from ... import utils
 
 
 class JMeter(performance_report.PerformanceReport,
              beautifulsoup.BeautifulSoupOpener):
-    ''' Class representing the JMeter performance report. '''
+    """ Class representing the JMeter performance report. """
 
     metric_source_name = 'Jmeter performance report'
     needs_metric_source_id = True
@@ -37,29 +37,25 @@ class JMeter(performance_report.PerformanceReport,
         super(JMeter, self).__init__(url=report_folder_url)
 
     def queries(self, product, version):
-        ''' Return the number of performance queries. '''
+        """ Return the number of performance queries. """
         return len(self.__query_rows(product, version))
 
     def queries_violating_max_responsetime(self, product, version):
-        ''' Return the number of performance queries that violate the maximum
-            response time. '''
+        """ Return the number of performance queries that violate the maximum response time. """
         return self.__queries_violating_response_time(product, version, 'red')
 
     def queries_violating_wished_responsetime(self, product, version):
-        ''' Return the number of performance queries that violate the maximum
-            response time we'd like to meet. '''
-        return self.__queries_violating_response_time(product, version,
-                                                      'yellow')
+        """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
+        return self.__queries_violating_response_time(product, version, 'yellow')
 
     def __queries_violating_response_time(self, product, version, color):
-        ''' Return the number of queries that are violating either the maximum
-            or the desired response time. '''
+        """ Return the number of queries that are violating either the maximum or the desired response time. """
         return len([row for row in self.__query_rows(product, version)
                     if row('td')[self.COLUMN_90_PERC]['class'] == color])
 
     @utils.memoized
     def __query_rows(self, product, version):
-        ''' Return the queries for the specified product and version. '''
+        """ Return the queries for the specified product and version. """
         rows = []
         product_query_re = re.compile(product[0])
         urls = self.urls(product, version)
@@ -79,7 +75,7 @@ class JMeter(performance_report.PerformanceReport,
 
     @utils.memoized
     def date(self, product, version):
-        ''' Return the date when performance was last measured. '''
+        """ Return the date when performance was last measured. """
         urls = self.urls(product, version)
         if urls:
             url = list(urls)[0]  # Any url is fine
@@ -87,32 +83,28 @@ class JMeter(performance_report.PerformanceReport,
             try:
                 date_text = soup('h2')[0].string.split(' End: ')[1]
             except IndexError:
-                logging.warning("Can't get date from performance report %s", 
-                                url)
+                logging.warning("Can't get date from performance report %s", url)
                 return datetime.datetime.today()
             return self.__parse_date(date_text)
         else:
             return datetime.datetime.min
 
     def exists(self, product, version):
-        ''' Return whether a performance report exists for the specified
-            product and version. '''
+        """ Return whether a performance report exists for the specified product and version. """
         return bool(self.urls(product, version))
 
     @utils.memoized
     def urls(self, product, version):
-        ''' Return the url(s) of the performance report for the specified
-            product and version. '''
+        """ Return the url(s) of the performance report for the specified product and version. """
         urls = {0: set()}  # {test_run_number: set(of urls)}
         for filename, url in self.__report_urls():
             if self.__report_covers_product_and_version(url, product, version):
-                urls.setdefault(self.__test_run_number(filename), 
-                                set()).add(url)
+                urls.setdefault(self.__test_run_number(filename), set()).add(url)
         return urls[max(urls.keys())]  # Return the latest test run
 
     @utils.memoized
     def __report_urls(self):
-        ''' Return the url(s) for the performance reports in the report folder. '''
+        """ Return the url(s) for the performance reports in the report folder. """
         urls = []
         base_url = self.url()
         soup = self.soup(base_url)
@@ -124,8 +116,7 @@ class JMeter(performance_report.PerformanceReport,
 
     @utils.memoized
     def __report_covers_product_and_version(self, url, product, version):
-        ''' Return whether the performance report covers the specified product
-            and version. '''
+        """ Return whether the performance report covers the specified product and version. """
         product_query_id, product_long_id = product
         soup = self.soup(url)
         if not self.__report_contains_queries(soup, product_query_id):
@@ -137,15 +128,13 @@ class JMeter(performance_report.PerformanceReport,
                 except ValueError:
                     return False
                 covered_version = covered_version.strip('-')
-                if covered_product == product_long_id and \
-                   version in (covered_version, ''):
+                if covered_product == product_long_id and version in (covered_version, ''):
                     return True
         return False
 
     @staticmethod
     def __report_contains_queries(soup, product_query_id):
-        ''' Return whether the performance report contains queries with the
-            specified query id. '''
+        """ Return whether the performance report contains queries with the specified query id. """
         product_query_re = re.compile(product_query_id)
         query_names = soup('td', attrs={'class': 'name'})
         for query_name in query_names:
@@ -155,10 +144,10 @@ class JMeter(performance_report.PerformanceReport,
 
     @staticmethod
     def __test_run_number(filename):
-        ''' Return the test run number as contained in the filename. '''
+        """ Return the test run number as contained in the filename. """
         return int(re.search('[0-9]+', filename).group(0))
 
     @staticmethod
     def __parse_date(date_text):
-        ''' Return a parsed version of the date text. '''
+        """ Return a parsed version of the date text. """
         return utils.parse_uk_date_time_year_last(date_text)

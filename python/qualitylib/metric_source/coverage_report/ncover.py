@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,18 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
 
-import datetime, re
+import datetime
+import re
 
 from ..abstract import coverage_report
 from ... import utils
 
 
 class NCover(coverage_report.CoverageReport):
-    ''' Class representing a NCover coverage report. '''
+    """ Class representing a NCover coverage report. """
     metric_source_name = 'NCover coverage report'
 
     def _parse_statement_coverage_percentage(self, soup):
@@ -33,7 +34,7 @@ class NCover(coverage_report.CoverageReport):
 
     @staticmethod
     def __parse_coverage_percentage(soup, coverage_type):
-        ''' Return the specified coverage percentage from the NCover soup. '''
+        """ Return the specified coverage percentage from the NCover soup. """
         scripts = soup('script', {'type': 'text/javascript'})
         for script in scripts:
             if 'ncover.execution.stats = ' in script.string:

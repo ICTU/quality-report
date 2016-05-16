@@ -15,24 +15,18 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
-from ...domain import LowerPercentageIsBetterMetric
-from ..metric_source_mixin import \
-    SonarDashboardMetricMixin, \
-    SonarViolationsMetricMixin
+from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin
 from ..quality_attributes import CODE_QUALITY
+from ...domain import LowerPercentageIsBetterMetric
 
 
 class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    """ Metric for measuring the percentage of lines of code that are commented
-        out. """
+    """ Metric for measuring the percentage of lines of code that are commented out. """
 
     name = 'Uitgecommentarieerde broncode'
-    norm_template = 'Maximaal {target}% van de regels code is ' \
-        'uitgecommentarieerd. Meer dan {low_target}% is rood.'
-    template = '{name} heeft {value}% ({numerator} van ' \
-        '{denominator}) uitgecommentarieerde regels code.'
+    norm_template = 'Maximaal {target}% van de regels code is uitgecommentarieerd. Meer dan {low_target}% is rood.'
+    template = '{name} heeft {value}% ({numerator} van {denominator}) uitgecommentarieerde regels code.'
     target_value = 1
     low_target_value = 5
     quality_attribute = CODE_QUALITY
@@ -44,16 +38,12 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
         return self._sonar.ncloc(self._sonar_id())
 
 
-class MethodQualityMetric(SonarViolationsMetricMixin, 
-                          LowerPercentageIsBetterMetric):
+class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    """ Base class for metrics that measure what percentage of methods doesn't
-        violate a certain criterium. """
+    """ Base class for metrics that measure what percentage of methods doesn't violate a certain criterium. """
 
-    norm_template = 'Maximaal {target}% van de methoden heeft ' \
-        '{attribute}. Meer dan {low_target}% is rood.'
-    template = '{value:.0f}% van de methoden ({numerator} van ' \
-        '{denominator}) van {name} heeft {attribute}.'
+    norm_template = 'Maximaal {target}% van de methoden heeft {attribute}. Meer dan {low_target}% is rood.'
+    template = '{value:.0f}% van de methoden ({numerator} van {denominator}) van {name} heeft {attribute}.'
     attribute = 'Subclass responsibility'
     target_value = 0
     low_target_value = 5
@@ -80,8 +70,7 @@ class MethodQualityMetric(SonarViolationsMetricMixin,
 
 class CyclomaticComplexity(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    """ Return the percentage of method whose cyclomatic complexity is too
-        high. """
+    """ Return the percentage of method whose cyclomatic complexity is too high. """
 
     name = 'Cyclomatische complexiteit'
     attribute = 'een cyclomatische complexiteit van 10 of hoger'
@@ -95,8 +84,7 @@ class LongMethods(MethodQualityMetric):
     """ Metric for measuring the percentage of methods that is too long. """
 
     name = 'Lange methoden'
-    attribute = 'een lengte van meer dan 20 NCSS ' \
-                '(Non-Comment Source Statements)'
+    attribute = 'een lengte van meer dan 20 NCSS (Non-Comment Source Statements)'
 
     def _numerator(self):
         return self._sonar.long_methods(self._sonar_id())
@@ -104,8 +92,7 @@ class LongMethods(MethodQualityMetric):
 
 class ManyParameters(MethodQualityMetric):
     # pylint: disable=too-many-public-methods, too-many-ancestors
-    """ Metric for measuring the percentage of methods that have too many
-        parameters. """
+    """ Metric for measuring the percentage of methods that have too many parameters. """
 
     name = 'Methoden met te veel parameters'
     attribute = 'meer dan 5 parameters'

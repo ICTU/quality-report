@@ -21,7 +21,7 @@ import unittest
 from qualitylib.metric_source import Sonar
 
 
-class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
+class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     """ Override the url open method to be able to return test data. """
 
     metrics_json = u"""
@@ -223,6 +223,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-many-public-methods
 """
 
     def url_open(self, url):
+        """ Return the static contents. """
         if 'metrics=true' in url:
             json = self.metrics_json
         elif 'FALSE-POSITIVE' in url:
@@ -236,7 +237,7 @@ class SonarTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the Sonar class. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = SonarUnderTest('http://sonar/')
         self.__no_violations_json = u"""
         [

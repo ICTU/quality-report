@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,18 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 from __future__ import absolute_import
-
 
 from ..base import DomainObject
 
 
 class Requirement(DomainObject):
-    ''' Domain object representing a project requirement. '''
+    """ Domain object representing a project requirement. """
     def __init__(self, *args, **kwargs):
         self.__metric_classes = kwargs.pop('metric_classes', set())
         super(Requirement, self).__init__(*args, **kwargs)
 
     def metric_classes(self):
-        ''' Return the set of metrics that have to be measured to satisfy this
-            requirement. '''
+        """ Return the set of metrics that have to be measured to satisfy this requirement. """
         return self.__metric_classes

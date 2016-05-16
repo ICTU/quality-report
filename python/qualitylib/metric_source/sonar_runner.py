@@ -22,7 +22,7 @@ import os
 from .. import utils, metric_info
 
 
-class SonarRunner(object):
+class SonarRunner(object):  # pylint: disable=too-few-public-methods
     """ Class for creating and removing Sonar analyses. """
 
     def __init__(self, sonar, maven, version_control_system):
@@ -107,11 +107,7 @@ class SonarRunner(object):
         self.__check_out(product, folder)
         os.putenv('MAVEN_OPTS', '-Xmx2048m -XX:MaxPermSize=512m')
         maven_command = '{maven} --fail-never clean install {goal} {sopt} {mopt}'.format(
-                             maven=self.__maven.binary(),
-                             goal=sonar_goal,
-                             sopt=sonar_options_string,
-                             mopt=maven_options_string,
-                         )
+            maven=self.__maven.binary(), goal=sonar_goal, sopt=sonar_options_string, mopt=maven_options_string)
         logging.info(maven_command)
         original_working_dir = os.getcwd()
         try:
@@ -135,5 +131,5 @@ class SonarRunner(object):
     def __check_out(self, product, folder):
         """ Check out the product in the folder. """
         vcs_product_info = metric_info.VersionControlSystemProductInfo(
-            [self.__vcs] if type(self.__vcs) != type([]) else self.__vcs, product)
+            self.__vcs if isinstance(self.__vcs, list) else [self.__vcs], product)
         vcs_product_info.vcs().check_out(vcs_product_info.vcs_path(), folder)
