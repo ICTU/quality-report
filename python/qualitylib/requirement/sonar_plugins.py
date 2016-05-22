@@ -20,16 +20,17 @@ from ..domain import Requirement
 from .. import metric
 
 
-JAVA_SONAR_PLUGINS = Requirement(
-    name='SonarQube Java plugins',
+JAVA = Requirement(
+    name='Java',
     metric_classes={metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
-                    metric.SonarPluginVersionFindBugs})
+                    metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava})
 
-DOT_NET_SONAR_PLUGINS = Requirement(
-    name='SonarQube DotNet plugins',
+C_SHARP = Requirement(
+    name='C#',
     metric_classes={metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
-                    metric.SonarPluginVersionReSharper})
+                    metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp})
 
-WEB_SONAR_PLUGINS = Requirement(
-    name='SonarQube Web plugins',
-    metric_classes={metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS})
+WEB_JS = Requirement(
+    name='Web and JavaScript',
+    metric_classes={metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS,
+                    metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS})

@@ -156,6 +156,9 @@ class QualityReport(object):
                                    metric.SonarPluginVersionCSharp, metric.SonarPluginVersionJS,
                                    metric.SonarPluginVersionReSharper, metric.SonarPluginVersionStyleCop,
                                    metric.SonarPluginVersionWeb)
+    SONAR_QUALITY_PROFILE_METRIC_CLASSES = (metric.SonarQualityProfileVersionJava,
+                                            metric.SonarQualityProfileVersionCSharp,
+                                            metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS)
     MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge,
                                  metric.RiskLog)
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
@@ -173,7 +176,8 @@ class QualityReport(object):
         return cls.TEST_COVERAGE_METRIC_CLASSES + cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.PROCESS_SECTION_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + cls.DEPENDENCY_METRIC_CLASSES + \
-            cls.SONAR_PLUGIN_METRIC_CLASSES + (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
+            cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
+            (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
 
     def __init__(self, project):
         self.__project = project
@@ -282,7 +286,7 @@ class QualityReport(object):
         for metric_class in self.ENVIRONMENT_METRIC_CLASSES:
             if metric_class.can_be_measured(self.__project, self.__project):
                 metrics.append(metric_class(self.__project, project=self.__project))
-        for metric_class in self.SONAR_PLUGIN_METRIC_CLASSES:
+        for metric_class in self.SONAR_PLUGIN_METRIC_CLASSES + self.SONAR_QUALITY_PROFILE_METRIC_CLASSES:
             if metric_class.should_be_measured(self.__project):
                 metrics.append(metric_class(subject=self.__project, project=self.__project))
         self.__metrics.extend(metrics)

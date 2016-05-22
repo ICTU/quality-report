@@ -24,32 +24,7 @@ from qualitylib.metric_source import Sonar
 class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     """ Override the url open method to be able to return test data. """
 
-    metrics_json = u"""
-[
-    {"version": "4.2",
-     "lang": "java",
-     "key": "product",
-     "msr":
-         [
-            {"val": 100, "key": "critical_violations"},
-            {"val": 100, "key": "blocker_violations"},
-            {"val": 100, "key": "major_violations"},
-            {"val": 100, "key": "branch_coverage"},
-            {"val": 100, "key": "commented_loc"},
-            {"val": 100, "key": "duplicated_lines"},
-            {"val": 100, "key": "test_failures"},
-            {"val": 100, "key": "test_errors"},
-            {"val": 100, "key": "line_coverage"},
-            {"val": 100, "key": "lines"},
-            {"val": 100, "key": "ncloc"},
-            {"val": 100, "key": "functions"},
-            {"val": 100, "key": "tests"},
-            {"val": 100, "key": "package_cycles"}
-        ]
-    }
-]"""
-
-    violations_json = u"""
+    json = violations_json = u"""
 [
     {"version": "4.2",
      "lang": "java",
@@ -68,6 +43,41 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
         ]
     }
 ]"""
+
+    no_violations_json = u"""
+[
+    {"version": "4.2",
+     "lang": "java",
+     "key": "product",
+     "msr":
+         []
+    }
+]"""
+
+    metrics_json = u"""
+    [
+        {"version": "4.2",
+         "lang": "java",
+         "key": "product",
+         "msr":
+             [
+                {"val": 100, "key": "critical_violations"},
+                {"val": 100, "key": "blocker_violations"},
+                {"val": 100, "key": "major_violations"},
+                {"val": 100, "key": "branch_coverage"},
+                {"val": 100, "key": "commented_loc"},
+                {"val": 100, "key": "duplicated_lines"},
+                {"val": 100, "key": "test_failures"},
+                {"val": 100, "key": "test_errors"},
+                {"val": 100, "key": "line_coverage"},
+                {"val": 100, "key": "lines"},
+                {"val": 100, "key": "ncloc"},
+                {"val": 100, "key": "functions"},
+                {"val": 100, "key": "tests"},
+                {"val": 100, "key": "package_cycles"}
+            ]
+        }
+    ]"""
 
     false_positives_json = u"""
 {
@@ -229,25 +239,15 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
         elif 'FALSE-POSITIVE' in url:
             json = self.false_positives_json
         else:
-            json = self.violations_json
+            json = self.json
         return io.StringIO(json)
 
 
-class SonarTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
+class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Unit tests for the Sonar class. """
 
     def setUp(self):
         self.__sonar = SonarUnderTest('http://sonar/')
-        self.__no_violations_json = u"""
-        [
-            {"version": "4.2",
-             "lang": "java",
-             "key": "product",
-             "msr":
-                 []
-            }
-        ]"""
 
     def test_url(self):
         """ Test the url. """
@@ -255,89 +255,76 @@ class SonarTest(unittest.TestCase):
 
     def test_dashboard_url(self):
         """ Test the url of a dashboard for a specific product. """
-        self.assertEqual('http://sonar/dashboard/index/product',
-                         self.__sonar.dashboard_url('product'))
+        self.assertEqual('http://sonar/dashboard/index/product', self.__sonar.dashboard_url('product'))
 
     def test_violations_url(self):
         """ Test the url of a violations page for a specific product. """
-        self.assertEqual('http://sonar/drilldown/violations/product',
-                         self.__sonar.violations_url('product'))
+        self.assertEqual('http://sonar/drilldown/violations/product', self.__sonar.violations_url('product'))
 
     def test_version(self):
-        """ Test that the version of a product is equal to the version returned
-            by the dashboard of that product. """
+        """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
         self.assertEqual('4.2', self.__sonar.version('product'))
 
     def test_ncloc(self):
-        """ Test that the number of non-commented lines of code equals the
-            ncloc returned by the dashboard. """
+        """ Test that the number of non-commented lines of code equals the ncloc returned by the dashboard. """
         self.assertEqual(100, self.__sonar.ncloc('product'))
 
     def test_lines(self):
-        """ Test that the number of lines of code equals the number of lines
-            returned by the dashboard. """
+        """ Test that the number of lines of code equals the number of lines returned by the dashboard. """
         self.assertEqual(100, self.__sonar.lines('product'))
 
     def test_major_violations(self):
-        """ Test that the number of major violations equals the number of major
-            violations returned by the dashboard. """
+        """ Test that the number of major violations equals the number of major violations returned by the
+            dashboard. """
         self.assertEqual(100, self.__sonar.major_violations('product'))
 
     def test_critical_violations(self):
-        """ Test that the number of critical violations equals the number of
-            critical violations returned by the dashboard. """
+        """ Test that the number of critical violations equals the number of critical violations returned by the
+            dashboard. """
         self.assertEqual(100, self.__sonar.critical_violations('product'))
 
     def test_blocker_violations(self):
-        """ Test that the number of blocker violations equals the number of
-            blocker violations returned by the dashboard. """
+        """ Test that the number of blocker violations equals the number of blocker violations returned by the
+            dashboard. """
         self.assertEqual(100, self.__sonar.blocker_violations('product'))
 
     def test_duplicated_lines(self):
-        """ Test that the number of duplicated lines equals the number of
-            duplicated lines returned by the dashboard. """
+        """ Test that the number of duplicated lines equals the number of duplicated lines returned by the
+            dashboard. """
         self.assertEqual(100, self.__sonar.duplicated_lines('product'))
 
     def test_line_coverage(self):
-        """ Test that the line coverage equals the line coverage returned by
-            the dashboard. """
+        """ Test that the line coverage equals the line coverage returned by the dashboard. """
         self.assertEqual(100, self.__sonar.line_coverage('product'))
 
     def test_branch_coverage(self):
-        """ Test that the branch coverage equals the branch coverage returned by
-            the dashboard. """
+        """ Test that the branch coverage equals the branch coverage returned by the dashboard. """
         self.assertEqual(100, self.__sonar.branch_coverage('product'))
 
     def test_unittests(self):
-        """ Test that the number of unit tests equals the number of unit tests
-            returned by the dashboard. """
+        """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
         self.assertEqual(100, self.__sonar.unittests('product'))
 
     def test_failing_unittests(self):
-        """ Test that the number of failing unit tests equals the number of
-            unit test failures plus the number of unit test errors returned
-            by the dashboard. """
+        """ Test that the number of failing unit tests equals the number of unit test failures plus the number of
+            unit test errors returned by the dashboard. """
         self.assertEqual(200, self.__sonar.failing_unittests('product'))
 
     def test_package_cycles(self):
-        """ Test that the number of package cycles equals the number of package
-            cycles returned by the dashboard. """
+        """ Test that the number of package cycles equals the number of package cycles returned by the dashboard. """
         self.assertEqual(100, self.__sonar.package_cycles('product'))
 
     def test_methods(self):
-        """ Test that the number of methods equals the number of methods
-            returned by the dashboard. """
+        """ Test that the number of methods equals the number of methods returned by the dashboard. """
         self.assertEqual(100, self.__sonar.methods('product'))
 
     def test_commented_loc(self):
-        """ Test that the number of commented loc equals the number of
-            commented loc returned by the dashboard. """
+        """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
         self.assertEqual(40, self.__sonar.commented_loc('product'))
 
     def test_commented_loc_cs(self):
-        """ Test that the number of commented loc equals the number of
-            commented loc returned by the dashboard. """
-        self.__sonar.violations_json = u"""
+        """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
+        self.__sonar.json = u"""
         [
             {"version": "4.2",
              "lang": "cs",
@@ -352,37 +339,32 @@ class SonarTest(unittest.TestCase):
         self.assertEqual(30, self.__sonar.commented_loc('product'))
 
     def test_commented_loc_missing(self):
-        """ Test that the number of commented loc is zero when none of
-            the rules return a result. """
-        self.__sonar.violations_json = self.__no_violations_json
+        """ Test that the number of commented loc is zero when none of the rules return a result. """
+        self.__sonar.json = self.__sonar.no_violations_json
         self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_complex_methods(self):
-        """ Test that the number of complex methods equals the number of
-            complex methods returned by the violations page. """
+        """ Test that the number of complex methods equals the number of complex methods returned by the
+            violations page. """
         self.assertEqual(50, self.__sonar.complex_methods('product'))
 
     def test_complex_methods_missing(self):
-        """ Test that the number of complex methods is zero when none
-            of the rules return a result. """
-        self.__sonar.violations_json = self.__no_violations_json
+        """ Test that the number of complex methods is zero when none of the rules return a result. """
+        self.__sonar.json = self.__sonar.no_violations_json
         self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_long_methods(self):
-        """ Test that the number of long methods equals the number of long
-            methods returned by the violations page. """
+        """ Test that the number of long methods equals the number of long methods returned by the violations page. """
         self.assertEqual(50, self.__sonar.long_methods('product'))
 
     def test_many_parameters_methods(self):
-        """ Test that the number of methods with many parameters equals the
-            number of methods with many parameters returned by the violations
-            page. """
+        """ Test that the number of methods with many parameters equals the number of methods with many parameters
+            returned by the violations page. """
         self.assertEqual(50, self.__sonar.many_parameters_methods('product'))
 
     def test_many_parameters_methods_missing(self):
-        """ Test that the number of methods with many parameters is zero
-            when none of the rules return a result. """
-        self.__sonar.violations_json = self.__no_violations_json
+        """ Test that the number of methods with many parameters is zero when none of the rules return a result. """
+        self.__sonar.json = self.__sonar.no_violations_json
         self.assertEqual(0, self.__sonar.many_parameters_methods('product'))
 
     def test_missing_metric_value(self):
@@ -392,7 +374,7 @@ class SonarTest(unittest.TestCase):
 
     def test_missing_violation_value(self):
         """ Test that the default value is returned for missing violations. """
-        self.__sonar.violations_json = u'[{"key": "product", "lang": "java"}]'
+        self.__sonar.json = u'[{"key": "product", "lang": "java"}]'
         self.assertEqual(0, self.__sonar.long_methods('product'))
 
     def test_no_sonar(self):
@@ -401,7 +383,7 @@ class SonarTest(unittest.TestCase):
 
     def test_no_sonar_found(self):
         """ Test that no sonar violations. """
-        self.__sonar.violations_json = u"""
+        self.__sonar.json = u"""
         [
             {"key": "product",
              "msr":
@@ -427,7 +409,7 @@ class SonarTest(unittest.TestCase):
 
     def test_version_number(self):
         """ Test that the version number is correct. """
-        self.__sonar.violations_json = u"""
+        self.__sonar.json = u"""
         {
             "id": "23422",
              "version": "1.2.3",
@@ -441,7 +423,7 @@ class SonarTest(unittest.TestCase):
 
     def test_plugin_version(self):
         """ Test that the plugins can be retrieved. """
-        self.__sonar.violations_json = u"""
+        self.__sonar.json = u"""
         [{
             "key": "pmd",
             "name": "PMD",
@@ -451,10 +433,47 @@ class SonarTest(unittest.TestCase):
 
     def test_missing_plugin(self):
         """ Test that the version number of a missing plugin is -1. """
-        self.__sonar.violations_json = u"""
+        self.__sonar.json = u"""
         [{
             "key": "pmd",
             "name": "PMD",
             "version": "1.1"
         }]"""
         self.assertEqual(-1, self.__sonar.plugin_version('checkstyle'))
+
+    def test_default_quality_profile(self):
+        """ Test that the name of the quality profile is returned. """
+        self.__sonar.json = u"""
+        [{
+            "key": "java-findbugs-94130",
+            "name": "FindBugs",
+            "language": "java",
+            "default": false
+        },
+        {
+            "key": "java-ictu-java-profile-v1-7-20151021-85551",
+            "name": "ICTU Java profile v1.7-20151021",
+            "language": "java",
+            "default": false
+        },
+        {
+            "key": "java-ictu-java-profile-v1-8-20151111-91699",
+            "name": "ICTU Java profile v1.8-20151111",
+            "language": "java",
+            "default": true
+        },
+        {
+            "key": "java-sonar-way-31199",
+            "name": "Sonar way",
+            "language": "java",
+            "default": false
+        }]"""
+        self.assertEqual("ICTU Java profile v1.8-20151111", self.__sonar.default_quality_profile('java'))
+
+    def test_quality_profiles_url(self):
+        """ Test that the url to the quality profiles page is correct. """
+        self.assertEqual('http://sonar/profiles/', self.__sonar.quality_profiles_url())
+
+    def test_plugins_url(self):
+        """ Test that the url to the plugin updatecenter page is correct. """
+        self.assertEqual('http://sonar/updatecenter/', self.__sonar.plugins_url())

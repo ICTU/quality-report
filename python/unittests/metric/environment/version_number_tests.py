@@ -17,6 +17,7 @@ limitations under the License.
 from __future__ import absolute_import
 
 import unittest
+from distutils.version import LooseVersion
 
 from qualitylib import metric, domain, metric_source
 
@@ -30,14 +31,29 @@ class FakeSonar(object):
         return '5.4.1.4'
 
     @staticmethod
-    def plugin_version(*args):  # pylint: disable=unused-argument
+    def plugin_version(plugin):
         """ Return a fake plugin version number. """
-        return '11.4'
+        return '11.4' if plugin == 'java' else -1
+
+    @staticmethod
+    def default_quality_profile(language):
+        """ Return a fake default profile. """
+        return "Java profile v1.6-20151008" if language == 'java' else ''
 
     @staticmethod
     def url():
         """ Return the Sonar url. """
         return 'http://sonar/'
+
+    @staticmethod
+    def quality_profiles_url():
+        """ Return the quality profiles url. """
+        return 'http://sonar/profiles/'
+
+    @staticmethod
+    def plugins_url():
+        """ Return the plugins url. """
+        return 'http://sonar/updatecenter/'
 
 
 class SonarVersionTest(unittest.TestCase):
@@ -67,6 +83,44 @@ class SonarVersionTest(unittest.TestCase):
         self.assertEqual(50401, self.__metric.numerical_value())
 
 
+class SonarQualityProfileVersionTest(unittest.TestCase):
+    """ Unit tests for the Sonar quality profile version metric. """
+    def setUp(self):
+        self.__project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
+        self.__metric = metric.SonarQualityProfileVersionJava(project=self.__project)
+
+    def test_value(self):
+        """ Test that the value is correct. """
+        self.assertEqual(LooseVersion('1.6'), self.__metric.value())
+
+    def test_value_when_missing(self):
+        """ Test that the value is '' when the plugin is missing. """
+        version = metric.SonarQualityProfileVersionCSharp(project=self.__project)
+        self.assertEqual(LooseVersion('0.0'), version.value())
+
+    def test_numerical_value(self):
+        """ Test that the numerical value is a weighted sum of the first three version number parts. """
+        self.assertEqual(10600, self.__metric.numerical_value())
+
+    def test_report(self):
+        """ Test that the report is correct. """
+        self.assertEqual("Sonar Java quality profile is versie 1.6.", self.__metric.report())
+
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual(dict(Sonar=FakeSonar().quality_profiles_url()), self.__metric.url())
+
+    def test_status(self):
+        """ Test that the metric is red. """
+        self.assertEqual('red', self.__metric.status())
+
+    def test_norm_template(self):
+        """ Test that the plugin name is filled in correctly in the norm template. """
+        values = metric.SonarQualityProfileVersionJava.norm_template_default_values()
+        self.assertEqual('Sonar Java quality profile heeft minimaal versie 1.8, lager dan versie 1.7 is rood.',
+                         metric.SonarQualityProfileVersionJava.norm_template.format(**values))
+
+
 class SonarPluginVersionTest(unittest.TestCase):
     """ Unit tests for the SonarPluginVersion class and its subclasses. """
     def setUp(self):
@@ -80,7 +134,7 @@ class SonarPluginVersionTest(unittest.TestCase):
     def test_value_when_missing(self):
         """ Test that the value is '0.0' when the plugin is missing. """
         version = metric.SonarPluginVersionCSharp(project=self.__project)
-        self.assertEqual(FakeSonar().plugin_version(version.plugin_key), version.value())
+        self.assertEqual(LooseVersion('0.0'), version.value())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -88,7 +142,7 @@ class SonarPluginVersionTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().url()), self.__metric.url())
+        self.assertEqual(dict(Sonar=FakeSonar().plugins_url()), self.__metric.url())
 
     def test_status(self):
         """ Test that the metric is green. """

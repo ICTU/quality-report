@@ -922,28 +922,26 @@ class QualityReportMetricsTest(unittest.TestCase):
                 metric_sources={metric_source.Sonar: self.__sonar},
                 requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY]))
 
-    def test_java_sonar_plugins(self):
-        """ Test that the Java related Sonar plugin version metrics are added if the project contains Java Sonar plugins
-            as requirement. """
+    def test_java_metrics(self):
+        """ Test that the Java related Sonar version metrics are added if the project has Java as requirement. """
         for metric_class in (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle,
-                             metric.SonarPluginVersionPMD, metric.SonarPluginVersionFindBugs):
+                             metric.SonarPluginVersionPMD, metric.SonarPluginVersionFindBugs,
+                             metric.SonarQualityProfileVersionJava):
             self.__assert_metric(
                 metric_class,
-                project_kwargs=dict(requirements=[requirement.JAVA_SONAR_PLUGINS]))
+                project_kwargs=dict(requirements=[requirement.JAVA]))
 
-    def test_dotnet_sonar_plugins(self):
-        """ Test that the DotNet related Sonar plugin version metrics are added if the project contains DotNet Sonar
-            plugins as requirement. """
-        for metric_class in (metric.SonarPluginVersionCSharp, metric.SonarPluginVersionReSharper,
-                             metric.SonarPluginVersionStyleCop):
+    def test_dotnet_metrics(self):
+        """ Test that the DotNet related version metrics are added if the project has DotNet as requirement. """
+        for metric_class in requirement.C_SHARP.metric_classes():
             self.__assert_metric(
                 metric_class,
-                project_kwargs=dict(requirements=[requirement.DOT_NET_SONAR_PLUGINS]))
+                project_kwargs=dict(requirements=[requirement.C_SHARP]))
 
-    def test_web_sonar_plugins(self):
-        """ Test that the Web related Sonar plugin version metrics are added if the project contains Web Sonar
-            plugins as requirement. """
-        for metric_class in (metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS):
+    def test_web_js_metrics(self):
+        """ Test that the Web related version metrics are added if the project contains Web & JS as requirement. """
+        for metric_class in (metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS,
+                             metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS):
             self.__assert_metric(
                 metric_class,
-                project_kwargs=dict(requirements=[requirement.WEB_SONAR_PLUGINS]))
+                project_kwargs=dict(requirements=[requirement.WEB_JS]))

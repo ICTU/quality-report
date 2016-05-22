@@ -48,6 +48,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__version_number_url = sonar_url + 'api/server/index'
         self.__projects_api_url = sonar_url + 'api/projects/{project}'
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'
+        self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}'
 
     @utils.memoized
     def version(self, product):
@@ -67,6 +68,28 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return -1
         mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
         return mapping.get(plugin, -1)
+
+    def plugins_url(self):
+        """ Return the url to the plugin update center. """
+        return self.url() + 'updatecenter/'
+
+    @utils.memoized
+    def default_quality_profile(self, language):
+        """ Return the default quality profile for the language. """
+        url = self.__quality_profiles_api_url.format(language=language)
+        try:
+            profiles = self.__get_json(url)
+        except (urllib2.HTTPError, urllib2.URLError) as reason:
+            logging.warning("Can't retrieve quality profiles url %s from Sonar: %s", url, reason)
+            return ''
+        for profile in profiles:
+            if profile['default']:
+                return profile['name']
+        return ''
+
+    def quality_profiles_url(self):
+        """ Return the quality profiles url. """
+        return self.url() + 'profiles/'
 
     # Sonar projects
 

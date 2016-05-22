@@ -20,7 +20,7 @@ from .art_stability import ARTStability
 from .configuration_consistency import JavaVersionConsistency
 from .failing_ci_jobs import FailingCIJobs
 from .unused_ci_jobs import UnusedCIJobs
-from .version_number import SonarVersion, SonarPluginVersionJava, SonarPluginVersionCheckStyle, SonarPluginVersionPMD, \
-    SonarPluginVersionFindBugs, SonarPluginVersionCSharp, SonarPluginVersionJS, SonarPluginVersionReSharper, \
-    SonarPluginVersionStyleCop, SonarPluginVersionWeb
-
+from .version_number import SonarVersion, SonarQualityProfileVersionJava, SonarQualityProfileVersionCSharp, \
+    SonarQualityProfileVersionJS, SonarQualityProfileVersionWeb, SonarPluginVersionJava, SonarPluginVersionCheckStyle, \
+    SonarPluginVersionPMD, SonarPluginVersionFindBugs, SonarPluginVersionCSharp, SonarPluginVersionJS, \
+    SonarPluginVersionReSharper, SonarPluginVersionStyleCop, SonarPluginVersionWeb
