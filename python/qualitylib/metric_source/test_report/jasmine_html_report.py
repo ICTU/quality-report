@@ -31,7 +31,7 @@ class JasmineHTMLReport(test_report.TestReport):
         """ Return the number of passed tests as reported by the test report. """
         try:
             soup = beautifulsoup.BeautifulSoup(self._url_open(report_url))
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, urllib2.URLError):
             nr_passed = -1
         else:
             nr_passed = self.__parse_passed_tests(soup)
@@ -41,7 +41,7 @@ class JasmineHTMLReport(test_report.TestReport):
         """ Return the number of failed tests as reported by the test report. """
         try:
             soup = beautifulsoup.BeautifulSoup(self._url_open(report_url))
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, urllib2.URLError):
             nr_failed = -1
         else:
             nr_failed = self.__parse_failed_tests(soup)

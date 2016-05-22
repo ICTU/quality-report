@@ -55,7 +55,7 @@ class JenkinsTestReport(test_report.TestReport):
         url += 'lastCompletedBuild/testReport/api/python'
         try:
             contents = self._url_open(url).read()
-        except urllib2.HTTPError as reason:
+        except (urllib2.HTTPError, urllib2.URLError) as reason:
             logging.warn("Couldn't open %s to read test count %s: %s", url, result_type, reason)
             return -1
         try:
