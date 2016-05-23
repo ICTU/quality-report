@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +20,7 @@
 
 if [[ "$WORKSPACE" == "" ]]; then
     WORKSPACE="."
-fi 
+fi
 PYENV_HOME=$WORKSPACE/.pyenv/
 
 # Delete previously built virtualenv, if any
