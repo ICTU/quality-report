@@ -182,6 +182,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
                            'pmd:CyclomaticComplexity',
                            'squid:MethodCyclomaticComplexity',
+                           'csharpsquid:S1541',
                            'FunctionComplexity',
                            'Web:ComplexityCheck',
                            'python:FunctionComplexity')
@@ -218,7 +219,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def commented_loc(self, product):
         """ Return the number of commented out lines in the source code of the product. """
-        violation_names = ('csharpsquid:CommentedCode', 'squid:CommentedOutCodeLine',
+        violation_names = ('csharpsquid:CommentedCode', 'csharpsquid:S125', 'squid:CommentedOutCodeLine',
                            'javascript:CommentedCode', 'python:S125')
         for violation_name in violation_names:
             nr_commented_loc = self.__violation(product, violation_name)
