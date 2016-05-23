@@ -1,3 +1,9 @@
+2016-05-23  Release 1.18.1
+
+  * Remove obsolete code.
+  * Add a C# Squid rule to use in Sonar for measuring the many-parameter metric.
+
+
 2016-05-22  Release 1.18.0
 
   * Add metrics to measure SonarQube quality profile version.
