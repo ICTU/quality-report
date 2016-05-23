@@ -30,7 +30,10 @@ C_SHARP = Requirement(
     metric_classes={metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
                     metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp})
 
-WEB_JS = Requirement(
-    name='Web and JavaScript',
-    metric_classes={metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS,
-                    metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS})
+JAVASCRIPT = Requirement(
+    name='JavaScript',
+    metric_classes={metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS})
+
+WEB = Requirement(
+    name='Web',
+    metric_classes={metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb})

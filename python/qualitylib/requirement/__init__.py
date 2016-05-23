@@ -20,4 +20,4 @@ from __future__ import absolute_import
 # Mostly standards.
 
 from .trusted_product_maintainability import TRUSTED_PRODUCT_MAINTAINABILITY
-from .sonar_plugins import JAVA, C_SHARP, WEB_JS
+from .sonar import JAVA, C_SHARP, JAVASCRIPT, WEB

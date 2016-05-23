@@ -938,10 +938,17 @@ class QualityReportMetricsTest(unittest.TestCase):
                 metric_class,
                 project_kwargs=dict(requirements=[requirement.C_SHARP]))
 
-    def test_web_js_metrics(self):
-        """ Test that the Web related version metrics are added if the project contains Web & JS as requirement. """
-        for metric_class in (metric.SonarPluginVersionWeb, metric.SonarPluginVersionJS,
-                             metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS):
+    def test_web_metrics(self):
+        """ Test that the Web related version metrics are added if the project contains Web as requirement. """
+        for metric_class in (metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb):
             self.__assert_metric(
                 metric_class,
-                project_kwargs=dict(requirements=[requirement.WEB_JS]))
+                project_kwargs=dict(requirements=[requirement.WEB]))
+
+    def test_js_metrics(self):
+        """ Test that the JavaScript related version metrics are added if the project contains JavaScript as
+            requirement. """
+        for metric_class in (metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS):
+            self.__assert_metric(
+                metric_class,
+                project_kwargs=dict(requirements=[requirement.JAVASCRIPT]))
