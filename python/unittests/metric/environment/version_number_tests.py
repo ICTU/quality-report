@@ -102,6 +102,11 @@ class SonarQualityProfileVersionTest(unittest.TestCase):
         """ Test that the numerical value is a weighted sum of the first three version number parts. """
         self.assertEqual(10600, self.__metric.numerical_value())
 
+    def test_numerical_value_when_missing(self):
+        """ Test that the numerical value is -1 when the plugin is missing. """
+        version = metric.SonarQualityProfileVersionCSharp(project=self.__project)
+        self.assertEqual(-1, version.numerical_value())
+
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual("Sonar Java quality profile is versie 1.6.", self.__metric.report())
