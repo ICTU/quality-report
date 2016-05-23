@@ -22,8 +22,14 @@ from qualitylib.metric_source import Subversion
 
 class SubversionUnderTest(Subversion):
     """ Override the Subversion class to prevent it from running shell commands. """
+    mergeinfo = ''
+
     def _run_shell_command(self, command, *args, **kwargs):
         self.last_command = command
+        if command[1] == 'mergeinfo':
+            return self.mergeinfo
+        elif command[1] == 'list' and 'path' not in command[3]:
+            return '<name>folder</name>'
 
 
 class SubversionTests(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -50,6 +56,21 @@ class SubversionTests(unittest.TestCase):  # pylint: disable=too-many-public-met
     def test_unmerged_branches(self):
         """ Test that there are no unmerged branches by default. """
         self.assertEqual({}, self.__svn.unmerged_branches('http://svn/'))
+
+    def test_one_unmerged_branch(self):
+        """ Test one unmerged branch. """
+        self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
+        self.assertEqual(dict(folder=5), self.__svn.unmerged_branches('http://svn/'))
+
+    def test_one_unmerged_branch_that_is_ignored(self):
+        """ Test one unmerged branch that is ignored. """
+        self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
+        self.assertEqual({}, self.__svn.unmerged_branches('http://svn/', list_of_branches_to_ignore=['folder']))
+
+    def test_one_unmerged_branch_that_is_ignored_with_re(self):
+        """ Test one unmerged branch that is ignored. """
+        self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
+        self.assertEqual({}, self.__svn.unmerged_branches('http://svn/', re_of_branches_to_ignore='f.*'))
 
     def test_normalize_path(self):
         """ Test path that needs no changes. """

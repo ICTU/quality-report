@@ -1,3 +1,14 @@
+2016-05-23  Release 1.19.0
+
+  * Allow for ignoring unmerged branches using a regular expression. Use the branches_to_ignore option to specify a
+    regular expression, like this:
+
+    subversion = metric_source.Subversion()
+    product = domain.Product(project, name='Product', short_name='PR',
+                             metric_source_ids={subversion: 'http://svn/trunk/foo/'},
+                             metric_options={metric.UnmergedBranches: dict(branches_to_ignore_re='feature.*')})
+
+
 2016-05-23  Release 1.18.2
 
   * Split the WEB_JS requirement into separate Web and Javascript requirements so that adding one doesn't imply the

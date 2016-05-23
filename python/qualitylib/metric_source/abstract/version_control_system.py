@@ -61,9 +61,11 @@ class VersionControlSystem(domain.MetricSource):
         """ Return a list of tag names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
-    def unmerged_branches(self, path, branches_to_ignore=None):  # pylint: disable=unused-argument
-        """ Return a dictionary of branch names and number of unmerged
-            revisions for each branch that has any unmerged revisions. """
+    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore=''):
+        # pylint: disable=unused-argument
+        """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
+            unmerged revisions. Branches listed in the list of branches to ignore or that match the regular
+            expression of branches to ignore are, obviously, ignored. """
         raise NotImplementedError  # pragma: no cover
 
     @classmethod

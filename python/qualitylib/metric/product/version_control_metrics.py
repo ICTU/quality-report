@@ -49,7 +49,18 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         return self.__branch_and_nr_revs_urls(self.__unmerged_branches())
 
     def comment_urls(self):
-        return self.__branch_urls(self.__branches_to_ignore())
+        return self.__branch_urls(self.__list_of_branches_to_ignore())
+
+    def comment(self):
+        comment = super(UnmergedBranches, self).comment()
+        branch_re = self.__re_of_branches_to_ignore()
+        if branch_re:
+            branch_comment = 'Branches die voldoen aan de reguliere expressie {re} zijn genegeerd.'.format(re=branch_re)
+            if comment:
+                comment += ' ' + branch_comment
+            else:
+                comment = branch_comment
+        return comment
 
     def _get_template(self):
         # pylint: disable=protected-access
@@ -83,12 +94,15 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     @utils.memoized
     def __unmerged_branches(self):
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
-        return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__branches_to_ignore())
+        return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),
+                                                        self.__re_of_branches_to_ignore())
 
-    def __branches_to_ignore(self):
-        """ Return the branches to ignore for the measured product. """
+    def __list_of_branches_to_ignore(self):
+        """ Return the list of branches to ignore for the measured product. """
         metric_options = self._subject.metric_options(self.__class__)
-        if metric_options:
-            return metric_options.get('branches_to_ignore', [])
-        else:
-            return []
+        return metric_options.get('branches_to_ignore', []) if metric_options else []
+
+    def __re_of_branches_to_ignore(self):
+        """ Return the regular expression of branches to ignore for the measured product. """
+        metric_options = self._subject.metric_options(self.__class__)
+        return metric_options.get('branches_to_ignore_re', '') if metric_options else ''
