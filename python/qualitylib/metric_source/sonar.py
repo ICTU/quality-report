@@ -53,10 +53,12 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def version(self, product):
         """ Return the version of the product. """
-        json = self.url_open(self.__resource_api_url.format(resource=product)).read()
-        version = utils.eval_json(json)[0]['version']
-        logging.debug('Retrieving Sonar version for %s -> %s', product, version)
-        return version
+        try:
+            json = self.url_open(self.__resource_api_url.format(resource=product)).read()
+        except urllib2.HTTPError as reason:
+            logging.warning("Can't retrieve version for %s: %s", product, reason)
+            return '?'
+        return utils.eval_json(json)[0]['version']
 
     @utils.memoized
     def plugin_version(self, plugin):
