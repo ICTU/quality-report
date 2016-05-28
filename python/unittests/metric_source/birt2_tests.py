@@ -803,10 +803,20 @@ class BirtTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         self.assertEqual(3, self.__birt.nr_manual_ltcs('bulk'))
 
+    def test_nr_manual_ltcs_on_error(self):
+        """ Test that the number of manual logical test cases is -1 when Birt is not available. """
+        self.__birt.html = 'raise'
+        self.assertEqual(-1, self.__birt.nr_manual_ltcs('bulk'))
+
     def test_nr_manual_ltcs_too_old(self):
         """ Test that the number of manual logical test cases that have not been tested recently is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         self.assertEqual(3, self.__birt.nr_manual_ltcs_too_old('bulk', 'trunk', 7))
+
+    def test_nr_manual_ltcs_too_old_on_error(self):
+        """ Test that the number of manual logical test cases is -1 whe Birt is not available. """
+        self.__birt.html = 'raise'
+        self.assertEqual(-1, self.__birt.nr_manual_ltcs_too_old('bulk', 'trunk', 7))
 
     def test_no_date_manual_tests(self):
         """ Test that the date of the last manual test execution is correct. """

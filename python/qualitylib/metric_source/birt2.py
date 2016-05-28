@@ -249,14 +249,21 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def nr_manual_ltcs(self, product, version='trunk'):
         """ Return the number of logical test cases for the product that are executed manually. """
-        return len(self.__manual_test_dates(product, version))
+        test_dates = self.__manual_test_dates(product, version)
+        if test_dates == -1:
+            return -1
+        else:
+            return len(test_dates)
 
     def nr_manual_ltcs_too_old(self, product, version, target):
         """ Return the number of manual logical test cases that have not been executed for target amount of days. """
         test_dates = self.__manual_test_dates(product, version)
-        now = datetime.datetime.now()
-        too_old = [date for date in test_dates if (now - date).days > target]
-        return len(too_old)
+        if test_dates == -1:
+            return -1
+        else:
+            now = datetime.datetime.now()
+            too_old = [date for date in test_dates if (now - date).days > target]
+            return len(too_old)
 
     def __nr_missing_automated_ltcs(self, product):
         """ Return the number of logical test cases for the product that should be automated but have not. """

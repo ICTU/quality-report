@@ -1,3 +1,8 @@
+2016-05-28  Release 1.19.2
+
+  * Be better prepared for Birt metric sources being down.
+
+
 2016-05-28  Release 1.19.1
 
   * Be better prepared for Birt metric sources being down.
