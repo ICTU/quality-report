@@ -135,7 +135,10 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return self.target() + 7
 
     def value(self):
-        return (datetime.datetime.now() - self._date()).days
+        if self._birt.nr_manual_ltcs(self._birt_id(), self.__version()) == -1:
+            return -1
+        else:
+            return (datetime.datetime.now() - self._date()).days
 
     def url(self):
         return dict(Birt=self._birt.manual_test_execution_url(self._birt_id(), self.__version()))
