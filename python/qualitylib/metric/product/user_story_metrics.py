@@ -28,7 +28,11 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
         return super(UserStoryMetric, cls).can_be_measured(product, project) and not product.product_version()
 
     def value(self):
-        return self._nr_user_stories() - self._nr_user_stories_ok()
+        nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()
+        if -1 in [nr_user_stories, nr_user_stories_ok]:
+            return -1
+        else:
+            return nr_user_stories - nr_user_stories_ok
 
     def _nr_user_stories_ok(self):
         """ Return the number of user stories whose quality is good. """

@@ -26,6 +26,7 @@ class FakeBirt(object):
 
     def __init__(self, test_design=True):
         self.__test_design = test_design
+        self.down = False
 
     def has_test_design(self, birt_id):  # pylint: disable=unused-argument
         """ Return whether the product with the Birt id has a test design  report in Birt. """
@@ -36,10 +37,9 @@ class FakeBirt(object):
         """ Return the number of approved logical test cases. """
         return 100
 
-    @staticmethod
-    def nr_ltcs(birt_id):  # pylint: disable=unused-argument
+    def nr_ltcs(self, birt_id):  # pylint: disable=unused-argument
         """ Return the number of logical test cases. """
-        return 120
+        return -1 if self.down else 120
 
     @staticmethod
     def reviewed_ltcs(birt_id):  # pylint: disable=unused-argument
@@ -70,10 +70,9 @@ class FakeBirt(object):
         """ Return the number of automated logical test cases. """
         return 20
 
-    @staticmethod
-    def nr_ltcs_to_be_automated(birt_id):  # pylint: disable=unused-argument
+    def nr_ltcs_to_be_automated(self, birt_id):  # pylint: disable=unused-argument
         """ Return the number of logical test cases that should be automated. """
-        return 25
+        return -1 if self.down else 25
 
     @staticmethod
     def manual_test_execution_url(*args):  # pylint: disable=unused-argument
@@ -122,6 +121,11 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
         """ Test that the value of the metric is the percentage of user stories that has enough logical test cases
             as reported by Birt. """
         self.assertEqual(5, self.__metric.value())
+
+    def test_value_on_error(self):
+        """ Test that the value is -1 when the metric source is not available. """
+        self.__birt.down = True
+        self.assertEqual(-1, self.__metric.value())
 
     def test_url(self):
         """ Test the url is correct. """

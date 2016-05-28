@@ -24,6 +24,7 @@ class FakeBirt(object):
 
     def __init__(self, test_design=True):
         self.__test_design = test_design
+        self.down = False
 
     def has_test_design(self, birt_id):  # pylint: disable=unused-argument
         """ Return whether the product has a test design report. """
@@ -34,15 +35,13 @@ class FakeBirt(object):
         """ Return the number of approved user stories. """
         return 20
 
-    @staticmethod
-    def reviewed_user_stories(birt_id):  # pylint: disable=unused-argument
+    def reviewed_user_stories(self, birt_id):  # pylint: disable=unused-argument
         """ Return the number of reviewed user stories. """
-        return 23
+        return -1 if self.down else 23
 
-    @staticmethod
-    def nr_user_stories(birt_id):  # pylint: disable=unused-argument
+    def nr_user_stories(self, birt_id):  # pylint: disable=unused-argument
         """ Return the total number of user stories. """
-        return 25
+        return -1 if self.down else 25
 
     @staticmethod
     def nr_user_stories_with_sufficient_ltcs(birt_id):  # pylint: disable=unused-argument
@@ -80,14 +79,19 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the user stories that are not reviewed. """
     def setUp(self):
-        birt = FakeBirt()
+        self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.UserStoriesNotReviewed(subject=self.__subject, project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric is the number of not reviewed user stories as reported by Birt. """
         self.assertEqual(2, self.__metric.value())
+
+    def test_value_on_error(self):
+        """ Test that the value is -1 when the metric source is down. """
+        self.__birt.down = True
+        self.assertEqual(-1, self.__metric.value())
 
     def test_report(self):
         """ Test that the report is correct. """

@@ -31,7 +31,11 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
         return super(LogicalTestCaseMetric, cls).can_be_measured(product, project) and not product.product_version()
 
     def value(self):
-        return self._nr_ltcs() - self._nr_ltcs_ok()
+        nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
+        if -1 in [nr_ltcs, nr_ltcs_ok]:
+            return -1
+        else:
+            return nr_ltcs - nr_ltcs_ok
 
     def _nr_ltcs_ok(self):
         """ Return the number of logical test cases whose quality is good. """
