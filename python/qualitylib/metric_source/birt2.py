@@ -17,6 +17,7 @@ from __future__ import absolute_import
 
 import datetime
 import logging
+import urllib2
 
 from . import beautifulsoup
 from .. import utils, domain
@@ -190,11 +191,19 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def nr_user_stories_with_sufficient_ltcs(self, product):
         """ Return the number of user stories that have a sufficient number of logical test cases."""
-        return int(self.nr_user_stories(product)) - int(self.__nr_user_stories_with_too_few_ltcs(product))
+        nr_user_stories = self.nr_user_stories(product)
+        if nr_user_stories == -1:
+            return -1
+        else:
+            return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs(product))
 
     def nr_automated_ltcs(self, product):
         """ Return the number of logical test cases that have been implemented as automated tests. """
-        return int(self.nr_ltcs_to_be_automated(product)) - int(self.__nr_missing_automated_ltcs(product))
+        nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated(product)
+        if nr_ltcs_to_be_automated == -1:
+            return -1
+        else:
+            return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs(product))
 
     # Metrics available directly in Birt:
 
@@ -256,7 +265,11 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def date_of_last_manual_test(self, product, version='trunk'):
         """ Return the date when the product/version was last tested manually. """
-        test_dates = self.__manual_test_dates(product, version)[:]
+        test_dates = self.__manual_test_dates(product, version)
+        if test_dates == -1:
+            return -1
+        else:
+            test_dates = test_dates[:]
         # Add today's date so that we report today if there are no manual test cases at all.
         test_dates.append(datetime.datetime.now())
         return min(test_dates)
@@ -264,7 +277,12 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def __manual_test_dates(self, product, version):
         """ Return the manual test cases. """
-        soup = self.soup(self.__manual_test_execution_url.format(ver=version))
+        url = self.__manual_test_execution_url.format(ver=version)
+        try:
+            soup = self.soup(url)
+        except (urllib2.HTTPError, urllib2.URLError) as reason:
+            logging.warn("Could not open manual test dates report at %s: %s", url, reason)
+            return -1
         inner_table = soup('table', {'id': '__bookmark_1'})[0]
         rows = inner_table('tr')[1:]  # Skip header row
         test_dates = []
@@ -286,7 +304,11 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def __test_design_metric(self, row_nr):
         """ Get a metric from a specific row in the test design report."""
         if not self.__test_design_report:
-            self.__test_design_report = self.soup(self.__test_design_url)
+            try:
+                self.__test_design_report = self.soup(self.__test_design_url)
+            except (urllib2.HTTPError, urllib2.URLError) as reason:
+                logging.warn("Could not open %s: %s", self.__test_design_url, reason)
+                return -1
         try:
             return int(self.__test_design_report('div', {'class': 'style_4'})[row_nr].string)
         except (ValueError, IndexError) as reason:

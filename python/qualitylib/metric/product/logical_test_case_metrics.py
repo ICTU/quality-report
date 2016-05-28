@@ -137,7 +137,9 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return dict(Birt=self._birt.manual_test_execution_url(self._birt_id(), self.__version()))
 
     def _date(self):
-        return self._birt.date_of_last_manual_test(self._birt_id(), self.__version())
+        date = self._birt.date_of_last_manual_test(self._birt_id(), self.__version())
+        # FIXME: distinguish between the min date meaning "Birt is down" and "some tests were never executed".
+        return datetime.datetime.min if date == -1 else date
 
     def _parameters(self):
         # pylint: disable=protected-access

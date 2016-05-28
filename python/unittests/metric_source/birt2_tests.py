@@ -16,11 +16,13 @@ limitations under the License.
 
 import datetime
 import unittest
+import urllib2
 
 import BeautifulSoup
 
 from qualitylib.metric_source import Birt2
 from qualitylib.metric_source.birt2 import SprintProgressReport
+
 
 TEST_DESIGN_HTML = """
 <html>
@@ -684,7 +686,10 @@ class BirtUnderTest(Birt2):  # pylint: disable=too-few-public-methods
 
     def soup(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
-        return BeautifulSoup.BeautifulSoup(self.html)
+        if self.html == 'raise':
+            raise urllib2.URLError('Birt down')
+        else:
+            return BeautifulSoup.BeautifulSoup(self.html)
 
 
 class BirtTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -733,10 +738,20 @@ class BirtTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(22, self.__birt.nr_user_stories_with_sufficient_ltcs('bulk'))
 
+    def test_nr_user_stories_with_sufficient_ltcs_on_error(self):
+        """ Test that the number of user stories is -1 when Birt is unavailable. """
+        self.__birt.html = 'raise'
+        self.assertEqual(-1, self.__birt.nr_user_stories_with_sufficient_ltcs('bulk'))
+
     def test_nr_automated_ltcs(self):
         """ Test the number of automated logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
         self.assertEqual(111, self.__birt.nr_automated_ltcs('bulk'))
+
+    def test_nr_automated_ltcs_on_error(self):
+        """ Test that the number of automated logical test cases is -1 when Birt is unavailable. """
+        self.__birt.html = 'raise'
+        self.assertEqual(-1, self.__birt.nr_automated_ltcs('bulk'))
 
     def test_nr_user_stories(self):
         """ Test that the number of user stories is correct. """
@@ -804,6 +819,11 @@ class BirtTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
         date = self.__birt.date_of_last_manual_test('bulk')
         self.assertEqual(datetime.datetime(2015, 8, 19), date)
+
+    def test_date_of_last_manual_test_on_error(self):
+        """ Test that the date of the last manual test execution is the min date when Birt is unavailable. """
+        self.__birt.html = 'raise'
+        self.assertEqual(-1, self.__birt.date_of_last_manual_test('bulk'))
 
 
 class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disable=too-few-public-methods

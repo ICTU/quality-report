@@ -1,3 +1,8 @@
+2016-05-28  Release 1.19.1
+
+  * Be better prepared for Birt metric sources being down.
+
+
 2016-05-23  Release 1.19.0
 
   * Allow for ignoring unmerged branches using a regular expression. Use the branches_to_ignore option to specify a
