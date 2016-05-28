@@ -135,7 +135,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return self.target() + 7
 
     def value(self):
-        if self._birt.nr_manual_ltcs(self._birt_id(), self.__version()) == -1:
+        if self._missing():
             return -1
         else:
             return (datetime.datetime.now() - self._date()).days
@@ -145,7 +145,6 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
 
     def _date(self):
         date = self._birt.date_of_last_manual_test(self._birt_id(), self.__version())
-        # FIXME: distinguish between the min date meaning "Birt is down" and "some tests were never executed".
         return datetime.datetime.min if date == -1 else date
 
     def _parameters(self):
@@ -160,6 +159,9 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         # pylint: disable=protected-access
         return self.never_template if self._date() == datetime.datetime.min \
             else super(ManualLogicalTestCases, self)._get_template()
+
+    def _missing(self):
+        return self._birt.date_of_last_manual_test(self._birt_id(), self.__version()) == -1
 
     def __version(self):
         """ Return the version number for the product this metric is reporting on. """
