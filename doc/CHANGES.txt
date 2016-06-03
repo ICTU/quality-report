@@ -1,3 +1,8 @@
+2016-06-04  Release 1.19.7
+
+  * Update required Sonar version and Sonar plugin versions.
+
+
 2016-06-03  Release 1.19.6
 
   * Be better prepared for Sonar metric sources being down.

@@ -28,9 +28,9 @@ class SonarVersion(HigherIsBetterMetric):
     name = 'Sonar versie'
     norm_template = 'Sonar heeft minimaal versie {target}, lager dan versie {low_target} is rood.'
     template = 'Sonar is versie {value}.'
-    target_value = LooseVersion('4.5.6')
+    target_value = LooseVersion('4.5.7')
     perfect_value = LooseVersion('999.999.999')
-    low_target_value = LooseVersion('4.5.4')
+    low_target_value = LooseVersion('4.5.6')
     quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Sonar,)
 
@@ -126,7 +126,7 @@ class SonarQualityProfileVersionJS(SonarQualityProfileVersion):
     name = 'Sonar JavaScript quality profile versie'
     language_key = 'js'
     language_name = 'JavaScript'
-    target_value = LooseVersion('1.3')
+    target_value = LooseVersion('1.4')
     low_target_value = LooseVersion('1.2')
 
 
@@ -185,8 +185,8 @@ class SonarPluginVersionJava(SonarPluginVersion):
     name = 'Sonar Java plugin version'
     plugin_key = 'java'
     plugin_name = 'Java'
-    target_value = LooseVersion('3.13.1')
-    low_target_value = LooseVersion('3.12')
+    target_value = LooseVersion('3.14')
+    low_target_value = LooseVersion('3.13.1')
 
 
 class SonarPluginVersionCheckStyle(SonarPluginVersion):
@@ -248,8 +248,8 @@ class SonarPluginVersionJS(SonarPluginVersion):
     name = 'Sonar JavaScript plugin version'
     plugin_key = 'javascript'
     plugin_name = 'JavaScript'
-    target_value = LooseVersion('2.12')
-    low_target_value = LooseVersion('2.11')
+    target_value = LooseVersion('2.13')
+    low_target_value = LooseVersion('2.12')
 
 
 class SonarPluginVersionWeb(SonarPluginVersion):
