@@ -54,19 +54,16 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def version(self, product):
         """ Return the version of the product. """
         try:
-            json = self.url_open(self.__resource_api_url.format(resource=product)).read()
-        except urllib2.HTTPError as reason:
-            logging.warning("Can't retrieve version for %s: %s", product, reason)
+            return self.__get_json(self.__resource_api_url.format(resource=product))[0]['version']
+        except (urllib2.URLError, urllib2.HTTPError):
             return '?'
-        return utils.eval_json(json)[0]['version']
 
     @utils.memoized
     def plugin_version(self, plugin):
         """ Return the version of the plugin. """
         try:
             plugins = self.__get_json(self.__plugin_api_url)
-        except urllib2.HTTPError as reason:
-            logging.warning("Can't retrieve plugins url %s from Sonar: %s", self.__plugin_api_url, reason)
+        except (urllib2.URLError, urllib2.HTTPError):
             return -1
         mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
         return mapping.get(plugin, -1)
@@ -78,11 +75,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def default_quality_profile(self, language):
         """ Return the default quality profile for the language. """
-        url = self.__quality_profiles_api_url.format(language=language)
         try:
-            profiles = self.__get_json(url)
-        except (urllib2.HTTPError, urllib2.URLError) as reason:
-            logging.warning("Can't retrieve quality profiles url %s from Sonar: %s", url, reason)
+            profiles = self.__get_json(self.__quality_profiles_api_url.format(language=language))
+        except (urllib2.HTTPError, urllib2.URLError):
             return ''
         for profile in profiles:
             if profile['default']:
@@ -109,9 +104,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         try:
             json = self.__get_json(self.__resources_api_url)
             return [resource['key'] for resource in json]
-        except (urllib2.HTTPError, urllib2.URLError) as reason:
-            logging.warning("Can't retrieve resources url %s from Sonar: %s", self.__resources_api_url, reason)
-        return []
+        except (urllib2.HTTPError, urllib2.URLError):
+            return []
 
     def delete_project(self, project):
         """ Delete a project (analysis) from Sonar. """
@@ -119,7 +113,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             self.url_delete(self.__projects_api_url.format(project=project))
             logging.info('Removed Sonar analysis for %s', project)
             return True
-        except urllib2.HTTPError as reason:
+        except (urllib2.HTTPError, urllib2.URLError) as reason:
             logging.warning("Can't remove Sonar analysis for %s: %s", project, reason)
             return False
 
@@ -251,13 +245,17 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def version_number(self):
         """ Return the version number of Sonar. """
-        return self.__get_json(self.__version_number_url)['version']
+        try:
+            return self.__get_json(self.__version_number_url)['version']
+        except (urllib2.HTTPError, urllib2.URLError):
+            return '0.0'
 
     def analysis_datetime(self, product):
         """ Return the date and time of the last analysis of the product. """
+        url = self.__resource_api_url.format(resource=product)
         try:
-            datetime_string = self.__get_json(self.__resource_api_url.format(resource=product))[0]['date']
-        except urllib2.HTTPError:
+            datetime_string = self.__get_json(url)[0]['date']
+        except (urllib2.HTTPError, urllib2.URLError):
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
@@ -287,7 +285,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return all available metric values for the product. """
         try:
             return self.__get_json(self.__metrics_api_url.format(resource=product, metrics='true'))
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, urllib2.URLError):
             return [{'msr': []}]
 
     @utils.memoized
@@ -297,7 +295,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return -1
         try:
             json = self.__get_json(self.__violations_api_url.format(resource=product))
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, urllib2.URLError):
             return default
         try:
             violations = json[0]['msr']
@@ -316,7 +314,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return -1
         try:
             json = self.__get_json(self.__false_positives_api_url.format(resource=product))
-        except urllib2.HTTPError:
+        except (urllib2.HTTPError, urllib2.URLError):
             return default
         return len(json['issues'])
 
@@ -325,7 +323,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Get and evaluate the json from the url. """
         try:
             json_string = self.url_open(url).read()
-        except urllib2.HTTPError as reason:
-            logging.warning("Can't retrieve resource url %s from Sonar: %s", url, reason)
+        except (urllib2.HTTPError, urllib2.URLError) as reason:
+            logging.warning("Can't retrieve url %s from Sonar: %s", url, reason)
             raise
         return utils.eval_json(json_string)
