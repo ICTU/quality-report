@@ -160,5 +160,5 @@ class SonarPluginVersionTest(unittest.TestCase):
     def test_norm_template(self):
         """ Test that the plugin name is filled in correctly in the norm template. """
         values = metric.SonarPluginVersionJava.norm_template_default_values()
-        self.assertEqual('Sonar plugin Java heeft minimaal versie 3.13.1, lager dan versie 3.12 is rood.',
+        self.assertEqual('Sonar plugin Java heeft minimaal versie 3.14, lager dan versie 3.13.1 is rood.',
                          metric.SonarPluginVersionJava.norm_template.format(**values))
