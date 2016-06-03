@@ -1,3 +1,8 @@
+2016-06-04  Release 1.19.8
+
+  * Indicate that the metric cannot be measured when the source is not configured or unavailable.
+
+
 2016-06-04  Release 1.19.7
 
   * Update required Sonar version and Sonar plugin versions.

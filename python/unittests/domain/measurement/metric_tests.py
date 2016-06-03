@@ -42,7 +42,7 @@ class MetricUnderTest(domain.Metric):
 class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Test case for the Metric domain class. """
 
-    def setUp(self):  # pylint: disable=C0103
+    def setUp(self):
         self.__subject = FakeSubject()
         self.__project = domain.Project(
             metric_sources={metric_source.History: FakeHistory()})
@@ -216,10 +216,16 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that a metric should not be measured be default. """
         self.assertFalse(domain.Metric.should_be_measured(self.__project))
 
-    def test_metric_missing(self):
+    def test_missing_metric(self):
         """ Test that the metric status is missing when the value is -1. """
         self.__metric.value_to_return = -1
         self.assertEqual('missing', self.__metric.status())
+
+    def test_missing_metric_report(self):
+        """ Test that the metric report is adapted when the value is missing. """
+        self.__metric.value_to_return = -1
+        self.assertEqual('De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.',
+                         self.__metric.report())
 
 
 class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
@@ -266,7 +272,7 @@ class HigherIsBetterMetricTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Test case for the HigherIsBetterMetric domain class. """
 
-    def setUp(self):  # pylint: disable=C0103
+    def setUp(self):
         self.__subject = FakeSubject()
         project = domain.Project(metric_sources={metric_source.History: FakeHistory()})
         self.__metric = HigherIsBetterMetricUnderTest(self.__subject, project=project)
@@ -302,7 +308,7 @@ class PercentageMetricTestCase(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Test case for percentage metrics. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__subject = FakeSubject()
         project = domain.Project(metric_sources={metric_source.History: FakeHistory()})
         self._metric = self.metric_under_test_class()(self.__subject, project=project)

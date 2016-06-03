@@ -27,6 +27,7 @@ class Metric(object):
     """ Base class for metrics. """
 
     name = norm_template = target_value = low_target_value = perfect_value = template = 'Subclass responsibility'
+    missing_template = 'De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.'
     url_label_text = comment_url_label_text = ''
     old_age = datetime.timedelta.max
     max_old_age = datetime.timedelta.max
@@ -170,7 +171,7 @@ class Metric(object):
 
     def _get_template(self):
         """ Return the template for the metric report. """
-        return self.template
+        return self.missing_template if self._missing() else self.template
 
     def _parameters(self):
         """ Return the parameters for the metric report template and for the metric norm template. """
