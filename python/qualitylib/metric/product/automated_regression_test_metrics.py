@@ -51,10 +51,6 @@ class FailingRegressionTests(LowerIsBetterMetric):
         return self.__test_report.passed_tests(*urls) < 0 or self.__test_report.failed_tests(*urls) < 0 or \
             self.__test_report.skipped_tests(*urls) < 0
 
-    def _get_template(self):
-        # pylint: disable=protected-access
-        return self.perfect_template if self._is_perfect() else super(FailingRegressionTests, self)._get_template()
-
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingRegressionTests, self)._parameters()

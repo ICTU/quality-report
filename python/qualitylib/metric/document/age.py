@@ -30,7 +30,7 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     norm_template = 'Dit document wordt minimaal een keer per {target} dagen bijgewerkt. Als het document langer ' \
         'dan {low_target} dagen geleden is bijgewerkt is deze metriek rood.'
     template = 'Het document "{name}" is {value} dag(en) geleden bijgewerkt.'
-    never_template = 'Het document "{name}" is niet aangetroffen.'
+    missing_template = 'Het document "{name}" is niet aangetroffen.'
     quality_attribute = DOC_QUALITY
     target_value = 180
     low_target_value = 200
@@ -42,23 +42,16 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         """ Return the number of days since the document was last changed. """
-        if self.__changed_date() == datetime.datetime.min:
-            return -1
-        else:
-            return (datetime.datetime.now() - self.__changed_date()).days
+        return -1 if self._missing() else (datetime.datetime.now() - self.__changed_date()).days
 
     def url(self):
         """ Return the url to the document. """
         return {self._vcs_product_info.metric_source_name: self._subject.url()}
 
-    def _get_template(self):
-        # pylint: disable=protected-access
-        return self.never_template if self.__document_not_found() else super(DocumentAge, self)._get_template()
-
     def __changed_date(self):
         """ Return the date that the document was last changed. """
         return self._vcs_product_info.last_changed_date(self._vcs_path())
 
-    def __document_not_found(self):
+    def _missing(self):
         """ Return whether the age of the document could be established. """
         return self.__changed_date() == datetime.datetime.min

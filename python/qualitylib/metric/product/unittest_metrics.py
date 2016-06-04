@@ -56,10 +56,6 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     def value(self):
         return self._sonar.failing_unittests(self._sonar_id())
 
-    def _get_template(self):
-        # pylint: disable=protected-access
-        return self.perfect_template if self._is_perfect() else super(FailingUnittests, self)._get_template()
-
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingUnittests, self)._parameters()

@@ -62,10 +62,6 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
                 comment = branch_comment
         return comment
 
-    def _get_template(self):
-        # pylint: disable=protected-access
-        return self.perfect_template if self._is_perfect() else super(UnmergedBranches, self)._get_template()
-
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(UnmergedBranches, self)._parameters()

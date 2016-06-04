@@ -64,7 +64,3 @@ class TeamAbsence(LowerIsBetterMetric):
             parameters['end'] = end.isoformat()
             parameters['absentees'] = ', '.join(sorted([member.name() for member in members]))
         return parameters
-
-    def _get_template(self):
-        # pylint: disable=protected-access
-        return self.perfect_template if self._is_perfect() else super(TeamAbsence, self)._get_template()
