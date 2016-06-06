@@ -107,8 +107,7 @@ class Section(object):
         return self.__product
 
     def contains_trunk_product(self):
-        """ Return whether this section describes a trunk version of a
-            product. """
+        """ Return whether this section describes a trunk version of a product. """
         return self.product() and self.product().product_version_type() == 'trunk'
 
 
@@ -129,7 +128,7 @@ class QualityReport(object):
                                   metric.LogicalTestCasesNotAutomated,
                                   metric.ManualLogicalTestCases,
                                   metric.NumberOfManualLogicalTestCases)
-    JAVA_METRIC_CLASSES = (metric.BlockerViolations, metric.CriticalViolations,
+    CODE_METRIC_CLASSES = (metric.BlockerViolations, metric.CriticalViolations,
                            metric.MajorViolations, metric.CyclomaticComplexity,
                            metric.CyclicDependencies, metric.JavaDuplication,
                            metric.ProductLOC, metric.LongMethods,
@@ -173,7 +172,7 @@ class QualityReport(object):
     @classmethod
     def metric_classes(cls):
         """ Return a list of metric classes that the report can measure. """
-        return cls.TEST_COVERAGE_METRIC_CLASSES + cls.TEST_DESIGN_METRIC_CLASSES + cls.JAVA_METRIC_CLASSES + \
+        return cls.TEST_COVERAGE_METRIC_CLASSES + cls.TEST_DESIGN_METRIC_CLASSES + cls.CODE_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.PROCESS_SECTION_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + cls.DEPENDENCY_METRIC_CLASSES + \
             cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
@@ -306,29 +305,13 @@ class QualityReport(object):
 
     def __product_section(self, product):
         """ Return the section for the product. """
-        metrics = []
-        for metric_class in self.TEST_COVERAGE_METRIC_CLASSES + self.TEST_DESIGN_METRIC_CLASSES + \
-                self.JAVA_METRIC_CLASSES + self.PERFORMANCE_METRIC_CLASSES:
-            if metric_class.can_be_measured(product, self.__project):
-                metrics.append(metric_class(product, project=self.__project))
+        metrics = self.__subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES + self.TEST_DESIGN_METRIC_CLASSES +
+                                         self.CODE_METRIC_CLASSES + self.PERFORMANCE_METRIC_CLASSES)
         if metric.OWASPDependencies.can_be_measured(product, self.__project):
-            metrics.append(metric.OWASPDependencies(product,
-                                                    project=self.__project))
+            metrics.append(metric.OWASPDependencies(product, project=self.__project))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
-            metrics.append(metric.SnapshotDependencies(product, report=self,
-                                                       project=self.__project))
-        art = product.art()
-        if art and art.product_version_type() == 'trunk':
-            # Only add the ART if we're reporting on the trunk version because we currently can only report on the
-            # trunk version of the ART.
-            metrics.extend(self.__java_metrics(art))
-            for art_metric_class in (metric.ARTStatementCoverage,
-                                     metric.ARTBranchCoverage,
-                                     metric.FailingRegressionTests):
-                if art_metric_class.can_be_measured(art, self.__project):
-                    metrics.append(art_metric_class(art, project=self.__project))
-        if metric.UnmergedBranches.can_be_measured(art, self.__project):
-            metrics.append(metric.UnmergedBranches(subject=art, project=self.__project))
+            metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
+        metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         if metric.UnmergedBranches.can_be_measured(product, self.__project):
             metrics.append(metric.UnmergedBranches(product, project=self.__project))
@@ -338,12 +321,9 @@ class QualityReport(object):
 
     def __team_section(self, team):
         """ Return a report section for the team. """
-        metrics = []
-        for metric_class in self.TEAM_SECTION_METRIC_CLASSES:
-            if metric_class.can_be_measured(team, self.__project):
-                metrics.append(metric_class(team, project=self.__project))
-        self.__metrics.extend(metrics)
-        return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics)
+        team_metrics = self.__subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
+        self.__metrics.extend(team_metrics)
+        return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), team_metrics)
 
     def __create_meta_section(self, sections):
         """ Create and return the meta section. """
@@ -356,19 +336,27 @@ class QualityReport(object):
         return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,
                        history=self.__project.metric_source(metric_source.History))
 
-    def __jsf_metrics(self, jsf):
-        """ Return a list of JSF metrics for the (JSF) product. """
+    def __art_metrics(self, art):
+        """ Return a list of Automated Regression Test metrics for the (ART) product. """
         metrics = []
-        if metric.JsfDuplication.can_be_measured(jsf, self.__project):
-            metrics.append(metric.JsfDuplication(jsf, project=self.__project))
-        if metric.ProductLOC.can_be_measured(jsf, self.__project):
-            metrics.append(metric.ProductLOC(jsf, project=self.__project))
+        if art and art.product_version_type() == 'trunk':
+            # Only add the ART if we're reporting on the trunk version because we currently can only report on the
+            # trunk version of the ART.
+            art_metric_classes = self.CODE_METRIC_CLASSES + (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
+                                                             metric.FailingRegressionTests)
+            metrics.extend(self.__subject_metrics(art, art_metric_classes))
+        if metric.UnmergedBranches.can_be_measured(art, self.__project):
+            metrics.append(metric.UnmergedBranches(subject=art, project=self.__project))
         return metrics
 
-    def __java_metrics(self, product):
-        """ Return a list of Java metrics for the (Java) product. """
+    def __jsf_metrics(self, jsf):
+        """ Return a list of JSF metrics for the (JSF) product. """
+        return self.__subject_metrics(jsf, (metric.JsfDuplication, metric.ProductLOC))
+
+    def __subject_metrics(self, subject, metric_classes):
+        """ Return a list of metrics for the subject that can be measured. """
         metrics = []
-        for metric_class in self.JAVA_METRIC_CLASSES:
-            if metric_class.can_be_measured(product, self.__project):
-                metrics.append(metric_class(product, project=self.__project))
+        for metric_class in metric_classes:
+            if metric_class.can_be_measured(subject, self.__project):
+                metrics.append(metric_class(subject, project=self.__project))
         return metrics

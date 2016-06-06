@@ -483,7 +483,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_art_critical_violations(self):
         """ Test that the critical violations is added for the ART. """
-        for metric_class in report.QualityReport.JAVA_METRIC_CLASSES:
+        for metric_class in report.QualityReport.CODE_METRIC_CLASSES:
             self.__assert_metric(
                 metric_class,
                 project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}),
