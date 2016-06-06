@@ -78,9 +78,11 @@ class VersionControlSystemProductInfo(object):
         else:
             return self.__vcs.last_changed_date(path)
 
-    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore=''):
+    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
+                          list_of_branches_to_include=None):
         """ Return a list of branches that haven't been merged with the trunk. """
-        return self.__vcs.unmerged_branches(path, list_of_branches_to_ignore, re_of_branches_to_ignore)
+        return self.__vcs.unmerged_branches(path, list_of_branches_to_ignore, re_of_branches_to_ignore,
+                                            list_of_branches_to_include)
 
     def branches(self, path):
         """ Return a list of branches. """

@@ -64,16 +64,21 @@ class Git(VersionControlSystem):
         return [tag.strip() for tag in tags.strip().split('\n') if valid_tag_name(tag.strip())]
 
     @utils.memoized
-    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore=''):
+    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
+                          list_of_branches_to_include=None):
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
             any unmerged commits. """
 
         def ignore(branch_name):
             """ Return whether the branch should be ignored. """
+            if list_of_branches_to_include:
+                if branch_name not in list_of_branches_to_include:
+                    return True
             return branch_name in list_of_branches_to_ignore or re_of_branches_to_ignore and \
                                                                 re.match(re_of_branches_to_ignore, branch_name)
 
         list_of_branches_to_ignore = list_of_branches_to_ignore or []
+        list_of_branches_to_include = list_of_branches_to_include or []
         unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not ignore(branch)]
         branches_and_commits = [(branch, self.__nr_unmerged_commits(branch)) for branch in unmerged_branches]
         return dict(branches_and_commits)

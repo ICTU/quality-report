@@ -20,10 +20,10 @@ import unittest
 from qualitylib.metric_source import Git
 
 
-class GitUnderTest(Git):
+class GitUnderTest(Git):  # pylint: disable=too-few-public-methods
     """ Override the Git class to prevent it from running shell commands. """
-    def _run_shell_command(self, command, *args, **kwargs):
-        self.last_command = command
+    def _run_shell_command(self, command, *args, **kwargs):  # pylint: disable=unused-argument
+        self.last_command = command  # pylint: disable=attribute-defined-outside-init
         return ''
 
 

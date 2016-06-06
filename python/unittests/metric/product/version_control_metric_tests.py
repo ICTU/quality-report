@@ -63,6 +63,7 @@ class UnmergedBranchesTest(unittest.TestCase):
             metric_source_ids={self.__subversion: 'http://svn/trunk/foo/'},
             metric_options={
                 metric.UnmergedBranches: dict(
+                    branches_to_include=['branch', 'ignored branch'],
                     branches_to_ignore=['ignored branch'],
                     branches_to_ignore_re='feature.*')})
         self.__metric = metric.UnmergedBranches(subject=self.__subject, project=self.__project)
@@ -85,9 +86,10 @@ class UnmergedBranchesTest(unittest.TestCase):
         """ Test that the label for the urls is correct. """
         self.assertEqual('Niet gemergde branches', self.__metric.url_label())
 
-    def test_comment(self):
+    def test_comment_ignored_branches(self):
         """ Test that the comment includes the regular expression for unmerged branches to ignore. """
-        self.assertEqual('Branches die voldoen aan de reguliere expressie feature.* zijn genegeerd.',
+        self.assertEqual('Alleen deze branches worden bewaakt: branch, ignored branch. '
+                         'Branches die voldoen aan de reguliere expressie feature.* zijn genegeerd.',
                          self.__metric.comment())
 
     def test_comment_urls(self):

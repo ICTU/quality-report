@@ -53,6 +53,14 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def comment(self):
         comment = super(UnmergedBranches, self).comment()
+        branches_to_include = self.__list_of_branches_to_include()
+        if branches_to_include:
+            branches = ', '.join(branches_to_include)
+            branch_comment = 'Alleen deze branches worden bewaakt: {}.'.format(branches)
+            if comment:
+                comment += ' ' + branch_comment
+            else:
+                comment = branch_comment
         branch_re = self.__re_of_branches_to_ignore()
         if branch_re:
             branch_comment = 'Branches die voldoen aan de reguliere expressie {re} zijn genegeerd.'.format(re=branch_re)
@@ -91,7 +99,8 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     def __unmerged_branches(self):
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
         return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),
-                                                        self.__re_of_branches_to_ignore())
+                                                        self.__re_of_branches_to_ignore(),
+                                                        self.__list_of_branches_to_include())
 
     def __list_of_branches_to_ignore(self):
         """ Return the list of branches to ignore for the measured product. """
@@ -102,3 +111,8 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         """ Return the regular expression of branches to ignore for the measured product. """
         metric_options = self._subject.metric_options(self.__class__)
         return metric_options.get('branches_to_ignore_re', '') if metric_options else ''
+
+    def __list_of_branches_to_include(self):
+        """ Return the list of branches to include for the measured product. """
+        metric_options = self._subject.metric_options(self.__class__)
+        return metric_options.get('branches_to_include', []) if metric_options else []

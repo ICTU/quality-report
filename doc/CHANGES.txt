@@ -1,3 +1,9 @@
+2016-06-06  Release 1.20.0
+
+  * Allow for monitoring only specific branches for unmerged revisions, using a metric option. For example,
+    metric_options={metric.UnmergedBranches: dict(branches_to_include=['test branch', 'dev branch'])}
+
+
 2016-06-04  Release 1.19.8
 
   * Indicate that the metric cannot be measured when the source is not configured or unavailable.

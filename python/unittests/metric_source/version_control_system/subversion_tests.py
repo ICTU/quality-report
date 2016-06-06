@@ -65,12 +65,23 @@ class SubversionTests(unittest.TestCase):  # pylint: disable=too-many-public-met
     def test_one_unmerged_branch_that_is_ignored(self):
         """ Test one unmerged branch that is ignored. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual({}, self.__svn.unmerged_branches('http://svn/', list_of_branches_to_ignore=['folder']))
+        self.assertEqual(dict(), self.__svn.unmerged_branches('http://svn/', list_of_branches_to_ignore=['folder']))
 
     def test_one_unmerged_branch_that_is_ignored_with_re(self):
         """ Test one unmerged branch that is ignored. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual({}, self.__svn.unmerged_branches('http://svn/', re_of_branches_to_ignore='f.*'))
+        self.assertEqual(dict(), self.__svn.unmerged_branches('http://svn/', re_of_branches_to_ignore='f.*'))
+
+    def test_one_unmerged_branch_that_is_included(self):
+        """ Test that the unmerged branch is returned when it is explicitly included. """
+        self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
+        self.assertEqual(dict(folder=5), self.__svn.unmerged_branches('http://svn/',
+                                                                      list_of_branches_to_include=['folder']))
+
+    def test_one_unmerged_branch_that_is_not_included(self):
+        """ Test that the unmerged branch is returned when it is explicitly included. """
+        self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
+        self.assertEqual(dict(), self.__svn.unmerged_branches('http://svn/', list_of_branches_to_include=['other']))
 
     def test_normalize_path(self):
         """ Test path that needs no changes. """
