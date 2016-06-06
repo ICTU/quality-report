@@ -102,7 +102,7 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
         self.__product.set_product_version('1.1')
         self.assertTrue(self.__subversion_product_info.is_latest_release())
 
-    def test_is_not_lastest_release(self):
+    def test_is_not_latest_release(self):
         """ Test that trunk versions are never the latest release. """
         self.assertFalse(self.__subversion_product_info.is_latest_release())
 
