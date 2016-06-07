@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from ..base import DomainObject
 
 
-class MeasurableObject(DomainObject):  # pylint: disable=too-few-public-methods
+class MeasurableObject(DomainObject):
     """ An object that has measurable characteristics. Base class for products, teams, etc. """
     def __init__(self, targets=None, low_targets=None, technical_debt_targets=None, metric_source_ids=None,
                  old_metric_source_ids=None, metric_source_options=None, metric_options=None, *args, **kwargs):
@@ -59,12 +59,11 @@ class MeasurableObject(DomainObject):  # pylint: disable=too-few-public-methods
         return old_metric_source_ids.get(version, None)
 
     def metric_source_options(self, metric_source):
-        """ Return the options of this object for the metric source. Options
-            can be any information that is needed to get information about this
-            object from the metric source. """
+        """ Return the options of this object for the metric source. Options can be any information that is needed
+            to get information about this object from the metric source. """
         return self.__metric_source_options.get(metric_source, None)
 
     def metric_options(self, metric_class):
-        """ Return the options of this object for the metric class. Options
-            can be any information that is needed for the metric. """
+        """ Return the options of this object for the metric class. Options can be any information that is needed
+            for the metric. """
         return self.__metric_options.get(metric_class, None)
