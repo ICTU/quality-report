@@ -24,7 +24,7 @@ class MeasurableObject(DomainObject):
                  old_metric_source_ids=None, metric_source_options=None, metric_options=None, *args, **kwargs):
         self._targets = targets or dict()
         self.__low_targets = low_targets or dict()
-        self._technical_debt_targets = technical_debt_targets or dict()
+        self.__technical_debt_targets = technical_debt_targets or dict()
         self.__metric_source_ids = metric_source_ids or dict()
         self.__old_metric_source_ids = old_metric_source_ids or dict()
         self.__metric_source_options = metric_source_options or dict()
@@ -41,7 +41,7 @@ class MeasurableObject(DomainObject):
 
     def technical_debt_target(self, metric_class):
         """ Return whether a score below target is considered to be accepted technical debt. """
-        return self._technical_debt_targets.get(metric_class, None)
+        return self.__technical_debt_targets.get(metric_class, None)
 
     def metric_source_id(self, metric_source):
         """ Return the id of this object in the metric source. """

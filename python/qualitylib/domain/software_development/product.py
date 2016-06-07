@@ -165,13 +165,10 @@ class Product(MeasurableObject):
 
     def technical_debt_target(self, metric_class):
         """ Return whether a score below target is considered to be accepted technical debt. """
-        # First check for a technical debt target for our version. If there
-        # is no technical debt target for our version return the generic
-        # technical debt target.
-        try:
-            return self._technical_debt_targets[(metric_class, self.product_version())]
-        except KeyError:
-            return super(Product, self).technical_debt_target(metric_class)
+        # First check for a technical debt target for our version. If there is no technical debt target for our version
+        # return the generic technical debt target.
+        version_target = super(Product, self).technical_debt_target((metric_class, self.product_version()))
+        return version_target if version_target else super(Product, self).technical_debt_target(metric_class)
 
     def product_resources(self):
         """ Return the resources of the product. """
