@@ -30,7 +30,7 @@ class Project(measurable.MeasurableObject):
     def __init__(self, organization='Unnamed organization',
                  metric_sources=None, requirements=None,
                  additional_resources=None, *args, **kwargs):
-        self.__short_section_names = set(['MM', 'PC', 'PD', 'PE'])  # Two letter abbreviations used, must be unique
+        self.__short_section_names = {'MM', 'PC', 'PD', 'PE'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__metric_sources = MetricSources(metric_sources or dict())
         self.__requirements = requirements or set()
@@ -110,27 +110,23 @@ class Project(measurable.MeasurableObject):
         return self.__products
 
     def get_product(self, name, version=None, branch=None):
-        """ Find a product by name, version and branch. Return the trunk version
-            if version and branch are not specified. """
+        """ Find a product by name, version and branch. Return the trunk version if version and branch are not
+            specified. """
         def match_version(product):
-            """ Return whether the product version matches the target version,
-                if any. """
+            """ Return whether the product version matches the target version, if any. """
             this_version = product.product_version()
             return this_version == version if version else not this_version
 
         def match_branch(product):
-            """ Return whether the product branch matches the target branch,
-                if any. """
+            """ Return whether the product branch matches the target branch, if any. """
             this_branch = product.product_branch()
             return this_branch == branch if branch else not this_branch
 
         def match(product):
-            """ Return whether the product name, version and branch match the
-                ones we're looking for. """
-            return name == product.name() and match_version(product) and \
-                match_branch(product)
+            """ Return whether the product name, version and branch match the ones we're looking for. """
+            return name == product.name() and match_version(product) and match_branch(product)
 
-        matches = [product for product in self.__products if match(product)]
+        matches = [each_product for each_product in self.__products if match(each_product)]
         return matches[0] if matches else None
 
     def product_dependencies(self):
@@ -187,8 +183,9 @@ class Project(measurable.MeasurableObject):
                               additional_resource.url()))
         return resources
 
-    def __add_metric_source_to_resources(self, source, resources):
-        if type(source) == type([]):
+    @staticmethod
+    def __add_metric_source_to_resources(source, resources):
+        if isinstance(source, list):
             for subsource in source:
                 resources.append((subsource.name(), subsource.url()))
         else:
