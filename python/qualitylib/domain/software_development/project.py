@@ -30,7 +30,7 @@ class Project(measurable.MeasurableObject):
     def __init__(self, organization='Unnamed organization',
                  metric_sources=None, requirements=None,
                  additional_resources=None, *args, **kwargs):
-        self.__short_section_names = set(['MM', 'PC', 'PD'])  # Two letter abbreviations used, must be unique
+        self.__short_section_names = set(['MM', 'PC', 'PD', 'PE'])  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__metric_sources = MetricSources(metric_sources or dict())
         self.__requirements = requirements or set()
