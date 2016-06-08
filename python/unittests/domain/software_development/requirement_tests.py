@@ -19,11 +19,10 @@ import unittest
 from qualitylib import domain
 
 
-class RequirementTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
+class RequirementTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Unit tests for the Requirement domain class. """
-    def setUp(self):  # pylint: disable=C0103
-        self.__requirement = domain.Requirement(name='Be user friendly', metric_classes=['Metric'])
+    def setUp(self):
+        self.__requirement = domain.Requirement(name='Be user friendly', metric_classes=['FakeMetricClass'])
 
     def test_name(self):
         """ Test the name of the requirement. """
@@ -31,4 +30,19 @@ class RequirementTest(unittest.TestCase):
 
     def test_metric_classes(self):
         """ Test that the metric classes can be retrieved. """
-        self.assertEqual(['Metric'], self.__requirement.metric_classes())
+        self.assertEqual(['FakeMetricClass'], self.__requirement.metric_classes())
+
+
+class RequirementSubjectTest(unittest.TestCase):
+    """ Unit tests for the Requirement Subject domain class. """
+    def setUp(self):
+        self.__requirement = domain.Requirement('A requirement', metric_classes=['FakeMetricClass'])
+        self.__subject = domain.software_development.requirement.RequirementSubject(requirements=[self.__requirement])
+
+    def test_requirements(self):
+        """ Test that requirements can be given to a requirement subject. """
+        self.assertTrue(self.__requirement in self.__subject.requirements())
+
+    def test_required_metric_classes(self):
+        """ Test that the required metric classes are returned based on the requirements. """
+        self.assertTrue('FakeMetricClass' in self.__subject.required_metric_classes())

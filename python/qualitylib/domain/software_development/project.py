@@ -15,25 +15,22 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
 import copy
 import logging
 
-
 from ..measurement import metric_source, measurable
 from ..measurement.metric_sources import MetricSources
+from .requirement import RequirementSubject
 
 
-class Project(measurable.MeasurableObject):
+class Project(RequirementSubject, measurable.MeasurableObject):
     """ Class representing a software development/maintenance project. """
 
     def __init__(self, organization='Unnamed organization',
-                 metric_sources=None, requirements=None,
-                 additional_resources=None, *args, **kwargs):
+                 metric_sources=None, additional_resources=None, *args, **kwargs):
         self.__short_section_names = {'MM', 'PC', 'PD', 'PE'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__metric_sources = MetricSources(metric_sources or dict())
-        self.__requirements = requirements or set()
         self.__additional_resources = additional_resources or []
         self.__products = []
         self.__teams = []
@@ -49,18 +46,6 @@ class Project(measurable.MeasurableObject):
     def metric_source(self, metric_source_class):
         """ Return the metric source instance for the metric source class. """
         return self.__metric_sources.get(metric_source_class, metric_source.MissingMetricSource())
-
-    def requirements(self):
-        """ Return the requirements of the project. """
-        return self.__requirements
-
-    def required_metric_classes(self):
-        """ Return the metrics that need to be measured as a consequence of the
-            project requirements. """
-        classes = set()
-        for requirement in self.__requirements:
-            classes.update(set(requirement.metric_classes()))
-        return classes
 
     def additional_resources(self):
         """ Return the additional resources of the project. """

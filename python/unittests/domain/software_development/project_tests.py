@@ -347,12 +347,6 @@ class ProjectResourcesTest(unittest.TestCase):
         resources = project.project_resources()
         self.assertTrue(('Resource', 'http://url') in resources)
 
-    def test_requirements(self):
-        """ Test that requirements can be given to a project. """
-        requirement = domain.Requirement('A requirement')
-        project = self.project(requirements=[requirement])
-        self.assertTrue(requirement in project.requirements())
-
     def test_team_resources(self):
         """ Test that team resources are added as well. """
         project = self.project()

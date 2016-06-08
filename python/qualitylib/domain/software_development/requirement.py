@@ -27,3 +27,21 @@ class Requirement(DomainObject):
     def metric_classes(self):
         """ Return the set of metrics that have to be measured to satisfy this requirement. """
         return self.__metric_classes
+
+
+class RequirementSubject(DomainObject):
+    """ Measurable objects that have requirements. """
+    def __init__(self, *args, **kwargs):
+        self.__requirements = kwargs.pop('requirements', set())
+        super(RequirementSubject, self).__init__(*args, **kwargs)
+
+    def requirements(self):
+        """ Return the requirements of the object. """
+        return self.__requirements
+
+    def required_metric_classes(self):
+        """ Return the metrics that need to be measured as a consequence of the requirements. """
+        classes = set()
+        for requirement in self.__requirements:
+            classes.update(set(requirement.metric_classes()))
+        return classes
