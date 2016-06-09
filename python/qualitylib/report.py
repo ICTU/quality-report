@@ -119,6 +119,8 @@ class QualityReport(object):
                                     metric.UnittestBranchCoverage,
                                     metric.IntegrationtestLineCoverage,
                                     metric.IntegrationtestBranchCoverage,
+                                    metric.OverallTestLineCoverage,
+                                    metric.OverallTestBranchCoverage,
                                     metric.FailingRegressionTests,
                                     metric.ARTStatementCoverage,
                                     metric.ARTBranchCoverage)

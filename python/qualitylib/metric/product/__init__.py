@@ -26,7 +26,8 @@ from .performance_metrics import *
 from .size_metrics import *
 from .source_code_metrics import *
 from .unittest_metrics import *
-from .integration_test_metrics import *
+from .integration_test_metrics import IntegrationtestLineCoverage, IntegrationtestBranchCoverage
+from .overall_test_metrics import OverallTestLineCoverage, OverallTestBranchCoverage
 from .user_story_metrics import *
 from .version_control_metrics import *
 from .violation_metrics import *

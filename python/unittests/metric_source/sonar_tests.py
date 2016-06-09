@@ -322,13 +322,21 @@ class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the integration test branch coverage equals the branch coverage returned by the dashboard. """
         self.assertEqual(100, self.__sonar.integration_test_branch_coverage('product'))
 
+    def test_overall_test_line_coverage(self):
+        """ Test that the overall test line coverage equals the line coverage returned by the dashboard. """
+        self.assertEqual(100, self.__sonar.overall_test_line_coverage('product'))
+
+    def test_overall_test_branch_coverage(self):
+        """ Test that the overall test branch coverage equals the branch coverage returned by the dashboard. """
+        self.assertEqual(100, self.__sonar.overall_test_branch_coverage('product'))
+
     def test_overall_line_coverage(self):
         """ Test that the overall test line coverage equals the line coverage returned by the dashboard. """
-        self.assertEqual(100, self.__sonar.overall_line_coverage('product'))
+        self.assertEqual(100, self.__sonar.overall_test_line_coverage('product'))
 
     def test_overall_branch_coverage(self):
         """ Test that the overall test branch coverage equals the branch coverage returned by the dashboard. """
-        self.assertEqual(100, self.__sonar.overall_branch_coverage('product'))
+        self.assertEqual(100, self.__sonar.overall_test_branch_coverage('product'))
 
     def test_package_cycles(self):
         """ Test that the number of package cycles equals the number of package cycles returned by the dashboard. """

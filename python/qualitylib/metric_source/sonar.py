@@ -167,11 +167,11 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the branch coverage of the integration tests for the product. """
         return self.__metric(product, 'it_branch_coverage')
 
-    def overall_line_coverage(self, product):
+    def overall_test_line_coverage(self, product):
         """ Return the overall line coverage of the tests for the product. """
         return self.__metric(product, 'overall_line_coverage')
 
-    def overall_branch_coverage(self, product):
+    def overall_test_branch_coverage(self, product):
         """ Return the overall branch coverage of the tests for the product. """
         return self.__metric(product, 'overall_branch_coverage')
 

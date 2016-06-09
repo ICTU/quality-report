@@ -1,3 +1,8 @@
+2016-06-09  Release 1.22.0
+
+  * Add metrics for overall test line and branch coverage.
+
+
 2016-06-09  Release 1.21.0
 
   * Add metrics for integration test line and branch coverage.
