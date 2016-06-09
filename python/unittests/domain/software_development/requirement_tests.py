@@ -19,7 +19,7 @@ import unittest
 from qualitylib import domain
 
 
-class RequirementTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class RequirementTest(unittest.TestCase):
     """ Unit tests for the Requirement domain class. """
     def setUp(self):
         self.__requirement = domain.Requirement(name='Be user friendly', metric_classes=['FakeMetricClass'])
