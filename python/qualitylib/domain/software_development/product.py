@@ -27,13 +27,14 @@ class Product(MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
     def __init__(self, project, short_name='',
-                 unittests=None, jsf=None, art=None, is_main=True,
+                 unittests=None, integration_tests=None, jsf=None, art=None, is_main=True,
                  product_branches=None, product_version='', product_branch='',
                  **kwargs):
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
         self.__unittests = unittests
+        self.__integration_tests = integration_tests
         self.__jsf = jsf
         self.__art = art
         self.__is_main = is_main  # Is this product part of the main system or is it support code?
@@ -148,6 +149,10 @@ class Product(MeasurableObject):
     def unittests(self):
         """ Return a product that represents the unit test of this product. """
         return self.__copy_component(self.__unittests)
+
+    def integration_tests(self):
+        """ Return a product that represents the integration test of this product. """
+        return self.__copy_component(self.__integration_tests)
 
     def jsf(self):
         """ Return a product that represents the JSF of this product. """

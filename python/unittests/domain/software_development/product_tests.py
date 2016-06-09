@@ -180,6 +180,23 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         product.set_product_version('1.1')
         self.assertEqual('1.1', product.unittests().product_version())
 
+    def test_default_integration_tests(self):
+        """ Test that products have no integration test component by default. """
+        self.assertFalse(self.__product.integration_tests())
+
+    def test_integration_tests(self):
+        """ Test that the integration test component can be retrieved. """
+        integration_tests = domain.Product(self.__project)
+        product = domain.Product(self.__project, integration_tests=integration_tests)
+        self.assertEqual(integration_tests, product.integration_tests())
+
+    def test_integration_tests_have_product_version(self):
+        """ Test that the integration test component has the same version as the product it belongs to. """
+        integration_tests = domain.Product(self.__project)
+        product = domain.Product(self.__project, integration_tests=integration_tests)
+        product.set_product_version('1.1')
+        self.assertEqual('1.1', product.integration_tests().product_version())
+
     def test_default_jsf(self):
         """ Test that products have no jsf component by default. """
         self.assertFalse(self.__product.jsf())

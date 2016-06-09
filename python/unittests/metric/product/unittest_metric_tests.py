@@ -26,11 +26,11 @@ class FakeSonar(object):
         self.__line_coverage = line_coverage
         self.__branch_coverage = branch_coverage
 
-    def line_coverage(self, *args):
+    def unittest_line_coverage(self, *args):
         """ Return the percentage line coverage. """
         return self.__line_coverage
 
-    def branch_coverage(self, *args):
+    def unittest_branch_coverage(self, *args):
         """ Return the percentage branch coverage. """
         return self.__branch_coverage
 
@@ -61,7 +61,7 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
         return 'FakeSubject'
 
     def unittests(self):
-        """ Return the unit test Sonar id of the subject. """
+        """ Return the unit tests of the subject. """
         return domain.Product(domain.Project(),
                               metric_source_ids={self.__sonar: 'some:fake:id'}) if self.__sonar else None
 

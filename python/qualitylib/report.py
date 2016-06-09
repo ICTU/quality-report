@@ -117,6 +117,8 @@ class QualityReport(object):
     TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests,
                                     metric.UnittestLineCoverage,
                                     metric.UnittestBranchCoverage,
+                                    metric.IntegrationtestLineCoverage,
+                                    metric.IntegrationtestBranchCoverage,
                                     metric.FailingRegressionTests,
                                     metric.ARTStatementCoverage,
                                     metric.ARTBranchCoverage)

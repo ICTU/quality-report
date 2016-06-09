@@ -143,11 +143,11 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the number of duplicated lines for the product. """
         return int(self.__metric(product, 'duplicated_lines'))
 
-    def line_coverage(self, product):
+    def unittest_line_coverage(self, product):
         """ Return the line coverage of the unit tests for the product. """
         return self.__metric(product, 'line_coverage')
 
-    def branch_coverage(self, product):
+    def unittest_branch_coverage(self, product):
         """ Return the branch coverage of the unit tests for the product. """
         return self.__metric(product, 'branch_coverage')
 
@@ -158,6 +158,22 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def failing_unittests(self, product):
         """ Return the number of failing unit tests for the product. """
         return int(self.__metric(product, 'test_failures') + self.__metric(product, 'test_errors'))
+
+    def integration_test_line_coverage(self, product):
+        """ Return the line coverage of the integration tests for the product. """
+        return self.__metric(product, 'it_line_coverage')
+
+    def integration_test_branch_coverage(self, product):
+        """ Return the branch coverage of the integration tests for the product. """
+        return self.__metric(product, 'it_branch_coverage')
+
+    def overall_line_coverage(self, product):
+        """ Return the overall line coverage of the tests for the product. """
+        return self.__metric(product, 'overall_line_coverage')
+
+    def overall_branch_coverage(self, product):
+        """ Return the overall branch coverage of the tests for the product. """
+        return self.__metric(product, 'overall_branch_coverage')
 
     def package_cycles(self, product):
         """ Return the number of cycles in the package dependencies for the product. """

@@ -70,6 +70,10 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
                 {"val": 100, "key": "test_failures"},
                 {"val": 100, "key": "test_errors"},
                 {"val": 100, "key": "line_coverage"},
+                {"val": 100, "key": "it_line_coverage"},
+                {"val": 100, "key": "it_branch_coverage"},
+                {"val": 100, "key": "overall_line_coverage"},
+                {"val": 100, "key": "overall_branch_coverage"},
                 {"val": 100, "key": "lines"},
                 {"val": 100, "key": "ncloc"},
                 {"val": 100, "key": "functions"},
@@ -293,13 +297,13 @@ class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             dashboard. """
         self.assertEqual(100, self.__sonar.duplicated_lines('product'))
 
-    def test_line_coverage(self):
+    def test_unittest_line_coverage(self):
         """ Test that the line coverage equals the line coverage returned by the dashboard. """
-        self.assertEqual(100, self.__sonar.line_coverage('product'))
+        self.assertEqual(100, self.__sonar.unittest_line_coverage('product'))
 
-    def test_branch_coverage(self):
+    def test_unittest_branch_coverage(self):
         """ Test that the branch coverage equals the branch coverage returned by the dashboard. """
-        self.assertEqual(100, self.__sonar.branch_coverage('product'))
+        self.assertEqual(100, self.__sonar.unittest_branch_coverage('product'))
 
     def test_unittests(self):
         """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
@@ -309,6 +313,22 @@ class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the number of failing unit tests equals the number of unit test failures plus the number of
             unit test errors returned by the dashboard. """
         self.assertEqual(200, self.__sonar.failing_unittests('product'))
+
+    def test_integration_test_line_coverage(self):
+        """ Test that the integration test line coverage equals the line coverage returned by the dashboard. """
+        self.assertEqual(100, self.__sonar.integration_test_line_coverage('product'))
+
+    def test_integration_test_branch_coverage(self):
+        """ Test that the integration test branch coverage equals the branch coverage returned by the dashboard. """
+        self.assertEqual(100, self.__sonar.integration_test_branch_coverage('product'))
+
+    def test_overall_line_coverage(self):
+        """ Test that the overall test line coverage equals the line coverage returned by the dashboard. """
+        self.assertEqual(100, self.__sonar.overall_line_coverage('product'))
+
+    def test_overall_branch_coverage(self):
+        """ Test that the overall test branch coverage equals the branch coverage returned by the dashboard. """
+        self.assertEqual(100, self.__sonar.overall_branch_coverage('product'))
 
     def test_package_cycles(self):
         """ Test that the number of package cycles equals the number of package cycles returned by the dashboard. """

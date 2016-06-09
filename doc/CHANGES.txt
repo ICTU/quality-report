@@ -1,3 +1,8 @@
+2016-06-09  Release 1.21.0
+
+  * Add metrics for integration test line and branch coverage.
+
+
 2016-06-06  Release 1.20.0
 
   * Allow for monitoring only specific branches for unmerged revisions, using a metric option. For example,

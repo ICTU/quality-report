@@ -86,7 +86,7 @@ class UnittestLineCoverage(UnittestCoverage):
     low_target_value = 90
 
     def value(self):
-        return round(self._sonar.line_coverage(self._sonar_id()))
+        return round(self._sonar.unittest_line_coverage(self._sonar_id()))
 
 
 class UnittestBranchCoverage(UnittestCoverage):
@@ -101,4 +101,4 @@ class UnittestBranchCoverage(UnittestCoverage):
     low_target_value = 60
 
     def value(self):
-        return round(self._sonar.branch_coverage(self._sonar_id()))
+        return round(self._sonar.unittest_branch_coverage(self._sonar_id()))
