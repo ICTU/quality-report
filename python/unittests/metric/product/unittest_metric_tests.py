@@ -50,10 +50,13 @@ class FakeSonar(object):
         return 'http://sonar'
 
 
-class FakeSubject(object):  # pylint: disable=too-few-public-methods
+class FakeSubject(object):
     """ Provide for a fake subject. """
-    def __init__(self, sonar=None):
-        self.__sonar = sonar
+    def __init__(self, sonar=None, unittests=True, integration_tests=False):
+        self.__unittests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
+            if unittests else None
+        self.__integration_tests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
+            if integration_tests else None
 
     @staticmethod
     def name():
@@ -62,8 +65,11 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
 
     def unittests(self):
         """ Return the unit tests of the subject. """
-        return domain.Product(domain.Project(),
-                              metric_source_ids={self.__sonar: 'some:fake:id'}) if self.__sonar else None
+        return self.__unittests
+
+    def integration_tests(self):
+        """ Return the integration tests of the subject. """
+        return self.__integration_tests
 
 
 class SonarDashboardUrlTestMixin(object):
@@ -75,7 +81,6 @@ class SonarDashboardUrlTestMixin(object):
 
 
 class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the failing unit tests metric. """
 
     def setUp(self):
@@ -111,10 +116,9 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
 
 
 class UnittestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the unit test line coverage metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = FakeSonar(line_coverage=89)
         self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
         self.__product = FakeSubject(self.__sonar)
@@ -146,15 +150,20 @@ class UnittestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         project = domain.Project()
         self.assertFalse(metric.UnittestLineCoverage.can_be_measured(product, project))
 
+    def test_wont_be_measured_with_integration_tests(self):
+        """ Test that the metric isn't measured when the product also has integration tests since then the combined
+            unit and integration test coverage will be measured instead. """
+        product = FakeSubject(self.__sonar, integration_tests=True)
+        self.assertFalse(metric.UnittestLineCoverage.can_be_measured(product, self.__project))
+
 
 class UnittestBranchCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the unit test branch coverage metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = FakeSonar(branch_coverage=87)
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self._metric = metric.UnittestBranchCoverage(subject=FakeSubject(self.__sonar), project=project)
+        self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
+        self._metric = metric.UnittestBranchCoverage(subject=FakeSubject(self.__sonar), project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric equals the branch coverage reported by Sonar. """
@@ -181,3 +190,9 @@ class UnittestBranchCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
         product = FakeSubject(self.__sonar)
         project = domain.Project()
         self.assertFalse(metric.UnittestBranchCoverage.can_be_measured(product, project))
+
+    def test_wont_be_measured_with_integration_tests(self):
+        """ Test that the metric isn't measured when the product also has integration tests since then the combined
+            unit and integration test coverage will be measured instead. """
+        product = FakeSubject(self.__sonar, integration_tests=True)
+        self.assertFalse(metric.UnittestBranchCoverage.can_be_measured(product, self.__project))

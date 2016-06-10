@@ -1,6 +1,14 @@
+2016-06-10  Release 1.23.0
+
+  * Include test coverage metrics in the report depending on whether the product has unit tests, integration tests, or
+    both. When the product has only unit tests, report on the unit test coverage. When the product has only integration
+    tests, report on the integration test coverage. When the product has both unit and integration tests, report on
+    the combined coverage only.
+
+
 2016-06-09  Release 1.22.0
 
-  * Add metrics for overall test line and branch coverage.
+  * Add metrics for combined unit and integration test line and branch coverage.
 
 
 2016-06-09  Release 1.21.0

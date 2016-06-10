@@ -20,18 +20,18 @@ from ..quality_attributes import TEST_COVERAGE
 from ...domain import HigherIsBetterMetric
 
 
-class OverallTestMetricMixin(SonarDashboardMetricMixin):
-    """ Mixin class for Sonar metrics about overall tests. """
+class UnitAndIntegrationTestMetricMixin(SonarDashboardMetricMixin):
+    """ Mixin class for Sonar metrics about combined unit and integration tests. """
 
     @classmethod
     def can_be_measured(cls, product, project):
-        return super(OverallTestMetricMixin, cls).can_be_measured(product, project) and \
-            product.unittests() and product.integration_tests()
+        return super(UnitAndIntegrationTestMetricMixin, cls).can_be_measured(product, project) and \
+               product.unittests() and product.integration_tests()
 
 
-class OverallTestCoverage(OverallTestMetricMixin, HigherIsBetterMetric):
+class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
-    """ Base class for metrics measuring overall coverage of tests for a product. """
+    """ Base class for metrics measuring combined coverage of unit and integration tests for a product. """
 
     perfect_value = 100
     quality_attribute = TEST_COVERAGE
@@ -40,29 +40,29 @@ class OverallTestCoverage(OverallTestMetricMixin, HigherIsBetterMetric):
         raise NotImplementedError  # pragma: no cover
 
 
-class OverallTestLineCoverage(OverallTestCoverage):
+class UnitAndIntegrationTestLineCoverage(UnitAndIntegrationTestCoverage):
     # pylint: disable=too-many-public-methods
-    """ Metric for measuring the overall line coverage of tests for a product. """
+    """ Metric for measuring the combined line coverage of unit and integration tests for a product. """
 
-    name = 'Overall test broncode dekking (line coverage)'
-    norm_template = 'Minimaal {target}% van de regels code wordt gedekt door unit- en integratietests. ' \
+    name = 'Gecombineerde unit- en integratietest broncode dekking (line coverage)'
+    norm_template = 'Minimaal {target}% van de regels code wordt gedekt door unit- en integratietests samen. ' \
         'Lager dan {low_target}% is rood.'
-    template = '{name} overall test line coverage is {value:.0f}%.'
-    target_value = 100
-    low_target_value = 80
+    template = '{name} gecombineerde unit- en integratietest line coverage is {value:.0f}%.'
+    target_value = 98
+    low_target_value = 90
 
     def value(self):
         return round(self._sonar.overall_test_line_coverage(self._sonar_id()))
 
 
-class OverallTestBranchCoverage(OverallTestCoverage):
+class UnitAndIntegrationTestBranchCoverage(UnitAndIntegrationTestCoverage):
     # pylint: disable=too-many-public-methods
-    """ Metric for measuring the overall branch coverage of tests for a product. """
+    """ Metric for measuring the combined branch coverage of unit and integration tests for a product. """
 
     name = 'Overall est broncode dekking (branch coverage)'
-    norm_template = 'Minimaal {target}% van de code branches wordt gedekt door unit- en integratietests. ' \
+    norm_template = 'Minimaal {target}% van de code branches wordt gedekt door unit- en integratietests samen. ' \
         'Lager dan {low_target}% is rood.'
-    template = '{name} overall test branch coverage is {value:.0f}%.'
+    template = '{name} gecombineerde unit- en integratietest branch coverage is {value:.0f}%.'
     target_value = 80
     low_target_value = 60
 

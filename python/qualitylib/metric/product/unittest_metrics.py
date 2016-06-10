@@ -27,7 +27,7 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):
     @staticmethod
     def product_has_sonar_id(sonar, product):
         unittest_sonar_info = metric_info.SonarProductInfo(sonar, product.unittests())
-        return product.unittests() and unittest_sonar_info.sonar_id()
+        return product.unittests() and not product.integration_tests() and unittest_sonar_info.sonar_id()
 
     def _parameters(self):
         """ Add the number of unit tests to the parameters for the report. """
