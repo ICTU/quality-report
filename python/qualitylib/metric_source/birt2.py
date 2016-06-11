@@ -317,7 +317,7 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 logging.warn("Could not open %s: %s", self.__test_design_url, reason)
                 return -1
         try:
-            return int(self.__test_design_report('div', {'class': 'style_4'})[row_nr].string)
+            return int(self.__test_design_report('div', {'class': 'style_4'})[row_nr].string.replace(',', ''))
         except (ValueError, IndexError) as reason:
             logging.warn("Could not obtain row %s from Birt report %s: %s", row_nr, self.__test_design_url, reason)
             return -1

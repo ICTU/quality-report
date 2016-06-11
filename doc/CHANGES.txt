@@ -1,3 +1,8 @@
+2016-06-11  Release 1.25.1
+
+  * Bug fix: Birt reports use commas as thousands separators. Remove commas before converting strings to integers.
+
+
 2016-06-11  Release 1.25.0
 
   * Include user stories and logical test case metrics in the report for products that have user stories and logical
