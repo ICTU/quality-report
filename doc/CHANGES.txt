@@ -1,3 +1,12 @@
+2016-06-11  Release 1.25.0
+
+  * Include user stories and logical test case metrics in the report for products that have user stories and logical
+    test cases as requirement: Product(..., requirements=[requirement.USER_STORIES_AND_LTCS]). This will add
+    the metrics UserStoriesNotReviewed, UserStoriesNotApproved, LogicalTestCasesNotReviewed,
+    LogicalTestCasesNotApproved, UserStoriesWithTooFewLogicalTestCases, LogicalTestCasesNotAutomated,
+    ManualLogicalTestCases, and NumberOfManualLogicalTestCases to the section of the product.
+
+
 2016-06-11  Release 1.24.0
 
   * Remove the blocking test issues metric as it is not used anymore.

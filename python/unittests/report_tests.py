@@ -488,18 +488,16 @@ class QualityReportMetricsTest(unittest.TestCase):
                 product_kwargs=dict(art=dict(metric_source_ids={self.__sonar: 'id'})))
 
     def test_reviewed_us(self):
-        """ Test that the reviewed user stories metric is added if possible. """
+        """ Test that the reviewed user stories metric is added if required. """
         self.__assert_metric(
             metric.UserStoriesNotReviewed,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
 
     def test_approved_us(self):
-        """ Test that the approved user stories metric is added if possible. """
+        """ Test that the approved user stories metric is added if required. """
         self.__assert_metric(
             metric.UserStoriesNotApproved,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
 
     def test_no_reviewed_us(self):
         """ Test that the reviewed user stories metric is not added when the product is not a trunk version. """
@@ -515,29 +513,29 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.UserStoriesNotApproved,
             project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'}),
+            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
+                                requirements=[requirement.USER_STORIES_AND_LTCS]),
             include=False)
 
     def test_reviewed_ltcs(self):
-        """ Test that the reviewed logical test case metric is added if possible. """
+        """ Test that the reviewed logical test case metric is added if required. """
         self.__assert_metric(
             metric.LogicalTestCasesNotReviewed,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
 
     def test_approved_ltcs(self):
-        """ Test that the approved logical test case metric is added if possible. """
+        """ Test that the approved logical test case metric is added if required. """
         self.__assert_metric(
             metric.LogicalTestCasesNotApproved,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
 
     def test_no_reviewed_ltcs(self):
         """ Test that the reviewed logical test case metric is not added when the product is not a trunk version. """
         self.__assert_metric(
             metric.LogicalTestCasesNotReviewed,
             project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'}),
+            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
+                                requirements=[requirement.USER_STORIES_AND_LTCS]),
             include=False)
 
     def test_no_approved_ltcs(self):
@@ -545,15 +543,15 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.LogicalTestCasesNotApproved,
             project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'}),
+            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
+                                requirements=[requirement.USER_STORIES_AND_LTCS]),
             include=False)
 
     def test_number_manual_ltcs(self):
-        """ Test that the number of manual logical test case metric is added if possible. """
+        """ Test that the number of manual logical test case metric is added if required. """
         self.__assert_metric(
             metric.NumberOfManualLogicalTestCases,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(metric_source_ids={self.__birt: 'birt'}))
+            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
 
     def test_no_number_manual_ltcs(self):
         """ Test that the number of manual logical test case metric is not added when the product is not a trunk
@@ -561,7 +559,8 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.NumberOfManualLogicalTestCases,
             project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'}),
+            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
+                                requirements=[requirement.USER_STORIES_AND_LTCS]),
             include=False)
 
     def test_duration_manual_ltcs(self):

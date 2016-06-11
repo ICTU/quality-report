@@ -288,9 +288,8 @@ class QualityReport(object):
         for metric_class in self.ENVIRONMENT_METRIC_CLASSES:
             if metric_class.can_be_measured(self.__project, self.__project):
                 metrics.append(metric_class(self.__project, project=self.__project))
-        for metric_class in self.SONAR_PLUGIN_METRIC_CLASSES + self.SONAR_QUALITY_PROFILE_METRIC_CLASSES:
-            if metric_class.should_be_measured(self.__project):
-                metrics.append(metric_class(subject=self.__project, project=self.__project))
+        metrics.extend(self.__mandatory_subject_metrics(self.__project, self.SONAR_PLUGIN_METRIC_CLASSES +
+                                                        self.SONAR_QUALITY_PROFILE_METRIC_CLASSES))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
 
@@ -308,8 +307,10 @@ class QualityReport(object):
 
     def __product_section(self, product):
         """ Return the section for the product. """
-        metrics = self.__subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES + self.TEST_DESIGN_METRIC_CLASSES +
-                                         self.CODE_METRIC_CLASSES + self.PERFORMANCE_METRIC_CLASSES)
+        metrics = self.__optional_subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES)
+        metrics.extend(self.__mandatory_subject_metrics(product, self.TEST_DESIGN_METRIC_CLASSES))
+        metrics.extend(self.__optional_subject_metrics(product, self.CODE_METRIC_CLASSES +
+                                                       self.PERFORMANCE_METRIC_CLASSES))
         if metric.OWASPDependencies.can_be_measured(product, self.__project):
             metrics.append(metric.OWASPDependencies(product, project=self.__project))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
@@ -324,7 +325,7 @@ class QualityReport(object):
 
     def __team_section(self, team):
         """ Return a report section for the team. """
-        team_metrics = self.__subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
+        team_metrics = self.__optional_subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
         self.__metrics.extend(team_metrics)
         return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), team_metrics)
 
@@ -347,19 +348,27 @@ class QualityReport(object):
             # trunk version of the ART.
             art_metric_classes = self.CODE_METRIC_CLASSES + (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
                                                              metric.FailingRegressionTests)
-            metrics.extend(self.__subject_metrics(art, art_metric_classes))
+            metrics.extend(self.__optional_subject_metrics(art, art_metric_classes))
         if metric.UnmergedBranches.can_be_measured(art, self.__project):
             metrics.append(metric.UnmergedBranches(subject=art, project=self.__project))
         return metrics
 
     def __jsf_metrics(self, jsf):
         """ Return a list of JSF metrics for the (JSF) product. """
-        return self.__subject_metrics(jsf, (metric.JsfDuplication, metric.ProductLOC))
+        return self.__optional_subject_metrics(jsf, (metric.JsfDuplication, metric.ProductLOC))
 
-    def __subject_metrics(self, subject, metric_classes):
+    def __optional_subject_metrics(self, subject, metric_classes):
         """ Return a list of metrics for the subject that can be measured. """
         metrics = []
         for metric_class in metric_classes:
             if metric_class.can_be_measured(subject, self.__project):
+                metrics.append(metric_class(subject, project=self.__project))
+        return metrics
+
+    def __mandatory_subject_metrics(self, subject, metric_classes):
+        """ Return a list of metrics for the subject that should be measured. """
+        metrics = []
+        for metric_class in metric_classes:
+            if metric_class.should_be_measured(subject):
                 metrics.append(metric_class(subject, project=self.__project))
         return metrics

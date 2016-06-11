@@ -21,9 +21,10 @@ import urllib2
 
 from ..measurement.measurable import MeasurableObject
 from ... import utils
+from .requirement import RequirementSubject
 
 
-class Product(MeasurableObject):
+class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
     def __init__(self, project, short_name='',

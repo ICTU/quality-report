@@ -24,8 +24,8 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring the quality of user stories. """
     @classmethod
-    def can_be_measured(cls, product, project):
-        return super(UserStoryMetric, cls).can_be_measured(product, project) and not product.product_version()
+    def should_be_measured(cls, product):
+        return super(UserStoryMetric, cls).should_be_measured(product) and not product.product_version()
 
     def value(self):
         nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()

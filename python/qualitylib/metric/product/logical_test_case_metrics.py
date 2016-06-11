@@ -27,8 +27,8 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring the quality of logical test cases. """
     @classmethod
-    def can_be_measured(cls, product, project):
-        return super(LogicalTestCaseMetric, cls).can_be_measured(product, project) and not product.product_version()
+    def should_be_measured(cls, product):
+        return super(LogicalTestCaseMetric, cls).should_be_measured(product) and not product.product_version()
 
     def value(self):
         nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()

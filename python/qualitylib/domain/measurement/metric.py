@@ -49,9 +49,9 @@ class Metric(object):
         return bool(subject)
 
     @classmethod
-    def should_be_measured(cls, project):
-        """ Return whether this metric should be measured for the specified project. """
-        return cls in project.required_metric_classes()
+    def should_be_measured(cls, requirement_subject):
+        """ Return whether this metric should be measured for the specified subject. """
+        return cls in requirement_subject.required_metric_classes()
 
     @classmethod
     def norm_template_default_values(cls):

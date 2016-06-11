@@ -13,12 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
 from __future__ import absolute_import
 
+from ..domain import Requirement
+from .. import metric
 
-# Package for concrete requirements, not specific to a specific project.
-# Mostly standards.
 
-from .trusted_product_maintainability import TRUSTED_PRODUCT_MAINTAINABILITY
-from .sonar import JAVA, C_SHARP, JAVASCRIPT, WEB
-from .process import USER_STORIES_AND_LTCS
+USER_STORIES_AND_LTCS = Requirement(
+    name='Scrum',
+    metric_classes={metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
+                    metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
+                    metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
+                    metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases})
