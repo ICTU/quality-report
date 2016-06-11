@@ -39,9 +39,8 @@ class JiraTest(unittest.TestCase):
     def setUp(self):
         self.__jira_url = 'http://jira/'
         self.__jira = JiraUnderTest(self.__jira_url, 'username', 'password', open_bug_query_id=123,
-                                    open_security_bug_query_id=456, blocking_test_issues_query_id=321,
-                                    manual_test_cases_query_id=654, technical_debt_issues_query_id=444,
-                                    user_stories_ready_query_id=555)
+                                    open_security_bug_query_id=456, manual_test_cases_query_id=654,
+                                    technical_debt_issues_query_id=444, user_stories_ready_query_id=555)
 
     def test_url(self):
         """ Test the Jira url. """
@@ -70,18 +69,6 @@ class JiraTest(unittest.TestCase):
     def test_nr_open_security_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_security_bugs_url())
-
-    def test_has_test_issues_query(self):
-        """ Test that the Jira under test has a blocking test issues query. """
-        self.assertTrue(self.__jira.has_blocking_test_issues_query())
-
-    def test_blocking_test_issues(self):
-        """ Test that the number of blocking test issues is correct. """
-        self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_blocking_test_issues())
-
-    def test_test_issues_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual(self.__jira.view_url, self.__jira.nr_blocking_test_issues_url())
 
     def test_has_manual_tests_query(self):
         """ Test that the Jira under test has a manual test cases query. """

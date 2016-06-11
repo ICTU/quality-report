@@ -67,36 +67,6 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
         return {'Jira': self._jira.nr_open_security_bugs_url()}
 
 
-class BlockingTestIssues(JiraMetricMixin, LowerIsBetterMetric):
-    """ Metric for measuring the number of blocking test issues opened the previous month. """
-
-    name = 'Aantal blokkerende testbevindingen'
-    norm_template = 'Het aantal geopende blokkerende testbevindingen is maximaal {target}. ' \
-        'Meer dan {low_target} is rood.'
-    template = 'Het aantal geopende blokkerende testbevindingen in de vorige maand ({month}) was {value}.'
-    target_value = 0
-    low_target_value = 1
-    quality_attribute = TEST_QUALITY
-
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jira = project.metric_source(metric_source.Jira)
-        return super(BlockingTestIssues, cls).can_be_measured(subject, project) and \
-            jira.has_blocking_test_issues_query()
-
-    def value(self):
-        return self._jira.nr_blocking_test_issues()
-
-    def url(self):
-        return {'Jira': self._jira.nr_blocking_test_issues_url()}
-
-    def _parameters(self):
-        # pylint: disable=protected-access
-        parameters = super(BlockingTestIssues, self)._parameters()
-        parameters['month'] = utils.format_month(utils.month_ago())
-        return parameters
-
-
 class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of technical debt issues. """
 

@@ -1,3 +1,8 @@
+2016-06-11  Release 1.24.0
+
+  * Remove the blocking test issues metric as it is not used anymore.
+
+
 2016-06-10  Release 1.23.0
 
   * Include test coverage metrics in the report depending on whether the product has unit tests, integration tests, or

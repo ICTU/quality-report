@@ -381,8 +381,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         quality_report.sections()  # Make sure the report is created
         return quality_report
 
-    def __assert_metric(self, metric_class, project_kwargs=None,
-                        team_kwargs=None, product_kwargs=None,
+    def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, product_kwargs=None,
                         street_kwargs=None, number_of_teams=1, include=True):
         """ Check that the metric class is included in the report. """
         quality_report = self.__create_report(project_kwargs or dict(),
@@ -430,8 +429,7 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.TestReport: self.__jenkins}))
 
     def test_failing_regression_tests_art(self):
-        """ Test that the failing regression tests metric is added if
-            the ART component has the Jenkins test report. """
+        """ Test that the failing regression tests metric is added if the ART component has the Jenkins test report. """
         self.__assert_metric(
             metric.FailingRegressionTests,
             product_kwargs=dict(art=dict(metric_source_ids={self.__jenkins: 'id'})),
@@ -622,12 +620,6 @@ class QualityReportMetricsTest(unittest.TestCase):
             metric.OpenSecurityBugs,
             project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
 
-    def test_blocking_test_issues(self):
-        """ Test that the blocking test issues metric is added if possible. """
-        self.__assert_metric(
-            metric.BlockingTestIssues,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
-
     def test_technical_debt_issues(self):
         """ Test that the technical debt issues metric is added if possible. """
         self.__assert_metric(
@@ -794,8 +786,7 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(metric_source_ids={self.__sonar: 'id'}))
 
     def test_no_java_duplication(self):
-        """ Test that the Java duplication metric is not added if the
-            product has no Sonar id. """
+        """ Test that the Java duplication metric is not added if the product has no Sonar id. """
         self.__assert_metric(
             metric.JavaDuplication,
             project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}),
@@ -913,8 +904,8 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.assertTrue(metric.ARTStatementCoverage in report.QualityReport.metric_classes())
 
     def test_total_loc(self):
-        """ Test that the total LOC metric is added if the project contains the
-            trusted product maintainability standard as requirement. """
+        """ Test that the total LOC metric is added if the project contains the trusted product maintainability
+            standard as requirement. """
         self.__assert_metric(
             metric.TotalLOC,
             product_kwargs=dict(short_name='dummy'),

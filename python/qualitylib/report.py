@@ -164,8 +164,7 @@ class QualityReport(object):
                                             metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS)
     MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge,
                                  metric.RiskLog)
-    BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs,
-                           metric.BlockingTestIssues, metric.TechnicalDebtIssues)
+    BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs, metric.TechnicalDebtIssues)
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + BUGS_METRIC_CLASSES + \
                                      (metric.DurationOfManualLogicalTestCases,
                                       metric.ManualLogicalTestCasesWithoutDuration,
