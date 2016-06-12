@@ -17,6 +17,8 @@ from __future__ import absolute_import
 
 from argparse import ArgumentParser
 
+import qualitylib
+
 
 def parse():
     """ Parse the command line arguments. """
@@ -25,6 +27,7 @@ def parse():
     parser.add_argument('--report', help='folder to write the HTML report in')
     parser.add_argument('--log', default="WARNING", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                         help="log level (WARNING by default)")
+    parser.add_argument('--version', action='version', version=qualitylib.VERSION)
     args = parser.parse_args()
     if not args.project:
         parser.error('Need a project folder')
