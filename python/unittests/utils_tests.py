@@ -129,6 +129,17 @@ class FormatDateTest(unittest.TestCase):
                          utils.format_date(datetime.datetime(2012, 12, 19), year=True))
 
 
+class FormatMonthTest(unittest.TestCase):
+    """ Unit tests of the format month method. """
+    def test_jan(self):
+        """ Test january first. """
+        self.assertEqual('januari 2011', utils.format_month(datetime.date(2011, 1, 1)))
+
+    def test_oct(self):
+        """ Test a month where the English spelling is different from the Dutch spelling. """
+        self.assertEqual('oktober 2011', utils.format_month(datetime.date(2011, 10, 15)))
+
+
 class FormatTimeDeltaTest(unittest.TestCase):
     """ Unit tests of the format time delta method. """
     def assert_format(self, formatted_time_delta, **time_delta_args):

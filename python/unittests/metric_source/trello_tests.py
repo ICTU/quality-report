@@ -71,13 +71,34 @@ class TrelloBoardTest(unittest.TestCase):
             raise urllib2.URLError(url)
         if 'cards' in url:
             json = self.__cards_json
+        elif 'actions' in url:
+            json = u'[{"date": "2015-1-1T10:0:0"}]'
         else:
-            json = u'{"url": "%s"}' % url
+            json = u'{"url": "%s", "name": "name"}' % url
         return io.StringIO(json)
 
     def test_url(self):
         """ Test the url of the Trello board. """
         self.assertEqual('https://api.trello.com/1/board/object_id?key=appkey&token=token', self.__trello_board.url())
+
+    def test_name(self):
+        """ Test the name of the Trello board. """
+        self.assertEqual('name', self.__trello_board.name())
+
+    def test_last_update_delta(self):
+        """ Test the time delta since last update. """
+        expected = datetime.datetime.now() - datetime.datetime(2015, 1, 1, 10, 0, 0)
+        actual = self.__trello_board.last_update_time_delta()
+        self.assertAlmostEqual(expected.total_seconds(), actual.total_seconds(), places=2)
+
+    def test_repr(self):
+        """ Test that repr(board) gives the json. """
+        self.assertEqual("{u'url': u'https://api.trello.com/1/board/object_id?key=appkey&token=token', "
+                         "u'name': u'name'}", repr(self.__trello_board))
+
+    def test_bool(self):
+        """ Test that the board is true if it has an app key and an id. """
+        self.assertTrue(self.__trello_board)
 
     def test_one_over_due(self):
         """ Test the count with one over due card. """

@@ -291,11 +291,6 @@ class FakeBirt(object):
         """ Return the planned velocity of the team with the specified birt id. """
         return 5
 
-    @staticmethod
-    def has_test_design(birt_id):  # pylint: disable=unused-argument
-        """ Return whether the product with the specified birt id has a test design. """
-        return True
-
 
 class FakeJira(object):  # pylint: disable=too-few-public-methods
     """ Fake Jira. """

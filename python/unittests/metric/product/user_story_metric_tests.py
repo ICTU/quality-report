@@ -22,13 +22,8 @@ from qualitylib import metric, domain, metric_source
 class FakeBirt(object):
     """ Provide for a fake Birt object. """
 
-    def __init__(self, test_design=True):
-        self.__test_design = test_design
+    def __init__(self):
         self.down = False
-
-    def has_test_design(self, birt_id):  # pylint: disable=unused-argument
-        """ Return whether the product has a test design report. """
-        return self.__test_design
 
     @staticmethod
     def approved_user_stories(birt_id):  # pylint: disable=unused-argument
