@@ -46,10 +46,14 @@ class SonarRunner(object):  # pylint: disable=too-few-public-methods
         if not product_sonar_id:
             return
         if not self.__sonar_has_product(product):
-            users = ', '.join(['{usr}:{ver}'.format(usr=user.name(), ver=user.product_version() or 'trunk')
-                               for user in product.users()])
-            logging.info('Check out and run sonar on %s (dependency of %s)', product.product_label(), users or 'none')
-            self.__checkout_code_and_run_sonar(product)
+            if product.product_version():
+                users = ', '.join(['{usr}:{ver}'.format(usr=user.name(), ver=user.product_version())
+                                   for user in product.users()])
+                logging.info('Check out and run Sonar on %s (dependency of %s)', product.product_label(),
+                             users or 'none')
+                self.__checkout_code_and_run_sonar(product)
+            else:
+                logging.warn('No Sonar analysis found for %s:trunk', product.product_label())
         unittests = product.unittests()
         if unittests:
             unittests_sonar_id = self.__product_sonar_id(unittests)

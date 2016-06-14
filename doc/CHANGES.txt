@@ -1,3 +1,8 @@
+2016-06-14  Release 1.26.2
+
+  * Bug fix: Don't crash when there's no Sonar analysis of the trunk version of a product.
+
+
 2016-06-14  Release 1.26.1
 
   * Bug fix: Adding technical debt to metric.ARTStability would cause an exception.
