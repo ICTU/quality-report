@@ -29,10 +29,6 @@ class FakeBirt(object):
         self.__test_design = test_design
         self.down = False
 
-    def has_test_design(self, birt_id):
-        """ Return whether the product with the Birt id has a test design  report in Birt. """
-        return self.__test_design
-
     @staticmethod
     def approved_ltcs(birt_id):
         """ Return the number of approved logical test cases. """
