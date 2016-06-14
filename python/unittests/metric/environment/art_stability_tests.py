@@ -34,7 +34,7 @@ class ARTStabilityTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the ARTstability metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.Jenkins: FakeJenkins()})
         self.__street = domain.Street('b', name='a', url='http://street')
         self.__metric = metric.ARTStability(subject=self.__street, project=self.__project)
@@ -90,7 +90,13 @@ class ARTStabilityTest(unittest.TestCase):
         self.assertEqual('perfect', self.__metric.status())
 
     def test_status_unstable(self):
-        """ Test that the status is red when the number of unstable ARTs is
-            not zero. """
+        """ Test that the status is red when the number of unstable ARTs is not zero. """
         FakeJenkins.UNSTABLE_ARTS_URL = {'unstable_art': 'http://url', 'unstable_art2': 'http://url'}
         self.assertEqual('red', self.__metric.status())
+
+    def test_technical_debt(self):
+        """ Test technical debt target. """
+        street = domain.Street('b', name='a', technical_debt_targets={
+            metric.ARTStability: domain.TechnicalDebtTarget(5, "Explanation", "days")})
+        art_stability = metric.ARTStability(subject=street, project=self.__project)
+        self.assertEqual('grey', art_stability.status())

@@ -52,6 +52,9 @@ class ARTStability(JenkinsMetricMixin, Metric):
     def _is_perfect(self):
         return self.value(days=1) == 0
 
+    def _is_value_better_than(self, target):
+        return self.value(days=self.target()) < target
+
     def _get_template(self):
         return self.below_target_template if self.value() > 0 else self.above_target_template
 
