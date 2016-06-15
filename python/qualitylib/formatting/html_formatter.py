@@ -343,14 +343,13 @@ class HTMLFormatter(base_formatter.Formatter):
             name = metric_class.name
             class_name = metric_class.__name__
             quality_attribute = metric_class.quality_attribute.name()
-            icon = 'check' if metric_class in report.included_metric_classes() else 'unchecked'
+            icon = '<i class="icon-ok"></i>' if metric_class in report.included_metric_classes() else ''
             try:
                 norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
             except ValueError:
                 logging.error('Metric class %s had faulty norm template', metric_class.__name__)
                 raise
-            result.append('<tr><td><span class="glyphicon glyphicon-{icon}" aria-hidden="true"></span></td>'
-                          '<td>{name}</td><td>{cls}</td><td>{qattr}</td><td>{norm}</td></tr>'.format(
+            result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td><td>{qattr}</td><td>{norm}</td></tr>'.format(
                 icon=icon, name=name, cls=class_name, qattr=quality_attribute, norm=norm))
         result.append('</table>')
         return '\n'.join(result)
