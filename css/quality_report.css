@@ -20,6 +20,6 @@ limitations under the License. */
     }
 }
 
-table.first-col-centered > tbody > tr:first-child > td {
+table.first-col-centered > tbody > tr > td:first-child {
     text-align: center;
 }

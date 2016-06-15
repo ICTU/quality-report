@@ -1,3 +1,8 @@
+2016-06-15  Release 1.27.3
+
+  * Bug fix: Center the icons in the help information.
+
+
 2016-06-15  Release 1.27.2
 
   * Bug fix: Center the icons in the help information.
