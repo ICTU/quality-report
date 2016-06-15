@@ -30,14 +30,6 @@ class FakeSonar(Sonar):  # pylint: disable=too-few-public-methods
         return io.StringIO(u'{}')
 
 
-class FakeVCS(VersionControlSystem):  # pylint: disable=too-few-public-methods
-    """ Fake a VCS for testing purposes. """
-    @staticmethod
-    def check_out(*args):
-        """ Fake check out. """
-        pass
-
-
 class FakeProduct(object):  # pylint: disable=too-few-public-methods
     """ Fake a product. """
     @staticmethod
@@ -55,11 +47,6 @@ class FakeProduct(object):  # pylint: disable=too-few-public-methods
         """ Return the Sonar id. """
         return 'a:b'
 
-    @staticmethod
-    def users():
-        """ Return the users of this product. """
-        return set()
-
     jsf = unittests = product_branch = product_branch_id = old_metric_source_id = metric_source_options = \
         product_version
 
@@ -68,7 +55,7 @@ class SonarRunnerTest(unittest.TestCase):
     """ Unit tests for the Sonar runner that creates and deletes Sonar analyses. """
 
     def setUp(self):
-        self.__runner = SonarRunner(FakeSonar('http://sonar/'), Maven(), FakeVCS())
+        self.__runner = SonarRunner(FakeSonar('http://sonar/'), Maven(), VersionControlSystem())
 
     def test_analyse_no_products(self):
         """ Test that the runner does nothing when analysing an empty set of products. """
