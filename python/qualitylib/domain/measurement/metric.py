@@ -37,8 +37,8 @@ class Metric(object):
 
     @classmethod
     def can_be_measured(cls, subject, project):
-        """ Return whether this metric can be measured for the specified
-            subject, i.e. whether the necessary metric sources are available. """
+        """ Return whether this metric can be measured for the specified subject, i.e. whether the necessary
+            metric sources are available. """
         for metric_source_class in cls.metric_source_classes:
             metric_source_instance = project.metric_source(metric_source_class)
             if not metric_source_instance:
@@ -77,9 +77,8 @@ class Metric(object):
         return stable_id
 
     def set_id_string(self, id_string):
-        """ Set the identification string. This can be set by a client since
-            the identification of a metric may depend on the section the
-            metric is reported in. E.g. A-1. """
+        """ Set the identification string. This can be set by a client since the identification of a metric may
+            depend on the section the metric is reported in. E.g. A-1. """
         self.__id_string = id_string
 
     def id_string(self):
@@ -93,17 +92,14 @@ class Metric(object):
         return self.target_value if subject_target is None else subject_target
 
     def low_target(self):
-        """ Return the low target value for the metric. If the actual value
-            is below the low target value, the metric needs immediate
-            action and its status/color is red. """
+        """ Return the low target value for the metric. If the actual value is below the low target value, the metric
+            needs immediate action and its status/color is red. """
         subject_low_target = self._subject.low_target(self.__class__) if hasattr(self._subject, 'low_target') else None
         return self.low_target_value if subject_low_target is None else subject_low_target
 
     def __technical_debt_target(self):
-        """ Return the reduced target due to technical debt for the subject.
-            If the subject has technical debt and the actual value of the
-            metric is below the technical debt target, the metric is red,
-            else it is grey. """
+        """ Return the reduced target due to technical debt for the subject. If the subject has technical debt and
+            the actual value of the metric is below the technical debt target, the metric is red, else it is grey. """
         try:
             return self._subject.technical_debt_target(self.__class__)
         except AttributeError:
@@ -131,8 +127,7 @@ class Metric(object):
         return self.__history.status_start_date(self.stable_id(), self.status())
 
     def __is_above_technical_debt_target(self):
-        """ Return whether a score below target is considered to be
-            accepted technical debt. """
+        """ Return whether a score below target is considered to be accepted technical debt. """
         target = self.__technical_debt_target()
         return self._is_value_better_than(target.target_value()) if target else False
 
@@ -149,8 +144,8 @@ class Metric(object):
         return self._is_old()
 
     def _is_perfect(self):
-        """ Return whether the actual value of the metric equals its perfect
-            value, i.e. no further improvement is possible. """
+        """ Return whether the actual value of the metric equals its perfect value,
+            i.e. no further improvement is possible. """
         return self.value() == self.perfect_value and not self._is_old()
 
     def value(self):
@@ -158,8 +153,7 @@ class Metric(object):
         raise NotImplementedError  # pragma: no cover
 
     def _is_value_better_than(self, target):
-        """ Return whether the actual value of the metric is better than the
-            specified target value. """
+        """ Return whether the actual value of the metric is better than the specified target value. """
         raise NotImplementedError  # pragma: no cover
 
     def report(self, max_subject_length=200):
@@ -290,16 +284,14 @@ class Metric(object):
             return minimum, maximum
 
     def numerical_value(self):
-        """ Return a numerical version of the metric value for use in graphs.
-            By default this simply returns the regular value, assuming it is
-            already numerical. Metrics that don't have a numerical value by
-            default can override this method to convert the non-numerical
-            value into a numerical value. """
+        """ Return a numerical version of the metric value for use in graphs. By default this simply returns the
+            regular value, assuming it is already numerical. Metrics that don't have a numerical value by default
+            can override this method to convert the non-numerical value into a numerical value. """
         return self.value()
 
     def product_version_type(self):
-        """ Return whether this metric measures a product and if so, whether
-            it's a trunk version, a tagged version or a release candidate. """
+        """ Return whether this metric measures a product and if so, whether it's a trunk version, a tagged version
+            or a release candidate. """
         try:
             return self._subject.product_version_type()
         except AttributeError:
@@ -363,8 +355,7 @@ class HigherIsBetterMetric(Metric):
         return self.value() >= target
 
 
-class LowerPercentageIsBetterMetric(metric_mixin.PercentageMixin,
-                                    LowerIsBetterMetric):
+class LowerPercentageIsBetterMetric(metric_mixin.PercentageMixin, LowerIsBetterMetric):
     """ Metric measured as a percentage with lower values being better. """
 
     zero_divided_by_zero_is_zero = True
@@ -376,15 +367,13 @@ class LowerPercentageIsBetterMetric(metric_mixin.PercentageMixin,
         raise NotImplementedError  # pragma: no cover
 
     def _is_perfect(self):
-        """ Return whether the metric has a perfect value. This is the case
-            when the numerator is zero. We ignore the denominator to prevent
-            a ZeroDivisionError exception. """
+        """ Return whether the metric has a perfect value. This is the case when the numerator is zero. We ignore
+            the denominator to prevent a ZeroDivisionError exception. """
         # pylint: disable=protected-access
         return self._numerator() == 0 and super(LowerPercentageIsBetterMetric, self)._is_perfect()
 
 
-class HigherPercentageIsBetterMetric(metric_mixin.PercentageMixin,
-                                     HigherIsBetterMetric):
+class HigherPercentageIsBetterMetric(metric_mixin.PercentageMixin, HigherIsBetterMetric):
     """ Metric measured as a percentage with higher values being better. """
 
     perfect_value = 100
@@ -397,7 +386,7 @@ class HigherPercentageIsBetterMetric(metric_mixin.PercentageMixin,
         raise NotImplementedError  # pragma: no cover
 
     def _is_perfect(self):
-        """ Return whether the metric has a perfect value. This is the case
-            when the numerator and denominator are equal. """
+        """ Return whether the metric has a perfect value. This is the case when the numerator and denominator
+            are equal. """
         # pylint: disable=protected-access
         return self._numerator() == self._denominator() and super(HigherPercentageIsBetterMetric, self)._is_perfect()
