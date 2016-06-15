@@ -1,3 +1,9 @@
+2016-06-15  Release 1.28.0
+
+  * Allow for adding comments to metrics in the project definition, e.g.
+    Product(..., metric_options={metric.UnmergedBranches: dict(comment="This is a comment")})
+
+
 2016-06-15  Release 1.27.3
 
   * Bug fix: Center the icons in the help information.

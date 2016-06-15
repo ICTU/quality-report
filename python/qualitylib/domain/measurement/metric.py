@@ -243,12 +243,20 @@ class Metric(object):
     @utils.memoized
     def comment(self):
         """ Return a comment on the metric. The comment is retrieved from the wiki. """
-        return self.__technical_debt_comment() or self._wiki.comment(self.id_string()) or ''
+        return self.__technical_debt_comment() or self.__subject_comment() or self._wiki.comment(self.id_string()) or ''
 
     @classmethod
     def comment_url_label(cls):
         """ Return the label for the comment urls. """
         return cls.comment_url_label_text
+
+    @utils.memoized
+    def __subject_comment(self):
+        """ Return the comment of the subject about this metric, if any. """
+        try:
+            return self._subject.metric_options(self.__class__)['comment']
+        except (AttributeError, TypeError, KeyError):
+            return ''
 
     @utils.memoized
     def __technical_debt_comment(self):
@@ -261,7 +269,7 @@ class Metric(object):
     def comment_urls(self):
         """ Return the source for the comment on the metric. """
         urls = {}
-        if self.__technical_debt_comment():
+        if self.__technical_debt_comment() or self.__subject_comment():
             pass  # No URL; the comment comes from the project definition.
         elif self.comment():
             urls['Wiki'] = self._wiki.comment_url()

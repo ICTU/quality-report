@@ -33,10 +33,7 @@ class MetricUnderTest(domain.Metric):
         return self.value_to_return
 
     def _date(self):
-        if self.date:
-            return self.date
-        else:
-            return super(MetricUnderTest, self)._date()  # pylint: disable=protected-access
+        return self.date if self.date else super(MetricUnderTest, self)._date()  # pylint: disable=protected-access
 
 
 class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -44,8 +41,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def setUp(self):
         self.__subject = FakeSubject()
-        self.__project = domain.Project(
-            metric_sources={metric_source.History: FakeHistory()})
+        self.__project = domain.Project(metric_sources={metric_source.History: FakeHistory()})
         self.__metric = MetricUnderTest(self.__subject, project=self.__project)
 
     def test_stable_id(self):
@@ -168,6 +164,17 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the metric has no comment url label by default. """
         self.assertFalse(self.__metric.comment_url_label())
 
+    def test_subject_comment(self):
+        """ Test that the metric uses the comment from the subject. """
+        self.__subject.options['comment'] = 'Comment'
+        self.assertEqual('Comment', self.__metric.comment())
+
+    def test_subject_comment_url(self):
+        """ Test that the metric has no comment url when the subject has a comment because the comment is specified
+            in the project definition. """
+        self.__subject.options['comment'] = 'Comment'
+        self.assertFalse(self.__metric.comment_urls())
+
     def test_comment_technical_debt(self):
         """ Test that the metric gets the comment from the subject when the subject has a reduced technical
             debt target. """
@@ -181,14 +188,12 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             the reduced technical debt target is specified in the project definition. """
         # pylint: disable=attribute-defined-outside-init
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
-        urls = self.__metric.comment_urls()
-        self.assertFalse(urls)
+        self.assertFalse(self.__metric.comment_urls())
 
     def test_comment_from_wiki_url(self):
         """ Test that the comment urls include a link to the Wiki if the Wiki has a comment on the metric. """
         wiki = FakeWiki('Comment')
-        project = domain.Project(
-            metric_sources={metric_source.History: FakeHistory(), metric_source.Wiki: wiki})
+        project = domain.Project(metric_sources={metric_source.History: FakeHistory(), metric_source.Wiki: wiki})
         metric = MetricUnderTest(self.__subject, project=project)
         self.assertEqual(dict(Wiki=wiki.comment_url()), metric.comment_urls())
 
@@ -241,10 +246,9 @@ class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
 
 
 class LowerIsBetterMetricTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for the LowerIsBetterMetric domain class. """
 
-    def setUp(self):  # pylint: disable=C0103
+    def setUp(self):
         self.__subject = FakeSubject()
         self.__project = domain.Project(metric_sources={metric_source.History: FakeHistory()})
 
@@ -269,7 +273,6 @@ class HigherIsBetterMetricUnderTest(domain.HigherIsBetterMetric):
 
 
 class HigherIsBetterMetricTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for the HigherIsBetterMetric domain class. """
 
     def setUp(self):
@@ -305,7 +308,6 @@ class LowerPercentageIsBetterMetricUnderTest(domain.LowerPercentageIsBetterMetri
 
 
 class PercentageMetricTestCase(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for percentage metrics. """
 
     def setUp(self):
@@ -326,7 +328,6 @@ class PercentageMetricTestCase(unittest.TestCase):
 
 
 class LowerPercentageIsBetterMetricTest(PercentageMetricTestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for the LowerPercentageIsBetterMetric domain class. """
 
     @staticmethod
@@ -379,7 +380,6 @@ class HigherPercentageIsBetterMetricUnderTest(domain.HigherPercentageIsBetterMet
 
 
 class HigherPercentageIsBetterMetricTest(PercentageMetricTestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for the HigherPercentageIsBetterMetric domain class. """
 
     @staticmethod

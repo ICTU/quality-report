@@ -64,7 +64,8 @@ QUALITY_REPORT = \
                 JACOCO: 'quality-report-coverage-report',
                 SUBVERSION: 'http://svn/commons/scripts/quality-report/'},
             metric_options={
-                metric.UnmergedBranches: dict(branches_to_ignore='spike')},
+                metric.UnmergedBranches: dict(branches_to_ignore='spike',
+                                              comment="Ignore the spike branch (2016-06-15).")},
             product_branches={'auto-discovery-branch': {SUBVERSION: 'auto-discovery', SONAR: 'auto_discovery'}})
 
 PROJECT.add_product(QUALITY_REPORT)
