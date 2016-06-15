@@ -336,7 +336,7 @@ class HTMLFormatter(base_formatter.Formatter):
     def __metric_classes(report):
         """ Return a HTML table of the metrics the software can measure. """
         result = list()
-        result.append('<table class="first-col-centered">')
+        result.append('<table class="table table-striped first-col-centered">')
         result.append('<tr><th>In dit rapport?</th><th>Metriek</th><th>Class naam</th>'
                       '<th>Kwaliteitsattribuut</th><th>Norm</th></tr>')
         for metric_class in report.metric_classes():
