@@ -16,6 +16,10 @@ limitations under the License. */
 @media screen and (min-width: 768px) {
     .modal-wide {
         width: 90%; /* either % (e.g. 60%) or px (400px) */
-        margin-left:-45%; /* width/2 */ 
+        margin-left:-45%; /* width/2 */
     }
+}
+
+table.first-col-centered > tbody > tr:first-child > td {
+    text-align: center;
 }

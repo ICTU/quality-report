@@ -124,8 +124,8 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table>\n<tr><th>In dit rapport?</th><th>Metriek</th><th>Class naam</th>' \
-                       '<th>Kwaliteitsattribuut</th><th>Norm</th>'
+        table_header = '<table class="first-col-centered">\n<tr><th>In dit rapport?</th><th>Metriek</th>' \
+                       '<th>Class naam</th><th>Kwaliteitsattribuut</th><th>Norm</th>'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_classes(self):
