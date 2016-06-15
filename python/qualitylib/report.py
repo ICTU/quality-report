@@ -253,6 +253,10 @@ class QualityReport(object):
         """ Return all metrics we report on. """
         return self.__metrics
 
+    def included_metric_classes(self):
+        """ Return the metric classes included in the report. """
+        return {each_metric.__class__ for each_metric in self.__metrics}
+
     def teams(self):
         """ Return the teams we report on. """
         return self.__teams

@@ -1,3 +1,8 @@
+2016-06-15  Release 1.27.0
+
+  * In the help information, show which of the metrics are actually included in the current report.
+
+
 2016-06-14  Release 1.26.2
 
   * Bug fix: Don't crash when there's no Sonar analysis of the trunk version of a product.

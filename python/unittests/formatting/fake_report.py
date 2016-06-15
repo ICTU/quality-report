@@ -93,6 +93,10 @@ class Report(object):
         """ Return a list of metric classes that the report can report on. """
         return [metric.ARTStatementCoverage]
 
+    def included_metric_classes(self):
+        """ Return the metric classes included in the report. """
+        return {each_metric.__class__ for each_metric in self.__metrics + self.__meta_metrics}
+
     def products(self):
         """ Return the products in the report. """
         return self.__products

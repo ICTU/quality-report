@@ -283,6 +283,12 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(product, quality_report.get_product('Product', '1.1'))
 
+    def test_get_included_metric_classes(self):
+        """ Test the list of included metric classes. """
+        self.__report.sections()  # Generate report
+        self.assertEqual({metric.RedMetaMetric, metric.YellowMetaMetric, metric.GreenMetaMetric,
+                          metric.GreyMetaMetric, metric.MissingMetaMetric}, self.__report.included_metric_classes())
+
 
 class FakeBirt(object):
     """ Fake a Birt instance. """

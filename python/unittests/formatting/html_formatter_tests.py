@@ -26,7 +26,7 @@ class HTMLFormatterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the html report formatter. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__formatter = HTMLFormatter()
 
     def test_title_in_prefix(self):
@@ -124,5 +124,12 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table>\n<tr><th>Metriek</th><th>Class naam</th><th>Kwaliteitsattribuut</th><th>Norm</th>'
+        table_header = '<table>\n<tr><th>In dit rapport?</th><th>Metriek</th><th>Class naam</th>' \
+                       '<th>Kwaliteitsattribuut</th><th>Norm</th>'
         self.assertTrue(table_header in html)
+
+    def test_not_included_metric_classes(self):
+        """ Test that the report shows which metric classes are included in the report and which are not. """
+        html = self.__formatter.process(fake_report.Report())
+        table_row = '<tr><td><span class="glyphicon glyphicon-unchecked"'
+        self.assertTrue(table_row in html)
