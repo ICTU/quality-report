@@ -24,6 +24,8 @@ import urllib2
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
+    url_open_exceptions = (urllib2.HTTPError, urllib2.URLError, socket.error)
+
     def __init__(self, uri=None, username=None, password=None,
                  build_opener=urllib2.build_opener, url_open=urllib2.urlopen):
         self.__username = username
@@ -65,7 +67,7 @@ class UrlOpener(object):
         """ Return an opened url, using the opener created earlier. """
         try:
             return self.__opener(url)
-        except (urllib2.HTTPError, urllib2.URLError, socket.error) as reason:
+        except self.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
 

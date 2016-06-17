@@ -1,3 +1,8 @@
+2016-05-17  Release 1.28.1
+
+  * Bug fix: Don't crash when opening a Sonar url throws a socket error.
+
+
 2016-06-15  Release 1.28.0
 
   * Allow for adding comments to metrics in the project definition, e.g.
