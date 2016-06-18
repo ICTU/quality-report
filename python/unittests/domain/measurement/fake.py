@@ -34,22 +34,6 @@ class FakeHistory(object):  # pylint: disable=too-few-public-methods
         return datetime.datetime(2013, 1, 1, 10, 0, 0)
 
 
-class FakeWiki(object):
-    """ Class to fake the wiki. """
-
-    def __init__(self, comment=''):
-        self.__comment = comment
-
-    def comment(self, *args):  # pylint: disable=unused-argument
-        """ Return a fake comment. """
-        return self.__comment
-
-    @staticmethod
-    def comment_url():
-        """ Return a fake url. """
-        return 'http://wiki'
-
-
 class FakeSubject(object):  # pylint: disable=too-few-public-methods
     """ Class to fake a metric subject. """
     def __init__(self):
