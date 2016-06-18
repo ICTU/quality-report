@@ -190,13 +190,6 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
         self.assertFalse(self.__metric.comment_urls())
 
-    def test_comment_from_wiki_url(self):
-        """ Test that the comment urls include a link to the Wiki if the Wiki has a comment on the metric. """
-        wiki = FakeWiki('Comment')
-        project = domain.Project(metric_sources={metric_source.History: FakeHistory(), metric_source.Wiki: wiki})
-        metric = MetricUnderTest(self.__subject, project=project)
-        self.assertEqual(dict(Wiki=wiki.comment_url()), metric.comment_urls())
-
     def test_numerical_value(self):
         """ Test that the numerical value is the value by default. """
         self.assertEqual(self.__metric.numerical_value(), self.__metric.value())

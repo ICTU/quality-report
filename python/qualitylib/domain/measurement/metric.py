@@ -65,7 +65,6 @@ class Metric(object):
         self.__id_string = self.stable_id()
         self._project = project
         from qualitylib import metric_source
-        self._wiki = self._project.metric_source(metric_source.Wiki)
         self.__history = self._project.metric_source(metric_source.History)
 
     def stable_id(self):
@@ -242,8 +241,8 @@ class Metric(object):
 
     @utils.memoized
     def comment(self):
-        """ Return a comment on the metric. The comment is retrieved from the wiki. """
-        return self.__technical_debt_comment() or self.__subject_comment() or self._wiki.comment(self.id_string()) or ''
+        """ Return a comment on the metric. The comment is retrieved from either the technical debt or the subject. """
+        return self.__technical_debt_comment() or self.__subject_comment() or ''
 
     @classmethod
     def comment_url_label(cls):
@@ -268,12 +267,7 @@ class Metric(object):
 
     def comment_urls(self):
         """ Return the source for the comment on the metric. """
-        urls = {}
-        if self.__technical_debt_comment() or self.__subject_comment():
-            pass  # No URL; the comment comes from the project definition.
-        elif self.comment():
-            urls['Wiki'] = self._wiki.comment_url()
-        return urls
+        return dict()
 
     def recent_history(self):
         """ Return a list of recent values of the metric, to be used in e.g. a spark line graph. """
