@@ -160,8 +160,7 @@ class YmorResponseTimes(domain.Metric):
 
     def __init__(self, *args, **kwargs):
         super(YmorResponseTimes, self).__init__(*args, **kwargs)
-        self.__performance_report = self._project.metric_source(
-            metric_source.JenkinsYmorPerformanceReport)
+        self.__performance_report = self._project.metric_source(metric_source.JenkinsYmorPerformanceReport)
         if not self._subject.product_version():
             self.old_age = datetime.timedelta(hours=7 * 24)
             self.max_old_age = datetime.timedelta(hours=14 * 24)
