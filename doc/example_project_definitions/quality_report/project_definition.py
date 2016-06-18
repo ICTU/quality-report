@@ -7,7 +7,7 @@ from qualitylib.domain import Project, Product, Team, Document, TechnicalDebtTar
     MetricSource
 
 
-BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkings_user', password='jenkings_password',
+BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
 MAVEN = metric_source.Maven(binary='mvn3')
 SUBVERSION = metric_source.Subversion()
@@ -30,8 +30,8 @@ PROJECT = Project('Organization name', name='Quality Report',
                   additional_resources=[
                       MetricSource(name='GitHub Quality Report', url='https://github.com/ICTU/quality-report')],
                   # Override the total loc metric targets:
-                  targets={metric.TotalLOC: 1000000},
-                  low_targets={metric.TotalLOC: 1200000})
+                  metric_options={
+                      metric.TotalLOC: dict(target=1000000, low_target=2000000)})
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team')

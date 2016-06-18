@@ -70,8 +70,7 @@ class TotalLOCTest(unittest.TestCase):
         self.__sonar = FakeSonar()
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
-            targets={metric.TotalLOC: 1000000},
-            low_targets={metric.TotalLOC: 2000000})
+            metric_options={metric.TotalLOC: dict(target=1000000, low_target=2000000)})
         product = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
         product_without_sonar_id = domain.Product(project, 'PW', name='ProductWithoutSonarId')
         test_product = domain.Product(project, 'TP', is_main=False, metric_source_ids={self.__sonar: 'sonar id'})
@@ -120,8 +119,7 @@ class TotalLOCTest(unittest.TestCase):
         """ Test that technical debt can be specified via the project. """
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
-            targets={metric.TotalLOC: 100},
-            low_targets={metric.TotalLOC: 110},
+            metric_options={metric.TotalLOC: dict(target=100, low_target=110)},
             technical_debt_targets={metric.TotalLOC: domain.TechnicalDebtTarget(150)})
         product = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
         project.add_product(product)

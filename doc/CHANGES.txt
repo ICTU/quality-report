@@ -1,3 +1,9 @@
+2016-06-18  Release 1.30.0
+
+  * Allow for overriding metric targets and low targets via the metric options, e.g.
+    Product(..., metric_options={metric.MajorViolations: dict(target=10, low_target=5)})
+
+
 2016-06-18  Release 1.29.0
 
   * Comments via a Wiki are no longer supported. Use the project definition for that. See release 1.28.0 below.

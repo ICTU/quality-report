@@ -78,7 +78,7 @@ class DocumentAgeTest(unittest.TestCase):
 
     def test_document_overrides_target(self):
         """ Test that the document can override the default target value. """
-        document = domain.Document(name='Title', targets={metric.DocumentAge: 20})
+        document = domain.Document(name='Title', metric_options={metric.DocumentAge: dict(target=20)})
         age = metric.DocumentAge(subject=document, project=self.__project)
         self.assertEqual(document.target(metric.DocumentAge), age.target())
 

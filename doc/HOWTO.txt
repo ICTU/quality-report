@@ -24,23 +24,23 @@ How to add a new project to the quality system.
    from qualitylib import metric_source
    from qualitylib.domain import Project
 
-   JIRA = metric_source.Jira('https://jira/', username='jira_user', 
+   JIRA = metric_source.Jira('https://jira/', username='jira_user',
                              password='jira_password', open_bug_query_id=123)
    HISTORY = metric_source.History('projects/new_project/history.json')
    WIKI = metric_source.Wiki('http://wiki/ManualKPIsNewProject')
 
-   project = Project('Organization', name='New Project', 
-                     metric_sources={metric_source.Jira: JIRA, 
+   project = Project('Organization', name='New Project',
+                     metric_sources={metric_source.Jira: JIRA,
                                      metric_source.History: HISTORY})
 
-   The doc/example_project_definitions folder contains a number of project 
+   The doc/example_project_definitions folder contains a number of project
    definition examples.
 
-   See the section "How to define a project" below for more information on how 
+   See the section "How to define a project" below for more information on how
    to define products, teams, documents, etc. and how to override default metric
    target values.
 
-2. Add the project definition file to version control. For example: 
+2. Add the project definition file to version control. For example:
    $ svn add quality-data/new_project/project_definition.py
 
 3. Add an empty history file for the project to new_project/ and add it to
@@ -55,7 +55,7 @@ How to add a new project to the quality system.
    $ svn commit -m "Added new_project to the quality system."
 
 6. Add the new quality report to Jenkins as a job, preferably by copying an
-   existing Jenkins job. Make sure the following is listed as a shell script 
+   existing Jenkins job. Make sure the following is listed as a shell script
    build step of the job:
 
    # Activate the virtual python environment
@@ -65,14 +65,14 @@ How to add a new project to the quality system.
    quality_report.py --project $PROJECT/project_definition.py --report . --json $PROJECT/history.json --log INFO
    svn commit -m "Updated history from Jenkins." $PROJECT
 
-   Also make sure the Jenkins job runs periodically, for example every 15 
+   Also make sure the Jenkins job runs periodically, for example every 15
    minutes during office hours: "*/15 7-19 * * 1-5"
 
 
 How to define a project.
 ===
 
-To generate a quality report, the quality report software uses a project 
+To generate a quality report, the quality report software uses a project
 definition file. This project definition is a python file that defines what
 software components the project consists of, which teams there are, and what the
 available metric sources are.
@@ -96,7 +96,7 @@ from qualitylib import domain, metric_source, metric
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='user',
                                      password='password')
-SONAR = metric_source.Sonar('http://sonar/', username='user, 
+SONAR = metric_source.Sonar('http://sonar/', username='user,
                             password='password')
 HISTORY = metric_source.History('quality-data/history.json')
 SUBVERSION = metric_source.Subversion()
@@ -121,20 +121,27 @@ PROJECT.add_team(TEAM_3)
 # Create the documents that we want to monitor. Some documents are expected to
 # be updated every sprint, others every release:
 SPRINT_LENGTH = 16 # days
-RELEASE_FREQUENCY = 5 # sprints 
-PROJECT.add_document(domain.Document(name='Deployment document', 
-                     targets={metric.DocumentAge: RELEASE_FREQUENCY * SPRINT_LENGTH},
-                     low_targets={metric.DocumentAge: (RELEASE_FREQUENCY + 1) * SPRINT_LENGTH}))
-PROJECT.add_document(domain.Document(name='Release notes',
-                     targets={metric.DocumentAge: SPRINT_LENGTH},
-                     low_targets={metric.DocumentAge: SPRINT_LENGTH + 7}))
+RELEASE_FREQUENCY = 5 # sprints
+PROJECT.add_document(domain.Document(
+                         name='Deployment document',
+                         metric_options={
+                             metric.DocumentAge:
+                                 dict(target=RELEASE_FREQUENCY * SPRINT_LENGTH,
+                                      low_target=(RELEASE_FREQUENCY + 1) * SPRINT_LENGTH)}))
+
+PROJECT.add_document(domain.Document(
+                         name='Release notes',
+                         metric_options={
+                             metric.DocumentAge:
+                                 dict(target=SPRINT_LENGTH,
+                                      low_target=SPRINT_LENGTH + 7)}))
 
 # Create the components we want to monitor.
 PA = domain.Product(PROJECT, 'PA',
                     metric_source_ids={
                         SONAR: 'com.company.pa',
                         SUBVERSION: 'http://svn/pa/trunk/'},
-                    unittests=domain.Product(PROJECT, 
+                    unittests=domain.Product(PROJECT,
                         metric_source_ids={
                             SONAR: 'com.company.pa'})
 
