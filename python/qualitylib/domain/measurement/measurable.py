@@ -39,7 +39,8 @@ class MeasurableObject(DomainObject):
 
     def technical_debt_target(self, metric_class):
         """ Return whether a score below target is considered to be accepted technical debt. """
-        return self.__technical_debt_targets.get(metric_class, None)
+        return self.__metric_options.get(metric_class, dict()).get('debt_target', None) or \
+               self.__technical_debt_targets.get(metric_class, None)
 
     def metric_source_id(self, metric_source):
         """ Return the id of this object in the metric source. """

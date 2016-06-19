@@ -119,8 +119,8 @@ class TotalLOCTest(unittest.TestCase):
         """ Test that technical debt can be specified via the project. """
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
-            metric_options={metric.TotalLOC: dict(target=100, low_target=110)},
-            technical_debt_targets={metric.TotalLOC: domain.TechnicalDebtTarget(150)})
+            metric_options={metric.TotalLOC: dict(target=100, low_target=110,
+                                                  debt_target=domain.TechnicalDebtTarget(150))})
         product = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
         project.add_product(product)
         total_loc = metric.TotalLOC(subject=project, project=project)

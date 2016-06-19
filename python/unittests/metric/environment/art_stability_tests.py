@@ -96,7 +96,7 @@ class ARTStabilityTest(unittest.TestCase):
 
     def test_technical_debt(self):
         """ Test technical debt target. """
-        street = domain.Street('b', name='a', technical_debt_targets={
-            metric.ARTStability: domain.TechnicalDebtTarget(5, "Explanation", "days")})
+        street = domain.Street('b', name='a', metric_options={
+            metric.ARTStability: dict(debt_target=domain.TechnicalDebtTarget(5, "Explanation", "days"))})
         art_stability = metric.ARTStability(subject=street, project=self.__project)
         self.assertEqual('grey', art_stability.status())

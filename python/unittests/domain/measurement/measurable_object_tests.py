@@ -21,15 +21,15 @@ from qualitylib.domain.measurement.measurable import MeasurableObject
 
 
 class MeasurableObjectTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the measurable object. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
+        self.__metric_options = dict(comment='metric options', target=100, low_target=50,
+                                     debt_target=TechnicalDebtTarget(100, 'explanation'))
         self.__measurable = MeasurableObject(
-            technical_debt_targets={self.__class__: TechnicalDebtTarget(100, 'explanation')},
             metric_source_ids={self.__class__: 'id'},
             old_metric_source_ids={self.__class__: {'1': 'old_id'}},
             metric_source_options={self.__class__: 'options'},
-            metric_options={self.__class__: dict(comment='metric options', target=100, low_target=50)})
+            metric_options={self.__class__: self.__metric_options})
 
     def test_no_target(self):
         """ Test that there is no target for an unknown class. """
@@ -98,5 +98,4 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_metric_options(self):
         """ Test the metric options for a known class. """
-        self.assertEqual(dict(comment='metric options', target=100, low_target=50),
-                         self.__measurable.metric_options(self.__class__))
+        self.assertEqual(self.__metric_options, self.__measurable.metric_options(self.__class__))

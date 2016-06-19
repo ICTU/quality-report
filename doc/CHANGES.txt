@@ -2,6 +2,8 @@
 
   * Overriding metric target and low targets via the targets and low_targets parameters is no longer supported.
     Use the metric_options parameter introduced in release 1.30.0.
+  * Allow for accepting technical debt metric targets via the metric options, e.g.
+    Product(..., metric_options={metric.MajorViolations: dict(debt_target=TechnicalDebtTarget(50))})
 
 
 2016-06-18  Release 1.30.0
