@@ -1,3 +1,9 @@
+2016-06-19  Release 1.31.0
+
+  * Overriding metric target and low targets via the targets and low_targets parameters is no longer supported.
+    Use the metric_options parameter introduced in release 1.30.0.
+
+
 2016-06-18  Release 1.30.0
 
   * Allow for overriding metric targets and low targets via the metric options, e.g.
@@ -6,7 +12,7 @@
 
 2016-06-18  Release 1.29.0
 
-  * Comments via a Wiki are no longer supported. Use the project definition for that. See release 1.28.0 below.
+  * Comments via a Wiki are no longer supported. Use the project definition for comments. See release 1.28.0 below.
 
 
 2016-06-17  Release 1.28.1
