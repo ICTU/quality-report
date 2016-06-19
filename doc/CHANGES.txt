@@ -1,3 +1,8 @@
+2016-06-19  Release 1.13.1
+
+  * Bug fix: Don't ignore a subject's comment when a metric has a technical debt comment.
+
+
 2016-06-19  Release 1.31.0
 
   * Overriding metric target and low targets via the targets and low_targets parameters is no longer supported.

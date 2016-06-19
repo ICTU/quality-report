@@ -178,17 +178,21 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_comment_technical_debt(self):
         """ Test that the metric gets the comment from the subject when the subject has a reduced technical
             debt target. """
-        # pylint: disable=attribute-defined-outside-init
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
-        comment = self.__metric.comment()
-        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10. Comment', comment)
+        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10. Comment', self.__metric.comment())
 
     def test_comment_technical_debt_url(self):
         """ Test that the metric has no comment url when the subject has a reduced technical debt target because
             the reduced technical debt target is specified in the project definition. """
-        # pylint: disable=attribute-defined-outside-init
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
         self.assertFalse(self.__metric.comment_urls())
+
+    def test_subject_and_debt_comment(self):
+        """ Test that the subject's comment and the technical debt comment are combined. """
+        self.__subject.options['comment'] = 'Subject.'
+        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
+        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10. Debt. Subject.',
+                         self.__metric.comment())
 
     def test_numerical_value(self):
         """ Test that the numerical value is the value by default. """

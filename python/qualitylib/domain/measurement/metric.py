@@ -242,7 +242,8 @@ class Metric(object):
     @utils.memoized
     def comment(self):
         """ Return a comment on the metric. The comment is retrieved from either the technical debt or the subject. """
-        return self.__technical_debt_comment() or self.__subject_comment() or ''
+        comments = [comment for comment in (self.__technical_debt_comment(), self.__subject_comment()) if comment]
+        return ' '.join(comments)
 
     @classmethod
     def comment_url_label(cls):
