@@ -282,6 +282,10 @@ class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
             dashboard. """
         self.assertEqual(100, self.__sonar.major_violations('product'))
 
+    def test_major_violation_for_missing_product(self):
+        """ Test that the number of violations for a missing product is -1. """
+        self.assertEqual(-1, self.__sonar.major_violations('missing'))
+
     def test_critical_violations(self):
         """ Test that the number of critical violations equals the number of critical violations returned by the
             dashboard. """
