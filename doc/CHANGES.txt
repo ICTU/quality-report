@@ -1,4 +1,9 @@
-2016-06-19  Release 1.13.1
+2016-06-20  Release 1.31.2
+
+  * Bug fix: Don't crash on httplib.BadStatusLine when opening a URL.
+
+
+2016-06-19  Release 1.31.1
 
   * Bug fix: Don't ignore a subject's comment when a metric has a technical debt comment.
 

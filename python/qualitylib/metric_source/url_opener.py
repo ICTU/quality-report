@@ -19,12 +19,13 @@ import base64
 import logging
 import socket
 import urllib2
+import httplib
 
 
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
-    url_open_exceptions = (urllib2.HTTPError, urllib2.URLError, socket.error)
+    url_open_exceptions = (urllib2.HTTPError, urllib2.URLError, socket.error, httplib.BadStatusLine)
 
     def __init__(self, uri=None, username=None, password=None,
                  build_opener=urllib2.build_opener, url_open=urllib2.urlopen):
