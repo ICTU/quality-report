@@ -148,6 +148,10 @@ class OWASPDependencies(LowerIsBetterMetric):
         return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) + \
                self.__jenkins_report.nr_normal_priority_warnings(self.__jenkins_ids())
 
+    def _missing(self):
+        return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) < 0 or \
+               self.__jenkins_report.nr_normal_priority_warnings(self.__jenkins_ids()) < 0
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(OWASPDependencies, self)._parameters()

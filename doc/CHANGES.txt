@@ -1,3 +1,8 @@
+2016-06-21  Release 1.32.1
+
+  * Bug fix: Show OWASP dependency metric as missing when the OWASP dependency report is not available.
+
+
 2016-06-21  Release 1.32.0
 
   * Setting technical debt metric targets via the technical_debt_target parameter is no longer supported.
