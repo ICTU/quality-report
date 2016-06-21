@@ -154,19 +154,19 @@ class FakeJenkinsOWASPDependenciesReport(object):
     """ Fake a Jenkins OWASP dependency report for unit test purposes. """
 
     @staticmethod
-    def nr_high_priority_warnings(job_names):  # pylint: disable=unused-argument
+    def nr_high_priority_warnings(job_names):
         """ Return the number of high priority warnings tests for the jobs. """
-        return 4
+        return -1 if job_names == [None] else 4
 
     @staticmethod
-    def nr_normal_priority_warnings(job_names):  # pylint: disable=unused-argument
+    def nr_normal_priority_warnings(job_names):
         """ Return the number of normal priority warnings tests for the jobs. """
-        return 2
+        return -1 if job_names == [None] else 2
 
     @staticmethod
-    def nr_low_priority_warnings(job_names):  # pylint: disable=unused-argument
+    def nr_low_priority_warnings(job_names):
         """ Return the number of low priority warnings tests for the jobs. """
-        return 14
+        return -1 if job_names == [None] else 14
 
     @staticmethod
     def report_url(job_name):
@@ -217,14 +217,16 @@ class OWASPDependenciesTest(unittest.TestCase):
                           'Jenkins OWASP dependency report b': self.__jenkins.report_url('b')},
                          dependencies.url())
 
-    def test_can_be_measured(self):
-        """ Test that metric can be measured when Jenkins is available and the product has a Jenkins job. """
-        self.assertTrue(metric.OWASPDependencies.can_be_measured(self.__subject, self.__project))
+    def test_is_not_missing(self):
+        """ Test that the metric is not missing when Jenkins is available. """
+        self.assertFalse(self.__metric._missing())
 
-    def test_cant_be_measured_without_jenkins(self):
+    def test_is_missing_without_jenkins(self):
+        """ Test that metric is missing when Jenkins is not available. """
+        owasp = metric.OWASPDependencies(self.__subject, domain.Project())
+        self.assertTrue(owasp._missing())
+
+    def test_cs_missing_without_jenkins_job(self):
         """ Test that the metric cannot be measured without Jenkins. """
-        self.assertFalse(metric.OWASPDependencies.can_be_measured(self.__subject, domain.Project()))
-
-    def test_cant_be_measured_without_jenkins_job(self):
-        """ Test that the metric cannot be measured without Jenkins job. """
-        self.assertFalse(metric.OWASPDependencies.can_be_measured(FakeSubject(), self.__project))
+        owasp = metric.OWASPDependencies(FakeSubject(), self.__project)
+        self.assertTrue(owasp._missing())

@@ -1,3 +1,10 @@
+2016-06-21  Releaae 1.33.0
+
+  * Include the OWASP dependency checker metric in the report for products that have OWASP as requirement:
+    Product(..., requirements=[requirement.OWASP]). This will add the metric metric.OWASPDependencies to the
+    section of the product.
+
+
 2016-06-21  Release 1.32.1
 
   * Bug fix: Show OWASP dependency metric as missing when the OWASP dependency report is not available.

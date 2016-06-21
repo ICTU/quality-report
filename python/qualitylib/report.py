@@ -315,7 +315,7 @@ class QualityReport(object):
         metrics.extend(self.__mandatory_subject_metrics(product, self.TEST_DESIGN_METRIC_CLASSES))
         metrics.extend(self.__optional_subject_metrics(product, self.CODE_METRIC_CLASSES +
                                                        self.PERFORMANCE_METRIC_CLASSES))
-        if metric.OWASPDependencies.can_be_measured(product, self.__project):
+        if metric.OWASPDependencies.should_be_measured(product):
             metrics.append(metric.OWASPDependencies(product, project=self.__project))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
             metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))

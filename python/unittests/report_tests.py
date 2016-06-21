@@ -771,12 +771,12 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(short_name='dummy', product_version='1.1'))
 
     def test_owasp_dependencies(self):
-        """ Test that the OWASP dependencies metric is added if possible. """
-        self.__assert_metric(
-            metric.OWASPDependencies,
-            project_kwargs=dict(metric_sources={metric_source.JenkinsOWASPDependencyReport:
-                                                self.__owasp_dependency_report}),
-            product_kwargs=dict(metric_source_ids={self.__owasp_dependency_report: 'job'}))
+        """ Test that the OWASP dependencies metric is added if required. """
+        self.__assert_metric(metric.OWASPDependencies, product_kwargs=dict(requirements=[requirement.OWASP]))
+
+    def test_no_owasp_dependencies(self):
+        """ Test that the OWASP dependencies metric is not added if not required. """
+        self.__assert_metric(metric.OWASPDependencies, include=False)
 
     def test_java_duplication(self):
         """ Test that the Java duplication metric is added if possible. """

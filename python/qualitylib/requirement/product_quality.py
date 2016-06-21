@@ -20,6 +20,11 @@ from ..domain import Requirement
 from .. import metric
 
 
+OWASP = Requirement(
+    name='OWASP Top 10',
+    url='https://www.owasp.org/',
+    metric_classes={metric.OWASPDependencies})
+
 TRUSTED_PRODUCT_MAINTAINABILITY = Requirement(
     name='Trusted Product Maintainability, version 6.1',
     url='http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/',
