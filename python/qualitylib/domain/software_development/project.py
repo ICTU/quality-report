@@ -47,6 +47,10 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the metric source instance for the metric source class. """
         return self.__metric_sources.get(metric_source_class, metric_source.MissingMetricSource())
 
+    def metric_source_classes(self):
+        """ Return a set of all metric source classes. """
+        return self.__metric_sources.keys()
+
     def additional_resources(self):
         """ Return the additional resources of the project. """
         return self.__additional_resources

@@ -61,6 +61,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['dashboard'] = DashboardFormatter.format(report)
         parameters['project_resources'] = self.__project_resources(report)
         parameters['metric_classes'] = self.__metric_classes(report)
+        parameters['metric_sources'] = self.__metric_sources(report)
         parameters['history'] = self.__trend_data(report.get_meta_section())
 
         metrics = []
@@ -351,6 +352,21 @@ class HTMLFormatter(base_formatter.Formatter):
                 raise
             result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td><td>{qattr}</td><td>{norm}</td></tr>'.format(
                 icon=icon, name=name, cls=class_name, qattr=quality_attribute, norm=norm))
+        result.append('</table>')
+        return '\n'.join(result)
+
+    @staticmethod
+    def __metric_sources(report):
+        """ Return a HTML table of the metric sources the software can collect data from. """
+        result = list()
+        result.append('<table class="table table-striped first-col-centered">')
+        result.append('<tr><th>In dit rapport?</th><th>Metriekbron</th><th>Class naam</th></tr>')
+        for metric_source_class in report.metric_source_classes():
+            name = metric_source_class.metric_source_name
+            class_name = metric_source_class.__name__
+            icon = '<i class="icon-ok"></i>' if metric_source_class in report.included_metric_source_classes() else ''
+            result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td><</tr>'.format(
+                icon=icon, name=name, cls=class_name))
         result.append('</table>')
         return '\n'.join(result)
 

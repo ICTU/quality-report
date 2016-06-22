@@ -181,6 +181,14 @@ class QualityReport(object):
             cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
             (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
 
+    @classmethod
+    def metric_source_classes(cls):
+        """ Return a list of metric source classes that the report can use. """
+        classes = {}
+        for metric_class in cls.metric_classes():
+            classes.add(set(metric_class.metric_source_classes))
+        return classes
+
     def __init__(self, project):
         self.__project = project
         self.__title = 'Kwaliteitsrapportage {org}/{proj}'.format(org=project.organization(), proj=project.name())
@@ -256,6 +264,10 @@ class QualityReport(object):
     def included_metric_classes(self):
         """ Return the metric classes included in the report. """
         return {each_metric.__class__ for each_metric in self.__metrics}
+
+    def included_metric_source_classes(self):
+        """ Return the metric classes actually configured in the project. """
+        return self.__project.metric_source_classes()
 
     def teams(self):
         """ Return the teams we report on. """

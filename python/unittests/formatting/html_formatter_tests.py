@@ -131,5 +131,19 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_not_included_metric_classes(self):
         """ Test that the report shows which metric classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td><i class="icon-ok"></i>'
-        self.assertFalse(table_row in html)
+        table_row = '<tr><td></td><td>Automatic regression test statement coverage</td><td>ARTStatementCoverage</td>' \
+                    '<td>Testdekking</td>'
+        self.assertTrue(table_row in html)
+
+    def test_metric_source_classes(self):
+        """ Test that the report contains a list of metric source classes it csn use. """
+        html = self.__formatter.process(fake_report.Report())
+        table_header = '<table class="table table-striped first-col-centered">\n<tr><th>In dit rapport?</th>' \
+                       '<th>Metriekbron</th><th>Class naam</th></tr>'
+        self.assertTrue(table_header in html)
+
+    def test_not_included_metric_source_class(self):
+        """ Test that the report shows which metric source classes are included in the report and which are not. """
+        html = self.__formatter.process(fake_report.Report())
+        table_row = '<tr><td><i class="icon-ok"></i></td><td>Git</td>'
+        self.assertTrue(table_row in html)

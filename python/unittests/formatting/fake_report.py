@@ -18,7 +18,7 @@ limitations under the License.
 
 import datetime
 
-from qualitylib import metric
+from qualitylib import metric, metric_source
 from unittests.formatting import fake_domain
 
 
@@ -93,9 +93,18 @@ class Report(object):
         """ Return a list of metric classes that the report can report on. """
         return [metric.ARTStatementCoverage]
 
+    @classmethod
+    def metric_source_classes(cls):
+        """ Return a list of metric source classes that the report can use. """
+        return [metric_source.Git]
+
     def included_metric_classes(self):
         """ Return the metric classes included in the report. """
         return {each_metric.__class__ for each_metric in self.__metrics + self.__meta_metrics}
+
+    def included_metric_source_classes(self):
+        """ Return the metric source classes added to the project. """
+        return [metric_source.Git]
 
     def products(self):
         """ Return the products in the report. """
