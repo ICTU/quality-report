@@ -33,14 +33,14 @@
                     <a class="brand" href="#">{title}</a>
                     <ul class="nav" role="navigation">
                         <li class="dropdown">
-                            <a id="navigation_menu" class="dropdown-toggle" 
+                            <a id="navigation_menu" class="dropdown-toggle"
                                data-toggle="dropdown" href="#">
                                 Ga naar<b class="caret"></b>
                             </a>
-                            <ul class="dropdown-menu" 
+                            <ul class="dropdown-menu"
                                 aria-labelledby="navigation_menu">
                                 <li>
-                                    <a class="link_section_dashboard" 
+                                    <a class="link_section_dashboard"
                                        href="#section_dashboard">
                                         Dashboard
                                     </a>
@@ -49,11 +49,11 @@
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a id="toon_menu" class="dropdown-toggle" 
+                            <a id="toon_menu" class="dropdown-toggle"
                                data-toggle="dropdown" href="#">
                                 Toon<b class="caret"></b>
                             </a>
-                            <ul class="dropdown-menu" 
+                            <ul class="dropdown-menu"
                                 aria-labelledby="toon_menu">
                                 <li>
                                     <a id="show_dashboard" href="#">
@@ -87,35 +87,35 @@
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a id="filter_menu" class="dropdown-toggle" 
+                            <a id="filter_menu" class="dropdown-toggle"
                                data-toggle="dropdown" href="#">
                                 Filter KPIs<b class="caret"></b>
                             </a>
-                            <ul class="dropdown-menu" 
+                            <ul class="dropdown-menu"
                                 aria-labelledby="filter_menu">
                                 <li>
-                                    <a class="filter_color" id="filter_color_all" 
+                                    <a class="filter_color" id="filter_color_all"
                                        href="#">
                                         <i class=""></i> KPI's met alle kleuren
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="filter_color" 
+                                    <a class="filter_color"
                                        id="filter_color_red_and_yellow" href="#">
-                                        <i class=""></i> Alleen KPI's die onder 
+                                        <i class=""></i> Alleen KPI's die onder
                                         de norm scoren (geel en rood)
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="filter_color" 
+                                    <a class="filter_color"
                                        id="filter_color_grey" href="#">
-                                        <i class=""></i> Alleen KPI's met 
+                                        <i class=""></i> Alleen KPI's met
                                         technische schuld (grijs)
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a class="filter_quality_attribute" 
+                                    <a class="filter_quality_attribute"
                                        id="filter_quality_attribute_all"
                                        href="#">
                                         <i class=""></i> KPI's voor alle kwaliteitsattributen
@@ -153,10 +153,10 @@
             </div><!-- /.navbar-inner -->
         </div><!-- /.navbar navbar-fixed-top -->
         <div class="modal hide modal-wide" id="modal_help_configuration_dialog" tabindex="-1"
-             role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+             role="dialog" aria-labelledby="modal_help_configuration_dialog_title" aria-hidden="true">
             <div class="modal-header">
                 <a class="close" data-dismiss="modal">&times;</a>
-                <h3 id="myModalLabel">Configuratie van het kwaliteitssysteem</h3>
+                <h3 id="modal_help_configuration_dialog_title">Configuratie van het kwaliteitssysteem</h3>
             </div>
             <div class="modal-body">
                 <p>
@@ -180,7 +180,9 @@
                     jobs langer gemaakt worden door in de beschrijving van de job
                     de periode op te nemen gedurende welke de job niet als ongebruikt
                     moet worden geschouwd. De syntax is als volgt:
-                    <pre>[gracedays=365]</pre>
+                </p>
+                <pre>[gracedays=365]</pre>
+                <p>
                     Het getal is de periode in dagen.
                 </p>
                 <h3>
@@ -217,71 +219,72 @@ metric_source.Jira: JIRA,</pre>
                 <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
             </div>
         </div>
-        <div class="modal hide modal-wide" id="modal_help_dialog" tabindex="-1" 
-             role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal hide modal-wide" id="modal_help_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_dialog_title" aria-hidden="true">
             <div class="modal-header">
                 <a class="close" data-dismiss="modal">&times;</a>
-                <h3 id="myModalLabel">Over het ICTU Kwaliteitssysteem</h3>
+                <h3 id="modal_help_dialog_title">Over het ICTU Kwaliteitssysteem</h3>
             </div>
             <div class="modal-body">
                 <p>
                     <em>Quality-report versie {current_version}.{new_version_available}</em>
+                </p>
                 <p>
-                    Het ICTU kwaliteitssysteem is een geautomatiseerd systeem 
+                    Het ICTU kwaliteitssysteem is een geautomatiseerd systeem
                     dat frequent (momenteel elke 15 minuten tijdens
-                    kantoortijden) allerlei metingen doet aan de producten, 
-                    processen en teams binnen softwareontwikkelprojecten die 
-                    door ICTU worden uitgevoerd. Doel van het kwaliteitssysteem 
+                    kantoortijden) allerlei metingen doet aan de producten,
+                    processen en teams binnen softwareontwikkelprojecten die
+                    door ICTU worden uitgevoerd. Doel van het kwaliteitssysteem
                     is inzicht te geven in de kwaliteit van de producten en de
-                    uitvoering van processen van een project &eacute;n om 
+                    uitvoering van processen van een project &eacute;n om
                     technische schuld te voorkomen.
                 </p>
                 <h3>
                     Voor wie is het kwaliteitssysteem bedoeld?
                 </h3>
                 <p>
-                    Het ICTU Kwaliteitssysteem is primair bedoeld voor 
+                    Het ICTU Kwaliteitssysteem is primair bedoeld voor
                     projectleiders, ontwerpers, ontwikkelaars en testers van
-                    softwareontwikkelprojecten. Projectleiders kunnen zien in 
+                    softwareontwikkelprojecten. Projectleiders kunnen zien in
                     hoeverre de kwaliteit van hun project(en) voldoet aan de
-                    kwaliteitscriteria. Ontwerpers, ontwikkelaars en testers 
+                    kwaliteitscriteria. Ontwerpers, ontwikkelaars en testers
                     kunnen zien in hoeverre hun werk voldoet aan de
-                    kwaliteitscriteria en waar eventueel nog verbetering moeten 
+                    kwaliteitscriteria en waar eventueel nog verbetering moeten
                     worden doorgevoerd.
                 </p>
                 <p>
-                    Daarnaast dient het kwaliteitsysteem om niet direct 
+                    Daarnaast dient het kwaliteitsysteem om niet direct
                     betrokkenen zoals opdrachtgever, beheerders en andere
-                    belanghebbenden te laten zien dat de kwaliteit van de 
-                    producten die binnen een project worden gebouwd voldoen aan 
+                    belanghebbenden te laten zien dat de kwaliteit van de
+                    producten die binnen een project worden gebouwd voldoen aan
                     de kwaliteitscriteria.
                 </p>
                 <h3>
                   Waar zijn de normen op gebaseerd?
                 </h3>
                 <p>
-                  De metingen en de normen voor de metingen zijn deels 
+                  De metingen en de normen voor de metingen zijn deels
                   gebaseerd op de
                   <a href="http://www.sig.eu/en/Services/Software%%20Product%%20Certification/Evaluation%%20Criteria/">
                       SIG-TUViT Evaluation Criteria for Trusted Product Maintainability
-                  </a>. 
-                  Daarnaast zijn de metingen en de normen gebaseerd op het 
+                  </a>.
+                  Daarnaast zijn de metingen en de normen gebaseerd op het
                   Scrumproces zoals dat bij ICTU uitgevoerd wordt.
                 </p>
                 <h3>
                   Wat meet het kwaliteitssysteem?
                 </h3>
                 <p>
-                  Het kwaliteitssysteem meet (kwaliteits)eigenschappen van de 
+                  Het kwaliteitssysteem meet (kwaliteits)eigenschappen van de
                   softwareproducten, het proces en de teams.
                 </p>
                 <h4>
                   Metingen aan de software
                 </h4>
                 <p>
-                  Om de lange-termijn onderhoudbaarheid van de software te 
+                  Om de lange-termijn onderhoudbaarheid van de software te
                   bevorderen meet het kwaliteitsysteem (met behulp van Sonar;
-                  een tool voor metingen aan Java software) kenmerken van de 
+                  een tool voor metingen aan Java software) kenmerken van de
                   software zoals complexiteit, lengte en overtredingen van
                   "good practices".
                 </p>
@@ -289,7 +292,7 @@ metric_source.Jira: JIRA,</pre>
                   Metingen aan het proces
                 </h4>
                 <p>
-                  Om te zorgen dat het proces goed wordt uitgevoerd meet het 
+                  Om te zorgen dat het proces goed wordt uitgevoerd meet het
                   kwaliteitssysteem of werkproducten zoals user stories en
                   logische testgevallen zijn gereviewd en goedgekeurd.
                 </p>
@@ -298,7 +301,7 @@ metric_source.Jira: JIRA,</pre>
                 </h4>
                 <p>
                   Het kwaliteitssysteem meet de velocity van de teams en de
-                  stemming binnen de teams. Dat meten van de stemming is 
+                  stemming binnen de teams. Dat meten van de stemming is
                   momenteel de enige niet-geautomatiseerde meting binnen het
                   kwaliteitssysteem.
                 </p>
@@ -334,7 +337,7 @@ metric_source.Jira: JIRA,</pre>
                                 {dashboard}
                             </div>
                             <div class="tab-pane" id="dependency_tab">
-                                <!-- put an embed tag inside the object tag to 
+                                <!-- put an embed tag inside the object tag to
                                      accomodate older browsers -->
                                 <object data="dependency.svg" type="image/svg+xml" width="100%%" height="800px">
                                     <embed src="dependency.svg" type="image/svg+xml" width="100%%" height="800px"/>
@@ -349,10 +352,10 @@ metric_source.Jira: JIRA,</pre>
                                 <h4>Geconfigureerde metriekbronnen</h4>
                                 <p>Onderstaande figuur laat zien welke metriekbronnen
                                 zijn geconfigureerd in de project definitie van dit project. Groene
-                                bronnen zijn geconfigureerd, rode niet. Groene metrieken 
+                                bronnen zijn geconfigureerd, rode niet. Groene metrieken
                                 kunnen gemeten worden. Rode metrieken kunnen niet gemeten worden
                                 omdat niet alle benodigde bronnen geconfigureerd zijn.</p>
-                                <!-- put an embed tag inside the object tag to 
+                                <!-- put an embed tag inside the object tag to
                                      accomodate older browsers -->
                                 <object data="metric_classes.svg" type="image/svg+xml" width="100%%">
                                     <embed src="metric_classes.svg" type="image/svg+xml" width="100%%"/>
