@@ -145,8 +145,11 @@ class OWASPDependencies(LowerIsBetterMetric):
         self.__jenkins_report = self._project.metric_source(metric_source.JenkinsOWASPDependencyReport)
 
     def value(self):
-        return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) + \
-               self.__jenkins_report.nr_normal_priority_warnings(self.__jenkins_ids())
+        if self._missing():
+            return -1
+        else:
+            return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) + \
+                   self.__jenkins_report.nr_normal_priority_warnings(self.__jenkins_ids())
 
     def _missing(self):
         return self.__jenkins_report.nr_high_priority_warnings(self.__jenkins_ids()) < 0 or \

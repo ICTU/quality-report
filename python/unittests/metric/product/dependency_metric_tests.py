@@ -199,6 +199,11 @@ class OWASPDependenciesTest(unittest.TestCase):
             self.__jenkins.nr_normal_priority_warnings(['a', 'b'])
         self.assertEqual(expected, failing_tests.value())
 
+    def test_value_without_metric_source(self):
+        """ Test that the value is -1 when no OWASP dependency report is provided. """
+        owasp = metric.OWASPDependencies(subject=self.__subject, project=domain.Project())
+        self.assertEqual(-1, owasp.value())
+
     def test_report(self):
         """ Test that the report for the metric is correct. """
         self.assertEqual('Dependencies van FakeSubject hebben 4 high priority, 2 normal priority en '
