@@ -40,7 +40,7 @@ class MissingMetricSource(MetricSource):
     @staticmethod
     def __default_method(*args, **kwargs):  # pylint: disable=unused-argument
         """ Do nothing and return nothing for any method called. """
-        return -1
+        return
 
     def __nonzero__(self):
         return False
