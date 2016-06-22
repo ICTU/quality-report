@@ -903,6 +903,10 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the report gives a list of metric classes. """
         self.assertTrue(metric.ARTStatementCoverage in report.QualityReport.metric_classes())
 
+    def test_metric_source_classes(self):
+        """ Test that the report gives a list of metric source classes. """
+        self.assertTrue(metric_source.VersionControlSystem in report.QualityReport.metric_source_classes())
+
     def test_total_loc(self):
         """ Test that the total LOC metric is added if the project contains the trusted product maintainability
             standard as requirement. """

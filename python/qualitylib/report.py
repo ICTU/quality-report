@@ -184,9 +184,9 @@ class QualityReport(object):
     @classmethod
     def metric_source_classes(cls):
         """ Return a list of metric source classes that the report can use. """
-        classes = {}
+        classes = set()
         for metric_class in cls.metric_classes():
-            classes.add(set(metric_class.metric_source_classes))
+            classes.update(set(metric_class.metric_source_classes))
         return classes
 
     def __init__(self, project):
