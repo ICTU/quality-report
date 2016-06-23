@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
+import urllib2
 
 from qualitylib.metric_source import Ymor
 
@@ -335,16 +336,15 @@ class YmorUnderTest(Ymor):
 
     def url_open(self, url):
         """ Return the static html. """
-        return HTML
+        if 'error' in url:
+            raise urllib2.URLError('reason')
+        else:
+            return HTML
 
-    def urls(self, product, version):
-        """ Return a list of urls for the performance report. """
-        return ['http://report/1'] if product != 'product' else []
 
-
-class JMeterTest(unittest.TestCase):
+class YmorTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
-    """ Unit tests for the JMeter performance report metric source. """
+    """ Unit tests for the Ymor performance report metric source. """
 
     def setUp(self):
         self.__performance_report = YmorUnderTest('http://report/')
@@ -376,6 +376,14 @@ class JMeterTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
                          self.__performance_report.date(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
 
-    def test_date_product_not_found(self):
-        """ Test the date when the product/version is not in the report. """
-        self.assertEqual(datetime.datetime.min, self.__performance_report.date('product', 'version'))
+    def test_queries_with_missing_report(self):
+        """ Test that the value of a missing report is -1. """
+        self.assertEqual(-1, YmorUnderTest('http://error/').queries('product', 'version'))
+
+    def test_queries_violating_max_responsetime_with_missing_report(self):
+        """ Test that the value of a missing report is -1. """
+        self.assertEqual(-1, YmorUnderTest('http://error/').queries_violating_max_responsetime('product', 'version'))
+
+    def test_queries_violating_wished_reponsetime_with_missing_report(self):
+        """ Test that the value of a missing report is -1. """
+        self.assertEqual(-1, YmorUnderTest('http://error/').queries_violating_wished_responsetime('product', 'version'))

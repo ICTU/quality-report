@@ -21,6 +21,7 @@ import logging
 import re
 
 from .. import beautifulsoup
+from ..url_opener import UrlOpener
 from ..abstract import performance_report
 from ... import utils
 
@@ -36,15 +37,24 @@ class Ymor(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpen
 
     def queries(self, product, version):
         """ Return the number of performance queries. """
-        return len(self.__query_rows(product, version))
+        try:
+            return len(self.__query_rows(product, version))
+        except UrlOpener.url_open_exceptions:
+            return -1
 
     def queries_violating_max_responsetime(self, product, version):
         """ Return the number of performance queries that violate the maximum response time. """
-        return self.__queries_violating_response_time(product, version, 'red')
+        try:
+            return self.__queries_violating_response_time(product, version, 'red')
+        except UrlOpener.url_open_exceptions:
+            return -1
 
     def queries_violating_wished_responsetime(self, product, version):
         """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
-        return self.__queries_violating_response_time(product, version, 'yellow')
+        try:
+            return self.__queries_violating_response_time(product, version, 'yellow')
+        except UrlOpener.url_open_exceptions:
+            return -1
 
     def __queries_violating_response_time(self, product, version, color):
         """ Return the number of queries that are violating either the maximum or the desired response time. """
