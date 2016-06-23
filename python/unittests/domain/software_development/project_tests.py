@@ -201,6 +201,15 @@ class ProjectTest(unittest.TestCase):
         project = domain.Project(metric_sources={''.__class__: 'metric_source'})
         self.assertEqual('metric_source', project.metric_source(''.__class__))
 
+    def test_metric_source_classes(self):
+        """ Test that the project returns a list of all metric source classes. """
+        project = domain.Project(metric_sources={''.__class__: 'metric_source'})
+        self.assertEqual([''.__class__], project.metric_source_classes())
+
+    def test_default_metric_source_classes(self):
+        """ Test that the project returns a list of all metric source classes. """
+        self.assertEqual([], domain.Project().metric_source_classes())
+
 
 class FakeResource(object):
     """ Class to fake resources such as metric sources. """
