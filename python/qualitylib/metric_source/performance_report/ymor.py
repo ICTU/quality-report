@@ -87,7 +87,10 @@ class Ymor(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpen
         urls = self.urls(product, version)
         if urls:
             url = list(urls)[0]  # Any url is fine
-            soup = self.soup(url)
+            try:
+                soup = self.soup(url)
+            except UrlOpener.url_open_exceptions:
+                return datetime.datetime.min
             try:
                 table = soup('table', attrs={'class': 'config'})[0]
                 date_string = table('tr')[2]('td')[1].string

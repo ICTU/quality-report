@@ -387,3 +387,7 @@ class YmorTest(unittest.TestCase):
     def test_queries_violating_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
         self.assertEqual(-1, YmorUnderTest('http://error/').queries_violating_wished_responsetime('product', 'version'))
+
+    def test_date_with_missing_report(self):
+        """ Test that the date of a missing report is the min date. """
+        self.assertEqual(datetime.datetime.min, YmorUnderTest('http://error/').date('product', 'version'))
