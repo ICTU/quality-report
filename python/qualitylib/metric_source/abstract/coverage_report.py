@@ -16,11 +16,10 @@ limitations under the License.
 from __future__ import absolute_import
 
 import datetime
-import urllib2
 
 from BeautifulSoup import BeautifulSoup
 
-from .. import url_opener
+from ..url_opener import UrlOpener
 from ... import utils, domain
 
 
@@ -30,7 +29,7 @@ class CoverageReport(domain.MetricSource):
     needs_metric_source_id = True
 
     def __init__(self, url_open=None, **kwargs):
-        self.__url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+        self.__url_open = url_open or UrlOpener(**kwargs).url_open
         super(CoverageReport, self).__init__()
 
     @utils.memoized
@@ -38,7 +37,7 @@ class CoverageReport(domain.MetricSource):
         """ Return the ART statement coverage for a specific product. """
         try:
             soup = self.__get_report_soup(coverage_url)
-        except urllib2.HTTPError:
+        except UrlOpener.url_open_exceptions:
             coverage = -1
         else:
             coverage = self._parse_statement_coverage_percentage(soup)
@@ -53,7 +52,7 @@ class CoverageReport(domain.MetricSource):
         """ Return the ART branch coverage for a specific product. """
         try:
             soup = self.__get_report_soup(coverage_url)
-        except urllib2.HTTPError:
+        except UrlOpener.url_open_exceptions:
             coverage = -1
         else:
             coverage = self._parse_branch_coverage_percentage(soup)
@@ -69,7 +68,7 @@ class CoverageReport(domain.MetricSource):
         coverage_date_url = self._get_coverage_date_url(coverage_url)
         try:
             soup = BeautifulSoup(self.__url_open(coverage_date_url))
-        except urllib2.HTTPError:
+        except UrlOpener.url_open_exceptions:
             coverage_date = now()
         else:
             coverage_date = self._parse_coverage_date(soup)

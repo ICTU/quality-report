@@ -1,6 +1,7 @@
 2016-06-22  Release 1.34.2
 
   * Bug fix: Remove extraneous "<<<<<<<<" from the help information of the quality report.
+  * Bug fix: Don't crash when a regression test coverage report isn't available.
 
 
 2016-06-22  Release 1.34.1
