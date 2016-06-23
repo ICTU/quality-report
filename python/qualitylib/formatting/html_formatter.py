@@ -365,7 +365,7 @@ class HTMLFormatter(base_formatter.Formatter):
             name = metric_source_class.metric_source_name
             class_name = metric_source_class.__name__
             icon = '<i class="icon-ok"></i>' if metric_source_class in report.included_metric_source_classes() else ''
-            result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td><</tr>'.format(
+            result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td></tr>'.format(
                 icon=icon, name=name, cls=class_name))
         result.append('</table>')
         return '\n'.join(result)
