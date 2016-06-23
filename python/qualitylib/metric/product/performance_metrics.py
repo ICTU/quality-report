@@ -86,6 +86,8 @@ class ResponseTimes(domain.Metric):
             not self.__report_exists()
 
     def _get_template(self):
+        if self._missing():
+            return self.missing_template
         if not self.__report_exists():
             return self.missing_report_template
         max_violations = self.__max_violations()

@@ -1,3 +1,8 @@
+2016-06-23  Release 1.34.5
+
+  * Bug fix: Show the default "metric source is missing" report when a performance test report isn't available.
+
+
 2016-06-23  Release 1.34.4
 
   * Bug fix: Don't crash when a performance test report isn't available.

@@ -128,7 +128,7 @@ class ResponseTimesTestsMixin(object):
         """ Test the report is correct. """
         self.assertTrue(self._metric.report().startswith(self.expected_report))
 
-    def test_missing_performance_report(self):
+    def test_missing_performance_report_for_version(self):
         """ Test the metric report when the performance report is missing. """
 
         class MissingPerformanceReport(object):
@@ -143,6 +143,13 @@ class ResponseTimesTestsMixin(object):
             def date(*args):  # pylint: disable=unused-argument
                 """ Return the date of the report. """
                 return datetime.datetime.min
+
+            @staticmethod
+            def queries_violating_max_responsetime(*args):  # pylint: disable=unused-argument
+                """ Return a default value. """
+                return 10
+
+            queries_violating_wished_responsetime = queries_violating_max_responsetime
 
         project = domain.Project(metric_sources={metric_source.PerformanceReport: MissingPerformanceReport()})
         rt_metric = metric.ResponseTimes(subject=FakeSubject(), project=project)
