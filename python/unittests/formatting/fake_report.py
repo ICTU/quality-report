@@ -156,13 +156,6 @@ class Report(object):
                 """ Return the project's resources. """
                 return [('resource', 'url'), ('missing', None)]
 
-            @staticmethod
-            def metric_source(metric_source_class):
-                # pylint: disable=unused-argument
-                """ Return the metric source for the given metric source
-                    class. """
-                return self.project_metric_sources.get(metric_source_class, None)
-
         return FakeProject()
 
     def get_meta_section(self):
