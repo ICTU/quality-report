@@ -22,9 +22,11 @@ from qualitylib import metric, domain, metric_source
 class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
     # pylint: disable=unused-argument
-    def __init__(self, line_coverage=0, branch_coverage=0):
+    def __init__(self, line_coverage=0, branch_coverage=0, unittests=10):
         self.__line_coverage = line_coverage
         self.__branch_coverage = branch_coverage
+        self.__unittests = unittests
+        self.__failing_unittests = 5 if unittests else 0
 
     def unittest_line_coverage(self, *args):
         """ Return the percentage line coverage. """
@@ -34,15 +36,13 @@ class FakeSonar(object):
         """ Return the percentage branch coverage. """
         return self.__branch_coverage
 
-    @staticmethod
-    def unittests(*args):
+    def unittests(self, *args):
         """ Return the number of unittests. """
-        return 10
+        return self.__unittests
 
-    @staticmethod
-    def failing_unittests(*args):
+    def failing_unittests(self, *args):
         """ Return the number of failing unittests. """
-        return 5
+        return self.__failing_unittests
 
     @staticmethod
     def dashboard_url(*args):
@@ -95,6 +95,12 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual('5 van de 10 unittests falen.', self._metric.report())
+
+    def test_status_with_zero_unittests(self):
+        sonar = FakeSonar(unittests=0)
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        failing_unittests = metric.FailingUnittests(subject=FakeSubject(sonar), project=project)
+        self.assertEqual('red', failing_unittests.status())
 
     def test_can_be_measured(self):
         """ Test that the metric can be measured when the project has Sonar and the product has unit tests. """

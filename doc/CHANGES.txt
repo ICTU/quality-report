@@ -1,3 +1,8 @@
+2016-06-24  Release 1.35.1
+
+  * Bug fix: Don't report 0 failing unit tests out of 0 unit tests as perfect but rather as red.
+
+
 2016-06-24  Release 1.35.0
 
   * Remove graph with metrics and metric sources as it was hard to read. Use the help information instead.

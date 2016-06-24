@@ -56,6 +56,11 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     def value(self):
         return self._sonar.failing_unittests(self._sonar_id())
 
+    def status(self):
+        status = super(FailingUnittests, self).status()
+        # Don't report 0 failing unit tests out of 0 unit tests as perfect but rather as red:
+        return 'red' if status == 'perfect' and self._sonar.unittests(self._sonar_id()) == 0 else status
+
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingUnittests, self)._parameters()
