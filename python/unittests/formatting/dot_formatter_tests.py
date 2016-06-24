@@ -16,19 +16,11 @@ limitations under the License.
 
 import unittest
 
-from qualitylib import metric_source
-from qualitylib.formatting import DependencyFormatter, MetricClassesFormatter
+from qualitylib.formatting import DependencyFormatter
 from unittests.formatting import fake_report, fake_domain
 
 
-class CommonDotFormatterTestsMixin(object):  # pylint: disable=too-few-public-methods
-    """ Tests for all dot graph formatters. """
-    def test_postfix(self):
-        """ Test that the formatter returns the correct postfix. """
-        self.assertEqual('}\n', self._formatter.postfix())
-
-
-class DependencyFormatterTest(CommonDotFormatterTestsMixin, unittest.TestCase):
+class DependencyFormatterTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the dependency graph formatter class. """
     def setUp(self):
@@ -37,6 +29,10 @@ class DependencyFormatterTest(CommonDotFormatterTestsMixin, unittest.TestCase):
     def test_prefix(self):
         """ Test that the formatter returns the correct prefix. """
         self.assertEqual('digraph { ranksep="2.5"; concentrate="true";', self._formatter.prefix(None))
+
+    def test_postfix(self):
+        """ Test that the formatter returns the correct postfix. """
+        self.assertEqual('}\n', self._formatter.postfix())
 
     def test_body_empty_report(self):
         """ Test that the formatter returns """
@@ -62,31 +58,4 @@ class DependencyFormatterTest(CommonDotFormatterTestsMixin, unittest.TestCase):
                          'fillcolor="green" URL="index.html#section_FP" '
                          'target="_top"];\n  };\n'
                          '  "Fake Product:1" -> "Fake Dependency:1";',
-                         self._formatter.body(report))
-
-
-class MetricClassFormatterTest(CommonDotFormatterTestsMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    """ Unit test for the metric classes graph formatter class. """
-    def setUp(self):
-        self._formatter = MetricClassesFormatter()
-
-    def test_prefix(self):
-        """ Test that the formatter returns the correct prefix. """
-        self.assertTrue(' rankdir=LR;' in self._formatter.prefix(None))
-
-    def test_body(self):
-        """ Test that the metrics of the report are listed. """
-        self.assertEqual(""""Coverage report" [style="filled" fillcolor="red"];
-"Automatic regression test statement coverage" [style="filled" fillcolor="red"];
-"Coverage report" -> "Automatic regression test statement coverage";""",
-                         self._formatter.body(fake_report.Report()))
-
-    def test_body_green(self):
-        """ Test that a metric is green when all metric sources are present. """
-        jacoco = metric_source.JaCoCo()
-        report = fake_report.Report(project_metric_sources={metric_source.CoverageReport: jacoco})
-        self.assertEqual(""""Coverage report" [style="filled" fillcolor="green" URL="" target="_top"];
-"Automatic regression test statement coverage" [style="filled" fillcolor="green"];
-"Coverage report" -> "Automatic regression test statement coverage";""",
                          self._formatter.body(report))

@@ -19,6 +19,6 @@ from __future__ import absolute_import
 # Package for report formatters.
 
 from .base_formatter import Formatter
-from .dot_formatter import DependencyFormatter, MetricClassesFormatter
+from .dot_formatter import DependencyFormatter
 from .html_formatter import HTMLFormatter
 from .json_formatter import JSONFormatter

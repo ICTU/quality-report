@@ -119,7 +119,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.create_dir(report_dir)
         cls.__create_html_file(quality_report, report_dir)
         cls.__create_dependency_graph(quality_report, report_dir)
-        cls.__create_metrics_graph(quality_report, report_dir)
         cls.__create_resources(report_dir)
         cls.__create_trend_images(quality_report, report_dir)
 
@@ -141,11 +140,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __create_dependency_graph(cls, quality_report, report_dir):
         """ Create and write the dependency graph. """
         cls.__create_graph(quality_report, report_dir, formatting.DependencyFormatter, 'dependency')
-
-    @classmethod
-    def __create_metrics_graph(cls, quality_report, report_dir):
-        """ Create and write the metrics graph. """
-        cls.__create_graph(quality_report, report_dir, formatting.MetricClassesFormatter, 'metric_classes')
 
     @classmethod
     def __create_graph(cls, quality_report, report_dir, formatter, filename):

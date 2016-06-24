@@ -1,3 +1,8 @@
+2016-06-24  Release 1.35.0
+
+  * Remove graph with metrics and metric sources as it was hard to read. Use the help information instead.
+
+
 2016-06-23  Release 1.34.5
 
   * Bug fix: Show the default "metric source is missing" report when a performance test report isn't available.
