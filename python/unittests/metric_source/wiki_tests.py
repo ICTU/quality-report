@@ -39,16 +39,6 @@ class WikiUnderTest(Wiki):  # pylint: disable=too-few-public-methods
                     <td>:-)</td>
                     <td>:-(</td>
                 </tr>
-              </table>
-              <table border="1">
-                <tr>
-                  <th>Metric ID</th>
-                  <th>Comment</th>
-                </tr>
-                <tr id="metric_id">
-                  <td>metric_id</td>
-                  <td>Comment</td>
-                </tr>
               </table>"""
 
     def soup(self, url):  # pylint: disable=unused-argument
@@ -66,10 +56,6 @@ class WikiTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual('http://wiki', self.__wiki.url())
 
-    def test_comment_url(self):
-        """ Test that the comment url is correct. """
-        self.assertEqual('http://wiki', self.__wiki.comment_url())
-
     def test_team_spirit(self):
         """ Test the spirit of the team. """
         self.assertEqual(':-(', self.__wiki.team_spirit('team_2'))
@@ -81,11 +67,3 @@ class WikiTest(unittest.TestCase):
     def test_date_of_last_measurement(self):
         """ Test the date of the last measurement of the spirit of the team. """
         self.assertEqual(datetime.datetime(2013, 1, 18), self.__wiki.date_of_last_team_spirit_measurement('team_2'))
-
-    def test_no_comment(self):
-        """ Test that the comment is empty for a metric that is not in the comment table. """
-        self.assertFalse(self.__wiki.comment('missing_id'))
-
-    def test_comment(self):
-        """ Test that the comment from the wiki is returned. """
-        self.assertEqual('Comment', self.__wiki.comment('metric_id'))

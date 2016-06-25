@@ -53,22 +53,6 @@ class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         date_text = soup('th')[columns - 1].string.strip()
         return self.__parse_date(date_text)
 
-    # Comment
-
-    @utils.memoized
-    def comment(self, metric_id):
-        """ Return a comment on a metric from the Wiki. """
-        soup = self.soup(self.url())
-        try:
-            metric_row = soup('table')[1]('tr', id=metric_id)[0]
-            return metric_row('td')[1].string.strip()
-        except IndexError:
-            return ''
-
-    def comment_url(self):
-        """ Return the url for comments. """
-        return self.url()
-
     # Utility methods
 
     @staticmethod
