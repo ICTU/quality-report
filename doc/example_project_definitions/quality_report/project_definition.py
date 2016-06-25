@@ -58,11 +58,10 @@ QUALITY_REPORT = \
                 SUBVERSION: 'http://svn/commons/scripts/quality-report/'},
             metric_options={
                 metric.UnittestLineCoverage:
-                    dict(debt_target=TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% unit test coverage', '%')),
+                    dict(debt_target=TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% unit test coverage')),
                 metric.MajorViolations:
                     dict(debt_target=DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 12),
-                                                                25, datetime.datetime(2014, 6, 1),
-                                                                unit='major violations')),
+                                                                25, datetime.datetime(2014, 6, 1))),
                 metric.UnmergedBranches:
                     dict(branches_to_ignore='spike', comment="Ignore the spike branch (2016-06-15).")},
             product_branches={'auto-discovery-branch': {SUBVERSION: 'auto-discovery', SONAR: 'auto_discovery'}})
