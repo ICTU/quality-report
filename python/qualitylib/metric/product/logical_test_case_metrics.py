@@ -188,9 +188,10 @@ class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring how long it takes to execute the manual logical test cases. """
 
     name = 'Uitvoeringstijd handmatige logische testgevallen'
-    unit = 'handmatige logische testgevallen'
-    norm_template = 'De uitvoering van de {unit} kost maximaal {target} minuten. Meer dan {low_target} is rood.'
-    template = 'De uitvoering van {measured} van de {total} {unit} kost {value} minuten.'
+    unit = 'minuten'
+    norm_template = 'De uitvoering van de handmatige logische testgevallen kost maximaal {target} {unit}. ' \
+                    'Meer dan {low_target} is rood.'
+    template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} {unit}.'
     target_value = 120
     low_target_value = 240
     quality_attribute = TEST_QUALITY

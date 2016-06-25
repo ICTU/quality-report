@@ -1,3 +1,8 @@
+2016-06-25  Release 1.36.1
+
+  * Bug fix: Unit of duration of manual logical test cases is minutes, not logical test cases.
+
+
 2016-06-25  Release 1.36.0
 
   * The unit of metrics is taken from the metric classes so the TechnicalDebtTarget and DynamicalDebtTarget classes
