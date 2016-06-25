@@ -166,8 +166,9 @@ class BadResponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
     expected_status = 'red'
     product_version = '1.1'
     expected_report = '%d van de %d performancetestqueries draaien niet in 90%% van de gevallen binnen de maximale ' \
-        'responsetijd en %d van de %d queries draaien niet in 90%% van de gevallen binnen de gewenste responsetijd ' \
-        '(meting ' % (expected_max_violations, expected_queries, expected_wish_violations, expected_queries)
+        'responsetijd en %d van de %d performancetestqueries draaien niet in 90%% van de gevallen binnen de gewenste ' \
+        'responsetijd (meting ' % (expected_max_violations, expected_queries, expected_wish_violations,
+                                   expected_queries)
 
 
 class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):

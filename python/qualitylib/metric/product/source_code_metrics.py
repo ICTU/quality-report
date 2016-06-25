@@ -21,12 +21,12 @@ from ...domain import LowerPercentageIsBetterMetric
 
 
 class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the percentage of lines of code that are commented out. """
 
     name = 'Uitgecommentarieerde broncode'
-    norm_template = 'Maximaal {target}% van de regels code is uitgecommentarieerd. Meer dan {low_target}% is rood.'
-    template = '{name} heeft {value}% ({numerator} van {denominator}) uitgecommentarieerde regels code.'
+    norm_template = 'Maximaal {target}{unit} van de regels code is uitgecommentarieerd. ' \
+                    'Meer dan {low_target}{unit} is rood.'
+    template = '{name} heeft {value}{unit} ({numerator} van {denominator}) uitgecommentarieerde regels code.'
     target_value = 1
     low_target_value = 5
     quality_attribute = CODE_QUALITY
@@ -39,11 +39,10 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
 
 
 class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Base class for metrics that measure what percentage of methods doesn't violate a certain criterium. """
 
-    norm_template = 'Maximaal {target}% van de methoden heeft {attribute}. Meer dan {low_target}% is rood.'
-    template = '{value:.0f}% van de methoden ({numerator} van {denominator}) van {name} heeft {attribute}.'
+    norm_template = 'Maximaal {target}{unit} van de methoden heeft {attribute}. Meer dan {low_target}{unit} is rood.'
+    template = '{value:.0f}{unit} van de methoden ({numerator} van {denominator}) van {name} heeft {attribute}.'
     attribute = 'Subclass responsibility'
     target_value = 0
     low_target_value = 5
@@ -69,7 +68,7 @@ class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMet
 
 
 class CyclomaticComplexity(MethodQualityMetric):
-    # pylint: disable=too-many-public-methods, too-many-ancestors
+    # pylint: disable=too-many-ancestors
     """ Return the percentage of method whose cyclomatic complexity is too high. """
 
     name = 'Cyclomatische complexiteit'
@@ -80,7 +79,7 @@ class CyclomaticComplexity(MethodQualityMetric):
 
 
 class LongMethods(MethodQualityMetric):
-    # pylint: disable=too-many-public-methods, too-many-ancestors
+    # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of methods that is too long. """
 
     name = 'Lange methoden'
@@ -91,7 +90,7 @@ class LongMethods(MethodQualityMetric):
 
 
 class ManyParameters(MethodQualityMetric):
-    # pylint: disable=too-many-public-methods, too-many-ancestors
+    # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of methods that have too many parameters. """
 
     name = 'Methoden met te veel parameters'

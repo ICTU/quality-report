@@ -17,16 +17,17 @@ from __future__ import absolute_import
 
 from .. import LowerIsBetterMetric
 from ..metric_source_mixin import JiraMetricMixin
-from ..quality_attributes import PROGRESS, TEST_QUALITY, SECURITY
-from ... import utils, metric_source
+from ..quality_attributes import PROGRESS, SECURITY
+from ... import metric_source
 
 
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of open bug reports. """
 
     name = 'Open bugreports'
-    norm_template = 'Het aantal open bug reports is minder dan {target}. Meer dan {low_target} is rood.'
-    template = 'Het aantal open bug reports is {value}.'
+    unit = 'open bugreports'
+    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} is {value}.'
     target_value = 50
     low_target_value = 100
     quality_attribute = PROGRESS
@@ -47,9 +48,10 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of open security bugs. """
 
     name = 'Open beveiligingsbugreports'
-    norm_template = 'Het aantal beveiliging bug reports met prioriteit major of hoger dat meer dan een ' \
-        'sprint open staat is minder dan {target}. Meer dan {low_target} is rood.'
-    template = 'Het aantal beveiliging bug reports met prioriteit major of hoger dat meer dan een sprint ' \
+    unit = 'beveiligingsbugreports'
+    norm_template = 'Het aantal {unit} met prioriteit major of hoger dat meer dan een ' \
+        'sprint open staat is minder dan {target}. Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} met prioriteit major of hoger dat meer dan een sprint ' \
         'open staat is {value}.'
     target_value = 0
     low_target_value = 3
@@ -71,8 +73,9 @@ class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of technical debt issues. """
 
     name = 'Aantal technische schuld issues'
-    norm_template = 'Het aantal technische schuld issues is maximaal {target}. Meer dan {low_target} is rood.'
-    template = 'Het aantal aantal technische schuld issues is {value}.'
+    unit = 'technische schuld issues'
+    norm_template = 'Het aantal {unit} is maximaal {target}. Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 50
     quality_attribute = PROGRESS

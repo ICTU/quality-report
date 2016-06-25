@@ -26,8 +26,9 @@ class ReadyUserStoryPoints(JiraMetricMixin, HigherIsBetterMetric):
     """ Metric for measuring the number of user story points ready. """
 
     name = 'Ready user story punten'
-    norm_template = 'Het aantal ready user story punten is meer dan {target}. Minder dan {low_target} is rood.'
-    template = 'Het aantal ready user story punten is {value}.'
+    unit = 'ready user story punten'
+    norm_template = 'Het aantal {unit} is meer dan {target}. Minder dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 20
     quality_attribute = PROGRESS

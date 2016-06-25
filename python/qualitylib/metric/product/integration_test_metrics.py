@@ -38,6 +38,7 @@ class IntegrationtestCoverage(IntegrationtestMetricMixin, HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring coverage of integration tests for a product. """
 
+    unit = '%'
     perfect_value = 100
     quality_attribute = TEST_COVERAGE
 
@@ -50,9 +51,9 @@ class IntegrationtestLineCoverage(IntegrationtestCoverage):
     """ Metric for measuring the line coverage of integration tests for a product. """
 
     name = 'Integratietest broncode dekking (line coverage)'
-    norm_template = 'Minimaal {target}% van de regels code wordt gedekt door integratietests. ' \
-        'Lager dan {low_target}% is rood.'
-    template = '{name} integratietest line coverage is {value:.0f}%.'
+    norm_template = 'Minimaal {target}{unit} van de regels code wordt gedekt door integratietests. ' \
+        'Lager dan {low_target}{unit} is rood.'
+    template = '{name} integratietest line coverage is {value:.0f}{unit}.'
     target_value = 98
     low_target_value = 90
 
@@ -65,9 +66,9 @@ class IntegrationtestBranchCoverage(IntegrationtestCoverage):
     """ Metric for measuring the branch coverage of integration tests for a product. """
 
     name = 'Integratietest broncode dekking (branch coverage)'
-    norm_template = 'Minimaal {target}% van de code branches wordt gedekt door integratietests. ' \
-        'Lager dan {low_target}% is rood.'
-    template = '{name} integratietest branch coverage is {value:.0f}%.'
+    norm_template = 'Minimaal {target}{unit} van de code branches wordt gedekt door integratietests. ' \
+        'Lager dan {low_target}{unit} is rood.'
+    template = '{name} integratietest branch coverage is {value:.0f}{unit}.'
     target_value = 80
     low_target_value = 60
 

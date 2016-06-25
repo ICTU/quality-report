@@ -82,7 +82,6 @@ class FakeReport(object):
 
 
 class DependencyQualityTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the dependency quality metric. """
 
     def setUp(self):
@@ -111,7 +110,6 @@ class DependencyQualityTest(unittest.TestCase):
 
 
 class SnapshotDependenciesTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the snapshot dependencies metric. """
 
     def setUp(self):
@@ -133,7 +131,6 @@ class SnapshotDependenciesTest(unittest.TestCase):
 
 
 class CyclicDependenciesTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the cyclic dependencies metric. """
 
     def setUp(self):
@@ -175,7 +172,6 @@ class FakeJenkinsOWASPDependenciesReport(object):
 
 
 class OWASPDependenciesTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the OWASP dependencies metric. """
 
     def setUp(self):
@@ -207,7 +203,7 @@ class OWASPDependenciesTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report for the metric is correct. """
         self.assertEqual('Dependencies van FakeSubject hebben 4 high priority, 2 normal priority en '
-                         '14 low priority warnings.', self.__metric.report())
+                         '14 low priority waarschuwingen.', self.__metric.report())
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
@@ -224,14 +220,14 @@ class OWASPDependenciesTest(unittest.TestCase):
 
     def test_is_not_missing(self):
         """ Test that the metric is not missing when Jenkins is available. """
-        self.assertFalse(self.__metric._missing())
+        self.assertFalse(self.__metric._missing())  # pylint: disable=protected-access
 
     def test_is_missing_without_jenkins(self):
         """ Test that metric is missing when Jenkins is not available. """
         owasp = metric.OWASPDependencies(self.__subject, domain.Project())
-        self.assertTrue(owasp._missing())
+        self.assertTrue(owasp._missing())  # pylint: disable=protected-access
 
     def test_cs_missing_without_jenkins_job(self):
         """ Test that the metric cannot be measured without Jenkins. """
         owasp = metric.OWASPDependencies(FakeSubject(), self.__project)
-        self.assertTrue(owasp._missing())
+        self.assertTrue(owasp._missing())  # pylint: disable=protected-access

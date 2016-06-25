@@ -23,6 +23,8 @@ import unittest
 class MetricUnderTest(domain.Metric):
     # pylint: disable=too-few-public-methods
     """ Override Metric to implement abstract methods that are needed for running the unit tests. """
+    unit = 'foo'
+
     def __init__(self, *args, **kwargs):
         self.date = None
         self.value_to_return = 0
@@ -179,7 +181,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the metric gets the comment from the subject when the subject has a reduced technical
             debt target. """
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Comment')
-        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10. Comment', self.__metric.comment())
+        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo. Comment', self.__metric.comment())
 
     def test_comment_technical_debt_url(self):
         """ Test that the metric has no comment url when the subject has a reduced technical debt target because
@@ -191,7 +193,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the subject's comment and the technical debt comment are combined. """
         self.__subject.options['comment'] = 'Subject.'
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
-        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10. Debt. Subject.',
+        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo. Debt. Subject.',
                          self.__metric.comment())
 
     def test_numerical_value(self):

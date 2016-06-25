@@ -21,6 +21,7 @@ from ... import utils
 class PercentageMixin(object):
     """ Mixin class for metrics that are calculated as the percentage of a numerator and a denominator. """
 
+    unit = '%'
     zero_divided_by_zero_is_zero = 'Subclass responsibility'
 
     @utils.memoized

@@ -21,15 +21,15 @@ from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 
 
 class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of continuous integration jobs that fail. """
 
     name = 'Falende CI-jobs'
-    norm_template = 'Maximaal {target} van de actieve CI-jobs ' \
-        'faalt. Meer dan {low_target} is rood. Een CI-job faalt als de ' \
+    unit = 'CI-jobs'
+    norm_template = 'Maximaal {target} van de actieve {unit} ' \
+        'faalt. Meer dan {low_target} {unit} is rood. Een CI-job faalt als de ' \
         'laatste bouwpoging niet is geslaagd en er de afgelopen 24 uur geen ' \
         'geslaagde bouwpogingen zijn geweest. Inactieve jobs worden genegeerd.'
-    template = '{value} van de {number_of_jobs} actieve CI-jobs faalt.'
+    template = '{value} van de {number_of_jobs} actieve {unit} faalt.'
     url_label_text = 'Falende jobs'
     target_value = 0
     low_target_value = 2

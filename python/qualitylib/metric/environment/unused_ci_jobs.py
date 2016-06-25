@@ -21,15 +21,14 @@ from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 
 
 class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
-    """ Metric for measuring the number of continuous integration jobs
-        that are not used. """
+    """ Metric for measuring the number of continuous integration jobs that are not used. """
 
     name = 'Ongebruikte CI-jobs'
-    norm_template = 'Maximaal {target} van de actieve CI-jobs is ongebruikt. Meer dan {low_target} is rood. ' \
+    unit = 'CI-jobs'
+    norm_template = 'Maximaal {target} van de actieve {unit} is ongebruikt. Meer dan {low_target} {unit} is rood. ' \
         'Een CI-job is ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn geweest. Inactieve ' \
-        'CI-jobs worden genegeerd.'
-    template = '{value} van de {number_of_jobs} actieve CI-jobs is ongebruikt.'
+        '{unit} worden genegeerd.'
+    template = '{value} van de {number_of_jobs} actieve {unit} is ongebruikt.'
     url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2

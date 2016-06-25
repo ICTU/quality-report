@@ -26,10 +26,11 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of unmerged branches. """
 
     name = 'Ongemergde branches'
-    norm_template = 'Maximaal {target} branches met ongemergde code. Meer dan {low_target} is rood.'
-    perfect_template = 'Geen van de {nr_branches} branches van {name} heeft revisies die niet met de trunk zijn ' \
+    unit = 'branches'
+    norm_template = 'Maximaal {target} {unit} met ongemergde code. Meer dan {low_target} {unit} is rood.'
+    perfect_template = 'Geen van de {nr_branches} {unit} van {name} heeft revisies die niet met de trunk zijn ' \
         'gemerged.'
-    template = '{value} van de {nr_branches} branches van {name} hebben revisies die niet met de trunk zijn gemerged.'
+    template = '{value} van de {nr_branches} {unit} van {name} hebben revisies die niet met de trunk zijn gemerged.'
     url_label_text = 'Niet gemergde branches'
     comment_url_label_text = 'Genegeerde branches'
     quality_attribute = CODE_QUALITY

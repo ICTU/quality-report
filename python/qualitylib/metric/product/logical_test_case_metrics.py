@@ -26,6 +26,8 @@ from ...domain import LowerIsBetterMetric
 class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring the quality of logical test cases. """
+    unit = 'logische testgevallen'
+
     @classmethod
     def should_be_measured(cls, product):
         return super(LogicalTestCaseMetric, cls).should_be_measured(product) and not product.product_version()
@@ -57,8 +59,8 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     """ Metric for measuring the number of logical test cases that has not been reviewed. """
 
     name = 'Review van logische testgevallen'
-    norm_template = 'Maximaal {target} van de logische testgevallen is niet gereviewd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet gereviewde logische testgevallen van in totaal {total} logische testgevallen.'
+    norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
     low_target_value = 15
     quality_attribute = DOC_QUALITY
@@ -75,9 +77,8 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     """ Metric for measuring the number of logical test cases that has not been approved. """
 
     name = 'Goedkeuring van logische testgevallen'
-    norm_template = 'Maximaal {target} van de logische testgevallen is niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet goedgekeurde logische testgevallen van in totaal {total} gereviewde ' \
-               'logische testgevallen.'
+    norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
     low_target_value = 10
     quality_attribute = DOC_QUALITY
@@ -95,10 +96,9 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
         automated. """
 
     name = 'Automatisering van logische testgevallen'
-    norm_template = 'Maximaal {target} van de te automatiseren logische testgevallen is niet geautomatiseerd. ' \
+    norm_template = 'Maximaal {target} van de te automatiseren {unit} is niet geautomatiseerd. ' \
         'Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} nog te automatiseren logische testgevallen, van in totaal {total} ' \
-        'geautomatiseerde logische testgevallen.'
+    template = '{name} heeft {value} nog te automatiseren {unit}, van in totaal {total} geautomatiseerde {unit}.'
     target_value = 9
     low_target_value = 15
     quality_attribute = TEST_COVERAGE
@@ -115,12 +115,12 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring how long ago the manual logical test cases have been tested. """
 
     name = 'Tijdige uitvoering van handmatige logische testgevallen'
-    norm_template = 'Alle handmatige logische testgevallen zijn minder dan {target} dagen geleden uitgevoerd. ' \
+    unit = 'handmatige logische testgevallen'
+    norm_template = 'Alle {unit} zijn minder dan {target} dagen geleden uitgevoerd. ' \
         'Langer dan {low_target} dagen geleden is rood.'
-    template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} handmatige logische testgevallen van {name} zijn ' \
+    template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} {unit} van {name} zijn ' \
         'te lang geleden (meest recente {value} dag(en), op {date}) uitgevoerd.'
-    never_template = 'De {nr_manual_ltcs} handmatige logische testgevallen van {name} zijn nog niet allemaal ' \
-        'uitgevoerd.'
+    never_template = 'De {nr_manual_ltcs} {unit} van {name} zijn nog niet allemaal uitgevoerd.'
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
@@ -170,8 +170,8 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     """ Metric for measuring the number of manual logical test cases. """
 
     name = 'Aantal handmatige logische testgevallen'
-    norm_template = 'Maximaal {target} van de logische testgevallen is handmatig. Meer dan {low_target} is rood.'
-    template = '{value} van de {total} logische testgevallen zijn handmatig.'
+    norm_template = 'Maximaal {target} van de {unit} is handmatig. Meer dan {low_target} is rood.'
+    template = '{value} van de {total} {unit} zijn handmatig.'
     target_value = 10
     low_target_value = 50
     quality_attribute = TEST_QUALITY
@@ -188,9 +188,9 @@ class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring how long it takes to execute the manual logical test cases. """
 
     name = 'Uitvoeringstijd handmatige logische testgevallen'
-    norm_template = 'De uitvoering van de handmatige logische testgevallen kost ' \
-        'maximaal {target} minuten. Meer dan {low_target} is rood.'
-    template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} minuten.'
+    unit = 'handmatige logische testgevallen'
+    norm_template = 'De uitvoering van de {unit} kost maximaal {target} minuten. Meer dan {low_target} is rood.'
+    template = 'De uitvoering van {measured} van de {total} {unit} kost {value} minuten.'
     target_value = 120
     low_target_value = 240
     quality_attribute = TEST_QUALITY
@@ -220,8 +220,9 @@ class ManualLogicalTestCasesWithoutDuration(JiraMetricMixin, LowerIsBetterMetric
     """ Metric for measuring how many of the manual test cases have not been measured for duration. """
 
     name = 'Uitvoeringstijd handmatige logische testgevallen niet ingevuld'
-    norm_template = 'Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld.'
-    template = 'Van {value} van de {total} handmatige logische testgevallen is de uitvoeringstijd niet ingevuld.'
+    unit = 'handmatige logische testgevallen'
+    norm_template = 'Van alle {unit} is de uitvoeringstijd ingevuld.'
+    template = 'Van {value} van de {total} {unit} is de uitvoeringstijd niet ingevuld.'
     target_value = 0
     low_target_value = 5
     quality_attribute = TEST_QUALITY

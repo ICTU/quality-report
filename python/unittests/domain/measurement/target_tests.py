@@ -22,32 +22,34 @@ from qualitylib.utils import format_date
 
 
 class TechnicalDebtTargetTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the technical debt target class. """
 
     def test_target_value(self):
         """ Test that the target value can be retrieved. """
         self.assertEqual(10, TechnicalDebtTarget(10).target_value())
 
-    def test_explanation(self):
-        """ Test that the explanation for the technical debt can be
-            retrieved. """
+    def test_explanation_without_unit(self):
+        """ Test that the explanation for the technical debt can be retrieved. """
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10. Explanation',
                          TechnicalDebtTarget(10, 'Explanation').explanation())
+
+    def test_no_extra_explanation_with_unit(self):
+        """ Test that explanation uses the unit passed. """
+        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo.',
+                         TechnicalDebtTarget(10).explanation('foo'))
 
     def test_unit(self):
         """ Test that the explanation for the technical debt includes the unit. """
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 LOC. Explanation',
-                         TechnicalDebtTarget(10, 'Explanation', 'LOC').explanation())
+                         TechnicalDebtTarget(10, 'Explanation').explanation('LOC'))
 
     def test_percentage_unit(self):
         """ Test that the percentage has no space before it. """
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10%. Explanation',
-                         TechnicalDebtTarget(10, 'Explanation', '%').explanation())
+                         TechnicalDebtTarget(10, 'Explanation').explanation('%'))
 
 
 class DynamicTechnicalDebtTargetTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the dynamically changing technical debt target class. """
 
     def test_before_initial_date(self):
@@ -90,13 +92,13 @@ class DynamicTechnicalDebtTargetTests(unittest.TestCase):
         now = datetime.datetime.now()
         start = now - datetime.timedelta(days=10)
         end = now + datetime.timedelta(days=10)
-        target = DynamicTechnicalDebtTarget(200, start, 100, end, unit='LOC')
+        target = DynamicTechnicalDebtTarget(200, start, 100, end)
         self.assertEqual(
             'Het doel is dat de technische schuld vermindert van %s LOC op %s naar %s LOC op %s. '
             'De op dit moment geaccepteerde technische schuld is %s LOC.' % (200, format_date(start, year=True),
                                                                              100, format_date(end, year=True),
                                                                              target.target_value()),
-            target.explanation())
+            target.explanation('LOC'))
 
     def test_custom_explanation(self):
         """ Test that the custom explanation is added to the default explanation. """

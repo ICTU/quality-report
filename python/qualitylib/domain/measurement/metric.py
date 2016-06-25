@@ -26,7 +26,7 @@ from ... import utils
 class Metric(object):
     """ Base class for metrics. """
 
-    name = norm_template = target_value = low_target_value = perfect_value = template = 'Subclass responsibility'
+    name = norm_template = target_value = low_target_value = perfect_value = template = unit = 'Subclass responsibility'
     missing_template = 'De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.'
     perfect_template = ''
     url_label_text = comment_url_label_text = ''
@@ -56,7 +56,7 @@ class Metric(object):
     @classmethod
     def norm_template_default_values(cls):
         """ Return the default values for parameters in the norm template. """
-        return dict(target=cls.target_value, low_target=cls.low_target_value,
+        return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value,
                     old_age=utils.format_timedelta(cls.old_age),
                     max_old_age=utils.format_timedelta(cls.max_old_age))
 
@@ -180,6 +180,7 @@ class Metric(object):
             version = '<no version>'
         return dict(name=self.__subject_name(),
                     version=version,
+                    unit=self.unit,
                     target=self.target(),
                     low_target=self.low_target(),
                     value=self.value(),
@@ -262,7 +263,7 @@ class Metric(object):
     def __technical_debt_comment(self):
         """ Return the comment of the accepted technical debt, if any. """
         if self.__technical_debt_target():
-            return self.__technical_debt_target().explanation()
+            return self.__technical_debt_target().explanation(self.unit)
         else:
             return ''
 

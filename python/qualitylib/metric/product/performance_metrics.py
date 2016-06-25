@@ -26,16 +26,17 @@ class ResponseTimes(domain.Metric):
     """ Metric for measuring reponsetimes as determined in the performance tests. """
 
     name = 'Responsetijden'
-    norm_template = 'Geen van de performancetestqueries overschrijdt de gewenste responsetijd. ' \
+    unit = 'performancetestqueries'
+    norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. ' \
         'Als een of meer queries de maximum responsetijd overschrijden is de score rood, anders geel.'
-    above_target_template = 'Alle {nr_queries} performancetestqueries draaien in 90% van de gevallen binnen ' \
+    above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen ' \
         'de gewenste responsetijd (meting {date}, {age} geleden).'
-    below_max_target_template = '{value_max} van de {nr_queries} performancetestqueries draaien niet in 90% ' \
+    below_max_target_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
         'van de gevallen binnen de maximale responsetijd (meting {date}, {age} geleden).'
-    below_wish_target_template = '{value_wish} van de {nr_queries} performancetestqueries draaien niet in 90% ' \
+    below_wish_target_template = '{value_wish} van de {nr_queries} {unit} draaien niet in 90% ' \
         'van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
-    below_both_targets_template = '{value_max} van de {nr_queries} performancetestqueries draaien niet in 90% ' \
-        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} queries draaien niet ' \
+    below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
+        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
         'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
     missing_report_template = 'Er is geen performancetestrapport voor {name}:{version}.'
     perfect_value = 0
@@ -51,8 +52,8 @@ class ResponseTimes(domain.Metric):
         if not self._subject.product_version():
             self.old_age = datetime.timedelta(hours=7 * 24)
             self.max_old_age = datetime.timedelta(hours=14 * 24)
-            self.norm_template = 'Geen van de performancetestqueries overschrijdt de gewenste responsetijd en de ' \
-                'performancemeting is niet ouder dan {old_age}. Als een of meer queries de maximum ' \
+            self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de ' \
+                'performancemeting is niet ouder dan {old_age}. Als een of meer {unit} de maximum ' \
                 'responsetijd overschrijden of als de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
 
     def value(self):
@@ -143,16 +144,17 @@ class YmorResponseTimes(domain.Metric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
     name = 'Responsetijden (obv Ymor performance rapportage)'
-    norm_template = 'Geen van de performancetestqueries overschrijdt de gewenste responsetijd. Als een of meer ' \
-        'queries de maximum responsetijd overschrijden is de score rood, anders geel.'
-    above_target_template = 'Alle {nr_queries} performancetestqueries draaien in 90% van de gevallen binnen de ' \
+    unit = 'performancetestqueries'
+    norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. Als een of meer ' \
+        '{unit} de maximum responsetijd overschrijden is de score rood, anders geel.'
+    above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen de ' \
         'gewenste responsetijd (meting {date}, {age} geleden).'
-    below_max_target_template = '{value_max} van de {nr_queries} performancetestqueries draaien niet in 90% ' \
+    below_max_target_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
         'van de gevallen binnen de maximale responsetijd (meting {date}, {age} geleden).'
-    below_wish_target_template = '{value_wish} van de {nr_queries} performancetestqueries draaien niet in 90% ' \
+    below_wish_target_template = '{value_wish} van de {nr_queries} {unit} draaien niet in 90% ' \
         'van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
-    below_both_targets_template = '{value_max} van de {nr_queries} performancetestqueries draaien niet in 90% ' \
-        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} queries draaien niet ' \
+    below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
+        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
         'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
     perfect_value = 0
     target_value = 0  # Not used
@@ -166,8 +168,8 @@ class YmorResponseTimes(domain.Metric):
         if not self._subject.product_version():
             self.old_age = datetime.timedelta(hours=7 * 24)
             self.max_old_age = datetime.timedelta(hours=14 * 24)
-            self.norm_template = 'Geen van de performancetestqueries overschrijdt de gewenste responsetijd en de ' \
-                'performancemeting is niet ouder dan {old_age}. Als een of meer queries de maximum responsetijd ' \
+            self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de ' \
+                'performancemeting is niet ouder dan {old_age}. Als een of meer {unit} de maximum responsetijd ' \
                 'overschrijden of als de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
 
     def value(self):

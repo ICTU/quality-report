@@ -24,9 +24,10 @@ class TeamAbsence(LowerIsBetterMetric):
     """ Metric for measuring the number of consecutive days that multiple team members are absent. """
 
     name = 'Absentie'
-    norm_template = 'Het aantal aaneengesloten dagen dat meerdere teamleden tegelijk gepland afwezig zijn is ' \
-        'lager dan {target} werkdagen. Meer dan {low_target} werkdagen is rood. Het team bestaat uit {team}.'
-    template = 'De langste periode dat meerdere teamleden tegelijk gepland afwezig zijn is {value} werkdagen ' \
+    unit = 'werkdagen'
+    norm_template = 'Het aantal aaneengesloten {unit} dat meerdere teamleden tegelijk gepland afwezig zijn is ' \
+        'lager dan {target} {unit}. Meer dan {low_target} {unit} is rood. Het team bestaat uit {team}.'
+    template = 'De langste periode dat meerdere teamleden tegelijk gepland afwezig zijn is {value} {unit} ' \
         '({start} tot en met {end}). Afwezig zijn: {absentees}.'
     perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
     target_value = 5

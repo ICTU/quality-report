@@ -45,10 +45,11 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of unit tests that fail. """
 
-    name = 'Falende unit testen'
-    norm_template = 'Alle unittests slagen.'
-    perfect_template = '{passed_tests} van de {tests} unittests slagen. '
-    template = '{value} van de {tests} unittests falen.'
+    name = 'Falende unittesten'
+    unit = 'unittesten'
+    norm_template = 'Alle unittesten slagen.'
+    perfect_template = '{tests} van de {tests} {unit} slagen.'
+    template = '{value} van de {tests} {unit} falen.'
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
@@ -61,17 +62,12 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
         # Don't report 0 failing unit tests out of 0 unit tests as perfect but rather as red:
         return 'red' if status == 'perfect' and self._sonar.unittests(self._sonar_id()) == 0 else status
 
-    def _parameters(self):
-        # pylint: disable=protected-access
-        parameters = super(FailingUnittests, self)._parameters()
-        parameters['passed_tests'] = parameters['tests'] - self.value()
-        return parameters
-
 
 class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring coverage of unit tests for a product. """
 
+    unit = '%'
     perfect_value = 100
     quality_attribute = TEST_COVERAGE
 
@@ -84,9 +80,9 @@ class UnittestLineCoverage(UnittestCoverage):
     """ Metric for measuring the line coverage of unit tests for a product. """
 
     name = 'Unit test broncode dekking (line coverage)'
-    norm_template = 'Minimaal {target}% van de regels code wordt gedekt door unittests. ' \
-        'Lager dan {low_target}% is rood.'
-    template = '{name} unittest line coverage is {value:.0f}% ({tests} unittests).'
+    norm_template = 'Minimaal {target}{unit} van de regels code wordt gedekt door unittests. ' \
+        'Lager dan {low_target}{unit} is rood.'
+    template = '{name} unittest line coverage is {value:.0f}{unit} ({tests} unittests).'
     target_value = 98
     low_target_value = 90
 
@@ -99,9 +95,9 @@ class UnittestBranchCoverage(UnittestCoverage):
     """ Metric for measuring the branch coverage of unit tests for a product. """
 
     name = 'Unit test broncode dekking (branch coverage)'
-    norm_template = 'Minimaal {target}% van de code branches wordt gedekt door unittests. ' \
-        'Lager dan {low_target}% is rood.'
-    template = '{name} unittest branch coverage is {value:.0f}% ({tests} unittests).'
+    norm_template = 'Minimaal {target}{unit} van de code branches wordt gedekt door unittests. ' \
+        'Lager dan {low_target}{unit} is rood.'
+    template = '{name} unittest branch coverage is {value:.0f}{unit} ({tests} unittests).'
     target_value = 80
     low_target_value = 60
 

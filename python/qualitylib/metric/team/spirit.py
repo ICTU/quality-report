@@ -26,6 +26,7 @@ class TeamSpirit(Metric):
     """ Metric for measuring the spirit of a specific team. The team simply picks a smiley. """
 
     name = 'Team stemming'
+    unit = ''
     norm_template = 'De stemming wordt door het team zelf bepaald door het kiezen van een smiley. ' \
         'De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood. ' \
         'Als de meting ouder is dan {old_age} dagen is de status geel, ouder dan {max_old_age} dagen is rood.'

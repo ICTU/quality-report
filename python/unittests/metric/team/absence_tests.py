@@ -89,6 +89,6 @@ class TeamAbsenceTest(unittest.TestCase):
     def test_default_norm(self):
         """ Test that the norm can be shown without instantiating the class. """
         defaults = metric.TeamAbsence.norm_template_default_values()
-        self.assertEqual('Het aantal aaneengesloten dagen dat meerdere teamleden tegelijk gepland afwezig zijn is '
+        self.assertEqual('Het aantal aaneengesloten werkdagen dat meerdere teamleden tegelijk gepland afwezig zijn is '
                          'lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit '
                          '(Lijst van teamleden).', metric.TeamAbsence.norm_template.format(**defaults))

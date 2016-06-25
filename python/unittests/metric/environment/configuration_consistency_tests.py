@@ -71,11 +71,11 @@ class JavaVersionConsistencyTests(unittest.TestCase):
 
     def test_report(self):
         """ Test the metric report. """
-        self.assertEqual('Er zijn 2 verschillende versies van Java in gebruik.', self.__metric.report())
+        self.assertEqual('Er zijn 2 verschillende Java versies in gebruik.', self.__metric.report())
 
     def test_norma(self):
         """ Test that the norm is correct. """
-        self.assertEqual('Er is precies een versie van Java in gebruik. Meer dan 2 versies is rood. '
+        self.assertEqual('Er is precies een versie van Java in gebruik. Meer dan 2 verschillende Java versies is rood. '
                          'De rapportage is maximaal 3 dagen oud. Meer dan 7 dagen oud is rood.',
                          self.__metric.norm())
 

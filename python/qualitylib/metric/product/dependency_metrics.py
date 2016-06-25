@@ -23,12 +23,12 @@ from ...formatting import HTMLFormatter
 
 
 class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Return the number of cyclic dependencies between packages. """
 
     name = 'Cyclische afhankelijkheden'
-    norm_template = 'Maximaal {target} cyclische afhankelijkheden tussen packages. Meer dan 10 is rood.'
-    template = '{name} heeft {value} cyclische afhankelijkheden.'
+    unit = 'cyclische afhankelijkheden'
+    norm_template = 'Maximaal {target} {unit} tussen packages. Meer dan 10 is rood.'
+    template = '{name} heeft {value} {unit}.'
     target_value = 0
     low_target_value = 10
     quality_attribute = DEPENDENCY_QUALITY
@@ -38,12 +38,11 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
 
 
 class SnapshotDependencies(LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of the dependencies on snapshot versions of other products. """
     name = 'Snapshot afhankelijkheden'
-    norm_template = 'Maximaal {target} afhankelijkheden op snapshot versies van andere producten. ' \
-        'Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} afhankelijkheden op snapshot versies van andere producten.'
+    unit = 'afhankelijkheden'
+    norm_template = 'Maximaal {target} {unit} op snapshot versies van andere producten. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} {unit} op snapshot versies van andere producten.'
     target_value = 0
     low_target_value = 2
     quality_attribute = DEPENDENCY_QUALITY
@@ -75,13 +74,12 @@ class SnapshotDependencies(LowerIsBetterMetric):
 
 
 class DependencyQuality(LowerPercentageIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the quality of the dependencies of the project. """
 
     name = 'Kwaliteit van afhankelijkheden'
-    norm_template = 'Maximaal {target}% van de afhankelijkheden tussen componenten is naar componenten die ' \
-        '"rode" metrieken hebben. Meer dan {low_target}% is rood.'
-    template = '{value:.0f}% van de afhankelijkheden ({nr_not_ok_deps} van ' \
+    norm_template = 'Maximaal {target}{unit} van de afhankelijkheden tussen componenten is naar componenten die ' \
+        '"rode" metrieken hebben. Meer dan {low_target}{unit} is rood.'
+    template = '{value:.0f}{unit} van de afhankelijkheden ({nr_not_ok_deps} van ' \
         'de {nr_deps}) is naar componenten die "rode" metrieken hebben.'
     url_label_text = 'Componenten die "rode" metrieken hebben'
     target_value = 10
@@ -128,13 +126,13 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
 
 
 class OWASPDependencies(LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of external dependencies of the project that have OWASP issues. """
 
     name = 'OWASP dependency kwaliteit'
-    norm_template = 'Dependencies van het product hebben geen normal of high OWASP issues.'
+    unit = 'waarschuwingen'
+    norm_template = 'Dependencies van het product hebben geen normal of high priority OWASP {unit}.'
     template = 'Dependencies van {name} hebben {high} high priority, ' \
-        '{normal} normal priority en {low} low priority warnings.'
+        '{normal} normal priority en {low} low priority {unit}.'
     target_value = 0
     low_target_value = 3
     quality_attribute = DEPENDENCY_QUALITY

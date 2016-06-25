@@ -25,8 +25,9 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the size (in number of lines of code) of a product. """
 
     name = 'Component omvang'
-    norm_template = 'Maximaal {target} regels (Java) code.'
-    template = '{name} heeft {value} regels code.'
+    unit = 'regels code'
+    norm_template = 'Maximaal {target} {unit}.'
+    template = '{name} heeft {value} {unit}.'
     target_value = 50000
     low_target_value = 100000
     quality_attribute = SIZE
@@ -39,9 +40,10 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the total size (in number of lines of code) of several products. """
 
     name = 'Totale omvang'
-    norm_template = 'Maximaal {target} regels (Java) code. Meer dan {low_target} regels (Java) code ' \
+    unit = 'regels code'
+    norm_template = 'Maximaal {target} {unit}. Meer dan {low_target} {unit} ' \
         '(herbouwtijd 30 jaar) is rood.'
-    template = 'Het totaal aantal LOC voor de producten {products} is {value} regels code.'
+    template = 'Het totaal aantal {unit} voor de producten {products} is {value} {unit}.'
     target_value = 160000
     # Maximum number of LOC Java to be eligible for 4 stars, see
     # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/

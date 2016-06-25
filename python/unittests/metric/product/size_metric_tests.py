@@ -91,8 +91,8 @@ class TotalLOCTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Het totaal aantal LOC voor de producten FakeSubject:trunk, ProductWithoutSonarId:trunk is '
-                         '123 regels code.', self.__metric.report())
+        self.assertEqual('Het totaal aantal regels code voor de producten FakeSubject:trunk, '
+                         'ProductWithoutSonarId:trunk is 123 regels code.', self.__metric.report())
 
     def test_recent_history(self):
         """ Test that the recent history subtracts the minimum value of each value so that more data can be plotted. """

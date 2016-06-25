@@ -27,9 +27,10 @@ class JavaVersionConsistency(LowerIsBetterMetric):
     """ Metric for measuring the number of inconsistencies in an environment. """
 
     name = 'Java versie consistentie'
-    norm_template = 'Er is precies een versie van Java in gebruik. Meer dan {low_target} versies is rood. ' \
+    unit = 'verschillende Java versies'
+    norm_template = 'Er is precies een versie van Java in gebruik. Meer dan {low_target} {unit} is rood. ' \
         'De rapportage is maximaal {old_age} oud. Meer dan {max_old_age} oud is rood.'
-    template = 'Er zijn {value} verschillende versies van Java in gebruik.'
+    template = 'Er zijn {value} {unit} in gebruik.'
     perfect_value = 1
     target_value = 1
     low_target_value = 2

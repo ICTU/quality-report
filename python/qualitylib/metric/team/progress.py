@@ -26,6 +26,7 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the progress of a team. """
 
     name = 'Team voortgang'
+    unit = ''
     norm_template = 'De vereiste velocity om het sprintdoel te halen is lager dan of gelijk aan {target_factor:.1f} ' \
         'maal de geplande velocity. Als de velocity die nodig is om het sprintdoel te halen hoger wordt dan ' \
         '{low_target_factor:.1f} maal de geplande velocity is deze metriek rood.'

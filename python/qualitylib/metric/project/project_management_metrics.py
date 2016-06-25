@@ -28,9 +28,10 @@ class RiskLog(LowerIsBetterMetric):
     """ Metric for measuring the number of days since the risk log was last updated. """
 
     name = 'Actualiteit risico log'
-    norm_template = 'Het risicolog wordt minimaal een keer per {target} dagen bijgewerkt. ' \
-        'Meer dan {low_target} dagen niet bijgewerkt is rood.'
-    template = 'Het risicolog is {value} dagen geleden (op {date}) voor het laatst bijgewerkt.'
+    unit = 'dagen'
+    norm_template = 'Het risicolog wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
+        'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
+    template = 'Het risicolog is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
     target_value = 14
     low_target_value = 28
     quality_attribute = PROJECT_MANAGEMENT
@@ -61,9 +62,10 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of days since the actions were last updated. """
 
     name = 'Actualiteit actielijst'
-    norm_template = 'De actie- en besluitenlijst wordt minimaal een keer per {target} dagen bijgewerkt. ' \
-        'Meer dan {low_target} dagen niet bijgewerkt is rood.'
-    template = 'De actie- en besluitenlijst is {value} dagen geleden (op {date}) voor het laatst bijgewerkt.'
+    unit = 'dagen'
+    norm_template = 'De actie- en besluitenlijst wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
+        'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
+    template = 'De actie- en besluitenlijst is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
     target_value = 7
     low_target_value = 14
     quality_attribute = PROJECT_MANAGEMENT
@@ -89,9 +91,10 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the age of individual actions. """
 
     name = 'Tijdigheid acties'
+    unit = 'acties'
     norm_template = 'Geen van de acties en besluiten in de actie- en besluitenlijst is te laat of te lang ' \
-        '(14 dagen) niet bijgewerkt. Meer dan {low_target} acties te laat of te lang niet bijgewerkt is rood.'
-    template = '{value} acties uit de actie- en besluitenlijst zijn te laat of te lang (14 dagen) niet bijgewerkt.'
+        '(14 dagen) niet bijgewerkt. Meer dan {low_target} {unit} te laat of te lang niet bijgewerkt is rood.'
+    template = '{value} {unit} uit de actie- en besluitenlijst zijn te laat of te lang (14 dagen) niet bijgewerkt.'
     url_label_text = 'Niet bijgewerkte of te late acties'
     target_value = 0
     low_target_value = 3

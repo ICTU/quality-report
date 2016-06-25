@@ -23,9 +23,10 @@ from ...domain import LowerIsBetterMetric
 class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the amount of violations reported by Sonar. """
-    norm_template = 'Maximaal {target} {violation_type} violations. ' \
-        'Meer dan {low_target} {violation_type} violations is rood.'
-    template = '{name} heeft {value} {violation_type} violations.'
+    unit = 'violations'
+    norm_template = 'Maximaal {target} {violation_type} {unit}. ' \
+        'Meer dan {low_target} {violation_type} {unit} is rood.'
+    template = '{name} heeft {value} {violation_type} {unit}.'
     quality_attribute = CODE_QUALITY
     violation_type = 'Subclass responsibility'
 
@@ -83,9 +84,10 @@ class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
 
 class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of times //NOSONAR is used to suppress violations. """
+    unit = '//NOSONAR onderdrukkingen'
     norm_template = 'Violations worden maximaal {target} keer onderdrukt met //NOSONAR. ' \
-        'Meer dan {low_target} keer is rood.'
-    template = '{name} bevat {value} keer //NOSONAR.'
+        'Meer dan {low_target} {unit} is rood.'
+    template = '{name} bevat {value} {unit}.'
     quality_attribute = CODE_QUALITY
     target_value = 25
     low_target_value = 50
@@ -96,7 +98,9 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
 
 class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of issues marked as false positive. """
-    norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. Meer dan {low_target} is rood.'
+    unit = 'false positives'
+    norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. ' \
+                    'Meer dan {low_target} {unit} is rood.'
     template = '{name} bevat {value} violations die zijn gemarkeerd als false positive.'
     quality_attribute = CODE_QUALITY
     target_value = 25

@@ -1,3 +1,9 @@
+2016-06-25  Release 1.36.0
+
+  * The unit of metrics is taken from the metric classes so the TechnicalDebtTarget and DynamicalDebtTarget classes
+    don't take a unit argument anymore.
+
+
 2016-06-24  Release 1.35.1
 
   * Bug fix: Don't report 0 failing unit tests out of 0 unit tests as perfect but rather as red.

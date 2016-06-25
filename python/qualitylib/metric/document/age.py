@@ -23,13 +23,13 @@ from qualitylib.metric.quality_attributes import DOC_QUALITY
 
 
 class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the progress of a team. """
 
     name = 'Document update leeftijd'
-    norm_template = 'Dit document wordt minimaal een keer per {target} dagen bijgewerkt. Als het document langer ' \
-        'dan {low_target} dagen geleden is bijgewerkt is deze metriek rood.'
-    template = 'Het document "{name}" is {value} dag(en) geleden bijgewerkt.'
+    unit = 'dag(en)'
+    norm_template = 'Dit document wordt minimaal een keer per {target} {unit} bijgewerkt. Als het document langer ' \
+        'dan {low_target} {unit} geleden is bijgewerkt is deze metriek rood.'
+    template = 'Het document "{name}" is {value} {unit} geleden bijgewerkt.'
     missing_template = 'Het document "{name}" is niet aangetroffen.'
     quality_attribute = DOC_QUALITY
     target_value = 180

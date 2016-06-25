@@ -954,3 +954,8 @@ class QualityReportMetricsTest(unittest.TestCase):
             self.__assert_metric(
                 metric_class,
                 project_kwargs=dict(requirements=[requirement.JAVASCRIPT]))
+
+    def test_metric_class_units(self):
+        """ Test that all metric classes have a unit. """
+        for metric_class in report.QualityReport.metric_classes():
+            self.assertNotEqual('Subclass responsibility', metric_class.unit, '{} has no unit'.format(metric_class))

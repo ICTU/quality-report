@@ -21,8 +21,9 @@ from ...domain import LowerIsBetterMetric
 
 
 class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring the quality of user stories. """
+    unit = 'user stories'
+
     @classmethod
     def should_be_measured(cls, product):
         return super(UserStoryMetric, cls).should_be_measured(product) and not product.product_version()
@@ -50,12 +51,11 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 
 
 class UserStoriesNotReviewed(UserStoryMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the percentage of user stories that not have been reviewed. """
 
     name = 'Review user stories'
-    norm_template = 'Maximaal {target} van de user stories is niet gereviewd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet gereviewde user stories van in totaal {total} user stories.'
+    norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
     low_target_value = 5
     quality_attribute = DOC_QUALITY
@@ -65,12 +65,11 @@ class UserStoriesNotReviewed(UserStoryMetric):
 
 
 class UserStoriesNotApproved(UserStoryMetric):
-    # pylint: disable=too-many-public-methods
-    """ Metric for measuring the percentage of user stories that not have been approved. """
+    """ Metric for measuring the number of user stories that not have been approved. """
 
     name = 'Goedgekeuring user stories'
-    norm_template = 'Maximaal {target} van de user stories is niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet goedgekeurde user stories van in totaal {total} gereviewde user stories.'
+    norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
+    template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
     low_target_value = 3
     quality_attribute = DOC_QUALITY
@@ -84,14 +83,13 @@ class UserStoriesNotApproved(UserStoryMetric):
 
 
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of user stories that has too few logical test cases. """
 
     name = 'Voldoende logische testgevallen per user story'
-    norm_template = 'Maximaal {target} van de user stories heeft onvoldoende logische testgevallen. ' \
+    norm_template = 'Maximaal {target} van de {unit} heeft onvoldoende logische testgevallen. ' \
         'Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} user stories met een onvoldoende aantal logische testgevallen van ' \
-        'in totaal {total} user stories.'
+    template = '{name} heeft {value} {unit} met een onvoldoende aantal logische testgevallen van ' \
+        'in totaal {total} {unit}.'
     target_value = 3
     low_target_value = 5
     quality_attribute = TEST_COVERAGE

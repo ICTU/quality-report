@@ -94,7 +94,7 @@ class FailingUnittestsTest(SonarDashboardUrlTestMixin, unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('5 van de 10 unittests falen.', self._metric.report())
+        self.assertEqual('5 van de 10 unittesten falen.', self._metric.report())
 
     def test_status_with_zero_unittests(self):
         sonar = FakeSonar(unittests=0)

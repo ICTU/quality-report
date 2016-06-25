@@ -26,6 +26,7 @@ from ...domain import HigherIsBetterMetric
 class SonarVersion(HigherIsBetterMetric):
     """ Measure the version number of Sonar. """
     name = 'Sonar versie'
+    unit = ''
     norm_template = 'Sonar heeft minimaal versie {target}, lager dan versie {low_target} is rood.'
     template = 'Sonar is versie {value}.'
     target_value = LooseVersion('4.5.7')
@@ -54,6 +55,7 @@ class SonarVersion(HigherIsBetterMetric):
 class SonarQualityProfileVersion(HigherIsBetterMetric):
     """ Measure the version number of the default Sonar quality profile for a specific language. """
     name = 'Sonar quality profile versie'
+    unit = ''
     language_key = 'Subclass responsibility'
     language_name = 'Subclass responsibility'
     norm_template = 'Sonar {language} quality profile heeft minimaal versie {target}, ' \
@@ -142,6 +144,7 @@ class SonarQualityProfileVersionWeb(SonarQualityProfileVersion):
 class SonarPluginVersion(HigherIsBetterMetric):
     """ Measure the version number of a Sonar plugin. """
     name = 'Sonar plugin versie'
+    unit = ''
     plugin_key = 'Subclass responsibility'
     plugin_name = 'Subclass responsibility'
     norm_template = 'Sonar plugin {plugin} heeft minimaal versie {target}, lager dan versie {low_target} is rood.'

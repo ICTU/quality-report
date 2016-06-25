@@ -21,15 +21,15 @@ from qualitylib.metric.quality_attributes import TEST_QUALITY
 
 
 class ARTStability(JenkinsMetricMixin, Metric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the stability of an ART. An ART is considered to
         be unstable if it hasn't succeeded for multiple days. """
 
     name = 'Stabiliteit van automatische regressietest'
-    norm_template = 'Alle regressietesten en integratietesten hebben de laatste {target} dagen minimaal eenmaal ' \
-        'succesvol gedraaid. Rood als er testen meer dan {low_target} dagen niet succesvol hebben gedraaid.'
-    above_target_template = 'Alle ARTs hebben de afgelopen {target} dagen succesvol gedraaid in de "{street}"-straat.'
-    below_target_template = '{value} ARTs hebben de afgelopen {target} dagen niet succesvol gedraaid in de ' \
+    unit = 'dagen'
+    norm_template = 'Alle regressietesten en integratietesten hebben de laatste {target} {unit} minimaal eenmaal ' \
+        'succesvol gedraaid. Rood als er testen meer dan {low_target} {unit} niet succesvol hebben gedraaid.'
+    above_target_template = 'Alle ARTs hebben de afgelopen {target} {unit} succesvol gedraaid in de "{street}"-straat.'
+    below_target_template = '{value} ARTs hebben de afgelopen {target} {unit} niet succesvol gedraaid in de ' \
         '"{street}"-straat.'
     target_value = 3
     low_target_value = 7

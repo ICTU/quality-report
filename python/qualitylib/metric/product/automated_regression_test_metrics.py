@@ -23,13 +23,13 @@ from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
 
 class FailingRegressionTests(LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of regression tests that fail. """
 
     name = 'Falende regressietesten'
-    norm_template = 'Alle regressietesten slagen.'
-    perfect_template = 'Alle {tests} regressietesten van {name} slagen.'
-    template = '{value} van de {tests} regressietesten van {name} slagen niet.'
+    unit = 'regressietesten'
+    norm_template = 'Alle {unit} slagen.'
+    perfect_template = 'Alle {tests} {unit} van {name} slagen.'
+    template = '{value} van de {tests} {unit} van {name} slagen niet.'
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
@@ -72,12 +72,22 @@ class FailingRegressionTests(LowerIsBetterMetric):
 
 
 class _ARTCoverage(HigherIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the coverage of automated regression tests (ART) for a product. """
+    unit = '%'
+    norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde functionele ' \
+                    'tests. Minder dan {low_target}{unit} is rood.'
+    template = '{name} ART {covered_item} coverage is {value}{unit} ({date}, {age} geleden).'
     perfect_value = 100
     quality_attribute = TEST_COVERAGE
     metric_source_classes = [metric_source.CoverageReport]
-    covered_items = 'Subclass responsibility'
+    covered_items = covered_item = 'Subclass responsibility'
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(_ARTCoverage, cls).norm_template_default_values()
+        values['covered_items'] = cls.covered_items
+        values['covered_item'] = cls.covered_item
+        return values
 
     def __init__(self, *args, **kwargs):
         super(_ARTCoverage, self).__init__(*args, **kwargs)
@@ -86,9 +96,9 @@ class _ARTCoverage(HigherIsBetterMetric):
             # Trunk version, ART coverage measurement should not be too old.
             self.old_age = datetime.timedelta(hours=3 * 24)
             self.max_old_age = datetime.timedelta(hours=5 * 24)
-            self.norm_template = 'Minimaal {target}% van de {covered_items} wordt gedekt door geautomatiseerde ' \
+            self.norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde ' \
                 'functionele tests en de coverage meting is niet ouder dan {old_age}. Minder dan ' \
-                '{low_target}% of meting ouder dan {max_old_age} is rood.'
+                '{low_target}{unit} of meting ouder dan {max_old_age} is rood.'
 
     def value(self):
         raise NotImplementedError  # pragma: nocover
@@ -114,19 +124,17 @@ class _ARTCoverage(HigherIsBetterMetric):
         # pylint: disable=protected-access
         parameters = super(_ARTCoverage, self)._parameters()
         parameters['covered_items'] = self.covered_items
+        parameters['covered_item'] = self.covered_item
         return parameters
 
 
 class ARTStatementCoverage(_ARTCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the statement coverage of automated regression tests (ART) for a product. """
 
     name = 'Automatic regression test statement coverage'
-    norm_template = 'Minimaal {target}% van de statements wordt gedekt door geautomatiseerde functionele tests. ' \
-           'Minder dan {low_target}% is rood.'
-    template = '{name} ART statement coverage is {value}% ({date}, {age} geleden).'
     target_value = 80
     low_target_value = 70
+    covered_item = 'statement'
     covered_items = 'statements'
 
     def value(self):
@@ -134,15 +142,12 @@ class ARTStatementCoverage(_ARTCoverage):
 
 
 class ARTBranchCoverage(_ARTCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the branch coverage of automated regression tests (ART) for a product. """
 
     name = 'Automatic regression test branch coverage'
-    norm_template = 'Minimaal {target}% van de branches wordt gedekt door geautomatiseerde functionele tests. ' \
-           'Minder dan {low_target}% is rood.'
-    template = '{name} ART branch coverage is {value}% ({date}, {age} geleden).'
     target_value = 75
     low_target_value = 60
+    covered_item = 'branch'
     covered_items = 'branches'
 
     def value(self):

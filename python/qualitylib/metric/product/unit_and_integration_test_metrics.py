@@ -33,6 +33,7 @@ class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIs
     # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring combined coverage of unit and integration tests for a product. """
 
+    unit = '%'
     perfect_value = 100
     quality_attribute = TEST_COVERAGE
 
@@ -45,9 +46,9 @@ class UnitAndIntegrationTestLineCoverage(UnitAndIntegrationTestCoverage):
     """ Metric for measuring the combined line coverage of unit and integration tests for a product. """
 
     name = 'Gecombineerde unit- en integratietest broncode dekking (line coverage)'
-    norm_template = 'Minimaal {target}% van de regels code wordt gedekt door unit- en integratietests samen. ' \
-        'Lager dan {low_target}% is rood.'
-    template = '{name} gecombineerde unit- en integratietest line coverage is {value:.0f}%.'
+    norm_template = 'Minimaal {target}{unit} van de regels code wordt gedekt door unit- en integratietests samen. ' \
+        'Lager dan {low_target}{unit} is rood.'
+    template = '{name} gecombineerde unit- en integratietest line coverage is {value:.0f}{unit}.'
     target_value = 98
     low_target_value = 90
 
@@ -60,9 +61,9 @@ class UnitAndIntegrationTestBranchCoverage(UnitAndIntegrationTestCoverage):
     """ Metric for measuring the combined branch coverage of unit and integration tests for a product. """
 
     name = 'Overall est broncode dekking (branch coverage)'
-    norm_template = 'Minimaal {target}% van de code branches wordt gedekt door unit- en integratietests samen. ' \
-        'Lager dan {low_target}% is rood.'
-    template = '{name} gecombineerde unit- en integratietest branch coverage is {value:.0f}%.'
+    norm_template = 'Minimaal {target}{unit} van de code branches wordt gedekt door unit- en integratietests samen. ' \
+        'Lager dan {low_target}{unit} is rood.'
+    template = '{name} gecombineerde unit- en integratietest branch coverage is {value:.0f}{unit}.'
     target_value = 80
     low_target_value = 60
 

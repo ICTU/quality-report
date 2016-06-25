@@ -67,7 +67,6 @@ class SonarViolationsUrlTestMixin(object):
 
 
 class CommentedLOCTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the commented LOC metric. """
 
     def setUp(self):
@@ -85,7 +84,6 @@ class CommentedLOCTest(unittest.TestCase):
 
 
 class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the Cyclomatic complexity metric. """
 
     def setUp(self):
@@ -109,7 +107,6 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
 
 class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the long methods metric. """
 
     def setUp(self):
@@ -132,7 +129,6 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
 
 class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the many parameters metric. """
 
     def setUp(self):
@@ -156,7 +152,6 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
 
 class NoSonarTest(SonarViolationsUrlTestMixin, unittest.TestCase):
-     # pylint: disable=too-many-public-methods
     """ Unit tests for the no Sonar metric. """
 
     def setUp(self):
@@ -170,7 +165,7 @@ class NoSonarTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
     def test_report(self):
         """ Test that the report of the metric is correct. """
-        self.assertEqual('FakeSubject bevat 4 keer //NOSONAR.', self._metric.report())
+        self.assertEqual('FakeSubject bevat 4 //NOSONAR onderdrukkingen.', self._metric.report())
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
