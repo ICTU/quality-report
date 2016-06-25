@@ -1,3 +1,8 @@
+2016-06-25  Release 1.37.0
+
+  * Use Bootstrap 3.
+
+
 2016-06-25  Release 1.36.4
 
   * Bug fix: Don't report negative failing unit tests when Sonar can't be reached.
