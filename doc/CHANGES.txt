@@ -1,3 +1,8 @@
+2016-06-25  Release 1.36.2
+
+  * Bug fix: Don't crash when wiki page isn't available.
+
+
 2016-06-25  Release 1.36.1
 
   * Bug fix: Unit of duration of manual logical test cases is minutes, not logical test cases.

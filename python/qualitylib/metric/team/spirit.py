@@ -34,7 +34,7 @@ class TeamSpirit(Metric):
     target_value = ':-)'
     perfect_value = ':-)'
     low_target_value = ':-('
-    numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2, '?': 2}
+    numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2}
     old_age = datetime.timedelta(days=21)
     max_old_age = 2 * old_age
     quality_attribute = SPIRIT
@@ -49,7 +49,7 @@ class TeamSpirit(Metric):
         return self.__wiki.team_spirit(self.__team_id) or '?'
 
     def numerical_value(self):
-        return self.numerical_value_map[self.value()]
+        return self.numerical_value_map.get(self.value(), -1)
 
     def y_axis_range(self):
         values = self.numerical_value_map.values()
@@ -73,6 +73,9 @@ class TeamSpirit(Metric):
 
     def _date(self):
         return self.__wiki.date_of_last_team_spirit_measurement(self.__team_id)
+
+    def _missing(self):
+        return not self.__wiki.team_spirit(self.__team_id)
 
     def url(self):
         return dict(Wiki=self.__wiki.url())

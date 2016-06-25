@@ -62,7 +62,7 @@ class WikiTest(unittest.TestCase):
 
     def test_missing_team_spirit(self):
         """ Test exception when team is missing. """
-        self.assertRaises(IndexError, self.__wiki.team_spirit, 'missing')
+        self.assertEqual('', self.__wiki.team_spirit('missing'))
 
     def test_date_of_last_measurement(self):
         """ Test the date of the last measurement of the spirit of the team. """

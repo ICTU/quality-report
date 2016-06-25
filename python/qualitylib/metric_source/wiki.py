@@ -22,6 +22,7 @@ import time
 
 from . import beautifulsoup
 from .. import utils, domain
+from .url_opener import UrlOpener
 
 
 class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
@@ -37,18 +38,26 @@ class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     @utils.memoized
     def team_spirit(self, team_id):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
-        soup = self.soup(self.url())
+        try:
+            soup = self.soup(self.url())
+        except UrlOpener.url_open_exceptions:
+            logging.warning("Could not open %s to read spirit of team %s", self.url(), team_id)
+            return ''
         try:
             row = soup('tr', id=team_id)[0]('td')
         except IndexError:
-            logging.error("Could not find %s in wiki", team_id)
-            raise
+            logging.warning("Could not find %s in wiki %s", team_id, self.url())
+            return ''
         return re.sub(r'[^:\-()|]', '', row[-1].string)
 
     @utils.memoized
     def date_of_last_team_spirit_measurement(self, team_id):
         """ Return the date that the team spirit of the team was last measured. """
-        soup = self.soup(self.url())
+        try:
+            soup = self.soup(self.url())
+        except UrlOpener.url_open_exceptions:
+            logging.warning("Could not open %s to read date of last spirit measurement of team %s", self.url(), team_id)
+            return datetime.datetime.min
         columns = len(soup('tr', id=team_id)[0]('td'))
         date_text = soup('th')[columns - 1].string.strip()
         return self.__parse_date(date_text)
