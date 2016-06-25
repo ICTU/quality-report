@@ -1,3 +1,8 @@
+2016-06-25  Release 1.36.3
+
+  * Bug fix: Don't report Sonar as being at version 0.0 when it can't be reached, but report it as not measurable.
+
+
 2016-06-25  Release 1.36.2
 
   * Bug fix: Don't crash when wiki page isn't available.

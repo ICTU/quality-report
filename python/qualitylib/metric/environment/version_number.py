@@ -49,7 +49,7 @@ class SonarVersion(HigherIsBetterMetric):
         return {'Sonar': self._sonar.url()}
 
     def _missing(self):
-        return False  # Not supported yet.
+        return self._sonar.version_number() == '0.0'
 
 
 class SonarQualityProfileVersion(HigherIsBetterMetric):
