@@ -1,3 +1,8 @@
+2016-06-25  Release 1.36.4
+
+  * Bug fix: Don't report negative failing unit tests when Sonar can't be reached.
+
+
 2016-06-25  Release 1.36.3
 
   * Bug fix: Don't report Sonar as being at version 0.0 when it can't be reached, but report it as not measurable.

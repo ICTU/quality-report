@@ -156,7 +156,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def failing_unittests(self, product):
         """ Return the number of failing unit tests for the product. """
-        return int(self.__metric(product, 'test_failures') + self.__metric(product, 'test_errors'))
+        failures = int(self.__metric(product, 'test_failures'))
+        errors = int(self.__metric(product, 'test_errors'))
+        return failures + errors if failures >= 0 and errors >= 0 else -1
 
     def integration_test_line_coverage(self, product):
         """ Return the line coverage of the integration tests for the product. """
