@@ -146,7 +146,7 @@ class HTMLFormatter(base_formatter.Formatter):
                 <a class="filter_quality_attribute"
                    id="filter_quality_attribute_{attribute_id}"
                    href="#">
-                    <i class=""></i> Alleen {attribute_name}-metingen
+                    <span class="" aria-hidden="true"></span> Alleen {attribute_name}-metingen
                 </a>
             </li>"""
         menu_items = [menu_item_template.format(attribute_id=attribute.id_string(), attribute_name=attribute.name())
@@ -344,7 +344,8 @@ class HTMLFormatter(base_formatter.Formatter):
             name = metric_class.name
             class_name = metric_class.__name__
             quality_attribute = metric_class.quality_attribute.name()
-            icon = '<i class="icon-ok"></i>' if metric_class in report.included_metric_classes() else ''
+            icon = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' \
+                if metric_class in report.included_metric_classes() else ''
             try:
                 norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
             except ValueError:
@@ -364,7 +365,8 @@ class HTMLFormatter(base_formatter.Formatter):
         for metric_source_class in report.metric_source_classes():
             name = metric_source_class.metric_source_name
             class_name = metric_source_class.__name__
-            icon = '<i class="icon-ok"></i>' if metric_source_class in report.included_metric_source_classes() else ''
+            icon = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' \
+                if metric_source_class in report.included_metric_source_classes() else ''
             result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td></tr>'.format(
                 icon=icon, name=name, cls=class_name))
         result.append('</table>')
@@ -392,7 +394,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         td_indent = tr_indent + ' ' * 4
 
         dashboard = list()
-        dashboard.append(table_indent + '<table width="100%" border="1">')
+        dashboard.append(table_indent + '<table class="table table-bordered" width="100%">')
         dashboard.extend(cls.__dashboard_headers(report, tr_indent, td_indent))
         dashboard.extend(cls.__dashboard_rows(report, tr_indent, td_indent))
         dashboard.append(table_indent + '</table>')
@@ -402,9 +404,9 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     def __dashboard_headers(report, tr_indent, td_indent):
         """ Return the headers of the dashboard. """
         dashboard_headers = report.dashboard()[0]
-        th_template = td_indent + '<th colspan="{span}" align="center" bgcolor="#2c2c2c">{sec}</th>'
+        th_template = td_indent + '<th colspan="{span}" style="text-align: center;">{sec}</th>'
         rows = list()
-        rows.append(tr_indent + '<tr style="color: white; font-weight: bold;">')
+        rows.append(tr_indent + '<tr style="color: white; font-weight: bold; background-color: #2F95CF;">')
         for section_type, colspan in dashboard_headers:
             table_header = th_template.format(span=colspan, sec=section_type)
             rows.append(table_header)

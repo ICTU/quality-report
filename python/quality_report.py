@@ -155,7 +155,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Create and write the resources. """
         resource_manager = pkg_resources.ResourceManager()
         formatting_module = formatting.html_formatter.__name__
-        for resource_type, encoding in (('css', 'utf-8'), ('img', None), ('js', 'utf-8')):
+        for resource_type, encoding in (('css', 'utf-8'), ('fonts', None), ('img', None), ('js', 'utf-8')):
             resource_dir = os.path.join(report_dir, resource_type)
             filesystem.create_dir(resource_dir)
             for resource in resource_manager.resource_listdir(formatting_module, resource_type):

@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>{title}</title>
-        <meta http-equiv="cache-control" content="no-cache" />
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <!-- <meta http-equiv="cache-control" content="no-cache" />
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="expires" content="0" />
-        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" /> -->
+        <title>{title}</title>
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <style type="text/css">
             body {{
-                padding-top: 60px;
+                padding-top: 70px;
                 padding-bottom: 40px;
             }}
         </style>
-        <link href="css/bootstrap-responsive.min.css" rel="stylesheet" />
         <link href="css/quality_report.css" rel="stylesheet" />
         <style type="text/css" media="print">.navbar {{ visibility: hidden; }}</style>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/compatibility.js"></script>
         <script type="text/javascript" src="js/cookie.js"></script>
@@ -27,121 +30,111 @@
         </script>
     </head>
     <body>
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container-fluid">
-                    <a class="brand" href="#">{title}</a>
-                    <ul class="nav" role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">{title}</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
                         <li class="dropdown">
-                            <a id="navigation_menu" class="dropdown-toggle"
-                               data-toggle="dropdown" href="#">
-                                Ga naar<b class="caret"></b>
+                            <a id="navigation_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                                Ga naar<span class="caret"></span>
                             </a>
-                            <ul class="dropdown-menu"
-                                aria-labelledby="navigation_menu">
+                            <ul class="dropdown-menu" aria-labelledby="navigation_menu">
                                 <li>
-                                    <a class="link_section_dashboard"
-                                       href="#section_dashboard">
-                                        Dashboard
-                                    </a>
+                                    <a class="link_section_dashboard" href="#section_dashboard">
+                                        <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Dashboard</a>
                                 </li>
                                 {section_menu}
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a id="toon_menu" class="dropdown-toggle"
-                               data-toggle="dropdown" href="#">
-                                Toon<b class="caret"></b>
+                            <a id="toon_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                                Toon<span class="caret"></span>
                             </a>
-                            <ul class="dropdown-menu"
-                                aria-labelledby="toon_menu">
+                            <ul class="dropdown-menu" aria-labelledby="toon_menu">
                                 <li>
                                     <a id="show_dashboard" href="#">
-                                        <i class=""></i> Dashboard
+                                        <span class="" aria-hidden="true"></span> Dashboard
                                     </a>
                                 </li>
                                 <li>
                                     <a id="show_multiple_tables" href="#">
-                                        <i class=""></i> Tabel per product/team
+                                        <span class="" aria-hidden="true"></span> Tabel per product/team
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a class="filter_version" id="filter_version_all"
-                                       href="#">
-                                       <i class=""></i> Alle versies van producten
+                                    <a class="filter_version" id="filter_version_all" href="#">
+                                       <span class="" aria-hidden="true"></span> Alle versies van producten
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="filter_version" id="filter_version_trunk"
-                                       href="#">
-                                       <i class=""></i> Alleen trunk versies
+                                    <a class="filter_version" id="filter_version_trunk" href="#">
+                                      <span class="" aria-hidden="true"></span> Alleen trunk versies
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="filter_version" id="filter_version_release"
-                                       href="#">
-                                       <i class=""></i> Alleen te releasen versies
+                                    <a class="filter_version" id="filter_version_release" href="#">
+                                       <span class="" aria-hidden="true"></span> Alleen te releasen versies
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a id="filter_menu" class="dropdown-toggle"
-                               data-toggle="dropdown" href="#">
+                            <a id="filter_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
                                 Filter KPIs<b class="caret"></b>
                             </a>
-                            <ul class="dropdown-menu"
-                                aria-labelledby="filter_menu">
+                            <ul class="dropdown-menu" aria-labelledby="filter_menu">
                                 <li>
-                                    <a class="filter_color" id="filter_color_all"
-                                       href="#">
-                                        <i class=""></i> KPI's met alle kleuren
+                                    <a class="filter_color" id="filter_color_all" href="#">
+                                        <span class="" aria-hidden="true"></span> KPI's met alle kleuren
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="filter_color"
-                                       id="filter_color_red_and_yellow" href="#">
-                                        <i class=""></i> Alleen KPI's die onder
-                                        de norm scoren (geel en rood)
+                                    <a class="filter_color" id="filter_color_red_and_yellow" href="#">
+                                        <span class="" aria-hidden="true"></span> Alleen KPI's die onder de norm scoren (geel en rood)
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="filter_color"
-                                       id="filter_color_grey" href="#">
-                                        <i class=""></i> Alleen KPI's met
-                                        technische schuld (grijs)
+                                    <a class="filter_color" id="filter_color_grey" href="#">
+                                        <span class="" aria-hidden="true"></span> Alleen KPI's met technische schuld (grijs)
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a class="filter_quality_attribute"
-                                       id="filter_quality_attribute_all"
-                                       href="#">
-                                        <i class=""></i> KPI's voor alle kwaliteitsattributen
+                                    <a class="filter_quality_attribute" id="filter_quality_attribute_all" href="#">
+                                        <span class="" aria-hidden="true"></span> KPI's voor alle kwaliteitsattributen
                                     </a>
                                 </li>
                                 {quality_attribute_filter_menu}
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a id="help_menu" class="dropdown-toggle"
-                               data-toggle="dropdown" href="#">
+                            <a id="help_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
                                 Help<b class="caret"></b>
                             </a>
-                            <ul class="dropdown-menu"
-                                aria-labelledby="help_menu">
+                            <ul class="dropdown-menu" aria-labelledby="help_menu">
                                 <li>
-                                    <a id="help_dialog" href="#modal_help_dialog"
-                                       data-toggle="modal">
-                                       <i class=""></i> Over het kwaliteitssysteem
-                                     </a>
+                                    <a id="help_dialog" href="#modal_help_dialog"  data-toggle="modal">
+                                       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Over het kwaliteitssysteem
+                                    </a>
                                 </li>
                                 <li>
-                                    <a id="help_configuration" href="#modal_help_configuration_dialog"
-                                       data-toggle="modal">
-                                       <i class=""></i> Configuratie
-                                     </a>
+                                    <a id="help_configuration" href="#modal_help_configuration_dialog" data-toggle="modal">
+                                       <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Configuratie
+                                    </a>
                                 </li>
                             </ul>
                         </li>
@@ -149,208 +142,215 @@
                     <p class="navbar-text pull-right">
                         Rapportage van {date}
                     </p>
-                </div><!-- /.container-fluid -->
-            </div><!-- /.navbar-inner -->
-        </div><!-- /.navbar navbar-fixed-top -->
-        <div class="modal hide modal-wide" id="modal_help_configuration_dialog" tabindex="-1"
+                </div>
+            </div><!-- /.container -->
+        </nav>
+        <div class="modal fade" id="modal_help_configuration_dialog" tabindex="-1"
              role="dialog" aria-labelledby="modal_help_configuration_dialog_title" aria-hidden="true">
-            <div class="modal-header">
-                <a class="close" data-dismiss="modal">&times;</a>
-                <h3 id="modal_help_configuration_dialog_title">Configuratie van het kwaliteitssysteem</h3>
-            </div>
-            <div class="modal-body">
-                <p>
-                    De configuratie van het kwaliteitssysteem vindt grotendeels
-                    plaats met behulp van een project definitie die beschreven
-                    wordt in een <tt>project_definition.py</tt> python bestand.
-                    Zie <a href="https://github.com/ICTU/quality-report">Github</a>
-                    voor meer informatie en voorbeelden.
-                </p>
-                <p>
-                    Sommige zaken kunnen geconfigureerd worden door in de bronsystemen
-                    van het kwaliteitssysteem aanpassingen te doen. Hieronder de
-                    instructies daarvoor.
-                </p>
-                <h3>
-                    Jenkins jobs negeren die ongebruikt zijn
-                </h3>
-                <p>
-                    Standaard rapporteert het kwaliteitssysteem ongebruikte Jenkins jobs
-                    na 180 dagen als ongebruikt. Deze periode kan voor specifieke Jenkins
-                    jobs langer gemaakt worden door in de beschrijving van de job
-                    de periode op te nemen gedurende welke de job niet als ongebruikt
-                    moet worden geschouwd. De syntax is als volgt:
-                </p>
-                <pre>[gracedays=365]</pre>
-                <p>
-                    Het getal is de periode in dagen.
-                </p>
-                <h3>
-                    Het toevoegen van een beveiligingsissues KPI
-                </h3>
-                <ol>
-                    <li>Maak een filter in Jira aan, bijvoorbeeld:
-                        <pre>
-project = CSK AND labels = beveiliging_bevinding AND status in (Open, "In Progress", Reopened) AND created <= -3w
-				        </pre>
-                    </li>
-				    <li>
-                        Sla het filter op met een zinnige naam, bijvoorbeeld <tt>CS open beveiligingsbevindingen</tt>
-				    </li>
-				    <li>
-                        Zorg dat het filter beschikbaar is: klik <tt>Details - Edit permissions - Add Shares</tt>,
-                        voeg toe <tt>Everyone</tt>
-				    </li>
-				    <li>
-                        Voeg het query id toe aan de project definitie. Het query id zie je in de url in Jira
-                        <tt>https://jira.lrgirko.nl/jira/issues/?filter=13152</tt>.
-                        Zet het query id in de projectdefinitie op de relevante plaatsen:
-					<pre>JIRA = metric_source.Jira('https://jira.lrgirko.nl/jira/',
-username='vul jira username in', password=vul jira password in,
-open_security_bug_query_id=13152)
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h3 id="modal_help_configuration_dialog_title">Configuratie van het kwaliteitssysteem</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            De configuratie van het kwaliteitssysteem vindt grotendeels
+                            plaats met behulp van een project definitie die beschreven
+                            wordt in een <tt>project_definition.py</tt> python bestand.
+                            Zie <a href="https://github.com/ICTU/quality-report">Github</a>
+                            voor meer informatie en voorbeelden.
+                        </p>
+                        <p>
+                            Sommige zaken kunnen geconfigureerd worden door in de bronsystemen
+                            van het kwaliteitssysteem aanpassingen te doen. Hieronder de
+                            instructies daarvoor.
+                        </p>
+                        <h3>
+                            Jenkins jobs negeren die ongebruikt zijn
+                        </h3>
+                        <p>
+                            Standaard rapporteert het kwaliteitssysteem ongebruikte Jenkins jobs
+                            na 180 dagen als ongebruikt. Deze periode kan voor specifieke Jenkins
+                            jobs langer gemaakt worden door in de beschrijving van de job
+                            de periode op te nemen gedurende welke de job niet als ongebruikt
+                            moet worden geschouwd. De syntax is als volgt:
+                        </p>
+                        <pre>[gracedays=365]</pre>
+                        <p>
+                            Het getal is de periode in dagen.
+                        </p>
+                        <h3>
+                            Het toevoegen van een beveiligingsissues KPI
+                        </h3>
+                        <ol>
+                            <li>Maak een filter in Jira aan, bijvoorbeeld:
+                                <pre>
+        project = CSK AND labels = beveiliging_bevinding AND status in (Open, "In Progress", Reopened) AND created <= -3w
+                                </pre>
+                            </li>
+                            <li>
+                                Sla het filter op met een zinnige naam, bijvoorbeeld <tt>CS open beveiligingsbevindingen</tt>
+                            </li>
+                            <li>
+                                Zorg dat het filter beschikbaar is: klik <tt>Details - Edit permissions - Add Shares</tt>,
+                                voeg toe <tt>Everyone</tt>
+                            </li>
+                            <li>
+                                Voeg het query id toe aan de project definitie. Het query id zie je in de url in Jira
+                                <tt>https://jira.lrgirko.nl/jira/issues/?filter=13152</tt>.
+                                Zet het query id in de projectdefinitie op de relevante plaatsen:
+                            <pre>JIRA = metric_source.Jira('https://jira.lrgirko.nl/jira/',
+        username='vul jira username in', password=vul jira password in,
+        open_security_bug_query_id=13152)
 
-PROJECT = Project('ICTU', name='CSKF2',
-metric_sources={{
-metric_source.Jira: JIRA,</pre>
-                    </li>
-                </ol>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+        PROJECT = Project('ICTU', name='CSKF2',
+        metric_sources={{
+        metric_source.Jira: JIRA,</pre>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="modal hide modal-wide" id="modal_help_dialog" tabindex="-1"
+        <div class="modal fade" id="modal_help_dialog" tabindex="-1"
              role="dialog" aria-labelledby="modal_help_dialog_title" aria-hidden="true">
-            <div class="modal-header">
-                <a class="close" data-dismiss="modal">&times;</a>
-                <h3 id="modal_help_dialog_title">Over het ICTU Kwaliteitssysteem</h3>
-            </div>
-            <div class="modal-body">
-                <p>
-                    <em>Quality-report versie {current_version}.{new_version_available}</em>
-                </p>
-                <p>
-                    Het ICTU kwaliteitssysteem is een geautomatiseerd systeem
-                    dat frequent (momenteel elke 15 minuten tijdens
-                    kantoortijden) allerlei metingen doet aan de producten,
-                    processen en teams binnen softwareontwikkelprojecten die
-                    door ICTU worden uitgevoerd. Doel van het kwaliteitssysteem
-                    is inzicht te geven in de kwaliteit van de producten en de
-                    uitvoering van processen van een project &eacute;n om
-                    technische schuld te voorkomen.
-                </p>
-                <h3>
-                    Voor wie is het kwaliteitssysteem bedoeld?
-                </h3>
-                <p>
-                    Het ICTU Kwaliteitssysteem is primair bedoeld voor
-                    projectleiders, ontwerpers, ontwikkelaars en testers van
-                    softwareontwikkelprojecten. Projectleiders kunnen zien in
-                    hoeverre de kwaliteit van hun project(en) voldoet aan de
-                    kwaliteitscriteria. Ontwerpers, ontwikkelaars en testers
-                    kunnen zien in hoeverre hun werk voldoet aan de
-                    kwaliteitscriteria en waar eventueel nog verbetering moeten
-                    worden doorgevoerd.
-                </p>
-                <p>
-                    Daarnaast dient het kwaliteitsysteem om niet direct
-                    betrokkenen zoals opdrachtgever, beheerders en andere
-                    belanghebbenden te laten zien dat de kwaliteit van de
-                    producten die binnen een project worden gebouwd voldoen aan
-                    de kwaliteitscriteria.
-                </p>
-                <h3>
-                  Waar zijn de normen op gebaseerd?
-                </h3>
-                <p>
-                  De metingen en de normen voor de metingen zijn deels
-                  gebaseerd op de
-                  <a href="http://www.sig.eu/en/Services/Software%%20Product%%20Certification/Evaluation%%20Criteria/">
-                      SIG-TUViT Evaluation Criteria for Trusted Product Maintainability
-                  </a>.
-                  Daarnaast zijn de metingen en de normen gebaseerd op het
-                  Scrumproces zoals dat bij ICTU uitgevoerd wordt.
-                </p>
-                <h3>
-                  Wat meet het kwaliteitssysteem?
-                </h3>
-                <p>
-                  Het kwaliteitssysteem meet (kwaliteits)eigenschappen van de
-                  softwareproducten, het proces en de teams.
-                </p>
-                <h4>
-                  Metingen aan de software
-                </h4>
-                <p>
-                  Om de lange-termijn onderhoudbaarheid van de software te
-                  bevorderen meet het kwaliteitsysteem (met behulp van Sonar;
-                  een tool voor metingen aan Java software) kenmerken van de
-                  software zoals complexiteit, lengte en overtredingen van
-                  "good practices".
-                </p>
-                <h4>
-                  Metingen aan het proces
-                </h4>
-                <p>
-                  Om te zorgen dat het proces goed wordt uitgevoerd meet het
-                  kwaliteitssysteem of werkproducten zoals user stories en
-                  logische testgevallen zijn gereviewd en goedgekeurd.
-                </p>
-                <h4>
-                  Metingen van en aan de teams
-                </h4>
-                <p>
-                  Het kwaliteitssysteem meet de velocity van de teams en de
-                  stemming binnen de teams. Dat meten van de stemming is
-                  momenteel de enige niet-geautomatiseerde meting binnen het
-                  kwaliteitssysteem.
-                </p>
-                <h4>
-                  Lijst van metrieken die het kwaliteitssysteem kan meten
-                </h4>
-                {metric_classes}
-                <h4>
-                    Lijst van metriekbronnen die het kwaliteitssysteem kan gebruiken
-                </h4>
-                {metric_sources}
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h3 id="modal_help_dialog_title">Over het ICTU Kwaliteitssysteem</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <em>Quality-report versie {current_version}.{new_version_available}</em>
+                        </p>
+                        <p>
+                            Het ICTU kwaliteitssysteem is een geautomatiseerd systeem
+                            dat frequent (momenteel elke 15 minuten tijdens
+                            kantoortijden) allerlei metingen doet aan de producten,
+                            processen en teams binnen softwareontwikkelprojecten die
+                            door ICTU worden uitgevoerd. Doel van het kwaliteitssysteem
+                            is inzicht te geven in de kwaliteit van de producten en de
+                            uitvoering van processen van een project &eacute;n om
+                            technische schuld te voorkomen.
+                        </p>
+                        <h3>
+                            Voor wie is het kwaliteitssysteem bedoeld?
+                        </h3>
+                        <p>
+                            Het ICTU Kwaliteitssysteem is primair bedoeld voor
+                            projectleiders, ontwerpers, ontwikkelaars en testers van
+                            softwareontwikkelprojecten. Projectleiders kunnen zien in
+                            hoeverre de kwaliteit van hun project(en) voldoet aan de
+                            kwaliteitscriteria. Ontwerpers, ontwikkelaars en testers
+                            kunnen zien in hoeverre hun werk voldoet aan de
+                            kwaliteitscriteria en waar eventueel nog verbetering moeten
+                            worden doorgevoerd.
+                        </p>
+                        <p>
+                            Daarnaast dient het kwaliteitsysteem om niet direct
+                            betrokkenen zoals opdrachtgever, beheerders en andere
+                            belanghebbenden te laten zien dat de kwaliteit van de
+                            producten die binnen een project worden gebouwd voldoen aan
+                            de kwaliteitscriteria.
+                        </p>
+                        <h3>
+                          Waar zijn de normen op gebaseerd?
+                        </h3>
+                        <p>
+                          De metingen en de normen voor de metingen zijn deels
+                          gebaseerd op de
+                          <a href="http://www.sig.eu/en/Services/Software%%20Product%%20Certification/Evaluation%%20Criteria/">
+                              SIG-TUViT Evaluation Criteria for Trusted Product Maintainability
+                          </a>.
+                          Daarnaast zijn de metingen en de normen gebaseerd op het
+                          Scrumproces zoals dat bij ICTU uitgevoerd wordt.
+                        </p>
+                        <h3>
+                          Wat meet het kwaliteitssysteem?
+                        </h3>
+                        <p>
+                          Het kwaliteitssysteem meet (kwaliteits)eigenschappen van de
+                          softwareproducten, het proces en de teams.
+                        </p>
+                        <h4>
+                          Metingen aan de software
+                        </h4>
+                        <p>
+                          Om de lange-termijn onderhoudbaarheid van de software te
+                          bevorderen meet het kwaliteitsysteem (met behulp van Sonar;
+                          een tool voor metingen aan Java software) kenmerken van de
+                          software zoals complexiteit, lengte en overtredingen van
+                          "good practices".
+                        </p>
+                        <h4>
+                          Metingen aan het proces
+                        </h4>
+                        <p>
+                          Om te zorgen dat het proces goed wordt uitgevoerd meet het
+                          kwaliteitssysteem of werkproducten zoals user stories en
+                          logische testgevallen zijn gereviewd en goedgekeurd.
+                        </p>
+                        <h4>
+                          Metingen van en aan de teams
+                        </h4>
+                        <p>
+                          Het kwaliteitssysteem meet de velocity van de teams en de
+                          stemming binnen de teams. Dat meten van de stemming is
+                          momenteel de enige niet-geautomatiseerde meting binnen het
+                          kwaliteitssysteem.
+                        </p>
+                        <h4>
+                          Lijst van metrieken die het kwaliteitssysteem kan meten
+                        </h4>
+                        {metric_classes}
+                        <h4>
+                            Lijst van metriekbronnen die het kwaliteitssysteem kan gebruiken
+                        </h4>
+                        {metric_sources}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div class="span12">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
                     <div id="section_dashboard">
                         <ul class="nav nav-tabs" id="dashboard_tab_control">
-                            <li class="active">
-                                <a href="#piecharts_tab">Overzicht</a>
+                            <li class="active" role="presentation">
+                                <a href="#piecharts_tab" role="tab" aria-controls="piecharts_tab" data-toggle="tab">Overzicht</a>
                             </li>
-                            <li>
-                                <a href="#dependency_tab">Dependencies</a>
+                            <li role="presentation">
+                                <a href="#dependency_tab" role="tab" aria-controls="dependency_tab" data-toggle="tab">Dependencies</a>
                             </li>
-                            <li>
-                                <a href="#meta_metrics_history_tab">Trend</a>
+                            <li role="presentation">
+                                <a href="#meta_metrics_history_tab" role="tab" aria-controls="meta_metrics_history_tab" data-toggle="tab">Trend</a>
                             </li>
-                            <li>
-                                <a href="#project_resources_tab">Resources</a>
+                            <li role="presentation">
+                                <a href="#project_resources_tab" role="tab" aria-controls="project_resources_tab" data-toggle="tab">Resources</a>
                             </li>
                         </ul>
                         <div class="tab-content">
-                            <div class="tab-pane active" id="piecharts_tab">
+                            <div class="tab-pane active" id="piecharts_tab" role="tabpanel">
                                 {dashboard}
                             </div>
-                            <div class="tab-pane" id="dependency_tab">
-                                <!-- put an embed tag inside the object tag to
-                                     accomodate older browsers -->
+                            <div class="tab-pane" id="dependency_tab" role="tabpanel">
+                                <!-- put an embed tag inside the object tag to accommodate older browsers -->
                                 <object data="dependency.svg" type="image/svg+xml" width="100%%" height="800px">
                                     <embed src="dependency.svg" type="image/svg+xml" width="100%%" height="800px"/>
                                 </object>
                             </div>
-                            <div class="tab-pane" id="meta_metrics_history_tab">
+                            <div class="tab-pane" id="meta_metrics_history_tab" role="tabpanel">
                                <div id="meta_metrics_history_graph"></div>
                             </div>
-                            <div class="tab-pane" id="project_resources_tab">
+                            <div class="tab-pane" id="project_resources_tab" role="tabpanel">
                                 <h4>Project resources</h4>
                                 {project_resources}
                             </div>

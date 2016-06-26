@@ -27,7 +27,8 @@ from setuptools import setup, find_packages
 from qualitylib import VERSION
 
 
-for src_files in ('../html/*.html', '../js/*.js', '../css/*.css', '../img/*.png'):
+for src_files in ('../css/*.css', '../css/*.css.map', '../fonts/glyphicons-halflings-regular.*', '../html/*.html',
+                  '../img/*.png', '../js/*.js'):
     destination_dir = os.path.join('qualitylib', 'formatting', src_files.split('/')[1])
     if not os.path.exists(destination_dir):
         os.mkdir(destination_dir)
@@ -58,4 +59,3 @@ setup(name='quality_report',
           'Programming Language :: JavaScript',
           'Programming Language :: Unix Shell',
           'Topic :: Software Development :: Quality Assurance'])
-
