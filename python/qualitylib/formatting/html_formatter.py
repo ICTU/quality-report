@@ -90,8 +90,9 @@ class HTMLFormatter(base_formatter.Formatter):
         subtitle = self.__format_subtitle(section.subtitle())
         links = self.__format_product_links(report, section.product())
         meta_data = self.__format_product_meta_data(section.product())
+        extra = '<div id="meta_metrics_history_graph"></div>' if section.has_history() else ''
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, product_meta_data=meta_data,
-                          product_links=links)
+                          product_links=links, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
     def metric(self, metric):
