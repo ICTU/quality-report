@@ -104,23 +104,21 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return the menu for jumping to specific sections. """
         menu_items = []
 
-        menu_item_template = '''<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>
-        </li>'''
-        sub_menu_template = '''<li class="dropdown-submenu"><a tabindex="-1" href="#">{title}</a>
-        <ul class="dropdown-menu">'''
+        menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
+                             '</li>'
+        header_template = '<li class="dropdown-header">{header}</li>'
 
         def add_menu_item(section_id, menu_label):
             """ Add a menu item that links to the specified section. """
             menu_items.append(menu_item_template.format(section_id=section_id, menu_label=menu_label))
 
-        def add_sub_menu(sections, title):
-            """ Add a sub menu with menu items that link to the specified sections. """
-            menu_items.append(sub_menu_template.format(title=title))
+        def add_header_and_menu_items(sections, header):
+            """ Add a header with menu items that link to the specified sections. """
+            menu_items.append(header_template.format(header=header))
             for each_section in sections:
                 add_menu_item(each_section.id_prefix(), each_section.subtitle())
-            menu_items.append('</ul></li>')
 
-        # First, group related sections so we can create sub menu's
+        # First, group related sections so we can group related sections under a header
         sections = {}
         titles = []
         for section in report.sections():
@@ -128,13 +126,13 @@ class HTMLFormatter(base_formatter.Formatter):
             sections.setdefault(title, []).append(section)
             if title not in titles:
                 titles.append(title)
-        # Next, create the menu's and submenu's
+        # Next, create the headers and menu items
         for title in titles:
             if len(sections[title]) == 1:
                 section = sections[title][0]
                 add_menu_item(section.id_prefix(), section.title())
             else:
-                add_sub_menu(sections[title], title)
+                add_header_and_menu_items(sections[title], title)
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 

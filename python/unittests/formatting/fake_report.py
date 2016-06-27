@@ -42,6 +42,11 @@ class Section(object):
         return True
 
     @staticmethod
+    def has_history():
+        """ Return whether this section has history. """
+        return True
+
+    @staticmethod
     def history():
         """ Return the history of this section. """
         return [{'GreyMetaMetric': 0, 'GreenMetaMetric': '94',

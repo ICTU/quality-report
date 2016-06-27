@@ -145,5 +145,6 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_not_included_metric_source_class(self):
         """ Test that the report shows which metric source classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td><i class="icon-ok"></i></td><td>Git</td>'
+        table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Git</td>' \
+                    '<td>Git</td></tr>'
         self.assertTrue(table_row in html)
