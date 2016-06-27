@@ -1,3 +1,8 @@
+2016-06-27  Release 1.37.2
+
+  * Replace both "KPI" and "meting" with "metriek" in the user interface for better consistency.
+
+
 2016-06-27  Release 1.37.1
 
   * Use dividers between components with multiple versions in the navigation menu for better readability.

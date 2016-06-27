@@ -479,11 +479,11 @@ function draw_pie_chart(section) {
 function draw_area_chart(section, history) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
-    data.addColumn('number', '% groene KPIs');
-    data.addColumn('number', '% gele KPIs');
-    data.addColumn('number', '% rode KPIs');
-    data.addColumn('number', '% grijze KPIs');
-    data.addColumn('number', '% ontbrekende KPIs');
+    data.addColumn('number', '% groene metrieken');
+    data.addColumn('number', '% gele metrieken');
+    data.addColumn('number', '% rode metrieken');
+    data.addColumn('number', '% grijze metrieken');
+    data.addColumn('number', '% ontbrekende metrieken');
     data.addRows(history);
     var options = {
       width: 1200, height: 400,

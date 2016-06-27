@@ -148,10 +148,8 @@ class HTMLFormatter(base_formatter.Formatter):
         quality_attributes = set([metric.quality_attribute for metric in report.metrics() if metric.quality_attribute])
         menu_item_template = """
             <li>
-                <a class="filter_quality_attribute"
-                   id="filter_quality_attribute_{attribute_id}"
-                   href="#">
-                    <span class="" aria-hidden="true"></span> Alleen {attribute_name}-metingen
+                <a class="filter_quality_attribute" id="filter_quality_attribute_{attribute_id}" href="#">
+                    <span class="" aria-hidden="true"></span> Alleen {attribute_name}-metrieken
                 </a>
             </li>"""
         menu_items = [menu_item_template.format(attribute_id=attribute.id_string(), attribute_name=attribute.name())
