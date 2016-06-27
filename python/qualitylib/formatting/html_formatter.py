@@ -107,6 +107,7 @@ class HTMLFormatter(base_formatter.Formatter):
         menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
                              '</li>'
         header_template = '<li class="dropdown-header">{header}</li>'
+        divider = '<li role="separator" class="divider"></li>'
 
         def add_menu_item(section_id, menu_label):
             """ Add a menu item that links to the specified section. """
@@ -114,9 +115,12 @@ class HTMLFormatter(base_formatter.Formatter):
 
         def add_header_and_menu_items(sections, header):
             """ Add a header with menu items that link to the specified sections. """
+            if menu_items and menu_items[-1] != divider:
+                menu_items.append(divider)
             menu_items.append(header_template.format(header=header))
             for each_section in sections:
                 add_menu_item(each_section.id_prefix(), each_section.subtitle())
+            menu_items.append(divider)
 
         # First, group related sections so we can group related sections under a header
         sections = {}
@@ -133,6 +137,8 @@ class HTMLFormatter(base_formatter.Formatter):
                 add_menu_item(section.id_prefix(), section.title())
             else:
                 add_header_and_menu_items(sections[title], title)
+        if menu_items and menu_items[-1] == divider:
+            menu_items.pop(-1)
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
