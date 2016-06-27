@@ -66,6 +66,12 @@ class JenkinsTest(unittest.TestCase):
                                   u'"url": "http://url", "buildable": False}], "builds": [{}]}'
         self.assertEqual({}, self.__jenkins.failing_jobs_url())
 
+    def test_ignore_pipeline_job(self):
+        """ Test that pipleine jobs without buildable flag are ignored. """
+        self.__jenkins.contents = u'{"jobs": [{"name": "job1", "color": "red", "description": "", ' \
+                                  u'"url": "http://url"}], "builds": [{}]}'
+        self.assertEqual({}, self.__jenkins.failing_jobs_url())
+
     def test_failing_jobs_url(self):
         """ Test that the failing jobs url dictionary contains the url for the failing job. """
         timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))

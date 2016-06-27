@@ -82,7 +82,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
         def failing(job):
             """ Return whether the job is failing. """
-            return not job['color'].startswith('blue') if job['buildable'] else False
+            return not job['color'].startswith('blue') if job.get('buildable', False) else False
 
         def old(job):
             """ Return whether the build age of the job is considered to be long ago. """
@@ -105,7 +105,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __active_jobs(self):
         """ Return all active Jenkins jobs. """
-        return [job for job in self.__jobs() if job['buildable']]
+        return [job for job in self.__jobs() if job.get('buildable', False)]
 
     @utils.memoized
     def __jobs(self):
