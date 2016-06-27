@@ -90,8 +90,9 @@ class HTMLFormatter(base_formatter.Formatter):
         subtitle = self.__format_subtitle(section.subtitle())
         links = self.__format_product_links(report, section.product())
         meta_data = self.__format_product_meta_data(section.product())
+        extra = '<div id="meta_metrics_history_graph"></div>' if section.has_history() else ''
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, product_meta_data=meta_data,
-                          product_links=links)
+                          product_links=links, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
     def metric(self, metric):
@@ -103,23 +104,21 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return the menu for jumping to specific sections. """
         menu_items = []
 
-        menu_item_template = '''<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>
-        </li>'''
-        sub_menu_template = '''<li class="dropdown-submenu"><a tabindex="-1" href="#">{title}</a>
-        <ul class="dropdown-menu">'''
+        menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
+                             '</li>'
+        header_template = '<li class="dropdown-header">{header}</li>'
 
         def add_menu_item(section_id, menu_label):
             """ Add a menu item that links to the specified section. """
             menu_items.append(menu_item_template.format(section_id=section_id, menu_label=menu_label))
 
-        def add_sub_menu(sections, title):
-            """ Add a sub menu with menu items that link to the specified sections. """
-            menu_items.append(sub_menu_template.format(title=title))
+        def add_header_and_menu_items(sections, header):
+            """ Add a header with menu items that link to the specified sections. """
+            menu_items.append(header_template.format(header=header))
             for each_section in sections:
                 add_menu_item(each_section.id_prefix(), each_section.subtitle())
-            menu_items.append('</ul></li>')
 
-        # First, group related sections so we can create sub menu's
+        # First, group related sections so we can group related sections under a header
         sections = {}
         titles = []
         for section in report.sections():
@@ -127,13 +126,13 @@ class HTMLFormatter(base_formatter.Formatter):
             sections.setdefault(title, []).append(section)
             if title not in titles:
                 titles.append(title)
-        # Next, create the menu's and submenu's
+        # Next, create the headers and menu items
         for title in titles:
             if len(sections[title]) == 1:
                 section = sections[title][0]
                 add_menu_item(section.id_prefix(), section.title())
             else:
-                add_sub_menu(sections[title], title)
+                add_header_and_menu_items(sections[title], title)
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
@@ -146,7 +145,7 @@ class HTMLFormatter(base_formatter.Formatter):
                 <a class="filter_quality_attribute"
                    id="filter_quality_attribute_{attribute_id}"
                    href="#">
-                    <i class=""></i> Alleen {attribute_name}-metingen
+                    <span class="" aria-hidden="true"></span> Alleen {attribute_name}-metingen
                 </a>
             </li>"""
         menu_items = [menu_item_template.format(attribute_id=attribute.id_string(), attribute_name=attribute.name())
@@ -344,7 +343,8 @@ class HTMLFormatter(base_formatter.Formatter):
             name = metric_class.name
             class_name = metric_class.__name__
             quality_attribute = metric_class.quality_attribute.name()
-            icon = '<i class="icon-ok"></i>' if metric_class in report.included_metric_classes() else ''
+            icon = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' \
+                if metric_class in report.included_metric_classes() else ''
             try:
                 norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
             except ValueError:
@@ -364,7 +364,8 @@ class HTMLFormatter(base_formatter.Formatter):
         for metric_source_class in report.metric_source_classes():
             name = metric_source_class.metric_source_name
             class_name = metric_source_class.__name__
-            icon = '<i class="icon-ok"></i>' if metric_source_class in report.included_metric_source_classes() else ''
+            icon = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' \
+                if metric_source_class in report.included_metric_source_classes() else ''
             result.append('<tr><td>{icon}</td><td>{name}</td><td>{cls}</td></tr>'.format(
                 icon=icon, name=name, cls=class_name))
         result.append('</table>')
@@ -392,7 +393,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         td_indent = tr_indent + ' ' * 4
 
         dashboard = list()
-        dashboard.append(table_indent + '<table width="100%" border="1">')
+        dashboard.append(table_indent + '<table class="table table-bordered" width="100%">')
         dashboard.extend(cls.__dashboard_headers(report, tr_indent, td_indent))
         dashboard.extend(cls.__dashboard_rows(report, tr_indent, td_indent))
         dashboard.append(table_indent + '</table>')
@@ -402,9 +403,9 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     def __dashboard_headers(report, tr_indent, td_indent):
         """ Return the headers of the dashboard. """
         dashboard_headers = report.dashboard()[0]
-        th_template = td_indent + '<th colspan="{span}" align="center" bgcolor="#2c2c2c">{sec}</th>'
+        th_template = td_indent + '<th colspan="{span}" style="text-align: center;">{sec}</th>'
         rows = list()
-        rows.append(tr_indent + '<tr style="color: white; font-weight: bold;">')
+        rows.append(tr_indent + '<tr style="color: white; font-weight: bold; background-color: #2F95CF;">')
         for section_type, colspan in dashboard_headers:
             table_header = th_template.format(span=colspan, sec=section_type)
             rows.append(table_header)

@@ -537,15 +537,15 @@ function set_radio_indicator(radio_items_classname, id_of_radio_item_to_select) 
     var elements = $('.' + radio_items_classname, document);
     for (var index = 0; index < elements.length; index++) {
         var check = (elements[index].getAttribute('id') === id_of_radio_item_to_select);
-        var icon = check ? 'icon-ok' : '';
-        elements[index].getElementsByTagName('i')[0].setAttribute('class', icon);
+        var icon = check ? 'glyphicon glyphicon-ok' : '';
+        elements[index].getElementsByTagName('span')[0].setAttribute('class', icon);
     }
 }
 
 function set_check_indicator(id_of_check_item, check) {
     var element = document.getElementById(id_of_check_item);
-    var icon = check ? 'icon-ok' : '';
-    element.getElementsByTagName('i')[0].setAttribute('class', icon);
+    var icon = check ? 'glyphicon glyphicon-ok' : '';
+    element.getElementsByTagName('span')[0].setAttribute('class', icon);
 }
 
 function section_contains_tagged_product(section) {
