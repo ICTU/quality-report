@@ -46,7 +46,7 @@
 
 2016-06-25  Release 1.36.0
 
-  * The unit of metrics is taken from the metric classes so the TechnicalDebtTarget and DynamicalDebtTarget classes
+  * The unit of metrics is taken from the metric classes so the `TechnicalDebtTarget` and `DynamicalDebtTarget` classes
     don't take a unit argument anymore.
 
 
@@ -104,7 +104,7 @@
 2016-06-21  Release 1.33.0
 
   * Include the OWASP dependency checker metric in the report for products that have OWASP as requirement:
-    Product(..., requirements=[requirement.OWASP]). This will add the metric metric.OWASPDependencies to the
+    `Product(..., requirements=[requirement.OWASP])`. This will add the metric `metric.OWASPDependencies` to the
     section of the product.
 
 
@@ -115,13 +115,13 @@
 
 2016-06-21  Release 1.32.0
 
-  * Setting technical debt metric targets via the technical_debt_target parameter is no longer supported.
-    Use the metric_options parameter introduced in release 1.31.0.
+  * Setting technical debt metric targets via the `technical_debt_target` parameter is no longer supported.
+    Use the `metric_options` parameter introduced in release 1.31.0.
 
 
 2016-06-20  Release 1.31.2
 
-  * Bug fix: Don't crash on httplib.BadStatusLine when opening a URL.
+  * Bug fix: Don't crash on `httplib.BadStatusLine` when opening a URL.
 
 
 2016-06-19  Release 1.31.1
@@ -131,16 +131,16 @@
 
 2016-06-19  Release 1.31.0
 
-  * Overriding metric target and low targets via the targets and low_targets parameters is no longer supported.
-    Use the metric_options parameter introduced in release 1.30.0.
+  * Overriding metric target and low targets via the `targets` and `low_targets` parameters is no longer supported.
+    Use the `metric_options` parameter introduced in release 1.30.0.
   * Allow for accepting technical debt metric targets via the metric options, e.g.
-    Product(..., metric_options={metric.MajorViolations: dict(debt_target=TechnicalDebtTarget(50))})
+    `Product(..., metric_options={metric.MajorViolations: dict(debt_target=TechnicalDebtTarget(50))})`
 
 
 2016-06-18  Release 1.30.0
 
   * Allow for overriding metric targets and low targets via the metric options, e.g.
-    Product(..., metric_options={metric.MajorViolations: dict(target=10, low_target=5)})
+    `Product(..., metric_options={metric.MajorViolations: dict(target=10, low_target=5)})`
 
 
 2016-06-18  Release 1.29.0
@@ -156,7 +156,7 @@
 2016-06-15  Release 1.28.0
 
   * Allow for adding comments to metrics in the project definition, e.g.
-    Product(..., metric_options={metric.UnmergedBranches: dict(comment="This is a comment")})
+    `Product(..., metric_options={metric.UnmergedBranches: dict(comment="This is a comment")})`
 
 
 2016-06-15  Release 1.27.3
@@ -186,12 +186,12 @@
 
 2016-06-14  Release 1.26.1
 
-  * Bug fix: Adding technical debt to metric.ARTStability would cause an exception.
+  * Bug fix: Adding technical debt to `metric.ARTStability` would cause an exception.
 
 
 2016-06-12  Release 1.26.0
 
-  * Add --version command line argument.
+  * Add `--version` command line argument.
 
 
 2016-06-11  Release 1.25.1
@@ -202,10 +202,10 @@
 2016-06-11  Release 1.25.0
 
   * Include user stories and logical test case metrics in the report for products that have user stories and logical
-    test cases as requirement: Product(..., requirements=[requirement.USER_STORIES_AND_LTCS]). This will add
-    the metrics UserStoriesNotReviewed, UserStoriesNotApproved, LogicalTestCasesNotReviewed,
-    LogicalTestCasesNotApproved, UserStoriesWithTooFewLogicalTestCases, LogicalTestCasesNotAutomated,
-    ManualLogicalTestCases, and NumberOfManualLogicalTestCases to the section of the product.
+    test cases as requirement: `Product(..., requirements=[requirement.USER_STORIES_AND_LTCS])`. This will add
+    the metrics `UserStoriesNotReviewed`, `UserStoriesNotApproved`, `LogicalTestCasesNotReviewed`,
+    `LogicalTestCasesNotApproved`, `UserStoriesWithTooFewLogicalTestCases`, `LogicalTestCasesNotAutomated`,
+    `ManualLogicalTestCases`, and `NumberOfManualLogicalTestCases` to the section of the product.
 
 
 2016-06-11  Release 1.24.0
@@ -234,7 +234,7 @@
 2016-06-06  Release 1.20.0
 
   * Allow for monitoring only specific branches for unmerged revisions, using a metric option. For example,
-    metric_options={metric.UnmergedBranches: dict(branches_to_include=['test branch', 'dev branch'])}
+    `metric_options={metric.UnmergedBranches: dict(branches_to_include=['test branch', 'dev branch'])}`
 
 
 2016-06-04  Release 1.19.8
@@ -279,18 +279,18 @@
 
 2016-05-23  Release 1.19.0
 
-  * Allow for ignoring unmerged branches using a regular expression. Use the branches_to_ignore option to specify a
+  * Allow for ignoring unmerged branches using a regular expression. Use the `branches_to_ignore` option to specify a
     regular expression, like this:
 
-    subversion = metric_source.Subversion()
+    `subversion = metric_source.Subversion()
     product = domain.Product(project, name='Product', short_name='PR',
                              metric_source_ids={subversion: 'http://svn/trunk/foo/'},
-                             metric_options={metric.UnmergedBranches: dict(branches_to_ignore_re='feature.*')})
+                             metric_options={metric.UnmergedBranches: dict(branches_to_ignore_re='feature.*')})`
 
 
 2016-05-23  Release 1.18.2
 
-  * Split the WEB_JS requirement into separate Web and Javascript requirements so that adding one doesn't imply the
+  * Split the `WEB_JS` requirement into separate `Web` and `Javascript` requirements so that adding one doesn't imply the
     other.
 
 
@@ -325,7 +325,7 @@
   * Lots of undocumented changes.
   * Add an OWASP dependency metric that uses the Jenkins OWASP dependency
     check plugin to check for dependencies with OWASP issues.
-  * Products take an optional is_main boolean parameter. Set it to False to have
+  * Products take an optional `is_main` boolean parameter. Set it to `False` to have
     the size of a product be ignored in the Total LOC metric.
   * Don't report CI-jobs without builds as failing.
   * Allow for overriding the total LOC metric via the project.
@@ -342,7 +342,7 @@
   * Bug fix: make the team spirit yellow or red when the measurement date gets
     old.
   * Bug fix: HTML escape comments retrieved from the Wiki.
-  * Bug fix: Make LowerIsBetterMetrics red when the measured value is invalid
+  * Bug fix: Make `LowerIsBetterMetrics` red when the measured value is invalid
     (below zero).
   * Bug fix: Have Git check remote branches for unmerged commits instead of just
     local branches.
@@ -352,7 +352,7 @@
 
   * Allow for requirements to be added to a project. The requirements
     will determine what needs to be measured later on.
-  * Introduce a abstract version control system class with Subversion and Git
+  * Introduce a abstract version control system class with `Subversion` and `Git`
     as concrete instances.
   * Use metric source id mapping to find teams in the Wiki.
   * Allow for adding a default team to a Jenkins instance. The default team is
@@ -363,7 +363,7 @@
 
 2014-11-03  Release 1.14.0
 
-  * Task functionality has been removed, metric_source.Tasks no longer exists.
+  * Task functionality has been removed, `metric_source.Tasks` no longer exists.
   * Documents now need a Subversion metric source id (the Subversion path).
   * The Pom metric source needs a reference to both Sonar and Subversion.
   * The Sonar metric source needs a reference to Subversion.
@@ -388,9 +388,9 @@
 
 2014-09-11  Release 1.13.0
 
-  * The unit test coverage metric is renamed UnittestLineCoverage to prepare for
+  * The unit test coverage metric is renamed `UnittestLineCoverage` to prepare for
     the addition of metrics for other types of unit test coverage.
-  * Add a unit test branch coverage metric (UnittestBranchCoverage).
+  * Add a unit test branch coverage metric (`UnittestBranchCoverage`).
   * Pom metric source now needs a Sonar instance as parameter because it uses
     the Sonar ids of products.
 
@@ -406,7 +406,7 @@
     should resolve to exactly one job.
   * Coverage report metric sources (JaCoCo and Emma) now take a Jenkins instance
     as first argument. This allows for using job names with regular expressions.
-  * Allow for adding people (Person class) as team members to teams. The
+  * Allow for adding people (`Person` class) as team members to teams. The
     team members are listed as part of the team resources.
   * Documents can have one or more teams responsible for them.
 
@@ -632,7 +632,7 @@
 2014-06-18  Release 1.2.0
 
   * Metric sources and metric options are now passed to the project via the
-    metric_sources and metric_options parameters so that the project class
+    `metric_sources` and `metric_options` parameters so that the project class
     doesn't need to know what metric sources exist.
   * Bug fix: Time stamps in the history file without milliseconds wouldn't be
     parsed.
@@ -640,7 +640,7 @@
 
 2014-06-12  Release 1.1.0
 
-  * Measurable objects like products and teams now take a metric_source_ids
+  * Measurable objects like products and teams now take a `metric_source_ids`
     parameter. See the example project definitions on how to use it.
 
 

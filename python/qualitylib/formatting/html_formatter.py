@@ -106,23 +106,17 @@ class HTMLFormatter(base_formatter.Formatter):
 
         menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
                              '</li>'
-        header_template = '<li class="dropdown-header">{header}</li>'
-        divider = '<li role="separator" class="divider"></li>'
 
-        def add_menu_item(section_id, menu_label):
+        def add_menu_item(section, title):
             """ Add a menu item that links to the specified section. """
-            menu_items.append(menu_item_template.format(section_id=section_id, menu_label=menu_label))
+            menu_items.append(menu_item_template.format(section_id=section.id_prefix(), menu_label=title))
 
-        def add_header_and_menu_items(sections, header):
+        def add_menu_items(sections):
             """ Add a header with menu items that link to the specified sections. """
-            if menu_items and menu_items[-1] != divider:
-                menu_items.append(divider)
-            menu_items.append(header_template.format(header=header))
             for each_section in sections:
-                add_menu_item(each_section.id_prefix(), each_section.subtitle())
-            menu_items.append(divider)
+                add_menu_item(each_section, each_section.title() + ' ' + each_section.subtitle())
 
-        # First, group related sections so we can group related sections under a header
+        # First, group related sections
         sections = {}
         titles = []
         for section in report.sections():
@@ -130,15 +124,13 @@ class HTMLFormatter(base_formatter.Formatter):
             sections.setdefault(title, []).append(section)
             if title not in titles:
                 titles.append(title)
-        # Next, create the headers and menu items
+        # Next, create the menu items
         for title in titles:
             if len(sections[title]) == 1:
                 section = sections[title][0]
-                add_menu_item(section.id_prefix(), section.title())
+                add_menu_item(section, section.title())
             else:
-                add_header_and_menu_items(sections[title], title)
-        if menu_items and menu_items[-1] == divider:
-            menu_items.pop(-1)
+                add_menu_items(sections[title])
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
