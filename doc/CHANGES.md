@@ -1,3 +1,9 @@
+2016-06-28  Release 1.37.3
+
+  * Rename "Filter metrieken" menu to "Filter" menu for consistency.
+  * Remove dividers between components with multiple versions to shorten the navigation menu.
+
+
 2016-06-27  Release 1.37.2
 
   * Replace both "KPI" and "meting" with "metriek" in the user interface for better consistency.
