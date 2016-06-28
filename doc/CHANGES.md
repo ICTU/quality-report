@@ -1,3 +1,8 @@
+2016-06-28  Release 1.37.4
+
+  * Bug fix: Use target=_blank for the link to the change history.
+  
+  
 2016-06-28  Release 1.37.3
 
   * Rename "Filter metrieken" menu to "Filter" menu for consistency.
