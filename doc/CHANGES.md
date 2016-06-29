@@ -1,3 +1,8 @@
+2016-06-29  Release 1.38.1
+
+  * Use condensed-table style for the dashboard so it takes a little bit less space.
+  
+  
 2016-06-29  Release 1.38.0
 
   * Add URLs of configured metric sources to the help menu.

@@ -389,13 +389,18 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     def format(cls, report):
         """ Return a HTML formatted dashboard. """
         table_indent = ' ' * 24
-        tr_indent = table_indent + ' ' * 4
+        thead_indent = tbody_indent = table_indent + ' ' * 4
+        tr_indent = thead_indent + ' ' * 4
         td_indent = tr_indent + ' ' * 4
 
         dashboard = list()
-        dashboard.append(table_indent + '<table class="table table-bordered" width="100%">')
+        dashboard.append(table_indent + '<table class="table table-condensed table-bordered">')
+        dashboard.append(thead_indent + '<thead>')
         dashboard.extend(cls.__dashboard_headers(report, tr_indent, td_indent))
+        dashboard.append(thead_indent + '</thead>')
+        dashboard.append(tbody_indent + '<tbody>')
         dashboard.extend(cls.__dashboard_rows(report, tr_indent, td_indent))
+        dashboard.append(tbody_indent + '</tbody>')
         dashboard.append(table_indent + '</table>')
         return '\n'.join(dashboard)
 
