@@ -1,3 +1,8 @@
+2016-06-29  Release 1.38.0
+
+  * Add URLs of configured metric sources to the help menu.
+  
+  
 2016-06-28  Release 1.37.4
 
   * Bug fix: Use target=_blank for the link to the change history.

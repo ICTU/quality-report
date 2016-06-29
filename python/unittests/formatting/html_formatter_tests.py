@@ -124,27 +124,27 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n<tr><th>In dit rapport?</th>' \
+        table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
                        '<th>Metriek</th><th>Class naam</th><th>Kwaliteitsattribuut</th><th>Norm</th>'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_classes(self):
         """ Test that the report shows which metric classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td></td><td>Automatic regression test statement coverage</td><td>ARTStatementCoverage</td>' \
-                    '<td>Testdekking</td>'
+        table_row = '<tr><td></td><td>Automatic regression test statement coverage</td>' \
+                    '<td><code>ARTStatementCoverage</code></td><td>Testdekking</td>'
         self.assertTrue(table_row in html)
 
     def test_metric_source_classes(self):
-        """ Test that the report contains a list of metric source classes it csn use. """
+        """ Test that the report contains a list of metric source classes it can use. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n<tr><th>In dit rapport?</th>' \
-                       '<th>Metriekbron</th><th>Class naam</th></tr>'
+        table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
+                       '<th>Metriekbron</th><th>Class naam</th><th>Instanties</th></tr>'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_source_class(self):
         """ Test that the report shows which metric source classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
         table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Git</td>' \
-                    '<td>Git</td></tr>'
+                    '<td><code>Git</code></td><td><a href="http://git/" target="_blank">http://git/</a></td></tr>'
         self.assertTrue(table_row in html)

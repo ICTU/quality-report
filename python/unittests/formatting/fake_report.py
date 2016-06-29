@@ -93,13 +93,13 @@ class Report(object):
         self.__meta_metrics = [fake_domain.Metric('MM-%d' % nr) for nr in range(1, number_of_meta_metrics)]
         self.project_metric_sources = project_metric_sources or dict()
 
-    @classmethod
-    def metric_classes(cls):
+    @staticmethod
+    def metric_classes():
         """ Return a list of metric classes that the report can report on. """
         return [metric.ARTStatementCoverage]
 
-    @classmethod
-    def metric_source_classes(cls):
+    @staticmethod
+    def metric_source_classes():
         """ Return a list of metric source classes that the report can use. """
         return [metric_source.Git]
 
@@ -160,6 +160,17 @@ class Report(object):
             def project_resources():
                 """ Return the project's resources. """
                 return [('resource', 'url'), ('missing', None)]
+
+            @staticmethod
+            def metric_source(metric_source_class):
+                """ Return the metric source instances for a metric source class. """
+                class FakeGit(object):  # pylint: disable=too-few-public-methods
+                    @staticmethod
+                    def url():
+                        """ Return the url of Git. """
+                        return 'http://git/'
+
+                return [FakeGit()]
 
         return FakeProject()
 
