@@ -1,3 +1,8 @@
+2016-06-29  Release 1.38.2
+
+  * Bug fix: Two metrics had no proper name in the help information.
+  
+
 2016-06-29  Release 1.38.1
 
   * Use condensed-table style for the dashboard so it takes a little bit less space.

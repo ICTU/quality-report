@@ -84,7 +84,8 @@ class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
 
 class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of times //NOSONAR is used to suppress violations. """
-    unit = '//NOSONAR onderdrukkingen'
+    name = 'Violation-onderdrukkingen met //NOSONAR'
+    unit = 'violation-onderdrukkingen'
     norm_template = 'Violations worden maximaal {target} keer onderdrukt met //NOSONAR. ' \
         'Meer dan {low_target} {unit} is rood.'
     template = '{name} bevat {value} {unit}.'
@@ -98,6 +99,7 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
 
 class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of issues marked as false positive. """
+    name = 'False positives'
     unit = 'false positives'
     norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. ' \
                     'Meer dan {low_target} {unit} is rood.'

@@ -165,7 +165,7 @@ class NoSonarTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
     def test_report(self):
         """ Test that the report of the metric is correct. """
-        self.assertEqual('FakeSubject bevat 4 //NOSONAR onderdrukkingen.', self._metric.report())
+        self.assertEqual('FakeSubject bevat 4 violation-onderdrukkingen.', self._metric.report())
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
