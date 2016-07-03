@@ -770,13 +770,23 @@ class QualityReportMetricsTest(unittest.TestCase):
                                                 metric_source.VersionControlSystem: self.__subversion}),
             product_kwargs=dict(short_name='dummy', product_version='1.1'))
 
-    def test_owasp_dependencies(self):
-        """ Test that the OWASP dependencies metric is added if required. """
-        self.__assert_metric(metric.OWASPDependencies, product_kwargs=dict(requirements=[requirement.OWASP]))
+    def test_high_prio_owasp_dependencies(self):
+        """ Test that the high priority OWASP dependencies metric is added if required. """
+        self.__assert_metric(metric.HighPriorityOWASPDependencyWarnings,
+                             product_kwargs=dict(requirements=[requirement.OWASP]))
 
-    def test_no_owasp_dependencies(self):
-        """ Test that the OWASP dependencies metric is not added if not required. """
-        self.__assert_metric(metric.OWASPDependencies, include=False)
+    def test_no_high_prio_owasp_dependencies(self):
+        """ Test that the high priority OWASP dependencies metric is not added if not required. """
+        self.__assert_metric(metric.HighPriorityOWASPDependencyWarnings, include=False)
+
+    def test_normal_prio_owasp_dependencies(self):
+        """ Test that the normal priority OWASP dependencies metric is added if required. """
+        self.__assert_metric(metric.NormalPriorityOWASPDependencyWarnings,
+                             product_kwargs=dict(requirements=[requirement.OWASP]))
+
+    def test_no_normal_prio_owasp_dependencies(self):
+        """ Test that the normal priority OWASP dependencies metric is not added if not required. """
+        self.__assert_metric(metric.NormalPriorityOWASPDependencyWarnings, include=False)
 
     def test_java_duplication(self):
         """ Test that the Java duplication metric is added if possible. """

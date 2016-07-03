@@ -185,17 +185,17 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     def test_high_priority_warnings(self):
         """ Test retrieving high priority warnings. """
         self.__jenkins.contents = u'{"numberOfHighPriorityWarnings":2}'
-        self.assertEqual(2, self.__jenkins.nr_high_priority_warnings(['job']))
+        self.assertEqual(2, self.__jenkins.nr_warnings(['job'], 'high'))
 
     def test_normal_priority_warnings(self):
         """ Test retrieving normal priority warnings. """
         self.__jenkins.contents = u'{"numberOfNormalPriorityWarnings":4}'
-        self.assertEqual(4, self.__jenkins.nr_normal_priority_warnings(['job']))
+        self.assertEqual(4, self.__jenkins.nr_warnings(['job'], 'normal'))
 
     def test_low_priority_warnings(self):
         """ Test retrieving low priority warnings. """
         self.__jenkins.contents = u'{"numberOfLowPriorityWarnings":9}'
-        self.assertEqual(9, self.__jenkins.nr_low_priority_warnings(['job']))
+        self.assertEqual(9, self.__jenkins.nr_warnings(['job'], 'low'))
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """
@@ -205,6 +205,4 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """
         self.__jenkins.contents = 'raise'
-        self.assertEqual(-1, self.__jenkins.nr_high_priority_warnings(['job']))
-        self.assertEqual(-1, self.__jenkins.nr_normal_priority_warnings(['job']))
-        self.assertEqual(-1, self.__jenkins.nr_low_priority_warnings(['job']))
+        self.assertEqual(-1, self.__jenkins.nr_warnings(['job'], 'normal'))

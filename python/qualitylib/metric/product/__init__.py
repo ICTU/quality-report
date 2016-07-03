@@ -20,6 +20,7 @@ from __future__ import absolute_import
 
 from .automated_regression_test_metrics import *
 from .dependency_metrics import *
+from .owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
 from .duplication_metrics import *
 from .logical_test_case_metrics import *
 from .performance_metrics import *

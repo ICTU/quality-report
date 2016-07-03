@@ -192,36 +192,22 @@ class JenkinsOWASPDependencyReport(Jenkins):
         self.__report_url = self._last_successful_build_url + 'dependency-check-jenkins-pluginResult/'
         self.__report_api_url = self.__report_url + self.api_postfix
 
-    def nr_high_priority_warnings(self, job_names):
-        """ Return the number of high priority warnings in the jobs. """
-        return self.__sum_warnings(job_names, 'High')
+    def nr_warnings(self, job_names, priority):
+        """ Return the number of warnings in the jobs with the specified priority. """
+        assert priority in ('low', 'normal', 'high')
+        warnings = [self.__nr_warnings(job_name, priority) for job_name in job_names]
+        return -1 if -1 in warnings else sum(warnings)
 
-    def nr_normal_priority_warnings(self, job_names):
-        """ Return the number of normal priority warnings in the jobs. """
-        return self.__sum_warnings(job_names, 'Normal')
-
-    def nr_low_priority_warnings(self, job_names):
-        """ Return the number of low priority warnings in the jobs. """
-        return self.__sum_warnings(job_names, 'Low')
-
-    def __sum_warnings(self, job_names, warning_type):
-        """ Return the sum of the number of warnings of the specified type in the jobs. """
-        warnings = [self.__nr_warnings(job_name, warning_type) for job_name in job_names]
-        if -1 in warnings:
-            return -1
-        else:
-            return sum(warnings)
-
-    def __nr_warnings(self, job_name, warning_type):
+    def __nr_warnings(self, job_name, priority):
         """ Return the number of warnings of the specified type in the job. """
         job_name = self.resolve_job_name(job_name)
         url = self.__report_api_url.format(job=job_name)
         try:
             report_dict = self._api(url)
         except urllib2.HTTPError as reason:
-            logging.warn("Couldn't open %s to read warning count %s: %s", url, warning_type, reason)
+            logging.warn("Couldn't open %s to read warning count %s: %s", url, priority, reason)
             return -1
-        return int(report_dict['numberOf{}PriorityWarnings'.format(warning_type)])
+        return int(report_dict['numberOf{}PriorityWarnings'.format(priority.capitalize())])
 
     def report_url(self, job_name):
         """ Return the url of the job. """

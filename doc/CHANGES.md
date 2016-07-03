@@ -1,3 +1,9 @@
+2016-07-01  Release 1.39.0
+
+  * Split the OWASP dependency warning metric into two metrics, one for high priority warnings and one for normal 
+    priority warnings. 
+  
+
 2016-06-29  Release 1.38.2
 
   * Bug fix: Two metrics had no proper name in the help information.

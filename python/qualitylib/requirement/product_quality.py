@@ -23,7 +23,7 @@ from .. import metric
 OWASP = Requirement(
     name='OWASP Top 10',
     url='https://www.owasp.org/',
-    metric_classes={metric.OWASPDependencies})
+    metric_classes={metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings})
 
 TRUSTED_PRODUCT_MAINTAINABILITY = Requirement(
     name='Trusted Product Maintainability, version 6.1',
