@@ -122,7 +122,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
         owasp = self.class_under_test(self.__subject, domain.Project())
         self.assertTrue(owasp._missing())  # pylint: disable=protected-access
 
-    def test_cs_missing_without_jenkins_job(self):
+    def test_is_missing_without_jenkins_job(self):
         """ Test that the metric cannot be measured without Jenkins. """
         owasp = self.class_under_test(FakeSubject(), self.__project)
         self.assertTrue(owasp._missing())  # pylint: disable=protected-access
