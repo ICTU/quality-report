@@ -1,3 +1,15 @@
+2016-07-05  Release 1.40.0 
+
+  * Support for the ZAP Scan report. To use it, in the project definition, create the metric source:
+    `ZAP_SCAN_REPORT = metric_source.ZAPScanReport()`
+    Add the metric source to the project:
+    `PROJECT = Project(..., metric_sources={metric_source.ZAPScanReport: ZAP_SCAN_REPORT})`
+    And then specify for each product where its ZAP Scan report can be found:
+    `PRODUCT = Product(metric_source_ids={ZAP_SCAN_REPORT: 'http://url/to/report.html'}`
+    This will cause the report to contain to new metrics: `metric.HighRiskZAPScanAlertsMetric` and
+    `metric.MediumRiskZAPScanAlertsMetric`.
+
+
 2016-07-01  Release 1.39.0
 
   * Split the OWASP dependency warning metric into two metrics, one for high priority warnings and one for normal 

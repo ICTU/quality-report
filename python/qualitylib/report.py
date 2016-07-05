@@ -140,9 +140,11 @@ class QualityReport(object):
                            metric.NoSonar, metric.FalsePositives,
                            metric.SonarAnalysisAge)
     DEPENDENCY_METRIC_CLASSES = (metric.DependencyQuality,
-                                 metric.SnapshotDependencies,
-                                 metric.HighPriorityOWASPDependencyWarnings,
-                                 metric.NormalPriorityOWASPDependencyWarnings)
+                                 metric.SnapshotDependencies)
+    SECURITY_METRIC_CLASSES = (metric.HighPriorityOWASPDependencyWarnings,
+                               metric.NormalPriorityOWASPDependencyWarnings,
+                               metric.HighRiskZAPScanAlertsMetric,
+                               metric.MediumRiskZAPScanAlertsMetric)
     PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes,
                                   metric.YmorResponseTimes)
     ENVIRONMENT_METRIC_CLASSES = (metric.FailingCIJobs,
@@ -179,7 +181,7 @@ class QualityReport(object):
         return cls.TEST_COVERAGE_METRIC_CLASSES + cls.TEST_DESIGN_METRIC_CLASSES + cls.CODE_METRIC_CLASSES + \
             cls.PERFORMANCE_METRIC_CLASSES + cls.PROCESS_SECTION_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + cls.DEPENDENCY_METRIC_CLASSES + \
-            cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
+            cls.SECURITY_METRIC_CLASSES + cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
             (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
 
     @classmethod
@@ -328,8 +330,7 @@ class QualityReport(object):
         metrics.extend(self.__mandatory_subject_metrics(product, self.TEST_DESIGN_METRIC_CLASSES))
         metrics.extend(self.__optional_subject_metrics(product, self.CODE_METRIC_CLASSES +
                                                        self.PERFORMANCE_METRIC_CLASSES))
-        metrics.extend(self.__mandatory_subject_metrics(product, (metric.HighPriorityOWASPDependencyWarnings,
-                                                                  metric.NormalPriorityOWASPDependencyWarnings)))
+        metrics.extend(self.__mandatory_subject_metrics(product, self.SECURITY_METRIC_CLASSES))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
             metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))

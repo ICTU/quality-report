@@ -788,6 +788,24 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the normal priority OWASP dependencies metric is not added if not required. """
         self.__assert_metric(metric.NormalPriorityOWASPDependencyWarnings, include=False)
 
+    def test_high_level_zap_scan_alerts(self):
+        """ Test that the high risk ZAP Scan alerts metric is added if required. """
+        self.__assert_metric(metric.HighRiskZAPScanAlertsMetric,
+                             product_kwargs=dict(requirements=[requirement.OWASP]))
+
+    def test_no_high_level_zap_scan_alerts(self):
+        """ Test that the high risk ZAP Scan alerts metric is not added if not required. """
+        self.__assert_metric(metric.HighRiskZAPScanAlertsMetric, include=False)
+
+    def test_mediun_risk_level_zap_scan_alerts(self):
+        """ Test that the medium risk ZAP Scan alerts metric is added if required. """
+        self.__assert_metric(metric.MediumRiskZAPScanAlertsMetric,
+                             product_kwargs=dict(requirements=[requirement.OWASP]))
+
+    def test_no_mediun_risk_level_zap_scan_alerts(self):
+        """ Test that the medium risk ZAP Scan alerts  metric is not added if not required. """
+        self.__assert_metric(metric.MediumRiskZAPScanAlertsMetric, include=False)
+
     def test_java_duplication(self):
         """ Test that the Java duplication metric is added if possible. """
         self.__assert_metric(

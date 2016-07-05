@@ -35,7 +35,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
             return self.html
 
 
-class JasmineHTMLReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class JasmineHTMLReportTest(unittest.TestCase):
     """ Unit tests for the Jasmine HTML report class. """
 
     def setUp(self):

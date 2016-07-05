@@ -17,6 +17,7 @@ HISTORY = metric_source.History('quality-data/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
 POM = metric_source.Pom(sonar=SONAR, version_control_system=SUBVERSION)
+ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
@@ -26,6 +27,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.Sonar: SONAR,
                       metric_source.JaCoCo: JACOCO,
                       metric_source.Pom: POM,
+                      metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY},
                   additional_resources=[
                       MetricSource(name='GitHub Quality Report', url='https://github.com/ICTU/quality-report')],
@@ -55,7 +57,8 @@ QUALITY_REPORT = \
             metric_source_ids={
                 SONAR: 'nl.ictu.quality-report:quality-report',
                 JACOCO: 'quality-report-coverage-report',
-                SUBVERSION: 'http://svn/commons/scripts/quality-report/'},
+                SUBVERSION: 'http://svn/commons/scripts/quality-report/',
+                ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
             metric_options={
                 metric.UnittestLineCoverage:
                     dict(debt_target=TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% unit test coverage')),
