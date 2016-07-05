@@ -1,6 +1,7 @@
 2016-07-05  Release 1.40.1
 
   * Better norm description for the ZAP Scan alerts metrics.
+  * Create separate requirement for the ZAP Scan alerts metrics to ease introduction: `requirement.OWASP_ZAP`.
   
 
 2016-07-05  Release 1.40.0 
@@ -9,8 +10,8 @@
     `ZAP_SCAN_REPORT = metric_source.ZAPScanReport()`
     Add the metric source to the project:
     `PROJECT = Project(..., metric_sources={metric_source.ZAPScanReport: ZAP_SCAN_REPORT})`
-    And then specify for each product where its ZAP Scan report can be found:
-    `PRODUCT = Product(metric_source_ids={ZAP_SCAN_REPORT: 'http://url/to/report.html'}`
+    And then specify for each product the security requirement and where its ZAP Scan report can be found:
+    `PRODUCT = Product(requirements=[requirement.OWASP], metric_source_ids={ZAP_SCAN_REPORT: 'http://url/to/report.html'}`
     This will cause the report to contain to new metrics: `metric.HighRiskZAPScanAlertsMetric` and
     `metric.MediumRiskZAPScanAlertsMetric`.
 

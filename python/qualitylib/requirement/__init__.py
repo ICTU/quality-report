@@ -19,6 +19,6 @@ from __future__ import absolute_import
 # Package for concrete requirements, not specific to a specific project.
 # Mostly standards.
 
-from .product_quality import TRUSTED_PRODUCT_MAINTAINABILITY, OWASP
+from .product_quality import TRUSTED_PRODUCT_MAINTAINABILITY, OWASP, OWASP_ZAP
 from .sonar import JAVA, C_SHARP, JAVASCRIPT, WEB
 from .process_quality import USER_STORIES_AND_LTCS

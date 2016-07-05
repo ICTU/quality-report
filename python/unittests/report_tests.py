@@ -791,7 +791,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_high_level_zap_scan_alerts(self):
         """ Test that the high risk ZAP Scan alerts metric is added if required. """
         self.__assert_metric(metric.HighRiskZAPScanAlertsMetric,
-                             product_kwargs=dict(requirements=[requirement.OWASP]))
+                             product_kwargs=dict(requirements=[requirement.OWASP_ZAP]))
 
     def test_no_high_level_zap_scan_alerts(self):
         """ Test that the high risk ZAP Scan alerts metric is not added if not required. """
@@ -800,7 +800,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_mediun_risk_level_zap_scan_alerts(self):
         """ Test that the medium risk ZAP Scan alerts metric is added if required. """
         self.__assert_metric(metric.MediumRiskZAPScanAlertsMetric,
-                             product_kwargs=dict(requirements=[requirement.OWASP]))
+                             product_kwargs=dict(requirements=[requirement.OWASP_ZAP]))
 
     def test_no_mediun_risk_level_zap_scan_alerts(self):
         """ Test that the medium risk ZAP Scan alerts  metric is not added if not required. """

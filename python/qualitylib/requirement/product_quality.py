@@ -21,10 +21,14 @@ from .. import metric
 
 
 OWASP = Requirement(
-    name='OWASP Top 10',
+    name='OWASP Top 10 2013',
     url='https://www.owasp.org/',
-    metric_classes={metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings,
-                    metric.HighRiskZAPScanAlertsMetric, metric.MediumRiskZAPScanAlertsMetric})
+    metric_classes={metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings})
+
+OWASP_ZAP = Requirement(
+    name='OWASP Top 10 2013',
+    url='https://www.owasp.org/',
+    metric_classes={metric.HighRiskZAPScanAlertsMetric, metric.MediumRiskZAPScanAlertsMetric})
 
 TRUSTED_PRODUCT_MAINTAINABILITY = Requirement(
     name='Trusted Product Maintainability, version 6.1',

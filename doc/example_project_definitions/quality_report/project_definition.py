@@ -2,7 +2,7 @@
 
 import datetime
 
-from qualitylib import metric_source, metric
+from qualitylib import metric_source, metric, requirement
 from qualitylib.domain import Project, Product, Team, Document, TechnicalDebtTarget, DynamicTechnicalDebtTarget, \
     MetricSource
 
@@ -54,6 +54,7 @@ QUALITY_REPORT_UNITTESTS = \
 QUALITY_REPORT = \
     Product(PROJECT, 'QR',
             unittests=QUALITY_REPORT_UNITTESTS,
+            requirements=[requirement.OWASP_ZAP],
             metric_source_ids={
                 SONAR: 'nl.ictu.quality-report:quality-report',
                 JACOCO: 'quality-report-coverage-report',
