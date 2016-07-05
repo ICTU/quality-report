@@ -3,8 +3,7 @@
 import datetime
 
 from qualitylib import metric_source, metric, requirement
-from qualitylib.domain import Project, Product, Team, Document, TechnicalDebtTarget, DynamicTechnicalDebtTarget, \
-    MetricSource
+from qualitylib.domain import Project, Product, Team, Document, TechnicalDebtTarget, DynamicTechnicalDebtTarget
 
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
@@ -29,8 +28,6 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.Pom: POM,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY},
-                  additional_resources=[
-                      MetricSource(name='GitHub Quality Report', url='https://github.com/ICTU/quality-report')],
                   # Override the total loc metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)})

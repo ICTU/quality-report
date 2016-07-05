@@ -350,12 +350,6 @@ class ProjectResourcesTest(unittest.TestCase):
         self.assertTrue(('Broncode repository Product 1', 'https://svn/product1/trunk/') in resources)
         self.assertTrue(('Broncode repository Product 2', 'https://svn/product2/trunk/') in resources)
 
-    def test_additional_resources(self):
-        """ Test that additional resources can be added to the project resources. """
-        project = self.project(additional_resources=[domain.MetricSource(name='Resource', url='http://url')])
-        resources = project.project_resources()
-        self.assertTrue(('Resource', 'http://url') in resources)
-
     def test_team_resources(self):
         """ Test that team resources are added as well. """
         project = self.project()

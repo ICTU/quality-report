@@ -26,12 +26,10 @@ from .requirement import RequirementSubject
 class Project(RequirementSubject, measurable.MeasurableObject):
     """ Class representing a software development/maintenance project. """
 
-    def __init__(self, organization='Unnamed organization',
-                 metric_sources=None, additional_resources=None, *args, **kwargs):
+    def __init__(self, organization='Unnamed organization', metric_sources=None, *args, **kwargs):
         self.__short_section_names = {'MM', 'PC', 'PD', 'PE'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__metric_sources = MetricSources(metric_sources or dict())
-        self.__additional_resources = additional_resources or []
         self.__products = []
         self.__teams = []
         self.__streets = []
@@ -50,10 +48,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def metric_source_classes(self):
         """ Return a set of all metric source classes. """
         return self.__metric_sources.keys()
-
-    def additional_resources(self):
-        """ Return the additional resources of the project. """
-        return self.__additional_resources
 
     def add_product(self, product):
         """ Add a product to the project. """
@@ -167,9 +161,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
             resources.extend(team.team_resources())
         for product in self.products():
             resources.extend(product.product_resources())
-        for additional_resource in self.additional_resources():
-            resources.append((additional_resource.name(),
-                              additional_resource.url()))
         return resources
 
     @staticmethod

@@ -1,3 +1,8 @@
+2016-07-05  Release 1.41.0
+
+  * Removed the additional_resources option to add extra urls to projects.
+  
+  
 2016-07-05  Release 1.40.1
 
   * Better norm description for the ZAP Scan alerts metrics.
