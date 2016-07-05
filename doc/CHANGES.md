@@ -1,3 +1,8 @@
+2016-07-05  Release 1.40.1
+
+  * Better norm description for the ZAP Scan alerts metrics.
+  
+
 2016-07-05  Release 1.40.0 
 
   * Support for the ZAP Scan report. To use it, in the project definition, create the metric source:

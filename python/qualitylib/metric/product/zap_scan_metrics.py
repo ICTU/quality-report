@@ -25,7 +25,7 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
 
     unit = 'waarschuwingen'
     risk_level = risk_level_key = 'Subclass responsilbility'
-    norm_template = 'Het product heeft geen {risk_level} risico {unit}. ' \
+    norm_template = 'Het product heeft geen {risk_level} risico ZAP Scan {unit}. ' \
                     'Meer dan {low_target} is rood.'
     template = '{name} heeft {value} {risk_level} risico {unit}.'
     target_value = 0
