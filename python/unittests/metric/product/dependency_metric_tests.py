@@ -57,10 +57,6 @@ class FakeSubject(object):
         """ Return the dependencies of the subject. """
         return [('product1', 'product1_version'), ('product2', '')]
 
-    def metric_source_id(self, the_metric_source):
-        """ Return the id of the subject for the metric source. """
-        return self.__metric_source_ids.get(the_metric_source, None)
-
 
 class FakeReport(object):
     """ Fake a quality report. """
