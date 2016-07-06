@@ -15,7 +15,7 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from ..quality_attributes import DEPENDENCY_QUALITY
+from ..quality_attributes import SECURITY
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
@@ -25,12 +25,12 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
         warnings with a certain priority. """
 
     unit = 'waarschuwingen'
-    priority = priority_key = 'Subclass responsilbility'
+    priority = priority_key = 'Subclass responsibility'
     norm_template = 'Dependencies van het product hebben geen {priority} prioriteit OWASP {unit}. ' \
                     'Meer dan {low_target} is rood.'
     template = 'Dependencies van {name} hebben {value} {priority} prioriteit {unit}.'
     target_value = 0
-    quality_attribute = DEPENDENCY_QUALITY
+    quality_attribute = SECURITY
     metric_source_classes = (metric_source.JenkinsOWASPDependencyReport,)
 
     @classmethod

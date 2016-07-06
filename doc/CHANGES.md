@@ -1,3 +1,8 @@
+2016-07-06  Release 1.41.1
+
+  * Bug fix: Show the OWASP dependency metrics when filtering security metrics.
+  
+  
 2016-07-05  Release 1.41.0
 
   * Removed the additional_resources option to add extra urls to projects.
