@@ -18,7 +18,6 @@ from __future__ import absolute_import
 
 # Test report
 from .abstract.test_report import TestReport
-from .test_report.jasmine_html_report import JasmineHTMLReport
 from .test_report.jenkins_test_report import JenkinsTestReport
 from .test_report.junit_test_report import JunitTestReport
 

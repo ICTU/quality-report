@@ -1,3 +1,8 @@
+2016-07-08  Release 1.42.0 (not released yet)
+
+  * Remove support for Jasmine HTML test reports.
+  
+  
 2016-07-06  Release 1.41.1
 
   * Bug fix: Show the OWASP dependency metrics when filtering security metrics.
