@@ -15,11 +15,12 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import datetime
 import logging
-import urllib2
 
 from ..abstract import test_report
 from ... import utils
+from ..url_opener import UrlOpener
 
 
 class JenkinsTestReport(test_report.TestReport):
@@ -55,8 +56,7 @@ class JenkinsTestReport(test_report.TestReport):
         url += 'lastCompletedBuild/testReport/api/python'
         try:
             contents = self._url_open(url).read()
-        except (urllib2.HTTPError, urllib2.URLError) as reason:
-            logging.warn("Couldn't open %s to read test count %s: %s", url, result_type, reason)
+        except UrlOpener.url_open_exceptions:
             return -1
         try:
             report_dict = eval(contents)
@@ -65,3 +65,20 @@ class JenkinsTestReport(test_report.TestReport):
                          url, result_type, reason, contents)
             return -1
         return int(report_dict[result_type])
+
+    def _report_datetime(self, report_url):
+        """ Return the date and time of the specified report. """
+        url = report_url
+        if not url.endswith('/'):
+            url += '/'
+        url += 'lastCompletedBuild/api/python'
+        try:
+            contents = self._url_open(url).read()
+        except UrlOpener.url_open_exceptions:
+            return datetime.datetime.min
+        try:
+            report_dict = eval(contents)
+        except (SyntaxError, NameError, TypeError) as reason:
+            logging.warn("Couldn't eval %s to read date and time: %s\nData received: %s", url, reason, contents)
+            return datetime.datetime.min
+        return datetime.datetime.fromtimestamp(float(report_dict["timestamp"])/1000.)

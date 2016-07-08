@@ -436,6 +436,20 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(art=dict(metric_source_ids={self.__jenkins: 'id'})),
             project_kwargs=dict(metric_sources={metric_source.TestReport: self.__jenkins}))
 
+    def test_regression_test_age(self):
+        """ Test that the regression test age metric is added if possible. """
+        self.__assert_metric(
+            metric.RegressionTestAge,
+            product_kwargs=dict(metric_source_ids={self.__jenkins: 'id'}),
+            project_kwargs=dict(metric_sources={metric_source.TestReport: self.__jenkins}))
+
+    def test_regression_test_age_art(self):
+        """ Test that the regression test age metric is added if the ART component has the Jenkins test report. """
+        self.__assert_metric(
+            metric.RegressionTestAge,
+            product_kwargs=dict(art=dict(metric_source_ids={self.__jenkins: 'id'})),
+            project_kwargs=dict(metric_sources={metric_source.TestReport: self.__jenkins}))
+
     def test_unittest_line_coverage(self):
         """ Test that the unit test line coverage metric is added if possible. """
         self.__assert_metric(

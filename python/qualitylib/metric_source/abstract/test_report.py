@@ -29,6 +29,10 @@ class TestReport(domain.MetricSource):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super(TestReport, self).__init__()
 
+    def report_datetime(self, *report_urls):
+        """ Return the (oldest) date and time of the reports. """
+        return min([self._report_datetime(report_url) for report_url in report_urls])
+
     def passed_tests(self, *report_urls):
         """ Return the number of passed tests. """
         return sum([self._passed_tests(report_url) for report_url in report_urls])
@@ -40,6 +44,10 @@ class TestReport(domain.MetricSource):
     def skipped_tests(self, *report_urls):
         """ Return the number of skipped tests. """
         return sum([self._skipped_tests(report_url) for report_url in report_urls])
+
+    def _report_datetime(self, report_url):
+        """ Return the date and time of the report. """
+        raise NotImplementedError  # pragma: nocover
 
     def _passed_tests(self, report_url):
         """ Return the number of passed tests as reported by the test report. """

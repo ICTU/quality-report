@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import io
 import unittest
 import urllib2
@@ -37,7 +38,7 @@ class JunitTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public
     """ Unit tests for the Junit test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()
-        self.__jenkins = JunitTestReport(url_open=self.__opener.url_open)
+        self.__junit = JunitTestReport(url_open=self.__opener.url_open)
 
     def test_test_report(self):
         """ Test retrieving a Junit test report. """
@@ -45,9 +46,9 @@ class JunitTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public
                                  '  <testsuite tests="12" failures="2" errors="0" skipped="1" disabled="0">' \
                                  '  </testsuite>' \
                                  '</testsuites>'
-        self.assertEqual(2, self.__jenkins.failed_tests('url'))
-        self.assertEqual(9, self.__jenkins.passed_tests('url'))
-        self.assertEqual(1, self.__jenkins.skipped_tests('url'))
+        self.assertEqual(2, self.__junit.failed_tests('url'))
+        self.assertEqual(9, self.__junit.passed_tests('url'))
+        self.assertEqual(1, self.__junit.skipped_tests('url'))
 
     def test_multiple_test_suites(self):
         """ Test retrieving a Junit test report with multiple suites. """
@@ -57,17 +58,25 @@ class JunitTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public
                                  '  <testsuite tests="3" failures="1" errors="1" skipped="0" disabled="0">' \
                                  '  </testsuite>' \
                                  '</testsuites>'
-        self.assertEqual(3, self.__jenkins.failed_tests('url'))
-        self.assertEqual(3, self.__jenkins.passed_tests('url'))
-        self.assertEqual(2, self.__jenkins.skipped_tests('url'))
+        self.assertEqual(3, self.__junit.failed_tests('url'))
+        self.assertEqual(3, self.__junit.passed_tests('url'))
+        self.assertEqual(2, self.__junit.skipped_tests('url'))
 
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """
-        self.assertEqual(-1, self.__jenkins.failed_tests('raise'))
-        self.assertEqual(-1, self.__jenkins.passed_tests('raise'))
-        self.assertEqual(-1, self.__jenkins.skipped_tests('raise'))
+        self.assertEqual(-1, self.__junit.failed_tests('raise'))
+        self.assertEqual(-1, self.__junit.passed_tests('raise'))
+        self.assertEqual(-1, self.__junit.skipped_tests('raise'))
 
     def test_incomplete_xml(self):
         """ Test that the default is returned when the xml is incomplete. """
         self.__opener.contents = u'<testsuites></testsuites>'
-        self.assertEqual(-1, self.__jenkins.failed_tests('url'))
+        self.assertEqual(-1, self.__junit.failed_tests('url'))
+
+    def test_report_datetime(self):
+        """ Test that the date and time of the test suite is returned. """
+        self.__opener.contents = u'<testsuites>' \
+                                 '  <testsuite name="Art" timestamp="2016-07-07T12:26:44">' \
+                                 '  </testsuite>' \
+                                 '</testsuites>'
+        self.assertEqual(datetime.datetime(2016, 7, 7, 12, 26, 44), self.__junit.report_datetime('url'))

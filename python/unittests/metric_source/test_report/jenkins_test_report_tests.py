@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import io
 import unittest
 import urllib2
@@ -63,3 +64,12 @@ class JenkinsTestReportTest(unittest.TestCase):  # pylint: disable=too-many-publ
         """ Test that the default is returned when the json can't be parsed. """
         self.__opener.contents = u'{"failCount":, "passCount":9, "skipCount":1}'
         self.assertEqual(-1, self.__jenkins.failed_tests('job'))
+
+    def test_report_datetime(self):
+        """ Test that the date and time of the test suite is returned. """
+        self.__opener.contents = u'{"timestamp":1467929105000}'
+        self.assertEqual(datetime.datetime(2016, 7, 8, 0, 5, 5), self.__jenkins.report_datetime('job'))
+
+    def test_missing_report_datetime(self):
+        """ Test that -1 is returned when the date and time of the test suite is missing. """
+        self.assertEqual(datetime.datetime.min, self.__jenkins.report_datetime('raise'))

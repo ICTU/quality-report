@@ -64,7 +64,6 @@ class FakeSubject(object):
 
 
 class ARTStatementCoverageJacocoTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the ART coverage metric. """
     def setUp(self):
         self.__jacoco = FakeJaCoCo()
@@ -100,7 +99,6 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
 
 
 class ARTStatementCoverageNCoverTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the ART statement coverage metric. """
     def setUp(self):
         self.__ncover = FakeNCover()
@@ -136,7 +134,6 @@ class ARTStatementCoverageNCoverTest(unittest.TestCase):
 
 
 class ARTBranchCoverageJacocoTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the ART branch metric. """
     def setUp(self):
         self.__jacoco = FakeJaCoCo()
@@ -172,7 +169,6 @@ class ARTBranchCoverageJacocoTest(unittest.TestCase):
 
 
 class ARTBranchCoverageNCoverTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the ART branch coverage metric. """
     def setUp(self):
         self.__ncover = FakeNCover()
@@ -226,9 +222,12 @@ class FakeJenkinsTestReport(object):
         """ Return the number of passed tests for the job. """
         return self.passed
 
+    def report_datetime(self, *args):  # pylint: disable=unused-argument
+        """ Return the number of passed tests for the job. """
+        return datetime.datetime.min if self.passed < 0 else datetime.datetime(2016, 1, 1, 12, 0, 0)
+
 
 class FailingRegressionTestsTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the failing regression tests metric. """
     def setUp(self):
         self.__jenkins = FakeJenkinsTestReport()
@@ -279,3 +278,58 @@ class FailingRegressionTestsTest(unittest.TestCase):
     def test_cant_be_measured_without_jenkins_job(self):
         """ Test that the metric cannot be measured without Jenkins job. """
         self.assertFalse(metric.FailingRegressionTests.can_be_measured(FakeSubject(), self.__project))
+
+
+class RegressionTestAgeTest(unittest.TestCase):
+    """ Unit tests for the regression test age metric. """
+    def setUp(self):
+        self.__jenkins = FakeJenkinsTestReport()
+        self.__subject = FakeSubject(metric_source_ids={self.__jenkins: 'jenkins_job'})
+        self.__project = domain.Project(metric_sources={metric_source.TestReport: self.__jenkins})
+        self.__metric = metric.RegressionTestAge(subject=self.__subject, project=self.__project)
+
+    def test_value(self):
+        """ Test that value of the metric equals the report date as reported by Jenkins. """
+        expected = (datetime.datetime.now() - self.__jenkins.report_datetime('jenkins_job')).days
+        self.assertEqual(expected, self.__metric.value())
+
+    def test_value_multiple_jobs(self):
+        """ Test that the value of the metric equals to minimum report age if there are multiple
+            test reports. """
+        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
+        age = metric.RegressionTestAge(subject=subject, project=self.__project)
+        expected = (datetime.datetime.now() - self.__jenkins.report_datetime('a', 'b')).days
+        self.assertEqual(expected, age.value())
+
+    def test_value_when_missing(self):
+        """ Test that the value is negative when the test report is missing. """
+        self.__jenkins.passed = -1
+        self.failUnless(self.__metric.value() < 0)
+
+    def test_report(self):
+        """ Test that the report for the metric is correct. """
+        days = (datetime.datetime.now() - self.__jenkins.report_datetime()).days
+        self.assertEqual('De regressietest van FakeSubject is {} dagen geleden gedraaid.'.format(days),
+                         self.__metric.report())
+
+    def test_url(self):
+        """ Test that the url points to the Jenkins job. """
+        self.assertEqual({'Test report (1/1)': 'jenkins_job'}, self.__metric.url())
+
+    def test_url_multiple_jobs(self):
+        """ Test that the url points to the Jenkins jobs. """
+        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
+        failing_tests = metric.RegressionTestAge(subject=subject, project=self.__project)
+        self.assertEqual({'Test report (1/2)': 'a', 'Test report (2/2)': 'b'}, failing_tests.url())
+
+    def test_can_be_measured(self):
+        """ Test that metric can be measured when Jenkins is available and the product has a Jenkins job. """
+        self.assertTrue(metric.RegressionTestAge.can_be_measured(self.__subject, self.__project))
+
+    def test_cant_be_measured_without_jenkins(self):
+        """ Test that the metric cannot be measured without Jenkins. """
+        self.assertFalse(metric.RegressionTestAge.can_be_measured(self.__subject, domain.Project()))
+
+    def test_cant_be_measured_without_jenkins_job(self):
+        """ Test that the metric cannot be measured without Jenkins job. """
+        self.assertFalse(metric.RegressionTestAge.can_be_measured(FakeSubject(), self.__project))

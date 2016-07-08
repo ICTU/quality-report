@@ -1,6 +1,7 @@
-2016-07-08  Release 1.42.0 (not released yet)
+2016-07-08  Release 1.42.0
 
   * Remove support for Jasmine HTML test reports.
+  * Add `metric.RegressionTestAge` for measuring how many days since regression tests last ran.
   
   
 2016-07-06  Release 1.41.1

@@ -18,7 +18,8 @@ from __future__ import absolute_import
 
 # pylint: disable=wildcard-import
 
-from .automated_regression_test_metrics import *
+from .automated_regression_test_metrics import FailingRegressionTests, RegressionTestAge, ARTStatementCoverage,\
+    ARTBranchCoverage
 from .dependency_metrics import *
 from .owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
 from .zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAPScanAlertsMetric

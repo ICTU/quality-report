@@ -71,6 +71,45 @@ class FailingRegressionTests(LowerIsBetterMetric):
         return urls
 
 
+class RegressionTestAge(LowerIsBetterMetric):
+    """ Metric for measuring the number of days since the regression test last ran. """
+
+    name = 'Regressietestleeftijd'
+    unit = 'dagen'
+    norm_template = 'De regressietest is maximaal {target} {unit} geleden gedraaid. ' \
+                    'Langer dan {low_target} {unit} geleden is rood.'
+    perfect_template = 'De regressietest is vandaag gedraaid.'
+    template = 'De regressietest van {name} is {value} {unit} geleden gedraaid.'
+    target_value = 3
+    low_target_value = 7
+    quality_attribute = TEST_QUALITY
+    metric_source_classes = (metric_source.TestReport,)
+
+    def __init__(self, *args, **kwargs):
+        super(RegressionTestAge, self).__init__(*args, **kwargs)
+        self.__test_report = self._project.metric_source(metric_source.TestReport)
+
+    def value(self):
+        return -1 if self._missing() else \
+            (datetime.datetime.now() - self.__test_report.report_datetime(*self.__report_urls())).days
+
+    def _missing(self):
+        return self.__test_report.report_datetime(*self.__report_urls()) == datetime.datetime.min
+
+    def __report_urls(self):
+        """ Return the test report urls. """
+        report_urls = self._subject.metric_source_id(self.__test_report)
+        return report_urls if isinstance(report_urls, list) else [report_urls]
+
+    def url(self):
+        report_urls = self.__report_urls()
+        urls = {}
+        count = len(report_urls)
+        for index, report_url in enumerate(report_urls, start=1):
+            urls['Test report ({index}/{count})'.format(index=index, count=count)] = report_url
+        return urls
+
+
 class _ARTCoverage(HigherIsBetterMetric):
     """ Metric for measuring the coverage of automated regression tests (ART) for a product. """
     unit = '%'

@@ -122,6 +122,7 @@ class QualityReport(object):
                                     metric.UnitAndIntegrationTestLineCoverage,
                                     metric.UnitAndIntegrationTestBranchCoverage,
                                     metric.FailingRegressionTests,
+                                    metric.RegressionTestAge,
                                     metric.ARTStatementCoverage,
                                     metric.ARTBranchCoverage)
     TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewed,
@@ -365,7 +366,7 @@ class QualityReport(object):
             # Only add the ART if we're reporting on the trunk version because we currently can only report on the
             # trunk version of the ART.
             art_metric_classes = self.CODE_METRIC_CLASSES + (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
-                                                             metric.FailingRegressionTests)
+                                                             metric.FailingRegressionTests, metric.RegressionTestAge)
             metrics.extend(self.__optional_subject_metrics(art, art_metric_classes))
         if metric.UnmergedBranches.can_be_measured(art, self.__project):
             metrics.append(metric.UnmergedBranches(subject=art, project=self.__project))
