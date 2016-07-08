@@ -78,7 +78,7 @@ class RegressionTestAge(LowerIsBetterMetric):
     unit = 'dagen'
     norm_template = 'De regressietest is maximaal {target} {unit} geleden gedraaid. ' \
                     'Langer dan {low_target} {unit} geleden is rood.'
-    perfect_template = 'De regressietest is vandaag gedraaid.'
+    perfect_template = 'De regressietest van {name} is vandaag gedraaid.'
     template = 'De regressietest van {name} is {value} {unit} geleden gedraaid.'
     target_value = 3
     low_target_value = 7

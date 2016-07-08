@@ -1,3 +1,8 @@
+2016-07-08  Release 1.42.1
+
+  * Bug fix: mention product name in regression test age metric.
+  
+
 2016-07-08  Release 1.42.0
 
   * Remove support for Jasmine HTML test reports.
