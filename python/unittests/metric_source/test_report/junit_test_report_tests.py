@@ -80,3 +80,17 @@ class JunitTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public
                                  '  </testsuite>' \
                                  '</testsuites>'
         self.assertEqual(datetime.datetime(2016, 7, 7, 12, 26, 44), self.__junit.report_datetime('url'))
+
+    def test_missing_report_datetime(self):
+        """ Test that the minimum datetime is returned if the url can't be opened. """
+        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('raise'))
+
+    def test_incomplete_xml_datetime(self):
+        """ Test that the minimum datetime is returned when the xml is incomplete. """
+        self.__opener.contents = u'<testsuites></testsuites>'
+        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('url'))
+
+    def test_incomplete_xml_no_timestamp(self):
+        """ Test that the minimum datetime is returned when the xml is incomplete. """
+        self.__opener.contents = u'<testsuites><testsuite></testsuite></testsuites>'
+        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('url'))

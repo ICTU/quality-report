@@ -71,5 +71,11 @@ class JenkinsTestReportTest(unittest.TestCase):  # pylint: disable=too-many-publ
         self.assertEqual(datetime.datetime(2016, 7, 8, 0, 5, 5), self.__jenkins.report_datetime('job'))
 
     def test_missing_report_datetime(self):
-        """ Test that -1 is returned when the date and time of the test suite is missing. """
+        """ Test that the minimum datetime is returned when the date and time of the test suite is missing. """
         self.assertEqual(datetime.datetime.min, self.__jenkins.report_datetime('raise'))
+
+    def test_invalid_date_time(self):
+        """ Test that the minimum datetime is returned when the json invalid. """
+        self.__opener.contents = u'{"timestamp":}'
+        self.assertEqual(datetime.datetime.min, self.__jenkins.report_datetime('job/'))
+

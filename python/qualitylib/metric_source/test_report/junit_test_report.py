@@ -63,7 +63,7 @@ class JunitTestReport(test_report.TestReport):
         try:
             test_suites = self.__test_suites(report_url)
         except UrlOpener.url_open_exceptions:
-            return -1
+            return datetime.datetime.min
         if test_suites:
             timestamps = [test_suite.get('timestamp', None) for test_suite in test_suites]
             date_times = [utils.parse_iso_datetime(timestamp + 'Z') for timestamp in timestamps if timestamp]

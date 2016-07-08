@@ -1,6 +1,11 @@
+2016-07-09  Release 1.42.2
+
+  * Bug fix: Don't crash when a Jenkins test report can't be reached.
+
+
 2016-07-08  Release 1.42.1
 
-  * Bug fix: mention product name in regression test age metric.
+  * Bug fix: Mention product name in regression test age metric.
   
 
 2016-07-08  Release 1.42.0
