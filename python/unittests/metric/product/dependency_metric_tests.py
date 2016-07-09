@@ -62,6 +62,11 @@ class FakeReport(object):
     """ Fake a quality report. """
 
     @staticmethod
+    def name():
+        """ Return the name of the report. """
+        return 'None'
+
+    @staticmethod
     def get_product_section(product_label):  # pylint: disable=unused-argument
         """ Return the section for the product/version. """
         return Section('', [])
@@ -81,9 +86,7 @@ class DependencyQualityTest(unittest.TestCase):
     """ Unit tests for the dependency quality metric. """
 
     def setUp(self):
-        self.__subject = FakeSubject()
-        project = domain.Project()
-        self.__metric = metric.DependencyQuality(subject=self.__subject, report=FakeReport(), project=project)
+        self.__metric = metric.DependencyQuality(subject=FakeReport(), project=domain.Project())
 
     def test_value(self):
         """ Test that the value of the metric equals the percentage of dependencies without red metrics. """

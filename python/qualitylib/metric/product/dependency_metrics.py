@@ -88,8 +88,8 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
     metric_source_classes = (metric_source.Pom, metric_source.VersionControlSystem)
 
     def __init__(self, *args, **kwargs):
-        self.__report = kwargs.pop('report')
         super(DependencyQuality, self).__init__(*args, **kwargs)
+        self.__report = self._subject
 
     def _numerator(self):
         return self.__dependency_colors().count('red')

@@ -17,7 +17,7 @@ from __future__ import absolute_import
 
 import datetime
 
-from . import metric, utils, metric_source, metric_info
+from . import metric, utils, metric_source, metric_info, domain
 
 
 class SectionHeader(object):
@@ -111,7 +111,7 @@ class Section(object):
         return self.product() and self.product().product_version_type() == 'trunk'
 
 
-class QualityReport(object):
+class QualityReport(domain.DomainObject):
     """ Quality report on a project. """
 
     TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests,
@@ -194,6 +194,8 @@ class QualityReport(object):
         return classes
 
     def __init__(self, project):
+        # Use None as name to keep the history consistent of metrics that have the report as subject:
+        super(QualityReport, self).__init__(name='None')
         self.__project = project
         self.__title = 'Kwaliteitsrapportage {org}/{proj}'.format(org=project.organization(), proj=project.name())
         self.__products = sorted(project.products(), key=lambda product: (product.name(), product.short_name()))
@@ -318,7 +320,7 @@ class QualityReport(object):
         metrics = []
         if metric.TotalLOC.should_be_measured(self.__project):
             metrics.append(metric.TotalLOC(subject=self.__project, project=self.__project))
-        metrics.append(metric.DependencyQuality(report=self, project=self.__project))
+        metrics.append(metric.DependencyQuality(subject=self, project=self.__project))
         for document in self.__project.documents():
             if metric.DocumentAge.can_be_measured(document, self.__project):
                 metrics.append(metric.DocumentAge(document, project=self.__project))
