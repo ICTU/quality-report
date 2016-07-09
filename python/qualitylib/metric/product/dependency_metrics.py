@@ -87,10 +87,6 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
     quality_attribute = DEPENDENCY_QUALITY
     metric_source_classes = (metric_source.Pom, metric_source.VersionControlSystem)
 
-    def __init__(self, *args, **kwargs):
-        super(DependencyQuality, self).__init__(*args, **kwargs)
-        self.__report = self._subject
-
     def _numerator(self):
         return self.__dependency_colors().count('red')
 
@@ -101,18 +97,18 @@ class DependencyQuality(LowerPercentageIsBetterMetric):
     def __dependency_colors(self):
         """ Return the colors of all dependencies in the project. """
         colors = []
-        for product in self.__report.products():
+        for product in self._subject.products():
             for dependency in product.dependencies(recursive=False):
-                product = self.__report.get_product(*dependency)
-                color = self.__report.get_product_section(product).color()
+                product = self._subject.get_product(*dependency)
+                color = self._subject.get_product_section(product).color()
                 colors.append(color)
         return colors
 
     def url(self):
         urls = dict()
-        for product in self.__report.products():
+        for product in self._subject.products():
             for dependency in product.dependencies(recursive=False):
-                product = self.__report.get_product(*dependency)
+                product = self._subject.get_product(*dependency)
                 label = '{}:{}'.format(dependency[0], dependency[1] or 'trunk')
                 urls[label] = HTMLFormatter.product_url(product)
         return urls
