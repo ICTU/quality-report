@@ -69,6 +69,14 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
         self.assertEqual('missing_source', self.__metric.status())
 
+    def test_missing_metric_source_id_status(self):
+        """ Test that the status is missing metric sources when the subject doesn't have the required metric source
+            id. """
+        project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
+        metric = MetricUnderTest(self.__subject, project=project)
+        metric.metric_source_classes = [metric_source.TestReport]
+        self.assertEqual('missing_source', metric.status())
+
     def test_missing_metric(self):
         """ Test that the metric status is missing when the value is -1. """
         self.__metric.value_to_return = -1
@@ -116,10 +124,18 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. '
                          'Configureer de volgende bronnen: VersionControlSystem.', self.__metric.report())
 
+    def test_missing_metric_source_id_report(self):
+        """ Test that the metric report explains which metric source ids need to be configured. """
+        project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
+        metric = MetricUnderTest(self.__subject, project=project)
+        metric.metric_source_classes = [metric_source.TestReport]
+        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bron-ids zijn geconfigureerd. '
+                         'Configureer ids voor de volgende bronnen: TestReport.', metric.report())
+
     def test_missing_metric_report(self):
         """ Test that the metric report is adapted when the value is missing. """
         self.__metric.value_to_return = -1
-        self.assertEqual('De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.',
+        self.assertEqual('De metriek kon niet gemeten worden omdat de bron niet beschikbaar is.',
                          self.__metric.report())
 
     def test_default_norm(self):

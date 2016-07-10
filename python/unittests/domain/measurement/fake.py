@@ -45,10 +45,17 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
         """ Return the name of the subject. """
         return 'FakeSubject'
 
-    def technical_debt_target(self, metric_class):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+
+    def technical_debt_target(self, metric_class):
         """ Return the technical debt target. """
         return self.debt_target
 
-    def metric_options(self, metric_class):  # pylint: disable=unused-argument
+    def metric_options(self, metric_class):
         """ Return the options for the metric class. """
         return self.options
+
+    @staticmethod
+    def metric_source_id(metric_class):
+        """ Return the metric source id for the metric class. """
+        return
