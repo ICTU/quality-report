@@ -65,7 +65,7 @@ class GreyMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
 class MissingMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of metrics that can't be measured. """
 
-    metric_statuses = ('missing',)
+    metric_statuses = ('missing', 'missing_source')
     norm_template = 'Maximaal {target}{unit} van de metrieken kan niet gemeten worden. ' \
                     'Meer dan {low_target}{unit} is rood.'
     template = '{value}{unit} van de metrieken ({numerator} van de {denominator}) kan niet gemeten worden.'

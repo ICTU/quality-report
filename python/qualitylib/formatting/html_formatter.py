@@ -208,7 +208,9 @@ class HTMLFormatter(base_formatter.Formatter):
             green=dict(image='smile', alt=':-)', status_nr=2, hover='Goed: norm gehaald'),
             perfect=dict(image='biggrin', alt=':-D', status_nr=3, hover='Perfect: score kan niet beter'),
             grey=dict(image='ashamed', alt=':-o', status_nr=4, hover='Technische schuld: lossen we later op'),
-            missing=dict(image='missing', alt='x', status_nr=5, hover='Ontbrekend: metriek kan niet gemeten worden'))
+            missing=dict(image='missing', alt='x', status_nr=5, hover='Ontbrekend: metriek kan niet gemeten worden'),
+            missing_source=dict(image='missing_source', alt='%', status_nr=6,
+                                hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
         kwargs = kwargs_by_status[status]
         qualifier = 'tenminste ' if metric.status_start_date() <= datetime.datetime(2013, 3, 19, 23, 59, 59) else ''
         kwargs['hover'] += ' (sinds {qual}{date})'.format(qual=qualifier,

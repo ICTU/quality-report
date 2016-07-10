@@ -1,3 +1,9 @@
+2016-07-??  Release 1.43.0 (not released yet)
+
+  * Distinguish between metrics that can't be measured because the source hasn't been configured and that can't be measured
+    because the source isn't available.
+    
+    
 2016-07-09  Release 1.42.2
 
   * Bug fix: Don't crash when a Jenkins test report can't be reached.

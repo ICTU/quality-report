@@ -63,6 +63,17 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the default status is green. """
         self.assertEqual('green', self.__metric.status())
 
+    def test_missing_metric_sources_status(self):
+        """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
+        # pylint: disable=attribute-defined-outside-init
+        self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
+        self.assertEqual('missing_source', self.__metric.status())
+
+    def test_missing_metric(self):
+        """ Test that the metric status is missing when the value is -1. """
+        self.__metric.value_to_return = -1
+        self.assertEqual('missing', self.__metric.status())
+
     def test_yellow_when_never_measured(self):
         """ Test that the status is yellow when the metric has never been measured. """
         self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
@@ -97,6 +108,19 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_report_with_long_subject(self):
         """ Test that the subject is abbreviated when long. """
         self.assertEqual('Subclass responsibility', self.__metric.report(max_subject_length=1))
+
+    def test_missing_metric_source_report(self):
+        """ Test that the metric report explains which metric source needs to be configured. """
+        # pylint: disable=attribute-defined-outside-init
+        self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
+        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. '
+                         'Configureer de volgende bronnen: VersionControlSystem.', self.__metric.report())
+
+    def test_missing_metric_report(self):
+        """ Test that the metric report is adapted when the value is missing. """
+        self.__metric.value_to_return = -1
+        self.assertEqual('De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.',
+                         self.__metric.report())
 
     def test_default_norm(self):
         """ Test the default norm. """
@@ -219,17 +243,6 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_metric_should_be_measured(self):
         """ Test that a metric should not be measured be default. """
         self.assertFalse(domain.Metric.should_be_measured(self.__project))
-
-    def test_missing_metric(self):
-        """ Test that the metric status is missing when the value is -1. """
-        self.__metric.value_to_return = -1
-        self.assertEqual('missing', self.__metric.status())
-
-    def test_missing_metric_report(self):
-        """ Test that the metric report is adapted when the value is missing. """
-        self.__metric.value_to_return = -1
-        self.assertEqual('De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.',
-                         self.__metric.report())
 
 
 class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):

@@ -86,7 +86,9 @@ class DependencyQualityTest(unittest.TestCase):
     """ Unit tests for the dependency quality metric. """
 
     def setUp(self):
-        self.__metric = metric.DependencyQuality(subject=FakeReport(), project=domain.Project())
+        project = domain.Project(metric_sources={metric_source.Pom: 'FakePom',
+                                                 metric_source.VersionControlSystem: 'FakeVCS'})
+        self.__metric = metric.DependencyQuality(subject=FakeReport(), project=project)
 
     def test_value(self):
         """ Test that the value of the metric equals the percentage of dependencies without red metrics. """
@@ -112,8 +114,9 @@ class SnapshotDependenciesTest(unittest.TestCase):
     """ Unit tests for the snapshot dependencies metric. """
 
     def setUp(self):
-        self.__metric = metric.SnapshotDependencies(subject=FakeSubject(), report=FakeReport(),
-                                                    project=domain.Project())
+        project = domain.Project(metric_sources={metric_source.Pom: 'FakePom',
+                                                 metric_source.VersionControlSystem: 'FakeVCS'})
+        self.__metric = metric.SnapshotDependencies(subject=FakeSubject(), report=FakeReport(), project=project)
 
     def test_value(self):
         """ Test that the value of the metric equals the number of snapshot dependencies of the product. """

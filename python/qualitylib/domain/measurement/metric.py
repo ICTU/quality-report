@@ -28,6 +28,8 @@ class Metric(object):
 
     name = norm_template = target_value = low_target_value = perfect_value = template = unit = 'Subclass responsibility'
     missing_template = 'De metriek kon niet gemeten worden omdat de bron niet beschikbaar of niet geconfigureerd is.'
+    missing_source_template = 'De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn ' \
+                              'geconfigureerd. Configureer de volgende bronnen: {missing_source_classes}.'
     perfect_template = ''
     url_label_text = comment_url_label_text = ''
     old_age = datetime.timedelta.max
@@ -107,6 +109,8 @@ class Metric(object):
     @utils.memoized
     def status(self):
         """ Return the status/color of the metric. """
+        if self.__missing_source_classes():
+            return 'missing_source'
         if self._missing():
             return 'missing'
         below_target = self._is_below_target()
@@ -133,6 +137,10 @@ class Metric(object):
     def _missing(self):
         """ Return whether the metric source is missing. """
         return self.value() == -1
+
+    def __missing_source_classes(self):
+        """ Return the metric source classes that need to be configured for the metric to be measurable. """
+        return [cls for cls in self.metric_source_classes if not self._project.metric_source(cls)]
 
     def _needs_immediate_action(self):
         """ Return whether the metric needs immediate action, i.e. its actual value is below its low target value. """
@@ -165,7 +173,9 @@ class Metric(object):
 
     def _get_template(self):
         """ Return the template for the metric report. """
-        if self._missing():
+        if self.__missing_source_classes():
+            return self.missing_source_template
+        elif self._missing():
             return self.missing_template
         elif self._is_perfect() and self.perfect_template:
             return self.perfect_template
@@ -187,7 +197,8 @@ class Metric(object):
                     date=utils.format_date(self._date()),
                     old_age=utils.format_timedelta(self.__old_age()),
                     max_old_age=utils.format_timedelta(self.__max_old_age()),
-                    age=utils.format_timedelta(self.__age()))
+                    age=utils.format_timedelta(self.__age()),
+                    missing_source_classes=', '.join(sorted(cls.__name__ for cls in self.__missing_source_classes())))
 
     def norm(self):
         """ Return a description of the norm for the metric. """
