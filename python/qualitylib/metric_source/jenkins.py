@@ -172,7 +172,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def resolve_job_name(self, job_name):
         """ If the job name is a regular expression, resolve it to a concrete job name.
             Assumes there is exactly one result. """
-        if '\\' in job_name or '.*' in job_name or '[' in job_name:
+        if job_name and ('\\' in job_name or '.*' in job_name or '[' in job_name):
             if not job_name.endswith('$'):
                 job_name += '$'
             jobs_re = re.compile(job_name)
@@ -204,7 +204,7 @@ class JenkinsOWASPDependencyReport(Jenkins):
         url = self.__report_api_url.format(job=job_name)
         try:
             report_dict = self._api(url)
-        except urllib2.HTTPError as reason:
+        except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warn("Couldn't open %s to read warning count %s: %s", url, priority, reason)
             return -1
         return int(report_dict['numberOf{}PriorityWarnings'.format(priority.capitalize())])
