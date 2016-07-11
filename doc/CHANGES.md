@@ -1,3 +1,8 @@
+2016-07-11  Release 1.44.0
+
+  * Remove the `metric.DependencyQuality` as it wasn't really used.
+  
+  
 2016-07-11  Release 1.43.1
 
   * Bug fix: Give the metrics that are missing due to missing configuration the same background color as metrics 

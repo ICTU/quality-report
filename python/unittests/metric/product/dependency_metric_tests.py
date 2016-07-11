@@ -82,34 +82,6 @@ class FakeReport(object):
         return FakeSubject()
 
 
-class DependencyQualityTest(unittest.TestCase):
-    """ Unit tests for the dependency quality metric. """
-
-    def setUp(self):
-        project = domain.Project(metric_sources={metric_source.Pom: 'FakePom',
-                                                 metric_source.VersionControlSystem: 'FakeVCS'})
-        self.__metric = metric.DependencyQuality(subject=FakeReport(), project=project)
-
-    def test_value(self):
-        """ Test that the value of the metric equals the percentage of dependencies without red metrics. """
-        self.assertEqual(0, self.__metric.value())
-
-    def test_report(self):
-        """ Test that the report is correct. """
-        self.assertEqual('0% van de afhankelijkheden (0 van de 4) is naar componenten die "rode" metrieken hebben.',
-                         self.__metric.report())
-
-    def test_url(self):
-        """ Test that the url contains the "red" products. """
-        self.assertEqual({'product1:product1_version': 'index.html#section_FS',
-                          'product2:trunk': 'index.html#section_FS'},
-                         self.__metric.url())
-
-    def test_url_label(self):
-        """ Test that the url label is correct. """
-        self.assertEqual('Componenten die "rode" metrieken hebben', self.__metric.url_label())
-
-
 class SnapshotDependenciesTest(unittest.TestCase):
     """ Unit tests for the snapshot dependencies metric. """
 

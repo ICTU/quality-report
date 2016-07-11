@@ -140,8 +140,7 @@ class QualityReport(domain.DomainObject):
                            metric.ManyParameters, metric.CommentedLOC,
                            metric.NoSonar, metric.FalsePositives,
                            metric.SonarAnalysisAge)
-    DEPENDENCY_METRIC_CLASSES = (metric.DependencyQuality,
-                                 metric.SnapshotDependencies)
+    DEPENDENCY_METRIC_CLASSES = (metric.SnapshotDependencies,)
     SECURITY_METRIC_CLASSES = (metric.HighPriorityOWASPDependencyWarnings,
                                metric.NormalPriorityOWASPDependencyWarnings,
                                metric.HighRiskZAPScanAlertsMetric,
@@ -320,7 +319,6 @@ class QualityReport(domain.DomainObject):
         metrics = []
         if metric.TotalLOC.should_be_measured(self.__project):
             metrics.append(metric.TotalLOC(subject=self.__project, project=self.__project))
-        metrics.append(metric.DependencyQuality(subject=self, project=self.__project))
         for document in self.__project.documents():
             if metric.DocumentAge.can_be_measured(document, self.__project):
                 metrics.append(metric.DocumentAge(document, project=self.__project))
