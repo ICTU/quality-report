@@ -94,8 +94,7 @@ function create_dashboard(metrics_data, history_data) {
     draw_area_chart('meta_metrics_history_graph', history_data);
 
     set_radio_indicator('filter_color', settings.filter_color);
-    set_radio_indicator('filter_quality_attribute',
-                        settings.filter_quality_attribute);
+    set_radio_indicator('filter_quality_attribute', settings.filter_quality_attribute);
     set_radio_indicator('filter_version', settings.filter_version);
     set_check_indicator('show_dashboard', settings.show_dashboard);
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
@@ -124,8 +123,7 @@ function create_dashboard(metrics_data, history_data) {
     };
 
     // Event handlers for the filter by product version menu items.
-    var versions = ['filter_version_all', 'filter_version_trunk',
-                    'filter_version_release'];
+    var versions = ['filter_version_all', 'filter_version_trunk', 'filter_version_release'];
     for (index = 0; index < versions.length; index++) {
         document.getElementById(versions[index]).onclick = (function() {
             var version = versions[index];
@@ -136,8 +134,7 @@ function create_dashboard(metrics_data, history_data) {
     }
 
     // Event handlers for the filter by color menu items.
-    var colors = ['filter_color_all', 'filter_color_red_and_yellow',
-                  'filter_color_grey'];
+    var colors = ['filter_color_all', 'filter_color_red_and_yellow', 'filter_color_grey'];
     for (index = 0; index < colors.length; index++) {
         document.getElementById(colors[index]).onclick = (function() {
             var color = colors[index];
@@ -287,7 +284,8 @@ function show_table(table, section, view) {
     document.getElementById('section_' + section).style.display = 'block';
     show_links_to(section);
     var is_tagged_product = ['tag', 'release'].indexOf(view.getValue(0, METRICS_COLUMN_VERSION)) > -1;
-    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_VERSION, METRICS_COLUMN_QUALITY_ATTRIBUTE];
+    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_VERSION,
+                           METRICS_COLUMN_QUALITY_ATTRIBUTE];
     var sort_column = settings.table_sort_column;
     if (is_tagged_product) {
         // Hide the trend column since this table, showing a tagged product,
@@ -373,7 +371,8 @@ function table_view(section) {
     // Quality attribute
     var filtered_quality_attribute = settings.filter_quality_attribute;
     if (filtered_quality_attribute !== 'filter_quality_attribute_all') {
-        var quality_attribute_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_QUALITY_ATTRIBUTE, value: filtered_quality_attribute}]);
+        var quality_attribute_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_QUALITY_ATTRIBUTE,
+                                                                      value: filtered_quality_attribute}]);
         rows = intersection(rows, quality_attribute_rows);
     }
 
@@ -415,8 +414,9 @@ function draw_column_chart(chart_div, sections) {
         var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
         var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
         var missing_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing'}]);
-        data.addRow([version, green_rows.length + perfect_rows.length,
-          yellow_rows.length, red_rows.length, grey_rows.length, missing_rows.length]);
+        var missing_source_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing_source'}]);
+        data.addRow([version, green_rows.length + perfect_rows.length, yellow_rows.length, red_rows.length,
+                     grey_rows.length, missing_rows.length + missing_source_rows.length]);
     }
 
     var bg_color = chart_div.parentNode.getAttribute('bgcolor');
@@ -424,7 +424,6 @@ function draw_column_chart(chart_div, sections) {
       series: {0: {color: COLOR_GREEN}, 1: {color: COLOR_YELLOW},
                2: {color: COLOR_RED}, 3: {color: COLOR_GREY},
                4: {color: COLOR_MISSING}},
-      //tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
       width: 80, height: 80,
       backgroundColor: bg_color,
@@ -448,6 +447,7 @@ function draw_pie_chart(section) {
     var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
     var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
     var missing_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing'}]);
+    var missing_source_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing_source'}]);
 
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Status');
@@ -457,7 +457,7 @@ function draw_pie_chart(section) {
       ['Geel', yellow_rows.length],
       ['Rood', red_rows.length],
       ['Grijs', grey_rows.length],
-      ['Ontbrekend', missing_rows.length]
+      ['Ontbrekend', missing_rows.length + missing_source_rows.length]
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
@@ -514,9 +514,7 @@ function show_links_to(section) {
         } else {
             var title = links[index].getAttribute('title');
             var style = links[index].getAttribute('style');
-            links[index].innerHTML = '<a href="#section_' + section +
-                                     '" style="' + style + '">' + title +
-                                     '</a>';
+            links[index].innerHTML = '<a href="#section_' + section + '" style="' + style + '">' + title + '</a>';
         }
     }
 }
@@ -553,8 +551,7 @@ function section_contains_tagged_product(section) {
     } else {
         section_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}]);
         tagged_product_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'tag'}]);
-        // Add the rows for product versions that are to be released since they
-        // are tagged too:
+        // Add the rows for product versions that are to be released since they are tagged too:
         tagged_product_rows.concat(window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'release'}]));
         tagged_product_rows_in_section = intersection(section_rows, tagged_product_rows);
         return tagged_product_rows_in_section.length === section_rows.length;

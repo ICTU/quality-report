@@ -1,3 +1,8 @@
+2016-07-11  Release 1.44.1
+
+  * Bug fix: The pie charts in the dashboard wouldn't include metrics that are missing due to missing configuration.
+
+
 2016-07-11  Release 1.44.0
 
   * Remove the `metric.DependencyQuality` as it wasn't really used.
