@@ -1,3 +1,9 @@
+2016-07-11  Release 1.43.1
+
+  * Bug fix: Give the metrics that are missing due to missing configuration the same background color as metrics 
+    that are missing due to sources being unreachable.
+    
+    
 2016-07-11  Release 1.43.0
 
   * Distinguish between metrics that can't be measured because the source hasn't been configured and that can't be measured

@@ -232,9 +232,8 @@ function show_section_summary_charts(filter_value) {
 
 function color_metrics(color_green, color_yellow, color_red, color_grey, color_missing) {
     var numberOfColumns = window.metrics.getNumberOfColumns();
-    var statusToColor = {'perfect': color_green, 'green': color_green,
-                         'yellow': color_yellow, 'red': color_red,
-                         'grey': color_grey, 'missing': color_missing};
+    var statusToColor = {'perfect': color_green, 'green': color_green, 'yellow': color_yellow, 'red': color_red,
+                         'grey': color_grey, 'missing': color_missing, 'missing_source': color_missing};
     for (var row_index = 0; row_index < window.metrics.getNumberOfRows();
          row_index++) {
         var bg_color = statusToColor[window.metrics.getValue(row_index, METRICS_COLUMN_STATUS_TEXT)];
