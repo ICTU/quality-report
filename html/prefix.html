@@ -161,54 +161,6 @@
                             Zie <a href="https://github.com/ICTU/quality-report" target="_blank">Github</a>
                             voor meer informatie en voorbeelden.
                         </p>
-                        <p>
-                            Sommige zaken kunnen geconfigureerd worden door in de bronsystemen
-                            van het kwaliteitssysteem aanpassingen te doen. Hieronder de
-                            instructies daarvoor.
-                        </p>
-                        <h3>
-                            Jenkins jobs negeren die ongebruikt zijn
-                        </h3>
-                        <p>
-                            Standaard rapporteert het kwaliteitssysteem ongebruikte Jenkins jobs
-                            na 180 dagen als ongebruikt. Deze periode kan voor specifieke Jenkins
-                            jobs langer gemaakt worden door in de beschrijving van de job
-                            de periode op te nemen gedurende welke de job niet als ongebruikt
-                            moet worden geschouwd. De syntax is als volgt:
-                        </p>
-                        <pre>[gracedays=365]</pre>
-                        <p>
-                            Het getal is de periode in dagen.
-                        </p>
-                        <h3>
-                            Het toevoegen van een beveiligingsissues KPI
-                        </h3>
-                        <ol>
-                            <li>Maak een filter in Jira aan, bijvoorbeeld:
-                                <pre>
-        project = CSK AND labels = beveiliging_bevinding AND status in (Open, "In Progress", Reopened) AND created <= -3w
-                                </pre>
-                            </li>
-                            <li>
-                                Sla het filter op met een zinnige naam, bijvoorbeeld <tt>CS open beveiligingsbevindingen</tt>
-                            </li>
-                            <li>
-                                Zorg dat het filter beschikbaar is: klik <tt>Details - Edit permissions - Add Shares</tt>,
-                                voeg toe <tt>Everyone</tt>
-                            </li>
-                            <li>
-                                Voeg het query id toe aan de project definitie. Het query id zie je in de url in Jira
-                                <tt>https://jira.lrgirko.nl/jira/issues/?filter=13152</tt>.
-                                Zet het query id in de projectdefinitie op de relevante plaatsen:
-                            <pre>JIRA = metric_source.Jira('https://jira.lrgirko.nl/jira/',
-        username='vul jira username in', password=vul jira password in,
-        open_security_bug_query_id=13152)
-
-        PROJECT = Project('ICTU', name='CSKF2',
-        metric_sources={{
-        metric_source.Jira: JIRA,</pre>
-                            </li>
-                        </ol>
                     </div>
                     <div class="modal-footer">
                         <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
