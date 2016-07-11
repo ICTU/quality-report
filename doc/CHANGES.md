@@ -1,3 +1,8 @@
+2016-07-??  Release 1.44.2 (to be released)
+
+  * Remove incomplete help information.
+  
+
 2016-07-11  Release 1.44.1
 
   * Bug fix: The pie charts in the dashboard wouldn't include metrics that are missing due to missing configuration.
