@@ -1,4 +1,4 @@
-2016-07-??  Release 1.43.0 (not released yet)
+2016-07-11  Release 1.43.0
 
   * Distinguish between metrics that can't be measured because the source hasn't been configured and that can't be measured
     because the source isn't available or because the metric source id (e.g. url, Sonar key) isn't configured.
