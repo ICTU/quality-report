@@ -336,6 +336,11 @@ class FakeSubversion(object):  # pylint: disable=too-few-public-methods
         """ Return a normalized version of the path. """
         return svn_path
 
+    @staticmethod
+    def tags_folder_for_version(svn_path, version):
+        """ Return the tags folder for the version. """
+        return svn_path + version
+
 
 class FakeJMeter(object):  # pylint: disable=too-few-public-methods
     """ Fake JMeter report. """
@@ -782,7 +787,8 @@ class QualityReportMetricsTest(unittest.TestCase):
             metric.SnapshotDependencies,
             project_kwargs=dict(metric_sources={metric_source.Pom: self.__pom,
                                                 metric_source.VersionControlSystem: self.__subversion}),
-            product_kwargs=dict(short_name='dummy', product_version='1.1'))
+            product_kwargs=dict(short_name='dummy', product_version='1.1',
+                                metric_source_ids={self.__subversion: 'path'}))
 
     def test_high_prio_owasp_dependencies(self):
         """ Test that the high priority OWASP dependencies metric is added if required. """

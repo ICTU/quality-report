@@ -362,7 +362,9 @@ class QualityReport(domain.DomainObject):
     def __art_metrics(self, art):
         """ Return a list of Automated Regression Test metrics for the (ART) product. """
         metrics = []
-        if art and art.product_version_type() == 'trunk':
+        if not art:
+            return metrics
+        if art.product_version_type() == 'trunk':
             # Only add the ART if we're reporting on the trunk version because we currently can only report on the
             # trunk version of the ART.
             art_metric_classes = self.CODE_METRIC_CLASSES + (metric.ARTStatementCoverage, metric.ARTBranchCoverage,

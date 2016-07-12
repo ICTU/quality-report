@@ -39,9 +39,6 @@ class FakeSonar(object):
 class FakeSubject(object):
     """ Provide for a fake subject. """
 
-    def __init__(self, metric_source_ids=None):
-        self.__metric_source_ids = metric_source_ids or dict()
-
     @staticmethod
     def name():
         """ Return the name of the subject. """
@@ -56,6 +53,11 @@ class FakeSubject(object):
     def dependencies(**kwargs):  # pylint: disable=unused-argument
         """ Return the dependencies of the subject. """
         return [('product1', 'product1_version'), ('product2', '')]
+
+    @staticmethod
+    def metric_source_id(metric_source):  # pylint: disable=unused-argument
+        """ Return the metric source id """
+        return 'id'
 
 
 class FakeReport(object):

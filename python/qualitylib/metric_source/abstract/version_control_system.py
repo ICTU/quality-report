@@ -28,6 +28,7 @@ class VersionControlSystem(domain.MetricSource):
 
     metric_source_name = 'Version control system'
     needs_values_as_list = True
+    needs_metric_source_id = True
 
     def __init__(self, username=None, password=None, url=None, run_shell_command=subprocess.check_output):
         self._username = username

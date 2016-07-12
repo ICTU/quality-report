@@ -25,9 +25,9 @@ class FakeSubversion(object):  # pylint: disable=too-few-public-methods
     metric_source_name = 'Subversion'
 
     @staticmethod
-    def last_changed_date(url):  # pylint: disable=unused-argument
+    def last_changed_date(url):
         """ Return the date the url was last changed. """
-        return datetime.datetime.now() - datetime.timedelta(days=2.1)
+        return datetime.datetime.min if 'raise' in url else datetime.datetime.now() - datetime.timedelta(days=2.1)
 
     @staticmethod
     def normalize_path(svn_path):
@@ -36,10 +36,9 @@ class FakeSubversion(object):  # pylint: disable=too-few-public-methods
 
 
 class DocumentAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the document age metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: self.__subversion})
         self.__document = domain.Document(name='Title', url='http://doc',
@@ -84,12 +83,13 @@ class DocumentAgeTest(unittest.TestCase):
 
 
 class MissingDocumentAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the document age metric when the document is missing. """
 
-    def setUp(self):  # pylint: disable=invalid-name
-        self.__document = domain.Document(name='Title', url='http://doc')
-        self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: FakeSubversion()})
+    def setUp(self):
+        self.__subversion = FakeSubversion()
+        self.__document = domain.Document(name='Title', url='http://doc',
+                                          metric_source_ids={self.__subversion: 'raise'})
+        self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: self.__subversion})
         self.__metric = metric.DocumentAge(subject=self.__document, project=self.__project)
 
     def test_value(self):
@@ -99,3 +99,18 @@ class MissingDocumentAgeTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual('Het document "Title" is niet aangetroffen.', self.__metric.report())
+
+    def test_report_no_vcs(self):
+        """ Test the report when there's no version control system. """
+        project = domain.Project()
+        document = domain.Document(name='Title', url='http://doc', metric_source_ids={self.__subversion: 'path'})
+        age = metric.DocumentAge(subject=document, project=project)
+        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. '
+                         'Configureer de volgende bronnen: VersionControlSystem.', age.report())
+
+    def test_report_no_vcs_path(self):
+        """ Test the report when there's no version control system path. """
+        document = domain.Document(name='Title', url='http://doc')
+        age = metric.DocumentAge(subject=document, project=self.__project)
+        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bron-ids zijn geconfigureerd. '
+                         'Configureer ids voor de volgende bronnen: VersionControlSystem.', age.report())
