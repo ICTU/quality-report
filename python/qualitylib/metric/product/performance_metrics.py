@@ -25,7 +25,7 @@ class ResponseTimes(domain.Metric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the performance tests. """
 
-    name = 'Responsetijden'
+    name = 'Overschrijding van responsetijden'
     unit = 'performancetestqueries'
     norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. ' \
         'Als een of meer queries de maximum responsetijd overschrijden is de score rood, anders geel.'
@@ -143,7 +143,7 @@ class ResponseTimes(domain.Metric):
 class YmorResponseTimes(domain.Metric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
-    name = 'Responsetijden (obv Ymor performance rapportage)'
+    name = 'Overschrijding van responsetijden (obv Ymor performance rapportage)'
     unit = 'performancetestqueries'
     norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. Als een of meer ' \
         '{unit} de maximum responsetijd overschrijden is de score rood, anders geel.'

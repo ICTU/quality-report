@@ -23,7 +23,7 @@ from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of continuous integration jobs that are not used. """
 
-    name = 'Ongebruikte CI-jobs'
+    name = 'Hoeveelheid ongebruikte CI-jobs'
     unit = 'CI-jobs'
     norm_template = 'Maximaal {target} van de actieve {unit} is ongebruikt. Meer dan {low_target} {unit} is rood. ' \
         'Een CI-job is ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn geweest. Inactieve ' \

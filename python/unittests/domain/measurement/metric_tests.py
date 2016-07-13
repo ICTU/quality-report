@@ -121,22 +121,24 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the metric report explains which metric source needs to be configured. """
         # pylint: disable=attribute-defined-outside-init
         self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
-        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. '
-                         'Configureer de volgende bronnen: VersionControlSystem.', self.__metric.report())
+        self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
+                         'benodigde bronnen zijn geconfigureerd. Configureer de volgende bronnen: '
+                         'VersionControlSystem.', self.__metric.report())
 
     def test_missing_metric_source_id_report(self):
         """ Test that the metric report explains which metric source ids need to be configured. """
         project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
         metric = MetricUnderTest(self.__subject, project=project)
         metric.metric_source_classes = [metric_source.TestReport]
-        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bron-ids zijn geconfigureerd. '
-                         'Configureer ids voor de volgende bronnen: TestReport.', metric.report())
+        self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
+                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de volgende bronnen: '
+                         'TestReport.', metric.report())
 
     def test_missing_metric_report(self):
         """ Test that the metric report is adapted when the value is missing. """
         self.__metric.value_to_return = -1
-        self.assertEqual('De metriek kon niet gemeten worden omdat de bron niet beschikbaar is.',
-                         self.__metric.report())
+        self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
+                         'benodigde bronnen beschikbaar zijn.', self.__metric.report())
 
     def test_default_norm(self):
         """ Test the default norm. """

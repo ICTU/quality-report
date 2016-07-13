@@ -24,7 +24,7 @@ class ARTStability(JenkinsMetricMixin, Metric):
     """ Metric for measuring the stability of an ART. An ART is considered to
         be unstable if it hasn't succeeded for multiple days. """
 
-    name = 'Stabiliteit van automatische regressietest'
+    name = 'Stabiliteit van de automatische regressietest'
     unit = 'dagen'
     norm_template = 'Alle regressietesten en integratietesten hebben de laatste {target} {unit} minimaal eenmaal ' \
         'succesvol gedraaid. Rood als er testen meer dan {low_target} {unit} niet succesvol hebben gedraaid.'

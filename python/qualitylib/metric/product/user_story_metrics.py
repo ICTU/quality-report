@@ -53,7 +53,7 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 class UserStoriesNotReviewed(UserStoryMetric):
     """ Metric for measuring the percentage of user stories that not have been reviewed. """
 
-    name = 'Review user stories'
+    name = 'Reviewstatus van user stories'
     norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
     template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
@@ -67,7 +67,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
 class UserStoriesNotApproved(UserStoryMetric):
     """ Metric for measuring the number of user stories that not have been approved. """
 
-    name = 'Goedgekeuring user stories'
+    name = 'Goedgekeuring van user stories'
     norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
     template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
@@ -85,7 +85,7 @@ class UserStoriesNotApproved(UserStoryMetric):
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     """ Metric for measuring the number of user stories that has too few logical test cases. """
 
-    name = 'Voldoende logische testgevallen per user story'
+    name = 'Hoeveelheid logische testgevallen per user story'
     norm_template = 'Maximaal {target} van de {unit} heeft onvoldoende logische testgevallen. ' \
         'Meer dan {low_target} is rood.'
     template = '{name} heeft {value} {unit} met een onvoldoende aantal logische testgevallen van ' \

@@ -79,7 +79,7 @@ class HighPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
     """ Metric for measuring the number of external dependencies of the project that have high priority OWASP
         warnings. """
 
-    name = 'OWASP dependency waarschuwingen met hoge prioriteit'
+    name = 'Hoeveelheid OWASP dependency waarschuwingen met hoge prioriteit'
     priority = 'hoge'
     priority_key = 'high'
     low_target_value = 3
@@ -89,7 +89,7 @@ class NormalPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
     """ Metric for measuring the number of external dependencies of the project that have high priority OWASP
         warnings. """
 
-    name = 'OWASP dependency waarschuwingen met normale prioriteit'
+    name = 'Hoeveelheid OWASP dependency waarschuwingen met normale prioriteit'
     priority = 'normale'
     priority_key = 'normal'
     low_target_value = 10

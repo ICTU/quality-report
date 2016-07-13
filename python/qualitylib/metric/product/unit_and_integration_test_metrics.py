@@ -60,7 +60,7 @@ class UnitAndIntegrationTestBranchCoverage(UnitAndIntegrationTestCoverage):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the combined branch coverage of unit and integration tests for a product. """
 
-    name = 'Overall est broncode dekking (branch coverage)'
+    name = 'Gecombineerde unit- en integratietest broncode dekking (branch coverage)'
     norm_template = 'Minimaal {target}{unit} van de code branches wordt gedekt door unit- en integratietests samen. ' \
         'Lager dan {low_target}{unit} is rood.'
     template = '{name} gecombineerde unit- en integratietest branch coverage is {value:.0f}{unit}.'

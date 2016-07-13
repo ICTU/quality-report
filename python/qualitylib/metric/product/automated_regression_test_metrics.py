@@ -25,7 +25,7 @@ from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 class FailingRegressionTests(LowerIsBetterMetric):
     """ Metric for measuring the number of regression tests that fail. """
 
-    name = 'Falende regressietesten'
+    name = 'Hoeveelheid falende regressietesten'
     unit = 'regressietesten'
     norm_template = 'Alle {unit} slagen.'
     perfect_template = 'Alle {tests} {unit} van {name} slagen.'

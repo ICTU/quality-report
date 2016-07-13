@@ -58,7 +58,7 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of logical test cases that has not been reviewed. """
 
-    name = 'Review van logische testgevallen'
+    name = 'Reviewstatus van logische testgevallen'
     norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
     template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
@@ -169,7 +169,7 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of manual logical test cases. """
 
-    name = 'Aantal handmatige logische testgevallen'
+    name = 'Hoeveelheid handmatige logische testgevallen'
     norm_template = 'Maximaal {target} van de {unit} is handmatig. Meer dan {low_target} is rood.'
     template = '{value} van de {total} {unit} zijn handmatig.'
     target_value = 10
@@ -187,7 +187,7 @@ class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring how long it takes to execute the manual logical test cases. """
 
-    name = 'Uitvoeringstijd handmatige logische testgevallen'
+    name = 'Uitvoeringstijd van handmatige logische testgevallen'
     unit = 'minuten'
     norm_template = 'De uitvoering van de handmatige logische testgevallen kost maximaal {target} {unit}. ' \
                     'Meer dan {low_target} is rood.'
@@ -220,7 +220,7 @@ class ManualLogicalTestCasesWithoutDuration(JiraMetricMixin, LowerIsBetterMetric
     # pylint: disable=too-many-public-methods
     """ Metric for measuring how many of the manual test cases have not been measured for duration. """
 
-    name = 'Uitvoeringstijd handmatige logische testgevallen niet ingevuld'
+    name = 'Hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd'
     unit = 'handmatige logische testgevallen'
     norm_template = 'Van alle {unit} is de uitvoeringstijd ingevuld.'
     template = 'Van {value} van de {total} {unit} is de uitvoeringstijd niet ingevuld.'

@@ -24,8 +24,7 @@ class VersionControlSystemProductInfo(object):
     def __init__(self, version_control_system, product):
         self.__vcs = self.__find_repo(version_control_system, product)
         self.__product = product
-        if self.__vcs:
-            self.metric_source_name = self.__vcs.metric_source_name
+        self.metric_source_name = self.__vcs.metric_source_name if self.__vcs else 'VCS not configured'
 
     def vcs(self):
         """ Return the version control system where the product lives. """

@@ -105,12 +105,14 @@ class MissingDocumentAgeTest(unittest.TestCase):
         project = domain.Project()
         document = domain.Document(name='Title', url='http://doc', metric_source_ids={self.__subversion: 'path'})
         age = metric.DocumentAge(subject=document, project=project)
-        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. '
-                         'Configureer de volgende bronnen: VersionControlSystem.', age.report())
+        self.assertEqual('De document update leeftijd van Title kon niet gemeten worden omdat niet alle '
+                         'benodigde bronnen zijn geconfigureerd. Configureer de volgende bronnen: '
+                         'VersionControlSystem.', age.report())
 
     def test_report_no_vcs_path(self):
         """ Test the report when there's no version control system path. """
         document = domain.Document(name='Title', url='http://doc')
         age = metric.DocumentAge(subject=document, project=self.__project)
-        self.assertEqual('De metriek kon niet gemeten worden omdat niet alle benodigde bron-ids zijn geconfigureerd. '
-                         'Configureer ids voor de volgende bronnen: VersionControlSystem.', age.report())
+        self.assertEqual('De document update leeftijd van Title kon niet gemeten worden omdat niet alle '
+                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de volgende bronnen: '
+                         'VersionControlSystem.', age.report())

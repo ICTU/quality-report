@@ -23,7 +23,7 @@ from ...domain import LowerPercentageIsBetterMetric
 class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of lines of code that are commented out. """
 
-    name = 'Uitgecommentarieerde broncode'
+    name = 'Hoeveelheid uitgecommentarieerde broncode'
     norm_template = 'Maximaal {target}{unit} van de regels code is uitgecommentarieerd. ' \
                     'Meer dan {low_target}{unit} is rood.'
     template = '{name} heeft {value}{unit} ({numerator} van {denominator}) uitgecommentarieerde regels code.'
@@ -82,7 +82,7 @@ class LongMethods(MethodQualityMetric):
     # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of methods that is too long. """
 
-    name = 'Lange methoden'
+    name = 'Lengte van methoden'
     attribute = 'een lengte van meer dan 20 NCSS (Non-Comment Source Statements)'
 
     def _numerator(self):
@@ -93,7 +93,7 @@ class ManyParameters(MethodQualityMetric):
     # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of methods that have too many parameters. """
 
-    name = 'Methoden met te veel parameters'
+    name = 'Hoeveelheid methoden met te veel parameters'
     attribute = 'meer dan 5 parameters'
 
     def _numerator(self):

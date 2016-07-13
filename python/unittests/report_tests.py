@@ -915,12 +915,11 @@ class QualityReportMetricsTest(unittest.TestCase):
             metric.DocumentAge,
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}, documents=[document]))
 
-    def test_no_document_age(self):
-        """ Test that the document age metric is not added if the project has no Subversion. """
+    def test_document_age_without_vcs(self):
+        """ Test that the document age metric is added even if the project has no version control system configured. """
         document = domain.Document(name='Title', url='http://url')
         self.__assert_metric(metric.DocumentAge,
-                             project_kwargs=dict(documents=[document]),
-                             include=False)
+                             project_kwargs=dict(documents=[document]))
 
     def test_user_story_points_ready(self):
         """ Test that the user story points ready metric is added if possible. """

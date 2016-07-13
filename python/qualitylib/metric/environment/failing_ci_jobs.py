@@ -23,7 +23,7 @@ from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of continuous integration jobs that fail. """
 
-    name = 'Falende CI-jobs'
+    name = 'Hoeveelheid falende CI-jobs'
     unit = 'CI-jobs'
     norm_template = 'Maximaal {target} van de actieve {unit} ' \
         'faalt. Meer dan {low_target} {unit} is rood. Een CI-job faalt als de ' \

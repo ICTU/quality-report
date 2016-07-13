@@ -25,7 +25,7 @@ from ...formatting import HTMLFormatter
 class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     """ Return the number of cyclic dependencies between packages. """
 
-    name = 'Cyclische afhankelijkheden'
+    name = 'Hoeveelheid cyclische afhankelijkheden'
     unit = 'cyclische afhankelijkheden'
     norm_template = 'Maximaal {target} {unit} tussen packages. Meer dan 10 is rood.'
     template = '{name} heeft {value} {unit}.'
@@ -39,7 +39,7 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
 
 class SnapshotDependencies(LowerIsBetterMetric):
     """ Metric for measuring the number of the dependencies on snapshot versions of other products. """
-    name = 'Snapshot afhankelijkheden'
+    name = 'Hoeveelheid snapshot afhankelijkheden'
     unit = 'afhankelijkheden'
     norm_template = 'Maximaal {target} {unit} op snapshot versies van andere producten. Meer dan {low_target} is rood.'
     template = '{name} heeft {value} {unit} op snapshot versies van andere producten.'

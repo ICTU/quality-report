@@ -45,7 +45,7 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of unit tests that fail. """
 
-    name = 'Falende unittesten'
+    name = 'Hoeveelheid falende unittesten'
     unit = 'unittesten'
     norm_template = 'Alle unittesten slagen.'
     perfect_template = '{tests} van de {tests} {unit} slagen.'

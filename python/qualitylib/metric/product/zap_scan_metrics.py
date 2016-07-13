@@ -77,7 +77,7 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
 class HighRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
     """ Metric for measuring the number of high risk ZAP Scan alerts. """
 
-    name = 'ZAP Scan waarschuwingen met hoog risiconiveau'
+    name = 'Hoeveelheid ZAP Scan waarschuwingen met hoog risiconiveau'
     risk_level = 'hoog'
     risk_level_key = 'high'
     low_target_value = 3
@@ -86,7 +86,7 @@ class HighRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
 class MediumRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
     """ Metric for measuring the number of medium risk ZAP Scan alerts. """
 
-    name = 'ZAP Scan waarschuwingen met medium risiconiveau'
+    name = 'Hoeveelheid ZAP Scan waarschuwingen met medium risiconiveau'
     risk_level = 'medium'
     risk_level_key = 'medium'
     low_target_value = 10

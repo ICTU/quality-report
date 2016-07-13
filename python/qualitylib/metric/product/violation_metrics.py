@@ -49,7 +49,7 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
 class BlockerViolations(Violations):  # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of blocker violations reported by Sonar. """
 
-    name = 'Blocker violations'
+    name = 'Hoeveelheid blocker violations'
     violation_type = 'blocker'
     target_value = 0
     low_target_value = 0
@@ -61,7 +61,7 @@ class BlockerViolations(Violations):  # pylint: disable=too-many-public-methods
 class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of critical violations reported by Sonar. """
 
-    name = 'Critical violations'
+    name = 'Hoeveelheid critical violations'
     violation_type = 'critical'
     target_value = 0
     low_target_value = 1
@@ -73,7 +73,7 @@ class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
 class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of major violations reported by Sonar. """
 
-    name = 'Major violations'
+    name = 'Hoeveelheid major violations'
     violation_type = 'major'
     target_value = 25
     low_target_value = 50
@@ -84,7 +84,7 @@ class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
 
 class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of times //NOSONAR is used to suppress violations. """
-    name = 'Violation-onderdrukkingen met //NOSONAR'
+    name = 'Hoeveelheid violation-onderdrukkingen met //NOSONAR'
     unit = 'violation-onderdrukkingen'
     norm_template = 'Violations worden maximaal {target} keer onderdrukt met //NOSONAR. ' \
         'Meer dan {low_target} {unit} is rood.'
@@ -99,7 +99,7 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
 
 class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of issues marked as false positive. """
-    name = 'False positives'
+    name = 'Hoeveelheid false positives'
     unit = 'false positives'
     norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. ' \
                     'Meer dan {low_target} {unit} is rood.'

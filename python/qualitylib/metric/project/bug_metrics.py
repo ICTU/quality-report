@@ -24,7 +24,7 @@ from ... import metric_source
 class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of open bug reports. """
 
-    name = 'Open bugreports'
+    name = 'Hoeveelheid open bugreports'
     unit = 'open bugreports'
     norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
@@ -47,7 +47,7 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
 class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of open security bugs. """
 
-    name = 'Open beveiligingsbugreports'
+    name = 'Hoeveelheid open beveiligingsbugreports'
     unit = 'beveiligingsbugreports'
     norm_template = 'Het aantal {unit} met prioriteit major of hoger dat meer dan een ' \
         'sprint open staat is minder dan {target}. Meer dan {low_target} {unit} is rood.'
@@ -72,7 +72,7 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
 class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of technical debt issues. """
 
-    name = 'Aantal technische schuld issues'
+    name = 'Hoeveelheid technische schuld issues'
     unit = 'technische schuld issues'
     norm_template = 'Het aantal {unit} is maximaal {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'

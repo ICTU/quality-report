@@ -25,7 +25,7 @@ from ...domain import LowerIsBetterMetric
 class SonarAnalysisAge(SonarDashboardMetricMixin, LowerIsBetterMetric):
     """ Metric to measure the age of the latest Sonar analysis. """
 
-    name = 'Leeftijd meest recente Sonar analyse'
+    name = 'Leeftijd van de meest recente Sonar analyse'
     unit = 'dagen'
     norm_template = 'De meest recente Sonar analyse is maximaal {target} {unit} oud. ' \
                     'Meer dan {low_target} {unit} is rood.'

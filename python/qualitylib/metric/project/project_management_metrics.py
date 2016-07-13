@@ -27,7 +27,7 @@ from ...metric_source import TrelloUnreachableException
 class RiskLog(LowerIsBetterMetric):
     """ Metric for measuring the number of days since the risk log was last updated. """
 
-    name = 'Actualiteit risico log'
+    name = 'Actualiteit van de risico log'
     unit = 'dagen'
     norm_template = 'Het risicolog wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
         'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
@@ -61,7 +61,7 @@ class RiskLog(LowerIsBetterMetric):
 class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the number of days since the actions were last updated. """
 
-    name = 'Actualiteit actielijst'
+    name = 'Actualiteit van de actielijst'
     unit = 'dagen'
     norm_template = 'De actie- en besluitenlijst wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
         'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
@@ -90,7 +90,7 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     """ Metric for measuring the age of individual actions. """
 
-    name = 'Tijdigheid acties'
+    name = 'Tijdigheid van de acties'
     unit = 'acties'
     norm_template = 'Geen van de acties en besluiten in de actie- en besluitenlijst is te laat of te lang ' \
         '(14 dagen) niet bijgewerkt. Meer dan {low_target} {unit} te laat of te lang niet bijgewerkt is rood.'

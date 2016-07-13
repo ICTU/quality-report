@@ -27,11 +27,12 @@ class Metric(object):
     """ Base class for metrics. """
 
     name = norm_template = target_value = low_target_value = perfect_value = template = unit = 'Subclass responsibility'
-    missing_template = 'De metriek kon niet gemeten worden omdat de bron niet beschikbaar is.'
-    missing_source_template = 'De metriek kon niet gemeten worden omdat niet alle benodigde bronnen zijn ' \
+    missing_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
+                       'beschikbaar zijn.'
+    missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen zijn ' \
                               'geconfigureerd. Configureer de volgende bronnen: {missing_source_classes}.'
-    missing_source_id_template = 'De metriek kon niet gemeten worden omdat niet alle benodigde bron-ids zijn ' \
-                                 'geconfigureerd. Configureer ids voor de volgende bronnen: ' \
+    missing_source_id_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde ' \
+                                 'bron-ids zijn geconfigureerd. Configureer ids voor de volgende bronnen: ' \
                                  '{missing_source_id_classes}.'
     perfect_template = ''
     url_label_text = comment_url_label_text = ''
@@ -199,6 +200,7 @@ class Metric(object):
         except AttributeError:
             version = '<no version>'
         return dict(name=self.__subject_name(),
+                    metric=self.name[0].lower()+self.name[1:],
                     version=version,
                     unit=self.unit,
                     target=self.target(),

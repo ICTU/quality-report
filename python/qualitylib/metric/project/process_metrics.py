@@ -25,7 +25,7 @@ from ... import metric_source
 class ReadyUserStoryPoints(JiraMetricMixin, HigherIsBetterMetric):
     """ Metric for measuring the number of user story points ready. """
 
-    name = 'Ready user story punten'
+    name = 'Hoeveelheid ready user story punten'
     unit = 'ready user story punten'
     norm_template = 'Het aantal {unit} is meer dan {target}. Minder dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'

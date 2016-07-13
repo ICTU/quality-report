@@ -25,7 +25,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of unmerged branches. """
 
-    name = 'Ongemergde branches'
+    name = 'Hoeveelheid ongemergde branches'
     unit = 'branches'
     norm_template = 'Maximaal {target} {unit} met ongemergde code. Meer dan {low_target} {unit} is rood.'
     perfect_template = 'Geen van de {nr_branches} {unit} van {name} heeft revisies die niet met de trunk zijn ' \

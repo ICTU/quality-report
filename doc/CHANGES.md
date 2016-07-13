@@ -1,6 +1,7 @@
-2016-07-??  Release 1.44.2 (to be released)
+2016-07-13  Release 1.44.2
 
   * Remove incomplete help information.
+  * Better reporting on metric sources that have not been configured completely.
   
 
 2016-07-11  Release 1.44.1

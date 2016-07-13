@@ -320,8 +320,7 @@ class QualityReport(domain.DomainObject):
         if metric.TotalLOC.should_be_measured(self.__project):
             metrics.append(metric.TotalLOC(subject=self.__project, project=self.__project))
         for document in self.__project.documents():
-            if metric.DocumentAge.can_be_measured(document, self.__project):
-                metrics.append(metric.DocumentAge(document, project=self.__project))
+            metrics.append(metric.DocumentAge(document, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics)
 
