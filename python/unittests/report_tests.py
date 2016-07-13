@@ -499,13 +499,22 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.CoverageReport: 'NCover'}),
             product_kwargs=dict(art=dict(metric_source_ids={'NCover': 'ncover'})))
 
-    def test_art_critical_violations(self):
-        """ Test that the critical violations is added for the ART. """
+    def test_art_code_metrics(self):
+        """ Test that the code metric are added for the ART. """
         for metric_class in report.QualityReport.CODE_METRIC_CLASSES:
             self.__assert_metric(
                 metric_class,
                 project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}),
                 product_kwargs=dict(art=dict(metric_source_ids={self.__sonar: 'id'})))
+
+    def test_art_code_metrics_non_trunk(self):
+        """ Test that the code metrics are not added if the ART is not a trunk version. """
+        for metric_class in report.QualityReport.CODE_METRIC_CLASSES:
+            self.__assert_metric(
+                metric_class,
+                project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}),
+                product_kwargs=dict(product_version='1.1', art=dict(metric_source_ids={self.__sonar: 'id'})),
+                include=False)
 
     def test_reviewed_us(self):
         """ Test that the reviewed user stories metric is added if required. """
