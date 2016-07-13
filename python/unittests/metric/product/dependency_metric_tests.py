@@ -64,21 +64,6 @@ class FakeReport(object):
     """ Fake a quality report. """
 
     @staticmethod
-    def name():
-        """ Return the name of the report. """
-        return 'None'
-
-    @staticmethod
-    def get_product_section(product_label):  # pylint: disable=unused-argument
-        """ Return the section for the product/version. """
-        return Section('', [])
-
-    @staticmethod
-    def products():
-        """ Return the products of the project. """
-        return [FakeSubject(), FakeSubject()]
-
-    @staticmethod
     def get_product(product, version):  # pylint: disable=unused-argument
         """ Return the specified product. """
         return FakeSubject()
