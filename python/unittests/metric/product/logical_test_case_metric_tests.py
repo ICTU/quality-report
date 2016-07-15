@@ -221,6 +221,11 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
         """ Test that the value of the metric is the number of manual logical test cases. """
         self.assertEqual(10, self.__metric.value())
 
+    def test_value_when_birt_missing(self):
+        """ Test that the value is -1 when Birt is missing. """
+        manual_ltcs = metric.NumberOfManualLogicalTestCases(subject=self.__subject, project=domain.Project())
+        self.assertEqual(-1, manual_ltcs.value())
+
     def test_report(self):
         """ Test the metric report. """
         self.assertEqual('10 van de 120 logische testgevallen zijn handmatig.', self.__metric.report())
