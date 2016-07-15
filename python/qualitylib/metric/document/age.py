@@ -35,11 +35,6 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     target_value = 180
     low_target_value = 200
 
-    @classmethod
-    def can_be_measured(cls, document, project):
-        """ Return whether the document age can be measured. """
-        return super(DocumentAge, cls).can_be_measured(document, project) and document.url()
-
     def value(self):
         """ Return the number of days since the document was last changed. """
         return -1 if self._missing() else (datetime.datetime.now() - self.__changed_date()).days
