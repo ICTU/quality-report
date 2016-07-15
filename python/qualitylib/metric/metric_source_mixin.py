@@ -111,7 +111,7 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
 
     @classmethod
     def can_be_measured(cls, product, project):
-        """ Rweturn whether the right metric sources are present to measure the metric. """
+        """ Return whether the right metric sources are present to measure the metric. """
         birt = project.metric_source(metric_source.Birt)
         if isinstance(birt, list):
             has_test_design = True
