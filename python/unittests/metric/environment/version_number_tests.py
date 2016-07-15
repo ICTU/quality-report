@@ -33,7 +33,7 @@ class FakeSonar(object):
     @staticmethod
     def plugin_version(plugin):
         """ Return a fake plugin version number. """
-        return '11.4' if plugin == 'java' else -1
+        return '11.4' if plugin == 'java' else '0.0'
 
     @staticmethod
     def default_quality_profile(language):

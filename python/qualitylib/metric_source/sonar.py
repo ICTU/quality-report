@@ -63,9 +63,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         try:
             plugins = self.__get_json(self.__plugin_api_url)
         except self.url_open_exceptions:
-            return -1
+            return '0.0'
         mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
-        return mapping.get(plugin, -1)
+        return mapping.get(plugin, '0.0')
 
     def plugins_url(self):
         """ Return the url to the plugin update center. """

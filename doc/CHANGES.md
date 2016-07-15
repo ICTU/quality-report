@@ -1,3 +1,8 @@
+2016-07-15  Release 1.44.3
+
+  * Don't crash when no Sonar or Birt instances are configured.
+  
+  
 2016-07-13  Release 1.44.2
 
   * Remove incomplete help information.

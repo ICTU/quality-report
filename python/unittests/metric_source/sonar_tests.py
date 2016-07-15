@@ -464,14 +464,14 @@ class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         self.assertEqual('1.1', self.__sonar.plugin_version('pmd'))
 
     def test_missing_plugin(self):
-        """ Test that the version number of a missing plugin is -1. """
+        """ Test that the version number of a missing plugin is 0.0. """
         self.__sonar.json = u"""
         [{
             "key": "pmd",
             "name": "PMD",
             "version": "1.1"
         }]"""
-        self.assertEqual(-1, self.__sonar.plugin_version('checkstyle'))
+        self.assertEqual('0.0', self.__sonar.plugin_version('checkstyle'))
 
     def test_default_quality_profile(self):
         """ Test that the name of the quality profile is returned. """

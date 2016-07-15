@@ -34,7 +34,7 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
-        if -1 in [nr_ltcs, nr_ltcs_ok]:
+        if -1 in (nr_ltcs_ok, nr_ltcs) or None in (nr_ltcs_ok, nr_ltcs):
             return -1
         else:
             return nr_ltcs - nr_ltcs_ok
@@ -158,7 +158,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
             else super(ManualLogicalTestCases, self)._get_template()
 
     def _missing(self):
-        return self._birt.date_of_last_manual_test(self._birt_id(), self.__version()) == -1
+        return self._birt.date_of_last_manual_test(self._birt_id(), self.__version()) in (-1, None)
 
     def __version(self):
         """ Return the version number for the product this metric is reporting on. """
@@ -177,7 +177,11 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     quality_attribute = TEST_QUALITY
 
     def _nr_ltcs_ok(self):
-        return self._nr_ltcs() - self._birt.nr_manual_ltcs(self._birt_id())
+        nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._birt.nr_manual_ltcs(self._birt_id())
+        if -1 in (nr_ltcs, nr_manual_ltcs) or None in (nr_ltcs, nr_manual_ltcs):
+            return -1
+        else:
+            return nr_ltcs - nr_manual_ltcs
 
     def _nr_ltcs(self):
         return self._birt.nr_ltcs(self._birt_id())

@@ -102,7 +102,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         return parameters
 
     def _missing(self):
-        return self._sonar.default_quality_profile(self.language_key) == ''
+        return self._sonar.default_quality_profile(self.language_key) in ('', None)
 
 
 class SonarQualityProfileVersionJava(SonarQualityProfileVersion):
@@ -169,7 +169,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
-        return LooseVersion('0.0') if self._missing() else LooseVersion(self._sonar.plugin_version(self.plugin_key))
+        return LooseVersion('0.0' if self._missing() else self._sonar.plugin_version(self.plugin_key))
 
     def url(self):
         return {'Sonar': self._sonar.plugins_url()}
@@ -180,7 +180,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return parameters
 
     def _missing(self):
-        return self._sonar.plugin_version(self.plugin_key) == -1
+        return self._sonar.plugin_version(self.plugin_key) in ('0.0', None)
 
 
 class SonarPluginVersionJava(SonarPluginVersion):

@@ -30,7 +30,7 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()
-        if -1 in [nr_user_stories, nr_user_stories_ok]:
+        if -1 in [nr_user_stories, nr_user_stories_ok] or None in [nr_user_stories, nr_user_stories_ok]:
             return -1
         else:
             return nr_user_stories - nr_user_stories_ok
