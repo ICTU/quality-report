@@ -241,11 +241,8 @@ class HTMLFormatter(base_formatter.Formatter):
 
     @classmethod
     def __format_metric_comment(cls, metric):
-        """ Return a HTML formatted version of the metric comment that includes
-            a link to the comment source (the wiki). """
-        return cls.__format_text_with_links(metric.comment(),
-                                            metric.comment_urls(),
-                                            metric.comment_url_label())
+        """ Return a HTML formatted version of the metric comment, including links if appropriate. """
+        return cls.__format_text_with_links(metric.comment(), metric.comment_urls(), metric.comment_url_label())
 
     @classmethod
     def __format_text_with_links(cls, text, url_dict, url_label=''):
