@@ -38,16 +38,18 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     low_target_value = 1
 
     @classmethod
-    def can_be_measured(cls, product, project):
+    def is_applicable(cls, product):
         """ Unmerged branches can only be measured for trunk versions of products that are under version control. """
-        return super(UnmergedBranches, cls).can_be_measured(product, project) \
-            and not product.product_version() and not product.product_branch()
+        return super(UnmergedBranches, cls).is_applicable(product) and \
+            not product.product_version() and not product.product_branch()
 
     def value(self):
-        return len(self.__unmerged_branches())
+        unmerged_branches = self.__unmerged_branches()
+        return -1 if unmerged_branches is None else len(unmerged_branches)
 
     def url(self):
-        return self.__branch_and_nr_revs_urls(self.__unmerged_branches())
+        unmerged_branches = self.__unmerged_branches()
+        return dict() if unmerged_branches is None else self.__branch_and_nr_revs_urls(unmerged_branches)
 
     def comment_urls(self):
         return self.__branch_urls(self.__list_of_branches_to_ignore())
@@ -74,7 +76,8 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(UnmergedBranches, self)._parameters()
-        parameters['nr_branches'] = len(self.__branches())
+        branches = self.__branches()
+        parameters['nr_branches'] = -1 if branches is None else len(branches)
         return parameters
 
     def __branch_and_nr_revs_urls(self, branches_and_revisions):

@@ -60,6 +60,11 @@ class Metric(object):
         return cls in requirement_subject.required_metric_classes()
 
     @classmethod
+    def is_applicable(cls, subject):  # pylint: disable=unused-argument
+        """ Return whether this metric applies to the specified subject. """
+        return True
+
+    @classmethod
     def norm_template_default_values(cls):
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value,
@@ -291,7 +296,7 @@ class Metric(object):
         else:
             return ''
 
-    def comment_urls(self):
+    def comment_urls(self):  # pylint: disable=no-self-use
         """ Return the source for the comment on the metric. """
         return dict()
 

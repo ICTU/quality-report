@@ -107,22 +107,16 @@ class UnmergedBranchesTest(unittest.TestCase):
         """ Test the label for the comment urls. """
         self.assertEqual('Genegeerde branches', self.__metric.comment_url_label())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can only be measured if the product is under version control and is
-            the trunk version. """
-        self.assertTrue(metric.UnmergedBranches.can_be_measured(self.__subject, self.__project))
+    def test_is_applicable(self):
+        """ Test that the metric is applicable if the product is the trunk version. """
+        self.assertTrue(metric.UnmergedBranches.is_applicable(self.__subject))
 
-    def test_cant_be_measured_if_releases(self):
-        """ Test that the metric can not be measured if the product is a released version. """
+    def test_is_not_applicable_if_release(self):
+        """ Test that the metric isn't applicable for released versions. """
         self.__subject.set_product_version('1.1')
-        self.assertFalse(metric.UnmergedBranches.can_be_measured(self.__subject, self.__project))
+        self.assertFalse(metric.UnmergedBranches.is_applicable(self.__subject))
 
-    def test_cant_be_measured_if_branch(self):
-        """ Test that the metric can not be measured if the product is a released version. """
+    def test_is_not_applicable_if_branch(self):
+        """ Test that the metric isn't applicable for released versions. """
         self.__subject.set_product_branch('branch')
-        self.assertFalse(metric.UnmergedBranches.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_subversion(self):
-        """ Test that the metric can not be measured if the project has no Subversion. """
-        project = domain.Project()
-        self.assertFalse(metric.UnmergedBranches.can_be_measured(self.__subject, project))
+        self.assertFalse(metric.UnmergedBranches.is_applicable(self.__subject))

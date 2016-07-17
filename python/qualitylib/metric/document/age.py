@@ -49,4 +49,4 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def _missing(self):
         """ Return whether the age of the document could be established. """
-        return self.__changed_date() == datetime.datetime.min
+        return self.__changed_date() in (None, datetime.datetime.min)

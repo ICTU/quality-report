@@ -698,6 +698,23 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
             product_kwargs=dict(metric_source_ids={subversion: 'svn'}))
 
+    def test_unmerged_branches_release(self):
+        """ Test that the unmerged branches metric is not added if the product is released. """
+        subversion = FakeSubversion()
+        self.__assert_metric(
+            metric.UnmergedBranches,
+            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
+            product_kwargs=dict(metric_source_ids={subversion: 'svn'}, product_version='1.1'),
+            include=False)
+
+    def test_unmerged_branches_without_vcs_path(self):
+        """ Test that the unmerged branches metric is still added without vcs path. """
+        subversion = FakeSubversion()
+        self.__assert_metric(
+            metric.UnmergedBranches,
+            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
+            product_kwargs=dict(short_name='foo'))
+
     def test_art_unmerged_branches(self):
         """ Test that the unmerged branches metric is added for the ART. """
         subversion = FakeSubversion()

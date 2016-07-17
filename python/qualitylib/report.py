@@ -335,7 +335,7 @@ class QualityReport(domain.DomainObject):
             metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
-        if metric.UnmergedBranches.can_be_measured(product, self.__project):
+        if metric.UnmergedBranches.is_applicable(product):
             metrics.append(metric.UnmergedBranches(product, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(), product.name(), self.__latest_product_version(product)),
@@ -369,7 +369,7 @@ class QualityReport(domain.DomainObject):
             art_metric_classes = self.CODE_METRIC_CLASSES + (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
                                                              metric.FailingRegressionTests, metric.RegressionTestAge)
             metrics.extend(self.__optional_subject_metrics(art, art_metric_classes))
-        if metric.UnmergedBranches.can_be_measured(art, self.__project):
+        if metric.UnmergedBranches.is_applicable(art):
             metrics.append(metric.UnmergedBranches(subject=art, project=self.__project))
         return metrics
 

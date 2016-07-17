@@ -18,6 +18,8 @@ from __future__ import absolute_import
 import datetime
 import logging
 
+from .. import domain
+
 
 class VersionControlSystemProductInfo(object):
     """ Class to represent information that the version control system has about a product. """
@@ -98,4 +100,4 @@ class VersionControlSystemProductInfo(object):
             except IndexError:
                 logging.warn('There is no VCS configured for %s',
                              product.name() if hasattr(product, 'name') else product)
-        return None
+        return domain.MissingMetricSource()

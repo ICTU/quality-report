@@ -1,3 +1,8 @@
+2016-07-17  Release 1.45.0 (To be released)
+
+  * Include unmerged branches metric in report even when version control system has not been configured yet.
+  
+
 2016-07-15  Release 1.44.3
 
   * Don't crash when no Sonar or Birt instances are configured.
