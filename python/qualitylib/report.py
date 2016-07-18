@@ -234,10 +234,13 @@ class QualityReport(domain.DomainObject):
                 self.__sections.append(environment_section)
             for product in self.__products:
                 section = self.__product_section(product)
-                self.__product_sections[product.product_label()] = section
-                self.__sections.append(section)
+                if section:
+                    self.__product_sections[product.product_label()] = section
+                    self.__sections.append(section)
             for team in self.__teams:
-                self.__sections.append(self.__team_section(team))
+                section = self.__team_section(team)
+                if section:
+                    self.__sections.append(section)
             self.__meta_section = self.__create_meta_section(self.__sections)
             self.__sections.append(self.__meta_section)
         return self.__sections
@@ -340,13 +343,13 @@ class QualityReport(domain.DomainObject):
             metrics.append(metric.UnmergedBranches(product, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(), product.name(), self.__latest_product_version(product)),
-                       metrics, product=product)
+                       metrics, product=product) if metrics else None
 
     def __team_section(self, team):
         """ Return a report section for the team. """
-        team_metrics = self.__optional_subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
-        self.__metrics.extend(team_metrics)
-        return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), team_metrics)
+        metrics = self.__optional_subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
+        self.__metrics.extend(metrics)
+        return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics) if metrics else None
 
     def __create_meta_section(self, sections):
         """ Create and return the meta section. """

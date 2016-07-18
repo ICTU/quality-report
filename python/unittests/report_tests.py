@@ -184,7 +184,9 @@ class QualityReportTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__sonar = FakeSonar()
-        self.__project = domain.Project('organization', name='project title')
+        self.__wiki = 'FakeWiki'
+        self.__project = domain.Project('organization', name='project title',
+                                        metric_sources={metric_source.Wiki: self.__wiki})
         self.__report = report.QualityReport(self.__project)
 
     def test_project(self):
@@ -255,7 +257,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_team(self):
         """ Test that the report has 2 sections when we add a team. """
-        team = domain.Team(name='Team')
+        team = domain.Team(name='Team', metric_source_ids={self.__wiki: 'team'})
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(2, len(quality_report.sections()))
