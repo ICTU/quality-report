@@ -198,7 +198,6 @@ class QualityReport(domain.DomainObject):
         self.__project = project
         self.__title = 'Kwaliteitsrapportage {org}/{proj}'.format(org=project.organization(), proj=project.name())
         self.__products = sorted(project.products(), key=lambda product: (product.name(), product.short_name()))
-        self.__product_sections = dict()
         self.__teams = sorted(project.teams(), key=str)
         self.__sections = []
         self.__meta_section = None
@@ -223,24 +222,10 @@ class QualityReport(domain.DomainObject):
     def sections(self):
         """ Return the sections in the report. """
         if not self.__sections:
-            process_section = self.__process_section()
-            if process_section:
-                self.__sections.append(process_section)
-            products_section = self.__overall_products_section()
-            if products_section:
-                self.__sections.append(products_section)
-            environment_section = self.__environment_section()
-            if environment_section:
-                self.__sections.append(environment_section)
-            for product in self.__products:
-                section = self.__product_section(product)
-                if section:
-                    self.__product_sections[product.product_label()] = section
-                    self.__sections.append(section)
-            for team in self.__teams:
-                section = self.__team_section(team)
-                if section:
-                    self.__sections.append(section)
+            sections = [self.__process_section(), self.__overall_products_section(), self.__environment_section()]
+            sections.extend([self.__product_section(product) for product in self.__products])
+            sections.extend([self.__team_section(team) for team in self.__teams])
+            self.__sections = [section for section in sections if section]
             self.__meta_section = self.__create_meta_section(self.__sections)
             self.__sections.append(self.__meta_section)
         return self.__sections
@@ -254,9 +239,8 @@ class QualityReport(domain.DomainObject):
 
     def get_product_section(self, product):
         """ Return the section for a specific product. """
-        if product.product_label() not in self.__product_sections:
-            self.sections()  # Create the sections
-        return self.__product_sections[product.product_label()]
+        return dict([(section.product().product_label(), section) for section in self.sections()
+                     if section.product()])[product.product_label()]
 
     def get_meta_section(self):
         """ Return the section with the meta metrics. """
