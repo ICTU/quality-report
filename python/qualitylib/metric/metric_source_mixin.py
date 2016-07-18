@@ -109,16 +109,6 @@ class BirtMetricMixin(object):  # pylint: disable=too-few-public-methods
 class BirtTestDesignMetricMixin(BirtMetricMixin):
     """ Mixin class for metrics that use the Birt test design report. """
 
-    @classmethod
-    def can_be_measured(cls, product, project):
-        """ Return whether the right metric sources are present to measure the metric. """
-        birt = project.metric_source(metric_source.Birt)
-        if isinstance(birt, list):
-            has_test_design = True
-        else:
-            has_test_design = birt.has_test_design(product.metric_source_id(birt))
-        return super(BirtTestDesignMetricMixin, cls).can_be_measured(product, project) and has_test_design
-
     def url(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
             What's Missing report allows users to click to the user stories and test cases in Jira. """
