@@ -221,13 +221,12 @@ class QualityReportTest(unittest.TestCase):
         self.assertEqual(None, self.__report.get_section('unknown'))
 
     def test_product(self):
-        """ Test that the report has four sections when we add a product:
-            one for overall product quality, one for overall process quality,
+        """ Test that the report has three sections when we add a product: one for overall process quality,
             one for the product itself, and one for meta metrics. """
         project = domain.Project('organization', name='project title',
                                  metric_sources={metric_source.Sonar: self.__sonar})
         project.add_product(domain.Product(project, 'FP', metric_source_ids={self.__sonar: 'sonar.id'}))
-        self.assertEqual(4, len(report.QualityReport(project).sections()))
+        self.assertEqual(3, len(report.QualityReport(project).sections()))
 
     def test_get_product_section(self):
         """ Test that the section for the product can be found. """

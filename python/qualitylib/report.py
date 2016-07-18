@@ -226,8 +226,9 @@ class QualityReport(domain.DomainObject):
             process_section = self.__process_section()
             if process_section:
                 self.__sections.append(process_section)
-            if self.__products or self.__project.documents():
-                self.__sections.append(self.__overall_products_section())
+            products_section = self.__overall_products_section()
+            if products_section:
+                self.__sections.append(products_section)
             environment_section = self.__environment_section()
             if environment_section:
                 self.__sections.append(environment_section)
@@ -322,7 +323,7 @@ class QualityReport(domain.DomainObject):
         for document in self.__project.documents():
             metrics.append(metric.DocumentAge(document, project=self.__project))
         self.__metrics.extend(metrics)
-        return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics)
+        return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics) if metrics else None
 
     def __product_section(self, product):
         """ Return the section for the product. """
