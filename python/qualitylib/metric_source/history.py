@@ -51,8 +51,7 @@ class History(domain.MetricSource):
         self.__clean_old_details()
         self.__deduplicate_history()
 
-    def status_start_date(self, metric_id, current_status,
-                          now=datetime.datetime.now):
+    def status_start_date(self, metric_id, current_status, now=datetime.datetime.now):
         """ Return the start date of the current status of the metric. """
         last_status, date = self.__last_status(metric_id)
         return date if last_status == current_status else now()
