@@ -26,3 +26,7 @@ USER_STORIES_AND_LTCS = Requirement(
                     metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
                     metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
                     metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases})
+
+KEEP_TRACK_OF_MANUAL_LTCS = Requirement(
+    name='Keep track of manual logical test cases',
+    metric_classes={metric.DurationOfManualLogicalTestCases})

@@ -49,9 +49,9 @@ class SnapshotDependencies(LowerIsBetterMetric):
     metric_source_classes = (metric_source.VersionControlSystem, metric_source.Pom)
 
     @classmethod
-    def can_be_measured(cls, product, project):
+    def is_applicable(cls, product):
         # Only report for released versions:
-        return super(SnapshotDependencies, cls).can_be_measured(product, project) and product.product_version()
+        return super(SnapshotDependencies, cls).is_applicable(product) and product.product_version()
 
     def __init__(self, *args, **kwargs):
         self.__report = kwargs.pop('report')

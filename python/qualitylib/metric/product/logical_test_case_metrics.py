@@ -200,23 +200,19 @@ class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
     low_target_value = 240
     quality_attribute = TEST_QUALITY
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jira = project.metric_source(metric_source.Jira)
-        return super(DurationOfManualLogicalTestCases, cls).can_be_measured(subject, project) and \
-            jira.has_manual_test_cases_query()
-
     def value(self):
-        return self._jira.manual_test_cases_time()
+        duration = self._jira.manual_test_cases_time()
+        return -1 if duration is None else duration
 
     def url(self):
-        return {'Jira': self._jira.manual_test_cases_url()}
+        return dict() if self._missing() else {'Jira': self._jira.manual_test_cases_url()}
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(DurationOfManualLogicalTestCases, self)._parameters()
-        parameters['total'] = total = self._jira.nr_manual_test_cases()
-        parameters['measured'] = total - self._jira.nr_manual_test_cases_not_measured()
+        if not self._missing():
+            parameters['total'] = total = self._jira.nr_manual_test_cases()
+            parameters['measured'] = total - self._jira.nr_manual_test_cases_not_measured()
         return parameters
 
 

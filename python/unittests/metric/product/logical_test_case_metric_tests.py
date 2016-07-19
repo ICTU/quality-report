@@ -363,24 +363,17 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
         self.assertEqual('De uitvoering van 3 van de 5 handmatige logische testgevallen kost 110 minuten.',
                          self.__metric.report())
 
+    def test_report_without_jira(self):
+        """ Test the metric report when no Jira has been configured. """
+        self.assertEqual('De uitvoeringstijd van handmatige logische testgevallen van <no name> kon niet gemeten '
+                         'worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende '
+                         'bronnen: Jira.',
+                         metric.DurationOfManualLogicalTestCases(domain.Project(), domain.Project()).report())
+
     def test_norm(self):
         """ Test the norm text. """
         self.assertEqual('De uitvoering van de handmatige logische testgevallen kost maximaal 120 minuten. '
                          'Meer dan 240 is rood.', self.__metric.norm())
-
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Jira and Jira has a manual test cases query. """
-        self.assertTrue(metric.DurationOfManualLogicalTestCases.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured_without_jira(self):
-        """ Test that the metric can not be measured when the project has no Jira. """
-        project = domain.Project()
-        self.assertFalse(metric.DurationOfManualLogicalTestCases.can_be_measured(project, project))
-
-    def test_cant_be_measured_without_manual_test_query(self):
-        """ Test that the metric can not be measured when Jira has no manual test cases query. """
-        self.__jira.has_query = False
-        self.assertFalse(metric.DurationOfManualLogicalTestCases.can_be_measured(self.__project, self.__project))
 
     def test_url(self):
         """ Test the url is correct. """
