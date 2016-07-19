@@ -278,7 +278,7 @@ class QualityReport(domain.DomainObject):
         """ Return a list of metrics for the subject that can be measured. """
         metrics = []
         for metric_class in metric_classes:
-            if metric_class.can_be_measured(subject, self.__project):
+            if metric_class.can_be_measured(subject, self.__project) and metric_class.is_applicable(subject):
                 metrics.append(metric_class(subject, project=self.__project))
         return metrics
 
@@ -286,6 +286,6 @@ class QualityReport(domain.DomainObject):
         """ Return a list of metrics for the subject that should be measured. """
         metrics = []
         for metric_class in metric_classes:
-            if metric_class.should_be_measured(subject):
+            if metric_class.should_be_measured(subject) and metric_class.is_applicable(subject):
                 metrics.append(metric_class(subject, project=self.__project))
         return metrics

@@ -142,7 +142,7 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
         """ Test that the metric will only be measured for trunk versions. """
         product = FakeSubject()
         product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotAutomated.should_be_measured(product))
+        self.assertFalse(metric.LogicalTestCasesNotAutomated.is_applicable(product))
 
 
 class LogicalTestCasesNotReviewedTest(unittest.TestCase):
@@ -174,7 +174,7 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
         """ Test that the metric will only be measured for trunk versions. """
         product = self.__subject
         product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotReviewed.should_be_measured(product))
+        self.assertFalse(metric.LogicalTestCasesNotReviewed.is_applicable(product))
 
 
 class LogicalTestCasesNotApprovedTest(unittest.TestCase):
@@ -206,7 +206,7 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
         """ Test that the metric will only be measured for trunk versions. """
         product = self.__subject
         product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotApproved.should_be_measured(product))
+        self.assertFalse(metric.LogicalTestCasesNotApproved.is_applicable(product))
 
 
 class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
@@ -243,7 +243,7 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
         """ Test that the metric will only be measured for trunk versions. """
         product = self.__subject
         product.version = '1.1'
-        self.assertFalse(metric.NumberOfManualLogicalTestCases.should_be_measured(product))
+        self.assertFalse(metric.NumberOfManualLogicalTestCases.is_applicable(product))
 
     def test_url(self):
         """ Test the url is correct. """

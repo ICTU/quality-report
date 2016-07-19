@@ -29,8 +29,8 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     unit = 'logische testgevallen'
 
     @classmethod
-    def should_be_measured(cls, product):
-        return super(LogicalTestCaseMetric, cls).should_be_measured(product) and not product.product_version()
+    def is_applicable(cls, product):
+        return super(LogicalTestCaseMetric, cls).is_applicable(product) and not product.product_version()
 
     def value(self):
         nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
