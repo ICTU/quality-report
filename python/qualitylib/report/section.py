@@ -43,7 +43,8 @@ class SectionHeader(object):
 class Section(object):
     """ Section within a report. """
 
-    ORDERED_STATUS_COLORS = ('missing', 'red', 'yellow', 'grey', 'green', 'perfect')
+    ORDERED_STATUSES = ('missing', 'missing_source', 'red', 'yellow', 'grey', 'green', 'perfect')
+    STATUS_TO_COLOR_MAPPING = dict(missing='red', missing_source='red', perfect='green')
 
     def __init__(self, header, metrics, history=None, product=None):
         self.__header = header
@@ -79,17 +80,13 @@ class Section(object):
     def color(self):
         """ Return the color of this section. """
         metric_statuses = set(each_metric.status() for each_metric in self)
-        for status_color in self.ORDERED_STATUS_COLORS:  # pragma: no branch
+        for status_color in self.ORDERED_STATUSES:  # pragma: no branch
             if status_color in metric_statuses:
                 color = status_color
                 break
         else:
             color = 'white'
-        if color == 'perfect':
-            color = 'green'
-        if color == 'missing':
-            color = 'red'
-        return color
+        return self.STATUS_TO_COLOR_MAPPING.get(color, color)
 
     def has_history(self):
         """ Return whether this section has history collected. """

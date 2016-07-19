@@ -93,13 +93,25 @@ class SectionTest(unittest.TestCase):
         """ Test that the section is red when one metric is red. """
         self.assertEqual('red', self.__section.color())
 
+    def test_color_red_when_missing(self):
+        """ Test that the section is red when one metric is missing and the rest is green or yellow. """
+        metrics = [FakeMetric('green'), FakeMetric('perfect'),
+                   FakeMetric('yellow'), FakeMetric('missing')]
+        section = Section(self.__header, metrics)
+        self.assertEqual('red', section.color())
+
+    def test_color_red_when_missing_source(self):
+        """ Test that the section is red when one metric source is missing and the rest is green or yellow. """
+        metrics = [FakeMetric('green'), FakeMetric('perfect'),
+                   FakeMetric('yellow'), FakeMetric('missing_source')]
+        section = Section(self.__header, metrics)
+        self.assertEqual('red', section.color())
+
     def test_color_yellow(self):
         """ Test that the section is yellow when no metrics are red and at least one is yellow. """
         metrics = [FakeMetric('green'), FakeMetric('perfect'),
                    FakeMetric('yellow'), FakeMetric('grey')]
-        # Using self.__header makes this unit test fail occasionally in the IDE. Don't understand why.
-        header = SectionHeader('TE', 'another title', 'subtitle')
-        section = Section(header, metrics)
+        section = Section(self.__header, metrics)
         self.assertEqual('yellow', section.color())
 
     def test_color_grey(self):
