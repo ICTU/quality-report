@@ -115,7 +115,7 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 
     def url(self):
         try:
-            url = self._trello_actions_board.over_due_or_inactive_cards_url()
+            urls = self._trello_actions_board.over_due_or_inactive_cards_url()
         except TrelloUnreachableException:
-            url = 'http://trello.com'
-        return dict() if url is None else dict(Trello=url)
+            urls = dict(Trello='http://trello.com')
+        return dict() if urls is None else urls
