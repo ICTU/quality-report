@@ -34,3 +34,7 @@ KEEP_TRACK_OF_MANUAL_LTCS = Requirement(
 KEEP_TRACK_OF_BUGS = Requirement(
     name='Keep track of open bug reports',
     metric_classes=[metric.OpenBugs, metric.OpenSecurityBugs])
+
+KEEP_TRACK_OF_TECHNICAL_DEBT = Requirement(
+    name='Keep track of technical debt',
+    metric_classes=[metric.TechnicalDebtIssues])

@@ -72,14 +72,9 @@ class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
     low_target_value = 50
     quality_attribute = PROGRESS
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jira = project.metric_source(metric_source.Jira)
-        return super(TechnicalDebtIssues, cls).can_be_measured(subject, project) and \
-            jira.has_technical_debt_issues_query()
-
     def value(self):
-        return self._jira.nr_technical_debt_issues()
+        nr_issues = self._jira.nr_technical_debt_issues()
+        return -1 if nr_issues in (-1, None) else nr_issues
 
     def url(self):
-        return {'Jira': self._jira.nr_technical_debt_issues_url()}
+        return dict() if self._missing() else {'Jira': self._jira.nr_technical_debt_issues_url()}

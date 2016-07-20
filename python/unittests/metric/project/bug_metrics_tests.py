@@ -113,7 +113,8 @@ class TechnicalDebtIssuesTest(unittest.TestCase):
     """ Unit tests for the number of technical debt issues metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()})
+        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
+                                        requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT])
         self.__metric = metric.TechnicalDebtIssues(project=self.__project)
 
     def test_value(self):
@@ -124,18 +125,6 @@ class TechnicalDebtIssuesTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_technical_debt_issues_url()}, self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Jira,
-            and Jira has a technical debt issue query. """
-        self.assertTrue(metric.TechnicalDebtIssues.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured_without_jira(self):
-        """ Test that the metric cannot be measured without Jira. """
-        project = domain.Project()
-        self.assertFalse(metric.TechnicalDebtIssues.can_be_measured(self.__project, project))
-
-    def test_cant_be_measured_without_td_issues_query(self):
-        """ Test that the metric cannot be measured without a technical debt issues query in Jira. """
-        jira = FakeJira(has_queries=False)
-        project = domain.Project(metric_sources={metric_source.Jira: jira})
-        self.assertFalse(metric.TechnicalDebtIssues.can_be_measured(self.__project, project))
+    def test_should_be_measured(self):
+        """ Test that the metric should be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.TechnicalDebtIssues.should_be_measured(self.__project))
