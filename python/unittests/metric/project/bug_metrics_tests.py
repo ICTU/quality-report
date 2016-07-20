@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from qualitylib import metric, domain, metric_source
+from qualitylib import metric, domain, metric_source, requirement
 
 
 class FakeJira(object):
@@ -71,7 +71,8 @@ class OpenBugsTest(unittest.TestCase):
     """ Unit tests for the number of open bugs metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()})
+        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
+                                        requirements=[requirement.KEEP_TRACK_OF_BUGS])
         self.__metric = metric.OpenBugs(project=self.__project)
 
     def test_value(self):
@@ -82,27 +83,17 @@ class OpenBugsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_open_bugs_url()}, self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Jira,
-            and Jira has an open bugs query. """
-        self.assertTrue(metric.OpenBugs.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured_without_jira(self):
-        """ Test that the metric cannot be measured without Jira. """
-        project = domain.Project()
-        self.assertFalse(metric.OpenBugs.can_be_measured(self.__project, project))
-
-    def test_cant_be_measured_without_open_bugs_query(self):
-        """ Test that the metric cannot be measured without an open bugs query in Jira. """
-        project = domain.Project(metric_sources={metric_source.Jira: FakeJira(has_queries=False)})
-        self.assertFalse(metric.OpenBugs.can_be_measured(self.__project, project))
+    def test_should_be_measured(self):
+        """ Test that the metric should be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.OpenBugs.should_be_measured(self.__project))
 
 
 class OpenSecurityBugsTest(unittest.TestCase):
     """ Unit tests for the number of open security bugs metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()})
+        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
+                                        requirements=[requirement.KEEP_TRACK_OF_BUGS])
         self.__metric = metric.OpenSecurityBugs(project=self.__project)
 
     def test_value(self):
@@ -113,20 +104,9 @@ class OpenSecurityBugsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_open_security_bugs_url()}, self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Jira, and Jira has an open bugs query. """
-        self.assertTrue(metric.OpenSecurityBugs.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured_without_jira(self):
-        """ Test that the metric cannot be measured without Jira. """
-        project = domain.Project()
-        self.assertFalse(metric.OpenSecurityBugs.can_be_measured(self.__project, project))
-
-    def test_cant_be_measured_without_open_bugs_query(self):
-        """ Test that the metric cannot be measured without an open bugs query in Jira. """
-        jira = FakeJira(has_queries=False)
-        project = domain.Project(metric_sources={metric_source.Jira: jira})
-        self.assertFalse(metric.OpenSecurityBugs.can_be_measured(self.__project, project))
+    def test_should_be_measured(self):
+        """ Test that the metric should be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.OpenSecurityBugs.should_be_measured(self.__project))
 
 
 class TechnicalDebtIssuesTest(unittest.TestCase):

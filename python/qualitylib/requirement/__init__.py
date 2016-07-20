@@ -21,4 +21,4 @@ from __future__ import absolute_import
 
 from .product_quality import TRUSTED_PRODUCT_MAINTAINABILITY, OWASP, OWASP_ZAP
 from .sonar import JAVA, C_SHARP, JAVASCRIPT, WEB
-from .process_quality import USER_STORIES_AND_LTCS, KEEP_TRACK_OF_MANUAL_LTCS
+from .process_quality import USER_STORIES_AND_LTCS, KEEP_TRACK_OF_MANUAL_LTCS, KEEP_TRACK_OF_BUGS

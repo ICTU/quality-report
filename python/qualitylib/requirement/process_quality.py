@@ -30,3 +30,7 @@ USER_STORIES_AND_LTCS = Requirement(
 KEEP_TRACK_OF_MANUAL_LTCS = Requirement(
     name='Keep track of manual logical test cases',
     metric_classes={metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration})
+
+KEEP_TRACK_OF_BUGS = Requirement(
+    name='Keep track of open bug reports',
+    metric_classes=[metric.OpenBugs, metric.OpenSecurityBugs])

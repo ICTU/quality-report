@@ -32,16 +32,12 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     low_target_value = 100
     quality_attribute = PROGRESS
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jira = project.metric_source(metric_source.Jira)
-        return super(OpenBugs, cls).can_be_measured(subject, project) and jira.has_open_bugs_query()
-
     def value(self):
-        return self._jira.nr_open_bugs()
+        nr_open_bugs = self._jira.nr_open_bugs()
+        return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
 
     def url(self):
-        return {'Jira': self._jira.nr_open_bugs_url()}
+        return dict() if self._missing() else {'Jira': self._jira.nr_open_bugs_url()}
 
 
 class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
@@ -57,16 +53,12 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     low_target_value = 3
     quality_attribute = SECURITY
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jira = project.metric_source(metric_source.Jira)
-        return super(OpenSecurityBugs, cls).can_be_measured(subject, project) and jira.has_open_security_bugs_query()
-
     def value(self):
-        return self._jira.nr_open_security_bugs()
+        nr_open_security_bugs = self._jira.nr_open_security_bugs()
+        return -1 if nr_open_security_bugs in (-1, None) else nr_open_security_bugs
 
     def url(self):
-        return {'Jira': self._jira.nr_open_security_bugs_url()}
+        return dict() if self._missing() else {'Jira': self._jira.nr_open_security_bugs_url()}
 
 
 class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
