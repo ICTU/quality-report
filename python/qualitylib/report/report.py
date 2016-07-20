@@ -194,8 +194,6 @@ class QualityReport(domain.DomainObject):
         for metric_class in self.PROCESS_SECTION_METRIC_CLASSES:
             if metric_class.should_be_measured(self.__project):
                 metrics.append(metric_class(self.__project, project=self.__project))
-            elif metric_class.can_be_measured(self.__project, self.__project):
-                metrics.append(metric_class(self.__project, project=self.__project))
         for street in self.__project.streets():
             metrics.append(metric.ARTStability(street, project=self.__project))
         self.__metrics.extend(metrics)

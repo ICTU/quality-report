@@ -444,10 +444,11 @@ class QualityReportMetricsTest(unittest.TestCase):
             include=False)
 
     def test_duration_manual_ltcs(self):
-        """ Test that the duration of manual logical test case metric is added if possible. """
+        """ Test that the duration of manual logical test case metric is added if required. """
         self.__assert_metric(
             metric.DurationOfManualLogicalTestCases,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+                                requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
 
     def test_no_duration_manual_ltcs(self):
         """ Test that the duration of manual logical test case metric is not added without Jira. """
@@ -456,13 +457,14 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(), include=False)
 
     def test_manual_ltcs_without_duration(self):
-        """ Test that the manual logical test case without duration metric is added if possible. """
+        """ Test that the manual logical test case without duration metric is added if required. """
         self.__assert_metric(
             metric.ManualLogicalTestCasesWithoutDuration,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+                                requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
 
     def test_no_manual_ltcs_without_duration(self):
-        """ Test that the manual logical test case without duration metric is not added without Jira. """
+        """ Test that the manual logical test case without duration metric is not added if not required. """
         self.__assert_metric(metric.ManualLogicalTestCasesWithoutDuration, project_kwargs=dict(), include=False)
 
     def test_jsf_duplication(self):
@@ -502,10 +504,11 @@ class QualityReportMetricsTest(unittest.TestCase):
                                 metric_sources={metric_source.Jira: FakeJira()}))
 
     def test_technical_debt_issues(self):
-        """ Test that the technical debt issues metric is added if possible. """
+        """ Test that the technical debt issues metric is added if required. """
         self.__assert_metric(
             metric.TechnicalDebtIssues,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+                                requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT]))
 
     def test_failing_ci_jobs(self):
         """ Test that the failing CI jobs metric is added if possible. """
@@ -526,22 +529,25 @@ class QualityReportMetricsTest(unittest.TestCase):
             project_kwargs=dict(metric_sources={metric_source.AnsibleConfigReport: 'Ansible'}))
 
     def test_action_activity(self):
-        """ Test that the action activity metric is added if possible. """
+        """ Test that the action activity metric is added if required. """
         self.__assert_metric(
             metric.ActionActivity,
-            project_kwargs=dict(metric_sources={metric_source.TrelloActionsBoard: 'Trello'}))
+            project_kwargs=dict(metric_sources={metric_source.TrelloActionsBoard: 'Trello'},
+                                requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
 
     def test_action_age(self):
-        """ Test that the action age metric is added if possible. """
+        """ Test that the action age metric is added if required. """
         self.__assert_metric(
             metric.ActionAge,
-            project_kwargs=dict(metric_sources={metric_source.TrelloActionsBoard: 'Trello'}))
+            project_kwargs=dict(metric_sources={metric_source.TrelloActionsBoard: 'Trello'},
+                                requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
 
     def test_risk_log(self):
-        """ Test that the risk log metric is added if possible. """
+        """ Test that the risk log metric is added if required. """
         self.__assert_metric(
             metric.RiskLog,
-            project_kwargs=dict(metric_sources={metric_source.TrelloRiskBoard: 'Trello'}))
+            project_kwargs=dict(metric_sources={metric_source.TrelloRiskBoard: 'Trello'},
+                                requirements=[requirement.KEEP_TRACK_OF_RISKS]))
 
     def test_unmerged_branches(self):
         """ Test that the unmerged branches metric is added if possible. """
@@ -801,12 +807,13 @@ class QualityReportMetricsTest(unittest.TestCase):
                              project_kwargs=dict(documents=[document]))
 
     def test_user_story_points_ready(self):
-        """ Test that the user story points ready metric is added if possible. """
+        """ Test that the user story points ready metric is added if required. """
         self.__assert_metric(metric.ReadyUserStoryPoints,
-                             project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+                             project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+                                                 requirements=[requirement.KEEP_TRACK_OF_READY_US]))
 
     def test_no_user_story_points_ready(self):
-        """ Test that the user story points ready metric is not added if the project has no Jira. """
+        """ Test that the user story points ready metric is not added if not required. """
         self.__assert_metric(metric.ReadyUserStoryPoints, include=False)
 
     def test_sonar_analysis_age(self):
