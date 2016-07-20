@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from .. import HigherIsBetterMetric
 from ..metric_source_mixin import JiraMetricMixin
 from ..quality_attributes import PROGRESS
-from ... import metric_source
 
 
 class ReadyUserStoryPoints(JiraMetricMixin, HigherIsBetterMetric):
@@ -33,14 +32,9 @@ class ReadyUserStoryPoints(JiraMetricMixin, HigherIsBetterMetric):
     low_target_value = 20
     quality_attribute = PROGRESS
 
-    @classmethod
-    def can_be_measured(cls, subject, project):
-        jira = project.metric_source(metric_source.Jira)
-        return super(ReadyUserStoryPoints, cls).can_be_measured(subject, project) and \
-            jira.has_user_stories_ready_query()
-
     def value(self):
-        return self._jira.nr_story_points_ready()
+        nr_points = self._jira.nr_story_points_ready()
+        return -1 if nr_points in (-1, None) else nr_points
 
     def url(self):
-        return {'Jira': self._jira.user_stories_ready_url()}
+        return dict() if self._missing() else {'Jira': self._jira.user_stories_ready_url()}

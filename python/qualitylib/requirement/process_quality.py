@@ -46,3 +46,7 @@ KEEP_TRACK_OF_ACTIONS = Requirement(
 KEEP_TRACK_OF_RISKS = Requirement(
     name='Keep track of risks',
     metric_classes=[metric.RiskLog])
+
+KEEP_TRACK_OF_READY_US = Requirement(
+    name='Keep track of ready user stories',
+    metric_classes=[metric.ReadyUserStoryPoints])

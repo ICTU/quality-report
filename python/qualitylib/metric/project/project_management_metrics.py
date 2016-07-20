@@ -42,7 +42,10 @@ class RiskLog(LowerIsBetterMetric):
         self.__trello_risklog_board = self._project.metric_source(metric_source.TrelloRiskBoard)
 
     def value(self):
-        return (datetime.datetime.now() - self._date()).days
+        date = self._date()
+        if date is None:
+            return -1
+        return (datetime.datetime.now() - date).days
 
     def _date(self):
         try:
@@ -55,7 +58,7 @@ class RiskLog(LowerIsBetterMetric):
             url = self.__trello_risklog_board.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
-        return dict(Trello=url)
+        return dict() if url is None else dict(Trello=url)
 
 
 class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
@@ -71,7 +74,10 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     quality_attribute = PROJECT_MANAGEMENT
 
     def value(self):
-        return (datetime.datetime.now() - self._date()).days
+        date = self._date()
+        if date is None:
+            return -1
+        return (datetime.datetime.now() - date).days
 
     def _date(self):
         try:
@@ -84,7 +90,7 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
             url = self._trello_actions_board.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
-        return dict(Trello=url)
+        return dict() if url is None else dict(Trello=url)
 
 
 class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
@@ -102,12 +108,14 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         try:
-            return self._trello_actions_board.nr_of_over_due_or_inactive_cards()
+            nr_cards = self._trello_actions_board.nr_of_over_due_or_inactive_cards()
         except TrelloUnreachableException:
             return -1
+        return -1 if nr_cards is None else nr_cards
 
     def url(self):
         try:
-            return self._trello_actions_board.over_due_or_inactive_cards_url()
+            url = self._trello_actions_board.over_due_or_inactive_cards_url()
         except TrelloUnreachableException:
-            return dict(Trello='http://trello.com')
+            url = 'http://trello.com'
+        return dict() if url is None else dict(Trello=url)
