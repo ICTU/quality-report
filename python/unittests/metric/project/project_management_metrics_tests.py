@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib import metric, domain, metric_source
+from qualitylib import metric, domain, metric_source, requirement
 from qualitylib.metric_source import TrelloUnreachableException
 
 
@@ -68,12 +68,12 @@ class UnreachableBoard(object):
 
 
 class RiskLogTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the risk log metric. """
 
     def setUp(self):
         self.__project = domain.Project(
-            metric_sources={metric_source.TrelloRiskBoard: FakeBoard()})
+            metric_sources={metric_source.TrelloRiskBoard: FakeBoard()},
+            requirements=[requirement.KEEP_TRACK_OF_RISKS])
         self.__metric = metric.RiskLog(project=self.__project)
 
     def test_url(self):
@@ -84,18 +84,12 @@ class RiskLogTest(unittest.TestCase):
         """ Test that the value is the number of days since the last update. """
         self.assertEqual(0, self.__metric.value())
 
-    def test_can_be_measured(self):
-        """ Test that the risk log can be measured if there is a Trello board. """
-        self.assertTrue(metric.RiskLog.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured_without_risklog(self):
-        """ Test that the risk log can't be measured if there is no Trello board. """
-        project = domain.Project()
-        self.assertFalse(metric.RiskLog.can_be_measured(project, project))
+    def test_should_be_measured(self):
+        """ Test that the risk log should be measured if the project has the appropriate requirement. """
+        self.assertTrue(metric.RiskLog.should_be_measured(self.__project))
 
 
 class UnreachableRiskLogTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the risk log metric when Trello is unreachable. """
 
     def setUp(self):
@@ -113,11 +107,11 @@ class UnreachableRiskLogTest(unittest.TestCase):
 
 
 class ActionActivityTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the action activity metric. """
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()})
+        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
+                                        requirements=[requirement.KEEP_TRACK_OF_ACTIONS])
         self.__metric = metric.ActionActivity(project=self.__project)
 
     def test_value(self):
@@ -128,22 +122,17 @@ class ActionActivityTest(unittest.TestCase):
         """ Test that url of the metric is equal to the url of the board. """
         self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has an action list. """
-        self.assertTrue(metric.ActionActivity.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured(self):
-        """ Test that the metric can not be measured when the project has no action list. """
-        project = domain.Project()
-        self.assertFalse(metric.ActionActivity.can_be_measured(project, project))
+    def test_should_be_measured(self):
+        """ Test that the metric should be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.ActionActivity.should_be_measured(self.__project))
 
 
 class UnreachableActionActivityTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the action activity metric when Trello is unreachable. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()})
+        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
+                                 requirements=[requirement.KEEP_TRACK_OF_ACTIONS])
         self.__metric = metric.ActionActivity(project=project)
 
     def test_value(self):
@@ -157,11 +146,11 @@ class UnreachableActionActivityTest(unittest.TestCase):
 
 
 class ActionAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the action age metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()})
+        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
+                                        requirements=[requirement.KEEP_TRACK_OF_ACTIONS])
         self.__metric = metric.ActionAge(project=self.__project)
 
     def test_value(self):
@@ -176,22 +165,17 @@ class ActionAgeTest(unittest.TestCase):
         """ Test that the metric has a url label. """
         self.assertTrue(self.__metric.url_label())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has an action list. """
-        self.assertTrue(metric.ActionAge.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured(self):
-        """ Test that the metric can not be measured when the project has no action list. """
-        project = domain.Project()
-        self.assertFalse(metric.ActionAge.can_be_measured(project, project))
+    def test_should_be_measured(self):
+        """ Test that the metric can be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.ActionAge.should_be_measured(self.__project))
 
 
 class UnreachableActionAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the action age metric when Trello is unreachable. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()})
+        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
+                                 requirements=[requirement.KEEP_TRACK_OF_ACTIONS])
         self.__metric = metric.ActionAge(project=project)
 
     def test_value(self):

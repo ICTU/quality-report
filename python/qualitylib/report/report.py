@@ -74,8 +74,7 @@ class QualityReport(domain.DomainObject):
     SONAR_QUALITY_PROFILE_METRIC_CLASSES = (metric.SonarQualityProfileVersionJava,
                                             metric.SonarQualityProfileVersionCSharp,
                                             metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS)
-    MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge,
-                                 metric.RiskLog)
+    MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, metric.RiskLog)
     BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs, metric.TechnicalDebtIssues)
     PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + BUGS_METRIC_CLASSES + \
                                      (metric.DurationOfManualLogicalTestCases,

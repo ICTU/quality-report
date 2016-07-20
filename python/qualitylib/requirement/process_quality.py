@@ -38,3 +38,11 @@ KEEP_TRACK_OF_BUGS = Requirement(
 KEEP_TRACK_OF_TECHNICAL_DEBT = Requirement(
     name='Keep track of technical debt',
     metric_classes=[metric.TechnicalDebtIssues])
+
+KEEP_TRACK_OF_ACTIONS = Requirement(
+    name='Keep track of actions',
+    metric_classes=[metric.ActionActivity, metric.ActionAge])
+
+KEEP_TRACK_OF_RISKS = Requirement(
+    name='Keep track of risks',
+    metric_classes=[metric.RiskLog])
