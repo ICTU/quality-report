@@ -488,16 +488,18 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(metric_source_ids={self.__jmeter: 'id'}))
 
     def test_open_bugs(self):
-        """ Test that the open bugs metric is added if possible. """
+        """ Test that the open bugs metric is added if required. """
         self.__assert_metric(
             metric.OpenBugs,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS],
+                                metric_sources={metric_source.Jira: FakeJira()}))
 
     def test_open_security_bugs(self):
-        """ Test that the open security bugs metric is added if possible. """
+        """ Test that the open security bugs metric is added if required. """
         self.__assert_metric(
             metric.OpenSecurityBugs,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS],
+                                metric_sources={metric_source.Jira: FakeJira()}))
 
     def test_technical_debt_issues(self):
         """ Test that the technical debt issues metric is added if possible. """
