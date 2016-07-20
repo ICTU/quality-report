@@ -190,10 +190,7 @@ class QualityReport(domain.DomainObject):
 
     def __process_section(self):
         """ Return the process section. """
-        metrics = []
-        for metric_class in self.PROCESS_SECTION_METRIC_CLASSES:
-            if metric_class.should_be_measured(self.__project):
-                metrics.append(metric_class(self.__project, project=self.__project))
+        metrics = self.__mandatory_subject_metrics(self.__project, self.PROCESS_SECTION_METRIC_CLASSES)
         for street in self.__project.streets():
             metrics.append(metric.ARTStability(street, project=self.__project))
         self.__metrics.extend(metrics)
