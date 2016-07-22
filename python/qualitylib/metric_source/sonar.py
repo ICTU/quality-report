@@ -265,7 +265,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         try:
             return self.__get_json(self.__version_number_url)['version']
         except self.url_open_exceptions:
-            return '0.0'
+            return None
 
     def analysis_datetime(self, product):
         """ Return the date and time of the last analysis of the product. """

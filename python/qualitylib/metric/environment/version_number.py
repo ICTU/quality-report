@@ -40,16 +40,16 @@ class SonarVersion(HigherIsBetterMetric):
         self._sonar = self._project.metric_source(metric_source.Sonar)
 
     def numerical_value(self):
-        return utils.version_number_to_numerical(self.value().version)
+        return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
-        return LooseVersion(self._sonar.version_number())
+        return -1 if self._missing() else LooseVersion(self._sonar.version_number())
 
     def url(self):
         return {'Sonar': self._sonar.url()}
 
     def _missing(self):
-        return self._sonar.version_number() == '0.0'
+        return self._sonar.version_number() is None
 
 
 class SonarQualityProfileVersion(HigherIsBetterMetric):

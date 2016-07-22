@@ -37,7 +37,8 @@ class ARTStability(JenkinsMetricMixin, Metric):
 
     def value(self, days=0):
         """ Return the number of failing jobs in the ART-street in the last days. """
-        return len(self._jenkins.unstable_arts_url(self.__street_regexp(), days=days or self.target()))
+        url = self._jenkins.unstable_arts_url(self.__street_regexp(), days=days or self.target())
+        return -1 if url is None else len(url)
 
     def numerical_value(self):
         """ Return the number of failing jobs. """
@@ -67,7 +68,9 @@ class ARTStability(JenkinsMetricMixin, Metric):
     def url(self):
         """ Return the urls for the failing jobs. """
         urls = dict()
-        urls.update(self._jenkins.unstable_arts_url(self.__street_regexp(), days=self.target()))
+        unstable_arts_urls = self._jenkins.unstable_arts_url(self.__street_regexp(), days=self.target())
+        if unstable_arts_urls:
+            urls.update(unstable_arts_urls)
         street_url = self._subject.url()
         if street_url:
             urls['"{street}"-straat'.format(street=self.__street_name())] = street_url
