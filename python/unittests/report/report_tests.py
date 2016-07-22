@@ -73,12 +73,12 @@ class QualityReportTest(unittest.TestCase):
         self.assertEqual(None, self.__report.get_section('unknown'))
 
     def test_product(self):
-        """ Test that the report has three sections when we add a product: one for overall process quality,
+        """ Test that the report has three sections when we add a product:
             one for the product itself, and one for meta metrics. """
         project = domain.Project('organization', name='project title',
                                  metric_sources={metric_source.Sonar: self.__sonar})
         project.add_product(domain.Product(project, 'FP', metric_source_ids={self.__sonar: 'sonar.id'}))
-        self.assertEqual(3, len(report.QualityReport(project).sections()))
+        self.assertEqual(2, len(report.QualityReport(project).sections()))
 
     def test_get_product_section(self):
         """ Test that the section for the product can be found. """
@@ -511,22 +511,22 @@ class QualityReportMetricsTest(unittest.TestCase):
                                 requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT]))
 
     def test_failing_ci_jobs(self):
-        """ Test that the failing CI jobs metric is added if possible. """
+        """ Test that the failing CI jobs metric is added if required. """
         self.__assert_metric(
             metric.FailingCIJobs,
-            project_kwargs=dict(metric_sources={metric_source.Jenkins: 'Jenkins'}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_CI_JOBS]))
 
     def test_unused_ci_jobs(self):
-        """ Test that the unused CI jobs metric is added if possible. """
+        """ Test that the unused CI jobs metric is added if required. """
         self.__assert_metric(
             metric.UnusedCIJobs,
-            project_kwargs=dict(metric_sources={metric_source.Jenkins: 'Jenkins'}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_CI_JOBS]))
 
     def test_configuration_consistency(self):
-        """ Test that the configuration consistency metric is added if possible. """
+        """ Test that the configuration consistency metric is added if required. """
         self.__assert_metric(
             metric.JavaVersionConsistency,
-            project_kwargs=dict(metric_sources={metric_source.AnsibleConfigReport: 'Ansible'}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY]))
 
     def test_action_activity(self):
         """ Test that the action activity metric is added if required. """
@@ -787,10 +787,10 @@ class QualityReportMetricsTest(unittest.TestCase):
             include=False)
 
     def test_sonar_version(self):
-        """ Test that the Sonar version number metric is included. """
+        """ Test that the Sonar version number metric is added if required. """
         self.__assert_metric(
             metric.SonarVersion,
-            project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_SONAR_VERSION]))
 
     def test_document_age(self):
         """ Test that the document age metric is added if possible. """

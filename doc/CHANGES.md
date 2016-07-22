@@ -1,6 +1,6 @@
-2016-07-17  Release 1.45.0 (To be released)
+2016-07-22  Release 1.45.0 (To be released)
 
-  * Include unmerged branches metric in report even when version control system has not been configured yet.
+  * Include metrics in the report based on requirements, not on whether they can be measured or not.
   
 
 2016-07-15  Release 1.44.3

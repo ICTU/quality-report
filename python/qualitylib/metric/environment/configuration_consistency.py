@@ -23,7 +23,6 @@ from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 
 
 class JavaVersionConsistency(LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of inconsistencies in an environment. """
 
     name = 'Java versie consistentie'
@@ -45,11 +44,13 @@ class JavaVersionConsistency(LowerIsBetterMetric):
         self.__report_url = self._subject.metric_source_id(self.__report)
 
     def value(self):
-        return self.__report.java_versions(self.__report_url)
+        versions = self.__report.java_versions(self.__report_url)
+        return -1 if versions is None else versions
 
     def url(self):
-        return {'Ansible configuration report': self.__report_url}
+        return dict() if self._missing() else {'Ansible configuration report': self.__report_url}
 
     def _date(self):
         """ Return the last measurement date. """
-        return self.__report.date(self.__report_url)
+        date = self.__report.date(self.__report_url)
+        return datetime.datetime.min if date is None else date

@@ -13,14 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
+from ..domain import Requirement
+from .. import metric
 
 
-# Package for concrete requirements, not specific to a specific project.
-# Mostly standards.
+KEEP_TRACK_OF_JAVA_CONSISTENCY = Requirement(
+    name='Track Java consistency',
+    metric_classes={metric.JavaVersionConsistency})
 
-from .product_quality import TRUSTED_PRODUCT_MAINTAINABILITY, OWASP, OWASP_ZAP
-from .sonar import JAVA, C_SHARP, JAVASCRIPT, WEB
-from .process_quality import USER_STORIES_AND_LTCS, KEEP_TRACK_OF_MANUAL_LTCS, KEEP_TRACK_OF_BUGS, \
-    KEEP_TRACK_OF_TECHNICAL_DEBT, KEEP_TRACK_OF_ACTIONS, KEEP_TRACK_OF_RISKS, KEEP_TRACK_OF_READY_US
-from .environment import KEEP_TRACK_OF_JAVA_CONSISTENCY, KEEP_TRACK_OF_CI_JOBS, KEEP_TRACK_OF_SONAR_VERSION
+KEEP_TRACK_OF_CI_JOBS = Requirement(
+    name='Track status and usage of continuous integration jobs',
+    metric_classes={metric.FailingCIJobs, metric.UnusedCIJobs})
+
+KEEP_TRACK_OF_SONAR_VERSION = Requirement(
+    name='Track Sonar version',
+    metric_classes={metric.SonarVersion})

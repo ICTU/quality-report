@@ -42,11 +42,13 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         """ Return the number of unused jobs. """
-        return len(self._jenkins.unused_jobs_url())
+        url = self._jenkins.unused_jobs_url()
+        return -1 if url is None else len(url)
 
     def url(self):
         """ Return the urls for the unused jobs. """
-        return self._jenkins.unused_jobs_url()
+        url = self._jenkins.unused_jobs_url()
+        return dict() if url is None else url
 
     def __number_of_jobs(self):
         """ Return the total number of active jobs. """

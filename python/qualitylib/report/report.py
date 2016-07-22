@@ -198,12 +198,9 @@ class QualityReport(domain.DomainObject):
 
     def __environment_section(self):
         """ Return the environment section. """
-        metrics = []
-        for metric_class in self.ENVIRONMENT_METRIC_CLASSES:
-            if metric_class.can_be_measured(self.__project, self.__project):
-                metrics.append(metric_class(self.__project, project=self.__project))
-        metrics.extend(self.__mandatory_subject_metrics(self.__project, self.SONAR_PLUGIN_METRIC_CLASSES +
-                                                        self.SONAR_QUALITY_PROFILE_METRIC_CLASSES))
+        metrics = self.__mandatory_subject_metrics(self.__project, self.ENVIRONMENT_METRIC_CLASSES +
+                                                   self.SONAR_PLUGIN_METRIC_CLASSES +
+                                                   self.SONAR_QUALITY_PROFILE_METRIC_CLASSES)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
 

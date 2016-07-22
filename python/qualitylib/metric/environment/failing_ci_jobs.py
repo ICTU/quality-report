@@ -42,7 +42,9 @@ class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
         return parameters
 
     def value(self):
-        return len(self._jenkins.failing_jobs_url())
+        url = self._jenkins.failing_jobs_url()
+        return -1 if url is None else len(url)
 
     def url(self):
-        return self._jenkins.failing_jobs_url()
+        url = self._jenkins.failing_jobs_url()
+        return dict() if url is None else url
