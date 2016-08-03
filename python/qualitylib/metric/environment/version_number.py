@@ -185,7 +185,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
 
 class SonarPluginVersionJava(SonarPluginVersion):
     """ Measure the version number of the Java Sonar plugin. """
-    name = 'Sonar Java plugin version'
+    name = 'Versie van de Sonar Java plugin'
     plugin_key = 'java'
     plugin_name = 'Java'
     target_value = LooseVersion('3.14')
@@ -194,7 +194,7 @@ class SonarPluginVersionJava(SonarPluginVersion):
 
 class SonarPluginVersionCheckStyle(SonarPluginVersion):
     """ Measure the version number of the CheckStyle Sonar plugin. """
-    name = 'Sonar CheckStyle plugin version'
+    name = 'Versie van de Sonar CheckStyle plugin'
     plugin_key = 'checkstyle'
     plugin_name = 'CheckStyle'
     target_value = LooseVersion('2.4')
@@ -203,7 +203,7 @@ class SonarPluginVersionCheckStyle(SonarPluginVersion):
 
 class SonarPluginVersionPMD(SonarPluginVersion):
     """ Measure the version number of the PMD Sonar plugin. """
-    name = 'Sonar PMD plugin version'
+    name = 'Versie van de Sonar PMD plugin'
     plugin_key = 'pmd'
     plugin_name = 'PMD'
     target_value = LooseVersion('2.5')
@@ -212,7 +212,7 @@ class SonarPluginVersionPMD(SonarPluginVersion):
 
 class SonarPluginVersionFindBugs(SonarPluginVersion):
     """ Measure the version number of the FindBugs Sonar plugin. """
-    name = 'Sonar FindBugs plugin version'
+    name = 'Versie van de Sonar FindBugs plugin'
     plugin_key = 'findbugs'
     plugin_name = 'FindBugs'
     target_value = LooseVersion('3.3')
@@ -221,7 +221,7 @@ class SonarPluginVersionFindBugs(SonarPluginVersion):
 
 class SonarPluginVersionCSharp(SonarPluginVersion):
     """ Measure the version number of the C# Sonar plugin. """
-    name = 'Sonar C# plugin version'
+    name = 'Versie van de Sonar C# plugin'
     plugin_key = 'csharp'
     plugin_name = 'C#'
     target_value = LooseVersion('5.2')
@@ -230,7 +230,7 @@ class SonarPluginVersionCSharp(SonarPluginVersion):
 
 class SonarPluginVersionReSharper(SonarPluginVersion):
     """ Measure the version number of the ReSharper Sonar plugin. """
-    name = 'Sonar ReSharper plugin version'
+    name = 'Versie van de Sonar ReSharper plugin'
     plugin_key = 'resharper'
     plugin_name = 'ReSharper'
     target_value = LooseVersion('2.0')
@@ -239,7 +239,7 @@ class SonarPluginVersionReSharper(SonarPluginVersion):
 
 class SonarPluginVersionStyleCop(SonarPluginVersion):
     """ Measure the version number of the StyleCop Sonar plugin. """
-    name = 'Sonar StyleCop plugin version'
+    name = 'Versie van de Sonar StyleCop plugin'
     plugin_key = 'stylecop'
     plugin_name = 'StyleCop'
     target_value = LooseVersion('1.1')
@@ -248,7 +248,7 @@ class SonarPluginVersionStyleCop(SonarPluginVersion):
 
 class SonarPluginVersionJS(SonarPluginVersion):
     """ Measure the version number of the JavaScript Sonar plugin. """
-    name = 'Sonar JavaScript plugin version'
+    name = 'Versie van de Sonar JavaScript plugin'
     plugin_key = 'javascript'
     plugin_name = 'JavaScript'
     target_value = LooseVersion('2.13')
@@ -257,7 +257,7 @@ class SonarPluginVersionJS(SonarPluginVersion):
 
 class SonarPluginVersionWeb(SonarPluginVersion):
     """ Measure the version number of the Web Sonar plugin. """
-    name = 'Sonar Web plugin version'
+    name = 'Versie van de Sonar Web plugin'
     plugin_key = 'web'
     plugin_name = 'Web'
     target_value = LooseVersion('2.4')
