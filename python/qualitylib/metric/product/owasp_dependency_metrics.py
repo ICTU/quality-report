@@ -62,12 +62,16 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
 
     def _nr_warnings(self):
         """ Return the number of warnings. """
-        return self._jenkins_report.nr_warnings(self._jenkins_ids(), self.priority_key)
+        ids = self._jenkins_ids()
+        return self._jenkins_report.nr_warnings(ids, self.priority_key) if ids else -1
 
     def _jenkins_ids(self):
         """ Return the Jenkins report ids (job names). """
         report = self._subject.metric_source_id(self._jenkins_report)
-        return report if isinstance(report, list) else [report]
+        if report is None:
+            return []
+        else:
+            return report if isinstance(report, list) else [report]
 
     def _parameters(self):
         parameters = super(OWASPDependencyWarnings, self)._parameters()

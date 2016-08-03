@@ -46,7 +46,8 @@ class SonarMetricMixin(object):
 
     def url(self):
         """ Return the url to Sonar. """
-        return dict(Sonar=self._sonar_url())
+        url = self._sonar_url()
+        return {} if url is None else dict(Sonar=self._sonar_url())
 
     def _sonar_url(self):
         """ Return the Sonar url to use for the metric url. """
@@ -112,7 +113,8 @@ class BirtTestDesignMetricMixin(BirtMetricMixin):
     def url(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
             What's Missing report allows users to click to the user stories and test cases in Jira. """
-        return dict(Birt=self._birt.whats_missing_url(self._birt_id()))
+        url = self._birt.whats_missing_url(self._birt_id())
+        return dict() if url is None else dict(Birt=url)
 
 
 class TrelloActionsBoardMetricMixin(object):

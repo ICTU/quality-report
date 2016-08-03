@@ -225,7 +225,7 @@ class YmorResponseTimes(BaseResponseTimes):
 
     def url(self):
         url = self.__performance_report.report_url(self.__performance_report_id())
-        return {'Performance report': url}
+        return dict() if url is None else {'Performance report': url}
 
     def __nr_queries(self):
         """ Return the number of performance queries in the performance report for the product. """
