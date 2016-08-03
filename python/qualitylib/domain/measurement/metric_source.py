@@ -31,8 +31,10 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
 
 
 class MissingMetricSource(MetricSource):
-    # pylint: disable=too-few-public-methods
     """ Class that represents a missing metric source. """
+
+    def url(self):
+        return
 
     def __getattr__(self, attribute):
         return self.__default_method

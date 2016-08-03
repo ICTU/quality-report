@@ -38,3 +38,7 @@ class MissingMetricSourceTests(unittest.TestCase):
         """ Test that missing metric sources are iterable. """
         for _ in domain.MissingMetricSource():  # pragma: no branch
             self.fail('Expected no items to iterate.')  # pragma: no cover
+
+    def test_url(self):
+        """ Test that the missing metric source has no url. """
+        self.assertEqual(None, domain.MissingMetricSource().url())
