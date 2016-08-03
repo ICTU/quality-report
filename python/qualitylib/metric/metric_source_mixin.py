@@ -109,6 +109,7 @@ class BirtMetricMixin(object):  # pylint: disable=too-few-public-methods
 
 class BirtTestDesignMetricMixin(BirtMetricMixin):
     """ Mixin class for metrics that use the Birt test design report. """
+    # pylint: disable=too-few-public-methods
 
     def url(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
