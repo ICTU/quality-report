@@ -36,7 +36,7 @@ class SonarAnalysisAge(SonarDashboardMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         latest_analysis_datetime = self._sonar.analysis_datetime(self._sonar_id())
-        if latest_analysis_datetime == datetime.datetime.min:
+        if latest_analysis_datetime in (None, datetime.datetime.min):
             return -1
         else:
             return (datetime.datetime.now() - latest_analysis_datetime).days

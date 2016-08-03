@@ -216,10 +216,9 @@ class QualityReport(domain.DomainObject):
 
     def __product_section(self, product):
         """ Return the section for the product. """
-        metrics = self.__optional_subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES)
-        metrics.extend(self.__mandatory_subject_metrics(product, self.TEST_DESIGN_METRIC_CLASSES))
-        metrics.extend(self.__optional_subject_metrics(product, self.CODE_METRIC_CLASSES +
-                                                       self.PERFORMANCE_METRIC_CLASSES))
+        metrics = self.__mandatory_subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES +
+                                                   self.TEST_DESIGN_METRIC_CLASSES + self.CODE_METRIC_CLASSES)
+        metrics.extend(self.__optional_subject_metrics(product, self.PERFORMANCE_METRIC_CLASSES))
         metrics.extend(self.__mandatory_subject_metrics(product, self.SECURITY_METRIC_CLASSES))
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
             metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
@@ -256,9 +255,10 @@ class QualityReport(domain.DomainObject):
         if art.product_version_type() == 'trunk':
             # Only add the ART if we're reporting on the trunk version because we currently can only report on the
             # trunk version of the ART.
-            art_metric_classes = self.CODE_METRIC_CLASSES + (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
-                                                             metric.FailingRegressionTests, metric.RegressionTestAge)
-            metrics.extend(self.__optional_subject_metrics(art, art_metric_classes))
+            metrics.extend(self.__optional_subject_metrics(art, self.CODE_METRIC_CLASSES))
+            metrics.extend(self.__mandatory_subject_metrics(art,
+                                                            (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
+                                                             metric.FailingRegressionTests, metric.RegressionTestAge)))
         if metric.UnmergedBranches.is_applicable(art):
             metrics.append(metric.UnmergedBranches(subject=art, project=self.__project))
         return metrics

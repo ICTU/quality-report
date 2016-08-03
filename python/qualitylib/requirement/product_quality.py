@@ -34,3 +34,21 @@ TRUSTED_PRODUCT_MAINTAINABILITY = Requirement(
     name='Trusted Product Maintainability, version 6.1',
     url='http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/',
     metric_classes={metric.TotalLOC})
+
+UNITTESTS = Requirement(
+    name='Unit and/or integration tests',
+    metric_classes={metric.FailingUnittests, metric.UnittestLineCoverage, metric.UnittestBranchCoverage,
+                    metric.IntegrationtestLineCoverage, metric.IntegrationtestBranchCoverage,
+                    metric.UnitAndIntegrationTestLineCoverage, metric.UnitAndIntegrationTestBranchCoverage})
+
+ART = Requirement(
+    name='Automated regression tests',
+    metric_classes={metric.FailingRegressionTests, metric.ARTStatementCoverage, metric.ARTBranchCoverage,
+                    metric.RegressionTestAge})
+
+CODE_QUALITY = Requirement(
+    name='Code quality',
+    metric_classes={metric.BlockerViolations, metric.CriticalViolations, metric.MajorViolations,
+                    metric.CyclomaticComplexity, metric.CyclicDependencies, metric.JavaDuplication,
+                    metric.ProductLOC, metric.LongMethods, metric.ManyParameters, metric.CommentedLOC,
+                    metric.NoSonar, metric.FalsePositives, metric.SonarAnalysisAge})

@@ -40,7 +40,7 @@ class FakeSonar(object):
         return 'http://sonar'
 
 
-class FakeSubject(object):  # pylint: disable=too-few-public-methods
+class FakeSubject(object):
     """ Provide for a fake subject. """
     def __init__(self, sonar=None, unittests=False, integration_tests=True):
         self.__unittests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
@@ -62,94 +62,53 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
         return self.__integration_tests
 
 
-class SonarDashboardUrlTestMixin(object):
-    # pylint: disable=too-few-public-methods
-    """ Mixin for metrics whose url refers to the Sonar dashboard. """
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self._metric.url())
+class CommonIntegrationtestMetricTestsMixin(object):
+    """ Mixin for common unit tests for the integration test metrics. """
 
-
-class IntegrationtestLineCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    """ Unit tests for the integration test line coverage metric. """
+    class_under_test = domain.Metric  # Subclass responsibility
+    expected_value = 0  # Subclass responsibility
+    expected_report = 'Subclass responsibility'
 
     def setUp(self):  # pylint: disable=invalid-name
-        self.__sonar = FakeSonar(line_coverage=89)
+        """ Set up the test fixture for the unit tests. """
+        self.__sonar = FakeSonar(line_coverage=self.expected_value, branch_coverage=self.expected_value)
         self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.__product = FakeSubject(self.__sonar)
-        self._metric = metric.IntegrationtestLineCoverage(subject=self.__product, project=self.__project)
+        self.__metric = self.class_under_test(subject=FakeSubject(self.__sonar), project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric equals the line coverage reported by Sonar. """
-        self.assertEqual(89, self._metric.value())
+        self.assertEqual(self.expected_value, self.__metric.value())
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('FakeSubject integratietest line coverage is 89%.', self._metric.report())
+        self.assertEqual(self.expected_report, self.__metric.report())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Sonar and the product has integration tests. """
-        product = FakeSubject(self.__sonar)
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.assertTrue(metric.IntegrationtestLineCoverage.can_be_measured(product, project))
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual(dict(Sonar=self.__sonar.dashboard_url()), self.__metric.url())
 
-    def test_cant_be_measured_without_integrationtests(self):
-        """ Test that the metric can only be measured when the product has integration tests. """
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        product = domain.Product(project)
-        self.assertFalse(metric.IntegrationtestLineCoverage.can_be_measured(product, project))
+    def test_is_applicable(self):
+        """ Test that the metric is applicable. """
+        self.assertTrue(self.class_under_test.is_applicable(FakeSubject(self.__sonar)))
 
-    def test_cant_be_measured_without_sonar(self):
-        """ Test that the metric can only be measured when the project has Sonar. """
-        product = FakeSubject(self.__sonar)
-        project = domain.Project()
-        self.assertFalse(metric.IntegrationtestLineCoverage.can_be_measured(product, project))
-
-    def test_wont_be_measured_with_unittests(self):
-        """ Test that the metric isn't measured when the product also has unit tests since then the combined
+    def test_is_not_applicable_with_unittests(self):
+        """ Test that the metric isn't applicable when the product also has unit tests since then the combined
             unit and integration test coverage will be measured instead. """
         product = FakeSubject(self.__sonar, unittests=True)
-        self.assertFalse(metric.IntegrationtestLineCoverage.can_be_measured(product, self.__project))
+        self.assertFalse(self.class_under_test.is_applicable(product))
 
 
-class IntegrationtestBranchCoverageTest(SonarDashboardUrlTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
+class IntegrationtestLineCoverageTest(CommonIntegrationtestMetricTestsMixin, unittest.TestCase):
+    """ Unit tests for the integration test line coverage metric. """
+
+    class_under_test = metric.IntegrationtestLineCoverage
+    expected_value = 89
+    expected_report = 'FakeSubject integratietest line coverage is 89%.'
+
+
+class IntegrationtestBranchCoverageTest(CommonIntegrationtestMetricTestsMixin, unittest.TestCase):
     """ Unit tests for the integration test branch coverage metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
-        self.__sonar = FakeSonar(branch_coverage=87)
-        self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self._metric = metric.IntegrationtestBranchCoverage(subject=FakeSubject(self.__sonar), project=self.__project)
-
-    def test_value(self):
-        """ Test that the value of the metric equals the branch coverage reported by Sonar. """
-        self.assertEqual(87, self._metric.value())
-
-    def test_report(self):
-        """ Test that the report is correct. """
-        self.assertEqual('FakeSubject integratietest branch coverage is 87%.', self._metric.report())
-
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Sonar and the product has integration tests. """
-        product = FakeSubject(self.__sonar)
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.assertTrue(metric.IntegrationtestBranchCoverage.can_be_measured(product, project))
-
-    def test_cant_be_measured_without_unittests(self):
-        """ Test that the metric can only be measured when the product has integration tests. """
-        product = FakeSubject()
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.assertFalse(metric.IntegrationtestBranchCoverage.can_be_measured(product, project))
-
-    def test_cant_be_measured_without_sonar(self):
-        """ Test that the metric can only be measured when the project has Sonar. """
-        product = FakeSubject(self.__sonar)
-        project = domain.Project()
-        self.assertFalse(metric.IntegrationtestBranchCoverage.can_be_measured(product, project))
-
-    def test_wont_be_measured_with_unittests(self):
-        """ Test that the metric isn't measured when the product also has unit tests since then the combined
-            unit and integration test coverage will be measured instead. """
-        product = FakeSubject(self.__sonar, unittests=True)
-        self.assertFalse(metric.IntegrationtestBranchCoverage.can_be_measured(product, self.__project))
+    class_under_test = metric.IntegrationtestBranchCoverage
+    expected_value = 87
+    expected_report = 'FakeSubject integratietest branch coverage is 87%.'

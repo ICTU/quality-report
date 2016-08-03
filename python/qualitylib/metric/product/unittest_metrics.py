@@ -24,10 +24,16 @@ from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 class UnittestMetricMixin(SonarDashboardMetricMixin):
     """ Mixin class for Sonar metrics about unit tests. """
 
-    @staticmethod
-    def product_has_sonar_id(sonar, product):
-        unittest_sonar_info = metric_info.SonarProductInfo(sonar, product.unittests())
-        return product.unittests() and not product.integration_tests() and unittest_sonar_info.sonar_id()
+    @classmethod
+    def can_be_measured(cls, product, project):  # FIXME: needed until SonarDashboardMetricMixin has no can_be_measured
+        return True
+
+    @classmethod
+    def is_applicable(cls, product):
+        """ Return whether the unit test metric is applicable to the product. This is only the case if the product
+            has no integration tests, because if it does, the combined unit and integration test metrics should be
+            used. """
+        return not product.integration_tests()
 
     def _parameters(self):
         """ Add the number of unit tests to the parameters for the report. """
@@ -42,7 +48,6 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):
 
 
 class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of unit tests that fail. """
 
     name = 'Hoeveelheid falende unittesten'
@@ -55,7 +60,8 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     quality_attribute = TEST_QUALITY
 
     def value(self):
-        return self._sonar.failing_unittests(self._sonar_id())
+        value = self._sonar.failing_unittests(self._sonar_id())
+        return -1 if value is None else value
 
     def status(self):
         status = super(FailingUnittests, self).status()
@@ -64,7 +70,6 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
 
 
 class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring coverage of unit tests for a product. """
 
     unit = '%'
@@ -76,7 +81,6 @@ class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
 
 
 class UnittestLineCoverage(UnittestCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the line coverage of unit tests for a product. """
 
     name = 'Unit test broncode dekking (line coverage)'
@@ -87,11 +91,11 @@ class UnittestLineCoverage(UnittestCoverage):
     low_target_value = 90
 
     def value(self):
-        return round(self._sonar.unittest_line_coverage(self._sonar_id()))
+        coverage = self._sonar.unittest_line_coverage(self._sonar_id())
+        return -1 if coverage is None else round(coverage)
 
 
 class UnittestBranchCoverage(UnittestCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the branch coverage of unit tests for a product. """
 
     name = 'Unit test broncode dekking (branch coverage)'
@@ -102,4 +106,5 @@ class UnittestBranchCoverage(UnittestCoverage):
     low_target_value = 60
 
     def value(self):
-        return round(self._sonar.unittest_branch_coverage(self._sonar_id()))
+        coverage = self._sonar.unittest_branch_coverage(self._sonar_id())
+        return -1 if coverage is None else round(coverage)

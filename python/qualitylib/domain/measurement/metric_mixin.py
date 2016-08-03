@@ -29,7 +29,7 @@ class PercentageMixin(object):
         """ Return the actual value of the metric as a percentage calculated from the numerator and denominator
             of the metric. """
         numerator, denominator = self._numerator(), self._denominator()
-        if -1 in (numerator, denominator):
+        if -1 in (numerator, denominator) or None in (numerator, denominator):
             return -1
         else:
             return utils.percentage(numerator, denominator, self.zero_divided_by_zero_is_zero)

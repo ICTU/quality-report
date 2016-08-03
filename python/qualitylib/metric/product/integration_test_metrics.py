@@ -24,10 +24,21 @@ from ...domain import HigherIsBetterMetric
 class IntegrationtestMetricMixin(SonarDashboardMetricMixin):
     """ Mixin class for Sonar metrics about integration tests. """
 
+    @classmethod
+    def can_be_measured(cls, product, project):  # FIXME: needed until SonarDashboardMetricMixin has no can_be_measured
+        return True
+
     @staticmethod
     def product_has_sonar_id(sonar, product):
         integration_test_sonar_info = metric_info.SonarProductInfo(sonar, product.integration_tests())
         return product.integration_tests() and not product.unittests() and integration_test_sonar_info.sonar_id()
+
+    @classmethod
+    def is_applicable(cls, product):
+        """ Return whether the integration test metric is applicable to the product. This is only the case if the
+            product has integration tests, but no unit tests, because if it does, the combined unit and integration
+            test metrics will be used. """
+        return product.integration_tests() and not product.unittests()
 
     def _sonar_id(self):
         integration_test_sonar_info = metric_info.SonarProductInfo(self._sonar, self._subject.integration_tests())
@@ -35,7 +46,6 @@ class IntegrationtestMetricMixin(SonarDashboardMetricMixin):
 
 
 class IntegrationtestCoverage(IntegrationtestMetricMixin, HigherIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring coverage of integration tests for a product. """
 
     unit = '%'
@@ -47,7 +57,6 @@ class IntegrationtestCoverage(IntegrationtestMetricMixin, HigherIsBetterMetric):
 
 
 class IntegrationtestLineCoverage(IntegrationtestCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the line coverage of integration tests for a product. """
 
     name = 'Integratietest broncode dekking (line coverage)'
@@ -58,11 +67,11 @@ class IntegrationtestLineCoverage(IntegrationtestCoverage):
     low_target_value = 90
 
     def value(self):
-        return round(self._sonar.integration_test_line_coverage(self._sonar_id()))
+        coverage = self._sonar.integration_test_line_coverage(self._sonar_id())
+        return -1 if coverage is None else round(coverage)
 
 
 class IntegrationtestBranchCoverage(IntegrationtestCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the branch coverage of integration tests for a product. """
 
     name = 'Integratietest broncode dekking (branch coverage)'
@@ -73,4 +82,5 @@ class IntegrationtestBranchCoverage(IntegrationtestCoverage):
     low_target_value = 60
 
     def value(self):
-        return round(self._sonar.integration_test_branch_coverage(self._sonar_id()))
+        coverage = self._sonar.integration_test_branch_coverage(self._sonar_id())
+        return -1 if coverage is None else round(coverage)

@@ -33,7 +33,8 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     quality_attribute = SIZE
 
     def value(self):
-        return self._sonar.ncloc(self._sonar_id())
+        loc = self._sonar.ncloc(self._sonar_id())
+        return -1 if loc is None else loc
 
 
 class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):

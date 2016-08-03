@@ -1,4 +1,4 @@
-2016-07-22  Release 1.45.0 (To be released)
+2016-08-03  Release 1.45.0 (To be released)
 
   * Include metrics in the report based on requirements, not on whether they can be measured or not.
   

@@ -21,7 +21,6 @@ from ...domain import LowerIsBetterMetric
 
 
 class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the amount of violations reported by Sonar. """
     unit = 'violations'
     norm_template = 'Maximaal {target} {violation_type} {unit}. ' \
@@ -37,7 +36,8 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return values
 
     def value(self):
-        raise NotImplementedError  # pragma: no cover
+        violations = getattr(self._sonar, '{}_violations'.format(self.violation_type))(self._sonar_id())
+        return -1 if violations is None else violations
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -46,7 +46,7 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return parameters
 
 
-class BlockerViolations(Violations):  # pylint: disable=too-many-public-methods
+class BlockerViolations(Violations):
     """ Metric for measuring the number of blocker violations reported by Sonar. """
 
     name = 'Hoeveelheid blocker violations'
@@ -54,11 +54,8 @@ class BlockerViolations(Violations):  # pylint: disable=too-many-public-methods
     target_value = 0
     low_target_value = 0
 
-    def value(self):
-        return self._sonar.blocker_violations(self._sonar_id())
 
-
-class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
+class CriticalViolations(Violations):
     """ Metric for measuring the number of critical violations reported by Sonar. """
 
     name = 'Hoeveelheid critical violations'
@@ -66,20 +63,14 @@ class CriticalViolations(Violations):  # pylint: disable=too-many-public-methods
     target_value = 0
     low_target_value = 1
 
-    def value(self):
-        return self._sonar.critical_violations(self._sonar_id())
 
-
-class MajorViolations(Violations):  # pylint: disable=too-many-public-methods
+class MajorViolations(Violations):
     """ Metric for measuring the number of major violations reported by Sonar. """
 
     name = 'Hoeveelheid major violations'
     violation_type = 'major'
     target_value = 25
     low_target_value = 50
-
-    def value(self):
-        return self._sonar.major_violations(self._sonar_id())
 
 
 class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
@@ -94,7 +85,8 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        return self._sonar.no_sonar(self._sonar_id())
+        no_sonar = self._sonar.no_sonar(self._sonar_id())
+        return -1 if no_sonar is None else no_sonar
 
 
 class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
@@ -109,7 +101,8 @@ class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        return self._sonar.false_positives(self._sonar_id())
+        false_positives = self._sonar.false_positives(self._sonar_id())
+        return -1 if false_positives is None else false_positives
 
     def _sonar_url(self):
         """ Return the url to the Sonar violations. """

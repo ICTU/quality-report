@@ -54,7 +54,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingRegressionTests, self)._parameters()
-        parameters['tests'] = self.value() + self.__test_report.passed_tests(*self.__report_urls())
+        passed_tests = self.__test_report.passed_tests(*self.__report_urls())
+        parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters
 
     def __report_urls(self):
@@ -94,7 +95,7 @@ class RegressionTestAge(LowerIsBetterMetric):
             (datetime.datetime.now() - self.__test_report.report_datetime(*self.__report_urls())).days
 
     def _missing(self):
-        return self.__test_report.report_datetime(*self.__report_urls()) == datetime.datetime.min
+        return self.__test_report.report_datetime(*self.__report_urls()) in (None, datetime.datetime.min)
 
     def __report_urls(self):
         """ Return the test report urls. """
@@ -177,7 +178,8 @@ class ARTStatementCoverage(_ARTCoverage):
     covered_items = 'statements'
 
     def value(self):
-        return int(round(self._coverage_report.statement_coverage(self._coverage_url())))
+        coverage = self._coverage_report.statement_coverage(self._coverage_url())
+        return -1 if coverage is None else int(round(coverage))
 
 
 class ARTBranchCoverage(_ARTCoverage):
@@ -190,5 +192,6 @@ class ARTBranchCoverage(_ARTCoverage):
     covered_items = 'branches'
 
     def value(self):
-        return int(round(self._coverage_report.branch_coverage(self._coverage_url())))
+        coverage = self._coverage_report.branch_coverage(self._coverage_url())
+        return -1 if coverage is None else int(round(coverage))
 

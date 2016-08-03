@@ -24,13 +24,17 @@ class UnitAndIntegrationTestMetricMixin(SonarDashboardMetricMixin):
     """ Mixin class for Sonar metrics about combined unit and integration tests. """
 
     @classmethod
-    def can_be_measured(cls, product, project):
-        return super(UnitAndIntegrationTestMetricMixin, cls).can_be_measured(product, project) and \
-               product.unittests() and product.integration_tests()
+    def can_be_measured(cls, product, project):  # FIXME: needed until SonarDashboardMetricMixin has no can_be_measured
+        return True
+
+    @classmethod
+    def is_applicable(cls, product):
+        """ Return whether the combined unit and integration test metrics are applicable to the product. This is only
+            the case if the product has both unit and integration tests. """
+        return product.integration_tests() and product.unittests()
 
 
 class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring combined coverage of unit and integration tests for a product. """
 
     unit = '%'
@@ -42,7 +46,6 @@ class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIs
 
 
 class UnitAndIntegrationTestLineCoverage(UnitAndIntegrationTestCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the combined line coverage of unit and integration tests for a product. """
 
     name = 'Gecombineerde unit- en integratietest broncode dekking (line coverage)'
@@ -53,11 +56,11 @@ class UnitAndIntegrationTestLineCoverage(UnitAndIntegrationTestCoverage):
     low_target_value = 90
 
     def value(self):
-        return round(self._sonar.overall_test_line_coverage(self._sonar_id()))
+        coverage = self._sonar.overall_test_line_coverage(self._sonar_id())
+        return -1 if coverage is None else round(coverage)
 
 
 class UnitAndIntegrationTestBranchCoverage(UnitAndIntegrationTestCoverage):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the combined branch coverage of unit and integration tests for a product. """
 
     name = 'Gecombineerde unit- en integratietest broncode dekking (branch coverage)'
@@ -68,4 +71,5 @@ class UnitAndIntegrationTestBranchCoverage(UnitAndIntegrationTestCoverage):
     low_target_value = 60
 
     def value(self):
-        return round(self._sonar.overall_test_branch_coverage(self._sonar_id()))
+        coverage = self._sonar.overall_test_branch_coverage(self._sonar_id())
+        return -1 if coverage is None else round(coverage)
