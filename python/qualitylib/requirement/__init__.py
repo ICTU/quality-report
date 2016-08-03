@@ -18,7 +18,8 @@ from __future__ import absolute_import
 
 # Package for concrete requirements, not specific to a specific project.
 
-from .product_quality import TRUSTED_PRODUCT_MAINTAINABILITY, OWASP, OWASP_ZAP, UNITTESTS, ART, CODE_QUALITY
+from .product_quality import TRUSTED_PRODUCT_MAINTAINABILITY, OWASP, OWASP_ZAP, UNITTESTS, ART, CODE_QUALITY, \
+    PERFORMANCE, PERFORMANCE_YMOR
 from .sonar import JAVA, C_SHARP, JAVASCRIPT, WEB
 from .process_quality import USER_STORIES_AND_LTCS, KEEP_TRACK_OF_MANUAL_LTCS, KEEP_TRACK_OF_BUGS, \
     KEEP_TRACK_OF_TECHNICAL_DEBT, KEEP_TRACK_OF_ACTIONS, KEEP_TRACK_OF_RISKS, KEEP_TRACK_OF_READY_US

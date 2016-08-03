@@ -217,9 +217,8 @@ class QualityReport(domain.DomainObject):
     def __product_section(self, product):
         """ Return the section for the product. """
         metrics = self.__mandatory_subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES +
-                                                   self.TEST_DESIGN_METRIC_CLASSES + self.CODE_METRIC_CLASSES)
-        metrics.extend(self.__optional_subject_metrics(product, self.PERFORMANCE_METRIC_CLASSES))
-        metrics.extend(self.__mandatory_subject_metrics(product, self.SECURITY_METRIC_CLASSES))
+                                                   self.TEST_DESIGN_METRIC_CLASSES + self.CODE_METRIC_CLASSES +
+                                                   self.PERFORMANCE_METRIC_CLASSES + self.SECURITY_METRIC_CLASSES)
         if metric.SnapshotDependencies.can_be_measured(product, self.__project):
             metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))

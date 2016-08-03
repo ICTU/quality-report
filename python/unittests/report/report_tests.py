@@ -467,13 +467,6 @@ class QualityReportMetricsTest(unittest.TestCase):
             product_kwargs=dict(jsf=dict(short_name='foo')),
             include=False)
 
-    def test_response_times(self):
-        """ Test that the response times metric is added if possible. """
-        self.__assert_metric(
-            metric.ResponseTimes,
-            project_kwargs=dict(metric_sources={metric_source.PerformanceReport: self.__jmeter}),
-            product_kwargs=dict(metric_source_ids={self.__jmeter: 'id'}))
-
     def test_open_bugs(self):
         """ Test that the open bugs metric is added if required. """
         self.__assert_metric(
@@ -726,6 +719,17 @@ class QualityReportMetricsTest(unittest.TestCase):
             self.__assert_metric(
                 metric_class,
                 product_kwargs=dict(requirements=[requirement.CODE_QUALITY]))
+
+    def test_performance_metrics(self):
+        """ Test that the response times metrics are added if required. """
+        for metric_class in requirement.PERFORMANCE.metric_classes():
+            self.__assert_metric(
+                metric_class,
+                product_kwargs=dict(requirements=[requirement.PERFORMANCE]))
+        for metric_class in requirement.PERFORMANCE_YMOR.metric_classes():
+            self.__assert_metric(
+                metric_class,
+                product_kwargs=dict(requirements=[requirement.PERFORMANCE_YMOR]))
 
     def test_metric_class_units(self):
         """ Test that all metric classes have a unit. """

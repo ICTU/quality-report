@@ -52,3 +52,13 @@ CODE_QUALITY = Requirement(
                     metric.CyclomaticComplexity, metric.CyclicDependencies, metric.JavaDuplication,
                     metric.ProductLOC, metric.LongMethods, metric.ManyParameters, metric.CommentedLOC,
                     metric.NoSonar, metric.FalsePositives, metric.SonarAnalysisAge})
+
+PERFORMANCE = Requirement(
+    name='Performance',
+    metric_classes={metric.ResponseTimes})
+
+# FIXME: There shouldn't be a separate Ymor performance requirement, but before we can fix that, the ResponseTimes and
+# YmorResponseTimes metrics need to be merged.
+PERFORMANCE_YMOR = Requirement(
+    name='Performance (Ymor)',
+    metric_classes={metric.YmorResponseTimes})

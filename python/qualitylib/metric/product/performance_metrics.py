@@ -21,7 +21,23 @@ from ..quality_attributes import PERFORMANCE
 from ... import domain, metric_source
 
 
-class ResponseTimes(domain.Metric):
+class BaseResponseTimes(domain.Metric):
+    """ Base class for metrics measuring response times as determined by performance tests. """
+    quality_attribute = PERFORMANCE
+
+    def numerical_value(self):
+        max_violations = self._max_violations()
+        wish_violations = self._wish_violations()
+        return -1 if None in (max_violations, wish_violations) else max_violations + wish_violations
+
+    def _max_violations(self):
+        raise NotImplementedError  # pragma: no cover
+
+    def _wish_violations(self):
+        raise NotImplementedError  # pragma: no cover
+
+
+class ResponseTimes(BaseResponseTimes):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the performance tests. """
 
@@ -42,7 +58,6 @@ class ResponseTimes(domain.Metric):
     perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
-    quality_attribute = PERFORMANCE
     metric_source_classes = (metric_source.PerformanceReport,)
 
     def __init__(self, *args, **kwargs):
@@ -59,14 +74,11 @@ class ResponseTimes(domain.Metric):
     def value(self):
         return None
 
-    def numerical_value(self):
-        return self.__max_violations() + self.__wish_violations()
-
-    def __max_violations(self):
+    def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
         return self.__performance_report.queries_violating_max_responsetime(*self.__product_id())
 
-    def __wish_violations(self):
+    def _wish_violations(self):
         """ The number of performance queries that is slower than the wished for response time. """
         return self.__performance_report.queries_violating_wished_responsetime(*self.__product_id())
 
@@ -74,16 +86,16 @@ class ResponseTimes(domain.Metric):
         return self.numerical_value() < 0
 
     def _is_perfect(self):
-        return self.__max_violations() == self.__wish_violations() == 0 and \
+        return self._max_violations() == self._wish_violations() == 0 and \
             not self._is_old() and self.__report_exists()
 
     def _needs_immediate_action(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or super(ResponseTimes, self)._is_too_old() or not self.__report_exists()
+        return self._max_violations() > 0 or super(ResponseTimes, self)._is_too_old() or not self.__report_exists()
 
     def _is_below_target(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or self.__wish_violations() > 0 or super(ResponseTimes, self)._is_old() or \
+        return self._max_violations() > 0 or self._wish_violations() > 0 or super(ResponseTimes, self)._is_old() or \
             not self.__report_exists()
 
     def _get_template(self):
@@ -91,8 +103,8 @@ class ResponseTimes(domain.Metric):
             return self.missing_template
         if not self.__report_exists():
             return self.missing_report_template
-        max_violations = self.__max_violations()
-        wish_violations = self.__wish_violations()
+        max_violations = self._max_violations()
+        wish_violations = self._wish_violations()
         if max_violations and wish_violations:
             return self.below_both_targets_template
         elif max_violations:
@@ -107,8 +119,8 @@ class ResponseTimes(domain.Metric):
         parameters = super(ResponseTimes, self)._parameters()
         if self.__report_exists():
             parameters.update(dict(nr_queries=self.__nr_queries(),
-                                   value_max=self.__max_violations(),
-                                   value_wish=self.__wish_violations()))
+                                   value_max=self._max_violations(),
+                                   value_wish=self._wish_violations()))
         return parameters
 
     def _date(self):
@@ -116,11 +128,12 @@ class ResponseTimes(domain.Metric):
 
     def url(self):
         urls = self.__performance_report.urls(*self.__product_id())
-        total = len(urls)
         labeled_urls = {}
-        for index, url in enumerate(sorted(urls)):
-            label = 'Wekelijkse performancemeting ({}/{})'.format(index + 1, total)
-            labeled_urls[label] = url
+        if urls:
+            total = len(urls)
+            for index, url in enumerate(sorted(urls)):
+                label = 'Wekelijkse performancemeting ({}/{})'.format(index + 1, total)
+                labeled_urls[label] = url
         return labeled_urls
 
     def __report_exists(self):
@@ -140,7 +153,7 @@ class ResponseTimes(domain.Metric):
         return self._subject.metric_source_id(self.__performance_report)
 
 
-class YmorResponseTimes(domain.Metric):
+class YmorResponseTimes(BaseResponseTimes):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
     name = 'Overschrijding van responsetijden (obv Ymor performance rapportage)'
@@ -159,7 +172,6 @@ class YmorResponseTimes(domain.Metric):
     perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
-    quality_attribute = PERFORMANCE
     metric_source_classes = (metric_source.JenkinsYmorPerformanceReport,)
 
     def __init__(self, *args, **kwargs):
@@ -175,31 +187,28 @@ class YmorResponseTimes(domain.Metric):
     def value(self):
         return None  # We use max_violations and wish_violations as value
 
-    def numerical_value(self):
-        return self.__max_violations() + self.__wish_violations()
-
-    def __max_violations(self):
+    def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
         return self.__performance_report.queries_violating_max_responsetime(self.__performance_report_id())
 
-    def __wish_violations(self):
+    def _wish_violations(self):
         """ The number of performance queries that is slower than the wished for response time. """
         return self.__performance_report.queries_violating_wished_responsetime(self.__performance_report_id())
 
     def _is_perfect(self):
-        return self.__max_violations() == self.__wish_violations() == 0 and not self._is_old()
+        return self._max_violations() == self._wish_violations() == 0 and not self._is_old()
 
     def _needs_immediate_action(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or super(YmorResponseTimes, self)._is_too_old()
+        return self._max_violations() > 0 or super(YmorResponseTimes, self)._is_too_old()
 
     def _is_below_target(self):
         # pylint: disable=protected-access
-        return self.__max_violations() > 0 or self.__wish_violations() > 0 or super(YmorResponseTimes, self)._is_old()
+        return self._max_violations() > 0 or self._wish_violations() > 0 or super(YmorResponseTimes, self)._is_old()
 
     def _get_template(self):
-        max_violations = self.__max_violations()
-        wish_violations = self.__wish_violations()
+        max_violations = self._max_violations()
+        wish_violations = self._wish_violations()
         if max_violations and wish_violations:
             return self.below_both_targets_template
         elif max_violations:
@@ -212,8 +221,8 @@ class YmorResponseTimes(domain.Metric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(YmorResponseTimes, self)._parameters()
-        parameters.update(dict(nr_queries=self.__nr_queries(), value_max=self.__max_violations(),
-                               value_wish=self.__wish_violations()))
+        parameters.update(dict(nr_queries=self.__nr_queries(), value_max=self._max_violations(),
+                               value_wish=self._wish_violations()))
         return parameters
 
     def _date(self):
