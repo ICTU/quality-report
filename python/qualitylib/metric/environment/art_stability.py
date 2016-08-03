@@ -57,7 +57,10 @@ class ARTStability(JenkinsMetricMixin, Metric):
         return self.value(days=self.target()) < target
 
     def _get_template(self):
-        return self.below_target_template if self.value() > 0 else self.above_target_template
+        if self._missing():
+            return super(ARTStability, self)._get_template()
+        else:
+            return self.below_target_template if self.value() > 0 else self.above_target_template
 
     def _parameters(self):
         # pylint: disable=protected-access
