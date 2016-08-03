@@ -103,7 +103,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
         """ Test that the norm is correct. """
         expected_norm = 'Dependencies van het product hebben geen {} prioriteit OWASP waarschuwingen. ' \
                         'Meer dan {} is rood.'.format(self.class_under_test.priority,
-                                                     self.class_under_test.low_target_value)
+                                                      self.class_under_test.low_target_value)
         self.assertEqual(expected_norm,
                          self.__metric.norm_template.format(**self.__metric.norm_template_default_values()))
 
