@@ -23,7 +23,12 @@ from ... import domain, metric_source
 
 class BaseResponseTimes(domain.Metric):
     """ Base class for metrics measuring response times as determined by performance tests. """
+    unit = 'performancetestqueries'
+    perfect_value = 0
     quality_attribute = PERFORMANCE
+
+    def value(self):
+        return None  # We use max_violations and wish_violations as value
 
     def numerical_value(self):
         max_violations = self._max_violations()
@@ -42,7 +47,6 @@ class ResponseTimes(BaseResponseTimes):
     """ Metric for measuring reponsetimes as determined in the performance tests. """
 
     name = 'Overschrijding van responsetijden'
-    unit = 'performancetestqueries'
     norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. ' \
         'Als een of meer queries de maximum responsetijd overschrijden is de score rood, anders geel.'
     above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen ' \
@@ -55,7 +59,6 @@ class ResponseTimes(BaseResponseTimes):
         'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
         'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
     missing_report_template = 'Er is geen performancetestrapport voor {name}:{version}.'
-    perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
     metric_source_classes = (metric_source.PerformanceReport,)
@@ -70,9 +73,6 @@ class ResponseTimes(BaseResponseTimes):
             self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de ' \
                 'performancemeting is niet ouder dan {old_age}. Als een of meer {unit} de maximum ' \
                 'responsetijd overschrijden of als de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
-
-    def value(self):
-        return None
 
     def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
@@ -157,7 +157,6 @@ class YmorResponseTimes(BaseResponseTimes):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
     name = 'Overschrijding van responsetijden (obv Ymor performance rapportage)'
-    unit = 'performancetestqueries'
     norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. Als een of meer ' \
         '{unit} de maximum responsetijd overschrijden is de score rood, anders geel.'
     above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen de ' \
@@ -169,7 +168,6 @@ class YmorResponseTimes(BaseResponseTimes):
     below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
         'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
         'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
-    perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
     metric_source_classes = (metric_source.JenkinsYmorPerformanceReport,)
@@ -183,9 +181,6 @@ class YmorResponseTimes(BaseResponseTimes):
             self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de ' \
                 'performancemeting is niet ouder dan {old_age}. Als een of meer {unit} de maximum responsetijd ' \
                 'overschrijden of als de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
-
-    def value(self):
-        return None  # We use max_violations and wish_violations as value
 
     def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
