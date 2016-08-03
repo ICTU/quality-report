@@ -52,4 +52,4 @@ from .sonar import Sonar
 from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard, TrelloUnreachableException
 from .wiki import Wiki
 from .zap_scan_report import ZAPScanReport
-
+from .url_opener import UrlOpener

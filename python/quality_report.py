@@ -180,7 +180,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                   "chds={y_axis_range}".format(history=history, y_axis_range=y_axis_range)
             try:
                 image = urllib2.urlopen(url).read()
-            except urllib2.URLError as reason:
+            except metric_source.UrlOpener.url_open_exceptions as reason:
                 logging.warn("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
                 image = cls.EMPTY_HISTORY_PNG
             filename = os.path.join(report_dir, 'img', '%s.png' % metric.id_string())
