@@ -138,7 +138,8 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return -1 if self._missing() else (datetime.datetime.now() - self._date()).days
 
     def url(self):
-        return dict(Birt=self._birt.manual_test_execution_url(self._birt_id(), self.__version()))
+        url = self._birt.manual_test_execution_url(self._birt_id(), self.__version())
+        return dict() if url is None else dict(Birt=url)
 
     def _date(self):
         date = self._birt.date_of_last_manual_test(self._birt_id(), self.__version())
