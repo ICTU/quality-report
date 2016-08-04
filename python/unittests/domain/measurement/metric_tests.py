@@ -122,7 +122,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         # pylint: disable=attribute-defined-outside-init
         self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
         self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
-                         'benodigde bronnen zijn geconfigureerd. Configureer de volgende bronnen: '
+                         'benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): '
                          'VersionControlSystem.', self.__metric.report())
 
     def test_missing_metric_source_id_report(self):
