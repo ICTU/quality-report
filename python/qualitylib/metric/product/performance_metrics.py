@@ -99,8 +99,8 @@ class ResponseTimes(BaseResponseTimes):
             not self.__report_exists()
 
     def _get_template(self):
-        if self._missing():
-            return self.missing_template
+        if self.status() in ('missing_source', 'missing'):
+            return super(ResponseTimes, self)._get_template()
         if not self.__report_exists():
             return self.missing_report_template
         max_violations = self._max_violations()
