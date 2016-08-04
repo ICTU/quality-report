@@ -30,7 +30,7 @@ class Metric(object):
     missing_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
                        'beschikbaar zijn.'
     missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen zijn ' \
-                              'geconfigureerd. Configureer de volgende bronnen: {missing_source_classes}.'
+                              'geconfigureerd. Configureer de volgende bron(nen): {missing_source_classes}.'
     missing_source_id_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde ' \
                                  'bron-ids zijn geconfigureerd. Configureer ids voor de volgende bronnen: ' \
                                  '{missing_source_id_classes}.'
