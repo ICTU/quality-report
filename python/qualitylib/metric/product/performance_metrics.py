@@ -202,6 +202,8 @@ class YmorResponseTimes(BaseResponseTimes):
         return self._max_violations() > 0 or self._wish_violations() > 0 or super(YmorResponseTimes, self)._is_old()
 
     def _get_template(self):
+        if self.status() in ('missing_source', 'missing'):
+            return super(YmorResponseTimes, self)._get_template()
         max_violations = self._max_violations()
         wish_violations = self._wish_violations()
         if max_violations and wish_violations:
