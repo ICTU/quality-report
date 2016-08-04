@@ -61,7 +61,10 @@ class FailingRegressionTests(LowerIsBetterMetric):
     def __report_urls(self):
         """ Return the test report urls. """
         report_urls = self._subject.metric_source_id(self.__test_report)
-        return report_urls if isinstance(report_urls, list) else [report_urls]
+        if report_urls is None:
+            return []
+        else:
+            return report_urls if isinstance(report_urls, list) else [report_urls]
 
     def url(self):
         report_urls = self.__report_urls()
@@ -100,7 +103,10 @@ class RegressionTestAge(LowerIsBetterMetric):
     def __report_urls(self):
         """ Return the test report urls. """
         report_urls = self._subject.metric_source_id(self.__test_report)
-        return report_urls if isinstance(report_urls, list) else [report_urls]
+        if report_urls is None:
+            return []
+        else:
+            return report_urls if isinstance(report_urls, list) else [report_urls]
 
     def url(self):
         report_urls = self.__report_urls()
@@ -148,9 +154,8 @@ class _ARTCoverage(HigherIsBetterMetric):
         return self._coverage_report.coverage_date(self._coverage_url())
 
     def url(self):
-        urls = dict()
-        urls[self.__coverage_class().__name__] = self._coverage_url()
-        return urls
+        url = self._coverage_url()
+        return dict() if url is None else {self.__coverage_class().__name__: url}
 
     def __coverage_class(self):
         """ Return the coverage class we're using. """
