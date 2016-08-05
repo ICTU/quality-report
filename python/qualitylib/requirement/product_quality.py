@@ -53,6 +53,10 @@ CODE_QUALITY = Requirement(
                     metric.ProductLOC, metric.LongMethods, metric.ManyParameters, metric.CommentedLOC,
                     metric.NoSonar, metric.FalsePositives, metric.SonarAnalysisAge})
 
+JSF_CODE_QUALITY = Requirement(
+    name='JSF code quality',
+    metric_classes={metric.JsfDuplication, metric.ProductLOC})
+
 PERFORMANCE = Requirement(
     name='Performance',
     metric_classes={metric.ResponseTimes})

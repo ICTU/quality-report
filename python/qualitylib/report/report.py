@@ -263,15 +263,7 @@ class QualityReport(domain.DomainObject):
 
     def __jsf_metrics(self, jsf):
         """ Return a list of JSF metrics for the (JSF) product. """
-        return self.__optional_subject_metrics(jsf, (metric.JsfDuplication, metric.ProductLOC))
-
-    def __optional_subject_metrics(self, subject, metric_classes):
-        """ Return a list of metrics for the subject that can be measured. """
-        metrics = []
-        for metric_class in metric_classes:
-            if metric_class.can_be_measured(subject, self.__project) and metric_class.is_applicable(subject):
-                metrics.append(metric_class(subject, project=self.__project))
-        return metrics
+        return self.__mandatory_subject_metrics(jsf, (metric.JsfDuplication, metric.ProductLOC)) if jsf else []
 
     def __mandatory_subject_metrics(self, subject, metric_classes):
         """ Return a list of metrics for the subject that should be measured. """
