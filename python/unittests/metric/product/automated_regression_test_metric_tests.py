@@ -83,20 +83,6 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith('FakeSubject ART statement coverage is 98%'))
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has Jacoco and the product has a Jacoco id. """
-        self.assertTrue(metric.ARTStatementCoverage.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_jacoco(self):
-        """ Test that the metric can not be measured without Jacoco. """
-        project = domain.Project()
-        self.assertFalse(metric.ARTStatementCoverage.can_be_measured(self.__subject, project))
-
-    def test_cant_be_measured_without_jacoco_id(self):
-        """ Test that the metric can not be measured if the product has no Jacoco id. """
-        subject = FakeSubject(version='1.1')
-        self.assertFalse(metric.ARTStatementCoverage.can_be_measured(subject, self.__project))
-
 
 class ARTStatementCoverageNCoverTest(unittest.TestCase):
     """ Unit tests for the ART statement coverage metric. """
@@ -117,20 +103,6 @@ class ARTStatementCoverageNCoverTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith('FakeSubject ART statement coverage is 98%'))
-
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has NCover and the product has an NCover id. """
-        self.assertTrue(metric.ARTStatementCoverage.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_ncover(self):
-        """ Test that the metric can not be measured without NCover. """
-        project = domain.Project()
-        self.assertFalse(metric.ARTStatementCoverage.can_be_measured(self.__subject, project))
-
-    def test_cant_be_measured_without_ncover_id(self):
-        """ Test that the metric can not be measured if the product has no NCover id. """
-        subject = FakeSubject(version='1.1')
-        self.assertFalse(metric.ARTStatementCoverage.can_be_measured(subject, self.__project))
 
 
 class ARTBranchCoverageJacocoTest(unittest.TestCase):
@@ -153,20 +125,6 @@ class ARTBranchCoverageJacocoTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith('FakeSubject ART branch coverage is 98%'))
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has Jacoco and the product has a Jacoco id. """
-        self.assertTrue(metric.ARTBranchCoverage.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_jacoco(self):
-        """ Test that the metric can not be measured without Jacoco. """
-        project = domain.Project()
-        self.assertFalse(metric.ARTBranchCoverage.can_be_measured(self.__subject, project))
-
-    def test_cant_be_measured_without_jacoco_id(self):
-        """ Test that the metric can not be measured if the product has no Jacoco id. """
-        subject = FakeSubject(version='1.1')
-        self.assertFalse(metric.ARTBranchCoverage.can_be_measured(subject, self.__project))
-
 
 class ARTBranchCoverageNCoverTest(unittest.TestCase):
     """ Unit tests for the ART branch coverage metric. """
@@ -187,20 +145,6 @@ class ARTBranchCoverageNCoverTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith('FakeSubject ART branch coverage is 98%'))
-
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has NCover and the product has an NCover id. """
-        self.assertTrue(metric.ARTBranchCoverage.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_ncover(self):
-        """ Test that the metric can not be measured without NCover. """
-        project = domain.Project()
-        self.assertFalse(metric.ARTBranchCoverage.can_be_measured(self.__subject, project))
-
-    def test_cant_be_measured_without_jncover_id(self):
-        """ Test that the metric can not be measured if the product has no NCover id. """
-        subject = FakeSubject(version='1.1')
-        self.assertFalse(metric.ARTBranchCoverage.can_be_measured(subject, self.__project))
 
 
 class FakeJenkinsTestReport(object):
@@ -267,18 +211,6 @@ class FailingRegressionTestsTest(unittest.TestCase):
         failing_tests = metric.FailingRegressionTests(subject=subject, project=self.__project)
         self.assertEqual({'Test report (1/2)': 'a', 'Test report (2/2)': 'b'}, failing_tests.url())
 
-    def test_can_be_measured(self):
-        """ Test that metric can be measured when Jenkins is available and the product has a Jenkins job. """
-        self.assertTrue(metric.FailingRegressionTests.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_jenkins(self):
-        """ Test that the metric cannot be measured without Jenkins. """
-        self.assertFalse(metric.FailingRegressionTests.can_be_measured(self.__subject, domain.Project()))
-
-    def test_cant_be_measured_without_jenkins_job(self):
-        """ Test that the metric cannot be measured without Jenkins job. """
-        self.assertFalse(metric.FailingRegressionTests.can_be_measured(FakeSubject(), self.__project))
-
 
 class RegressionTestAgeTest(unittest.TestCase):
     """ Unit tests for the regression test age metric. """
@@ -321,15 +253,3 @@ class RegressionTestAgeTest(unittest.TestCase):
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         failing_tests = metric.RegressionTestAge(subject=subject, project=self.__project)
         self.assertEqual({'Test report (1/2)': 'a', 'Test report (2/2)': 'b'}, failing_tests.url())
-
-    def test_can_be_measured(self):
-        """ Test that metric can be measured when Jenkins is available and the product has a Jenkins job. """
-        self.assertTrue(metric.RegressionTestAge.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_jenkins(self):
-        """ Test that the metric cannot be measured without Jenkins. """
-        self.assertFalse(metric.RegressionTestAge.can_be_measured(self.__subject, domain.Project()))
-
-    def test_cant_be_measured_without_jenkins_job(self):
-        """ Test that the metric cannot be measured without Jenkins job. """
-        self.assertFalse(metric.RegressionTestAge.can_be_measured(FakeSubject(), self.__project))

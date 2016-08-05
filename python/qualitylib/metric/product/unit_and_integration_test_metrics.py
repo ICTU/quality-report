@@ -24,10 +24,6 @@ class UnitAndIntegrationTestMetricMixin(SonarDashboardMetricMixin):
     """ Mixin class for Sonar metrics about combined unit and integration tests. """
 
     @classmethod
-    def can_be_measured(cls, product, project):  # FIXME: needed until SonarDashboardMetricMixin has no can_be_measured
-        return True
-
-    @classmethod
     def is_applicable(cls, product):
         """ Return whether the combined unit and integration test metrics are applicable to the product. This is only
             the case if the product has both unit and integration tests. """

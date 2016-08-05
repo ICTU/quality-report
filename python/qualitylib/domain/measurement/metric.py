@@ -42,19 +42,6 @@ class Metric(object):
     metric_source_classes = []
 
     @classmethod
-    def can_be_measured(cls, subject, project):
-        """ Return whether this metric can be measured for the specified subject, i.e. whether the necessary
-            metric sources are available. """
-        for metric_source_class in cls.metric_source_classes:
-            metric_source_instance = project.metric_source(metric_source_class)
-            if not metric_source_instance:
-                return False
-            if metric_source_class.needs_metric_source_id:
-                if not subject.metric_source_id(metric_source_instance):
-                    return False
-        return bool(subject)
-
-    @classmethod
     def should_be_measured(cls, requirement_subject):
         """ Return whether this metric should be measured for the specified subject. """
         return cls in requirement_subject.required_metric_classes()

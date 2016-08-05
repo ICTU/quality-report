@@ -26,29 +26,27 @@ class SonarMetricMixinUnderTest(metric.SonarMetricMixin, metric.Metric):
 
 
 class SonarMetricMixinTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods,no-member
     """ Unit tests for the Sonar metric source mixin class. """
 
-    def test_can_be_measured(self):
-        """ Test that subclasses of the Sonar metric mixin can be measured
-            when the project has Sonar and the product has a Sonar id. """
-        project = domain.Project(metric_sources={metric_source.Sonar: 'Sonar'})
-        product = domain.Product(project, metric_source_ids={'Sonar': 'sonar id'})
-        self.assertTrue(SonarMetricMixinUnderTest.can_be_measured(product, project))
+    def test_url(self):
+        """ Test the url. """
+        sonar = metric_source.Sonar('http://sonar/')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        product = domain.Product(project, metric_source_ids={sonar: 'sonar id'})
+        self.assertEqual(dict(Sonar='http://sonar/'), SonarMetricMixinUnderTest(product, project).url())
 
-    def test_cant_be_measured_without_sonar(self):
-        """ Test that subclasses of the Sonar metric mixin can't be measured
-            when the product has a Sonar id but the project has no Sonar. """
+    def test_url_without_sonar(self):
+        """ Test that the metric has no url when the project has no Sonar configured. """
         project = domain.Project()
         product = domain.Product(project)
-        self.assertFalse(SonarMetricMixinUnderTest.can_be_measured(product, project))
+        self.assertEqual(dict(), SonarMetricMixinUnderTest(product, project).url())
 
-    def test_cant_be_measured_without_sonar_d(self):
-        """ Test that subclasses of the Sonar metric mixin can't be measured
-            when the project has Sonar but the product has no Sonar id. """
-        project = domain.Project(metric_sources={metric_source.Sonar: 'Sonar'})
+    def test_url_without_sonar_id(self):
+        """ Test that the metric has a url when the product has no Sonat id configured. """
+        sonar = metric_source.Sonar('http://sonar/')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product(project)
-        self.assertFalse(SonarMetricMixinUnderTest.can_be_measured(product, project))
+        self.assertEqual(dict(Sonar='http://sonar/'), SonarMetricMixinUnderTest(product, project).url())
 
 
 class BirtMetricUnderTest(metric.BirtMetricMixin, domain.Metric):
@@ -95,20 +93,38 @@ class FakeBirt(object):
         """ Return whether the Birt instance has a test design report. """
         return True
 
+    @staticmethod
+    def whats_missing_url(*args):  # pylint: disable=unused-argument
+        """ Return the url for the What's Missing report. """
+        return 'http://birt/whatsmissing/'
+
 
 class BirtTestDesignMixinTest(unittest.TestCase):
     """ Unit tests for the Birt test design report metric source mixin class. """
-    # pylint: disable=no-member
 
-    def test_one_birt(self):
-        """ Test that the metric can be measured with one Birt instance. """
+    def test_url(self):
+        """ Test the url. """
         birt = FakeBirt()
         project = domain.Project(metric_sources={metric_source.Birt: birt})
         product = domain.Product(project, metric_source_ids={birt: 'birt id'})
-        self.assertTrue(BirtTestDesignMetricUnderTest.can_be_measured(product, project))
+        self.assertEqual(dict(Birt='http://birt/whatsmissing/'), BirtTestDesignMetricUnderTest(product, project).url())
 
-    def test_multiple_birts(self):
-        """ Test that the metric can be measured with multiple Birt instances. """
-        project = domain.Project(metric_sources={metric_source.Birt: ['Birt1', 'Birt2']})
-        product = domain.Product(project, metric_source_ids={'Birt1': 'birt id'})
-        self.assertTrue(BirtTestDesignMetricUnderTest.can_be_measured(product, project))
+    def test_url_with_multiple_birts(self):
+        """ Test the url with multiple Birt instances. """
+        birt1, birt2 = FakeBirt(), FakeBirt()
+        project = domain.Project(metric_sources={metric_source.Birt: [birt1, birt2]})
+        product = domain.Product(project, metric_source_ids={birt1: 'birt id'})
+        self.assertEqual(dict(Birt='http://birt/whatsmissing/'), BirtTestDesignMetricUnderTest(product, project).url())
+
+    def test_url_without_birt(self):
+        """ Test that the metric has no url when Birt hasn't been configured. """
+        project = domain.Project()
+        product = domain.Product(project)
+        self.assertEqual(dict(), BirtTestDesignMetricUnderTest(product, project).url())
+
+    def test_url_without_birt_id(self):
+        """ Test that the metric has no url when the product has no Birt id. """
+        birt = FakeBirt()
+        project = domain.Project(metric_sources={metric_source.Birt: birt})
+        product = domain.Product(project)
+        self.assertEqual(dict(Birt='http://birt/whatsmissing/'), BirtTestDesignMetricUnderTest(product, project).url())

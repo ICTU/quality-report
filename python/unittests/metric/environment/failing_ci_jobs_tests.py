@@ -46,15 +46,6 @@ class FailingCIJobsTest(unittest.TestCase):
         self._project = domain.Project(metric_sources={metric_source.Jenkins: FakeJenkins()})
         self._metric = metric.FailingCIJobs(subject=self._subject, project=self._project)
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if there is a build server. """
-        self.assertTrue(metric.FailingCIJobs.can_be_measured(self._project, self._project))
-
-    def test_cant_be_measured_without_build_server(self):
-        """ Test that the metric cannot be measured without build server. """
-        project = domain.Project()
-        self.assertFalse(metric.FailingCIJobs.can_be_measured(project, project))
-
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(metric.FailingCIJobs.norm_template % metric.FailingCIJobs.norm_template_default_values())

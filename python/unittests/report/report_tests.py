@@ -450,19 +450,10 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.ManualLogicalTestCasesWithoutDuration, project_kwargs=dict(), include=False)
 
     def test_jsf_duplication(self):
-        """ Test that the jsf duplication metric is added if possible. """
+        """ Test that the jsf duplication metric is added if required. """
         self.__assert_metric(
             metric.JsfDuplication,
-            project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}),
-            product_kwargs=dict(jsf=dict(metric_source_ids={self.__sonar: 'id'})))
-
-    def test_no_jsf_duplication(self):
-        """ Test that the jsf duplication metric is not added if the jsf component has no Sonar id. """
-        self.__assert_metric(
-            metric.JsfDuplication,
-            project_kwargs=dict(metric_sources={metric_source.Sonar: self.__sonar}),
-            product_kwargs=dict(jsf=dict(short_name='foo')),
-            include=False)
+            product_kwargs=dict(jsf=dict(requirements=[requirement.JSF_CODE_QUALITY])))
 
     def test_open_bugs(self):
         """ Test that the open bugs metric is added if required. """

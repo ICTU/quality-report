@@ -67,16 +67,11 @@ class JsfDuplicationTest(unittest.TestCase):
         self.__jsf = domain.Product(self.__project, 'JS', metric_source_ids={sonar: 'sonar id'})
         self._metric = metric.JsfDuplication(subject=self.__jsf, project=self.__project)
 
-    def test_can_be_measured_(self):
-        """ Test that the JSF duplication can be measured for a JSF component. """
-        self.assertTrue(metric.JsfDuplication.can_be_measured(self.__jsf, self.__project))
+    def test_value(self):
+        """ Test that the value of the metric equals the percentage of duplicated lines. """
+        self.assertEqual(10., self._metric.value())
 
-    def test_cant_be_measured_without_sonar(self):
-        """ Test that the JSF duplication cannot be measured without Sonar. """
-        project = domain.Project()
-        self.assertFalse(metric.JsfDuplication.can_be_measured(self.__jsf, project))
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self._metric.url())
 
-    def test_cant_be_measured_without_jsf(self):
-        """ Test that the JSF duplication cannot be measured if the JSF component has no Sonar id. """
-        jsf = domain.Product(self.__project)
-        self.assertFalse(metric.JsfDuplication.can_be_measured(jsf, self.__project))

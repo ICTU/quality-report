@@ -47,15 +47,6 @@ class JavaVersionConsistencyTests(unittest.TestCase):
                                         metric_source_ids={self.__report: 'http://ansible_report'})
         self.__metric = metric.JavaVersionConsistency(subject=self.__project, project=self.__project)
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if there is a config report. """
-        self.assertTrue(metric.JavaVersionConsistency.can_be_measured(self.__project, self.__project))
-
-    def test_cant_be_measured_without_config_report(self):
-        """ Test that the metric cannot be measured without config report. """
-        project = domain.Project()
-        self.assertFalse(metric.JavaVersionConsistency.can_be_measured(project, project))
-
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(metric.JavaVersionConsistency.norm_template %

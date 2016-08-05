@@ -57,20 +57,6 @@ class DocumentAgeTest(unittest.TestCase):
         """ Test that the url of the metric is the url of the document. """
         self.assertEqual(dict(Subversion='http://doc'), self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has Subversion and the document has an url. """
-        self.assertTrue(metric.DocumentAge.can_be_measured(self.__document, self.__project))
-
-    def test_cant_be_measured_without_url(self):
-        """ Test that the metric cannot be measured if the document has no url. """
-        document = domain.Document(name='Title')
-        self.assertFalse(metric.DocumentAge.can_be_measured(document, self.__project))
-
-    def test_cant_be_measured_without_subversion(self):
-        """ Test that the metric cannot be measured without Subversion. """
-        project = domain.Project()
-        self.assertFalse(metric.DocumentAge.can_be_measured(self.__document, project))
-
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(metric.DocumentAge.norm_template % metric.DocumentAge.norm_template_default_values())

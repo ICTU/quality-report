@@ -96,15 +96,6 @@ class ResponseTimesTestsMixin(object):
         self.__project = domain.Project(metric_sources={metric_source.PerformanceReport: report})
         self._metric = metric.ResponseTimes(subject=self.__subject, project=self.__project)
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured. """
-        self.assertTrue(metric.ResponseTimes.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured(self):
-        """ Test that the metric can't be measured without performance report. """
-        subject = FakeSubject(performance_report_id='')
-        self.assertFalse(metric.ResponseTimes.can_be_measured(subject, domain.Project()))
-
     def test_value(self):
         """ Test that the value of the metric equals None since it is not used. """
         self.assertEqual(None, self._metric.value())

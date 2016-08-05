@@ -297,26 +297,6 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual(dict(Birt=self.__birt.manual_test_execution_url()), self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured when the project has Birt and the product has a Birt id, the project
-            has Subversion and the product has a Subversion id and the product is a trunk version. """
-        self.assertTrue(metric.ManualLogicalTestCases.can_be_measured(self.__subject, self.__project))
-
-    def test_cant_be_measured_without_birt(self):
-        """ Test that the metric can not be measured when the project has no Birt. """
-        self.assertFalse(metric.ManualLogicalTestCases.can_be_measured(self.__subject, domain.Project()))
-
-    def test_cant_be_measured_without_birt_id(self):
-        """ Test that the metric can not be measured when the product has no Birt id. """
-        product = FakeSubject(birt_id=False)
-        self.assertFalse(metric.ManualLogicalTestCases.can_be_measured(product, self.__project))
-
-    def test_can_be_measured_for_released_product(self):
-        """ Test that the metric can only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertTrue(metric.ManualLogicalTestCases.can_be_measured(product, self.__project))
-
 
 class FakeJira(object):
     """ A fake Jira for testing purposes. """

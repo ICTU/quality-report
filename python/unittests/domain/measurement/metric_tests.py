@@ -250,14 +250,6 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the product version type is no_product when the metric subject is not a product. """
         self.assertEqual('no_product', self.__metric.product_version_type())
 
-    def test_metric_can_be_measured(self):
-        """ Test that a metric can be measured if given a subject. """
-        self.assertTrue(domain.Metric.can_be_measured(FakeSubject(), None))
-
-    def test_metric_cant_be_measured(self):
-        """ Test that a metric cannot be measured if not given a subject. """
-        self.assertFalse(domain.Metric.can_be_measured(None, None))
-
     def test_metric_should_be_measured(self):
         """ Test that a metric should not be measured be default. """
         self.assertFalse(domain.Metric.should_be_measured(self.__project))

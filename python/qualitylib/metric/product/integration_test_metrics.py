@@ -25,15 +25,6 @@ class IntegrationtestMetricMixin(SonarDashboardMetricMixin):
     """ Mixin class for Sonar metrics about integration tests. """
 
     @classmethod
-    def can_be_measured(cls, product, project):  # FIXME: needed until SonarDashboardMetricMixin has no can_be_measured
-        return True
-
-    @staticmethod
-    def product_has_sonar_id(sonar, product):
-        integration_test_sonar_info = metric_info.SonarProductInfo(sonar, product.integration_tests())
-        return product.integration_tests() and not product.unittests() and integration_test_sonar_info.sonar_id()
-
-    @classmethod
     def is_applicable(cls, product):
         """ Return whether the integration test metric is applicable to the product. This is only the case if the
             product has integration tests, but no unit tests, because if it does, the combined unit and integration
