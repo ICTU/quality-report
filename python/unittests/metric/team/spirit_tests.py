@@ -71,15 +71,6 @@ class TeamSpiritTest(unittest.TestCase):
         """ Test that the metric url uses the wiki url. """
         self.assertEqual(dict(Wiki=FakeWiki().url()), self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has a Wiki. """
-        self.assertTrue(metric.TeamSpirit.can_be_measured(self.__team, self.__project))
-
-    def test_cant_be_measured_without_wiki(self):
-        """ Test that the metric cannot be measured without a Wiki. """
-        project = domain.Project()
-        self.assertFalse(metric.TeamSpirit.can_be_measured(self.__team, project))
-
     def test_too_old(self):
         """ Test that the metric becomes red when too old. """
         self.__wiki.date_of_last_measurement = datetime.datetime(2000, 1, 1)

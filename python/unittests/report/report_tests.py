@@ -107,7 +107,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_team(self):
         """ Test that the report has 2 sections when we add a team. """
-        team = domain.Team(name='Team', metric_source_ids={self.__wiki: 'team'})
+        team = domain.Team(name='Team', requirements=[requirement.TRACK_SPIRIT])
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(2, len(quality_report.sections()))
@@ -249,25 +249,24 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.assertTrue(included if include else not included)
 
     def test_team_progress(self):
-        """ Test that the team progress metric is added if possible. """
+        """ Test that the team progress metric is added if required. """
         self.__assert_metric(
             metric.TeamProgress,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            team_kwargs=dict(is_scrum_team=True, metric_source_ids={self.__birt: 'team'}))
+            team_kwargs=dict(is_scrum_team=True, requirements=[requirement.SCRUM_TEAM]))
 
     def test_art_stability(self):
         """ Test that the ART stability metric is added if possible. """
         self.__assert_metric(metric.ARTStability, street_kwargs=dict(name='A', job_regexp='A.*'))
 
     def test_team_spirit(self):
-        """ Test that the team spirit metric is added if possible. """
-        self.__assert_metric(metric.TeamSpirit, project_kwargs=dict(metric_sources={metric_source.Wiki: 'Wiki'}))
+        """ Test that the team spirit metric is added if required. """
+        self.__assert_metric(metric.TeamSpirit, team_kwargs=dict(requirements=[requirement.TRACK_SPIRIT]))
 
     def test_team_absence(self):
-        """ Test that the team absence metric is added if possible. """
+        """ Test that the team absence metric is added if required. """
         self.__assert_metric(
             metric.TeamAbsence,
-            project_kwargs=dict(metric_sources={metric_source.HolidayPlanner: 'Planner'}))
+            team_kwargs=dict(requirements=[requirement.TRACK_ABSENCE]))
 
     def test_failing_unittests(self):
         """ Test that the failing unit tests metric is added if required. """

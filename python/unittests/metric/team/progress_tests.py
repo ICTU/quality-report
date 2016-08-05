@@ -89,24 +89,13 @@ class TeamProgressTest(unittest.TestCase):
         """ Test that the url of the metric is the url of the Birt report. """
         self.assertEqual(dict(Birt='http://birt/report/'), self.__metric.url())
 
-    def test_can_be_measured(self):
-        """ Test that the metric can be measured if the project has Birt and the team has a Birt id. """
-        self.assertTrue(metric.TeamProgress.can_be_measured(self.__team, self.__project))
+    def test_is_applicable(self):
+        """ Test that the metric is applicable if the team is a Scrum team. """
+        self.assertTrue(metric.TeamProgress.is_applicable(self.__team))
 
-    def test_can_only_be_measured_for_scrum_teams(self):
-        """ Test that the metric cannot be measured if the team is not a Scrum team. """
-        team = domain.Team(name='ABC', metric_source_ids={self.__birt: 'abc'})
-        self.assertFalse(metric.TeamProgress.can_be_measured(team, self.__project))
-
-    def test_cant_be_measured_without_birt_id(self):
-        """ Test that the metric cannot be measured if the team has no Birt id. """
-        team = domain.Team(name='Team', is_scrum_team=True)
-        self.assertFalse(metric.TeamProgress.can_be_measured(team, self.__project))
-
-    def test_cant_be_measured_without_birt(self):
-        """ Test that the metric cannot be measured without Birt. """
-        project = domain.Project()
-        self.assertFalse(metric.TeamProgress.can_be_measured(self.__team, project))
+    def test_is_not_applicable(self):
+        """ Test that the metric is not applicable if the team isn't a Scrum team. """
+        self.assertFalse(metric.TeamProgress.is_applicable(domain.Team(name='No Scrum')))
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """

@@ -16,9 +16,10 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..measurement.measurable import MeasurableObject
+from .requirement import RequirementSubject
 
 
-class Team(MeasurableObject):
+class Team(RequirementSubject, MeasurableObject):
     """ Class for representing a team. """
 
     def __init__(self, short_name=None, is_scrum_team=False,

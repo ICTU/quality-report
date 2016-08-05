@@ -78,4 +78,5 @@ class TeamSpirit(Metric):
         return not self.__wiki.team_spirit(self.__team_id)
 
     def url(self):
-        return dict(Wiki=self.__wiki.url())
+        url = self.__wiki.url()
+        return dict() if url is None else dict(Wiki=url)

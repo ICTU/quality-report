@@ -36,8 +36,8 @@ class TeamAbsence(LowerIsBetterMetric):
     metric_source_classes = (metric_source.HolidayPlanner,)
 
     @classmethod
-    def can_be_measured(cls, team, project):
-        return super(TeamAbsence, cls).can_be_measured(team, project) and len(team.members()) > 1
+    def is_applicable(cls, team):
+        return len(team.members()) > 1
 
     @classmethod
     def norm_template_default_values(cls):
@@ -50,18 +50,20 @@ class TeamAbsence(LowerIsBetterMetric):
         self.__planner = self._project.metric_source(metric_source.HolidayPlanner)
 
     def value(self):
-        return self.__planner.days(self._subject)[0]
+        return self.__planner.days(self._subject)[0] if self.__planner else -1
 
     def url(self):
-        return dict(Planner=self.__planner.url())
+        url = self.__planner.url()
+        return dict() if url is None else dict(Planner=url)
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamAbsence, self)._parameters()
         parameters['team'] = ', '.join([member.name() for member in self._subject.members()])
-        length, start, end, members = self.__planner.days(self._subject)
-        if length:
-            parameters['start'] = start.isoformat()
-            parameters['end'] = end.isoformat()
-            parameters['absentees'] = ', '.join(sorted([member.name() for member in members]))
+        if self.__planner:
+            length, start, end, members = self.__planner.days(self._subject)
+            if length:
+                parameters['start'] = start.isoformat()
+                parameters['end'] = end.isoformat()
+                parameters['absentees'] = ', '.join(sorted([member.name() for member in members]))
         return parameters

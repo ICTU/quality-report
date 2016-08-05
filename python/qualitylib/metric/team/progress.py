@@ -40,8 +40,8 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     metric_source_classes = (metric_source.Birt,)
 
     @classmethod
-    def can_be_measured(cls, team, project):
-        return super(TeamProgress, cls).can_be_measured(team, project) and team.is_scrum_team()
+    def is_applicable(cls, team):
+        return team.is_scrum_team()
 
     @classmethod
     def norm_template_default_values(cls):
@@ -53,15 +53,17 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     def __init__(self, *args, **kwargs):
         super(TeamProgress, self).__init__(*args, **kwargs)
         self.__birt_team_id = self._subject.metric_source_id(self._birt)
-        planned_velocity = self._birt.planned_velocity(self.__birt_team_id)
+        planned_velocity = self._birt.planned_velocity(self.__birt_team_id) or 0
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
 
     def value(self):
-        return self._birt.required_velocity(self.__birt_team_id)
+        velocity = self._birt.required_velocity(self.__birt_team_id)
+        return -1 if velocity is None else velocity
 
     def url(self):
-        return dict(Birt=self._birt.sprint_progress_url(self.__birt_team_id))
+        url = self._birt.sprint_progress_url(self.__birt_team_id)
+        return dict() if url is None else dict(Birt=url)
 
     def _parameters(self):
         # pylint: disable=protected-access

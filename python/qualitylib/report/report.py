@@ -231,7 +231,7 @@ class QualityReport(domain.DomainObject):
 
     def __team_section(self, team):
         """ Return a report section for the team. """
-        metrics = self.__optional_subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
+        metrics = self.__mandatory_subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
         self.__metrics.extend(metrics)
         return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics) if metrics else None
 
