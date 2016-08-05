@@ -585,13 +585,11 @@ class QualityReportMetricsTest(unittest.TestCase):
             include=False)
 
     def test_snapshot_dependencies(self):
-        """ Test that the snapshot dependencies metric is added if possible. """
+        """ Test that the snapshot dependencies metric is added if required and applicable. """
         self.__assert_metric(
             metric.SnapshotDependencies,
-            project_kwargs=dict(metric_sources={metric_source.Pom: self.__pom,
-                                                metric_source.VersionControlSystem: self.__subversion}),
             product_kwargs=dict(short_name='dummy', product_version='1.1',
-                                metric_source_ids={self.__subversion: 'path'}))
+                                requirements=[requirement.NO_SNAPSHOT_DEPENDENCIES]))
 
     def test_high_prio_owasp_dependencies(self):
         """ Test that the high priority OWASP dependencies metric is added if required. """

@@ -219,7 +219,8 @@ class QualityReport(domain.DomainObject):
         metrics = self.__mandatory_subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES +
                                                    self.TEST_DESIGN_METRIC_CLASSES + self.CODE_METRIC_CLASSES +
                                                    self.PERFORMANCE_METRIC_CLASSES + self.SECURITY_METRIC_CLASSES)
-        if metric.SnapshotDependencies.can_be_measured(product, self.__project):
+        if metric.SnapshotDependencies.should_be_measured(product) and \
+                metric.SnapshotDependencies.is_applicable(product):
             metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))

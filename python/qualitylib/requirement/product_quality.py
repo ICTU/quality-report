@@ -62,3 +62,7 @@ PERFORMANCE = Requirement(
 PERFORMANCE_YMOR = Requirement(
     name='Performance (Ymor)',
     metric_classes={metric.YmorResponseTimes})
+
+NO_SNAPSHOT_DEPENDENCIES = Requirement(
+    name='No snapshot dependencies',
+    metric_classes={metric.SnapshotDependencies})
