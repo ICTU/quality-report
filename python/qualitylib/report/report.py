@@ -61,8 +61,7 @@ class QualityReport(domain.DomainObject):
                                   metric.JavaVersionConsistency,
                                   metric.SonarVersion)
     DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
-    TEAM_METRIC_CLASSES = (metric.TeamProgress, metric.TeamSpirit,
-                           metric.TeamAbsence)
+    TEAM_METRIC_CLASSES = (metric.TeamProgress, metric.TeamSpirit, metric.TeamAbsence)
     META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
                            metric.YellowMetaMetric, metric.GreyMetaMetric,
                            metric.MissingMetaMetric)
@@ -255,8 +254,7 @@ class QualityReport(domain.DomainObject):
         if art.product_version_type() == 'trunk':
             # Only add the ART if we're reporting on the trunk version because we currently can only report on the
             # trunk version of the ART.
-            metrics.extend(self.__optional_subject_metrics(art, self.CODE_METRIC_CLASSES))
-            metrics.extend(self.__mandatory_subject_metrics(art,
+            metrics.extend(self.__mandatory_subject_metrics(art, self.CODE_METRIC_CLASSES +
                                                             (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
                                                              metric.FailingRegressionTests, metric.RegressionTestAge)))
         if metric.UnmergedBranches.is_applicable(art):
