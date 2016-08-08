@@ -35,11 +35,6 @@ class FakeSubversion(object):
         return ['branch1', 'branch2']
 
     @staticmethod
-    def tags_folder_for_version(*args):  # pylint: disable=unused-argument
-        """ Return the tags folder for the version. """
-        return 'http://tags/'
-
-    @staticmethod
     def branch_folder_for_branch(*args):  # pylint: disable=unused-argument
         """ Return the branch folder for the branch. """
         return 'http://branch/'

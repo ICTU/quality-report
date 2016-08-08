@@ -89,11 +89,6 @@ class FakeBirt(object):
     # pylint: disable=too-few-public-methods
 
     @staticmethod
-    def has_test_design(*args):  # pylint: disable=unused-argument
-        """ Return whether the Birt instance has a test design report. """
-        return True
-
-    @staticmethod
     def whats_missing_url(*args):  # pylint: disable=unused-argument
         """ Return the url for the What's Missing report. """
         return 'http://birt/whatsmissing/'

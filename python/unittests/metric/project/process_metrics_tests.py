@@ -21,12 +21,6 @@ from qualitylib import metric, domain, metric_source, requirement
 
 class FakeJira(object):
     """ Fake Jira. """
-    def __init__(self, has_queries=True):
-        self.__has_queries = has_queries
-
-    def has_user_stories_ready_query(self):
-        """ Return whether Jira has an ready user stories query. """
-        return self.__has_queries
 
     @staticmethod
     def nr_story_points_ready():

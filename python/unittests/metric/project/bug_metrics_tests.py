@@ -21,12 +21,6 @@ from qualitylib import metric, domain, metric_source, requirement
 
 class FakeJira(object):
     """ Fake Jira. """
-    def __init__(self, has_queries=True):
-        self.__has_queries = has_queries
-
-    def has_open_bugs_query(self):
-        """ Return whether Jira has an open bugs query. """
-        return self.__has_queries
 
     @staticmethod
     def nr_open_bugs():
@@ -38,10 +32,6 @@ class FakeJira(object):
         """ Return a fake url for the nr of open bugs query. """
         return 'http://openbugs/'
 
-    def has_open_security_bugs_query(self):
-        """ Return whether Jira has an open security bugs query. """
-        return self.__has_queries
-
     @staticmethod
     def nr_open_security_bugs():
         """ Return a fake number of open security bugs. """
@@ -51,10 +41,6 @@ class FakeJira(object):
     def nr_open_security_bugs_url():
         """ Return a fake url for the nr of open security bugs query. """
         return 'http://opensecuritybugs/'
-
-    def has_technical_debt_issues_query(self):
-        """ Return whether Jira has a technical debt issues query. """
-        return self.__has_queries
 
     @staticmethod
     def nr_technical_debt_issues_url():

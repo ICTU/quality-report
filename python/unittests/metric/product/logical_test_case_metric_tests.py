@@ -300,11 +300,6 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
 class FakeJira(object):
     """ A fake Jira for testing purposes. """
-    has_query = True
-
-    def has_manual_test_cases_query(self):
-        """ Return whether jira has a query for manual test cases. """
-        return self.has_query
 
     @staticmethod
     def manual_test_cases_time():
