@@ -43,8 +43,11 @@ UNITTESTS = Requirement(
 
 ART = Requirement(
     name='Automated regression tests',
-    metric_classes={metric.FailingRegressionTests, metric.ARTStatementCoverage, metric.ARTBranchCoverage,
-                    metric.RegressionTestAge})
+    metric_classes={metric.FailingRegressionTests, metric.RegressionTestAge})
+
+ART_COVERAGE = Requirement(
+    name='Automated regression test coverage',
+    metric_classes={metric.ARTStatementCoverage, metric.ARTBranchCoverage})
 
 CODE_QUALITY = Requirement(
     name='Code quality',

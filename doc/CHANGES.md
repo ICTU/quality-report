@@ -1,3 +1,9 @@
+2016-08-08  Release 1.45.1
+
+  * Split `requirement.ART` into two different requirements: `requirement.ART` for the regression test success and age
+    and `requirement.ART_COVERAGE` for the coverage metrics.
+    
+    
 2016-08-08  Release 1.45.0
 
   * Include metrics in the report based on requirements, not on whether they can be measured or not.

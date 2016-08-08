@@ -262,25 +262,25 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the ART statement coverage metric is added if required. """
         self.__assert_metric(
             metric.ARTStatementCoverage,
-            product_kwargs=dict(requirements=[requirement.ART]))
+            product_kwargs=dict(requirements=[requirement.ART_COVERAGE]))
 
     def test_art_statement_coverage_via_art(self):
         """ Test that the ART statement coverage metric is added if the ART product has the ART requirement. """
         self.__assert_metric(
             metric.ARTStatementCoverage,
-            product_kwargs=dict(art=dict(requirements=[requirement.ART])))
+            product_kwargs=dict(art=dict(requirements=[requirement.ART_COVERAGE])))
 
     def test_art_branch_coverage(self):
         """ Test that the ART statement coverage metric is added if required. """
         self.__assert_metric(
             metric.ARTBranchCoverage,
-            product_kwargs=dict(requirements=[requirement.ART]))
+            product_kwargs=dict(requirements=[requirement.ART_COVERAGE]))
 
     def test_art_branch_coverage_via_art(self):
         """ Test that the ART statement coverage metric is added if the ART product has the ART requirement. """
         self.__assert_metric(
             metric.ARTBranchCoverage,
-            product_kwargs=dict(art=dict(requirements=[requirement.ART])))
+            product_kwargs=dict(art=dict(requirements=[requirement.ART_COVERAGE])))
 
     def test_art_code_metrics(self):
         """ Test that the code metric are added for the ART if required. """
