@@ -87,3 +87,10 @@ class TeamAbsenceTest(unittest.TestCase):
         self.assertEqual('Het aantal aaneengesloten werkdagen dat meerdere teamleden tegelijk gepland afwezig zijn is '
                          'lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit '
                          '(Lijst van teamleden).', metric.TeamAbsence.norm_template.format(**defaults))
+
+    def test_parameters_without_planner(self):
+        """ Test that the parameters are correct when the holiday planner hasn't been configured. """
+        project = domain.Project()
+        parameters = metric.TeamAbsence(self.__team, project=project)._parameters()
+        self.failUnless('team' in parameters)
+        self.failIf('absentees' in parameters)
