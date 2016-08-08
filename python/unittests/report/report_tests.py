@@ -141,61 +141,9 @@ class QualityReportTest(unittest.TestCase):
                           metric.GreyMetaMetric, metric.MissingMetaMetric}, self.__report.included_metric_classes())
 
 
-class FakeBirt(object):  # pylint: disable=too-few-public-methods
-    """ Fake a Birt instance. """
-    @staticmethod
-    def planned_velocity(birt_id):  # pylint: disable=unused-argument
-        """ Return the planned velocity of the team with the specified birt id. """
-        return 5
-
-
-class FakeJira(object):  # pylint: disable=too-few-public-methods
-    """ Fake Jira. """
-
-    @staticmethod
-    def has_open_bugs_query():
-        """ Return whether Jira has a query to report the number of open bug reports. """
-        return True
-
-    has_manual_test_cases_query = has_open_security_bugs_query = has_blocking_test_issues_query = \
-        has_user_stories_ready_query = has_technical_debt_issues_query = has_open_bugs_query
-
-
-class FakeJenkinsTestReport(object):  # pylint: disable=too-few-public-methods
-    """ Fake Jenkins. """
-    pass
-
-
-class FakeJenkinsOWASPDependencyReport(object):
-    # pylint: disable=too-few-public-methods
-    """ Fake Jenkins. """
-    pass
-
-
-class FakePom(object):  # pylint: disable=too-few-public-methods
-    """ Fake Pom retriever. """
-    pass
-
-
-class FakeSubversion(object):  # pylint: disable=too-few-public-methods
-    """ Fake Subversion repository. """
-
-    metric_source_name = 'FakeSubversion'
-
-    @staticmethod
-    def normalize_path(svn_path):
-        """ Return a normalized version of the path. """
-        return svn_path
-
-    @staticmethod
-    def tags_folder_for_version(svn_path, version):
-        """ Return the tags folder for the version. """
-        return svn_path + version
-
-
-class FakeJMeter(object):  # pylint: disable=too-few-public-methods
-    """ Fake JMeter report. """
-    pass
+class FakeMetricSource(object):  # pylint: disable=too-few-public-methods
+    """ Fake a metric source. """
+    metric_source_name = 'FakeMetricSource'
 
 
 class QualityReportMetricsTest(unittest.TestCase):
@@ -203,13 +151,13 @@ class QualityReportMetricsTest(unittest.TestCase):
     """ Unit tests for the quality report class that test whether the right metrics are added. """
 
     def setUp(self):
-        self.__sonar = FakeSonar()
-        self.__birt = FakeBirt()
-        self.__pom = FakePom()
-        self.__subversion = FakeSubversion()
-        self.__jenkins = FakeJenkinsTestReport()
-        self.__owasp_dependency_report = FakeJenkinsOWASPDependencyReport()
-        self.__jmeter = FakeJMeter()
+        self.__sonar = FakeMetricSource()
+        self.__birt = FakeMetricSource()
+        self.__pom = FakeMetricSource()
+        self.__subversion = FakeMetricSource()
+        self.__jenkins = FakeMetricSource()
+        self.__owasp_dependency_report = FakeMetricSource()
+        self.__jmeter = FakeMetricSource()
 
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs, street_kwargs, number_of_teams=1):
@@ -429,7 +377,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the duration of manual logical test case metric is added if required. """
         self.__assert_metric(
             metric.DurationOfManualLogicalTestCases,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
                                 requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
 
     def test_no_duration_manual_ltcs(self):
@@ -442,7 +390,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the manual logical test case without duration metric is added if required. """
         self.__assert_metric(
             metric.ManualLogicalTestCasesWithoutDuration,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
                                 requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
 
     def test_no_manual_ltcs_without_duration(self):
@@ -460,20 +408,20 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.OpenBugs,
             project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS],
-                                metric_sources={metric_source.Jira: FakeJira()}))
+                                metric_sources={metric_source.Jira: FakeMetricSource()}))
 
     def test_open_security_bugs(self):
         """ Test that the open security bugs metric is added if required. """
         self.__assert_metric(
             metric.OpenSecurityBugs,
             project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS],
-                                metric_sources={metric_source.Jira: FakeJira()}))
+                                metric_sources={metric_source.Jira: FakeMetricSource()}))
 
     def test_technical_debt_issues(self):
         """ Test that the technical debt issues metric is added if required. """
         self.__assert_metric(
             metric.TechnicalDebtIssues,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+            project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
                                 requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT]))
 
     def test_failing_ci_jobs(self):
@@ -517,7 +465,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_unmerged_branches(self):
         """ Test that the unmerged branches metric is added if possible. """
-        subversion = FakeSubversion()
+        subversion = FakeMetricSource()
         self.__assert_metric(
             metric.UnmergedBranches,
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
@@ -525,7 +473,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_unmerged_branches_release(self):
         """ Test that the unmerged branches metric is not added if the product is released. """
-        subversion = FakeSubversion()
+        subversion = FakeMetricSource()
         self.__assert_metric(
             metric.UnmergedBranches,
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
@@ -534,7 +482,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_unmerged_branches_without_vcs_path(self):
         """ Test that the unmerged branches metric is still added without vcs path. """
-        subversion = FakeSubversion()
+        subversion = FakeMetricSource()
         self.__assert_metric(
             metric.UnmergedBranches,
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
@@ -542,7 +490,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_art_unmerged_branches(self):
         """ Test that the unmerged branches metric is added for the ART. """
-        subversion = FakeSubversion()
+        subversion = FakeMetricSource()
         self.__assert_metric(
             metric.UnmergedBranches,
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
@@ -623,7 +571,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_document_age(self):
         """ Test that the document age metric is added if possible. """
-        subversion = FakeSubversion()
+        subversion = FakeMetricSource()
         document = domain.Document(name='Title', url='http://url/', metric_source_ids={subversion: 'http://url/'})
         self.__assert_metric(
             metric.DocumentAge,
@@ -638,7 +586,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_user_story_points_ready(self):
         """ Test that the user story points ready metric is added if required. """
         self.__assert_metric(metric.ReadyUserStoryPoints,
-                             project_kwargs=dict(metric_sources={metric_source.Jira: FakeJira()},
+                             project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
                                                  requirements=[requirement.KEEP_TRACK_OF_READY_US]))
 
     def test_no_user_story_points_ready(self):
