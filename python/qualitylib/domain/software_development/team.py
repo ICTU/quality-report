@@ -22,8 +22,7 @@ from .requirement import RequirementSubject
 class Team(RequirementSubject, MeasurableObject):
     """ Class for representing a team. """
 
-    def __init__(self, short_name=None, is_scrum_team=False,
-                 *args, **kwargs):
+    def __init__(self, short_name=None, is_scrum_team=False, *args, **kwargs):
         super(Team, self).__init__(*args, **kwargs)
         if short_name:
             assert len(short_name) == 2
