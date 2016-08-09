@@ -1,3 +1,8 @@
+2016-08-09  Release 1.45.2
+
+  * Add `requirement.TRACK_BRANCHES` to enable deciding whether branches should be tracked.
+  
+  
 2016-08-08  Release 1.45.1
 
   * Split `requirement.ART` into two different requirements: `requirement.ART` for the regression test success and age
