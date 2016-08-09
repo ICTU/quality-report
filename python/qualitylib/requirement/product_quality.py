@@ -73,3 +73,7 @@ PERFORMANCE_YMOR = Requirement(
 NO_SNAPSHOT_DEPENDENCIES = Requirement(
     name='No snapshot dependencies',
     metric_classes={metric.SnapshotDependencies})
+
+TRACK_BRANCHES = Requirement(
+    'Track branches',
+    metric_classes={metric.UnmergedBranches})

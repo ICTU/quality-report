@@ -33,10 +33,7 @@ class QualityReportTest(unittest.TestCase):
     """ Unit tests for the quality report class. """
 
     def setUp(self):
-        self.__sonar = FakeSonar()
-        self.__wiki = 'FakeWiki'
-        self.__project = domain.Project('organization', name='project title',
-                                        metric_sources={metric_source.Wiki: self.__wiki})
+        self.__project = domain.Project('organization', name='project title')
         self.__report = report.QualityReport(self.__project)
 
     def test_project(self):
@@ -75,14 +72,13 @@ class QualityReportTest(unittest.TestCase):
     def test_product(self):
         """ Test that the report has three sections when we add a product:
             one for the product itself, and one for meta metrics. """
-        project = domain.Project('organization', name='project title',
-                                 metric_sources={metric_source.Sonar: self.__sonar})
-        project.add_product(domain.Product(project, 'FP', metric_source_ids={self.__sonar: 'sonar.id'}))
+        project = domain.Project()
+        project.add_product(domain.Product(project, 'FP', requirements=[requirement.CODE_QUALITY]))
         self.assertEqual(2, len(report.QualityReport(project).sections()))
 
     def test_get_product_section(self):
         """ Test that the section for the product can be found. """
-        product = domain.Product(self.__project, 'FP', metric_source_ids={self.__sonar: 'sonar.id'})
+        product = domain.Product(self.__project, 'FP', requirements=[requirement.CODE_QUALITY])
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section = quality_report.get_product_section(product)
@@ -90,7 +86,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_get_product_section_twice(self):
         """ Test that the product section is cached. """
-        product = domain.Product(self.__project, 'FP', metric_source_ids={self.__sonar: 'sonar.id'})
+        product = domain.Product(self.__project, 'FP', requirements=[requirement.CODE_QUALITY])
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section1 = quality_report.get_product_section(product)
@@ -151,7 +147,6 @@ class QualityReportMetricsTest(unittest.TestCase):
     """ Unit tests for the quality report class that test whether the right metrics are added. """
 
     def setUp(self):
-        self.__sonar = FakeMetricSource()
         self.__birt = FakeMetricSource()
         self.__pom = FakeMetricSource()
         self.__subversion = FakeMetricSource()
@@ -315,7 +310,8 @@ class QualityReportMetricsTest(unittest.TestCase):
             metric.UserStoriesNotReviewed,
             project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
             product_kwargs=dict(product_version='1.1',
-                                metric_source_ids={self.__birt: 'birt'}),
+                                metric_source_ids={self.__birt: 'birt'},
+                                requirements=[requirement.USER_STORIES_AND_LTCS]),
             include=False)
 
     def test_no_approved_us(self):
@@ -377,25 +373,13 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the duration of manual logical test case metric is added if required. """
         self.__assert_metric(
             metric.DurationOfManualLogicalTestCases,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
-                                requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
-
-    def test_no_duration_manual_ltcs(self):
-        """ Test that the duration of manual logical test case metric is not added without Jira. """
-        self.__assert_metric(
-            metric.DurationOfManualLogicalTestCases,
-            project_kwargs=dict(), include=False)
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
 
     def test_manual_ltcs_without_duration(self):
         """ Test that the manual logical test case without duration metric is added if required. """
         self.__assert_metric(
             metric.ManualLogicalTestCasesWithoutDuration,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
-                                requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
-
-    def test_no_manual_ltcs_without_duration(self):
-        """ Test that the manual logical test case without duration metric is not added if not required. """
-        self.__assert_metric(metric.ManualLogicalTestCasesWithoutDuration, project_kwargs=dict(), include=False)
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
 
     def test_jsf_duplication(self):
         """ Test that the jsf duplication metric is added if required. """
@@ -407,22 +391,19 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the open bugs metric is added if required. """
         self.__assert_metric(
             metric.OpenBugs,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS],
-                                metric_sources={metric_source.Jira: FakeMetricSource()}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS]))
 
     def test_open_security_bugs(self):
         """ Test that the open security bugs metric is added if required. """
         self.__assert_metric(
             metric.OpenSecurityBugs,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS],
-                                metric_sources={metric_source.Jira: FakeMetricSource()}))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS]))
 
     def test_technical_debt_issues(self):
         """ Test that the technical debt issues metric is added if required. """
         self.__assert_metric(
             metric.TechnicalDebtIssues,
-            project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
-                                requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT]))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT]))
 
     def test_failing_ci_jobs(self):
         """ Test that the failing CI jobs metric is added if required. """
@@ -446,38 +427,31 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the action activity metric is added if required. """
         self.__assert_metric(
             metric.ActionActivity,
-            project_kwargs=dict(metric_sources={metric_source.TrelloActionsBoard: 'Trello'},
-                                requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
 
     def test_action_age(self):
         """ Test that the action age metric is added if required. """
         self.__assert_metric(
             metric.ActionAge,
-            project_kwargs=dict(metric_sources={metric_source.TrelloActionsBoard: 'Trello'},
-                                requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
 
     def test_risk_log(self):
         """ Test that the risk log metric is added if required. """
         self.__assert_metric(
             metric.RiskLog,
-            project_kwargs=dict(metric_sources={metric_source.TrelloRiskBoard: 'Trello'},
-                                requirements=[requirement.KEEP_TRACK_OF_RISKS]))
+            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_RISKS]))
 
     def test_unmerged_branches(self):
-        """ Test that the unmerged branches metric is added if possible. """
-        subversion = FakeMetricSource()
+        """ Test that the unmerged branches metric is added if required. """
         self.__assert_metric(
             metric.UnmergedBranches,
-            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
-            product_kwargs=dict(metric_source_ids={subversion: 'svn'}))
+            product_kwargs=dict(requirements=[requirement.TRACK_BRANCHES]))
 
     def test_unmerged_branches_release(self):
         """ Test that the unmerged branches metric is not added if the product is released. """
-        subversion = FakeMetricSource()
         self.__assert_metric(
             metric.UnmergedBranches,
-            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
-            product_kwargs=dict(metric_source_ids={subversion: 'svn'}, product_version='1.1'),
+            product_kwargs=dict(requirements=[requirement.TRACK_BRANCHES], product_version='1.1'),
             include=False)
 
     def test_unmerged_branches_without_vcs_path(self):
@@ -486,15 +460,13 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.UnmergedBranches,
             project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
-            product_kwargs=dict(short_name='foo'))
+            product_kwargs=dict(requirements=[requirement.TRACK_BRANCHES], short_name='foo'))
 
     def test_art_unmerged_branches(self):
         """ Test that the unmerged branches metric is added for the ART. """
-        subversion = FakeMetricSource()
         self.__assert_metric(
             metric.UnmergedBranches,
-            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
-            product_kwargs=dict(art=dict(metric_source_ids={subversion: 'svn'})))
+            product_kwargs=dict(art=dict(requirements=[requirement.TRACK_BRANCHES])))
 
     def test_no_snapshot_dependencies(self):
         """ Test that the snapshot dependencies metric is not added for trunk versions. """
@@ -502,22 +474,7 @@ class QualityReportMetricsTest(unittest.TestCase):
             metric.SnapshotDependencies,
             project_kwargs=dict(metric_sources={metric_source.Pom: self.__pom,
                                                 metric_source.Subversion: self.__subversion}),
-            product_kwargs=dict(short_name='dummy'), include=False)
-
-    def test_no_snapshot_dependencies_without_pom(self):
-        """ Test that the snapshot dependencies metric is not added without pom files. """
-        self.__assert_metric(
-            metric.SnapshotDependencies,
-            project_kwargs=dict(metric_sources={metric_source.Subversion: self.__subversion}),
-            product_kwargs=dict(short_name='dummy', product_version='1.1'),
-            include=False)
-
-    def test_no_snapshot_dependencies_without_svn(self):
-        """ Test that the snapshot dependencies metric is not added without pom files. """
-        self.__assert_metric(
-            metric.SnapshotDependencies,
-            project_kwargs=dict(metric_sources={metric_source.Pom: self.__pom}),
-            product_kwargs=dict(short_name='dummy', product_version='1.1'),
+            product_kwargs=dict(short_name='dummy', requirements=[requirement.NO_SNAPSHOT_DEPENDENCIES]),
             include=False)
 
     def test_snapshot_dependencies(self):
@@ -532,36 +489,20 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(metric.HighPriorityOWASPDependencyWarnings,
                              product_kwargs=dict(requirements=[requirement.OWASP]))
 
-    def test_no_high_prio_owasp_dependencies(self):
-        """ Test that the high priority OWASP dependencies metric is not added if not required. """
-        self.__assert_metric(metric.HighPriorityOWASPDependencyWarnings, include=False)
-
     def test_normal_prio_owasp_dependencies(self):
         """ Test that the normal priority OWASP dependencies metric is added if required. """
         self.__assert_metric(metric.NormalPriorityOWASPDependencyWarnings,
                              product_kwargs=dict(requirements=[requirement.OWASP]))
-
-    def test_no_normal_prio_owasp_dependencies(self):
-        """ Test that the normal priority OWASP dependencies metric is not added if not required. """
-        self.__assert_metric(metric.NormalPriorityOWASPDependencyWarnings, include=False)
 
     def test_high_level_zap_scan_alerts(self):
         """ Test that the high risk ZAP Scan alerts metric is added if required. """
         self.__assert_metric(metric.HighRiskZAPScanAlertsMetric,
                              product_kwargs=dict(requirements=[requirement.OWASP_ZAP]))
 
-    def test_no_high_level_zap_scan_alerts(self):
-        """ Test that the high risk ZAP Scan alerts metric is not added if not required. """
-        self.__assert_metric(metric.HighRiskZAPScanAlertsMetric, include=False)
-
-    def test_mediun_risk_level_zap_scan_alerts(self):
+    def test_medium_risk_level_zap_scan_alerts(self):
         """ Test that the medium risk ZAP Scan alerts metric is added if required. """
         self.__assert_metric(metric.MediumRiskZAPScanAlertsMetric,
                              product_kwargs=dict(requirements=[requirement.OWASP_ZAP]))
-
-    def test_no_mediun_risk_level_zap_scan_alerts(self):
-        """ Test that the medium risk ZAP Scan alerts  metric is not added if not required. """
-        self.__assert_metric(metric.MediumRiskZAPScanAlertsMetric, include=False)
 
     def test_sonar_version(self):
         """ Test that the Sonar version number metric is added if required. """
@@ -586,12 +527,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_user_story_points_ready(self):
         """ Test that the user story points ready metric is added if required. """
         self.__assert_metric(metric.ReadyUserStoryPoints,
-                             project_kwargs=dict(metric_sources={metric_source.Jira: FakeMetricSource()},
-                                                 requirements=[requirement.KEEP_TRACK_OF_READY_US]))
-
-    def test_no_user_story_points_ready(self):
-        """ Test that the user story points ready metric is not added if not required. """
-        self.__assert_metric(metric.ReadyUserStoryPoints, include=False)
+                             project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_READY_US]))
 
     def test_metric_classes(self):
         """ Test that the report gives a list of metric classes. """
@@ -614,9 +550,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.TotalLOC,
             product_kwargs=dict(short_name='dummy'),
-            project_kwargs=dict(
-                metric_sources={metric_source.Sonar: self.__sonar},
-                requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY]))
+            project_kwargs=dict(requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY]))
 
     def test_java_metrics(self):
         """ Test that the Java related Sonar version metrics are added if the project has Java as requirement. """
