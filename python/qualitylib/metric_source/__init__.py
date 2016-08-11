@@ -46,6 +46,7 @@ from .holiday_planner import HolidayPlanner
 from .jenkins import Jenkins, JenkinsOWASPDependencyReport, JenkinsYmorPerformanceReport
 from .jira import Jira
 from .maven import Maven
+from .open_vas_scan_report import OpenVASScanReport
 from .pom import Pom
 from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
