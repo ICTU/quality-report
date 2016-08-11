@@ -1,3 +1,9 @@
+2016-08-11  Release 1.45.4
+
+  * Rollback 1.45.3 because the problem was not that Jenkins needed to retry but that the credentials weren't entered
+    correctly.
+    
+
 2016-08-11  Release 1.45.3
 
   * When receiving a 403 forbidden (e.g. from Jenkins), retry with basic authentication.
