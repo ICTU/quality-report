@@ -36,7 +36,7 @@ class HTMLFormatterTest(unittest.TestCase):
 
     def test_postfix(self):
         """ Test that the postfix closes the html tag. """
-        self.assertTrue(self.__formatter.postfix().endswith('</html>\n'))
+        self.assertTrue(self.__formatter.postfix().strip().endswith('</html>'))
 
     def test_section(self):
         """ Test that the report contains exactly one section. """
