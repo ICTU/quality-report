@@ -147,7 +147,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__jmeter = FakeMetricSource()
 
     @staticmethod
-    def __create_report(project_kwargs, team_kwargs, product_kwargs, street_kwargs, number_of_teams=1):
+    def __create_report(project_kwargs, team_kwargs, product_kwargs, number_of_teams=1):
         """ Create the quality report. """
         documents = project_kwargs.pop('documents', [])
         project = domain.Project('organization', name='project', **project_kwargs)
@@ -166,19 +166,16 @@ class QualityReportMetricsTest(unittest.TestCase):
                     product_kwargs[component_name] = component
             product = domain.Product(project, **product_kwargs)
             project.add_product(product)
-        if street_kwargs:
-            project.add_street(domain.Street(**street_kwargs))
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
 
     def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, product_kwargs=None,
-                        street_kwargs=None, number_of_teams=1, include=True):
+                        number_of_teams=1, include=True):
         """ Check that the metric class is included in the report. """
         quality_report = self.__create_report(project_kwargs or dict(),
                                               team_kwargs or dict(),
                                               product_kwargs or dict(),
-                                              street_kwargs or dict(),
                                               number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
         self.assertTrue(included if include else not included)
@@ -188,10 +185,6 @@ class QualityReportMetricsTest(unittest.TestCase):
         self.__assert_metric(
             metric.TeamProgress,
             team_kwargs=dict(is_scrum_team=True, requirements=[requirement.SCRUM_TEAM]))
-
-    def test_art_stability(self):
-        """ Test that the ART stability metric is added if possible. """
-        self.__assert_metric(metric.ARTStability, street_kwargs=dict(name='A', job_regexp='A.*'))
 
     def test_team_spirit(self):
         """ Test that the team spirit metric is added if required. """

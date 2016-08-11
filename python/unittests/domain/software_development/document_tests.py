@@ -26,7 +26,7 @@ class DocumentTest(unittest.TestCase):
         self.__document = domain.Document(name='Document name')
 
     def test_name(self):
-        """ Test the name of the street. """
+        """ Test the name of the document. """
         self.assertEqual('Document name', self.__document.name())
 
     def test_str(self):

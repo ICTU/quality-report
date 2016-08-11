@@ -89,7 +89,7 @@ class QualityReport(domain.DomainObject):
             cls.PERFORMANCE_METRIC_CLASSES + cls.PROCESS_SECTION_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
             cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + cls.DEPENDENCY_METRIC_CLASSES + \
             cls.SECURITY_METRIC_CLASSES + cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
-            (metric.TotalLOC, metric.UnmergedBranches, metric.ARTStability)
+            (metric.TotalLOC, metric.UnmergedBranches)
 
     @classmethod
     def metric_source_classes(cls):
@@ -190,8 +190,6 @@ class QualityReport(domain.DomainObject):
     def __process_section(self):
         """ Return the process section. """
         metrics = self.__mandatory_subject_metrics(self.__project, self.PROCESS_SECTION_METRIC_CLASSES)
-        for street in self.__project.streets():
-            metrics.append(metric.ARTStability(street, project=self.__project))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
 

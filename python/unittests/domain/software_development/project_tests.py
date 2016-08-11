@@ -185,13 +185,6 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_document(document)
         self.assertTrue(document in self.__project.documents())
 
-    def test_streets(self):
-        """ Test that a project has development streets. """
-        self.__project.add_street(domain.Street('A.*', name='A'))
-        self.__project.add_street(domain.Street('B.*', name='B'))
-        self.assertEqual([domain.Street('A.*', name='A'), domain.Street('B.*', name='B')],
-                         self.__project.streets())
-
     def test_unknown_metric_source(self):
         """ Test that the project returns None for an unknown metric source class. """
         self.assertFalse(self.__project.metric_source(self.__class__))

@@ -42,8 +42,7 @@ class FakeWiki(object):
 
 
 class TeamSpiritTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    """ Unit tests for the ARTstability metric. """
+    """ Unit tests for the Team Spirit metric. """
 
     def setUp(self):
         self.__wiki = FakeWiki()

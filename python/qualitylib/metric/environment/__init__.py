@@ -16,7 +16,6 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from .art_stability import ARTStability
 from .configuration_consistency import JavaVersionConsistency
 from .failing_ci_jobs import FailingCIJobs
 from .unused_ci_jobs import UnusedCIJobs

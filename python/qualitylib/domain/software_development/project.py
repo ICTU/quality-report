@@ -32,7 +32,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         self.__metric_sources = MetricSources(metric_sources or dict())
         self.__products = []
         self.__teams = []
-        self.__streets = []
         self.__documents = []
         self.__dashboard = [], []  # rows, columns
         super(Project, self).__init__(*args, **kwargs)
@@ -127,14 +126,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def teams(self):
         """ Return the teams that work on the project. """
         return self.__teams
-
-    def add_street(self, street):
-        """ Add a development street to the project. """
-        self.__streets.append(street)
-
-    def streets(self):
-        """ Return the development streets of the project. """
-        return self.__streets
 
     def add_document(self, document):
         """ Add a document to the project. """

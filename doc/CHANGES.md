@@ -1,3 +1,9 @@
+2016-08-11  Release 1.46.0
+
+  * Remove `metric.ARTStability` and `domain.Street` because the stability of automated regression tests is also
+    measured via the regression test reports.
+    
+
 2016-08-11  Release 1.45.4
 
   * Rollback 1.45.3 because the problem was not that Jenkins needed to retry but that the credentials weren't entered
