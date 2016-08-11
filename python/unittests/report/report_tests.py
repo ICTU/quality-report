@@ -20,14 +20,6 @@ import unittest
 from qualitylib import report, domain, metric, metric_source, requirement
 
 
-class FakeSonar(object):  # pylint: disable=too-few-public-methods
-    """ Fake a Sonar instance. """
-    @staticmethod
-    def version(*args):  # pylint: disable=unused-argument
-        """ Return the version number of the product. """
-        return '1'
-
-
 class QualityReportTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the quality report class. """
