@@ -22,6 +22,14 @@ import urllib2
 import httplib
 
 
+class HTTPBasic403AuthHandler(urllib2.HTTPBasicAuthHandler):
+    def http_error_403(self, req, fp, code, msg, headers):
+        """ Retry with basic authentication when facing a 403 forbidden. This may happen with Jenkins. """
+        host = req.get_host()
+        realm = None
+        return self.retry_http_basic_auth(host, req, realm)
+
+
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
@@ -46,17 +54,14 @@ class UrlOpener(object):
         if uri and self.__username and self.__password:
             password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
             password_manager.add_password(realm=None, uri=uri, user=self.__username, passwd=self.__password)
-            auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
+            auth_handler = HTTPBasic403AuthHandler(password_manager)
             return build_opener(auth_handler).open
         elif self.__username and self.__password:
             credentials = base64.encodestring(':'.join([self.__username, self.__password]))[:-1]
 
             def url_open_with_basic_auth(url):
                 """ Open the url with basic authentication. """
-                if isinstance(url, urllib2.Request):
-                    request = url
-                else:
-                    request = urllib2.Request(url)
+                request = url if isinstance(url, urllib2.Request) else urllib2.Request(url)
                 request.add_header('Authorization', 'Basic ' + credentials)
                 return url_open(request)
 

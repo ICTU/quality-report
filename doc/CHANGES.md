@@ -1,3 +1,8 @@
+2016-08-11  Release 1.45.3
+
+  * When receiving a 403 forbidden (e.g. from Jenkins), retry with basic authentication.
+  
+  
 2016-08-09  Release 1.45.2
 
   * Add `requirement.TRACK_BRANCHES` to enable deciding whether branches should be tracked.
