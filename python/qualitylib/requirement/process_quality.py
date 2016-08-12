@@ -21,7 +21,7 @@ from .. import metric
 
 
 USER_STORIES_AND_LTCS = Requirement(
-    name='Scrum',
+    name='User stories and logical test cases',
     metric_classes={metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
                     metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
                     metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
