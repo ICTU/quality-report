@@ -129,22 +129,9 @@ class QualityReportTest(unittest.TestCase):
                           metric.GreyMetaMetric, metric.MissingMetaMetric}, self.__report.included_metric_classes())
 
 
-class FakeMetricSource(object):  # pylint: disable=too-few-public-methods
-    """ Fake a metric source. """
-    metric_source_name = 'FakeMetricSource'
-
-
 class QualityReportMetricsTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the quality report class that test whether the right metrics are added. """
-
-    def setUp(self):
-        self.__birt = FakeMetricSource()
-        self.__pom = FakeMetricSource()
-        self.__subversion = FakeMetricSource()
-        self.__jenkins = FakeMetricSource()
-        self.__owasp_dependency_report = FakeMetricSource()
-        self.__jmeter = FakeMetricSource()
 
     @staticmethod
     def __create_report(project_kwargs, team_kwargs, product_kwargs, number_of_teams=1):
@@ -173,346 +160,92 @@ class QualityReportMetricsTest(unittest.TestCase):
     def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, product_kwargs=None,
                         number_of_teams=1, include=True):
         """ Check that the metric class is included in the report. """
-        quality_report = self.__create_report(project_kwargs or dict(),
-                                              team_kwargs or dict(),
-                                              product_kwargs or dict(),
-                                              number_of_teams)
+        quality_report = self.__create_report(project_kwargs or dict(), team_kwargs or dict(),
+                                              product_kwargs or dict(), number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
-        self.assertTrue(included if include else not included)
+        if include:
+            self.assertTrue(included, '{} should be included in the report but was not.'.format(metric_class))
+        else:
+            self.assertFalse(included, '{} should not be included in the report but was.'.format(metric_class))
 
-    def test_team_progress(self):
-        """ Test that the team progress metric is added if required. """
-        self.__assert_metric(
-            metric.TeamProgress,
-            team_kwargs=dict(is_scrum_team=True, requirements=[requirement.SCRUM_TEAM]))
+    def test_project_requirements(self):
+        """ Test for each project requirement that its metrics are added if the project has the requirement. """
+        for req in [requirement.JAVA, requirement.C_SHARP, requirement.WEB, requirement.JAVASCRIPT,
+                    requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.KEEP_TRACK_OF_READY_US,
+                    requirement.KEEP_TRACK_OF_SONAR_VERSION, requirement.KEEP_TRACK_OF_ACTIONS,
+                    requirement.KEEP_TRACK_OF_RISKS, requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY,
+                    requirement.KEEP_TRACK_OF_CI_JOBS, requirement.KEEP_TRACK_OF_TECHNICAL_DEBT,
+                    requirement.KEEP_TRACK_OF_BUGS, requirement.KEEP_TRACK_OF_MANUAL_LTCS]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, project_kwargs=dict(requirements=[req]))
 
-    def test_team_spirit(self):
-        """ Test that the team spirit metric is added if required. """
-        self.__assert_metric(metric.TeamSpirit, team_kwargs=dict(requirements=[requirement.TRACK_SPIRIT]))
+    def test_team_requirements(self):
+        """ Test that the team metrics are added if required. """
+        for req in [requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT, requirement.TRACK_ABSENCE]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, team_kwargs=dict(is_scrum_team=True, requirements=[req]))
 
-    def test_team_absence(self):
-        """ Test that the team absence metric is added if required. """
-        self.__assert_metric(
-            metric.TeamAbsence,
-            team_kwargs=dict(requirements=[requirement.TRACK_ABSENCE]))
+    def test_product_requirements(self):
+        """ Test that the product metrics are added if required. """
+        for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE,
+                    requirement.USER_STORIES_AND_LTCS, requirement.TRACK_BRANCHES, requirement.OWASP,
+                    requirement.OWASP_ZAP, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]))
 
-    def test_failing_unittests(self):
-        """ Test that the failing unit tests metric is added if required. """
-        self.__assert_metric(
-            metric.FailingUnittests,
-            product_kwargs=dict(requirements=[requirement.UNITTESTS]))
+    def test_product_requirements_not_applicable(self):
+        """ Test that product metrics that can't be measured on trunk versions are not included. """
+        for req in [requirement.NO_SNAPSHOT_DEPENDENCIES]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]), include=False)
 
-    def test_failing_regression_tests(self):
-        """ Test that the failing regression tests metric is added if required. """
-        self.__assert_metric(
-            metric.FailingRegressionTests,
-            product_kwargs=dict(requirements=[requirement.ART]))
+    def test_product_art_requirements(self):
+        """ Test that the product ART metrics are added if required. """
+        for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE, requirement.TRACK_BRANCHES]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, product_kwargs=dict(art=dict(requirements=[req])))
 
-    def test_failing_regression_tests_art(self):
-        """ Test that the failing regression tests metric is added if the ART component has the ART requirement. """
-        self.__assert_metric(
-            metric.FailingRegressionTests,
-            product_kwargs=dict(art=dict(requirements=[requirement.ART])))
+    def test_product_jsf_requirements(self):
+        """ Test that the product JSF metrics are added if required. """
+        for req in [requirement.JSF_CODE_QUALITY]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, product_kwargs=dict(jsf=dict(requirements=[req])))
 
-    def test_regression_test_age(self):
-        """ Test that the regression test age metric is added if required. """
-        self.__assert_metric(
-            metric.RegressionTestAge,
-            product_kwargs=dict(requirements=[requirement.ART]))
+    def test_product_with_version_requirements(self):
+        """ Test that metrics that can only be measured on non-trunk product versions are included. """
+        for req in [requirement.NO_SNAPSHOT_DEPENDENCIES]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, product_kwargs=dict(product_version='1.1', requirements=[req]))
 
-    def test_regression_test_age_art(self):
-        """ Test that the regression test age metric is added if the ART component has the ART requirement. """
-        self.__assert_metric(
-            metric.RegressionTestAge,
-            product_kwargs=dict(art=dict(requirements=[requirement.ART])))
-
-    def test_unittest_line_coverage(self):
-        """ Test that the unit test line coverage metric is added if required. """
-        self.__assert_metric(
-            metric.UnittestLineCoverage,
-            product_kwargs=dict(requirements=[requirement.UNITTESTS]))
-
-    def test_unittest_branch_coverage(self):
-        """ Test that the unit test branch coverage metric is added if required. """
-        self.__assert_metric(
-            metric.UnittestBranchCoverage,
-            product_kwargs=dict(requirements=[requirement.UNITTESTS]))
-
-    def test_art_statement_coverage(self):
-        """ Test that the ART statement coverage metric is added if required. """
-        self.__assert_metric(
-            metric.ARTStatementCoverage,
-            product_kwargs=dict(requirements=[requirement.ART_COVERAGE]))
-
-    def test_art_statement_coverage_via_art(self):
-        """ Test that the ART statement coverage metric is added if the ART product has the ART requirement. """
-        self.__assert_metric(
-            metric.ARTStatementCoverage,
-            product_kwargs=dict(art=dict(requirements=[requirement.ART_COVERAGE])))
-
-    def test_art_branch_coverage(self):
-        """ Test that the ART statement coverage metric is added if required. """
-        self.__assert_metric(
-            metric.ARTBranchCoverage,
-            product_kwargs=dict(requirements=[requirement.ART_COVERAGE]))
-
-    def test_art_branch_coverage_via_art(self):
-        """ Test that the ART statement coverage metric is added if the ART product has the ART requirement. """
-        self.__assert_metric(
-            metric.ARTBranchCoverage,
-            product_kwargs=dict(art=dict(requirements=[requirement.ART_COVERAGE])))
-
-    def test_art_code_metrics(self):
-        """ Test that the code metric are added for the ART if required. """
-        for metric_class in report.QualityReport.CODE_METRIC_CLASSES:
-            self.__assert_metric(
-                metric_class,
-                product_kwargs=dict(art=dict(requirements=[requirement.CODE_QUALITY])))
-
-    def test_art_code_metrics_non_trunk(self):
+    def test_product_art_code_with_version(self):
         """ Test that the code metrics are not added if the ART is not a trunk version. """
-        for metric_class in report.QualityReport.CODE_METRIC_CLASSES:
-            self.__assert_metric(
-                metric_class,
-                product_kwargs=dict(product_version='1.1', art=dict(requirements=[requirement.CODE_QUALITY])),
-                include=False)
+        for req in [requirement.CODE_QUALITY]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class,
+                                     product_kwargs=dict(product_version='1.1', art=dict(requirements=[req])),
+                                     include=False)
 
-    def test_reviewed_us(self):
-        """ Test that the reviewed user stories metric is added if required. """
-        self.__assert_metric(
-            metric.UserStoriesNotReviewed,
-            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
+    def test_product_with_version_exclude(self):
+        """ Test that metrics that can't be measured on non-trunk product versions aren't included ."""
+        for metric_class in [metric.UserStoriesNotApproved, metric.UserStoriesNotReviewed,
+                             metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotApproved,
+                             metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotAutomated,
+                             metric.UnmergedBranches]:
+            self.__assert_metric(metric_class,
+                                 product_kwargs=dict(product_version='1.1',
+                                                     requirements=[requirement.USER_STORIES_AND_LTCS,
+                                                                   requirement.TRACK_BRANCHES]),
+                                 include=False)
 
-    def test_approved_us(self):
-        """ Test that the approved user stories metric is added if required. """
-        self.__assert_metric(
-            metric.UserStoriesNotApproved,
-            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
-
-    def test_no_reviewed_us(self):
-        """ Test that the reviewed user stories metric is not added when the product is not a trunk version. """
-        self.__assert_metric(
-            metric.UserStoriesNotReviewed,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1',
-                                metric_source_ids={self.__birt: 'birt'},
-                                requirements=[requirement.USER_STORIES_AND_LTCS]),
-            include=False)
-
-    def test_no_approved_us(self):
-        """ Test that the approved user stories metric is not added when the product is not a trunk version. """
-        self.__assert_metric(
-            metric.UserStoriesNotApproved,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
-                                requirements=[requirement.USER_STORIES_AND_LTCS]),
-            include=False)
-
-    def test_reviewed_ltcs(self):
-        """ Test that the reviewed logical test case metric is added if required. """
-        self.__assert_metric(
-            metric.LogicalTestCasesNotReviewed,
-            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
-
-    def test_approved_ltcs(self):
-        """ Test that the approved logical test case metric is added if required. """
-        self.__assert_metric(
-            metric.LogicalTestCasesNotApproved,
-            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
-
-    def test_no_reviewed_ltcs(self):
-        """ Test that the reviewed logical test case metric is not added when the product is not a trunk version. """
-        self.__assert_metric(
-            metric.LogicalTestCasesNotReviewed,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
-                                requirements=[requirement.USER_STORIES_AND_LTCS]),
-            include=False)
-
-    def test_no_approved_ltcs(self):
-        """ Test that the approved logical test case metric is not added when the product is not a trunk version. """
-        self.__assert_metric(
-            metric.LogicalTestCasesNotApproved,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
-                                requirements=[requirement.USER_STORIES_AND_LTCS]),
-            include=False)
-
-    def test_number_manual_ltcs(self):
-        """ Test that the number of manual logical test case metric is added if required. """
-        self.__assert_metric(
-            metric.NumberOfManualLogicalTestCases,
-            product_kwargs=dict(requirements=[requirement.USER_STORIES_AND_LTCS]))
-
-    def test_no_number_manual_ltcs(self):
-        """ Test that the number of manual logical test case metric is not added when the product is not a trunk
-            version. """
-        self.__assert_metric(
-            metric.NumberOfManualLogicalTestCases,
-            project_kwargs=dict(metric_sources={metric_source.Birt: self.__birt}),
-            product_kwargs=dict(product_version='1.1', metric_source_ids={self.__birt: 'birt'},
-                                requirements=[requirement.USER_STORIES_AND_LTCS]),
-            include=False)
-
-    def test_duration_manual_ltcs(self):
-        """ Test that the duration of manual logical test case metric is added if required. """
-        self.__assert_metric(
-            metric.DurationOfManualLogicalTestCases,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
-
-    def test_manual_ltcs_without_duration(self):
-        """ Test that the manual logical test case without duration metric is added if required. """
-        self.__assert_metric(
-            metric.ManualLogicalTestCasesWithoutDuration,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_MANUAL_LTCS]))
-
-    def test_jsf_duplication(self):
-        """ Test that the jsf duplication metric is added if required. """
-        self.__assert_metric(
-            metric.JsfDuplication,
-            product_kwargs=dict(jsf=dict(requirements=[requirement.JSF_CODE_QUALITY])))
-
-    def test_open_bugs(self):
-        """ Test that the open bugs metric is added if required. """
-        self.__assert_metric(
-            metric.OpenBugs,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS]))
-
-    def test_open_security_bugs(self):
-        """ Test that the open security bugs metric is added if required. """
-        self.__assert_metric(
-            metric.OpenSecurityBugs,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_BUGS]))
-
-    def test_technical_debt_issues(self):
-        """ Test that the technical debt issues metric is added if required. """
-        self.__assert_metric(
-            metric.TechnicalDebtIssues,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT]))
-
-    def test_failing_ci_jobs(self):
-        """ Test that the failing CI jobs metric is added if required. """
-        self.__assert_metric(
-            metric.FailingCIJobs,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_CI_JOBS]))
-
-    def test_unused_ci_jobs(self):
-        """ Test that the unused CI jobs metric is added if required. """
-        self.__assert_metric(
-            metric.UnusedCIJobs,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_CI_JOBS]))
-
-    def test_configuration_consistency(self):
-        """ Test that the configuration consistency metric is added if required. """
-        self.__assert_metric(
-            metric.JavaVersionConsistency,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY]))
-
-    def test_action_activity(self):
-        """ Test that the action activity metric is added if required. """
-        self.__assert_metric(
-            metric.ActionActivity,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
-
-    def test_action_age(self):
-        """ Test that the action age metric is added if required. """
-        self.__assert_metric(
-            metric.ActionAge,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_ACTIONS]))
-
-    def test_risk_log(self):
-        """ Test that the risk log metric is added if required. """
-        self.__assert_metric(
-            metric.RiskLog,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_RISKS]))
-
-    def test_unmerged_branches(self):
-        """ Test that the unmerged branches metric is added if required. """
-        self.__assert_metric(
-            metric.UnmergedBranches,
-            product_kwargs=dict(requirements=[requirement.TRACK_BRANCHES]))
-
-    def test_unmerged_branches_release(self):
-        """ Test that the unmerged branches metric is not added if the product is released. """
-        self.__assert_metric(
-            metric.UnmergedBranches,
-            product_kwargs=dict(requirements=[requirement.TRACK_BRANCHES], product_version='1.1'),
-            include=False)
-
-    def test_unmerged_branches_without_vcs_path(self):
-        """ Test that the unmerged branches metric is still added without vcs path. """
-        subversion = FakeMetricSource()
-        self.__assert_metric(
-            metric.UnmergedBranches,
-            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}),
-            product_kwargs=dict(requirements=[requirement.TRACK_BRANCHES], short_name='foo'))
-
-    def test_art_unmerged_branches(self):
-        """ Test that the unmerged branches metric is added for the ART. """
-        self.__assert_metric(
-            metric.UnmergedBranches,
-            product_kwargs=dict(art=dict(requirements=[requirement.TRACK_BRANCHES])))
-
-    def test_no_snapshot_dependencies(self):
-        """ Test that the snapshot dependencies metric is not added for trunk versions. """
-        self.__assert_metric(
-            metric.SnapshotDependencies,
-            project_kwargs=dict(metric_sources={metric_source.Pom: self.__pom,
-                                                metric_source.Subversion: self.__subversion}),
-            product_kwargs=dict(short_name='dummy', requirements=[requirement.NO_SNAPSHOT_DEPENDENCIES]),
-            include=False)
-
-    def test_snapshot_dependencies(self):
-        """ Test that the snapshot dependencies metric is added if required and applicable. """
-        self.__assert_metric(
-            metric.SnapshotDependencies,
-            product_kwargs=dict(short_name='dummy', product_version='1.1',
-                                requirements=[requirement.NO_SNAPSHOT_DEPENDENCIES]))
-
-    def test_high_prio_owasp_dependencies(self):
-        """ Test that the high priority OWASP dependencies metric is added if required. """
-        self.__assert_metric(metric.HighPriorityOWASPDependencyWarnings,
-                             product_kwargs=dict(requirements=[requirement.OWASP]))
-
-    def test_normal_prio_owasp_dependencies(self):
-        """ Test that the normal priority OWASP dependencies metric is added if required. """
-        self.__assert_metric(metric.NormalPriorityOWASPDependencyWarnings,
-                             product_kwargs=dict(requirements=[requirement.OWASP]))
-
-    def test_high_level_zap_scan_alerts(self):
-        """ Test that the high risk ZAP Scan alerts metric is added if required. """
-        self.__assert_metric(metric.HighRiskZAPScanAlertsMetric,
-                             product_kwargs=dict(requirements=[requirement.OWASP_ZAP]))
-
-    def test_medium_risk_level_zap_scan_alerts(self):
-        """ Test that the medium risk ZAP Scan alerts metric is added if required. """
-        self.__assert_metric(metric.MediumRiskZAPScanAlertsMetric,
-                             product_kwargs=dict(requirements=[requirement.OWASP_ZAP]))
-
-    def test_sonar_version(self):
-        """ Test that the Sonar version number metric is added if required. """
-        self.__assert_metric(
-            metric.SonarVersion,
-            project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_SONAR_VERSION]))
+    def test_unittest_metrics(self):
+        """ Test that the unit test metrics are added if required. """
+        for metric_class in [metric.FailingUnittests, metric.UnittestLineCoverage, metric.UnittestBranchCoverage]:
+            self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UNITTESTS]))
 
     def test_document_age(self):
         """ Test that the document age metric is added if possible. """
-        subversion = FakeMetricSource()
-        document = domain.Document(name='Title', url='http://url/', metric_source_ids={subversion: 'http://url/'})
-        self.__assert_metric(
-            metric.DocumentAge,
-            project_kwargs=dict(metric_sources={metric_source.VersionControlSystem: subversion}, documents=[document]))
-
-    def test_document_age_without_vcs(self):
-        """ Test that the document age metric is added even if the project has no version control system configured. """
-        document = domain.Document(name='Title', url='http://url')
-        self.__assert_metric(metric.DocumentAge,
-                             project_kwargs=dict(documents=[document]))
-
-    def test_user_story_points_ready(self):
-        """ Test that the user story points ready metric is added if required. """
-        self.__assert_metric(metric.ReadyUserStoryPoints,
-                             project_kwargs=dict(requirements=[requirement.KEEP_TRACK_OF_READY_US]))
+        document = domain.Document(name='Title', url='http://url/')
+        self.__assert_metric(metric.DocumentAge, project_kwargs=dict(documents=[document]))
 
     def test_metric_classes(self):
         """ Test that the report gives a list of metric classes. """
@@ -528,61 +261,6 @@ class QualityReportMetricsTest(unittest.TestCase):
         project = domain.Project()
         self.assertEqual(project.metric_source_classes(),
                          report.QualityReport(project).included_metric_source_classes())
-
-    def test_total_loc(self):
-        """ Test that the total LOC metric is added if the project contains the trusted product maintainability
-            standard as requirement. """
-        self.__assert_metric(
-            metric.TotalLOC,
-            product_kwargs=dict(short_name='dummy'),
-            project_kwargs=dict(requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY]))
-
-    def test_java_metrics(self):
-        """ Test that the Java related Sonar version metrics are added if the project has Java as requirement. """
-        for metric_class in requirement.JAVA.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                project_kwargs=dict(requirements=[requirement.JAVA]))
-
-    def test_dotnet_metrics(self):
-        """ Test that the DotNet related version metrics are added if the project has DotNet as requirement. """
-        for metric_class in requirement.C_SHARP.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                project_kwargs=dict(requirements=[requirement.C_SHARP]))
-
-    def test_web_metrics(self):
-        """ Test that the Web related version metrics are added if the project contains Web as requirement. """
-        for metric_class in requirement.WEB.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                project_kwargs=dict(requirements=[requirement.WEB]))
-
-    def test_js_metrics(self):
-        """ Test that the JavaScript related version metrics are added if the project contains JavaScript as
-            requirement. """
-        for metric_class in requirement.JAVASCRIPT.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                project_kwargs=dict(requirements=[requirement.JAVASCRIPT]))
-
-    def test_code_quality_metrics(self):
-        """ Test that the code quality metrics are added if the product has code quality as requirement. """
-        for metric_class in requirement.CODE_QUALITY.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                product_kwargs=dict(requirements=[requirement.CODE_QUALITY]))
-
-    def test_performance_metrics(self):
-        """ Test that the response times metrics are added if required. """
-        for metric_class in requirement.PERFORMANCE.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                product_kwargs=dict(requirements=[requirement.PERFORMANCE]))
-        for metric_class in requirement.PERFORMANCE_YMOR.metric_classes():
-            self.__assert_metric(
-                metric_class,
-                product_kwargs=dict(requirements=[requirement.PERFORMANCE_YMOR]))
 
     def test_metric_class_units(self):
         """ Test that all metric classes have a unit. """
