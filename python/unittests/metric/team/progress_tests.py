@@ -70,7 +70,7 @@ class TeamProgressTest(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=invalid-name
         self.__birt = FakeBirt()
-        self.__team = domain.Team(name='ABC', is_scrum_team=True, metric_source_ids={self.__birt: 'abc'})
+        self.__team = domain.Team(name='ABC', metric_source_ids={self.__birt: 'abc'})
         self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.TeamProgress(subject=self.__team, project=self.__project)
 
@@ -88,14 +88,6 @@ class TeamProgressTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url of the metric is the url of the Birt report. """
         self.assertEqual(dict(Birt='http://birt/report/'), self.__metric.url())
-
-    def test_is_applicable(self):
-        """ Test that the metric is applicable if the team is a Scrum team. """
-        self.assertTrue(metric.TeamProgress.is_applicable(self.__team))
-
-    def test_is_not_applicable(self):
-        """ Test that the metric is not applicable if the team isn't a Scrum team. """
-        self.assertFalse(metric.TeamProgress.is_applicable(domain.Team(name='No Scrum')))
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """

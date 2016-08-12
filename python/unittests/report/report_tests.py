@@ -183,7 +183,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the team metrics are added if required. """
         for req in [requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT, requirement.TRACK_ABSENCE]:
             for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class, team_kwargs=dict(is_scrum_team=True, requirements=[req]))
+                self.__assert_metric(metric_class, team_kwargs=dict(requirements=[req]))
 
     def test_product_requirements(self):
         """ Test that the product metrics are added if required. """

@@ -1,3 +1,8 @@
+2016-08-12  Release 1.47.0
+
+  * Remove the `domain.Team` parameter `is_scrum_team` because it is no longer needed.
+  
+  
 2016-08-11  Release 1.46.0
 
   * Remove `metric.ARTStability` and `domain.Street` because the stability of automated regression tests is also

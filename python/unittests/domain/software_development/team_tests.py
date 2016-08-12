@@ -24,10 +24,6 @@ class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def setUp(self):
         self.__team = domain.Team(name='The A-team')
 
-    def test_default_scrum_team(self):
-        """ Test that a team is not a Scrum team by default. """
-        self.assertFalse(self.__team.is_scrum_team())
-
     def test_id_string(self):
         """ Test that the id string is the team name as identifier. """
         self.assertEqual('the_a-team', self.__team.id_string())

@@ -40,10 +40,6 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
     metric_source_classes = (metric_source.Birt,)
 
     @classmethod
-    def is_applicable(cls, team):
-        return team.is_scrum_team()
-
-    @classmethod
     def norm_template_default_values(cls):
         values = super(TeamProgress, cls).norm_template_default_values()
         values['target_factor'] = cls.target_factor

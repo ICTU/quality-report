@@ -22,12 +22,11 @@ from .requirement import RequirementSubject
 class Team(RequirementSubject, MeasurableObject):
     """ Class for representing a team. """
 
-    def __init__(self, short_name=None, is_scrum_team=False, *args, **kwargs):
+    def __init__(self, short_name=None, *args, **kwargs):
         super(Team, self).__init__(*args, **kwargs)
         if short_name:
             assert len(short_name) == 2
         self.__short_name = short_name or self.name()[:2].upper()
-        self.__is_scrum_team = is_scrum_team
         self.__members = set()
 
     def __eq__(self, other):
@@ -43,10 +42,6 @@ class Team(RequirementSubject, MeasurableObject):
     def short_name(self):
         """ Return an abbreviation of the team name. """
         return self.__short_name
-
-    def is_scrum_team(self):
-        """ Return whether this team is a Scrum team, which means it is doing product development. """
-        return self.__is_scrum_team
 
     def team_resources(self):
         """ Return the resources of the team. """
