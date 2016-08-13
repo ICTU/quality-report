@@ -28,12 +28,12 @@ class QualityReport(domain.DomainObject):
         """ Return a list of all requirements that the report can report on. """
         return [requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
                 requirement.CODE_QUALITY, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR,
-                requirement.KEEP_TRACK_OF_ACTIONS, requirement.KEEP_TRACK_OF_RISKS, requirement.KEEP_TRACK_OF_BUGS,
-                requirement.KEEP_TRACK_OF_TECHNICAL_DEBT, requirement.KEEP_TRACK_OF_MANUAL_LTCS,
-                requirement.KEEP_TRACK_OF_READY_US, requirement.KEEP_TRACK_OF_CI_JOBS,
-                requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY, requirement.KEEP_TRACK_OF_SONAR_VERSION,
+                requirement.TRACK_ACTIONS, requirement.TRACK_RISKS, requirement.TRACK_BUGS,
+                requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS,
+                requirement.TRACK_READY_US, requirement.TRACK_CI_JOBS,
+                requirement.TRACK_JAVA_CONSISTENCY, requirement.TRACK_SONAR_VERSION,
                 requirement.TRACK_DOCUMENT_AGE, requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT,
-                requirement.TRACK_ABSENCE, requirement.NO_SNAPSHOT_DEPENDENCIES, requirement.OWASP,
+                requirement.TRACK_ABSENCE, requirement.NO_SNAPSHOT_DEPENDENCIES, requirement.OWASP_DEPENDENCIES,
                 requirement.OWASP_ZAP, requirement.JAVA, requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB,
                 requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.TRACK_BRANCHES]
 
@@ -140,19 +140,19 @@ class QualityReport(domain.DomainObject):
 
     def __process_section(self):
         """ Return the process section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.KEEP_TRACK_OF_ACTIONS,
-                                                  requirement.KEEP_TRACK_OF_RISKS, requirement.KEEP_TRACK_OF_BUGS,
-                                                  requirement.KEEP_TRACK_OF_TECHNICAL_DEBT,
-                                                  requirement.KEEP_TRACK_OF_MANUAL_LTCS,
-                                                  requirement.KEEP_TRACK_OF_READY_US)
+        metrics = self.__required_subject_metrics(self.__project, requirement.TRACK_ACTIONS,
+                                                  requirement.TRACK_RISKS, requirement.TRACK_BUGS,
+                                                  requirement.TRACK_TECHNICAL_DEBT,
+                                                  requirement.TRACK_MANUAL_LTCS,
+                                                  requirement.TRACK_READY_US)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
 
     def __environment_section(self):
         """ Return the environment section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.KEEP_TRACK_OF_CI_JOBS,
-                                                  requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY,
-                                                  requirement.KEEP_TRACK_OF_SONAR_VERSION, requirement.JAVA,
+        metrics = self.__required_subject_metrics(self.__project, requirement.TRACK_CI_JOBS,
+                                                  requirement.TRACK_JAVA_CONSISTENCY,
+                                                  requirement.TRACK_SONAR_VERSION, requirement.JAVA,
                                                   requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
@@ -170,7 +170,7 @@ class QualityReport(domain.DomainObject):
         metrics = self.__required_subject_metrics(product, requirement.UNITTESTS, requirement.ART,
                                                   requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
                                                   requirement.CODE_QUALITY, requirement.PERFORMANCE,
-                                                  requirement.PERFORMANCE_YMOR, requirement.OWASP,
+                                                  requirement.PERFORMANCE_YMOR, requirement.OWASP_DEPENDENCIES,
                                                   requirement.OWASP_ZAP)
         for metric_class in requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes():
             if metric_class.should_be_measured(product) and metric_class.is_applicable(product):

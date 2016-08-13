@@ -20,7 +20,7 @@ from ..domain import Requirement
 from .. import metric
 
 
-OWASP = Requirement(
+OWASP_DEPENDENCIES = Requirement(
     name='OWASP Top 10 2013',
     url='https://www.owasp.org/',
     metric_classes=(metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings))

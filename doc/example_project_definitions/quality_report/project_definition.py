@@ -32,8 +32,8 @@ PROJECT = Project('Organization name', name='Quality Report',
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
                   requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.WEB, requirement.JAVASCRIPT,
-                                requirement.JAVA, requirement.KEEP_TRACK_OF_CI_JOBS,
-                                requirement.KEEP_TRACK_OF_SONAR_VERSION])
+                                requirement.JAVA, requirement.TRACK_CI_JOBS,
+                                requirement.TRACK_SONAR_VERSION])
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', requirements=[requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT])

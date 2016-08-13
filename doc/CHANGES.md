@@ -1,3 +1,8 @@
+2016-08-13  Release 1.48.0
+
+  * Consistent requirement names.
+
+
 2016-08-12  Release 1.47.0
 
   * Remove the `domain.Team` parameter `is_scrum_team` because it is no longer needed.

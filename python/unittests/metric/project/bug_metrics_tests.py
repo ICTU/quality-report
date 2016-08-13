@@ -58,7 +58,7 @@ class OpenBugsTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
-                                        requirements=[requirement.KEEP_TRACK_OF_BUGS])
+                                        requirements=[requirement.TRACK_BUGS])
         self.__metric = metric.OpenBugs(project=self.__project)
 
     def test_value(self):
@@ -79,7 +79,7 @@ class OpenSecurityBugsTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
-                                        requirements=[requirement.KEEP_TRACK_OF_BUGS])
+                                        requirements=[requirement.TRACK_BUGS])
         self.__metric = metric.OpenSecurityBugs(project=self.__project)
 
     def test_value(self):
@@ -100,7 +100,7 @@ class TechnicalDebtIssuesTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
-                                        requirements=[requirement.KEEP_TRACK_OF_TECHNICAL_DEBT])
+                                        requirements=[requirement.TRACK_TECHNICAL_DEBT])
         self.__metric = metric.TechnicalDebtIssues(project=self.__project)
 
     def test_value(self):

@@ -18,14 +18,14 @@ from ..domain import Requirement
 from .. import metric
 
 
-KEEP_TRACK_OF_JAVA_CONSISTENCY = Requirement(
+TRACK_JAVA_CONSISTENCY = Requirement(
     name='Track Java consistency',
     metric_classes=(metric.JavaVersionConsistency,))
 
-KEEP_TRACK_OF_CI_JOBS = Requirement(
+TRACK_CI_JOBS = Requirement(
     name='Track status and usage of continuous integration jobs',
     metric_classes=(metric.FailingCIJobs, metric.UnusedCIJobs))
 
-KEEP_TRACK_OF_SONAR_VERSION = Requirement(
+TRACK_SONAR_VERSION = Requirement(
     name='Track Sonar version',
     metric_classes=(metric.SonarVersion,))

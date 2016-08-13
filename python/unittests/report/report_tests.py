@@ -171,11 +171,11 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
         for req in [requirement.JAVA, requirement.C_SHARP, requirement.WEB, requirement.JAVASCRIPT,
-                    requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.KEEP_TRACK_OF_READY_US,
-                    requirement.KEEP_TRACK_OF_SONAR_VERSION, requirement.KEEP_TRACK_OF_ACTIONS,
-                    requirement.KEEP_TRACK_OF_RISKS, requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY,
-                    requirement.KEEP_TRACK_OF_CI_JOBS, requirement.KEEP_TRACK_OF_TECHNICAL_DEBT,
-                    requirement.KEEP_TRACK_OF_BUGS, requirement.KEEP_TRACK_OF_MANUAL_LTCS]:
+                    requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.TRACK_READY_US,
+                    requirement.TRACK_SONAR_VERSION, requirement.TRACK_ACTIONS,
+                    requirement.TRACK_RISKS, requirement.TRACK_JAVA_CONSISTENCY,
+                    requirement.TRACK_CI_JOBS, requirement.TRACK_TECHNICAL_DEBT,
+                    requirement.TRACK_BUGS, requirement.TRACK_MANUAL_LTCS]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(requirements=[req]))
 
@@ -194,7 +194,7 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_product_requirements(self):
         """ Test that the product metrics are added if required. """
         for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE,
-                    requirement.USER_STORIES_AND_LTCS, requirement.TRACK_BRANCHES, requirement.OWASP,
+                    requirement.USER_STORIES_AND_LTCS, requirement.TRACK_BRANCHES, requirement.OWASP_DEPENDENCIES,
                     requirement.OWASP_ZAP, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]))

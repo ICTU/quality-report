@@ -27,26 +27,26 @@ USER_STORIES_AND_LTCS = Requirement(
                     metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
                     metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases))
 
-KEEP_TRACK_OF_MANUAL_LTCS = Requirement(
-    name='Keep track of manual logical test cases',
+TRACK_MANUAL_LTCS = Requirement(
+    name='Track manual logical test cases',
     metric_classes=(metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration))
 
-KEEP_TRACK_OF_BUGS = Requirement(
-    name='Keep track of open bug reports',
+TRACK_BUGS = Requirement(
+    name='Track open bug reports',
     metric_classes=(metric.OpenBugs, metric.OpenSecurityBugs))
 
-KEEP_TRACK_OF_TECHNICAL_DEBT = Requirement(
-    name='Keep track of technical debt',
+TRACK_TECHNICAL_DEBT = Requirement(
+    name='Track technical debt',
     metric_classes=(metric.TechnicalDebtIssues,))
 
-KEEP_TRACK_OF_ACTIONS = Requirement(
-    name='Keep track of actions',
+TRACK_ACTIONS = Requirement(
+    name='Track actions',
     metric_classes=(metric.ActionActivity, metric.ActionAge))
 
-KEEP_TRACK_OF_RISKS = Requirement(
-    name='Keep track of risks',
+TRACK_RISKS = Requirement(
+    name='Track risks',
     metric_classes=(metric.RiskLog,))
 
-KEEP_TRACK_OF_READY_US = Requirement(
-    name='Keep track of ready user stories',
+TRACK_READY_US = Requirement(
+    name='Track ready user stories',
     metric_classes=(metric.ReadyUserStoryPoints,))
