@@ -17,79 +17,38 @@ limitations under the License.
 import datetime
 
 from .section import Section, SectionHeader
-from .. import metric, metric_source, metric_info, domain
+from .. import metric, metric_source, metric_info, domain, requirement
 
 
 class QualityReport(domain.DomainObject):
     """ Quality report on a project. """
 
-    TEST_COVERAGE_METRIC_CLASSES = (metric.FailingUnittests,
-                                    metric.UnittestLineCoverage,
-                                    metric.UnittestBranchCoverage,
-                                    metric.IntegrationtestLineCoverage,
-                                    metric.IntegrationtestBranchCoverage,
-                                    metric.UnitAndIntegrationTestLineCoverage,
-                                    metric.UnitAndIntegrationTestBranchCoverage,
-                                    metric.FailingRegressionTests,
-                                    metric.RegressionTestAge,
-                                    metric.ARTStatementCoverage,
-                                    metric.ARTBranchCoverage)
-    TEST_DESIGN_METRIC_CLASSES = (metric.UserStoriesNotReviewed,
-                                  metric.UserStoriesNotApproved,
-                                  metric.LogicalTestCasesNotReviewed,
-                                  metric.LogicalTestCasesNotApproved,
-                                  metric.UserStoriesWithTooFewLogicalTestCases,
-                                  metric.LogicalTestCasesNotAutomated,
-                                  metric.ManualLogicalTestCases,
-                                  metric.NumberOfManualLogicalTestCases)
-    CODE_METRIC_CLASSES = (metric.BlockerViolations, metric.CriticalViolations,
-                           metric.MajorViolations, metric.CyclomaticComplexity,
-                           metric.CyclicDependencies, metric.JavaDuplication,
-                           metric.ProductLOC, metric.LongMethods,
-                           metric.ManyParameters, metric.CommentedLOC,
-                           metric.NoSonar, metric.FalsePositives,
-                           metric.SonarAnalysisAge)
-    DEPENDENCY_METRIC_CLASSES = (metric.SnapshotDependencies,)
-    SECURITY_METRIC_CLASSES = (metric.HighPriorityOWASPDependencyWarnings,
-                               metric.NormalPriorityOWASPDependencyWarnings,
-                               metric.HighRiskZAPScanAlertsMetric,
-                               metric.MediumRiskZAPScanAlertsMetric)
-    PERFORMANCE_METRIC_CLASSES = (metric.ResponseTimes,
-                                  metric.YmorResponseTimes)
-    ENVIRONMENT_METRIC_CLASSES = (metric.FailingCIJobs,
-                                  metric.UnusedCIJobs,
-                                  metric.JavaVersionConsistency,
-                                  metric.SonarVersion)
-    DOCUMENT_METRIC_CLASSES = (metric.DocumentAge,)
-    TEAM_METRIC_CLASSES = (metric.TeamProgress, metric.TeamSpirit, metric.TeamAbsence)
-    META_METRIC_CLASSES = (metric.GreenMetaMetric, metric.RedMetaMetric,
-                           metric.YellowMetaMetric, metric.GreyMetaMetric,
-                           metric.MissingMetaMetric)
-    SONAR_PLUGIN_METRIC_CLASSES = (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle,
-                                   metric.SonarPluginVersionPMD, metric.SonarPluginVersionFindBugs,
-                                   metric.SonarPluginVersionCSharp, metric.SonarPluginVersionJS,
-                                   metric.SonarPluginVersionReSharper, metric.SonarPluginVersionStyleCop,
-                                   metric.SonarPluginVersionWeb)
-    SONAR_QUALITY_PROFILE_METRIC_CLASSES = (metric.SonarQualityProfileVersionJava,
-                                            metric.SonarQualityProfileVersionCSharp,
-                                            metric.SonarQualityProfileVersionWeb, metric.SonarQualityProfileVersionJS)
-    MANAGEMENT_METRIC_CLASSES = (metric.ActionActivity, metric.ActionAge, metric.RiskLog)
-    BUGS_METRIC_CLASSES = (metric.OpenBugs, metric.OpenSecurityBugs, metric.TechnicalDebtIssues)
-    PROCESS_SECTION_METRIC_CLASSES = MANAGEMENT_METRIC_CLASSES + BUGS_METRIC_CLASSES + \
-                                     (metric.DurationOfManualLogicalTestCases,
-                                      metric.ManualLogicalTestCasesWithoutDuration,
-                                      metric.ReadyUserStoryPoints)
-    META_SECTION_METRIC_CLASSES = META_METRIC_CLASSES
-    TEAM_SECTION_METRIC_CLASSES = TEAM_METRIC_CLASSES
-
     @classmethod
     def metric_classes(cls):
         """ Return a list of metric classes that the report can measure. """
-        return cls.TEST_COVERAGE_METRIC_CLASSES + cls.TEST_DESIGN_METRIC_CLASSES + cls.CODE_METRIC_CLASSES + \
-            cls.PERFORMANCE_METRIC_CLASSES + cls.PROCESS_SECTION_METRIC_CLASSES + cls.ENVIRONMENT_METRIC_CLASSES + \
-            cls.DOCUMENT_METRIC_CLASSES + cls.TEAM_METRIC_CLASSES + cls.DEPENDENCY_METRIC_CLASSES + \
-            cls.SECURITY_METRIC_CLASSES + cls.SONAR_PLUGIN_METRIC_CLASSES + cls.SONAR_QUALITY_PROFILE_METRIC_CLASSES + \
-            (metric.TotalLOC, metric.UnmergedBranches)
+        return requirement.UNITTESTS.metric_classes() + requirement.ART.metric_classes() + \
+            requirement.ART_COVERAGE.metric_classes() + requirement.USER_STORIES_AND_LTCS.metric_classes() + \
+            requirement.CODE_QUALITY.metric_classes() + requirement.PERFORMANCE.metric_classes() + \
+            requirement.PERFORMANCE_YMOR.metric_classes() + \
+            requirement.KEEP_TRACK_OF_ACTIONS.metric_classes() + \
+            requirement.KEEP_TRACK_OF_RISKS.metric_classes() + \
+            requirement.KEEP_TRACK_OF_BUGS.metric_classes() + \
+            requirement.KEEP_TRACK_OF_TECHNICAL_DEBT.metric_classes() + \
+            requirement.KEEP_TRACK_OF_MANUAL_LTCS.metric_classes() + \
+            requirement.KEEP_TRACK_OF_READY_US.metric_classes() + \
+            requirement.KEEP_TRACK_OF_CI_JOBS.metric_classes() + \
+            requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY.metric_classes() + \
+            requirement.KEEP_TRACK_OF_SONAR_VERSION.metric_classes() + \
+            requirement.TRACK_DOCUMENT_AGE.metric_classes() + \
+            requirement.SCRUM_TEAM.metric_classes() + \
+            requirement.TRACK_SPIRIT.metric_classes() + \
+            requirement.TRACK_ABSENCE.metric_classes() + \
+            requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes() + \
+            requirement.OWASP.metric_classes() + requirement.OWASP_ZAP.metric_classes() + \
+            requirement.JAVA.metric_classes() + requirement.C_SHARP.metric_classes() + \
+            requirement.JAVASCRIPT.metric_classes() + requirement.WEB.metric_classes() + \
+            requirement.TRUSTED_PRODUCT_MAINTAINABILITY.metric_classes() + \
+            requirement.TRACK_BRANCHES.metric_classes()
 
     @classmethod
     def metric_source_classes(cls):
@@ -189,46 +148,52 @@ class QualityReport(domain.DomainObject):
 
     def __process_section(self):
         """ Return the process section. """
-        metrics = self.__mandatory_subject_metrics(self.__project, self.PROCESS_SECTION_METRIC_CLASSES)
+        metrics = self.__required_subject_metrics(self.__project, requirement.KEEP_TRACK_OF_ACTIONS,
+                                                  requirement.KEEP_TRACK_OF_RISKS, requirement.KEEP_TRACK_OF_BUGS,
+                                                  requirement.KEEP_TRACK_OF_TECHNICAL_DEBT,
+                                                  requirement.KEEP_TRACK_OF_MANUAL_LTCS,
+                                                  requirement.KEEP_TRACK_OF_READY_US)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
 
     def __environment_section(self):
         """ Return the environment section. """
-        metrics = self.__mandatory_subject_metrics(self.__project, self.ENVIRONMENT_METRIC_CLASSES +
-                                                   self.SONAR_PLUGIN_METRIC_CLASSES +
-                                                   self.SONAR_QUALITY_PROFILE_METRIC_CLASSES)
+        metrics = self.__required_subject_metrics(self.__project, requirement.KEEP_TRACK_OF_CI_JOBS,
+                                                  requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY,
+                                                  requirement.KEEP_TRACK_OF_SONAR_VERSION, requirement.JAVA,
+                                                  requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
 
     def __overall_products_section(self):
         """ Return the products overall section. """
-        metrics = []
-        if metric.TotalLOC.should_be_measured(self.__project):
-            metrics.append(metric.TotalLOC(subject=self.__project, project=self.__project))
+        metrics = self.__required_subject_metrics(self.__project, requirement.TRUSTED_PRODUCT_MAINTAINABILITY)
         for document in self.__project.documents():
-            metrics.append(metric.DocumentAge(document, project=self.__project))
+            metrics.extend(self.__required_subject_metrics(document, requirement.TRACK_DOCUMENT_AGE))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics) if metrics else None
 
     def __product_section(self, product):
         """ Return the section for the product. """
-        metrics = self.__mandatory_subject_metrics(product, self.TEST_COVERAGE_METRIC_CLASSES +
-                                                   self.TEST_DESIGN_METRIC_CLASSES + self.CODE_METRIC_CLASSES +
-                                                   self.PERFORMANCE_METRIC_CLASSES + self.SECURITY_METRIC_CLASSES)
-        if metric.SnapshotDependencies.should_be_measured(product) and \
-                metric.SnapshotDependencies.is_applicable(product):
-            metrics.append(metric.SnapshotDependencies(product, report=self, project=self.__project))
+        metrics = self.__required_subject_metrics(product, requirement.UNITTESTS, requirement.ART,
+                                                  requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
+                                                  requirement.CODE_QUALITY, requirement.PERFORMANCE,
+                                                  requirement.PERFORMANCE_YMOR, requirement.OWASP,
+                                                  requirement.OWASP_ZAP)
+        for metric_class in requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes():
+            if metric_class.should_be_measured(product) and metric_class.is_applicable(product):
+                metrics.append(metric_class(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
-        metrics.extend(self.__mandatory_subject_metrics(product, [metric.UnmergedBranches]))
+        metrics.extend(self.__required_subject_metrics(product, requirement.TRACK_BRANCHES))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(), product.name(), self.__latest_product_version(product)),
                        metrics, product=product) if metrics else None
 
     def __team_section(self, team):
         """ Return a report section for the team. """
-        metrics = self.__mandatory_subject_metrics(team, self.TEAM_SECTION_METRIC_CLASSES)
+        metrics = self.__required_subject_metrics(team, requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT,
+                                                  requirement.TRACK_ABSENCE)
         self.__metrics.extend(metrics)
         return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics) if metrics else None
 
@@ -238,7 +203,8 @@ class QualityReport(domain.DomainObject):
         for section in sections:
             metrics.extend(section.metrics())
         meta_metrics = [meta_metric_class(metrics, project=self.__project) for
-                        meta_metric_class in self.META_SECTION_METRIC_CLASSES]
+                        meta_metric_class in (metric.GreenMetaMetric, metric.RedMetaMetric, metric.YellowMetaMetric,
+                                              metric.GreyMetaMetric, metric.MissingMetaMetric)]
         self.__metrics.extend(meta_metrics)
         return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,
                        history=self.__project.metric_source(metric_source.History))
@@ -251,20 +217,20 @@ class QualityReport(domain.DomainObject):
         if art.product_version_type() == 'trunk':
             # Only add the ART if we're reporting on the trunk version because we currently can only report on the
             # trunk version of the ART.
-            metrics.extend(self.__mandatory_subject_metrics(art, self.CODE_METRIC_CLASSES +
-                                                            (metric.ARTStatementCoverage, metric.ARTBranchCoverage,
-                                                             metric.FailingRegressionTests, metric.RegressionTestAge)))
-        metrics.extend(self.__mandatory_subject_metrics(art, [metric.UnmergedBranches]))
+            metrics.extend(self.__required_subject_metrics(art, requirement.CODE_QUALITY, requirement.ART_COVERAGE,
+                                                           requirement.ART))
+        metrics.extend(self.__required_subject_metrics(art, requirement.TRACK_BRANCHES))
         return metrics
 
     def __jsf_metrics(self, jsf):
         """ Return a list of JSF metrics for the (JSF) product. """
-        return self.__mandatory_subject_metrics(jsf, (metric.JsfDuplication, metric.ProductLOC)) if jsf else []
+        return self.__required_subject_metrics(jsf, requirement.JSF_CODE_QUALITY) if jsf else []
 
-    def __mandatory_subject_metrics(self, subject, metric_classes):
-        """ Return a list of metrics for the subject that should be measured. """
+    def __required_subject_metrics(self, subject, *requirements):
+        """ Return a list of metrics for the subject that should be measured and are applicable. """
         metrics = []
-        for metric_class in metric_classes:
-            if metric_class.should_be_measured(subject) and metric_class.is_applicable(subject):
-                metrics.append(metric_class(subject, project=self.__project))
+        for req in requirements:
+            for metric_class in req.metric_classes():
+                if metric_class.should_be_measured(subject) and metric_class.is_applicable(subject):
+                    metrics.append(metric_class(subject, project=self.__project))
         return metrics

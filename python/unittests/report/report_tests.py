@@ -185,6 +185,12 @@ class QualityReportMetricsTest(unittest.TestCase):
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, team_kwargs=dict(requirements=[req]))
 
+    def test_document_requirements(self):
+        """ Test that the document metrics are added if a document is added to the project. """
+        for req in [requirement.TRACK_DOCUMENT_AGE]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, project_kwargs=dict(documents=[domain.Document()]))
+
     def test_product_requirements(self):
         """ Test that the product metrics are added if required. """
         for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE,

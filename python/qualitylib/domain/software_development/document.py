@@ -16,10 +16,16 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..measurement.measurable import MeasurableObject
+from .requirement import RequirementSubject
 
 
-class Document(MeasurableObject):
+class Document(RequirementSubject, MeasurableObject):
     """ Class representing a document. """
+
+    def __init__(self, *args, **kwargs):
+        from ... import requirement  # Run time import to prevent circular dependency.
+        kwargs['requirements'] = [requirement.TRACK_DOCUMENT_AGE]
+        super(Document, self).__init__(*args, **kwargs)
 
     def __str__(self):
         """ Return the id string of the document. """

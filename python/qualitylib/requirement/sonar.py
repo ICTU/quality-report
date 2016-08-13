@@ -22,18 +22,18 @@ from .. import metric
 
 JAVA = Requirement(
     name='Java',
-    metric_classes={metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
-                    metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava})
+    metric_classes=(metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
+                    metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava))
 
 C_SHARP = Requirement(
     name='C#',
-    metric_classes={metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
-                    metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp})
+    metric_classes=(metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
+                    metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp))
 
 JAVASCRIPT = Requirement(
     name='JavaScript',
-    metric_classes={metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS})
+    metric_classes=(metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS))
 
 WEB = Requirement(
     name='Web',
-    metric_classes={metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb})
+    metric_classes=(metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb))

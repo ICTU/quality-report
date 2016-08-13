@@ -22,12 +22,12 @@ from .. import metric
 
 SCRUM_TEAM = Requirement(
     name='Scrum team',
-    metric_classes={metric.TeamProgress})
+    metric_classes=(metric.TeamProgress,))
 
 TRACK_SPIRIT = Requirement(
     name='Track spirit',
-    metric_classes={metric.TeamSpirit})
+    metric_classes=(metric.TeamSpirit,))
 
 TRACK_ABSENCE = Requirement(
     name='Track absence',
-    metric_classes={metric.TeamAbsence})
+    metric_classes=(metric.TeamAbsence,))

@@ -14,18 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import absolute_import
+
 from ..domain import Requirement
 from .. import metric
 
 
-KEEP_TRACK_OF_JAVA_CONSISTENCY = Requirement(
-    name='Track Java consistency',
-    metric_classes=(metric.JavaVersionConsistency,))
-
-KEEP_TRACK_OF_CI_JOBS = Requirement(
-    name='Track status and usage of continuous integration jobs',
-    metric_classes=(metric.FailingCIJobs, metric.UnusedCIJobs))
-
-KEEP_TRACK_OF_SONAR_VERSION = Requirement(
-    name='Track Sonar version',
-    metric_classes=(metric.SonarVersion,))
+TRACK_DOCUMENT_AGE = Requirement(
+    name='Track document age',
+    metric_classes=(metric.DocumentAge,))

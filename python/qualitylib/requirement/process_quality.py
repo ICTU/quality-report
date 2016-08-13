@@ -22,31 +22,31 @@ from .. import metric
 
 USER_STORIES_AND_LTCS = Requirement(
     name='User stories and logical test cases',
-    metric_classes={metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
+    metric_classes=(metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
                     metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
                     metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
-                    metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases})
+                    metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases))
 
 KEEP_TRACK_OF_MANUAL_LTCS = Requirement(
     name='Keep track of manual logical test cases',
-    metric_classes={metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration})
+    metric_classes=(metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration))
 
 KEEP_TRACK_OF_BUGS = Requirement(
     name='Keep track of open bug reports',
-    metric_classes=[metric.OpenBugs, metric.OpenSecurityBugs])
+    metric_classes=(metric.OpenBugs, metric.OpenSecurityBugs))
 
 KEEP_TRACK_OF_TECHNICAL_DEBT = Requirement(
     name='Keep track of technical debt',
-    metric_classes=[metric.TechnicalDebtIssues])
+    metric_classes=(metric.TechnicalDebtIssues,))
 
 KEEP_TRACK_OF_ACTIONS = Requirement(
     name='Keep track of actions',
-    metric_classes=[metric.ActionActivity, metric.ActionAge])
+    metric_classes=(metric.ActionActivity, metric.ActionAge))
 
 KEEP_TRACK_OF_RISKS = Requirement(
     name='Keep track of risks',
-    metric_classes=[metric.RiskLog])
+    metric_classes=(metric.RiskLog,))
 
 KEEP_TRACK_OF_READY_US = Requirement(
     name='Keep track of ready user stories',
-    metric_classes=[metric.ReadyUserStoryPoints])
+    metric_classes=(metric.ReadyUserStoryPoints,))
