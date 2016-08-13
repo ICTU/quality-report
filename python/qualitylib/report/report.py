@@ -24,31 +24,23 @@ class QualityReport(domain.DomainObject):
     """ Quality report on a project. """
 
     @classmethod
+    def __requirements(cls):
+        """ Return a list of all requirements that the report can report on. """
+        return [requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
+                requirement.CODE_QUALITY, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR,
+                requirement.KEEP_TRACK_OF_ACTIONS, requirement.KEEP_TRACK_OF_RISKS, requirement.KEEP_TRACK_OF_BUGS,
+                requirement.KEEP_TRACK_OF_TECHNICAL_DEBT, requirement.KEEP_TRACK_OF_MANUAL_LTCS,
+                requirement.KEEP_TRACK_OF_READY_US, requirement.KEEP_TRACK_OF_CI_JOBS,
+                requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY, requirement.KEEP_TRACK_OF_SONAR_VERSION,
+                requirement.TRACK_DOCUMENT_AGE, requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT,
+                requirement.TRACK_ABSENCE, requirement.NO_SNAPSHOT_DEPENDENCIES, requirement.OWASP,
+                requirement.OWASP_ZAP, requirement.JAVA, requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB,
+                requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.TRACK_BRANCHES]
+
+    @classmethod
     def metric_classes(cls):
         """ Return a list of metric classes that the report can measure. """
-        return requirement.UNITTESTS.metric_classes() + requirement.ART.metric_classes() + \
-            requirement.ART_COVERAGE.metric_classes() + requirement.USER_STORIES_AND_LTCS.metric_classes() + \
-            requirement.CODE_QUALITY.metric_classes() + requirement.PERFORMANCE.metric_classes() + \
-            requirement.PERFORMANCE_YMOR.metric_classes() + \
-            requirement.KEEP_TRACK_OF_ACTIONS.metric_classes() + \
-            requirement.KEEP_TRACK_OF_RISKS.metric_classes() + \
-            requirement.KEEP_TRACK_OF_BUGS.metric_classes() + \
-            requirement.KEEP_TRACK_OF_TECHNICAL_DEBT.metric_classes() + \
-            requirement.KEEP_TRACK_OF_MANUAL_LTCS.metric_classes() + \
-            requirement.KEEP_TRACK_OF_READY_US.metric_classes() + \
-            requirement.KEEP_TRACK_OF_CI_JOBS.metric_classes() + \
-            requirement.KEEP_TRACK_OF_JAVA_CONSISTENCY.metric_classes() + \
-            requirement.KEEP_TRACK_OF_SONAR_VERSION.metric_classes() + \
-            requirement.TRACK_DOCUMENT_AGE.metric_classes() + \
-            requirement.SCRUM_TEAM.metric_classes() + \
-            requirement.TRACK_SPIRIT.metric_classes() + \
-            requirement.TRACK_ABSENCE.metric_classes() + \
-            requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes() + \
-            requirement.OWASP.metric_classes() + requirement.OWASP_ZAP.metric_classes() + \
-            requirement.JAVA.metric_classes() + requirement.C_SHARP.metric_classes() + \
-            requirement.JAVASCRIPT.metric_classes() + requirement.WEB.metric_classes() + \
-            requirement.TRUSTED_PRODUCT_MAINTAINABILITY.metric_classes() + \
-            requirement.TRACK_BRANCHES.metric_classes()
+        return [metric_class for req in cls.__requirements() for metric_class in req.metric_classes()]
 
     @classmethod
     def metric_source_classes(cls):
