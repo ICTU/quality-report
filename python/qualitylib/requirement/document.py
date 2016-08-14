@@ -22,4 +22,5 @@ from .. import metric
 
 TRACK_DOCUMENT_AGE = Requirement(
     name='Track document age',
+    identifier='TRACK_DOCUMENT_AGE',
     metric_classes=(metric.DocumentAge,))

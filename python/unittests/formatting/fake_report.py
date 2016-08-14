@@ -18,7 +18,7 @@ limitations under the License.
 
 import datetime
 
-from qualitylib import metric, metric_source
+from qualitylib import metric, metric_source, requirement
 from unittests.formatting import fake_domain
 
 
@@ -92,6 +92,16 @@ class Report(object):
         self.__teams = teams or []
         self.__meta_metrics = [fake_domain.Metric('MM-%d' % nr) for nr in range(1, number_of_meta_metrics)]
         self.project_metric_sources = project_metric_sources or dict()
+
+    @staticmethod
+    def requirements():
+        """ Return the requirements the report can report on. """
+        return {requirement.ART, requirement.ART_COVERAGE}
+
+    @staticmethod
+    def included_requirements():
+        """ Return the requirements actually included in the report. """
+        return {requirement.ART_COVERAGE}
 
     @staticmethod
     def metric_classes():

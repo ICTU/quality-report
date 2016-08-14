@@ -1,3 +1,8 @@
+2016-08-14  Release 1.49.0
+
+  * List all requirements in the help menu and indicate which are included in the current report.
+  
+  
 2016-08-13  Release 1.48.0
 
   * Consistent requirement names.

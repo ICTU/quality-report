@@ -22,11 +22,16 @@ class Requirement(DomainObject):
     """ Domain object representing a project requirement. """
     def __init__(self, *args, **kwargs):
         self.__metric_classes = kwargs.pop('metric_classes', tuple())
+        self.__id = kwargs.pop('identifier')
         super(Requirement, self).__init__(*args, **kwargs)
 
     def metric_classes(self):
         """ Return the metrics that have to be measured to satisfy this requirement. """
         return self.__metric_classes
+
+    def id(self):
+        """ Return the identifier of the requirement instance that can be used in the project definition. """
+        return self.__id
 
 
 class RequirementSubject(DomainObject):

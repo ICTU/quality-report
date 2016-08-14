@@ -24,7 +24,7 @@ class QualityReport(domain.DomainObject):
     """ Quality report on a project. """
 
     @classmethod
-    def __requirements(cls):
+    def requirements(cls):
         """ Return a list of all requirements that the report can report on. """
         return [requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
                 requirement.CODE_QUALITY, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR,
@@ -39,7 +39,7 @@ class QualityReport(domain.DomainObject):
     @classmethod
     def metric_classes(cls):
         """ Return a list of metric classes that the report can measure. """
-        return [metric_class for req in cls.__requirements() for metric_class in req.metric_classes()]
+        return [metric_class for req in cls.requirements() for metric_class in req.metric_classes()]
 
     @classmethod
     def metric_source_classes(cls):
@@ -59,6 +59,7 @@ class QualityReport(domain.DomainObject):
         self.__sections = []
         self.__meta_section = None
         self.__metrics = []
+        self.__requirements = set()
 
     def __str__(self):
         return self.__title
@@ -114,6 +115,10 @@ class QualityReport(domain.DomainObject):
     def included_metric_classes(self):
         """ Return the metric classes included in the report. """
         return {each_metric.__class__ for each_metric in self.__metrics}
+
+    def included_requirements(self):
+        """ Return the requirements included in the report. """
+        return self.__requirements.copy()
 
     def included_metric_source_classes(self):
         """ Return the metric classes actually configured in the project. """
@@ -172,6 +177,7 @@ class QualityReport(domain.DomainObject):
                                                   requirement.OWASP_ZAP)
         for metric_class in requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes():
             if metric_class.should_be_measured(product) and metric_class.is_applicable(product):
+                self.__requirements.add(requirement.NO_SNAPSHOT_DEPENDENCIES)
                 metrics.append(metric_class(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
@@ -222,5 +228,6 @@ class QualityReport(domain.DomainObject):
         for req in requirements:
             for metric_class in req.metric_classes():
                 if metric_class.should_be_measured(subject) and metric_class.is_applicable(subject):
+                    self.__requirements.add(req)
                     metrics.append(metric_class(subject, project=self.__project))
         return metrics

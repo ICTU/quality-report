@@ -22,7 +22,8 @@ from qualitylib import domain
 class RequirementTest(unittest.TestCase):
     """ Unit tests for the Requirement domain class. """
     def setUp(self):
-        self.__requirement = domain.Requirement(name='Be user friendly', metric_classes=['FakeMetricClass'])
+        self.__requirement = domain.Requirement(name='Be user friendly', identifier='REQ',
+                                                metric_classes=['FakeMetricClass'])
 
     def test_name(self):
         """ Test the name of the requirement. """
@@ -32,11 +33,15 @@ class RequirementTest(unittest.TestCase):
         """ Test that the metric classes can be retrieved. """
         self.assertEqual(['FakeMetricClass'], self.__requirement.metric_classes())
 
+    def test_id(self):
+        """ Test that the id is correct. """
+        self.assertEqual('REQ', self.__requirement.id())
+
 
 class RequirementSubjectTest(unittest.TestCase):
     """ Unit tests for the Requirement Subject domain class. """
     def setUp(self):
-        self.__requirement = domain.Requirement('A requirement', metric_classes=['FakeMetricClass'])
+        self.__requirement = domain.Requirement('A requirement', identifier='REQ', metric_classes=['FakeMetricClass'])
         self.__subject = domain.software_development.requirement.RequirementSubject(requirements=[self.__requirement])
 
     def test_requirements(self):

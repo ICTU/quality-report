@@ -20,12 +20,15 @@ from .. import metric
 
 TRACK_JAVA_CONSISTENCY = Requirement(
     name='Track Java consistency',
+    identifier='TRACK_JAVA_CONSISTENCY',
     metric_classes=(metric.JavaVersionConsistency,))
 
 TRACK_CI_JOBS = Requirement(
     name='Track status and usage of continuous integration jobs',
+    identifier='TRACK_CI_JOBS',
     metric_classes=(metric.FailingCIJobs, metric.UnusedCIJobs))
 
 TRACK_SONAR_VERSION = Requirement(
     name='Track Sonar version',
+    identifier='TRACK_SONAR_VERSION',
     metric_classes=(metric.SonarVersion,))

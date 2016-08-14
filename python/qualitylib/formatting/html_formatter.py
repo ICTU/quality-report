@@ -62,6 +62,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['project_resources'] = self.__project_resources(report)
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
+        parameters['requirements'] = self.__requirements(report)
         parameters['history'] = self.__trend_data(report.get_meta_section())
 
         metrics = []
@@ -330,15 +331,15 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __metric_classes(report):
         """ Return a HTML table of the metrics the software can measure. """
-        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{cls}</code></td><td>{qattr}</td><td>{norm}</td></tr>'
+        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{qattr}</td><td>{norm}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         result = list()
         result.append('<table class="table table-striped first-col-centered">')
-        result.append('  <tr><th>In dit rapport?</th><th>Metriek</th><th>Class naam</th>'
+        result.append('  <tr><th>In dit rapport?</th><th>Metriek</th><th>Identifier</th>'
                       '<th>Kwaliteitsattribuut</th><th>Norm</th></tr>')
         for metric_class in report.metric_classes():
             name = metric_class.name
-            class_name = metric_class.__name__
+            identifier = metric_class.__name__
             quality_attribute = metric_class.quality_attribute.name()
             icon = icon_span if metric_class in report.included_metric_classes() else ''
             try:
@@ -346,27 +347,44 @@ class HTMLFormatter(base_formatter.Formatter):
             except ValueError:
                 logging.error('Metric class %s had faulty norm template', metric_class.__name__)
                 raise
-            result.append(row.format(icon=icon, name=name, cls=class_name, qattr=quality_attribute, norm=norm))
+            result.append(row.format(icon=icon, name=name, id=identifier, qattr=quality_attribute, norm=norm))
         result.append('</table>')
         return '\n'.join(result)
 
     @staticmethod
     def __metric_sources(report):
         """ Return a HTML table of the metric sources the software can collect data from. """
-        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{cls}</code></td><td>{ins}</td></tr>'
+        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{ins}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         anchor = '<a href="{url}" target="_blank">{url}</a>'
         result = list()
         result.append('<table class="table table-striped first-col-centered">')
-        result.append('  <tr><th>In dit rapport?</th><th>Metriekbron</th><th>Class naam</th><th>Instanties</th></tr>')
+        result.append('  <tr><th>In dit rapport?</th><th>Metriekbron</th><th>Identifier</th><th>Instanties</th></tr>')
         for metric_source_class in report.metric_source_classes():
             name = metric_source_class.metric_source_name
-            class_name = metric_source_class.__name__
+            identifier = metric_source_class.__name__
             icon = icon_span if metric_source_class in report.included_metric_source_classes() else ''
             instances = report.project().metric_source(metric_source_class)
             instances = instances if isinstance(instances, list) else [instances]
             instances = '<br>'.join([anchor.format(url=instance.url()) for instance in instances if instance.url()])
-            result.append(row.format(icon=icon, name=name, cls=class_name, ins=instances))
+            result.append(row.format(icon=icon, name=name, id=identifier, ins=instances))
+        result.append('</table>')
+        return '\n'.join(result)
+
+    @staticmethod
+    def __requirements(report):
+        """ Return a HTML table of the requirements. """
+        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{metrics}</td></tr>'
+        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
+        result = list()
+        result.append('<table class="table table-striped first-col-centered">')
+        result.append('  <tr><th>In dit rapport?</th><th>Eis</th><th>Identifier</th><th>Metrieken</th></tr>')
+        for requirement in report.requirements():
+            name = requirement.name()
+            identifier = requirement.id()
+            metrics = ', '.join(metric_class.name for metric_class in requirement.metric_classes())
+            icon = icon_span if requirement in report.included_requirements() else ''
+            result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))
         result.append('</table>')
         return '\n'.join(result)
 
