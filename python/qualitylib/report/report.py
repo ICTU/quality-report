@@ -29,9 +29,8 @@ class QualityReport(domain.DomainObject):
         return [requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
                 requirement.CODE_QUALITY, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR,
                 requirement.TRACK_ACTIONS, requirement.TRACK_RISKS, requirement.TRACK_BUGS,
-                requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS,
-                requirement.TRACK_READY_US, requirement.TRACK_CI_JOBS,
-                requirement.TRACK_JAVA_CONSISTENCY, requirement.TRACK_SONAR_VERSION,
+                requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS, requirement.TRACK_READY_US,
+                requirement.TRACK_CI_JOBS, requirement.TRACK_JAVA_CONSISTENCY, requirement.TRACK_SONAR_VERSION,
                 requirement.TRACK_DOCUMENT_AGE, requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT,
                 requirement.TRACK_ABSENCE, requirement.NO_SNAPSHOT_DEPENDENCIES, requirement.OWASP_DEPENDENCIES,
                 requirement.OWASP_ZAP, requirement.JAVA, requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB,
@@ -142,8 +141,7 @@ class QualityReport(domain.DomainObject):
         """ Return the process section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TRACK_ACTIONS,
                                                   requirement.TRACK_RISKS, requirement.TRACK_BUGS,
-                                                  requirement.TRACK_TECHNICAL_DEBT,
-                                                  requirement.TRACK_MANUAL_LTCS,
+                                                  requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS,
                                                   requirement.TRACK_READY_US)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
