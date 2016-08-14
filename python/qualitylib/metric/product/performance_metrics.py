@@ -24,8 +24,31 @@ from ... import domain, metric_source
 class BaseResponseTimes(domain.Metric):
     """ Base class for metrics measuring response times as determined by performance tests. """
     unit = 'performancetestqueries'
+    norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. Als een of meer ' \
+        '{unit} de maximum responsetijd overschrijden is de score rood, anders geel.'
+    above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen de ' \
+        'gewenste responsetijd (meting {date}, {age} geleden).'
+    below_max_target_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
+        'van de gevallen binnen de maximale responsetijd (meting {date}, {age} geleden).'
+    below_wish_target_template = '{value_wish} van de {nr_queries} {unit} draaien niet in 90% ' \
+        'van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
+    below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
+        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
+        'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
+
     perfect_value = 0
+    target_value = 0  # Not used
+    low_target_value = 0  # Not used
     quality_attribute = PERFORMANCE
+
+    def __init__(self, *args, **kwargs):
+        super(BaseResponseTimes, self).__init__(*args, **kwargs)
+        if not self._subject.product_version():
+            self.old_age = datetime.timedelta(hours=7 * 24)
+            self.max_old_age = datetime.timedelta(hours=14 * 24)
+            self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de performancemeting ' \
+                'is niet ouder dan {old_age}. Als een of meer {unit} de maximum responsetijd overschrijden of als ' \
+                'de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
 
     def value(self):
         return None  # We use max_violations and wish_violations as value
@@ -41,38 +64,29 @@ class BaseResponseTimes(domain.Metric):
     def _wish_violations(self):
         raise NotImplementedError  # pragma: no cover
 
+    def _is_perfect(self):
+        return self._max_violations() == self._wish_violations() == 0 and not self._is_old()
+
+    def _needs_immediate_action(self):
+        # pylint: disable=protected-access
+        return self._max_violations() > 0 or self._is_too_old()
+
+    def _is_below_target(self):
+        # pylint: disable=protected-access
+        return self._max_violations() > 0 or self._wish_violations() > 0 or self._is_old()
+
 
 class ResponseTimes(BaseResponseTimes):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the performance tests. """
 
     name = 'Overschrijding van responsetijden'
-    norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. ' \
-        'Als een of meer queries de maximum responsetijd overschrijden is de score rood, anders geel.'
-    above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen ' \
-        'de gewenste responsetijd (meting {date}, {age} geleden).'
-    below_max_target_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
-        'van de gevallen binnen de maximale responsetijd (meting {date}, {age} geleden).'
-    below_wish_target_template = '{value_wish} van de {nr_queries} {unit} draaien niet in 90% ' \
-        'van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
-    below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
-        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
-        'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
     missing_report_template = 'Er is geen performancetestrapport voor {name}:{version}.'
-    target_value = 0  # Not used
-    low_target_value = 0  # Not used
     metric_source_classes = (metric_source.PerformanceReport,)
 
     def __init__(self, *args, **kwargs):
         super(ResponseTimes, self).__init__(*args, **kwargs)
-        self.__performance_report = self._project.metric_source(
-            metric_source.PerformanceReport)
-        if not self._subject.product_version():
-            self.old_age = datetime.timedelta(hours=7 * 24)
-            self.max_old_age = datetime.timedelta(hours=14 * 24)
-            self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de ' \
-                'performancemeting is niet ouder dan {old_age}. Als een of meer {unit} de maximum ' \
-                'responsetijd overschrijden of als de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
+        self.__performance_report = self._project.metric_source(metric_source.PerformanceReport)
 
     def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
@@ -86,17 +100,15 @@ class ResponseTimes(BaseResponseTimes):
         return self.numerical_value() < 0
 
     def _is_perfect(self):
-        return self._max_violations() == self._wish_violations() == 0 and \
-            not self._is_old() and self.__report_exists()
+        return super(ResponseTimes, self)._is_perfect() and self.__report_exists()
 
     def _needs_immediate_action(self):
         # pylint: disable=protected-access
-        return self._max_violations() > 0 or super(ResponseTimes, self)._is_too_old() or not self.__report_exists()
+        return super(ResponseTimes, self)._needs_immediate_action() or not self.__report_exists()
 
     def _is_below_target(self):
         # pylint: disable=protected-access
-        return self._max_violations() > 0 or self._wish_violations() > 0 or super(ResponseTimes, self)._is_old() or \
-            not self.__report_exists()
+        return super(ResponseTimes, self)._is_below_target() or not self.__report_exists()
 
     def _get_template(self):
         if self.status() in ('missing_source', 'missing'):
@@ -157,30 +169,11 @@ class YmorResponseTimes(BaseResponseTimes):
     # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
     name = 'Overschrijding van responsetijden (obv Ymor performance rapportage)'
-    norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. Als een of meer ' \
-        '{unit} de maximum responsetijd overschrijden is de score rood, anders geel.'
-    above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen de ' \
-        'gewenste responsetijd (meting {date}, {age} geleden).'
-    below_max_target_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
-        'van de gevallen binnen de maximale responsetijd (meting {date}, {age} geleden).'
-    below_wish_target_template = '{value_wish} van de {nr_queries} {unit} draaien niet in 90% ' \
-        'van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
-    below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
-        'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
-        'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
-    target_value = 0  # Not used
-    low_target_value = 0  # Not used
     metric_source_classes = (metric_source.JenkinsYmorPerformanceReport,)
 
     def __init__(self, *args, **kwargs):
         super(YmorResponseTimes, self).__init__(*args, **kwargs)
         self.__performance_report = self._project.metric_source(metric_source.JenkinsYmorPerformanceReport)
-        if not self._subject.product_version():
-            self.old_age = datetime.timedelta(hours=7 * 24)
-            self.max_old_age = datetime.timedelta(hours=14 * 24)
-            self.norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd en de ' \
-                'performancemeting is niet ouder dan {old_age}. Als een of meer {unit} de maximum responsetijd ' \
-                'overschrijden of als de meting ouder is dan {max_old_age}, is de score rood, anders geel.'
 
     def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
@@ -189,17 +182,6 @@ class YmorResponseTimes(BaseResponseTimes):
     def _wish_violations(self):
         """ The number of performance queries that is slower than the wished for response time. """
         return self.__performance_report.queries_violating_wished_responsetime(self.__performance_report_id())
-
-    def _is_perfect(self):
-        return self._max_violations() == self._wish_violations() == 0 and not self._is_old()
-
-    def _needs_immediate_action(self):
-        # pylint: disable=protected-access
-        return self._max_violations() > 0 or super(YmorResponseTimes, self)._is_too_old()
-
-    def _is_below_target(self):
-        # pylint: disable=protected-access
-        return self._max_violations() > 0 or self._wish_violations() > 0 or super(YmorResponseTimes, self)._is_old()
 
     def _get_template(self):
         if self.status() in ('missing_source', 'missing'):
