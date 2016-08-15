@@ -151,7 +151,8 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     def _date(self):
         """ Return the date of the last coverage measurement from the coverage report. """
-        return self._coverage_report.coverage_date(self._coverage_url())
+        url = self._coverage_url()
+        return datetime.datetime.min if url is None else self._coverage_report.coverage_date(url)
 
     def url(self):
         url = self._coverage_url()
@@ -163,7 +164,7 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     def _coverage_url(self):
         """ Return the url of the coverage report. """
-        return self._subject.metric_source_id(self._coverage_report) or ''
+        return self._subject.metric_source_id(self._coverage_report)
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -183,7 +184,10 @@ class ARTStatementCoverage(_ARTCoverage):
     covered_items = 'statements'
 
     def value(self):
-        coverage = self._coverage_report.statement_coverage(self._coverage_url())
+        url = self._coverage_url()
+        if url is None:
+            return -1
+        coverage = self._coverage_report.statement_coverage(url)
         return -1 if coverage is None else int(round(coverage))
 
 
@@ -197,6 +201,9 @@ class ARTBranchCoverage(_ARTCoverage):
     covered_items = 'branches'
 
     def value(self):
-        coverage = self._coverage_report.branch_coverage(self._coverage_url())
+        url = self._coverage_url()
+        if url is None:
+            return -1
+        coverage = self._coverage_report.branch_coverage(url)
         return -1 if coverage is None else int(round(coverage))
 

@@ -1,3 +1,8 @@
+2016-08-15  Release 1.49.2
+
+  * Bug fix: Don't crash when a product should have a coverage report, but the coverage URL isn't supplied.
+  
+  
 2016-08-15  Release 1.49.1
 
   * Bug fix: Don't crash when a product should have a coverage report, but the coverage URL isn't supplied.
