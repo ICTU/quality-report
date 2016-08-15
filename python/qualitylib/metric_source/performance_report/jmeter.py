@@ -25,8 +25,7 @@ from ..abstract import performance_report
 from ... import utils
 
 
-class JMeter(performance_report.PerformanceReport,
-             beautifulsoup.BeautifulSoupOpener):
+class JMeter(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
     """ Class representing the JMeter performance report. """
 
     metric_source_name = 'Jmeter performance report'

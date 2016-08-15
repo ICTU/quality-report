@@ -163,7 +163,7 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     def _coverage_url(self):
         """ Return the url of the coverage report. """
-        return self._subject.metric_source_id(self._coverage_report)
+        return self._subject.metric_source_id(self._coverage_report) or ''
 
     def _parameters(self):
         # pylint: disable=protected-access
