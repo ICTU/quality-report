@@ -1,3 +1,12 @@
+2016-08-16  Release 1.50.0
+
+  * Prepare for multiple implementations of the OWASP dependency report metric source. This means that adding the 
+    `metric_source.JenkinsOWASPDependencyReport` to the project now needs to use `metric_source.OWASPDependencyReport`
+    as key: 
+    `OWASP_REPORT = metric_source.JenkinsOWASPDependencyReport('http://jenkins')
+    PROJECT = Project(..., metric_sources={metric_source.OWASPDependencyReport: OWASP_REPORT})`
+  
+
 2016-08-15  Release 1.49.2
 
   * Bug fix: Don't crash when a product should have a coverage report, but the coverage URL isn't supplied.
