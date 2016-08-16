@@ -57,7 +57,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
     def setUp(self):
         self.__jenkins = FakeJenkinsOWASPDependenciesReport()
         self.__subject = FakeSubject(metric_source_ids={self.__jenkins: 'jenkins_job'})
-        self.__project = domain.Project(metric_sources={metric_source.JenkinsOWASPDependencyReport: self.__jenkins})
+        self.__project = domain.Project(metric_sources={metric_source.OWASPDependencyReport: self.__jenkins})
         self.__metric = self.class_under_test(subject=self.__subject, project=self.__project)
 
     def expected_warnings(self, job):
@@ -88,15 +88,15 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Jenkins OWASP dependency report': self.__jenkins.report_url('jenkins_job')},
+        self.assertEqual({'OWASP dependency report': self.__jenkins.report_url('jenkins_job')},
                          self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         dependencies = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual({'Jenkins OWASP dependency report a': self.__jenkins.report_url('a'),
-                          'Jenkins OWASP dependency report b': self.__jenkins.report_url('b')},
+        self.assertEqual({'OWASP dependency report (1/2)': self.__jenkins.report_url('a'),
+                          'OWASP dependency report (2/2)': self.__jenkins.report_url('b')},
                          dependencies.url())
 
     def test_norm(self):

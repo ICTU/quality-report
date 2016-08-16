@@ -31,7 +31,7 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
     template = 'Dependencies van {name} hebben {value} {priority} prioriteit {unit}.'
     target_value = 0
     quality_attribute = SECURITY
-    metric_source_classes = (metric_source.JenkinsOWASPDependencyReport,)
+    metric_source_classes = (metric_source.OWASPDependencyReport,)
 
     @classmethod
     def norm_template_default_values(cls):
@@ -41,20 +41,21 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(OWASPDependencyWarnings, self).__init__(*args, **kwargs)
-        self._jenkins_report = self._project.metric_source(metric_source.JenkinsOWASPDependencyReport)
+        self._owasp_dependency_report = self._project.metric_source(metric_source.OWASPDependencyReport)
 
     def value(self):
         return -1 if self._missing() else self._nr_warnings()
 
     def url(self):
-        jenkins_ids = self._jenkins_ids()
-        if len(jenkins_ids) == 1:
-            return {'Jenkins OWASP dependency report': self._jenkins_report.report_url(jenkins_ids[0])}
+        report_ids = self._report_ids()
+        if len(report_ids) == 1:
+            return {'OWASP dependency report': self._owasp_dependency_report.report_url(report_ids[0])}
         else:
             urls = {}
-            for jenkins_id in jenkins_ids:
-                label = 'Jenkins OWASP dependency report {jid}'.format(jid=jenkins_id)
-                urls[label] = self._jenkins_report.report_url(jenkins_id)
+            count = len(report_ids)
+            for index, report_id in enumerate(report_ids, start=1):
+                label = 'OWASP dependency report ({index}/{count})'.format(index=index, count=count)
+                urls[label] = self._owasp_dependency_report.report_url(report_id)
             return urls
 
     def _missing(self):
@@ -62,12 +63,12 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
 
     def _nr_warnings(self):
         """ Return the number of warnings. """
-        ids = self._jenkins_ids()
-        return self._jenkins_report.nr_warnings(ids, self.priority_key) if ids else -1
+        ids = self._report_ids()
+        return self._owasp_dependency_report.nr_warnings(ids, self.priority_key) if ids else -1
 
-    def _jenkins_ids(self):
+    def _report_ids(self):
         """ Return the Jenkins report ids (job names). """
-        report = self._subject.metric_source_id(self._jenkins_report)
+        report = self._subject.metric_source_id(self._owasp_dependency_report)
         if report is None:
             return []
         else:
