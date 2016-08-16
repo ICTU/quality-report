@@ -17,9 +17,8 @@ limitations under the License.
 import io
 import datetime
 import unittest
-import urllib2
 
-from qualitylib.metric_source import Jenkins, JenkinsOWASPDependencyReport
+from qualitylib.metric_source import Jenkins
 
 
 def to_jenkins_timestamp(date_time, epoch=datetime.datetime(1970, 1, 1)):
@@ -163,46 +162,3 @@ class JenkinsTest(unittest.TestCase):
             even when it partially matches another job. """
         self.__jenkins.contents = u'{"jobs": [{"name": "job50"}, {"name": "job5"}]}'
         self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
-
-
-class JenkinsOWASPDependencyReportUnderTest(JenkinsOWASPDependencyReport):  # pylint: disable=too-few-public-methods
-    """ Override the url_open method to return a fixed HTML fragment. """
-    contents = u'{"jobs": []}'
-
-    def url_open(self, url):  # pylint: disable=unused-argument
-        """ Return the static contents or raise an exception. """
-        if 'raise' in self.contents:
-            raise urllib2.HTTPError(None, None, None, None, None)
-        else:
-            return io.StringIO(self.contents)
-
-
-class JenkinsOWASPDependencyReportTest(unittest.TestCase):
-    """ Unit tests for the Jenkins OWASP dependency report class. """
-    def setUp(self):
-        self.__jenkins = JenkinsOWASPDependencyReportUnderTest('http://jenkins/', 'username', 'password')
-
-    def test_high_priority_warnings(self):
-        """ Test retrieving high priority warnings. """
-        self.__jenkins.contents = u'{"numberOfHighPriorityWarnings":2}'
-        self.assertEqual(2, self.__jenkins.nr_warnings(['job'], 'high'))
-
-    def test_normal_priority_warnings(self):
-        """ Test retrieving normal priority warnings. """
-        self.__jenkins.contents = u'{"numberOfNormalPriorityWarnings":4}'
-        self.assertEqual(4, self.__jenkins.nr_warnings(['job'], 'normal'))
-
-    def test_low_priority_warnings(self):
-        """ Test retrieving low priority warnings. """
-        self.__jenkins.contents = u'{"numberOfLowPriorityWarnings":9}'
-        self.assertEqual(9, self.__jenkins.nr_warnings(['job'], 'low'))
-
-    def test_url(self):
-        """ Test the url for a OWASP dependency report. """
-        self.assertEqual('http://jenkins/job/job_name/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/',
-                         self.__jenkins.report_url('job_name'))
-
-    def test_http_error(self):
-        """ Test that the default is returned when a HTTP error occurs. """
-        self.__jenkins.contents = 'raise'
-        self.assertEqual(-1, self.__jenkins.nr_warnings(['job'], 'normal'))

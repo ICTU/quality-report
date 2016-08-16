@@ -36,6 +36,10 @@ from .abstract.version_control_system import VersionControlSystem
 from .version_control_system.git import Git
 from .version_control_system.subversion import Subversion
 
+# OWASP dependency report
+from .abstract.owasp_dependency_report import OWASPDependencyReport
+from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
+
 # Other metric sources
 from .ansible_config_report import AnsibleConfigReport
 from .birt import Birt
@@ -43,7 +47,7 @@ from .birt2 import Birt2
 from .dependencies import Dependencies
 from .history import History
 from .holiday_planner import HolidayPlanner
-from .jenkins import Jenkins, JenkinsOWASPDependencyReport, JenkinsYmorPerformanceReport
+from .jenkins import Jenkins, JenkinsYmorPerformanceReport
 from .jira import Jira
 from .maven import Maven
 from .open_vas_scan_report import OpenVASScanReport
