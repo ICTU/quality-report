@@ -22,12 +22,12 @@ class OWASPDependencyReport(domain.MetricSource):
     metric_source_name = 'OWASP dependency report'
     needs_metric_source_id = True
 
-    def nr_warnings(self, job_names, priority):
+    def nr_warnings(self, metric_source_id, priority):
         """ Return the number of warnings in the report with the specified priority. """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
-    def report_url(self, job_name):
+    def report_url(self, metric_source_id):
         """ Return the url of the report. """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
