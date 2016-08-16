@@ -23,7 +23,6 @@ from ..jenkins import Jenkins
 
 class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport, Jenkins):
     """ Class representing OWASP dependency reports in Jenkins jobs. """
-    needs_metric_source_id = True
 
     def __init__(self, *args, **kwargs):
         super(JenkinsOWASPDependencyReport, self).__init__(*args, **kwargs)
