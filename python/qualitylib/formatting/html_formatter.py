@@ -152,18 +152,12 @@ class HTMLFormatter(base_formatter.Formatter):
     def __trend_data(self, meta_metrics_section):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
-        missing_id = grey_id = green_id = red_id = yellow_id = ''
-        for metric in meta_metrics_section.metrics():
-            if metric.id_string() == 'MM-1':
-                green_id = metric.stable_id()
-            elif metric.id_string() == 'MM-2':
-                red_id = metric.stable_id()
-            elif metric.id_string() == 'MM-3':
-                yellow_id = metric.stable_id()
-            elif metric.id_string() == 'MM-4':
-                grey_id = metric.stable_id()
-            elif metric.id_string() == 'MM-5':
-                missing_id = metric.stable_id()
+        stable_ids = dict((metric.id_string(), metric.stable_id()) for metric in meta_metrics_section.metrics())
+        green_id = stable_ids.get('MM-1', '')
+        red_id = stable_ids.get('MM-2', '')
+        yellow_id = stable_ids.get('MM-3', '')
+        grey_id = stable_ids.get('MM-4', '')
+        missing_id = stable_ids.get('MM-5', '')
         for history_record in meta_metrics_section.history():
             date_and_time = self.__date_and_time(history_record)
             percentages = self.__percentages(history_record, green_id, red_id, yellow_id, grey_id, missing_id)
