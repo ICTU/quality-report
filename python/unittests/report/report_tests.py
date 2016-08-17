@@ -128,6 +128,11 @@ class QualityReportTest(unittest.TestCase):
         self.assertEqual({metric.RedMetaMetric, metric.YellowMetaMetric, metric.GreenMetaMetric,
                           metric.GreyMetaMetric, metric.MissingMetaMetric}, self.__report.included_metric_classes())
 
+    def test_get_included_requirements(self):
+        """ Test the list of included requirements. """
+        self.__report.sections()
+        self.assertEqual(set(), self.__report.included_requirements())
+
 
 class QualityReportMetricsTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
