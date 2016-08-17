@@ -21,12 +21,12 @@ from ..abstract import owasp_dependency_report
 from .. import url_opener
 
 
-class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport,):
+class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     """ Class representing OWASP dependency reports in XML format. """
 
-    def __init__(self, url_open=None, *args, **kwargs):
+    def __init__(self, url_open=None, **kwargs):
         self.__url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
-        super(OWASPDependencyXMLReport, self).__init__(*args, **kwargs)
+        super(OWASPDependencyXMLReport, self).__init__()
 
     def nr_warnings(self, report_urls, priority):
         """ Return the number of warnings in the reports with the specified priority. """

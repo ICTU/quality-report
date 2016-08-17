@@ -1,3 +1,8 @@
+2016-08-17  Release 1.51.1
+
+  * Bug fix: Don't crash on credentials passed to the OWASP dependency XML report.
+  
+  
 2016-08-17  Release 1.51.0
 
   * Support OWASP dependency XML reports as metric source for the OWASP dependency metric:
