@@ -1,3 +1,10 @@
+2016-08-17  Release 1.51.0
+
+  * Support OWASP dependency XML reports as metric source for the OWASP dependency metric:
+    `OWASP_REPORT = metric_source.OWASPDependencyXMLReport('http://url/report.xml')`
+    `PROJECT = Project(..., metric_sources={metric_source.OWASPDependencyReport: OWASP_REPORT})`
+  
+
 2016-08-16  Release 1.50.0
 
   * Prepare for multiple implementations of the OWASP dependency report metric source. This means that adding the 

@@ -39,6 +39,7 @@ from .version_control_system.subversion import Subversion
 # OWASP dependency report
 from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
+from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport
 
 # Other metric sources
 from .ansible_config_report import AnsibleConfigReport
