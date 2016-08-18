@@ -123,6 +123,13 @@ class FailingUnittestsTest(CommonUnittestMetricTestsMixin, unittest.TestCase):
         failing_unittests = metric.FailingUnittests(subject=FakeSubject(sonar), project=project)
         self.assertEqual('red', failing_unittests.status())
 
+    def test_report_with_zero_unittests(self):
+        """ Test that the report is different when there are no unit tests. """
+        sonar = FakeSonar(unittests=0)
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        failing_unittests = metric.FailingUnittests(subject=FakeSubject(sonar), project=project)
+        self.assertEqual('Er zijn geen unittesten.', failing_unittests.report())
+
 
 class UnittestLineCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase):
     """ Unit tests for the unit test line coverage metric. """

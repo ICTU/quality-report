@@ -51,6 +51,7 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     norm_template = 'Alle unittesten slagen.'
     perfect_template = '{tests} van de {tests} {unit} slagen.'
     template = '{value} van de {tests} {unit} falen.'
+    no_tests_template = 'Er zijn geen {unit}.'
     target_value = 0
     low_target_value = 0
     quality_attribute = TEST_QUALITY
@@ -60,9 +61,14 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
         return -1 if value is None else value
 
     def status(self):
-        status = super(FailingUnittests, self).status()
-        # Don't report 0 failing unit tests out of 0 unit tests as perfect but rather as red:
-        return 'red' if status == 'perfect' and self._sonar.unittests(self._sonar_id()) == 0 else status
+        return 'red' if self.__no_tests() else super(FailingUnittests, self).status()
+
+    def _get_template(self):
+        return self.no_tests_template if self.__no_tests() else super(FailingUnittests, self)._get_template()
+
+    def __no_tests(self):
+        """ Return True if are no unit tests. """
+        return self._sonar.unittests(self._sonar_id()) == 0
 
 
 class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):

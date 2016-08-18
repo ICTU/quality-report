@@ -1,3 +1,9 @@
+2016-08-18  Release 1.52.2
+
+  * Have `metric.FailingUnittests` report there are no unit tests rather than say that  0 of 0 unit tests fail, 
+    if there are no unit tests.
+    
+    
 2016-08-17  Release 1.51.1
 
   * Bug fix: Don't crash on credentials passed to the OWASP dependency XML report.
