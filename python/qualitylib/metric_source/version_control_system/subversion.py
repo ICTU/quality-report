@@ -44,7 +44,7 @@ class Subversion(version_control_system.VersionControlSystem):
         """ Return the tags folder for the specified version. """
         tags = self.tags(trunk_url)
         # Mapping from version numbers to tags:
-        folders = dict([(self._parse_version(tag)[1], tag) for tag in tags])
+        folders = {self._parse_version(tag)[1]: tag for tag in tags}
         # Look up the tag by its version number and return the tag folder
         tags_folder = self.__tags_folder(trunk_url)
         if version in folders:
