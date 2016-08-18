@@ -15,6 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import logging
+
 from .. import domain
 from . import url_opener, beautifulsoup
 
@@ -37,8 +39,11 @@ class ZAPScanReport(domain.MetricSource):
                 soup = beautifulsoup.BeautifulSoup(self._url_open(url))
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
-            else:
+            try:
                 nr_alerts += self.__parse_alerts(soup, risk_level)
+            except IndexError as reason:
+                logging.warn("Couldn't parse alerts with %s risk level from %s: %s", risk_level, url, reason)
+                return -1
         return nr_alerts
 
     @staticmethod

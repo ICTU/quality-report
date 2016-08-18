@@ -81,3 +81,9 @@ class ZAPScanReportTest(unittest.TestCase):
     def test_multiple_urls(self):
         """ Test the number of alerts for multiple urls. """
         self.assertEqual(2, self.__report.alerts('medium', 'url1', 'url2'))
+
+    def test_missing_table(self):
+        """ Test that a missing table can be handled. """
+        self.__opener.html = '<html></html>'
+        self.assertEqual(-1, self.__report.alerts('high', 'url'))
+
