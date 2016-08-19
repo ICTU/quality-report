@@ -1,6 +1,3 @@
-# Ignore subversion folder:
-.svn
-
 # Ignore PyCharm settings folder:
 .idea
 
@@ -20,5 +17,12 @@ python/.coverage
 python/htmlcov
 python/test-reports
 
+# Ignore build folders
+python/dist
+python/quality_report.egg-info/
+
 # Ignore the virtual python environment created by virtual env:
 .pyenv
+
+# Ignore OS specific folders and files
+.DS_Store
