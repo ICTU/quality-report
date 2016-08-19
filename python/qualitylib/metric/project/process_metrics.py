@@ -16,12 +16,11 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from .. import HigherIsBetterMetric
-from ..metric_source_mixin import JiraMetricMixin
+from .. import HigherIsBetterMetric, metric_source
 from ..quality_attributes import PROGRESS
 
 
-class ReadyUserStoryPoints(JiraMetricMixin, HigherIsBetterMetric):
+class ReadyUserStoryPoints(HigherIsBetterMetric):
     """ Metric for measuring the number of user story points ready. """
 
     name = 'Hoeveelheid ready user story punten'
@@ -31,10 +30,11 @@ class ReadyUserStoryPoints(JiraMetricMixin, HigherIsBetterMetric):
     target_value = 10
     low_target_value = 20
     quality_attribute = PROGRESS
+    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
-        nr_points = self._jira.nr_story_points_ready()
+        nr_points = self._metric_source.nr_story_points_ready()
         return -1 if nr_points in (-1, None) else nr_points
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._jira.user_stories_ready_url()}
+        return dict() if self._missing() else {'Jira': self._metric_source.user_stories_ready_url()}

@@ -35,7 +35,7 @@ class SonarAnalysisAge(SonarDashboardMetricMixin, LowerIsBetterMetric):
     quality_attribute = CODE_QUALITY
 
     def value(self):
-        latest_analysis_datetime = self._sonar.analysis_datetime(self._sonar_id())
+        latest_analysis_datetime = self._metric_source.analysis_datetime(self._sonar_id())
         if latest_analysis_datetime in (None, datetime.datetime.min):
             return -1
         else:

@@ -57,9 +57,8 @@ class PercentageMixin(object):
 
 
 class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
-    """ Mixin class for meta metrics. Assumes that meta metrics are percentage
-        metrics and that the subclass specifies the metric statuses (colors)
-        that the meta metric is measuring. """
+    """ Mixin class for meta metrics. Assumes that meta metrics are percentage metrics and that the subclass
+        specifies the metric statuses (colors) that the meta metric is measuring. """
     metric_statuses = []  # Subclass responsibility
 
     def _numerator(self):

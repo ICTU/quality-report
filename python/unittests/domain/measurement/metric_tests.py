@@ -63,6 +63,30 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """ Test that the default status is green. """
         self.assertEqual('green', self.__metric.status())
 
+    def test_one_metric_source(self):
+        """ Test that the correct metric source id is returned when there is one metric source instance. """
+        MetricUnderTest.metric_source_classes = [metric_source.Birt]
+        project = domain.Project(metric_sources={metric_source.Birt: 'Birt1'})
+        product = domain.Product(project, metric_source_ids={'Birt1': 'birt id'})
+        self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
+        MetricUnderTest.metric_source_classes = []
+
+    def test_multiple_metric_sources(self):
+        """ Test that the correct metric source id is returned when there are multiple metric source instances. """
+        MetricUnderTest.metric_source_classes = [metric_source.Birt]
+        project = domain.Project(metric_sources={metric_source.Birt: ['Birt1', 'Birt2']})
+        product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
+        self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
+        MetricUnderTest.metric_source_classes = []
+
+    def test_no_matching_metric_source(self):
+        """ Test that no metric source id is returned when there is no metric source instance for the product. """
+        MetricUnderTest.metric_source_classes = [metric_source.Birt]
+        project = domain.Project(metric_sources={metric_source.Birt: ['Birt1']})
+        product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
+        self.failIf(MetricUnderTest(project=project, subject=product)._metric_source_id)
+        MetricUnderTest.metric_source_classes = []
+
     def test_missing_metric_sources_status(self):
         """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
         # pylint: disable=attribute-defined-outside-init

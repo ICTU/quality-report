@@ -52,7 +52,7 @@ class UnitAndIntegrationTestLineCoverage(UnitAndIntegrationTestCoverage):
     low_target_value = 90
 
     def value(self):
-        coverage = self._sonar.overall_test_line_coverage(self._sonar_id())
+        coverage = self._metric_source.overall_test_line_coverage(self._sonar_id())
         return -1 if coverage is None else round(coverage)
 
 
@@ -67,5 +67,5 @@ class UnitAndIntegrationTestBranchCoverage(UnitAndIntegrationTestCoverage):
     low_target_value = 60
 
     def value(self):
-        coverage = self._sonar.overall_test_branch_coverage(self._sonar_id())
+        coverage = self._metric_source.overall_test_branch_coverage(self._sonar_id())
         return -1 if coverage is None else round(coverage)

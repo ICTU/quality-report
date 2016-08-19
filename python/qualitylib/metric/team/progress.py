@@ -16,13 +16,12 @@ limitations under the License.
 from __future__ import absolute_import
 
 
-from ..metric_source_mixin import BirtMetricMixin
 from ..quality_attributes import PROGRESS
 from ...domain import LowerIsBetterMetric
 from ... import metric_source
 
 
-class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
+class TeamProgress(LowerIsBetterMetric):
     """ Metric for measuring the progress of a team. """
 
     name = 'Team voortgang'
@@ -48,24 +47,23 @@ class TeamProgress(BirtMetricMixin, LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(TeamProgress, self).__init__(*args, **kwargs)
-        self.__birt_team_id = self._subject.metric_source_id(self._birt)
-        planned_velocity = self._birt.planned_velocity(self.__birt_team_id) or 0
+        planned_velocity = self._metric_source.planned_velocity(self._metric_source_id) or 0
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
 
     def value(self):
-        velocity = self._birt.required_velocity(self.__birt_team_id)
+        velocity = self._metric_source.required_velocity(self._metric_source_id)
         return -1 if velocity is None else velocity
 
     def url(self):
-        url = self._birt.sprint_progress_url(self.__birt_team_id)
+        url = self._metric_source.sprint_progress_url(self._metric_source_id)
         return dict() if url is None else dict(Birt=url)
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamProgress, self)._parameters()
-        birt_team_id = self.__birt_team_id
-        birt = self._birt
+        birt_team_id = self._metric_source_id
+        birt = self._metric_source
         parameters['sprint_goal'] = birt.nr_points_planned(birt_team_id)
         parameters['actual_points'] = birt.nr_points_realized(birt_team_id)
         parameters['actual_velocity'] = birt.actual_velocity(birt_team_id)

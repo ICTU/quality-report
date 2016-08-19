@@ -60,8 +60,28 @@ class Metric(object):
 
     def __init__(self, subject=None, project=None):
         self._subject = subject
-        self.__id_string = self.stable_id()
         self._project = project
+        self._metric_source = self._project.metric_source(self.metric_source_classes[0]) if self.metric_source_classes \
+            else None
+        if isinstance(self._metric_source, list):
+            for source in self._metric_source:
+                try:
+                    source_id = self._subject.metric_source_id(source)
+                except AttributeError:
+                    continue
+                if source_id:
+                    self._metric_source = source
+                    self._metric_source_id = source_id
+                    break
+            else:
+                logging.warning("Couldn't find metric source for %s", self._subject)
+                self._metric_source_id = None
+        else:
+            try:
+                self._metric_source_id = self._subject.metric_source_id(self._metric_source)
+            except AttributeError:
+                self._metric_source_id = None
+        self.__id_string = self.stable_id()
         from qualitylib import metric_source
         self.__history = self._project.metric_source(metric_source.History)
 
@@ -237,10 +257,7 @@ class Metric(object):
     def __age(self):
         """ Return how long ago this metric was measured (in hours). """
         last_measurement_date = self._date()
-        if last_measurement_date:
-            return datetime.datetime.now() - last_measurement_date
-        else:
-            return datetime.timedelta.max
+        return datetime.datetime.now() - last_measurement_date if last_measurement_date else datetime.timedelta.max
 
     def __old_age(self):
         """ Return the age when we consider the metric to have been measured long ago. """
@@ -278,10 +295,8 @@ class Metric(object):
     @utils.memoized
     def __technical_debt_comment(self):
         """ Return the comment of the accepted technical debt, if any. """
-        if self.__technical_debt_target():
-            return self.__technical_debt_target().explanation(self.unit)
-        else:
-            return ''
+        td_target = self.__technical_debt_target()
+        return td_target.explanation(self.unit) if td_target else ''
 
     def comment_urls(self):  # pylint: disable=no-self-use
         """ Return the source for the comment on the metric. """
@@ -298,10 +313,7 @@ class Metric(object):
         if not history:
             return 0, 100
         minimum, maximum = min(history), max(history)
-        if minimum == maximum:
-            return minimum - 1, maximum + 1
-        else:
-            return minimum, maximum
+        return (minimum - 1, maximum + 1) if minimum == maximum else (minimum, maximum)
 
     def numerical_value(self):
         """ Return a numerical version of the metric value for use in graphs. By default this simply returns the
@@ -337,14 +349,12 @@ class LowerIsBetterMetric(Metric):
         """ Return whether the metric meets or exceeds the target. """
         # The metric is below target when the actual value is *higher*
         # than the target value, because the target value is the maximum value
-        # pylint: disable=protected-access
         value = self.value()
         return value < self.perfect_value or value > self.target() or \
             super(LowerIsBetterMetric, self)._is_below_target()
 
     def _needs_immediate_action(self):
         """ Return whether the metric scores so bad that immediate action is required. """
-        # pylint: disable=protected-access
         value = self.value()
         return value < self.perfect_value or value > self.low_target() or \
             super(LowerIsBetterMetric, self)._needs_immediate_action()
@@ -363,12 +373,10 @@ class HigherIsBetterMetric(Metric):
         """ Return whether the metric meets or exceeds the target. """
         # The metric is below target when the actual value is *lower*
         # than the target value, because the target value is the minimum value
-        # pylint: disable=protected-access
         return self.value() < self.target() or super(HigherIsBetterMetric, self)._is_below_target()
 
     def _needs_immediate_action(self):
         """ Return whether the metric scores so bad that immediate action is required. """
-        # pylint: disable=protected-access
         return self.value() < self.low_target() or super(HigherIsBetterMetric, self)._needs_immediate_action()
 
     def _is_value_better_than(self, target):
@@ -389,7 +397,6 @@ class LowerPercentageIsBetterMetric(metric_mixin.PercentageMixin, LowerIsBetterM
     def _is_perfect(self):
         """ Return whether the metric has a perfect value. This is the case when the numerator is zero. We ignore
             the denominator to prevent a ZeroDivisionError exception. """
-        # pylint: disable=protected-access
         return self._numerator() == 0 and super(LowerPercentageIsBetterMetric, self)._is_perfect()
 
 
@@ -408,5 +415,4 @@ class HigherPercentageIsBetterMetric(metric_mixin.PercentageMixin, HigherIsBette
     def _is_perfect(self):
         """ Return whether the metric has a perfect value. This is the case when the numerator and denominator
             are equal. """
-        # pylint: disable=protected-access
         return self._numerator() == self._denominator() and super(HigherPercentageIsBetterMetric, self)._is_perfect()

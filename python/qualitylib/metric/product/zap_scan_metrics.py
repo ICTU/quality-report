@@ -38,10 +38,6 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
         values['risk_level'] = cls.risk_level
         return values
 
-    def __init__(self, *args, **kwargs):
-        super(ZAPScanAlertsMetric, self).__init__(*args, **kwargs)
-        self.__zap_scan_report = self._project.metric_source(metric_source.ZAPScanReport)
-
     def value(self):
         return -1 if self._missing() else self.__nr_alerts()
 
@@ -50,13 +46,12 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
 
     def __nr_alerts(self):
         """ Return the number of alerts. """
-        return self.__zap_scan_report.alerts(self.risk_level_key, *self.__report_urls())
+        return self._metric_source.alerts(self.risk_level_key, *self.__report_urls())
 
     def __report_urls(self):
         """ Return the ZAP Scan report urls. """
-        report_urls = self._subject.metric_source_id(self.__zap_scan_report)
-        if report_urls:
-            return report_urls if isinstance(report_urls, list) else [report_urls]
+        if self._metric_source_id:
+            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
         else:
             return []
 

@@ -35,11 +35,11 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):
         """ Add the number of unit tests to the parameters for the report. """
         # pylint: disable=protected-access
         parameters = super(UnittestMetricMixin, self)._parameters()
-        parameters['tests'] = self._sonar.unittests(self._sonar_id())
+        parameters['tests'] = self._metric_source.unittests(self._sonar_id())
         return parameters
 
     def _sonar_id(self):
-        unittest_sonar_info = metric_info.SonarProductInfo(self._sonar, self._subject.unittests())
+        unittest_sonar_info = metric_info.SonarProductInfo(self._metric_source, self._subject.unittests())
         return unittest_sonar_info.sonar_id()
 
 
@@ -57,7 +57,7 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     quality_attribute = TEST_QUALITY
 
     def value(self):
-        value = self._sonar.failing_unittests(self._sonar_id())
+        value = self._metric_source.failing_unittests(self._sonar_id())
         return -1 if value is None else value
 
     def status(self):
@@ -68,7 +68,7 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
 
     def __no_tests(self):
         """ Return True if are no unit tests. """
-        return self._sonar.unittests(self._sonar_id()) == 0
+        return self._metric_source.unittests(self._sonar_id()) == 0
 
 
 class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
@@ -93,7 +93,7 @@ class UnittestLineCoverage(UnittestCoverage):
     low_target_value = 90
 
     def value(self):
-        coverage = self._sonar.unittest_line_coverage(self._sonar_id())
+        coverage = self._metric_source.unittest_line_coverage(self._sonar_id())
         return -1 if coverage is None else round(coverage)
 
 
@@ -108,5 +108,5 @@ class UnittestBranchCoverage(UnittestCoverage):
     low_target_value = 60
 
     def value(self):
-        coverage = self._sonar.unittest_branch_coverage(self._sonar_id())
+        coverage = self._metric_source.unittest_branch_coverage(self._sonar_id())
         return -1 if coverage is None else round(coverage)

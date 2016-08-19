@@ -33,7 +33,7 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     quality_attribute = SIZE
 
     def value(self):
-        loc = self._sonar.ncloc(self._sonar_id())
+        loc = self._metric_source.ncloc(self._sonar_id())
         return -1 if loc is None else loc
 
 
@@ -60,9 +60,9 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     def value(self):
         total = 0
         for product in self.__main_products():
-            sonar_id = metric_info.SonarProductInfo(self._sonar, product).sonar_id()
+            sonar_id = metric_info.SonarProductInfo(self._metric_source, product).sonar_id()
             if sonar_id:
-                total += self._sonar.ncloc(sonar_id)
+                total += self._metric_source.ncloc(sonar_id)
         return total
 
     def recent_history(self):

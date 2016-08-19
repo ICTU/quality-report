@@ -35,22 +35,18 @@ class SonarVersion(HigherIsBetterMetric):
     quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Sonar,)
 
-    def __init__(self, *args, **kwargs):
-        super(SonarVersion, self).__init__(*args, **kwargs)
-        self._sonar = self._project.metric_source(metric_source.Sonar)
-
     def numerical_value(self):
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
-        return -1 if self._missing() else LooseVersion(self._sonar.version_number())
+        return -1 if self._missing() else LooseVersion(self._metric_source.version_number())
 
     def url(self):
-        url = self._sonar.url()
+        url = self._metric_source.url()
         return dict() if url is None else {'Sonar': url}
 
     def _missing(self):
-        return self._sonar.version_number() is None
+        return self._metric_source.version_number() is None
 
 
 class SonarQualityProfileVersion(HigherIsBetterMetric):
@@ -74,10 +70,6 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         default_values['language'] = cls.language_name
         return default_values
 
-    def __init__(self, *args, **kwargs):
-        super(SonarQualityProfileVersion, self).__init__(*args, **kwargs)
-        self._sonar = self._project.metric_source(metric_source.Sonar)
-
     def numerical_value(self):
         if self._missing():
             return -1
@@ -89,13 +81,13 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         if self._missing():
             return LooseVersion('0.0')
         else:
-            profile_name = self._sonar.default_quality_profile(self.language_key)
+            profile_name = self._metric_source.default_quality_profile(self.language_key)
             match = re.search(r"v\d+(\.\d+){1,2}", profile_name)
             profile_version = match.group()[1:] if match else '0.0'
             return LooseVersion(profile_version)
 
     def url(self):
-        url = self._sonar.quality_profiles_url()
+        url = self._metric_source.quality_profiles_url()
         return dict() if url is None else {'Sonar': url}
 
     def _parameters(self):
@@ -104,7 +96,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         return parameters
 
     def _missing(self):
-        return self._sonar.default_quality_profile(self.language_key) in ('', None)
+        return self._metric_source.default_quality_profile(self.language_key) in ('', None)
 
 
 class SonarQualityProfileVersionJava(SonarQualityProfileVersion):
@@ -163,18 +155,14 @@ class SonarPluginVersion(HigherIsBetterMetric):
         default_values['plugin'] = cls.plugin_name
         return default_values
 
-    def __init__(self, *args, **kwargs):
-        super(SonarPluginVersion, self).__init__(*args, **kwargs)
-        self._sonar = self._project.metric_source(metric_source.Sonar)
-
     def numerical_value(self):
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
-        return LooseVersion('0.0' if self._missing() else self._sonar.plugin_version(self.plugin_key))
+        return LooseVersion('0.0' if self._missing() else self._metric_source.plugin_version(self.plugin_key))
 
     def url(self):
-        url = self._sonar.plugins_url()
+        url = self._metric_source.plugins_url()
         return dict() if url is None else {'Sonar': url}
 
     def _parameters(self):
@@ -183,7 +171,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return parameters
 
     def _missing(self):
-        return self._sonar.plugin_version(self.plugin_key) in ('0.0', None)
+        return self._metric_source.plugin_version(self.plugin_key) in ('0.0', None)
 
 
 class SonarPluginVersionJava(SonarPluginVersion):

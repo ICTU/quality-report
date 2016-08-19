@@ -39,23 +39,19 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
         values['priority'] = cls.priority
         return values
 
-    def __init__(self, *args, **kwargs):
-        super(OWASPDependencyWarnings, self).__init__(*args, **kwargs)
-        self._owasp_dependency_report = self._project.metric_source(metric_source.OWASPDependencyReport)
-
     def value(self):
         return -1 if self._missing() else self._nr_warnings()
 
     def url(self):
         report_ids = self._report_ids()
         if len(report_ids) == 1:
-            return {'OWASP dependency report': self._owasp_dependency_report.report_url(report_ids[0])}
+            return {'OWASP dependency report': self._metric_source.report_url(report_ids[0])}
         else:
             urls = {}
             count = len(report_ids)
             for index, report_id in enumerate(report_ids, start=1):
                 label = 'OWASP dependency report ({index}/{count})'.format(index=index, count=count)
-                urls[label] = self._owasp_dependency_report.report_url(report_id)
+                urls[label] = self._metric_source.report_url(report_id)
             return urls
 
     def _missing(self):
@@ -64,15 +60,14 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
     def _nr_warnings(self):
         """ Return the number of warnings. """
         ids = self._report_ids()
-        return self._owasp_dependency_report.nr_warnings(ids, self.priority_key) if ids else -1
+        return self._metric_source.nr_warnings(ids, self.priority_key) if ids else -1
 
     def _report_ids(self):
         """ Return the Jenkins report ids (job names). """
-        report = self._subject.metric_source_id(self._owasp_dependency_report)
-        if report is None:
+        if self._metric_source_id is None:
             return []
         else:
-            return report if isinstance(report, list) else [report]
+            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
     def _parameters(self):
         parameters = super(OWASPDependencyWarnings, self)._parameters()

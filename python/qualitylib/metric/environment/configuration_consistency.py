@@ -38,19 +38,14 @@ class JavaVersionConsistency(LowerIsBetterMetric):
     quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.AnsibleConfigReport,)
 
-    def __init__(self, *args, **kwargs):
-        super(JavaVersionConsistency, self).__init__(*args, **kwargs)
-        self.__report = self._project.metric_source(metric_source.AnsibleConfigReport)
-        self.__report_url = self._subject.metric_source_id(self.__report)
-
     def value(self):
-        versions = self.__report.java_versions(self.__report_url)
+        versions = self._metric_source.java_versions(self._metric_source_id)
         return -1 if versions is None else versions
 
     def url(self):
-        return dict() if self._missing() else {'Ansible configuration report': self.__report_url}
+        return dict() if self._missing() else {'Ansible configuration report': self._metric_source_id}
 
     def _date(self):
         """ Return the last measurement date. """
-        date = self.__report.date(self.__report_url)
+        date = self._metric_source.date(self._metric_source_id)
         return datetime.datetime.min if date is None else date

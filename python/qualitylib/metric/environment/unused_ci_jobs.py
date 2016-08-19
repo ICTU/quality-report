@@ -16,11 +16,11 @@ limitations under the License.
 from __future__ import absolute_import
 
 from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import JenkinsMetricMixin
 from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
+from qualitylib import metric_source
 
 
-class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
+class UnusedCIJobs(LowerIsBetterMetric):
     """ Metric for measuring the number of continuous integration jobs that are not used. """
 
     name = 'Hoeveelheid ongebruikte CI-jobs'
@@ -33,6 +33,7 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 2
     quality_attribute = ENVIRONMENT_QUALITY
+    metric_source_classes = (metric_source.Jenkins,)
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -42,14 +43,14 @@ class UnusedCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
 
     def value(self):
         """ Return the number of unused jobs. """
-        url = self._jenkins.unused_jobs_url()
+        url = self._metric_source.unused_jobs_url()
         return -1 if url is None else len(url)
 
     def url(self):
         """ Return the urls for the unused jobs. """
-        url = self._jenkins.unused_jobs_url()
+        url = self._metric_source.unused_jobs_url()
         return dict() if url is None else url
 
     def __number_of_jobs(self):
         """ Return the total number of active jobs. """
-        return self._jenkins.number_of_active_jobs()
+        return self._metric_source.number_of_active_jobs()

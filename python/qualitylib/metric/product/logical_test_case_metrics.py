@@ -17,14 +17,13 @@ from __future__ import absolute_import
 
 import datetime
 
-from ..metric_source_mixin import BirtMetricMixin, BirtTestDesignMetricMixin, JiraMetricMixin
+from ..metric_source_mixin import BirtTestDesignMetricMixin
 from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY, TEST_QUALITY
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
 
 class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Base class for metrics measuring the quality of logical test cases. """
     unit = 'logische testgevallen'
 
@@ -48,14 +47,12 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
         raise NotImplementedError  # pragma: no cover
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(LogicalTestCaseMetric, self)._parameters()
         parameters['total'] = self._nr_ltcs()
         return parameters
 
 
 class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of logical test cases that has not been reviewed. """
 
     name = 'Reviewstatus van logische testgevallen'
@@ -66,14 +63,13 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     quality_attribute = DOC_QUALITY
 
     def _nr_ltcs_ok(self):
-        return self._birt.reviewed_ltcs(self._birt_id())
+        return self._metric_source.reviewed_ltcs(self._metric_source_id)
 
     def _nr_ltcs(self):
-        return self._birt.nr_ltcs(self._birt_id())
+        return self._metric_source.nr_ltcs(self._metric_source_id)
 
 
 class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of logical test cases that has not been approved. """
 
     name = 'Goedkeuring van logische testgevallen'
@@ -84,14 +80,13 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     quality_attribute = DOC_QUALITY
 
     def _nr_ltcs_ok(self):
-        return self._birt.approved_ltcs(self._birt_id())
+        return self._metric_source.approved_ltcs(self._metric_source_id)
 
     def _nr_ltcs(self):
-        return self._birt.reviewed_ltcs(self._birt_id())
+        return self._metric_source.reviewed_ltcs(self._metric_source_id)
 
 
 class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of logical test cases that should be automated that has actually been
         automated. """
 
@@ -104,14 +99,13 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     quality_attribute = TEST_COVERAGE
 
     def _nr_ltcs_ok(self):
-        return self._birt.nr_automated_ltcs(self._birt_id())
+        return self._metric_source.nr_automated_ltcs(self._metric_source_id)
 
     def _nr_ltcs(self):
-        return self._birt.nr_ltcs_to_be_automated(self._birt_id())
+        return self._metric_source.nr_ltcs_to_be_automated(self._metric_source_id)
 
 
-class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
+class ManualLogicalTestCases(LowerIsBetterMetric):
     """ Metric for measuring how long ago the manual logical test cases have been tested. """
 
     name = 'Tijdige uitvoering van handmatige logische testgevallen'
@@ -124,6 +118,7 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
     target_value = 21
     low_target_value = 28
     quality_attribute = TEST_COVERAGE
+    metric_source_classes = (metric_source.Birt,)
 
     def target(self):
         if self._subject.product_version_type() == 'release':
@@ -138,28 +133,27 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
         return -1 if self._missing() else (datetime.datetime.now() - self._date()).days
 
     def url(self):
-        url = self._birt.manual_test_execution_url(self._birt_id(), self.__version())
+        url = self._metric_source.manual_test_execution_url(self._metric_source_id, self.__version())
         return dict() if url is None else dict(Birt=url)
 
     def _date(self):
-        date = self._birt.date_of_last_manual_test(self._birt_id(), self.__version())
+        date = self._metric_source.date_of_last_manual_test(self._metric_source_id, self.__version())
         return datetime.datetime.min if date == -1 else date
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(ManualLogicalTestCases, self)._parameters()
-        parameters['nr_manual_ltcs'] = self._birt.nr_manual_ltcs(self._birt_id(), self.__version())
-        parameters['nr_manual_ltcs_too_old'] = self._birt.nr_manual_ltcs_too_old(self._birt_id(), self.__version(),
-                                                                                 self.target())
+        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs(self._metric_source_id, self.__version())
+        parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old(self._metric_source_id,
+                                                                                          self.__version(),
+                                                                                          self.target())
         return parameters
 
     def _get_template(self):
-        # pylint: disable=protected-access
         return self.never_template if self._date() == datetime.datetime.min \
             else super(ManualLogicalTestCases, self)._get_template()
 
     def _missing(self):
-        return self._birt.date_of_last_manual_test(self._birt_id(), self.__version()) in (-1, None)
+        return self._metric_source.date_of_last_manual_test(self._metric_source_id, self.__version()) in (-1, None)
 
     def __version(self):
         """ Return the version number for the product this metric is reporting on. """
@@ -167,7 +161,6 @@ class ManualLogicalTestCases(BirtMetricMixin, LowerIsBetterMetric):
 
 
 class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of manual logical test cases. """
 
     name = 'Hoeveelheid handmatige logische testgevallen'
@@ -178,18 +171,17 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     quality_attribute = TEST_QUALITY
 
     def _nr_ltcs_ok(self):
-        nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._birt.nr_manual_ltcs(self._birt_id())
+        nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._metric_source.nr_manual_ltcs(self._metric_source_id)
         if -1 in (nr_ltcs, nr_manual_ltcs) or None in (nr_ltcs, nr_manual_ltcs):
             return -1
         else:
             return nr_ltcs - nr_manual_ltcs
 
     def _nr_ltcs(self):
-        return self._birt.nr_ltcs(self._birt_id())
+        return self._metric_source.nr_ltcs(self._metric_source_id)
 
 
-class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
+class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     """ Metric for measuring how long it takes to execute the manual logical test cases. """
 
     name = 'Uitvoeringstijd van handmatige logische testgevallen'
@@ -200,25 +192,24 @@ class DurationOfManualLogicalTestCases(JiraMetricMixin, LowerIsBetterMetric):
     target_value = 120
     low_target_value = 240
     quality_attribute = TEST_QUALITY
+    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
-        duration = self._jira.manual_test_cases_time()
+        duration = self._metric_source.manual_test_cases_time()
         return -1 if duration is None else duration
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._jira.manual_test_cases_url()}
+        return dict() if self._missing() else {'Jira': self._metric_source.manual_test_cases_url()}
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(DurationOfManualLogicalTestCases, self)._parameters()
         if not self._missing():
-            parameters['total'] = total = self._jira.nr_manual_test_cases()
-            parameters['measured'] = total - self._jira.nr_manual_test_cases_not_measured()
+            parameters['total'] = total = self._metric_source.nr_manual_test_cases()
+            parameters['measured'] = total - self._metric_source.nr_manual_test_cases_not_measured()
         return parameters
 
 
-class ManualLogicalTestCasesWithoutDuration(JiraMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
+class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
     """ Metric for measuring how many of the manual test cases have not been measured for duration. """
 
     name = 'Hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd'
@@ -228,16 +219,16 @@ class ManualLogicalTestCasesWithoutDuration(JiraMetricMixin, LowerIsBetterMetric
     target_value = 0
     low_target_value = 5
     quality_attribute = TEST_QUALITY
+    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
-        nr_ltcs = self._jira.nr_manual_test_cases_not_measured()
+        nr_ltcs = self._metric_source.nr_manual_test_cases_not_measured()
         return -1 if nr_ltcs is None else nr_ltcs
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._jira.manual_test_cases_url()}
+        return dict() if self._missing() else {'Jira': self._metric_source.manual_test_cases_url()}
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(ManualLogicalTestCasesWithoutDuration, self)._parameters()
-        parameters['total'] = self._jira.nr_manual_test_cases()
+        parameters['total'] = self._metric_source.nr_manual_test_cases()
         return parameters

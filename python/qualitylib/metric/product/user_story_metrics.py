@@ -41,7 +41,7 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 
     def _nr_user_stories(self):
         """ Return the total number of user stories. """
-        return self._birt.nr_user_stories(self._birt_id())
+        return self._metric_source.nr_user_stories(self._metric_source_id)
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -61,7 +61,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
     quality_attribute = DOC_QUALITY
 
     def _nr_user_stories_ok(self):
-        return self._birt.reviewed_user_stories(self._birt_id())
+        return self._metric_source.reviewed_user_stories(self._metric_source_id)
 
 
 class UserStoriesNotApproved(UserStoryMetric):
@@ -75,11 +75,11 @@ class UserStoriesNotApproved(UserStoryMetric):
     quality_attribute = DOC_QUALITY
 
     def _nr_user_stories_ok(self):
-        return self._birt.approved_user_stories(self._birt_id())
+        return self._metric_source.approved_user_stories(self._metric_source_id)
 
     def _nr_user_stories(self):
         """ Override the total number of user stories. """
-        return self._birt.reviewed_user_stories(self._birt_id())
+        return self._metric_source.reviewed_user_stories(self._metric_source_id)
 
 
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
@@ -95,4 +95,4 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     quality_attribute = TEST_COVERAGE
 
     def _nr_user_stories_ok(self):
-        return self._birt.nr_user_stories_with_sufficient_ltcs(self._birt_id())
+        return self._metric_source.nr_user_stories_with_sufficient_ltcs(self._metric_source_id)

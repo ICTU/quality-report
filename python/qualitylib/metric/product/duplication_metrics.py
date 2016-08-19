@@ -29,10 +29,10 @@ class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     quality_attribute = CODE_QUALITY
 
     def _numerator(self):
-        return self._sonar.duplicated_lines(self._sonar_id())
+        return self._metric_source.duplicated_lines(self._sonar_id())
 
     def _denominator(self):
-        return self._sonar.lines(self._sonar_id())
+        return self._metric_source.lines(self._sonar_id())
 
 
 class JavaDuplication(Duplication):

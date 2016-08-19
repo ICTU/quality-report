@@ -32,10 +32,10 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     quality_attribute = CODE_QUALITY
 
     def _numerator(self):
-        return self._sonar.commented_loc(self._sonar_id())
+        return self._metric_source.commented_loc(self._sonar_id())
 
     def _denominator(self):
-        return self._sonar.ncloc(self._sonar_id())
+        return self._metric_source.ncloc(self._sonar_id())
 
 
 class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMetric):
@@ -58,7 +58,7 @@ class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMet
         raise NotImplementedError  # pragma: no cover
 
     def _denominator(self):
-        return self._sonar.methods(self._sonar_id())
+        return self._metric_source.methods(self._sonar_id())
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -75,7 +75,7 @@ class CyclomaticComplexity(MethodQualityMetric):
     attribute = 'een cyclomatische complexiteit van 10 of hoger'
 
     def _numerator(self):
-        return self._sonar.complex_methods(self._sonar_id())
+        return self._metric_source.complex_methods(self._sonar_id())
 
 
 class LongMethods(MethodQualityMetric):
@@ -86,7 +86,7 @@ class LongMethods(MethodQualityMetric):
     attribute = 'een lengte van meer dan 20 NCSS (Non-Comment Source Statements)'
 
     def _numerator(self):
-        return self._sonar.long_methods(self._sonar_id())
+        return self._metric_source.long_methods(self._sonar_id())
 
 
 class ManyParameters(MethodQualityMetric):
@@ -97,4 +97,4 @@ class ManyParameters(MethodQualityMetric):
     attribute = 'meer dan 5 parameters'
 
     def _numerator(self):
-        return self._sonar.many_parameters_methods(self._sonar_id())
+        return self._metric_source.many_parameters_methods(self._sonar_id())

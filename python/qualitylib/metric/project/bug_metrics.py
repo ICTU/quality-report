@@ -16,12 +16,11 @@ limitations under the License.
 from __future__ import absolute_import
 
 from .. import LowerIsBetterMetric
-from ..metric_source_mixin import JiraMetricMixin
 from ..quality_attributes import PROGRESS, SECURITY
 from ... import metric_source
 
 
-class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
+class OpenBugs(LowerIsBetterMetric):
     """ Metric for measuring the number of open bug reports. """
 
     name = 'Hoeveelheid open bugreports'
@@ -31,16 +30,17 @@ class OpenBugs(JiraMetricMixin, LowerIsBetterMetric):
     target_value = 50
     low_target_value = 100
     quality_attribute = PROGRESS
+    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
-        nr_open_bugs = self._jira.nr_open_bugs()
+        nr_open_bugs = self._metric_source.nr_open_bugs()
         return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._jira.nr_open_bugs_url()}
+        return dict() if self._missing() else {'Jira': self._metric_source.nr_open_bugs_url()}
 
 
-class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
+class OpenSecurityBugs(LowerIsBetterMetric):
     """ Metric for measuring the number of open security bugs. """
 
     name = 'Hoeveelheid open beveiligingsbugreports'
@@ -52,16 +52,17 @@ class OpenSecurityBugs(JiraMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 3
     quality_attribute = SECURITY
+    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
-        nr_open_security_bugs = self._jira.nr_open_security_bugs()
+        nr_open_security_bugs = self._metric_source.nr_open_security_bugs()
         return -1 if nr_open_security_bugs in (-1, None) else nr_open_security_bugs
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._jira.nr_open_security_bugs_url()}
+        return dict() if self._missing() else {'Jira': self._metric_source.nr_open_security_bugs_url()}
 
 
-class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
+class TechnicalDebtIssues(LowerIsBetterMetric):
     """ Metric for measuring the number of technical debt issues. """
 
     name = 'Hoeveelheid technische schuld issues'
@@ -71,10 +72,11 @@ class TechnicalDebtIssues(JiraMetricMixin, LowerIsBetterMetric):
     target_value = 10
     low_target_value = 50
     quality_attribute = PROGRESS
+    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
-        nr_issues = self._jira.nr_technical_debt_issues()
+        nr_issues = self._metric_source.nr_technical_debt_issues()
         return -1 if nr_issues in (-1, None) else nr_issues
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._jira.nr_technical_debt_issues_url()}
+        return dict() if self._missing() else {'Jira': self._metric_source.nr_technical_debt_issues_url()}

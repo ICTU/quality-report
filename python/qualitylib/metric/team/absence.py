@@ -45,23 +45,19 @@ class TeamAbsence(LowerIsBetterMetric):
         values['team'] = '(Lijst van teamleden)'
         return values
 
-    def __init__(self, *args, **kwargs):
-        super(TeamAbsence, self).__init__(*args, **kwargs)
-        self.__planner = self._project.metric_source(metric_source.HolidayPlanner)
-
     def value(self):
-        return self.__planner.days(self._subject)[0] if self.__planner else -1
+        return self._metric_source.days(self._subject)[0] if self._metric_source else -1
 
     def url(self):
-        url = self.__planner.url()
+        url = self._metric_source.url()
         return dict() if url is None else dict(Planner=url)
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamAbsence, self)._parameters()
         parameters['team'] = ', '.join([member.name() for member in self._subject.members()])
-        if self.__planner:
-            length, start, end, members = self.__planner.days(self._subject)
+        if self._metric_source:
+            length, start, end, members = self._metric_source.days(self._subject)
             if length:
                 parameters['start'] = start.isoformat()
                 parameters['end'] = end.isoformat()

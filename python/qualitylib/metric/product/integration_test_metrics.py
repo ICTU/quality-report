@@ -32,7 +32,8 @@ class IntegrationtestMetricMixin(SonarDashboardMetricMixin):
         return product.integration_tests() and not product.unittests()
 
     def _sonar_id(self):
-        integration_test_sonar_info = metric_info.SonarProductInfo(self._sonar, self._subject.integration_tests())
+        integration_test_sonar_info = metric_info.SonarProductInfo(self._metric_source,
+                                                                   self._subject.integration_tests())
         return integration_test_sonar_info.sonar_id()
 
 
@@ -58,7 +59,7 @@ class IntegrationtestLineCoverage(IntegrationtestCoverage):
     low_target_value = 90
 
     def value(self):
-        coverage = self._sonar.integration_test_line_coverage(self._sonar_id())
+        coverage = self._metric_source.integration_test_line_coverage(self._sonar_id())
         return -1 if coverage is None else round(coverage)
 
 
@@ -73,5 +74,5 @@ class IntegrationtestBranchCoverage(IntegrationtestCoverage):
     low_target_value = 60
 
     def value(self):
-        coverage = self._sonar.integration_test_branch_coverage(self._sonar_id())
+        coverage = self._metric_source.integration_test_branch_coverage(self._sonar_id())
         return -1 if coverage is None else round(coverage)

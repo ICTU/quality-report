@@ -36,7 +36,7 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return values
 
     def value(self):
-        violations = getattr(self._sonar, '{}_violations'.format(self.violation_type))(self._sonar_id())
+        violations = getattr(self._metric_source, '{}_violations'.format(self.violation_type))(self._sonar_id())
         return -1 if violations is None else violations
 
     def _parameters(self):
@@ -85,7 +85,7 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        no_sonar = self._sonar.no_sonar(self._sonar_id())
+        no_sonar = self._metric_source.no_sonar(self._sonar_id())
         return -1 if no_sonar is None else no_sonar
 
 
@@ -101,9 +101,9 @@ class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        false_positives = self._sonar.false_positives(self._sonar_id())
+        false_positives = self._metric_source.false_positives(self._sonar_id())
         return -1 if false_positives is None else false_positives
 
     def _sonar_url(self):
         """ Return the url to the Sonar violations. """
-        return self._sonar.false_positives_url(self._sonar_id())
+        return self._metric_source.false_positives_url(self._sonar_id())

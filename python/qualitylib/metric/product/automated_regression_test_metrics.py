@@ -35,36 +35,31 @@ class FailingRegressionTests(LowerIsBetterMetric):
     quality_attribute = TEST_QUALITY
     metric_source_classes = (metric_source.TestReport,)
 
-    def __init__(self, *args, **kwargs):
-        super(FailingRegressionTests, self).__init__(*args, **kwargs)
-        self.__test_report = self._project.metric_source(metric_source.TestReport)
-
     def value(self):
         if self._missing():
             return -1
         else:
             urls = self.__report_urls()
-            return self.__test_report.failed_tests(*urls) + self.__test_report.skipped_tests(*urls)
+            return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
 
     def _missing(self):
         urls = self.__report_urls()
-        return self.__test_report.passed_tests(*urls) < 0 or self.__test_report.failed_tests(*urls) < 0 or \
-            self.__test_report.skipped_tests(*urls) < 0
+        return self._metric_source.passed_tests(*urls) < 0 or self._metric_source.failed_tests(*urls) < 0 or \
+               self._metric_source.skipped_tests(*urls) < 0
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingRegressionTests, self)._parameters()
-        passed_tests = self.__test_report.passed_tests(*self.__report_urls())
+        passed_tests = self._metric_source.passed_tests(*self.__report_urls())
         parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters
 
     def __report_urls(self):
         """ Return the test report urls. """
-        report_urls = self._subject.metric_source_id(self.__test_report)
-        if report_urls is None:
+        if self._metric_source_id is None:
             return []
         else:
-            return report_urls if isinstance(report_urls, list) else [report_urls]
+            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
     def url(self):
         report_urls = self.__report_urls()
@@ -89,24 +84,19 @@ class RegressionTestAge(LowerIsBetterMetric):
     quality_attribute = TEST_QUALITY
     metric_source_classes = (metric_source.TestReport,)
 
-    def __init__(self, *args, **kwargs):
-        super(RegressionTestAge, self).__init__(*args, **kwargs)
-        self.__test_report = self._project.metric_source(metric_source.TestReport)
-
     def value(self):
         return -1 if self._missing() else \
-            (datetime.datetime.now() - self.__test_report.report_datetime(*self.__report_urls())).days
+            (datetime.datetime.now() - self._metric_source.report_datetime(*self.__report_urls())).days
 
     def _missing(self):
-        return self.__test_report.report_datetime(*self.__report_urls()) in (None, datetime.datetime.min)
+        return self._metric_source.report_datetime(*self.__report_urls()) in (None, datetime.datetime.min)
 
     def __report_urls(self):
         """ Return the test report urls. """
-        report_urls = self._subject.metric_source_id(self.__test_report)
-        if report_urls is None:
+        if self._metric_source_id is None:
             return []
         else:
-            return report_urls if isinstance(report_urls, list) else [report_urls]
+            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
     def url(self):
         report_urls = self.__report_urls()
@@ -137,7 +127,6 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(_ARTCoverage, self).__init__(*args, **kwargs)
-        self._coverage_report = self._project.metric_source(self.__coverage_class())
         if not self._subject.product_version():
             # Trunk version, ART coverage measurement should not be too old.
             self.old_age = datetime.timedelta(hours=3 * 24)
@@ -151,20 +140,12 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     def _date(self):
         """ Return the date of the last coverage measurement from the coverage report. """
-        url = self._coverage_url()
-        return datetime.datetime.min if url is None else self._coverage_report.coverage_date(url)
+        return datetime.datetime.min if self._metric_source_id is None else \
+            self._metric_source.coverage_date(self._metric_source_id)
 
     def url(self):
-        url = self._coverage_url()
-        return dict() if url is None else {self.__coverage_class().__name__: url}
-
-    def __coverage_class(self):
-        """ Return the coverage class we're using. """
-        return self.metric_source_classes[0]
-
-    def _coverage_url(self):
-        """ Return the url of the coverage report. """
-        return self._subject.metric_source_id(self._coverage_report)
+        return dict() if self._metric_source_id is None else \
+            {self.metric_source_classes[0].__name__: self._metric_source_id}
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -184,10 +165,9 @@ class ARTStatementCoverage(_ARTCoverage):
     covered_items = 'statements'
 
     def value(self):
-        url = self._coverage_url()
-        if url is None:
+        if self._metric_source_id is None:
             return -1
-        coverage = self._coverage_report.statement_coverage(url)
+        coverage = self._metric_source.statement_coverage(self._metric_source_id)
         return -1 if coverage is None else int(round(coverage))
 
 
@@ -201,9 +181,8 @@ class ARTBranchCoverage(_ARTCoverage):
     covered_items = 'branches'
 
     def value(self):
-        url = self._coverage_url()
-        if url is None:
+        if self._metric_source_id is None:
             return -1
-        coverage = self._coverage_report.branch_coverage(url)
+        coverage = self._metric_source.branch_coverage(self._metric_source_id)
         return -1 if coverage is None else int(round(coverage))
 

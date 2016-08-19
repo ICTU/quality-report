@@ -16,11 +16,11 @@ limitations under the License.
 from __future__ import absolute_import
 
 from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import JenkinsMetricMixin
 from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
+from qualitylib import metric_source
 
 
-class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
+class FailingCIJobs(LowerIsBetterMetric):
     """ Metric for measuring the number of continuous integration jobs that fail. """
 
     name = 'Hoeveelheid falende CI-jobs'
@@ -34,17 +34,18 @@ class FailingCIJobs(JenkinsMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 2
     quality_attribute = ENVIRONMENT_QUALITY
+    metric_source_classes = (metric_source.Jenkins,)
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingCIJobs, self)._parameters()
-        parameters['number_of_jobs'] = self._jenkins.number_of_active_jobs()
+        parameters['number_of_jobs'] = self._metric_source.number_of_active_jobs()
         return parameters
 
     def value(self):
-        url = self._jenkins.failing_jobs_url()
+        url = self._metric_source.failing_jobs_url()
         return -1 if url is None else len(url)
 
     def url(self):
-        url = self._jenkins.failing_jobs_url()
+        url = self._metric_source.failing_jobs_url()
         return dict() if url is None else url

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import datetime
 
 from .. import LowerIsBetterMetric
-from ..metric_source_mixin import TrelloActionsBoardMetricMixin
 from ..quality_attributes import PROJECT_MANAGEMENT
 from ... import metric_source
 from ...metric_source import TrelloUnreachableException
@@ -37,10 +36,6 @@ class RiskLog(LowerIsBetterMetric):
     quality_attribute = PROJECT_MANAGEMENT
     metric_source_classes = (metric_source.TrelloRiskBoard,)
 
-    def __init__(self, *args, **kwargs):
-        super(RiskLog, self).__init__(*args, **kwargs)
-        self.__trello_risklog_board = self._project.metric_source(metric_source.TrelloRiskBoard)
-
     def value(self):
         date = self._date()
         if date is None:
@@ -49,19 +44,19 @@ class RiskLog(LowerIsBetterMetric):
 
     def _date(self):
         try:
-            return self.__trello_risklog_board.date_of_last_update()
+            return self._metric_source.date_of_last_update()
         except TrelloUnreachableException:
             return datetime.datetime.min
 
     def url(self):
         try:
-            url = self.__trello_risklog_board.url()
+            url = self._metric_source.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
         return dict() if url is None else dict(Trello=url)
 
 
-class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
+class ActionActivity(LowerIsBetterMetric):
     """ Metric for measuring the number of days since the actions were last updated. """
 
     name = 'Actualiteit van de actielijst'
@@ -72,6 +67,7 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     target_value = 7
     low_target_value = 14
     quality_attribute = PROJECT_MANAGEMENT
+    metric_source_classes = (metric_source.TrelloActionsBoard,)
 
     def value(self):
         date = self._date()
@@ -81,19 +77,19 @@ class ActionActivity(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
 
     def _date(self):
         try:
-            return self._trello_actions_board.date_of_last_update()
+            return self._metric_source.date_of_last_update()
         except TrelloUnreachableException:
             return datetime.datetime.min
 
     def url(self):
         try:
-            url = self._trello_actions_board.url()
+            url = self._metric_source.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
         return dict() if url is None else dict(Trello=url)
 
 
-class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
+class ActionAge(LowerIsBetterMetric):
     """ Metric for measuring the age of individual actions. """
 
     name = 'Tijdigheid van de acties'
@@ -105,17 +101,18 @@ class ActionAge(TrelloActionsBoardMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 3
     quality_attribute = PROJECT_MANAGEMENT
+    metric_source_classes = (metric_source.TrelloActionsBoard,)
 
     def value(self):
         try:
-            nr_cards = self._trello_actions_board.nr_of_over_due_or_inactive_cards()
+            nr_cards = self._metric_source.nr_of_over_due_or_inactive_cards()
         except TrelloUnreachableException:
             return -1
         return -1 if nr_cards is None else nr_cards
 
     def url(self):
         try:
-            urls = self._trello_actions_board.over_due_or_inactive_cards_url()
+            urls = self._metric_source.over_due_or_inactive_cards_url()
         except TrelloUnreachableException:
             urls = dict(Trello='http://trello.com')
         return dict() if urls is None else urls

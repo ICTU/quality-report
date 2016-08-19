@@ -34,7 +34,7 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     quality_attribute = DEPENDENCY_QUALITY
 
     def value(self):
-        cycles = self._sonar.package_cycles(self._sonar_id())
+        cycles = self._metric_source.package_cycles(self._sonar_id())
         return -1 if cycles is None else cycles
 
 

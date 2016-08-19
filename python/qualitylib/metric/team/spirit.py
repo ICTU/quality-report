@@ -40,13 +40,8 @@ class TeamSpirit(Metric):
     quality_attribute = SPIRIT
     metric_source_classes = (metric_source.Wiki,)
 
-    def __init__(self, *args, **kwargs):
-        super(TeamSpirit, self).__init__(*args, **kwargs)
-        self.__wiki = self._project.metric_source(metric_source.Wiki)
-        self.__team_id = self._subject.metric_source_id(self.__wiki)
-
     def value(self):
-        return self.__wiki.team_spirit(self.__team_id) or '?'
+        return self._metric_source.team_spirit(self._metric_source_id) or '?'
 
     def numerical_value(self):
         return self.numerical_value_map.get(self.value(), -1)
@@ -58,25 +53,20 @@ class TeamSpirit(Metric):
     def _needs_immediate_action(self):
         # First check whether the metric needs immediate action because it was measured too long ago.
         # If not, check whether the spirit is too low.
-        if super(TeamSpirit, self)._needs_immediate_action():
-            return True
-        else:
-            return self.value() == self.low_target()
+        return True if super(TeamSpirit, self)._needs_immediate_action() else self.value() == self.low_target()
 
     def _is_below_target(self):
         # First check whether the metric needs action because it was measured too long ago.
         # If not, check whether the spirit is low.
-        if super(TeamSpirit, self)._is_below_target():
-            return True
-        else:
-            return self.numerical_value() < max(self.numerical_value_map.values())
+        return True if super(TeamSpirit, self)._is_below_target() else \
+            self.numerical_value() < max(self.numerical_value_map.values())
 
     def _date(self):
-        return self.__wiki.date_of_last_team_spirit_measurement(self.__team_id)
+        return self._metric_source.date_of_last_team_spirit_measurement(self._metric_source_id)
 
     def _missing(self):
-        return not self.__wiki.team_spirit(self.__team_id)
+        return not self._metric_source.team_spirit(self._metric_source_id)
 
     def url(self):
-        url = self.__wiki.url()
+        url = self._metric_source.url()
         return dict() if url is None else dict(Wiki=url)
