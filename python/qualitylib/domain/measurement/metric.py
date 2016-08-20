@@ -347,14 +347,12 @@ class LowerIsBetterMetric(Metric):
         """ Return whether the metric meets or exceeds the target. """
         # The metric is below target when the actual value is *higher*
         # than the target value, because the target value is the maximum value
-        value = self.value()
-        return value < self.perfect_value or value > self.target() or \
+        return not(self.perfect_value <= self.value() <= self.target()) or \
             super(LowerIsBetterMetric, self)._is_below_target()
 
     def _needs_immediate_action(self):
         """ Return whether the metric scores so bad that immediate action is required. """
-        value = self.value()
-        return value < self.perfect_value or value > self.low_target() or \
+        return not(self.perfect_value <= self.value() <= self.low_target()) or \
             super(LowerIsBetterMetric, self)._needs_immediate_action()
 
     def _is_value_better_than(self, target):

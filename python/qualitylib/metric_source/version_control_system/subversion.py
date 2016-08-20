@@ -84,9 +84,8 @@ class Subversion(version_control_system.VersionControlSystem):
             unmerged revisions. """
         def ignore(branch_name):
             """ Return whether the branch should be ignored. """
-            if list_of_branches_to_include:
-                if branch_name not in list_of_branches_to_include:
-                    return True
+            if list_of_branches_to_include and branch_name not in list_of_branches_to_include:
+                return True
             return branch_name in list_of_branches_to_ignore or re_of_branches_to_ignore and \
                                                                 re.match(re_of_branches_to_ignore, branch_name)
 
