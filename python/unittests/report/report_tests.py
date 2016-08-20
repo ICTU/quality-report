@@ -134,38 +134,50 @@ class QualityReportTest(unittest.TestCase):
         self.assertEqual(set(), self.__report.included_requirements())
 
 
-class QualityReportMetricsTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
-    """ Unit tests for the quality report class that test whether the right metrics are added. """
+class ReportFactory(object):  # pylint: disable=too-few-public-methods
+    """ Create a report according to provided arguments. """
 
     @staticmethod
-    def __create_report(project_kwargs, team_kwargs, product_kwargs, number_of_teams=1):
+    def report(project_kwargs, team_kwargs, product_kwargs, number_of_teams=1):
         """ Create the quality report. """
         documents = project_kwargs.pop('documents', [])
         project = domain.Project('organization', name='project', **project_kwargs)
         for document in documents:
             project.add_document(document)
         for index in range(number_of_teams):
-            team = domain.Team(name='Team %d' % index, **team_kwargs)
-            team.add_member(domain.Person(name='Piet Programmer'))
-            team.add_member(domain.Person(name='Tara Tester'))
-            project.add_team(team)
+            project.add_team(ReportFactory.__create_team(index, team_kwargs))
         if product_kwargs:
-            for component_name in ('unittests', 'jsf', 'art'):
-                component_kwargs = product_kwargs.pop(component_name, dict())
-                if component_kwargs:
-                    component = domain.Product(project, **component_kwargs)
-                    product_kwargs[component_name] = component
-            product = domain.Product(project, **product_kwargs)
-            project.add_product(product)
+            project.add_product(ReportFactory.__create_product(project, product_kwargs))
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
 
+    @staticmethod
+    def __create_product(project, product_kwargs):
+        """ Create a product according to the provided arguments. """
+        for component_name in ('unittests', 'jsf', 'art'):
+            component_kwargs = product_kwargs.pop(component_name, dict())
+            if component_kwargs:
+                component = domain.Product(project, **component_kwargs)
+                product_kwargs[component_name] = component
+        return domain.Product(project, **product_kwargs)
+
+    @staticmethod
+    def __create_team(index, team_kwargs):
+        """ Create a team according to the provided arguments. """
+        team = domain.Team(name='Team %d' % index, **team_kwargs)
+        team.add_member(domain.Person(name='Piet Programmer'))
+        team.add_member(domain.Person(name='Tara Tester'))
+        return team
+
+
+class QualityReportMetricsTest(unittest.TestCase):
+    """ Unit tests for the quality report class that test whether the right metrics are added. """
+
     def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, product_kwargs=None,
                         number_of_teams=1, include=True):
         """ Check that the metric class is included in the report. """
-        quality_report = self.__create_report(project_kwargs or dict(), team_kwargs or dict(),
+        quality_report = ReportFactory.report(project_kwargs or dict(), team_kwargs or dict(),
                                               product_kwargs or dict(), number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
         if include:
