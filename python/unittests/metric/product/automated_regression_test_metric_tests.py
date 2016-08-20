@@ -60,7 +60,7 @@ class FakeSubject(object):
 
     def metric_source_id(self, the_metric_source):
         """ Return the id of the subject for the metric source. """
-        return self.__metric_source_ids.get(the_metric_source, None)
+        return self.__metric_source_ids.get(the_metric_source)
 
 
 class ARTStatementCoverageJacocoTest(unittest.TestCase):

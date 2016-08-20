@@ -29,15 +29,15 @@ class MeasurableObject(DomainObject):
 
     def target(self, metric_class):
         """ Return the target for the specified metric. """
-        return self.__metric_options.get(metric_class, dict()).get('target', None)
+        return self.__metric_options.get(metric_class, dict()).get('target')
 
     def low_target(self, metric_class):
         """ Return the low target for the specified metric. """
-        return self.__metric_options.get(metric_class, dict()).get('low_target', None)
+        return self.__metric_options.get(metric_class, dict()).get('low_target')
 
     def technical_debt_target(self, metric_class):
         """ Return whether a score below target is considered to be accepted technical debt. """
-        return self.__metric_options.get(metric_class, dict()).get('debt_target', None)
+        return self.__metric_options.get(metric_class, dict()).get('debt_target')
 
     def metric_source_id(self, metric_source):
         """ Return the id of this object in the metric source. """
@@ -47,17 +47,17 @@ class MeasurableObject(DomainObject):
                     return self.__metric_source_ids.get(source)
             return None
         else:
-            return self.__metric_source_ids.get(metric_source, None)
+            return self.__metric_source_ids.get(metric_source)
 
     def old_metric_source_id(self, metric_source, version):
         """ Return the id of this object in the metric source for a specific version of the object. """
         old_metric_source_ids = self.__old_metric_source_ids.get(metric_source, dict())
-        return old_metric_source_ids.get(version, None)
+        return old_metric_source_ids.get(version)
 
     def metric_source_options(self, metric_source):
         """ Return the options of this object for the metric source. Options can be any information that is needed
             to get information about this object from the metric source. """
-        return self.__metric_source_options.get(metric_source, None)
+        return self.__metric_source_options.get(metric_source)
 
     def metric_options(self, metric_class):
         """ Return the options of this object for the metric class. Options can be any information that is needed
