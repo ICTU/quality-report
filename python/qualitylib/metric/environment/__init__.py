@@ -13,13 +13,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-from __future__ import absolute_import
-
-from .configuration_consistency import JavaVersionConsistency
-from .failing_ci_jobs import FailingCIJobs
-from .unused_ci_jobs import UnusedCIJobs
-from .version_number import SonarVersion, SonarQualityProfileVersionJava, SonarQualityProfileVersionCSharp, \
-    SonarQualityProfileVersionJS, SonarQualityProfileVersionWeb, SonarPluginVersionJava, SonarPluginVersionCheckStyle, \
-    SonarPluginVersionPMD, SonarPluginVersionFindBugs, SonarPluginVersionCSharp, SonarPluginVersionJS, \
-    SonarPluginVersionReSharper, SonarPluginVersionStyleCop, SonarPluginVersionWeb

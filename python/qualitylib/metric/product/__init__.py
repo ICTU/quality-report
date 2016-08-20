@@ -13,25 +13,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
-
-
-# pylint: disable=wildcard-import
-
-from .automated_regression_test_metrics import FailingRegressionTests, RegressionTestAge, ARTStatementCoverage,\
-    ARTBranchCoverage
-from .dependency_metrics import *
-from .owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
-from .zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAPScanAlertsMetric
-from .duplication_metrics import *
-from .logical_test_case_metrics import *
-from .performance_metrics import *
-from .size_metrics import *
-from .source_code_metrics import *
-from .unittest_metrics import *
-from .integration_test_metrics import IntegrationtestLineCoverage, IntegrationtestBranchCoverage
-from .unit_and_integration_test_metrics import UnitAndIntegrationTestLineCoverage, UnitAndIntegrationTestBranchCoverage
-from .user_story_metrics import *
-from .version_control_metrics import *
-from .violation_metrics import *
-from .analysis_age import *

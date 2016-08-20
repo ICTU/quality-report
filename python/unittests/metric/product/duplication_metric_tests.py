@@ -46,7 +46,7 @@ class DuplicationTest(unittest.TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
         product = domain.Product(project, 'PR', name='FakeSubject')
-        self._metric = metric.Duplication(subject=product, project=project)
+        self._metric = metric.JavaDuplication(subject=product, project=project)
 
     def test_value(self):
         """ Test that the value of the metric equals the percentage of duplicated lines. """

@@ -20,7 +20,6 @@ from ...domain import LowerPercentageIsBetterMetric
 
 
 class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the percentage of duplicated lines of code. """
 
     norm_template = 'Maximaal {target}% gedupliceerde regels code. Meer dan {low_target}% is rood.'
@@ -34,7 +33,7 @@ class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
 
 
 class JavaDuplication(Duplication):
-    # pylint: disable=too-many-public-methods, too-many-ancestors
+    # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of duplicated lines of code in Java code. """
 
     name = 'Duplicatie van Java broncode'
@@ -43,7 +42,7 @@ class JavaDuplication(Duplication):
 
 
 class JsfDuplication(Duplication):
-    # pylint: disable=too-many-public-methods, too-many-ancestors
+    # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of duplicated lines of code in JSF code. """
 
     name = 'Duplicatie van JSF broncode'

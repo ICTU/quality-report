@@ -19,7 +19,7 @@ import unittest
 from qualitylib import metric, domain, metric_source
 
 
-class SonarMetricMixinUnderTest(metric.SonarMetricMixin, metric.Metric):
+class SonarMetricMixinUnderTest(metric.metric_source_mixin.SonarMetricMixin, domain.Metric):
     """ Create a testable class by mixing the mixin class with a metric class. """
     # pylint: disable=too-few-public-methods
     pass
@@ -49,7 +49,7 @@ class SonarMetricMixinTest(unittest.TestCase):
         self.assertEqual(dict(Sonar='http://sonar/'), SonarMetricMixinUnderTest(product, project).url())
 
 
-class BirtTestDesignMetricUnderTest(metric.BirtTestDesignMetricMixin, domain.Metric):
+class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMetricMixin, domain.Metric):
     """ Create a testable class by mixing the mixin class with a metric class. """
     # pylint: disable=too-few-public-methods
     pass

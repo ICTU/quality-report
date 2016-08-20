@@ -17,9 +17,9 @@ from __future__ import absolute_import
 
 import datetime
 
-from .. import LowerIsBetterMetric
-from ... import metric_source
-from ...metric_source import TrelloUnreachableException
+from qualitylib.domain import LowerIsBetterMetric
+from qualitylib import metric_source
+from qualitylib.metric_source import TrelloUnreachableException
 
 
 class RiskLog(LowerIsBetterMetric):

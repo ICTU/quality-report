@@ -15,7 +15,7 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from .. import LowerIsBetterMetric
+from ...domain import LowerIsBetterMetric
 from ... import metric_source
 
 

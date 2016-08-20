@@ -16,7 +16,8 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from .. import HigherIsBetterMetric, metric_source
+from ...domain import HigherIsBetterMetric
+from ... import metric_source
 
 
 class ReadyUserStoryPoints(HigherIsBetterMetric):

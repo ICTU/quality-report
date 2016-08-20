@@ -16,12 +16,54 @@ limitations under the License.
 from __future__ import absolute_import
 
 
-# pylint: disable=wildcard-import
+# Product metrics
+from .product.analysis_age import SonarAnalysisAge
+from .product.automated_regression_test_metrics import (
+    FailingRegressionTests, RegressionTestAge, ARTStatementCoverage, ARTBranchCoverage)
+from .product.dependency_metrics import CyclicDependencies, SnapshotDependencies
+from .product.duplication_metrics import JavaDuplication, JsfDuplication
+from .product.integration_test_metrics import IntegrationtestLineCoverage, IntegrationtestBranchCoverage
+from .product.logical_test_case_metrics import (
+    LogicalTestCasesNotReviewed, LogicalTestCasesNotApproved, LogicalTestCasesNotAutomated,
+    DurationOfManualLogicalTestCases, ManualLogicalTestCasesWithoutDuration, ManualLogicalTestCases,
+    NumberOfManualLogicalTestCases)
+from .product.owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
+from .product.performance_metrics import ResponseTimes, YmorResponseTimes
+from .product.size_metrics import ProductLOC, TotalLOC
+from .product.source_code_metrics import CommentedLOC, CyclomaticComplexity, LongMethods, ManyParameters
+from .product.unit_and_integration_test_metrics import (
+    UnitAndIntegrationTestLineCoverage, UnitAndIntegrationTestBranchCoverage)
+from .product.unittest_metrics import FailingUnittests, UnittestLineCoverage, UnittestBranchCoverage
+from .product.user_story_metrics import (
+    UserStoriesNotReviewed, UserStoriesNotApproved, UserStoriesWithTooFewLogicalTestCases)
+from .product.version_control_metrics import UnmergedBranches
+from .product.violation_metrics import BlockerViolations, CriticalViolations, MajorViolations, NoSonar, FalsePositives
+from .product.zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAPScanAlertsMetric
 
-from .product import *
-from .project import *
-from .team import *
-from .document import *
-from .environment import *
+# Project metrics
+from .project.bug_metrics import OpenBugs, OpenSecurityBugs, TechnicalDebtIssues
+from .project.process_metrics import ReadyUserStoryPoints
+from .project.project_management_metrics import RiskLog, ActionActivity, ActionAge
 
-from .meta_metrics import *
+# Team metrics
+from .team.absence import TeamAbsence
+from .team.progress import TeamProgress
+from .team.spirit import TeamSpirit
+
+# Document metrics
+from .document.age import DocumentAge
+
+# Environment metrics
+from .environment.configuration_consistency import JavaVersionConsistency
+from .environment.failing_ci_jobs import FailingCIJobs
+from .environment.unused_ci_jobs import UnusedCIJobs
+from .environment.version_number import (
+    SonarVersion,
+    SonarPluginVersionCheckStyle, SonarPluginVersionCSharp, SonarPluginVersionFindBugs, SonarPluginVersionJava,
+    SonarPluginVersionJS, SonarPluginVersionPMD, SonarPluginVersionReSharper, SonarPluginVersionStyleCop,
+    SonarPluginVersionWeb,
+    SonarQualityProfileVersionCSharp, SonarQualityProfileVersionJava, SonarQualityProfileVersionJS,
+    SonarQualityProfileVersionWeb)
+
+# Meta metrics
+from .meta_metrics import GreenMetaMetric, YellowMetaMetric, RedMetaMetric, GreyMetaMetric, MissingMetaMetric
