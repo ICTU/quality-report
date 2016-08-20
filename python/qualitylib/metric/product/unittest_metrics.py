@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ..quality_attributes import TEST_COVERAGE, TEST_QUALITY
 from ... import metric_info
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
@@ -54,7 +53,6 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     no_tests_template = 'Er zijn geen {unit}.'
     target_value = 0
     low_target_value = 0
-    quality_attribute = TEST_QUALITY
 
     def value(self):
         value = self._metric_source.failing_unittests(self._sonar_id())
@@ -76,7 +74,6 @@ class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
 
     unit = '%'
     perfect_value = 100
-    quality_attribute = TEST_COVERAGE
 
     def value(self):
         raise NotImplementedError  # pragma: no cover

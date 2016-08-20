@@ -17,7 +17,6 @@ from __future__ import absolute_import
 
 import datetime
 
-from ..quality_attributes import PERFORMANCE
 from ... import domain, metric_source
 
 
@@ -39,7 +38,6 @@ class BaseResponseTimes(domain.Metric):
     perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
-    quality_attribute = PERFORMANCE
 
     def __init__(self, *args, **kwargs):
         super(BaseResponseTimes, self).__init__(*args, **kwargs)

@@ -34,4 +34,3 @@ from .software_development.person import Person
 from .software_development.project import Project
 from .software_development.requirement import Requirement
 from .software_development.document import Document
-from .software_development.quality_attribute import QualityAttribute

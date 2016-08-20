@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerPercentageIsBetterMetric
 
 
@@ -26,7 +25,6 @@ class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
 
     norm_template = 'Maximaal {target}% gedupliceerde regels code. Meer dan {low_target}% is rood.'
     template = '{name} heeft {value}% ({numerator} op {denominator}) duplicatie.'
-    quality_attribute = CODE_QUALITY
 
     def _numerator(self):
         return self._metric_source.duplicated_lines(self._sonar_id())

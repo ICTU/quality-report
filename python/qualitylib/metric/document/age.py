@@ -19,7 +19,6 @@ import datetime
 
 from qualitylib.domain import LowerIsBetterMetric
 from qualitylib.metric.metric_source_mixin import VersionControlSystemMetricMixin
-from qualitylib.metric.quality_attributes import DOC_QUALITY
 
 
 class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
@@ -31,7 +30,6 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         'dan {low_target} {unit} geleden is bijgewerkt is deze metriek rood.'
     template = 'Het document "{name}" is {value} {unit} geleden bijgewerkt.'
     missing_template = 'Het document "{name}" is niet aangetroffen.'
-    quality_attribute = DOC_QUALITY
     target_value = 180
     low_target_value = 200
 

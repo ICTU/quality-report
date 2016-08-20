@@ -17,7 +17,6 @@ from __future__ import absolute_import
 
 import datetime
 
-from ..quality_attributes import TEST_COVERAGE, TEST_QUALITY
 from ... import metric_source
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
@@ -32,7 +31,6 @@ class FailingRegressionTests(LowerIsBetterMetric):
     template = '{value} van de {tests} {unit} van {name} slagen niet.'
     target_value = 0
     low_target_value = 0
-    quality_attribute = TEST_QUALITY
     metric_source_classes = (metric_source.TestReport,)
 
     def value(self):
@@ -81,7 +79,6 @@ class RegressionTestAge(LowerIsBetterMetric):
     template = 'De regressietest van {name} is {value} {unit} geleden gedraaid.'
     target_value = 3
     low_target_value = 7
-    quality_attribute = TEST_QUALITY
     metric_source_classes = (metric_source.TestReport,)
 
     def value(self):
@@ -114,7 +111,6 @@ class _ARTCoverage(HigherIsBetterMetric):
                     'tests. Minder dan {low_target}{unit} is rood.'
     template = '{name} ART {covered_item} coverage is {value}{unit} ({date}, {age} geleden).'
     perfect_value = 100
-    quality_attribute = TEST_COVERAGE
     metric_source_classes = [metric_source.CoverageReport]
     covered_items = covered_item = 'Subclass responsibility'
 

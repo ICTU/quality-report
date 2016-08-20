@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 
-from ..quality_attributes import PROGRESS
 from ...domain import LowerIsBetterMetric
 from ... import metric_source
 
@@ -33,7 +32,6 @@ class TeamProgress(LowerIsBetterMetric):
         'sprint ({sprint_goal:.1f} punten) te halen. De geplande velocity is {planned_velocity:.1f} punt per dag. ' \
         'De tot nu toe (dag {sprint_day} van {sprint_length}) gerealiseerde velocity is {actual_velocity:.1f} ' \
         'punt per dag ({actual_points:.1f} punten).'
-    quality_attribute = PROGRESS
     target_factor = 1.25
     low_target_factor = 1.5
     metric_source_classes = (metric_source.Birt,)

@@ -15,7 +15,6 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from ..quality_attributes import PROGRESS
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
@@ -32,7 +31,6 @@ class TeamAbsence(LowerIsBetterMetric):
     perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
     target_value = 5
     low_target_value = 10
-    quality_attribute = PROGRESS
     metric_source_classes = (metric_source.HolidayPlanner,)
 
     @classmethod

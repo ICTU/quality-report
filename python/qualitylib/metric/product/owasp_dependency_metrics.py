@@ -15,7 +15,6 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from ..quality_attributes import SECURITY
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
@@ -30,7 +29,6 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
                     'Meer dan {low_target} is rood.'
     template = 'Dependencies van {name} hebben {value} {priority} prioriteit {unit}.'
     target_value = 0
-    quality_attribute = SECURITY
     metric_source_classes = (metric_source.OWASPDependencyReport,)
 
     @classmethod

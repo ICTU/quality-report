@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarMetricMixin, SonarDashboardMetricMixin
-from ..quality_attributes import SIZE
 from ... import metric_info
 from ...domain import LowerIsBetterMetric
 
@@ -30,7 +29,6 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
     template = '{name} heeft {value} {unit}.'
     target_value = 50000
     low_target_value = 100000
-    quality_attribute = SIZE
 
     def value(self):
         loc = self._metric_source.ncloc(self._sonar_id())
@@ -49,7 +47,6 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     # Maximum number of LOC Java to be eligible for 4 stars, see
     # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/
     low_target_value = 175000
-    quality_attribute = SIZE
 
     def _parameters(self):
         parameters = super(TotalLOC, self)._parameters()

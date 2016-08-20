@@ -40,8 +40,7 @@ class HTMLFormatter(base_formatter.Formatter):
                    u"'{text}'",
                    u"'{norm}'",
                    u"'{comment}'",
-                   u"'{version}'",
-                   u"'{quality_attribute}'"]
+                   u"'{version}'"]
     columns = u'[' + u', '.join(column_list) + u']'
 
     def __init__(self, *args, **kwargs):
@@ -57,7 +56,6 @@ class HTMLFormatter(base_formatter.Formatter):
             current_version=self.__current_software_version,
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
-        parameters['quality_attribute_filter_menu'] = self.__quality_attribute_filter_menu(report)
         parameters['dashboard'] = DashboardFormatter.format(report)
         parameters['project_resources'] = self.__project_resources(report)
         parameters['metric_classes'] = self.__metric_classes(report)
@@ -135,20 +133,6 @@ class HTMLFormatter(base_formatter.Formatter):
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
-    @staticmethod
-    def __quality_attribute_filter_menu(report):
-        """ Return the menu for filtering on quality attributes. """
-        quality_attributes = set([metric.quality_attribute for metric in report.metrics() if metric.quality_attribute])
-        menu_item_template = """
-            <li>
-                <a class="filter_quality_attribute" id="filter_quality_attribute_{attribute_id}" href="#">
-                    <span class="" aria-hidden="true"></span> Alleen {attribute_name}-metrieken
-                </a>
-            </li>"""
-        menu_items = [menu_item_template.format(attribute_id=attribute.id_string(), attribute_name=attribute.name())
-                      for attribute in sorted(quality_attributes)]
-        return '\n'.join(menu_items)
-
     def __trend_data(self, meta_metrics_section):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
@@ -216,10 +200,6 @@ class HTMLFormatter(base_formatter.Formatter):
         kwargs['version'] = metric.product_version_type()
         kwargs['text'] = self.__format_metric_text(metric)
         kwargs['norm'] = metric.norm()
-        attribute_id = metric.quality_attribute.id_string()
-        if attribute_id:
-            attribute_id = 'filter_quality_attribute_' + attribute_id
-        kwargs['quality_attribute'] = attribute_id
         kwargs['comment'] = self.__format_metric_comment(metric)
         return kwargs
 
@@ -325,23 +305,21 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __metric_classes(report):
         """ Return a HTML table of the metrics the software can measure. """
-        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{qattr}</td><td>{norm}</td></tr>'
+        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{norm}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         result = list()
         result.append('<table class="table table-striped first-col-centered">')
-        result.append('  <tr><th>In dit rapport?</th><th>Metriek</th><th>Identifier</th>'
-                      '<th>Kwaliteitsattribuut</th><th>Norm</th></tr>')
+        result.append('  <tr><th>In dit rapport?</th><th>Metriek</th><th>Identifier</th><th>Norm</th></tr>')
         for metric_class in report.metric_classes():
             name = metric_class.name
             identifier = metric_class.__name__
-            quality_attribute = metric_class.quality_attribute.name()
             icon = icon_span if metric_class in report.included_metric_classes() else ''
             try:
                 norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
             except ValueError:
                 logging.error('Metric class %s had faulty norm template', metric_class.__name__)
                 raise
-            result.append(row.format(icon=icon, name=name, id=identifier, qattr=quality_attribute, norm=norm))
+            result.append(row.format(icon=icon, name=name, id=identifier, norm=norm))
         result.append('</table>')
         return '\n'.join(result)
 

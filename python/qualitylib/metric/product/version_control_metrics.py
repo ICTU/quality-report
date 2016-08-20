@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import VersionControlSystemMetricMixin
-from ..quality_attributes import CODE_QUALITY
 from ... import utils
 from ...domain import LowerIsBetterMetric
 
@@ -33,7 +32,6 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     template = '{value} van de {nr_branches} {unit} van {name} hebben revisies die niet met de trunk zijn gemerged.'
     url_label_text = 'Niet gemergde branches'
     comment_url_label_text = 'Genegeerde branches'
-    quality_attribute = CODE_QUALITY
     target_value = 0
     low_target_value = 1
 

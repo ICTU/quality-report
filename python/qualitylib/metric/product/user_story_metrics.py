@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import BirtTestDesignMetricMixin
-from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY
 from ...domain import LowerIsBetterMetric
 
 
@@ -58,7 +57,6 @@ class UserStoriesNotReviewed(UserStoryMetric):
     template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
     low_target_value = 5
-    quality_attribute = DOC_QUALITY
 
     def _nr_user_stories_ok(self):
         return self._metric_source.reviewed_user_stories(self._metric_source_id)
@@ -72,7 +70,6 @@ class UserStoriesNotApproved(UserStoryMetric):
     template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
     low_target_value = 3
-    quality_attribute = DOC_QUALITY
 
     def _nr_user_stories_ok(self):
         return self._metric_source.approved_user_stories(self._metric_source_id)
@@ -92,7 +89,6 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
         'in totaal {total} {unit}.'
     target_value = 3
     low_target_value = 5
-    quality_attribute = TEST_COVERAGE
 
     def _nr_user_stories_ok(self):
         return self._metric_source.nr_user_stories_with_sufficient_ltcs(self._metric_source_id)

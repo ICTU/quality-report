@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import datetime
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerIsBetterMetric
 
 
@@ -32,7 +31,6 @@ class SonarAnalysisAge(SonarDashboardMetricMixin, LowerIsBetterMetric):
     template = 'De meest recente Sonar analyse van {name} is {value} {unit} oud.'
     target_value = 6 * 7
     low_target_value = 9 * 7
-    quality_attribute = CODE_QUALITY
 
     def value(self):
         latest_analysis_datetime = self._metric_source.analysis_datetime(self._sonar_id())

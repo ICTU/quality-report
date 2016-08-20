@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 from qualitylib import metric_source
 
 
@@ -33,11 +32,9 @@ class FailingCIJobs(LowerIsBetterMetric):
     url_label_text = 'Falende jobs'
     target_value = 0
     low_target_value = 2
-    quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Jenkins,)
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(FailingCIJobs, self)._parameters()
         parameters['number_of_jobs'] = self._metric_source.number_of_active_jobs()
         return parameters

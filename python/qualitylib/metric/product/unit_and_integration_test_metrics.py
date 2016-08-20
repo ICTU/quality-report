@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ..quality_attributes import TEST_COVERAGE
 from ...domain import HigherIsBetterMetric
 
 
@@ -35,7 +34,6 @@ class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIs
 
     unit = '%'
     perfect_value = 100
-    quality_attribute = TEST_COVERAGE
 
     def value(self):
         raise NotImplementedError  # pragma: no cover

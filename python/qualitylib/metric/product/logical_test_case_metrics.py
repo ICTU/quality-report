@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import datetime
 
 from ..metric_source_mixin import BirtTestDesignMetricMixin
-from ..quality_attributes import TEST_COVERAGE, DOC_QUALITY, TEST_QUALITY
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
@@ -60,7 +59,6 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
     low_target_value = 15
-    quality_attribute = DOC_QUALITY
 
     def _nr_ltcs_ok(self):
         return self._metric_source.reviewed_ltcs(self._metric_source_id)
@@ -77,7 +75,6 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
     low_target_value = 10
-    quality_attribute = DOC_QUALITY
 
     def _nr_ltcs_ok(self):
         return self._metric_source.approved_ltcs(self._metric_source_id)
@@ -96,7 +93,6 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     template = '{name} heeft {value} nog te automatiseren {unit}, van in totaal {total} geautomatiseerde {unit}.'
     target_value = 9
     low_target_value = 15
-    quality_attribute = TEST_COVERAGE
 
     def _nr_ltcs_ok(self):
         return self._metric_source.nr_automated_ltcs(self._metric_source_id)
@@ -117,7 +113,6 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     never_template = 'De {nr_manual_ltcs} {unit} van {name} zijn nog niet allemaal uitgevoerd.'
     target_value = 21
     low_target_value = 28
-    quality_attribute = TEST_COVERAGE
     metric_source_classes = (metric_source.Birt,)
 
     def target(self):
@@ -168,7 +163,6 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     template = '{value} van de {total} {unit} zijn handmatig.'
     target_value = 10
     low_target_value = 50
-    quality_attribute = TEST_QUALITY
 
     def _nr_ltcs_ok(self):
         nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._metric_source.nr_manual_ltcs(self._metric_source_id)
@@ -191,7 +185,6 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} {unit}.'
     target_value = 120
     low_target_value = 240
-    quality_attribute = TEST_QUALITY
     metric_source_classes = (metric_source.Jira,)
 
     def value(self):
@@ -218,7 +211,6 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
     template = 'Van {value} van de {total} {unit} is de uitvoeringstijd niet ingevuld.'
     target_value = 0
     low_target_value = 5
-    quality_attribute = TEST_QUALITY
     metric_source_classes = (metric_source.Jira,)
 
     def value(self):

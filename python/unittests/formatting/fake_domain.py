@@ -18,8 +18,6 @@ limitations under the License.
 
 import datetime
 
-from qualitylib import domain
-
 
 class Product(object):
     """ Fake the product domain class. """
@@ -86,7 +84,6 @@ class Product(object):
 
 class Metric(object):
     """ Fake a metric class. """
-    quality_attribute = domain.QualityAttribute('quality', name='Quality')
 
     def __init__(self, id_string='id_string-1', status_start_date=datetime.datetime(2012, 1, 1, 12, 0, 0)):
         self.__id_string = id_string

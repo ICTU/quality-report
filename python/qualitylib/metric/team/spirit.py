@@ -17,7 +17,6 @@ from __future__ import absolute_import
 
 import datetime
 
-from ..quality_attributes import SPIRIT
 from ... import metric_source
 from ...domain import Metric
 
@@ -37,7 +36,6 @@ class TeamSpirit(Metric):
     numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2}
     old_age = datetime.timedelta(days=21)
     max_old_age = 2 * old_age
-    quality_attribute = SPIRIT
     metric_source_classes = (metric_source.Wiki,)
 
     def value(self):

@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin
-from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerPercentageIsBetterMetric
 
 
@@ -29,7 +28,6 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
     template = '{name} heeft {value}{unit} ({numerator} van {denominator}) uitgecommentarieerde regels code.'
     target_value = 1
     low_target_value = 5
-    quality_attribute = CODE_QUALITY
 
     def _numerator(self):
         return self._metric_source.commented_loc(self._sonar_id())
@@ -46,7 +44,6 @@ class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMet
     attribute = 'Subclass responsibility'
     target_value = 0
     low_target_value = 5
-    quality_attribute = CODE_QUALITY
 
     @classmethod
     def norm_template_default_values(cls):

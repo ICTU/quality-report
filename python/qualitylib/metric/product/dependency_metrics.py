@@ -16,9 +16,8 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ..quality_attributes import DEPENDENCY_QUALITY
-from ... import utils, metric_source
-from ...domain import LowerIsBetterMetric, LowerPercentageIsBetterMetric
+from ... import metric_source
+from ...domain import LowerIsBetterMetric
 from ...formatting import HTMLFormatter
 
 
@@ -31,7 +30,6 @@ class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
     template = '{name} heeft {value} {unit}.'
     target_value = 0
     low_target_value = 10
-    quality_attribute = DEPENDENCY_QUALITY
 
     def value(self):
         cycles = self._metric_source.package_cycles(self._sonar_id())
@@ -46,7 +44,6 @@ class SnapshotDependencies(LowerIsBetterMetric):
     template = '{name} heeft {value} {unit} op snapshot versies van andere producten.'
     target_value = 0
     low_target_value = 2
-    quality_attribute = DEPENDENCY_QUALITY
     metric_source_classes = (metric_source.VersionControlSystem, metric_source.Pom)
 
     @classmethod

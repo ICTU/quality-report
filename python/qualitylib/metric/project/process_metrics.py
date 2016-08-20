@@ -17,7 +17,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from .. import HigherIsBetterMetric, metric_source
-from ..quality_attributes import PROGRESS
 
 
 class ReadyUserStoryPoints(HigherIsBetterMetric):
@@ -29,7 +28,6 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 20
-    quality_attribute = PROGRESS
     metric_source_classes = (metric_source.Jira,)
 
     def value(self):

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import re
 from distutils.version import LooseVersion
 
-from ..quality_attributes import ENVIRONMENT_QUALITY
 from ... import metric_source, utils
 from ...domain import HigherIsBetterMetric
 
@@ -32,7 +31,6 @@ class SonarVersion(HigherIsBetterMetric):
     target_value = LooseVersion('4.5.7')
     perfect_value = LooseVersion('999.999.999')
     low_target_value = LooseVersion('4.5.6')
-    quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Sonar,)
 
     def numerical_value(self):
@@ -61,7 +59,6 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
     target_value = LooseVersion('1.0')
     perfect_value = LooseVersion('999.999.999')
     low_target_value = LooseVersion('0.9')
-    quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Sonar,)
 
     @classmethod
@@ -146,7 +143,6 @@ class SonarPluginVersion(HigherIsBetterMetric):
     target_value = LooseVersion('1.0')
     perfect_value = LooseVersion('999.999.999')
     low_target_value = LooseVersion('0.1')
-    quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Sonar,)
 
     @classmethod

@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from .. import LowerIsBetterMetric
-from ..quality_attributes import PROGRESS, SECURITY
 from ... import metric_source
 
 
@@ -29,7 +28,6 @@ class OpenBugs(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 50
     low_target_value = 100
-    quality_attribute = PROGRESS
     metric_source_classes = (metric_source.Jira,)
 
     def value(self):
@@ -51,7 +49,6 @@ class OpenSecurityBugs(LowerIsBetterMetric):
         'open staat is {value}.'
     target_value = 0
     low_target_value = 3
-    quality_attribute = SECURITY
     metric_source_classes = (metric_source.Jira,)
 
     def value(self):
@@ -71,7 +68,6 @@ class TechnicalDebtIssues(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 50
-    quality_attribute = PROGRESS
     metric_source_classes = (metric_source.Jira,)
 
     def value(self):

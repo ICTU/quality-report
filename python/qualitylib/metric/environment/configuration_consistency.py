@@ -19,7 +19,6 @@ import datetime
 
 from qualitylib import metric_source
 from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 
 
 class JavaVersionConsistency(LowerIsBetterMetric):
@@ -35,7 +34,6 @@ class JavaVersionConsistency(LowerIsBetterMetric):
     low_target_value = 2
     old_age = datetime.timedelta(days=3)
     max_old_age = datetime.timedelta(days=7)
-    quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.AnsibleConfigReport,)
 
     def value(self):

@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin, SonarMetricMixin
-from ..quality_attributes import CODE_QUALITY
 from ...domain import LowerIsBetterMetric
 
 
@@ -26,7 +25,6 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
     norm_template = 'Maximaal {target} {violation_type} {unit}. ' \
         'Meer dan {low_target} {violation_type} {unit} is rood.'
     template = '{name} heeft {value} {violation_type} {unit}.'
-    quality_attribute = CODE_QUALITY
     violation_type = 'Subclass responsibility'
 
     @classmethod
@@ -80,7 +78,6 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
     norm_template = 'Violations worden maximaal {target} keer onderdrukt met //NOSONAR. ' \
         'Meer dan {low_target} {unit} is rood.'
     template = '{name} bevat {value} {unit}.'
-    quality_attribute = CODE_QUALITY
     target_value = 25
     low_target_value = 50
 
@@ -96,7 +93,6 @@ class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
     norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. ' \
                     'Meer dan {low_target} {unit} is rood.'
     template = '{name} bevat {value} violations die zijn gemarkeerd als false positive.'
-    quality_attribute = CODE_QUALITY
     target_value = 25
     low_target_value = 50
 

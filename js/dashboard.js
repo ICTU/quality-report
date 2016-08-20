@@ -47,7 +47,6 @@ var METRICS_COLUMN_MEASUREMENT = 5;
 var METRICS_COLUMN_NORM = 6;
 var METRICS_COLUMN_COMMENT = 7;
 var METRICS_COLUMN_VERSION = 8;
-var METRICS_COLUMN_QUALITY_ATTRIBUTE = 9;
 
 function create_metrics_table(metrics_data) {
     var metrics = new google.visualization.DataTable();
@@ -61,7 +60,6 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
     metrics.addColumn('string', 'Version');
-    metrics.addColumn('string', 'Quality attribute');
     metrics.addRows(metrics_data);
     color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
@@ -94,7 +92,6 @@ function create_dashboard(metrics_data, history_data) {
     draw_area_chart('meta_metrics_history_graph', history_data);
 
     set_radio_indicator('filter_color', settings.filter_color);
-    set_radio_indicator('filter_quality_attribute', settings.filter_quality_attribute);
     set_radio_indicator('filter_version', settings.filter_version);
     set_check_indicator('show_dashboard', settings.show_dashboard);
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
@@ -143,32 +140,10 @@ function create_dashboard(metrics_data, history_data) {
             };
         })();
     }
-
-    // Extract the possible quality attributes from the metrics table
-    var list_of_quality_attributes = window.metrics.getDistinctValues(METRICS_COLUMN_QUALITY_ATTRIBUTE);
-    var quality_attributes = ['filter_quality_attribute_all'];
-    for (index = 0; index < list_of_quality_attributes.length; index++) {
-        var quality_attribute = list_of_quality_attributes[index];
-        if (quality_attribute &&
-            quality_attributes.indexOf(quality_attribute) === -1) {
-            quality_attributes.push(quality_attribute);
-        }
-    }
-
-    // Event handler for the filter by quality attribute menu items
-    for (index = 0; index < quality_attributes.length; index++) {
-        document.getElementById(quality_attributes[index]).onclick = (function() {
-            var quality_attribute_ = quality_attributes[index];
-            return function() {
-                set_filter('filter_quality_attribute', quality_attribute_, tables);
-            };
-        })();
-    }
 }
 
 function read_settings_from_cookies() {
     settings.filter_color = read_cookie('filter_color', 'filter_color_all');
-    settings.filter_quality_attribute = read_cookie('filter_quality_attribute', 'filter_quality_attribute_all');
     settings.filter_version = read_cookie('filter_version', 'filter_version_trunk');
     settings.show_dashboard = read_cookie('show_dashboard', 'true') === 'true';
     settings.show_multiple_tables = read_cookie('show_multiple_tables', 'true') === 'true';
@@ -284,8 +259,7 @@ function show_table(table, section, view) {
     document.getElementById('section_' + section).style.display = 'block';
     show_links_to(section);
     var is_tagged_product = ['tag', 'release'].indexOf(view.getValue(0, METRICS_COLUMN_VERSION)) > -1;
-    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_VERSION,
-                           METRICS_COLUMN_QUALITY_ATTRIBUTE];
+    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_VERSION];
     var sort_column = settings.table_sort_column;
     if (is_tagged_product) {
         // Hide the trend column since this table, showing a tagged product,
@@ -366,14 +340,6 @@ function table_view(section) {
             filtered_rows = filtered_rows.concat(release_rows);
         }
         rows = intersection(rows, filtered_rows);
-    }
-
-    // Quality attribute
-    var filtered_quality_attribute = settings.filter_quality_attribute;
-    if (filtered_quality_attribute !== 'filter_quality_attribute_all') {
-        var quality_attribute_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_QUALITY_ATTRIBUTE,
-                                                                      value: filtered_quality_attribute}]);
-        rows = intersection(rows, quality_attribute_rows);
     }
 
     view.setRows(rows);

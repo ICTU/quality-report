@@ -19,7 +19,6 @@ import datetime
 import logging
 
 from . import metric_mixin
-from ..software_development.quality_attribute import QualityAttribute
 from ... import utils
 
 
@@ -38,7 +37,6 @@ class Metric(object):
     url_label_text = comment_url_label_text = ''
     old_age = datetime.timedelta.max
     max_old_age = datetime.timedelta.max
-    quality_attribute = QualityAttribute('', name='')
     metric_source_classes = []
 
     @classmethod

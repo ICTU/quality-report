@@ -25,4 +25,3 @@ from .document import *
 from .environment import *
 
 from .meta_metrics import *
-from .quality_attributes import *

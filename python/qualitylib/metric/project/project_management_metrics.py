@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import datetime
 
 from .. import LowerIsBetterMetric
-from ..quality_attributes import PROJECT_MANAGEMENT
 from ... import metric_source
 from ...metric_source import TrelloUnreachableException
 
@@ -33,7 +32,6 @@ class RiskLog(LowerIsBetterMetric):
     template = 'Het risicolog is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
     target_value = 14
     low_target_value = 28
-    quality_attribute = PROJECT_MANAGEMENT
     metric_source_classes = (metric_source.TrelloRiskBoard,)
 
     def value(self):
@@ -66,7 +64,6 @@ class ActionActivity(LowerIsBetterMetric):
     template = 'De actie- en besluitenlijst is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
     target_value = 7
     low_target_value = 14
-    quality_attribute = PROJECT_MANAGEMENT
     metric_source_classes = (metric_source.TrelloActionsBoard,)
 
     def value(self):
@@ -100,7 +97,6 @@ class ActionAge(LowerIsBetterMetric):
     url_label_text = 'Niet bijgewerkte of te late acties'
     target_value = 0
     low_target_value = 3
-    quality_attribute = PROJECT_MANAGEMENT
     metric_source_classes = (metric_source.TrelloActionsBoard,)
 
     def value(self):

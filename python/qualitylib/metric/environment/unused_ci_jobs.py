@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.quality_attributes import ENVIRONMENT_QUALITY
 from qualitylib import metric_source
 
 
@@ -32,7 +31,6 @@ class UnusedCIJobs(LowerIsBetterMetric):
     url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2
-    quality_attribute = ENVIRONMENT_QUALITY
     metric_source_classes = (metric_source.Jenkins,)
 
     def _parameters(self):

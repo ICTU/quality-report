@@ -1,4 +1,9 @@
-2016-08-18  Release 1.52.2
+2016-08-20  Release 1.52.0
+
+  * Remove the quality attributes and ability to filter on it.
+  
+  
+2016-08-18  Release 1.51.2
 
   * Have `metric.FailingUnittests` report there are no unit tests rather than say that  0 of 0 unit tests fail, 
     if there are no unit tests.
