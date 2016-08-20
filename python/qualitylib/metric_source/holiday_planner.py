@@ -82,4 +82,4 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
         json = utils.eval_json(self.url_open(self.__api_url).read())
         absence_list = json['afwezig']
         # Filter out people not in the team, absences other than whole days, and duplicates
-        return set([tuple(absence[1:]) for absence in absence_list if absence[1] in member_ids and absence[3] == '3'])
+        return {tuple(absence[1:]) for absence in absence_list if absence[1] in member_ids and absence[3] == '3'}

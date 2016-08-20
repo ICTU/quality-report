@@ -90,7 +90,7 @@ class Report(object):
         self.__products = products or []
         self.__metrics = metrics or []
         self.__teams = teams or []
-        self.__meta_metrics = [fake_domain.Metric('MM-%d' % nr) for nr in range(1, number_of_meta_metrics)]
+        self.__meta_metrics = [fake_domain.Metric('MM-{}'.format(nr)) for nr in range(1, number_of_meta_metrics)]
         self.project_metric_sources = project_metric_sources or dict()
 
     @staticmethod

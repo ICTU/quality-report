@@ -46,7 +46,7 @@ class FakeJenkinsOWASPDependenciesReport(object):
     @staticmethod
     def report_url(job_name):
         """ Return the url for the job. """
-        return 'http://jenkins/%s' % job_name
+        return 'http://jenkins/{}'.format(job_name)
 
 
 class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):

@@ -97,8 +97,8 @@ class QualityReport(domain.DomainObject):
 
     def get_product_section(self, product):
         """ Return the section for a specific product. """
-        return dict([(section.product().product_label(), section) for section in self.sections()
-                     if section.product()])[product.product_label()]
+        return {section.product().product_label(): section for section in self.sections()
+                if section.product()}[product.product_label()]
 
     def get_meta_section(self):
         """ Return the section with the meta metrics. """

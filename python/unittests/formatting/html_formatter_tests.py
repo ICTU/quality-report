@@ -47,7 +47,8 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test that the section can contain links. """
         product = fake_domain.Product(dependencies=True)
         html = self.__formatter.section(fake_report.Report(), fake_report.Section(product=product))
-        self.assertTrue('%s:%s gebruikt:' % (product.name(), product.product_version()) in html)
+        name, version = product.name(), product.product_version()
+        self.assertTrue('{name}:{version} gebruikt:'.format(name=name, version=version) in html)
 
     def test_one_metric(self):
         """ Test that the report contains one metric. """
@@ -65,7 +66,7 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test meta metrics. """
         html = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
         for number in range(1, 5):
-            self.assertTrue('MM-%d' % number in html, html)
+            self.assertTrue('MM-{}'.format(number) in html, html)
 
     def test_project_resources(self):
         """ Test that the report contains the project resources. """
@@ -92,7 +93,7 @@ class HTMLFormatterTest(unittest.TestCase):
         html = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
         expected_date = utils.format_date(datetime.datetime(2012, 1, 1, 12, 0, 0), year=True)
         self.assertTrue('title="Direct actie vereist: norm niet gehaald of '
-                        'meting te oud (sinds tenminste %s)' % expected_date in html)
+                        'meting te oud (sinds tenminste {})'.format(expected_date) in html)
 
     def test_hover_known_start(self):
         """ Test that the hover text over the status icon explains the status and shows the start date of the
@@ -102,7 +103,7 @@ class HTMLFormatterTest(unittest.TestCase):
             fake_report.Report(metrics=[fake_domain.Metric(status_start_date=expected_date)]))
         expected_formatted_date = utils.format_date(expected_date, year=True)
         self.assertTrue('title="Direct actie vereist: norm niet gehaald of '
-                        'meting te oud (sinds %s)' % expected_formatted_date in html)
+                        'meting te oud (sinds {})'.format(expected_formatted_date) in html)
 
     def test_product_meta_data_release_candidate(self):
         """ Test that the report shows whether a product is a release candidate. """

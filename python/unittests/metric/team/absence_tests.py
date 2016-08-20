@@ -59,8 +59,8 @@ class TeamAbsenceTest(unittest.TestCase):
         start = today.isoformat()
         end = (today + datetime.timedelta(days=6)).isoformat()
         self.assertEqual('De langste periode dat meerdere teamleden tegelijk gepland afwezig zijn is 6 werkdagen '
-                         '(%s tot en met %s). Afwezig zijn: Derk Designer, Piet Programmer.' % (start, end),
-                         self.__metric.report())
+                         '({start} tot en met {end}). Afwezig zijn: Derk Designer, '
+                         'Piet Programmer.'.format(start=start, end=end), self.__metric.report())
 
     def test_report_without_absence(self):
         """ Test that the report is correct when there are no absences. """

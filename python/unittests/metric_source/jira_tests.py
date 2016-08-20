@@ -29,8 +29,8 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static content. """
-        return io.StringIO(u'{"searchUrl": "http://search", "viewUrl": "%s", "total": %d, "issues": %s}' %
-                           (self.view_url, self.nr_query_results, self.issues))
+        return io.StringIO(u'{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
+                           u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
 
 
 class JiraTest(unittest.TestCase):

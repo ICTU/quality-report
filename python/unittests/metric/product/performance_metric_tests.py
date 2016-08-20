@@ -156,10 +156,10 @@ class BadResponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
     expected_wish_violations = 3
     expected_status = 'red'
     product_version = '1.1'
-    expected_report = '%d van de %d performancetestqueries draaien niet in 90%% van de gevallen binnen de maximale ' \
-        'responsetijd en %d van de %d performancetestqueries draaien niet in 90%% van de gevallen binnen de gewenste ' \
-        'responsetijd (meting ' % (expected_max_violations, expected_queries, expected_wish_violations,
-                                   expected_queries)
+    expected_report = '{0} van de {1} performancetestqueries draaien niet in 90% van de gevallen binnen de maximale ' \
+        'responsetijd en {2} van de {3} performancetestqueries draaien niet in 90% van de gevallen binnen de ' \
+        'gewenste responsetijd (meting '.format(expected_max_violations, expected_queries, expected_wish_violations,
+                                                expected_queries)
 
 
 class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
@@ -170,8 +170,8 @@ class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
     expected_max_violations = 0
     expected_wish_violations = 0
     expected_status = 'perfect'
-    expected_report = 'Alle %d performancetestqueries draaien in 90%% van de gevallen binnen de gewenste ' \
-                      'responsetijd (meting ' % expected_queries
+    expected_report = 'Alle {} performancetestqueries draaien in 90% van de gevallen binnen de gewenste ' \
+                      'responsetijd (meting '.format(expected_queries)
 
 
 class OnlyMaxResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
@@ -182,8 +182,8 @@ class OnlyMaxResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
     expected_max_violations = 4
     expected_wish_violations = 0
     expected_status = 'red'
-    expected_report = '%d van de %d performancetestqueries draaien niet in 90%% van de gevallen binnen de maximale ' \
-                      'responsetijd (meting ' % (expected_max_violations, expected_queries)
+    expected_report = '{0} van de {1} performancetestqueries draaien niet in 90% van de gevallen binnen de maximale ' \
+                      'responsetijd (meting '.format(expected_max_violations, expected_queries)
 
 
 class OnlyWishedResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
@@ -194,5 +194,5 @@ class OnlyWishedResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase
     expected_max_violations = 0
     expected_wish_violations = 3
     expected_status = 'yellow'
-    expected_report = '%d van de %d performancetestqueries draaien niet in 90%% van de gevallen binnen de gewenste ' \
-                      'responsetijd (meting ' % (expected_wish_violations, expected_queries)
+    expected_report = '{0} van de {1} performancetestqueries draaien niet in 90% van de gevallen binnen de gewenste ' \
+                      'responsetijd (meting '.format(expected_wish_violations, expected_queries)

@@ -87,7 +87,8 @@ class ViolationsTestMixin(object):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('FakeSubject heeft %d %s violations.' % (self.__nr_violations, self.violation_type),
+        self.assertEqual('FakeSubject heeft {nr} {type} violations.'.format(nr=self.__nr_violations,
+                                                                            type=self.violation_type),
                          self._metric.report())
 
     def test_is_perfect(self):

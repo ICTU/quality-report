@@ -165,7 +165,7 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
     @staticmethod
     def __create_team(index, team_kwargs):
         """ Create a team according to the provided arguments. """
-        team = domain.Team(name='Team %d' % index, **team_kwargs)
+        team = domain.Team(name='Team {}'.format(index), **team_kwargs)
         team.add_member(domain.Person(name='Piet Programmer'))
         team.add_member(domain.Person(name='Tara Tester'))
         return team

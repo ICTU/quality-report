@@ -74,7 +74,7 @@ class TrelloBoardTest(unittest.TestCase):
         elif 'actions' in url:
             json = u'[{"date": "2015-1-1T10:0:0"}]'
         else:
-            json = u'{"url": "%s", "name": "name"}' % url
+            json = u'{{"url": "{}", "name": "name"}}'.format(url)
         return io.StringIO(json)
 
     def test_url(self):
