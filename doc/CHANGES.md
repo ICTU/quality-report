@@ -1,6 +1,7 @@
 2016-08-20  Release 1.52.0
 
   * Remove the quality attributes and ability to filter on it.
+  * Read and parse each OWASP dependency XML report just once to improve performance.
   
   
 2016-08-18  Release 1.51.2

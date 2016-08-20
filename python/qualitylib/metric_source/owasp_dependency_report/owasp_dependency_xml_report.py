@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import logging
 import xml.etree.ElementTree
 
 from ..abstract import owasp_dependency_report
 from .. import url_opener
+from ... import utils
 
 
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
@@ -33,22 +33,29 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         assert priority in ('low', 'normal', 'high')
         if priority == 'normal':
             priority = 'medium'
-        warnings = [self.__nr_warnings(report_url, priority.capitalize()) for report_url in report_urls]
+        warnings = [self.__nr_warnings_for_prio(report_url, priority.capitalize()) for report_url in report_urls]
         return -1 if -1 in warnings else sum(warnings)
 
-    def __nr_warnings(self, report_url, priority):
-        """ Return the number of warnings of the specified type in the report. """
+    def __nr_warnings_for_prio(self, report_url, priority):
+        """ Return the number of warnings of the specified priority in the report. """
+        return self.__nr_warnings(report_url)[priority]
+
+    @utils.memoized
+    def __nr_warnings(self, report_url):
+        """ Return the number of warnings of each priority in the report. """
         try:
             contents = self.__url_open(report_url).read()
-        except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.warn("Couldn't open %s to read warning count %s: %s", report_url, priority, reason)
-            return -1
+        except url_opener.UrlOpener.url_open_exceptions:
+            return dict(Low=-1, Medium=-1, High=-1)
         root = xml.etree.ElementTree.fromstring(contents)
         # ElementTree has no API to get the namespace so we extract it from the root tag:
         namespace = root.tag.split('}')[0][1:]
-        # Using XPath, find all vulnerability nodes with a severity child node that has the specified priority as text:
-        return len(root.findall(".//{{{ns}}}vulnerability[{{{ns}}}severity='{prio}']".format(ns=namespace,
-                                                                                             prio=priority)))
+        # Using XPath, find all vulnerability nodes with a severity child node:
+        severity_nodes = root.findall(".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace))
+        warnings = dict()
+        for priority in ('Low', 'Medium', 'High'):
+            warnings[priority] = len([node for node in severity_nodes if node.text == priority])
+        return warnings
 
     def report_url(self, report_url):
         """ Return the url of the report. """
