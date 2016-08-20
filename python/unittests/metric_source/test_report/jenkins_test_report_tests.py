@@ -68,7 +68,7 @@ class JenkinsTestReportTest(unittest.TestCase):  # pylint: disable=too-many-publ
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
         self.__opener.contents = u'{"timestamp":1467929105000}'
-        self.assertEqual(datetime.datetime(2016, 7, 8, 0, 5, 5), self.__jenkins.report_datetime('job'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000/1000.), self.__jenkins.report_datetime('job'))
 
     def test_missing_report_datetime(self):
         """ Test that the minimum datetime is returned when the date and time of the test suite is missing. """
