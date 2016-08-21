@@ -343,7 +343,6 @@ class YmorUnderTest(Ymor):
 
 
 class YmorTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the Ymor performance report metric source. """
 
     def setUp(self):

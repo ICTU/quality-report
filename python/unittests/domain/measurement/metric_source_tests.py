@@ -20,7 +20,6 @@ from qualitylib import domain
 
 
 class MetricSourceTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the metric source domain class. """
     def test_default_name(self):
         """ Test the default name of a metric source. """
@@ -32,7 +31,6 @@ class MetricSourceTests(unittest.TestCase):
 
 
 class MissingMetricSourceTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the missing metric source domain class. """
     def test_iteration(self):
         """ Test that missing metric sources are iterable. """

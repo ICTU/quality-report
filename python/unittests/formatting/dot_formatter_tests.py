@@ -21,7 +21,6 @@ from unittests.formatting import fake_report, fake_domain
 
 
 class DependencyFormatterTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the dependency graph formatter class. """
     def setUp(self):
         self._formatter = DependencyFormatter()

@@ -40,7 +40,6 @@ class FakeSonar(object):
 
 
 class DuplicationTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the duplication metric. """
 
     def setUp(self):
@@ -58,7 +57,6 @@ class DuplicationTest(unittest.TestCase):
 
 
 class JsfDuplicationTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the duplication metric. """
 
     def setUp(self):

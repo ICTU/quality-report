@@ -46,7 +46,6 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 
 
 class JacocoTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the Jacoco class. """
 
     def setUp(self):

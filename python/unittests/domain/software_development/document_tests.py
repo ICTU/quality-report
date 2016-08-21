@@ -20,7 +20,6 @@ from qualitylib import domain
 
 
 class DocumentTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the Document domain class. """
     def setUp(self):
         self.__document = domain.Document(name='Document name')

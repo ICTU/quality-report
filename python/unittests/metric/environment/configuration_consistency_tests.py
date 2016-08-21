@@ -37,7 +37,6 @@ class FakeAnsibleConfigReport(object):
 
 
 class JavaVersionConsistencyTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the configuration consistency metric. """
 
     def setUp(self):

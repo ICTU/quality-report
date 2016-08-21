@@ -692,7 +692,7 @@ class BirtUnderTest(Birt2):  # pylint: disable=too-few-public-methods
             return BeautifulSoup.BeautifulSoup(self.html)
 
 
-class BirtTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class BirtTest(unittest.TestCase):
     """ Unit tests for the Birt class. """
 
     def setUp(self):
@@ -845,7 +845,7 @@ class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disabl
         return BeautifulSoup.BeautifulSoup(self.html)
 
 
-class BirtSprintProgressReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class BirtSprintProgressReportTest(unittest.TestCase):
     """ Unit tests for the Birt sprint progress report. """
 
     def setUp(self):

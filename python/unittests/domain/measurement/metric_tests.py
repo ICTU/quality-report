@@ -35,10 +35,10 @@ class MetricUnderTest(domain.Metric):
         return self.value_to_return
 
     def _date(self):
-        return self.date if self.date else super(MetricUnderTest, self)._date()  # pylint: disable=protected-access
+        return self.date if self.date else super(MetricUnderTest, self)._date()
 
 
-class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class MetricTest(unittest.TestCase):
     """ Test case for the Metric domain class. """
 
     def setUp(self):
@@ -68,6 +68,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         MetricUnderTest.metric_source_classes = [metric_source.Birt]
         project = domain.Project(metric_sources={metric_source.Birt: 'Birt1'})
         product = domain.Product(project, metric_source_ids={'Birt1': 'birt id'})
+        # pylint: disable=protected-access
         self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
         MetricUnderTest.metric_source_classes = []
 
@@ -76,6 +77,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         MetricUnderTest.metric_source_classes = [metric_source.Birt]
         project = domain.Project(metric_sources={metric_source.Birt: ['Birt1', 'Birt2']})
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
+        # pylint: disable=protected-access
         self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
         MetricUnderTest.metric_source_classes = []
 
@@ -84,6 +86,7 @@ class MetricTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
         MetricUnderTest.metric_source_classes = [metric_source.Birt]
         project = domain.Project(metric_sources={metric_source.Birt: ['Birt1']})
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
+        # pylint: disable=protected-access
         self.failIf(MetricUnderTest(project=project, subject=product)._metric_source_id)
         MetricUnderTest.metric_source_classes = []
 

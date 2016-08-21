@@ -23,7 +23,8 @@ from unittests.domain.measurement.fake import FakeHistory, FakeSubject
 class DummyMetric(domain.Metric):
     # pylint: disable=too-few-public-methods
     """ Override to implement abstract methods that are needed for running the unit tests. """
-    def value(self):
+    @staticmethod
+    def value():
         """ Return a dummy value. """
         return 0
 
@@ -35,7 +36,6 @@ class MetaMetricUnderTest(domain.MetaMetricMixin, domain.HigherPercentageIsBette
 
 
 class MetaMetricMixinTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for meta metric mixin class. """
 
     def setUp(self):

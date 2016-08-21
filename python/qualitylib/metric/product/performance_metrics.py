@@ -66,16 +66,13 @@ class BaseResponseTimes(domain.Metric):
         return self._max_violations() == self._wish_violations() == 0 and not self._is_old()
 
     def _needs_immediate_action(self):
-        # pylint: disable=protected-access
         return self._max_violations() > 0 or self._is_too_old()
 
     def _is_below_target(self):
-        # pylint: disable=protected-access
         return self._max_violations() > 0 or self._wish_violations() > 0 or self._is_old()
 
 
 class ResponseTimes(BaseResponseTimes):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the performance tests. """
 
     name = 'Overschrijding van responsetijden'
@@ -97,11 +94,9 @@ class ResponseTimes(BaseResponseTimes):
         return super(ResponseTimes, self)._is_perfect() and self.__report_exists()
 
     def _needs_immediate_action(self):
-        # pylint: disable=protected-access
         return super(ResponseTimes, self)._needs_immediate_action() or not self.__report_exists()
 
     def _is_below_target(self):
-        # pylint: disable=protected-access
         return super(ResponseTimes, self)._is_below_target() or not self.__report_exists()
 
     def _get_template(self):
@@ -121,7 +116,6 @@ class ResponseTimes(BaseResponseTimes):
             return self.above_target_template
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(ResponseTimes, self)._parameters()
         if self.__report_exists():
             parameters.update(dict(nr_queries=self.__nr_queries(),
@@ -156,7 +150,6 @@ class ResponseTimes(BaseResponseTimes):
 
 
 class YmorResponseTimes(BaseResponseTimes):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
     name = 'Overschrijding van responsetijden (obv Ymor performance rapportage)'
     metric_source_classes = (metric_source.JenkinsYmorPerformanceReport,)
@@ -184,7 +177,6 @@ class YmorResponseTimes(BaseResponseTimes):
             return self.above_target_template
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(YmorResponseTimes, self)._parameters()
         parameters.update(dict(nr_queries=self.__nr_queries(), value_max=self._max_violations(),
                                value_wish=self._wish_violations()))

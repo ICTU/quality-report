@@ -35,7 +35,6 @@ class FakeJenkins(object):
 
 
 class UnusedCIJobsTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the unused CI jobs metric. """
 
     expected_report = '1 van de 2 actieve CI-jobs is ongebruikt.'

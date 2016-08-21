@@ -148,7 +148,6 @@ class ResponseTimesTestsMixin(object):
 
 
 class BadResponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the response times metric with bad performance. """
 
     expected_queries = 10
@@ -163,7 +162,6 @@ class BadResponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
 
 
 class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the response times metric with perfect response times. """
 
     expected_queries = 10
@@ -175,7 +173,6 @@ class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
 
 
 class OnlyMaxResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the response times metric with max response times violated. """
 
     expected_queries = 10
@@ -187,7 +184,6 @@ class OnlyMaxResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
 
 
 class OnlyWishedResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the response times metric with wished response times violated. """
 
     expected_queries = 10

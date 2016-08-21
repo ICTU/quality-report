@@ -32,7 +32,7 @@ class SubversionUnderTest(Subversion):
             return '<name>folder</name>'
 
 
-class SubversionTests(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class SubversionTests(unittest.TestCase):
     """ Unit tests for the Subversion class. """
     def setUp(self):
         self.__svn = SubversionUnderTest(url='http://svn/')

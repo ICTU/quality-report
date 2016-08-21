@@ -22,9 +22,6 @@ import unittest
 from qualitylib import utils
 
 
-# pylint: disable=too-many-public-methods
-
-
 class PercentageTest(unittest.TestCase):
     """ Unit tests of the percentage method. """
     def test_some_values(self):
@@ -230,8 +227,7 @@ class MemoizedTest(unittest.TestCase):
 
             @utils.memoized
             def test_func_with_args(self, argument):
-                """ Record how often this method is invoked for each argument
-                    value. """
+                """ Record how often this method is invoked for each argument value. """
                 try:
                     hash(argument)
                 except TypeError:
@@ -243,8 +239,7 @@ class MemoizedTest(unittest.TestCase):
 
     def test_doc_string(self):
         """ Test that the original doc string is still available. """
-        self.assertEqual(' Record how often this method is invoked. ',
-                         repr(self.__instance.test_func))
+        self.assertEqual(' Record how often this method is invoked. ', repr(self.__instance.test_func))
 
     def test_cache(self):
         """ Test that the function is only called once. """
@@ -257,8 +252,7 @@ class MemoizedTest(unittest.TestCase):
         self.__instance.test_func_with_args('one')
         self.__instance.test_func_with_args('two')
         self.__instance.test_func_with_args('two')
-        self.assertEqual(dict(one=1, two=1),
-                         self.__instance.test_func_with_args_calls)
+        self.assertEqual(dict(one=1, two=1), self.__instance.test_func_with_args_calls)
 
     def test_mutable_argument(self):
         """ Test that caching is skipped when the argument is mutable. """

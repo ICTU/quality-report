@@ -127,7 +127,6 @@ class JMeterUnderTest(JMeter):
 
 
 class JMeterTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the JMeter performance report metric source. """
 
     def setUp(self):

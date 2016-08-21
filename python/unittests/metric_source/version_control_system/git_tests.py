@@ -27,7 +27,7 @@ class GitUnderTest(Git):  # pylint: disable=too-few-public-methods
         return ''
 
 
-class GitTests(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class GitTests(unittest.TestCase):
     """ Unit tests for the Git class. """
     def setUp(self):
         self.__git = GitUnderTest(url='http://git/')

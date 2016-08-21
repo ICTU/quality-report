@@ -112,7 +112,6 @@ class FakeSubject(object):
 
 
 class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the logical test cases to be automated metric. """
     def setUp(self):
         self.__birt = FakeBirt()

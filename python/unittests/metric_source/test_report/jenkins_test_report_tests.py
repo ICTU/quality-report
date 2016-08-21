@@ -33,7 +33,7 @@ class FakeUrlOpener(object):
             return io.StringIO(self.contents)
 
 
-class JenkinsTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class JenkinsTestReportTest(unittest.TestCase):
     """ Unit tests for the Jenkins test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()

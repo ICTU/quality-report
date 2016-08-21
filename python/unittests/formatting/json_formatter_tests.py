@@ -29,7 +29,6 @@ class FakeSonar(object):  # pylint: disable=too-few-public-methods
 
 
 class JSONFormatterTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit test for the dot report formatter class. """
     def setUp(self):
         self.__formatter = JSONFormatter(sonar=FakeSonar())

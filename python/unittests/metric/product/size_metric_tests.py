@@ -45,7 +45,6 @@ class FakeHistory(object):  # pylint: disable=too-few-public-methods
 
 
 class ProductLOCTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the product LOC metric. """
 
     def setUp(self):
@@ -63,7 +62,6 @@ class ProductLOCTest(unittest.TestCase):
 
 
 class TotalLOCTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the total LOC metric. """
 
     def setUp(self):

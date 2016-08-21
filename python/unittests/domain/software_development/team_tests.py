@@ -19,7 +19,7 @@ import unittest
 from qualitylib import domain
 
 
-class TeamTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class TeamTest(unittest.TestCase):
     """ Unit tests for the Team domain class. """
     def setUp(self):
         self.__team = domain.Team(name='The A-team')

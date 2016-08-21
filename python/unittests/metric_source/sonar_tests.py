@@ -247,7 +247,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
         return io.StringIO(json)
 
 
-class SonarTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class SonarTest(unittest.TestCase):
     """ Unit tests for the Sonar class. """
 
     def setUp(self):

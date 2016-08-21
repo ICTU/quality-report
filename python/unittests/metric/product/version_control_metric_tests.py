@@ -46,7 +46,6 @@ class FakeSubversion(object):
 
 
 class UnmergedBranchesTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the unmerged branches metric. """
 
     def setUp(self):

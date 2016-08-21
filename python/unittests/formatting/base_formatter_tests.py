@@ -34,7 +34,6 @@ class FormatterUnderTest(Formatter):
 
 
 class BaseFormatterTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the base report formatter. """
 
     def setUp(self):

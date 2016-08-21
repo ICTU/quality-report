@@ -23,7 +23,6 @@ from unittests.formatting import fake_report, fake_domain
 
 
 class HTMLFormatterTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the html report formatter. """
 
     def setUp(self):

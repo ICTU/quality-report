@@ -38,7 +38,6 @@ class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
 
 
 class TeamAbsenceTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the team absence metric. """
 
     def setUp(self):

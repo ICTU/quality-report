@@ -21,7 +21,6 @@ from ...domain import LowerIsBetterMetric
 
 
 class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
-    # pylint: disable=too-many-public-methods
     """ Metric for measuring the number of unmerged branches. """
 
     name = 'Hoeveelheid ongemergde branches'
@@ -72,7 +71,6 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         return comment
 
     def _parameters(self):
-        # pylint: disable=protected-access
         parameters = super(UnmergedBranches, self)._parameters()
         branches = self.__branches()
         parameters['nr_branches'] = -1 if branches is None else len(branches)

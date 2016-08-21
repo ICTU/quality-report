@@ -67,7 +67,6 @@ class FakeProduct(object):
 
 
 class ProjectTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for the Project domain class. """
 
     def setUp(self):
@@ -220,7 +219,6 @@ class FakeResource(object):
 
 
 class ProjectResourcesTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Test case for the Project.project_resources() method. """
 
     @staticmethod

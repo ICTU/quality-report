@@ -21,7 +21,6 @@ from qualitylib import report, domain, metric, metric_source, requirement
 
 
 class QualityReportTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the quality report class. """
 
     def setUp(self):

@@ -43,7 +43,6 @@ class FakeSonar(object):
 
 
 class SonarAnalysisAgeTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the sonar analysis age metric. """
 
     def setUp(self):

@@ -34,7 +34,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
             return io.StringIO(self.contents)
 
 
-class JunitTestReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class JunitTestReportTest(unittest.TestCase):
     """ Unit tests for the Junit test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()

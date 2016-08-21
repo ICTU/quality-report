@@ -65,7 +65,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
             return io.StringIO(u"invalid.json" if 'invalid' in url else self.json)
 
 
-class AnsibleConfigReportTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class AnsibleConfigReportTest(unittest.TestCase):
     """ Unit tests for the Ansible config report class. """
 
     def setUp(self):
