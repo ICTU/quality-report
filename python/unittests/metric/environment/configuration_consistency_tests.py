@@ -40,7 +40,7 @@ class JavaVersionConsistencyTests(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the configuration consistency metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         """ Create the text fixture. """
         self.__report = FakeAnsibleConfigReport()
         self.__project = domain.Project(metric_sources={metric_source.AnsibleConfigReport: self.__report},

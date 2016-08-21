@@ -38,7 +38,7 @@ class MetaMetricMixinTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Test case for meta metric mixin class. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         project = domain.Project(metric_sources={metric_source.History: FakeHistory()})
         subject = [DummyMetric(FakeSubject(), project=project)]
         self.__metric = MetaMetricUnderTest(subject, project=project)
@@ -65,7 +65,7 @@ class PercentageMetricUnderTest(domain.HigherPercentageIsBetterMetric):
 
 class PercentageMixinTest(unittest.TestCase):
     """ Test case for the percentage mixin class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__project = domain.Project()
 
     def test_value(self):

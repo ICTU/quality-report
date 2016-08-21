@@ -216,7 +216,7 @@ class HtmlEscapeTest(unittest.TestCase):
 
 class MemoizedTest(unittest.TestCase):
     """ Unit tests of the memoized decorator. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         class TestClass(object):
             """ Class with a cached method. """
             def __init__(self):
@@ -269,7 +269,7 @@ class MemoizedTest(unittest.TestCase):
 
 class RemoveTreeTest(unittest.TestCase):
     """ Unit tests for the remove tree method. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.removed_folder = None
 
     @staticmethod

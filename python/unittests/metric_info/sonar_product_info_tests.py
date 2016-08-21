@@ -28,9 +28,8 @@ class FakeSonar(object):  # pylint: disable=too-few-public-methods
 
 
 class SonarProductInfoTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """t tests for the Sonar product information class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = FakeSonar()
         self.__project = domain.Project('Organization', name='Project name',
                                         metric_sources={metric_source.Sonar: self.__sonar})

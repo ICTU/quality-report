@@ -41,7 +41,7 @@ class TeamAbsenceTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the team absence metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__planner = FakeHolidayPlanner()
         self.__project = domain.Project(metric_sources={metric_source.HolidayPlanner: self.__planner})
         self.__team = domain.Team(name='Team')

@@ -20,9 +20,8 @@ from qualitylib import domain
 
 
 class DomainObjectTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the base domain object class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__object = domain.DomainObject(name='Name', url='http://url')
 
     def test_name(self):

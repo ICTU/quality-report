@@ -69,7 +69,7 @@ class CommonIntegrationtestMetricTestsMixin(object):
     expected_value = 0  # Subclass responsibility
     expected_report = 'Subclass responsibility'
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         """ Set up the test fixture for the unit tests. """
         self.__sonar = FakeSonar(line_coverage=self.expected_value, branch_coverage=self.expected_value)
         self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})

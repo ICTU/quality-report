@@ -109,7 +109,7 @@ class UnreachableRiskLogTest(unittest.TestCase):
 class ActionActivityTest(unittest.TestCase):
     """ Unit tests for the action activity metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
                                         requirements=[requirement.TRACK_ACTIONS])
         self.__metric = metric.ActionActivity(project=self.__project)

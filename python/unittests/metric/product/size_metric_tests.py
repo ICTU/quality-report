@@ -66,7 +66,7 @@ class TotalLOCTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the total LOC metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = FakeSonar()
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},

@@ -49,7 +49,7 @@ class UnmergedBranchesTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the unmerged branches metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: self.__subversion})
         self.__subject = domain.Product(

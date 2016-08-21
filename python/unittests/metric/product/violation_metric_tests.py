@@ -56,7 +56,6 @@ class FakeSonar(object):
 
 
 class ViolationsTestMixin(object):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the Violations metric classes. """
 
     def setUp(self):  # pylint: disable=invalid-name,missing-docstring
@@ -108,7 +107,6 @@ class ViolationsTestMixin(object):
 
 
 class BlockerViolationsTest(ViolationsTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the BlockerViolations metric class. """
 
     metric_class = metric.BlockerViolations
@@ -116,7 +114,6 @@ class BlockerViolationsTest(ViolationsTestMixin, unittest.TestCase):
 
 
 class CriticalViolationsTest(ViolationsTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the CriticalViolations metric class. """
 
     metric_class = metric.CriticalViolations
@@ -124,7 +121,6 @@ class CriticalViolationsTest(ViolationsTestMixin, unittest.TestCase):
 
 
 class MajorViolationsTest(ViolationsTestMixin, unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the MajorViolations metric class. """
 
     metric_class = metric.MajorViolations
@@ -132,10 +128,9 @@ class MajorViolationsTest(ViolationsTestMixin, unittest.TestCase):
 
 
 class FalsePositivesTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the false positives metric class. """
 
-    def setUp(self):  # pylint: disable=invalid-name,missing-docstring
+    def setUp(self):
         sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         self.__subject = domain.Product(project, 'PR', name='FakeSubject')

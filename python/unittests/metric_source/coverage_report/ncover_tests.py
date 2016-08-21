@@ -51,10 +51,9 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 
 
 class NCoverTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the NCover class. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__opener = FakeUrlOpener()
         self.__ncover = NCover(url_open=self.__opener.url_open)
 

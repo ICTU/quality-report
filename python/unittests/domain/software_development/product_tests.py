@@ -88,7 +88,7 @@ class FakeReleaseCandidates(object):
 
 class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """ Unit tests for the Product domain class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__project = domain.Project('Organization')
         self.__product = domain.Product(self.__project, name='Product')
 
@@ -242,7 +242,7 @@ class ProductTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
 class BranchProductTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the Product domain class when on a branch. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__sonar = FakeSonar()
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(

@@ -50,9 +50,8 @@ class FakeVersionControlSystem(object):
 
 
 class VersionControlSystemProductInfoTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """t tests for the Subversion product information class. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__subversion = FakeVersionControlSystem()
         self.__project = domain.Project('Organization', name='Project name',
                                         metric_sources={metric_source.Subversion: self.__subversion})
@@ -113,9 +112,8 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
 
 
 class MultipleVersionControlSystemProductInfoTests(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the VersionControlSystemProductInfo class that covers cases of multiple vcs. """
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__vcs1 = FakeVersionControlSystem('http://svn1/productx/', '1.5', datetime.datetime(2005, 1, 1))
         self.__vcs2 = FakeVersionControlSystem('http://svn2/producty/', '2.0', datetime.datetime(2010, 1, 1))
         self.__vcs_repos = [self.__vcs1, self.__vcs2]

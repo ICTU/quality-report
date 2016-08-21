@@ -43,7 +43,7 @@ class DuplicationTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the duplication metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
         product = domain.Product(project, 'PR', name='FakeSubject')
         self._metric = metric.JavaDuplication(subject=product, project=project)
@@ -61,7 +61,7 @@ class JsfDuplicationTest(unittest.TestCase):
     # pylint: disable=too-many-public-methods
     """ Unit tests for the duplication metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         sonar = FakeSonar()
         self.__project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         self.__jsf = domain.Product(self.__project, 'JS', metric_source_ids={sonar: 'sonar id'})

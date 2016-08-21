@@ -65,10 +65,9 @@ class FakeBirt(object):
 
 
 class TeamProgressTest(unittest.TestCase):
-    # pylint: disable=too-many-public-methods
     """ Unit tests for the team progress metric. """
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):
         self.__birt = FakeBirt()
         self.__team = domain.Team(name='ABC', metric_source_ids={self.__birt: 'abc'})
         self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
