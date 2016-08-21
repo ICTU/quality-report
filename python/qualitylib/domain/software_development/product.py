@@ -204,6 +204,8 @@ class Product(RequirementSubject, MeasurableObject):
             if dependency and dependency.name() != self.name():
                 if recursive:
                     recursive_dependencies.update(dependency.dependencies(version=dependency_version, user=self))
+                else:
+                    continue
             else:
                 dependencies.remove((dependency_name, dependency_version))
         all_dependencies = dependencies | recursive_dependencies
