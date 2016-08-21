@@ -66,5 +66,4 @@ class TeamSpirit(Metric):
         return not self._metric_source.team_spirit(self._metric_source_id)
 
     def url(self):
-        url = self._metric_source.url()
-        return dict() if url is None else dict(Wiki=url)
+        return self.create_url_dict('Wiki', self._metric_source.url())

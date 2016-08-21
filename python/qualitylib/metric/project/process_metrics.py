@@ -36,4 +36,4 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
         return -1 if nr_points in (-1, None) else nr_points
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._metric_source.user_stories_ready_url()}
+        return self.create_url_dict('Jira', self._metric_source.user_stories_ready_url())

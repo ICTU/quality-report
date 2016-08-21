@@ -203,7 +203,7 @@ class FailingRegressionTestsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Test report (1/1)': 'jenkins_job'}, self.__metric.url())
+        self.assertEqual({'Test report': 'jenkins_job'}, self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
@@ -246,7 +246,7 @@ class RegressionTestAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Test report (1/1)': 'jenkins_job'}, self.__metric.url())
+        self.assertEqual({'Test report': 'jenkins_job'}, self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """

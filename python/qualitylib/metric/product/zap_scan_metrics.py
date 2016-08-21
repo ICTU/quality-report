@@ -54,12 +54,7 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
             return []
 
     def url(self):
-        report_urls = self.__report_urls()
-        urls = {}
-        count = len(report_urls)
-        for index, report_url in enumerate(report_urls, start=1):
-            urls['ZAP Scan report ({index}/{count})'.format(index=index, count=count)] = report_url
-        return urls
+        return self.create_url_dict(('ZAP Scan rapport'), *self.__report_urls())
 
     def _parameters(self):
         parameters = super(ZAPScanAlertsMetric, self)._parameters()

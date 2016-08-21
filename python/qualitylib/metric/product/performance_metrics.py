@@ -128,13 +128,7 @@ class ResponseTimes(BaseResponseTimes):
 
     def url(self):
         urls = self._metric_source.urls(*self.__product_id())
-        labeled_urls = {}
-        if urls:
-            total = len(urls)
-            for index, url in enumerate(sorted(urls)):
-                label = 'Wekelijkse performancemeting ({}/{})'.format(index + 1, total)
-                labeled_urls[label] = url
-        return labeled_urls
+        return self.create_url_dict('Performancerapport', *urls)
 
     def __report_exists(self):
         """ Return whether a performance report exists for the product and version this metric reports on. """
@@ -187,7 +181,7 @@ class YmorResponseTimes(BaseResponseTimes):
 
     def url(self):
         url = self._metric_source.report_url(self.__performance_report_id())
-        return dict() if url is None else {'Performance report': url}
+        self.create_url_dict(('Performancerapport', url))
 
     def __nr_queries(self):
         """ Return the number of performance queries in the performance report for the product. """

@@ -235,6 +235,20 @@ class Metric(object):
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
         return dict()
 
+    @staticmethod
+    def create_url_dict(label, *urls):
+        """ Create a dict from a label and a list of urls. Can be used in subclasses to implement url(). """
+        urls = [url for url in urls if url]  # Weed out urls that are empty or None
+        if len(urls) == 1:
+            return {label: urls[0]}
+        else:
+            url_dict = {}
+            count = len(urls)
+            for index, url in enumerate(urls, start=1):
+                numbered_label = '{label} ({index}/{count})'.format(label=label, index=index, count=count)
+                url_dict[numbered_label] = url
+            return url_dict
+
     @classmethod
     def url_label(cls):
         """ Return the label to be used to explain the urls. """

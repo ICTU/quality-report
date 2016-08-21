@@ -111,8 +111,8 @@ class ResponseTimesTestsMixin(object):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual({'Wekelijkse performancemeting (1/2)': 'http://report1',
-                          'Wekelijkse performancemeting (2/2)': 'http://report2'},
+        self.assertEqual({'Performancerapport (1/2)': 'http://report1',
+                          'Performancerapport (2/2)': 'http://report2'},
                          self._metric.url())
 
     def test_report(self):

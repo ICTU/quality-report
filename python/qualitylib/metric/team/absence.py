@@ -47,8 +47,7 @@ class TeamAbsence(LowerIsBetterMetric):
         return self._metric_source.days(self._subject)[0] if self._metric_source else -1
 
     def url(self):
-        url = self._metric_source.url()
-        return dict() if url is None else dict(Planner=url)
+        return self.create_url_dict('Planner', self._metric_source.url())
 
     def _parameters(self):
         # pylint: disable=protected-access

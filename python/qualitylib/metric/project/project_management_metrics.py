@@ -51,7 +51,7 @@ class RiskLog(LowerIsBetterMetric):
             url = self._metric_source.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
-        return dict() if url is None else dict(Trello=url)
+        return self.create_url_dict('Trello', url)
 
 
 class ActionActivity(LowerIsBetterMetric):
@@ -83,7 +83,7 @@ class ActionActivity(LowerIsBetterMetric):
             url = self._metric_source.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
-        return dict() if url is None else dict(Trello=url)
+        return self.create_url_dict('Trello', url)
 
 
 class ActionAge(LowerIsBetterMetric):

@@ -129,7 +129,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
 
     def url(self):
         url = self._metric_source.manual_test_execution_url(self._metric_source_id, self.__version())
-        return dict() if url is None else dict(Birt=url)
+        return self.create_url_dict('Birt', url)
 
     def _date(self):
         date = self._metric_source.date_of_last_manual_test(self._metric_source_id, self.__version())
@@ -192,7 +192,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
         return -1 if duration is None else duration
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._metric_source.manual_test_cases_url()}
+        return self.create_url_dict('Jira', self._metric_source.manual_test_cases_url())
 
     def _parameters(self):
         parameters = super(DurationOfManualLogicalTestCases, self)._parameters()
@@ -218,7 +218,7 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
         return -1 if nr_ltcs is None else nr_ltcs
 
     def url(self):
-        return dict() if self._missing() else {'Jira': self._metric_source.manual_test_cases_url()}
+        return self.create_url_dict('Jira', self._metric_source.manual_test_cases_url())
 
     def _parameters(self):
         parameters = super(ManualLogicalTestCasesWithoutDuration, self)._parameters()

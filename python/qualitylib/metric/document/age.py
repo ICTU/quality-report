@@ -39,8 +39,7 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def url(self):
         """ Return the url to the document. """
-        url = self._subject.url()
-        return {self._vcs_product_info.metric_source_name: self._subject.url()} if url else dict()
+        return self.create_url_dict(self._vcs_product_info.metric_source_name, self._subject.url())
 
     def __changed_date(self):
         """ Return the date that the document was last changed. """
