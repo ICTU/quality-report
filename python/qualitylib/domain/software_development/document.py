@@ -39,6 +39,6 @@ class Document(RequirementSubject, MeasurableObject):
         """ Documents have no versions. """
         return None
 
-    def product_branch_id(self, subversion):
+    def product_branch_id(self, vcs):
         """ Documents have no branches. """
         return None
