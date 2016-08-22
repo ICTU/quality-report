@@ -58,13 +58,9 @@ class VersionControlSystemProductInfo(object):
         return self.__vcs.latest_tagged_product_version(vcs_path)
 
     def is_latest_release(self):
-        """ Return whether the version of the product is the latest
-            released version. """
+        """ Return whether the version of the product is the latest released version. """
         product_version = self.__product.product_version()
-        if product_version:
-            return product_version == self.latest_released_product_version()
-        else:
-            return False
+        return product_version == self.latest_released_product_version() if product_version else False
 
     def branch_folder_for_branch(self, path, branch):
         """ Return the folder for the branch. """
@@ -72,12 +68,7 @@ class VersionControlSystemProductInfo(object):
 
     def last_changed_date(self, path=None):
         """ Return the date the path was last changed. """
-        if path is None:
-            path = self.vcs_path()
-        if self.__vcs is None:
-            return datetime.datetime.min
-        else:
-            return self.__vcs.last_changed_date(path)
+        return datetime.datetime.min if self.__vcs is None else self.__vcs.last_changed_date(path or self.vcs_path())
 
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
