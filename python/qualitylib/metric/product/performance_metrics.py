@@ -181,7 +181,7 @@ class YmorResponseTimes(BaseResponseTimes):
 
     def url(self):
         url = self._metric_source.report_url(self.__performance_report_id())
-        self.create_url_dict(('Performancerapport', url))
+        self.create_url_dict('Performancerapport', url)
 
     def __nr_queries(self):
         """ Return the number of performance queries in the performance report for the product. """

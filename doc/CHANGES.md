@@ -1,3 +1,8 @@
+2016-08-24  Release 1.53.3
+
+  * Bug fix: Don't crash when a performance report metric source hasn't been configured.
+
+
 2016-08-24  Release 1.53.2
 
   * Bug fix: Don't crash when a performance report metric source hasn't been configured.
