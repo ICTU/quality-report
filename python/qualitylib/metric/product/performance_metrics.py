@@ -127,7 +127,7 @@ class ResponseTimes(BaseResponseTimes):
         return self._metric_source.date(*self.__product_id())
 
     def url(self):
-        urls = self._metric_source.urls(*self.__product_id())
+        urls = self._metric_source.urls(*self.__product_id()) or []
         return self.create_url_dict('Performancerapport', *urls)
 
     def __report_exists(self):
@@ -180,7 +180,7 @@ class YmorResponseTimes(BaseResponseTimes):
         return self._metric_source.date(self.__performance_report_id())
 
     def url(self):
-        url = self._metric_source.report_url(self.__performance_report_id())
+        url = self._metric_source.report_url(self.__performance_report_id()) or []
         self.create_url_dict(('Performancerapport', url))
 
     def __nr_queries(self):
