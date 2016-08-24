@@ -211,7 +211,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the product metrics are added if required. """
         for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE,
                     requirement.USER_STORIES_AND_LTCS, requirement.TRACK_BRANCHES, requirement.OWASP_DEPENDENCIES,
-                    requirement.OWASP_ZAP, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR]:
+                    requirement.OWASP_ZAP, requirement.OPEN_VAS, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]))
 

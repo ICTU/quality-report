@@ -57,5 +57,6 @@ from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
 from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard, TrelloUnreachableException
 from .wiki import Wiki
+from .open_vas_scan_report import OpenVASScanReport
 from .zap_scan_report import ZAPScanReport
 from .url_opener import UrlOpener
