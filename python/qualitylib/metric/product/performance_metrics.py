@@ -180,7 +180,7 @@ class YmorResponseTimes(BaseResponseTimes):
         return self._metric_source.date(self.__performance_report_id())
 
     def url(self):
-        url = self._metric_source.report_url(self.__performance_report_id()) or []
+        url = self._metric_source.report_url(self.__performance_report_id())
         self.create_url_dict(('Performancerapport', url))
 
     def __nr_queries(self):
