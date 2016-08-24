@@ -32,12 +32,10 @@ OWASP_ZAP = Requirement(
     url='https://www.owasp.org/',
     metric_classes=(metric.HighRiskZAPScanAlertsMetric, metric.MediumRiskZAPScanAlertsMetric))
 
-
 OPEN_VAS = Requirement(
     name='Open VAS',
     identifier='OPEN_VAS',
-    metric_classes=(metric.HighRiskOpenVASScanAlertsMetric, metric.MediumRiskZAPScanAlertsMetric))
-
+    metric_classes=(metric.HighRiskOpenVASScanAlertsMetric, metric.MediumRiskOpenVASScanAlertsMetric))
 
 TRUSTED_PRODUCT_MAINTAINABILITY = Requirement(
     name='Trusted Product Maintainability, version 6.1',
