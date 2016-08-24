@@ -1,3 +1,8 @@
+2016-08-24  Release 1.53.0
+
+  * Add a metric for the Open VAS Scan report.
+  
+  
 2016-08-20  Release 1.52.0
 
   * Remove the quality attributes and ability to filter on it.
