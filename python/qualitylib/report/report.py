@@ -26,15 +26,16 @@ class QualityReport(domain.DomainObject):
     @classmethod
     def requirements(cls):
         """ Return a list of all requirements that the report can report on. """
-        return [requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
+        return (requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
                 requirement.CODE_QUALITY, requirement.PERFORMANCE, requirement.PERFORMANCE_YMOR,
                 requirement.TRACK_ACTIONS, requirement.TRACK_RISKS, requirement.TRACK_BUGS,
                 requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS, requirement.TRACK_READY_US,
                 requirement.TRACK_CI_JOBS, requirement.TRACK_JAVA_CONSISTENCY, requirement.TRACK_SONAR_VERSION,
                 requirement.TRACK_DOCUMENT_AGE, requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT,
                 requirement.TRACK_ABSENCE, requirement.NO_SNAPSHOT_DEPENDENCIES, requirement.OWASP_DEPENDENCIES,
-                requirement.OWASP_ZAP, requirement.JAVA, requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB,
-                requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.TRACK_BRANCHES]
+                requirement.OWASP_ZAP, requirement.OPEN_VAS, requirement.JAVA, requirement.C_SHARP,
+                requirement.JAVASCRIPT, requirement.WEB, requirement.TRUSTED_PRODUCT_MAINTAINABILITY,
+                requirement.TRACK_BRANCHES)
 
     @classmethod
     def metric_classes(cls):
@@ -174,7 +175,7 @@ class QualityReport(domain.DomainObject):
                                                   requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
                                                   requirement.CODE_QUALITY, requirement.PERFORMANCE,
                                                   requirement.PERFORMANCE_YMOR, requirement.OWASP_DEPENDENCIES,
-                                                  requirement.OWASP_ZAP)
+                                                  requirement.OWASP_ZAP, requirement.OPEN_VAS)
         for metric_class in requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes():
             if metric_class.should_be_measured(product) and metric_class.is_applicable(product):
                 self.__requirements.add(requirement.NO_SNAPSHOT_DEPENDENCIES)

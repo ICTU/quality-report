@@ -27,6 +27,7 @@ from .product.logical_test_case_metrics import (
     LogicalTestCasesNotReviewed, LogicalTestCasesNotApproved, LogicalTestCasesNotAutomated,
     DurationOfManualLogicalTestCases, ManualLogicalTestCasesWithoutDuration, ManualLogicalTestCases,
     NumberOfManualLogicalTestCases)
+from .product.openvas_scan_metrics import HighRiskOpenVASScanAlertsMetric, MediumRiskOpenVASScanAlertsMetric
 from .product.owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
 from .product.performance_metrics import ResponseTimes, YmorResponseTimes
 from .product.size_metrics import ProductLOC, TotalLOC
