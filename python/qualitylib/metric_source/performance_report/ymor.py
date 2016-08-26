@@ -32,8 +32,8 @@ class Ymor(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpen
     needs_metric_source_id = True
     COLUMN_90_PERC = 5
 
-    def __init__(self, report_url):
-        super(Ymor, self).__init__(url=report_url)
+    def __init__(self, report_url, *args, **kwargs):
+        super(Ymor, self).__init__(url=report_url, *args, **kwargs)
 
     def queries(self, product, version):
         """ Return the number of performance queries. """
@@ -76,7 +76,7 @@ class Ymor(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpen
                 query_name = query_names[0].string
                 if not product_query_re.match(query_name):
                     continue  # Not our product
-                if not row('td')[self.COLUMN_90_PERC].has_key('class'):
+                if len(row('td')) < self.COLUMN_90_PERC + 1 or not row('td')[self.COLUMN_90_PERC].has_key('class'):
                     continue  # No color in 90 perc column
                 rows.append(row)
         return rows

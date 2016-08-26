@@ -32,8 +32,8 @@ class JMeter(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOp
     needs_metric_source_id = True
     COLUMN_90_PERC = 10
 
-    def __init__(self, report_folder_url):
-        super(JMeter, self).__init__(url=report_folder_url)
+    def __init__(self, report_folder_url, *args, **kwargs):
+        super(JMeter, self).__init__(url=report_folder_url, *args, **kwargs)
 
     def queries(self, product, version):
         """ Return the number of performance queries. """
