@@ -44,6 +44,6 @@ class OpenVASScanReport(domain.MetricSource):
     @staticmethod
     def __parse_alerts(soup, risk_level):
         """ Get the number of alerts from the HTML soup. """
-        summary_table = soup('table')[0]('table')[1]  # The whole report is one big table with nested tables, yuck.
+        summary_table = soup('table')[0]('table')[1]  # The whole report is one big table with nested tables.
         column = dict(high=3, medium=4, low=5)[risk_level]
         return int(summary_table('tr')[-1]('td')[column].string)
