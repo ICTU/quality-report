@@ -138,7 +138,7 @@ class SprintProgressReport(BirtReport):
             return 0.
 
 
-class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
+class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     """ Class representing the Birt report engine instance. """
 
     metric_source_name = 'Birt reports'
@@ -146,7 +146,7 @@ class Birt2(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __init__(self, birt_url):
         birt_url += 'birt/'
-        super(Birt2, self).__init__(url=birt_url)
+        super(Birt, self).__init__(url=birt_url)
         birt_report_url = birt_url + 'preview?__report=reports/'
         self.__test_design_url = birt_report_url + 'test_design.rptdesign'
         self.__manual_test_execution_url = birt_report_url + \
