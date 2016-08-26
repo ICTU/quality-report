@@ -43,8 +43,8 @@ from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependency
 
 # Other metric sources
 from .ansible_config_report import AnsibleConfigReport
-from .birt import Birt
 from .birt2 import Birt2
+Birt = Birt2
 from .dependencies import Dependencies
 from .history import History
 from .holiday_planner import HolidayPlanner

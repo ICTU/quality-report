@@ -1,3 +1,8 @@
+2016-08-26  Release 1.54.0 (to be released)
+
+  * Remove support for the "old" BIRT reports (ICTU specific).
+  
+  
 2016-08-24  Release 1.53.4
 
   * Bug fix: The Open VAS requirement contained a ZAP Scan metric.
