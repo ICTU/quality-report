@@ -20,49 +20,17 @@ import datetime
 import logging
 import re
 
-from .. import beautifulsoup
-from ..url_opener import UrlOpener
 from ..abstract import performance_report
 from ... import utils
 
 
-class Ymor(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
+class Ymor(performance_report.PerformanceReport):
     """ The Ymor performance report is a variant of a JMeter report. """
     metric_source_name = 'Ymor performance report'
-    needs_metric_source_id = True
     COLUMN_90_PERC = 5
 
-    def __init__(self, report_url, *args, **kwargs):
-        super(Ymor, self).__init__(url=report_url, *args, **kwargs)
-
-    def queries(self, product, version):
-        """ Return the number of performance queries. """
-        try:
-            return len(self.__query_rows(product, version))
-        except UrlOpener.url_open_exceptions:
-            return -1
-
-    def queries_violating_max_responsetime(self, product, version):
-        """ Return the number of performance queries that violate the maximum response time. """
-        try:
-            return self.__queries_violating_response_time(product, version, 'red')
-        except UrlOpener.url_open_exceptions:
-            return -1
-
-    def queries_violating_wished_responsetime(self, product, version):
-        """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
-        try:
-            return self.__queries_violating_response_time(product, version, 'yellow')
-        except UrlOpener.url_open_exceptions:
-            return -1
-
-    def __queries_violating_response_time(self, product, version, color):
-        """ Return the number of queries that are violating either the maximum or the desired response time. """
-        return len([row for row in self.__query_rows(product, version)
-                    if row('td')[self.COLUMN_90_PERC]['class'] == color])
-
     @utils.memoized
-    def __query_rows(self, product, version):
+    def _query_rows(self, product, version):
         """ Return the queries for the specified product and version. """
         rows = []
         product_query_re = re.compile(product[0])
@@ -81,30 +49,16 @@ class Ymor(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpen
                 rows.append(row)
         return rows
 
-    @utils.memoized
-    def date(self, product, version):
+    def _date_from_soup(self, soup):
         """ Return the date when performance was last measured. """
-        urls = self.urls(product, version)
-        if urls:
-            url = list(urls)[0]  # Any url is fine
-            try:
-                soup = self.soup(url)
-            except UrlOpener.url_open_exceptions:
-                return datetime.datetime.min
-            try:
-                table = soup('table', attrs={'class': 'config'})[0]
-                date_string = table('tr')[2]('td')[1].string
-            except IndexError:
-                logging.warning("Can't get date from performance report %s", url)
-                return datetime.datetime.today()
-            date_parts = [int(part) for part in date_string.split('.')]
-            return datetime.datetime(*date_parts)
-        else:
-            return datetime.datetime.min
-
-    def exists(self, product, version):
-        """ Return whether a performance report exists for the specified product and version. """
-        return bool(self.urls(product, version))
+        try:
+            table = soup('table', attrs={'class': 'config'})[0]
+            date_string = table('tr')[2]('td')[1].string
+        except IndexError:
+            logging.warning("Can't get date from performance report")
+            return datetime.datetime.today()
+        date_parts = [int(part) for part in date_string.split('.')]
+        return datetime.datetime(*date_parts)
 
     @utils.memoized
     def urls(self, product, version):  # pylint: disable=unused-argument

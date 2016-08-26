@@ -20,9 +20,11 @@ import datetime
 from ... import domain, metric_source
 
 
-class BaseResponseTimes(domain.Metric):
-    """ Base class for metrics measuring response times as determined by performance tests. """
+class ResponseTimes(domain.Metric):
+    """ Class for measuring response times as determined by performance tests. """
+    name = 'Overschrijding van responsetijden'
     unit = 'performancetestqueries'
+    missing_report_template = 'Er is geen performancetestrapport voor {name}:{version}.'
     norm_template = 'Geen van de {unit} overschrijdt de gewenste responsetijd. Als een of meer ' \
         '{unit} de maximum responsetijd overschrijden is de score rood, anders geel.'
     above_target_template = 'Alle {nr_queries} {unit} draaien in 90% van de gevallen binnen de ' \
@@ -34,13 +36,14 @@ class BaseResponseTimes(domain.Metric):
     below_both_targets_template = '{value_max} van de {nr_queries} {unit} draaien niet in 90% ' \
         'van de gevallen binnen de maximale responsetijd en {value_wish} van de {nr_queries} {unit} draaien niet ' \
         'in 90% van de gevallen binnen de gewenste responsetijd (meting {date}, {age} geleden).'
+    metric_source_classes = (metric_source.PerformanceReport,)
 
     perfect_value = 0
     target_value = 0  # Not used
     low_target_value = 0  # Not used
 
     def __init__(self, *args, **kwargs):
-        super(BaseResponseTimes, self).__init__(*args, **kwargs)
+        super(ResponseTimes, self).__init__(*args, **kwargs)
         if not self._subject.product_version():
             self.old_age = datetime.timedelta(hours=7 * 24)
             self.max_old_age = datetime.timedelta(hours=14 * 24)
@@ -57,29 +60,6 @@ class BaseResponseTimes(domain.Metric):
         return -1 if None in (max_violations, wish_violations) else max_violations + wish_violations
 
     def _max_violations(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _wish_violations(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _is_perfect(self):
-        return self._max_violations() == self._wish_violations() == 0 and not self._is_old()
-
-    def _needs_immediate_action(self):
-        return self._max_violations() > 0 or self._is_too_old()
-
-    def _is_below_target(self):
-        return self._max_violations() > 0 or self._wish_violations() > 0 or self._is_old()
-
-
-class ResponseTimes(BaseResponseTimes):
-    """ Metric for measuring reponsetimes as determined in the performance tests. """
-
-    name = 'Overschrijding van responsetijden'
-    missing_report_template = 'Er is geen performancetestrapport voor {name}:{version}.'
-    metric_source_classes = (metric_source.PerformanceReport,)
-
-    def _max_violations(self):
         """ The number of performance queries that is slower than the maximum response time. """
         return self._metric_source.queries_violating_max_responsetime(*self.__product_id())
 
@@ -87,17 +67,17 @@ class ResponseTimes(BaseResponseTimes):
         """ The number of performance queries that is slower than the wished for response time. """
         return self._metric_source.queries_violating_wished_responsetime(*self.__product_id())
 
-    def _missing(self):
-        return self.numerical_value() < 0
-
     def _is_perfect(self):
-        return super(ResponseTimes, self)._is_perfect() and self.__report_exists()
+        return self._max_violations() == self._wish_violations() == 0 and not self._is_old() and self.__report_exists()
 
     def _needs_immediate_action(self):
-        return super(ResponseTimes, self)._needs_immediate_action() or not self.__report_exists()
+        return self._max_violations() > 0 or self._is_too_old() or not self.__report_exists()
 
     def _is_below_target(self):
-        return super(ResponseTimes, self)._is_below_target() or not self.__report_exists()
+        return self._max_violations() > 0 or self._wish_violations() > 0 or self._is_old() or not self.__report_exists()
+
+    def _missing(self):
+        return self.numerical_value() < 0
 
     def _get_template(self):
         if self.status() in ('missing_source', 'missing'):
@@ -141,52 +121,3 @@ class ResponseTimes(BaseResponseTimes):
     def __product_id(self):
         """ Return the performance report id and version of the product. """
         return self._metric_source_id, self._subject.product_version()
-
-
-class YmorResponseTimes(BaseResponseTimes):
-    """ Metric for measuring reponsetimes as determined in the Ymor performance report. """
-    name = 'Overschrijding van responsetijden (obv Ymor performance rapportage)'
-    metric_source_classes = (metric_source.JenkinsYmorPerformanceReport,)
-
-    def _max_violations(self):
-        """ The number of performance queries that is slower than the maximum response time. """
-        return self._metric_source.queries_violating_max_responsetime(self.__performance_report_id())
-
-    def _wish_violations(self):
-        """ The number of performance queries that is slower than the wished for response time. """
-        return self._metric_source.queries_violating_wished_responsetime(self.__performance_report_id())
-
-    def _get_template(self):
-        if self.status() in ('missing_source', 'missing'):
-            return super(YmorResponseTimes, self)._get_template()
-        max_violations = self._max_violations()
-        wish_violations = self._wish_violations()
-        if max_violations and wish_violations:
-            return self.below_both_targets_template
-        elif max_violations:
-            return self.below_max_target_template
-        elif wish_violations:
-            return self.below_wish_target_template
-        else:
-            return self.above_target_template
-
-    def _parameters(self):
-        parameters = super(YmorResponseTimes, self)._parameters()
-        parameters.update(dict(nr_queries=self.__nr_queries(), value_max=self._max_violations(),
-                               value_wish=self._wish_violations()))
-        return parameters
-
-    def _date(self):
-        return self._metric_source.date(self.__performance_report_id())
-
-    def url(self):
-        url = self._metric_source.report_url(self.__performance_report_id())
-        return self.create_url_dict('Performancerapport', url)
-
-    def __nr_queries(self):
-        """ Return the number of performance queries in the performance report for the product. """
-        return self._metric_source.queries(self.__performance_report_id())
-
-    def __performance_report_id(self):
-        """ Return the performance report id of the product. """
-        return [self._metric_source_id]

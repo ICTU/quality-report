@@ -78,13 +78,6 @@ PERFORMANCE = Requirement(
     identifier='PERFORMANCE',
     metric_classes=(metric.ResponseTimes,))
 
-# FIXME: There shouldn't be a separate Ymor performance requirement, but before we can fix that, the ResponseTimes and
-# YmorResponseTimes metrics need to be merged.
-PERFORMANCE_YMOR = Requirement(
-    name='Performance (Ymor)',
-    identifier='PERFORMANCE_YMOR',
-    metric_classes=(metric.YmorResponseTimes,))
-
 NO_SNAPSHOT_DEPENDENCIES = Requirement(
     name='No snapshot dependencies',
     identifier='NO_SNAPSHOT_DEPENDENCIES',

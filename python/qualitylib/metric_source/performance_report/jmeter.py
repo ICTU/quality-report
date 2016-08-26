@@ -20,40 +20,18 @@ import datetime
 import logging
 import re
 
-from .. import beautifulsoup
 from ..abstract import performance_report
 from ... import utils
 
 
-class JMeter(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
+class JMeter(performance_report.PerformanceReport):
     """ Class representing the JMeter performance report. """
 
     metric_source_name = 'Jmeter performance report'
-    needs_metric_source_id = True
     COLUMN_90_PERC = 10
 
-    def __init__(self, report_folder_url, *args, **kwargs):
-        super(JMeter, self).__init__(url=report_folder_url, *args, **kwargs)
-
-    def queries(self, product, version):
-        """ Return the number of performance queries. """
-        return len(self.__query_rows(product, version))
-
-    def queries_violating_max_responsetime(self, product, version):
-        """ Return the number of performance queries that violate the maximum response time. """
-        return self.__queries_violating_response_time(product, version, 'red')
-
-    def queries_violating_wished_responsetime(self, product, version):
-        """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
-        return self.__queries_violating_response_time(product, version, 'yellow')
-
-    def __queries_violating_response_time(self, product, version, color):
-        """ Return the number of queries that are violating either the maximum or the desired response time. """
-        return len([row for row in self.__query_rows(product, version)
-                    if row('td')[self.COLUMN_90_PERC]['class'] == color])
-
     @utils.memoized
-    def __query_rows(self, product, version):
+    def _query_rows(self, product, version):
         """ Return the queries for the specified product and version. """
         rows = []
         product_query_re = re.compile(product[0])
@@ -72,25 +50,14 @@ class JMeter(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOp
                 rows.append(row)
         return rows
 
-    @utils.memoized
-    def date(self, product, version):
+    def _date_from_soup(self, soup):
         """ Return the date when performance was last measured. """
-        urls = self.urls(product, version)
-        if urls:
-            url = list(urls)[0]  # Any url is fine
-            soup = self.soup(url)
-            try:
-                date_text = soup('h2')[0].string.split(' End: ')[1]
-            except IndexError:
-                logging.warning("Can't get date from performance report %s", url)
-                return datetime.datetime.today()
-            return self.__parse_date(date_text)
-        else:
-            return datetime.datetime.min
-
-    def exists(self, product, version):
-        """ Return whether a performance report exists for the specified product and version. """
-        return bool(self.urls(product, version))
+        try:
+            date_text = soup('h2')[0].string.split(' End: ')[1]
+        except IndexError:
+            logging.warning("Can't get date from performance report")
+            return datetime.datetime.today()
+        return self.__parse_date(date_text)
 
     @utils.memoized
     def urls(self, product, version):

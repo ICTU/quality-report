@@ -15,10 +15,74 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from ... import domain
+import datetime
+
+from .. import beautifulsoup
+from ... import domain, utils
+from ..url_opener import UrlOpener
 
 
-class PerformanceReport(domain.MetricSource):
+class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     """ Abstract class representing a performance report. """
     metric_source_name = 'Performance report'
     needs_metric_source_id = True
+    COLUMN_90_PERC = 0  # Subclass responsibility
+
+    def __init__(self, report_url, *args, **kwargs):
+        super(PerformanceReport, self).__init__(url=report_url, *args, **kwargs)
+
+    def exists(self, product, version):
+        """ Return whether a performance report exists for the specified product and version. """
+        return bool(self.urls(product, version))
+
+    def urls(self, product, version):
+        """ Return the report urls for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def queries(self, product, version):
+        """ Return the number of performance queries. """
+        try:
+            return len(self._query_rows(product, version))
+        except UrlOpener.url_open_exceptions:
+            return -1
+
+    def queries_violating_max_responsetime(self, product, version):
+        """ Return the number of performance queries that violate the maximum response time. """
+        try:
+            return self._queries_violating_response_time(product, version, 'red')
+        except UrlOpener.url_open_exceptions:
+            return -1
+
+    def queries_violating_wished_responsetime(self, product, version):
+        """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
+        try:
+            return self._queries_violating_response_time(product, version, 'yellow')
+        except UrlOpener.url_open_exceptions:
+            return -1
+
+    @utils.memoized
+    def date(self, product, version):
+        """ Return the date when performance was last measured. """
+        urls = self.urls(product, version)
+        if urls:
+            url = list(urls)[0]  # Any url is fine
+            try:
+                soup = self.soup(url)
+            except UrlOpener.url_open_exceptions:
+                return datetime.datetime.min
+            return self._date_from_soup(soup)
+        else:
+            return datetime.datetime.min
+
+    def _query_rows(self, product, version):
+        """ Return the queries for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def _queries_violating_response_time(self, product, version, color):
+        """ Return the number of queries that are violating either the maximum or the desired response time. """
+        return len([row for row in self._query_rows(product, version)
+                    if row('td')[self.COLUMN_90_PERC]['class'] == color])
+
+    def _date_from_soup(self, soup):
+        """ Return the date when the performance was last measured based on the report at the url. """
+        raise NotImplementedError  # pragma: no cover

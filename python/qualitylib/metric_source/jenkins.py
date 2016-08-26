@@ -20,7 +20,7 @@ import logging
 import re
 import urllib2
 
-from . import url_opener, beautifulsoup
+from . import url_opener
 from .. import utils, domain
 
 
@@ -181,79 +181,3 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             assert len(jobs) == 1
             job_name = jobs[0]['name']
         return job_name
-
-
-class JenkinsYmorPerformanceReport(Jenkins):
-    """ Class representing Ymor performance reports in Jenkins jobs. """
-    needs_metric_source_id = True
-    COLUMN_90_PERC = 5
-
-    def __init__(self, *args, **kwargs):
-        super(JenkinsYmorPerformanceReport, self).__init__(*args, **kwargs)
-        self.__report_url = self._last_successful_build_url + 'Performance_Test_Report/'
-
-    def queries(self, job_names):
-        """ Return the number of performance queries. """
-        return len(self.__query_rows(job_names))
-
-    def queries_violating_max_responsetime(self, job_names):
-        """ Return the number of performance queries that violate the maximum response time. """
-        return self.__queries_violating_response_time(job_names, 'red')
-
-    def queries_violating_wished_responsetime(self, job_names):
-        """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
-        return self.__queries_violating_response_time(job_names, 'yellow')
-
-    def __queries_violating_response_time(self, job_names, color):
-        """ Return the number of queries that are violating either the maximum or the desired response time. """
-        return len([row for row in self.__query_rows(job_names) if row('td')[self.COLUMN_90_PERC]['class'] == color])
-
-    @utils.memoized
-    def __query_rows(self, job_names):
-        """ Return the queries for the specified product and version. """
-        rows = []
-        for job_name in job_names:
-            job_name = self.resolve_job_name(job_name)
-            url = self.__report_url.format(job=job_name)
-            # Open the frame and get the Subversion url of the report
-            # FIXME: why not get the quality report from the Jenkins job instead
-            # FIXME: of going to Subversion?
-            soup = beautifulsoup.BeautifulSoupOpener().soup(url)
-            subversion_path = soup('li', attrs={'id': 'tab1'})[0]['value']
-            subversion_url = 'http://' + subversion_path[2:]  # Strip './'
-            # Next, open the performance report itself
-            soup = beautifulsoup.BeautifulSoupOpener().soup(subversion_url)
-            table = soup('table', attrs={'class': 'details'})[0]
-            for row in table('tr'):
-                try:
-                    column_90_perc = row('td')[self.COLUMN_90_PERC]
-                except IndexError:
-                    continue  # No 90 perc column
-                if not column_90_perc.has_key('class'):
-                    continue  # No color in 90 perc column
-                rows.append(row)
-        return rows
-
-    def report_url(self, job_names):
-        """ Return the url of the job. """
-        return self.__report_url.format(job=self.resolve_job_name(job_names[0]))
-
-    def date(self, job_names):
-        """ Return the date of the report. """
-        dates = []
-        for job_name in job_names:
-            job_name = self.resolve_job_name(job_name)
-            url = self.__report_url.format(job=job_name)
-            # Open the frame and get the Subversion url of the report
-            # FIXME: why not get the quality report from the Jenkins job instead
-            # FIXME: of going to Subversion?
-            soup = beautifulsoup.BeautifulSoupOpener().soup(url)
-            subversion_path = soup('li', attrs={'id': 'tab1'})[0]['value']
-            subversion_url = 'http://' + subversion_path[2:]  # Strip './'
-            # Next, open the performance report itself
-            soup = beautifulsoup.BeautifulSoupOpener().soup(subversion_url)
-            table = soup('table', attrs={'class': 'config'})[0]
-            date_string = table('tr')[2]('td')[1].string
-            date_parts = [int(part) for part in date_string.split('.')]
-            dates.append(datetime.datetime(*date_parts))
-        return min(dates) if dates else datetime.datetime.now()
