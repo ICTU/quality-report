@@ -31,12 +31,12 @@ PROJECT = Project('Organization name', name='Quality Report',
                   # Override the total loc metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.WEB, requirement.JAVASCRIPT,
-                                requirement.JAVA, requirement.TRACK_CI_JOBS,
-                                requirement.TRACK_SONAR_VERSION])
+                  requirements=[requirement.TrustedProductMaintainability, requirement.Web, requirement.JavaScript,
+                                requirement.Java, requirement.TrackCIJobs,
+                                requirement.TrackSonarVersion])
 
 # Teams of the project.
-QUALITY_TEAM = Team(name='Quality team', requirements=[requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT])
+QUALITY_TEAM = Team(name='Quality team', requirements=[requirement.ScrumTeam, requirement.TrackSpirit])
 PROJECT.add_team(QUALITY_TEAM)
 
 # Documents of the project.
@@ -54,8 +54,8 @@ QUALITY_REPORT_UNITTESTS = \
 QUALITY_REPORT = \
     Product(PROJECT, 'QR',
             unittests=QUALITY_REPORT_UNITTESTS,
-            requirements=[requirement.OWASP_ZAP, requirement.UNITTESTS, requirement.ART, requirement.CODE_QUALITY,
-                          requirement.PERFORMANCE, requirement.NO_SNAPSHOT_DEPENDENCIES],
+            requirements=[requirement.OWASPZAP, requirement.UnitTests, requirement.ART, requirement.CodeQuality,
+                          requirement.Performance, requirement.NoSnapshotDependencies],
             metric_source_ids={
                 SONAR: 'nl.ictu.quality-report:quality-report',
                 JACOCO: 'quality-report-coverage-report',

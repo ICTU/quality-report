@@ -98,7 +98,7 @@ class TotalLOCTest(unittest.TestCase):
 
     def test_should_be_measured(self):
         """ Test that the metric should be measured if the project requires it. """
-        project = domain.Project(requirements=[requirement.TRUSTED_PRODUCT_MAINTAINABILITY])
+        project = domain.Project(requirements=[requirement.TrustedProductMaintainability])
         self.assertTrue(metric.TotalLOC.should_be_measured(project))
 
     def test_should_not_be_measured(self):

@@ -26,15 +26,15 @@ class QualityReport(domain.DomainObject):
     @classmethod
     def requirements(cls):
         """ Return a list of all requirements that the report can report on. """
-        return (requirement.UNITTESTS, requirement.ART, requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
-                requirement.CODE_QUALITY, requirement.PERFORMANCE, requirement.TRACK_ACTIONS, requirement.TRACK_RISKS,
-                requirement.TRACK_BUGS, requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS,
-                requirement.TRACK_READY_US, requirement.TRACK_CI_JOBS, requirement.TRACK_JAVA_CONSISTENCY,
-                requirement.TRACK_SONAR_VERSION, requirement.TRACK_DOCUMENT_AGE, requirement.SCRUM_TEAM,
-                requirement.TRACK_SPIRIT, requirement.TRACK_ABSENCE, requirement.NO_SNAPSHOT_DEPENDENCIES,
-                requirement.OWASP_DEPENDENCIES, requirement.OWASP_ZAP, requirement.OPEN_VAS, requirement.JAVA,
-                requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB,
-                requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.TRACK_BRANCHES)
+        return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
+                requirement.CodeQuality, requirement.Performance, requirement.TrackActions, requirement.TrackRisks,
+                requirement.TrackBugs, requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
+                requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
+                requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
+                requirement.TrackSpirit, requirement.TrackAbsence, requirement.NoSnapshotDependencies,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS, requirement.Java,
+                requirement.CSharp, requirement.JavaScript, requirement.Web,
+                requirement.TrustedProductMaintainability, requirement.TrackBranches)
 
     @classmethod
     def metric_classes(cls):
@@ -144,52 +144,52 @@ class QualityReport(domain.DomainObject):
 
     def __process_section(self):
         """ Return the process section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.TRACK_ACTIONS,
-                                                  requirement.TRACK_RISKS, requirement.TRACK_BUGS,
-                                                  requirement.TRACK_TECHNICAL_DEBT, requirement.TRACK_MANUAL_LTCS,
-                                                  requirement.TRACK_READY_US)
+        metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions,
+                                                  requirement.TrackRisks, requirement.TrackBugs,
+                                                  requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
+                                                  requirement.TrackReadyUS)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
 
     def __environment_section(self):
         """ Return the environment section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.TRACK_CI_JOBS,
-                                                  requirement.TRACK_JAVA_CONSISTENCY,
-                                                  requirement.TRACK_SONAR_VERSION, requirement.JAVA,
-                                                  requirement.C_SHARP, requirement.JAVASCRIPT, requirement.WEB)
+        metrics = self.__required_subject_metrics(self.__project, requirement.TrackCIJobs,
+                                                  requirement.TrackJavaConsistency,
+                                                  requirement.TrackSonarVersion, requirement.Java,
+                                                  requirement.CSharp, requirement.JavaScript, requirement.Web)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
 
     def __overall_products_section(self):
         """ Return the products overall section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.TRUSTED_PRODUCT_MAINTAINABILITY)
+        metrics = self.__required_subject_metrics(self.__project, requirement.TrustedProductMaintainability)
         for document in self.__project.documents():
-            metrics.extend(self.__required_subject_metrics(document, requirement.TRACK_DOCUMENT_AGE))
+            metrics.extend(self.__required_subject_metrics(document, requirement.TrackDocumentAge))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics) if metrics else None
 
     def __product_section(self, product):
         """ Return the section for the product. """
-        metrics = self.__required_subject_metrics(product, requirement.UNITTESTS, requirement.ART,
-                                                  requirement.ART_COVERAGE, requirement.USER_STORIES_AND_LTCS,
-                                                  requirement.CODE_QUALITY, requirement.PERFORMANCE,
-                                                  requirement.OWASP_DEPENDENCIES, requirement.OWASP_ZAP,
-                                                  requirement.OPEN_VAS)
-        for metric_class in requirement.NO_SNAPSHOT_DEPENDENCIES.metric_classes():
+        metrics = self.__required_subject_metrics(product, requirement.UnitTests, requirement.ART,
+                                                  requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
+                                                  requirement.CodeQuality, requirement.Performance,
+                                                  requirement.OWASPDependencies, requirement.OWASPZAP,
+                                                  requirement.OpenVAS)
+        for metric_class in requirement.NoSnapshotDependencies.metric_classes():
             if metric_class.should_be_measured(product) and metric_class.is_applicable(product):
-                self.__requirements.add(requirement.NO_SNAPSHOT_DEPENDENCIES)
+                self.__requirements.add(requirement.NoSnapshotDependencies)
                 metrics.append(metric_class(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
-        metrics.extend(self.__required_subject_metrics(product, requirement.TRACK_BRANCHES))
+        metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(), product.name(), self.__latest_product_version(product)),
                        metrics, product=product) if metrics else None
 
     def __team_section(self, team):
         """ Return a report section for the team. """
-        metrics = self.__required_subject_metrics(team, requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT,
-                                                  requirement.TRACK_ABSENCE)
+        metrics = self.__required_subject_metrics(team, requirement.ScrumTeam, requirement.TrackSpirit,
+                                                  requirement.TrackAbsence)
         self.__metrics.extend(metrics)
         return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics) if metrics else None
 
@@ -213,14 +213,14 @@ class QualityReport(domain.DomainObject):
         if art.product_version_type() == 'trunk':
             # Only add the ART if we're reporting on the trunk version because we currently can only report on the
             # trunk version of the ART.
-            metrics.extend(self.__required_subject_metrics(art, requirement.CODE_QUALITY, requirement.ART_COVERAGE,
+            metrics.extend(self.__required_subject_metrics(art, requirement.CodeQuality, requirement.ARTCoverage,
                                                            requirement.ART))
-        metrics.extend(self.__required_subject_metrics(art, requirement.TRACK_BRANCHES))
+        metrics.extend(self.__required_subject_metrics(art, requirement.TrackBranches))
         return metrics
 
     def __jsf_metrics(self, jsf):
         """ Return a list of JSF metrics for the (JSF) product. """
-        return self.__required_subject_metrics(jsf, requirement.JSF_CODE_QUALITY) if jsf else []
+        return self.__required_subject_metrics(jsf, requirement.JSFCodeQuality) if jsf else []
 
     def __required_subject_metrics(self, subject, *requirements):
         """ Return a list of metrics for the subject that should be measured and are applicable. """

@@ -38,7 +38,7 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
-                                        requirements=[requirement.TRACK_READY_US])
+                                        requirements=[requirement.TrackReadyUS])
         self.__metric = metric.ReadyUserStoryPoints(project=self.__project)
 
     def test_value(self):

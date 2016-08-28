@@ -24,7 +24,7 @@ class Document(RequirementSubject, MeasurableObject):
 
     def __init__(self, *args, **kwargs):
         from ... import requirement  # Run time import to prevent circular dependency.
-        kwargs['requirements'] = [requirement.TRACK_DOCUMENT_AGE]
+        kwargs['requirements'] = [requirement.TrackDocumentAge]
         super(Document, self).__init__(*args, **kwargs)
 
     def __str__(self):

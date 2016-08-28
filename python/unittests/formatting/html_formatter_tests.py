@@ -162,6 +162,6 @@ class HTMLFormatterTest(unittest.TestCase):
         table_row = '<tr><td></td><td>Automated regression tests</td><td><code>ART</code></td>'
         self.assertTrue(table_row in html)
         table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' \
-                    '<td>Automated regression test coverage</td><td><code>ART_COVERAGE</code></td>'
+                    '<td>Automated regression test coverage</td><td><code>ARTCoverage</code></td>'
         self.assertTrue(table_row in html)
 

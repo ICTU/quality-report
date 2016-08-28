@@ -1,3 +1,8 @@
+2016-08-28  Release 1.55.0
+  
+  * Use CamelCase requirement names for consistency with metric and metric source names.
+
+
 2016-08-26  Release 1.54.1
 
   * Allow for using credentials with performance reports.

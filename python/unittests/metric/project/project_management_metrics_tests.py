@@ -73,7 +73,7 @@ class RiskLogTest(unittest.TestCase):
     def setUp(self):
         self.__project = domain.Project(
             metric_sources={metric_source.TrelloRiskBoard: FakeBoard()},
-            requirements=[requirement.TRACK_RISKS])
+            requirements=[requirement.TrackRisks])
         self.__metric = metric.RiskLog(project=self.__project)
 
     def test_url(self):
@@ -111,7 +111,7 @@ class ActionActivityTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
-                                        requirements=[requirement.TRACK_ACTIONS])
+                                        requirements=[requirement.TrackActions])
         self.__metric = metric.ActionActivity(project=self.__project)
 
     def test_value(self):
@@ -132,7 +132,7 @@ class UnreachableActionActivityTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
-                                 requirements=[requirement.TRACK_ACTIONS])
+                                 requirements=[requirement.TrackActions])
         self.__metric = metric.ActionActivity(project=project)
 
     def test_value(self):
@@ -150,7 +150,7 @@ class ActionAgeTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
-                                        requirements=[requirement.TRACK_ACTIONS])
+                                        requirements=[requirement.TrackActions])
         self.__metric = metric.ActionAge(project=self.__project)
 
     def test_value(self):
@@ -175,7 +175,7 @@ class UnreachableActionAgeTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
-                                 requirements=[requirement.TRACK_ACTIONS])
+                                 requirements=[requirement.TrackActions])
         self.__metric = metric.ActionAge(project=project)
 
     def test_value(self):

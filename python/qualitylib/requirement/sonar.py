@@ -20,24 +20,23 @@ from ..domain import Requirement
 from .. import metric
 
 
-JAVA = Requirement(
-    name='Java',
-    identifier='JAVA',
-    metric_classes=(metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
-                    metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava))
+class Java(Requirement):
+    _name = 'Java'
+    _metric_classes = (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
+                       metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava)
 
-C_SHARP = Requirement(
-    name='C#',
-    identifier='C_SHARP',
-    metric_classes=(metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
-                    metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp))
 
-JAVASCRIPT = Requirement(
-    name='JavaScript',
-    identifier='JAVASCRIPT',
-    metric_classes=(metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS))
+class CSharp(Requirement):
+    _name = 'C#'
+    _metric_classes = (metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
+                       metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp)
 
-WEB = Requirement(
-    name='Web',
-    identifier='WEB',
-    metric_classes=(metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb))
+
+class JavaScript(Requirement):
+    _name = 'JavaScript'
+    _metric_classes = (metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS)
+
+
+class Web(Requirement):
+    _name = 'Web'
+    _metric_classes = (metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb)

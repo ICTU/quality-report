@@ -19,11 +19,15 @@ import unittest
 from qualitylib import domain
 
 
+class RequirementUnderTest(domain.Requirement):
+    _name = 'Be user friendly'
+    _metric_classes = ['FakeMetricClass']
+
+
 class RequirementTest(unittest.TestCase):
     """ Unit tests for the Requirement domain class. """
     def setUp(self):
-        self.__requirement = domain.Requirement(name='Be user friendly', identifier='REQ',
-                                                metric_classes=['FakeMetricClass'])
+        self.__requirement = RequirementUnderTest()
 
     def test_name(self):
         """ Test the name of the requirement. """
@@ -35,13 +39,13 @@ class RequirementTest(unittest.TestCase):
 
     def test_id(self):
         """ Test that the id is correct. """
-        self.assertEqual('REQ', self.__requirement.id())
+        self.assertEqual(RequirementUnderTest.__name__, self.__requirement.id())
 
 
 class RequirementSubjectTest(unittest.TestCase):
     """ Unit tests for the Requirement Subject domain class. """
     def setUp(self):
-        self.__requirement = domain.Requirement('A requirement', identifier='REQ', metric_classes=['FakeMetricClass'])
+        self.__requirement = RequirementUnderTest()
         self.__subject = domain.software_development.requirement.RequirementSubject(requirements=[self.__requirement])
 
     def test_requirements(self):

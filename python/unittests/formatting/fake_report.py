@@ -96,12 +96,12 @@ class Report(object):
     @staticmethod
     def requirements():
         """ Return the requirements the report can report on. """
-        return {requirement.ART, requirement.ART_COVERAGE}
+        return {requirement.ART, requirement.ARTCoverage}
 
     @staticmethod
     def included_requirements():
         """ Return the requirements actually included in the report. """
-        return {requirement.ART_COVERAGE}
+        return {requirement.ARTCoverage}
 
     @staticmethod
     def metric_classes():

@@ -64,12 +64,12 @@ class QualityReportTest(unittest.TestCase):
         """ Test that the report has three sections when we add a product:
             one for the product itself, and one for meta metrics. """
         project = domain.Project()
-        project.add_product(domain.Product(project, 'FP', requirements=[requirement.CODE_QUALITY]))
+        project.add_product(domain.Product(project, 'FP', requirements=[requirement.CodeQuality]))
         self.assertEqual(2, len(report.QualityReport(project).sections()))
 
     def test_get_product_section(self):
         """ Test that the section for the product can be found. """
-        product = domain.Product(self.__project, 'FP', requirements=[requirement.CODE_QUALITY])
+        product = domain.Product(self.__project, 'FP', requirements=[requirement.CodeQuality])
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section = quality_report.get_product_section(product)
@@ -77,7 +77,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_get_product_section_twice(self):
         """ Test that the product section is cached. """
-        product = domain.Product(self.__project, 'FP', requirements=[requirement.CODE_QUALITY])
+        product = domain.Product(self.__project, 'FP', requirements=[requirement.CodeQuality])
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section1 = quality_report.get_product_section(product)
@@ -94,7 +94,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_team(self):
         """ Test that the report has 2 sections when we add a team. """
-        team = domain.Team(name='Team', requirements=[requirement.TRACK_SPIRIT])
+        team = domain.Team(name='Team', requirements=[requirement.TrackSpirit])
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(2, len(quality_report.sections()))
@@ -186,62 +186,62 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
-        for req in [requirement.JAVA, requirement.C_SHARP, requirement.WEB, requirement.JAVASCRIPT,
-                    requirement.TRUSTED_PRODUCT_MAINTAINABILITY, requirement.TRACK_READY_US,
-                    requirement.TRACK_SONAR_VERSION, requirement.TRACK_ACTIONS,
-                    requirement.TRACK_RISKS, requirement.TRACK_JAVA_CONSISTENCY,
-                    requirement.TRACK_CI_JOBS, requirement.TRACK_TECHNICAL_DEBT,
-                    requirement.TRACK_BUGS, requirement.TRACK_MANUAL_LTCS]:
+        for req in [requirement.Java, requirement.CSharp, requirement.Web, requirement.JavaScript,
+                    requirement.TrustedProductMaintainability, requirement.TrackReadyUS,
+                    requirement.TrackSonarVersion, requirement.TrackActions,
+                    requirement.TrackRisks, requirement.TrackJavaConsistency,
+                    requirement.TrackCIJobs, requirement.TrackTechnicalDebt,
+                    requirement.TrackBugs, requirement.TrackManualLTCs]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(requirements=[req]))
 
     def test_team_requirements(self):
         """ Test that the team metrics are added if required. """
-        for req in [requirement.SCRUM_TEAM, requirement.TRACK_SPIRIT, requirement.TRACK_ABSENCE]:
+        for req in [requirement.ScrumTeam, requirement.TrackSpirit, requirement.TrackAbsence]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, team_kwargs=dict(requirements=[req]))
 
     def test_document_requirements(self):
         """ Test that the document metrics are added if a document is added to the project. """
-        for req in [requirement.TRACK_DOCUMENT_AGE]:
+        for req in [requirement.TrackDocumentAge]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(documents=[domain.Document()]))
 
     def test_product_requirements(self):
         """ Test that the product metrics are added if required. """
-        for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE,
-                    requirement.USER_STORIES_AND_LTCS, requirement.TRACK_BRANCHES, requirement.OWASP_DEPENDENCIES,
-                    requirement.OWASP_ZAP, requirement.OPEN_VAS, requirement.PERFORMANCE]:
+        for req in [requirement.CodeQuality, requirement.ART, requirement.ARTCoverage,
+                    requirement.UserStoriesAndLTCs, requirement.TrackBranches, requirement.OWASPDependencies,
+                    requirement.OWASPZAP, requirement.OpenVAS, requirement.Performance]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]))
 
     def test_product_requirements_not_applicable(self):
         """ Test that product metrics that can't be measured on trunk versions are not included. """
-        for req in [requirement.NO_SNAPSHOT_DEPENDENCIES]:
+        for req in [requirement.NoSnapshotDependencies]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]), include=False)
 
     def test_product_art_requirements(self):
         """ Test that the product ART metrics are added if required. """
-        for req in [requirement.CODE_QUALITY, requirement.ART, requirement.ART_COVERAGE, requirement.TRACK_BRANCHES]:
+        for req in [requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(art=dict(requirements=[req])))
 
     def test_product_jsf_requirements(self):
         """ Test that the product JSF metrics are added if required. """
-        for req in [requirement.JSF_CODE_QUALITY]:
+        for req in [requirement.JSFCodeQuality]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(jsf=dict(requirements=[req])))
 
     def test_product_with_version_requirements(self):
         """ Test that metrics that can only be measured on non-trunk product versions are included. """
-        for req in [requirement.NO_SNAPSHOT_DEPENDENCIES]:
+        for req in [requirement.NoSnapshotDependencies]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(product_version='1.1', requirements=[req]))
 
     def test_product_art_code_with_version(self):
         """ Test that the code metrics are not added if the ART is not a trunk version. """
-        for req in [requirement.CODE_QUALITY]:
+        for req in [requirement.CodeQuality]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class,
                                      product_kwargs=dict(product_version='1.1', art=dict(requirements=[req])),
@@ -255,14 +255,14 @@ class QualityReportMetricsTest(unittest.TestCase):
                              metric.UnmergedBranches]:
             self.__assert_metric(metric_class,
                                  product_kwargs=dict(product_version='1.1',
-                                                     requirements=[requirement.USER_STORIES_AND_LTCS,
-                                                                   requirement.TRACK_BRANCHES]),
+                                                     requirements=[requirement.UserStoriesAndLTCs,
+                                                                   requirement.TrackBranches]),
                                  include=False)
 
     def test_unittest_metrics(self):
         """ Test that the unit test metrics are added if required. """
         for metric_class in [metric.FailingUnittests, metric.UnittestLineCoverage, metric.UnittestBranchCoverage]:
-            self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UNITTESTS]))
+            self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UnitTests]))
 
     def test_document_age(self):
         """ Test that the document age metric is added if possible. """

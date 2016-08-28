@@ -20,40 +20,39 @@ from ..domain import Requirement
 from .. import metric
 
 
-USER_STORIES_AND_LTCS = Requirement(
-    name='User stories and logical test cases',
-    identifier='USER_STORIES_AND_LTCS',
-    metric_classes=(metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
-                    metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
-                    metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
-                    metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases))
+class UserStoriesAndLTCs(Requirement):
+    _name = 'User stories and logical test cases'
+    _metric_classes = (metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
+                       metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
+                       metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotAutomated,
+                       metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases)
 
-TRACK_MANUAL_LTCS = Requirement(
-    name='Track manual logical test cases',
-    identifier='TRACK_MANUAL_LTCS',
-    metric_classes=(metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration))
 
-TRACK_BUGS = Requirement(
-    name='Track open bug reports',
-    identifier='TRACK_BUGS',
-    metric_classes=(metric.OpenBugs, metric.OpenSecurityBugs))
+class TrackManualLTCs(Requirement):
+    _name = 'Track manual logical test cases'
+    _metric_classes = (metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration)
 
-TRACK_TECHNICAL_DEBT = Requirement(
-    name='Track technical debt',
-    identifier='TRACK_TECHNICAL_DEBT',
-    metric_classes=(metric.TechnicalDebtIssues,))
 
-TRACK_ACTIONS = Requirement(
-    name='Track actions',
-    identifier='TRACK_ACTIONS',
-    metric_classes=(metric.ActionActivity, metric.ActionAge))
+class TrackBugs(Requirement):
+    _name = 'Track open bug reports'
+    _metric_classes = (metric.OpenBugs, metric.OpenSecurityBugs)
 
-TRACK_RISKS = Requirement(
-    name='Track risks',
-    identifier='TRACK_RISKS',
-    metric_classes=(metric.RiskLog,))
 
-TRACK_READY_US = Requirement(
-    name='Track ready user stories',
-    identifier='TRACK_READY_US',
-    metric_classes=(metric.ReadyUserStoryPoints,))
+class TrackTechnicalDebt(Requirement):
+    _name = 'Track technical debt'
+    _metric_classes = (metric.TechnicalDebtIssues,)
+
+
+class TrackActions(Requirement):
+    _name = 'Track actions'
+    _metric_classes = (metric.ActionActivity, metric.ActionAge)
+
+
+class TrackRisks(Requirement):
+    _name = 'Track risks'
+    _metric_classes = (metric.RiskLog,)
+
+
+class TrackReadyUS(Requirement):
+    _name = 'Track ready user stories'
+    _metric_classes = (metric.ReadyUserStoryPoints,)
