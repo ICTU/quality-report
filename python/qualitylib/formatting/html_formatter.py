@@ -351,11 +351,11 @@ class HTMLFormatter(base_formatter.Formatter):
         result = list()
         result.append('<table class="table table-striped first-col-centered">')
         result.append('  <tr><th>In dit rapport?</th><th>Eis</th><th>Identifier</th><th>Metrieken</th></tr>')
-        for requirement in report.requirements():
-            name = requirement.name()
-            identifier = requirement.__name__
-            metrics = ', '.join(metric_class.name for metric_class in requirement.metric_classes())
-            icon = icon_span if requirement in report.included_requirements() else ''
+        for requirement_class in report.requirement_classes():
+            name = requirement_class.name()
+            identifier = requirement_class.__name__
+            metrics = ', '.join(metric_class.name for metric_class in requirement_class.metric_classes())
+            icon = icon_span if requirement_class in report.included_requirement_classes() else ''
             result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))
         result.append('</table>')
         return '\n'.join(result)

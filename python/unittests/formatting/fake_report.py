@@ -94,13 +94,13 @@ class Report(object):
         self.project_metric_sources = project_metric_sources or dict()
 
     @staticmethod
-    def requirements():
-        """ Return the requirements the report can report on. """
+    def requirement_classes():
+        """ Return the requirement classes the report can report on. """
         return {requirement.ART, requirement.ARTCoverage}
 
     @staticmethod
-    def included_requirements():
-        """ Return the requirements actually included in the report. """
+    def included_requirement_classes():
+        """ Return the requirement classes actually included in the report. """
         return {requirement.ARTCoverage}
 
     @staticmethod
@@ -117,7 +117,8 @@ class Report(object):
         """ Return the metric classes included in the report. """
         return {each_metric.__class__ for each_metric in self.__metrics + self.__meta_metrics}
 
-    def included_metric_source_classes(self):
+    @staticmethod
+    def included_metric_source_classes():
         """ Return the metric source classes added to the project. """
         return [metric_source.Git]
 

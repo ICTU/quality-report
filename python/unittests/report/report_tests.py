@@ -130,7 +130,7 @@ class QualityReportTest(unittest.TestCase):
     def test_get_included_requirements(self):
         """ Test the list of included requirements. """
         self.__report.sections()
-        self.assertEqual(set(), self.__report.included_requirements())
+        self.assertEqual(set(), self.__report.included_requirement_classes())
 
 
 class ReportFactory(object):  # pylint: disable=too-few-public-methods

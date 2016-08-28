@@ -24,8 +24,8 @@ class QualityReport(domain.DomainObject):
     """ Quality report on a project. """
 
     @classmethod
-    def requirements(cls):
-        """ Return a list of all requirements that the report can report on. """
+    def requirement_classes(cls):
+        """ Return a list of all requirement classes that the report can report on. """
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
                 requirement.CodeQuality, requirement.Performance, requirement.TrackActions, requirement.TrackRisks,
                 requirement.TrackBugs, requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
@@ -39,7 +39,7 @@ class QualityReport(domain.DomainObject):
     @classmethod
     def metric_classes(cls):
         """ Return a list of metric classes that the report can measure. """
-        return [metric_class for req in cls.requirements() for metric_class in req.metric_classes()]
+        return [metric_class for req_class in cls.requirement_classes() for metric_class in req_class.metric_classes()]
 
     @classmethod
     def metric_source_classes(cls):
@@ -116,7 +116,7 @@ class QualityReport(domain.DomainObject):
         """ Return the metric classes included in the report. """
         return {each_metric.__class__ for each_metric in self.__metrics}
 
-    def included_requirements(self):
+    def included_requirement_classes(self):
         """ Return the requirements included in the report. """
         return self.__requirements.copy()
 
