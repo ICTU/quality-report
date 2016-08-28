@@ -37,10 +37,6 @@ class RequirementTest(unittest.TestCase):
         """ Test that the metric classes can be retrieved. """
         self.assertEqual(['FakeMetricClass'], self.__requirement.metric_classes())
 
-    def test_id(self):
-        """ Test that the id is correct. """
-        self.assertEqual(RequirementUnderTest.__name__, self.__requirement.id())
-
 
 class RequirementSubjectTest(unittest.TestCase):
     """ Unit tests for the Requirement Subject domain class. """

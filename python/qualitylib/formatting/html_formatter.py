@@ -353,7 +353,7 @@ class HTMLFormatter(base_formatter.Formatter):
         result.append('  <tr><th>In dit rapport?</th><th>Eis</th><th>Identifier</th><th>Metrieken</th></tr>')
         for requirement in report.requirements():
             name = requirement.name()
-            identifier = requirement.id()
+            identifier = requirement.__name__
             metrics = ', '.join(metric_class.name for metric_class in requirement.metric_classes())
             icon = icon_span if requirement in report.included_requirements() else ''
             result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))

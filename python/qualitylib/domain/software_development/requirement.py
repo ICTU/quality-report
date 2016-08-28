@@ -33,11 +33,6 @@ class Requirement(DomainObject):
         """ Return the name of the requirement. """
         return cls._name
 
-    @classmethod
-    def id(cls):
-        """ Return the identifier of the requirement instance that can be used in the project definition. """
-        return cls.__name__
-
 
 class RequirementSubject(DomainObject):
     """ Measurable objects that have requirements. """
