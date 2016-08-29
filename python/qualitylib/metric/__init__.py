@@ -43,7 +43,7 @@ from .product.zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAP
 
 # Project metrics
 from .project.bug_metrics import OpenBugs, OpenSecurityBugs, TechnicalDebtIssues
-from .project.process_metrics import ReadyUserStoryPoints
+from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment
 from .project.project_management_metrics import RiskLog, ActionActivity, ActionAge
 
 # Team metrics

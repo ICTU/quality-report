@@ -28,6 +28,8 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
                  manual_test_cases_query_id=None,
                  user_stories_ready_query_id=None,
                  technical_debt_issues_query_id=None,
+                 user_stories_without_security_risk_query_id=None,
+                 user_stories_without_performance_risk_query_id=None,
                  manual_test_cases_duration_field='customfield_11700',
                  user_story_points_field='customfield_10002'):
         self.__url = url
@@ -38,6 +40,8 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         self.__user_stories_ready_query_id = user_stories_ready_query_id
         self.__user_story_points_field = user_story_points_field
         self.__technical_debt_issues_query_id = technical_debt_issues_query_id
+        self.__user_stories_without_security_risk_query_id = user_stories_without_security_risk_query_id
+        self.__user_stories_without_performance_risk_query_id = user_stories_without_performance_risk_query_id
         super(Jira, self).__init__(username=username, password=password)
 
     @utils.memoized
@@ -94,6 +98,24 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     def has_user_stories_ready_query(self):
         """ Return whether Jira has a query for ready user stories. """
         return self.__user_stories_ready_query_id
+
+    @utils.memoized
+    def nr_user_stories_without_security_risk_assessment(self):
+        """ Return the number of user stories without security risk assessment. """
+        return self.__query_total(self.__user_stories_without_security_risk_query_id)
+
+    def has_user_stories_without_security_risk_assessment_query(self):
+        """ Return whether Jira has a query for user stories without security risk assessment. """
+        return self.__user_stories_without_security_risk_query_id
+
+    @utils.memoized
+    def nr_user_stories_without_performance_risk_assessment(self):
+        """ Return the number of user stories without performance risk assessment. """
+        return self.__query_total(self.__user_stories_without_performance_risk_query_id)
+
+    def has_user_stories_without_performance_risk_assessment_query(self):
+        """ Return whether Jira has a query for user stories without performance risk assessment. """
+        return self.__user_stories_without_performance_risk_query_id
 
     @utils.memoized
     def __query_total(self, query_id):
@@ -155,6 +177,14 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     def nr_technical_debt_issues_url(self):
         """ Return the url for the technical debt issues query. """
         return self.__get_query_url(self.__technical_debt_issues_query_id, search=False)
+
+    def user_stories_without_security_risk_assessment_url(self):
+        """ Return the url for the user stories without security risk assessment query. """
+        return self.__get_query_url(self.__user_stories_without_security_risk_query_id, search=False)
+
+    def user_stories_without_performance_risk_assessment_url(self):
+        """ Return the url for the user stories without performance risk assessment query. """
+        return self.__get_query_url(self.__user_stories_without_performance_risk_query_id, search=False)
 
     def url(self):
         """ Return the url of the Jira instance. """

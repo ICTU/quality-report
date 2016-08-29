@@ -40,7 +40,9 @@ class JiraTest(unittest.TestCase):
         self.__jira_url = 'http://jira/'
         self.__jira = JiraUnderTest(self.__jira_url, 'username', 'password', open_bug_query_id=123,
                                     open_security_bug_query_id=456, manual_test_cases_query_id=654,
-                                    technical_debt_issues_query_id=444, user_stories_ready_query_id=555)
+                                    technical_debt_issues_query_id=444, user_stories_ready_query_id=555,
+                                    user_stories_without_security_risk_query_id=567,
+                                    user_stories_without_performance_risk_query_id=789)
 
     def test_url(self):
         """ Test the Jira url. """
@@ -122,3 +124,19 @@ class JiraTest(unittest.TestCase):
     def test_user_stories_ready_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.user_stories_ready_url())
+
+    def test_user_stories_without_security_risk(self):
+        """ Test that the correct number of user stories without security risk assessment is returned. """
+        self.assertEqual(5, self.__jira.nr_user_stories_without_security_risk_assessment())
+
+    def test_has_user_stories_without_security_risk(self):
+        """ Test that the Jira under test has a user stories without security risk query. """
+        self.assertTrue(self.__jira.has_user_stories_without_security_risk_assessment_query())
+
+    def test_user_stories_without_performance_risk(self):
+        """ Test that the correct number of user stories without performance risk assessment is returned. """
+        self.assertEqual(5, self.__jira.nr_user_stories_without_performance_risk_assessment())
+
+    def test_has_user_stories_without_performance_risk(self):
+        """ Test that the Jira under test has a user stories without performance risk query. """
+        self.assertTrue(self.__jira.has_user_stories_without_performance_risk_assessment_query())
