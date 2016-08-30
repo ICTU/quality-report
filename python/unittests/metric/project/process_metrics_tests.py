@@ -27,14 +27,16 @@ class FakeJira(object):
         """ Return a fake number of ready user story points. """
         return 7
 
-    nr_user_stories_without_security_risk_assessment = nr_story_points_ready
+    nr_user_stories_without_performance_risk_assessment = nr_user_stories_without_security_risk_assessment = \
+            nr_story_points_ready
 
     @staticmethod
     def user_stories_ready_url():
         """ Return a fake url for the nr of ready user story points query. """
         return 'http://url/'
 
-    user_stories_without_security_risk_assessment_url = user_stories_ready_url
+    user_stories_without_performance_risk_assessment_url = user_stories_without_security_risk_assessment_url = \
+        user_stories_ready_url
 
 
 class ReadyUserStoryPointsTest(unittest.TestCase):
@@ -77,3 +79,24 @@ class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
     def test_should_be_measured(self):
         """ Test that the metric should be measured when the project has the appropriate requirement. """
         self.assertTrue(metric.UserStoriesWithoutSecurityRiskAssessment.should_be_measured(self.__project))
+
+
+class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
+    """ Unit tests for the number of user stories without performance risk assessment metric. """
+
+    def setUp(self):
+        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
+                                        requirements=[requirement.TrackSecurityAndPerformanceRisks])
+        self.__metric = metric.UserStoriesWithoutPerformanceRiskAssessment(project=self.__project)
+
+    def test_value(self):
+        """ Test that the value is correct. """
+        self.assertEqual(FakeJira.nr_user_stories_without_performance_risk_assessment(), self.__metric.value())
+
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual({'Jira': FakeJira.user_stories_without_performance_risk_assessment_url()}, self.__metric.url())
+
+    def test_should_be_measured(self):
+        """ Test that the metric should be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.UserStoriesWithoutPerformanceRiskAssessment.should_be_measured(self.__project))

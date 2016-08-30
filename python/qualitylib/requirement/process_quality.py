@@ -60,4 +60,5 @@ class TrackReadyUS(Requirement):
 
 class TrackSecurityAndPerformanceRisks(Requirement):
     _name = 'Track whether user stories have security and performance risks'
-    _metric_classes = (metric.UserStoriesWithoutSecurityRiskAssessment,)
+    _metric_classes = (metric.UserStoriesWithoutSecurityRiskAssessment,
+                       metric.UserStoriesWithoutPerformanceRiskAssessment)
