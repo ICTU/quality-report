@@ -1,3 +1,8 @@
+2016-08-30  Release 1.56.2
+
+  * Changed target_value and low_target_value for user stories without security and performance risk assessment.
+
+
 2016-08-30  Release 1.56.1
 
   * Previous version didn't install correctly.
