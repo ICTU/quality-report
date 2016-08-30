@@ -44,6 +44,8 @@ class JunitTestReportTest(unittest.TestCase):
         """ Test retrieving a Junit test report. """
         self.__opener.contents = u'<testsuites>' \
                                  '  <testsuite tests="12" failures="2" errors="0" skipped="1" disabled="0">' \
+                                 '    <testcase><failure/></testcase>' \
+                                 '    <testcase><failure/></testcase>' \
                                  '  </testsuite>' \
                                  '</testsuites>'
         self.assertEqual(2, self.__junit.failed_tests('url'))
@@ -54,8 +56,10 @@ class JunitTestReportTest(unittest.TestCase):
         """ Test retrieving a Junit test report with multiple suites. """
         self.__opener.contents = u'<testsuites>' \
                                  '  <testsuite tests="5" failures="1" errors="0" skipped="1" disabled="1">' \
+                                 '    <testcase><failure/><failure/></testcase>' \
                                  '  </testsuite>' \
                                  '  <testsuite tests="3" failures="1" errors="1" skipped="0" disabled="0">' \
+                                 '    <testcase><failure/></testcase>' \
                                  '  </testsuite>' \
                                  '</testsuites>'
         self.assertEqual(3, self.__junit.failed_tests('url'))

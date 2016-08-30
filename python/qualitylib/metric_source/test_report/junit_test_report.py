@@ -35,28 +35,19 @@ class JunitTestReport(test_report.TestReport):
         failed = self._failed_tests(report_url)
         skipped = self._skipped_tests(report_url)
         total = self.__test_count(report_url, 'tests')
-        if -1 in (failed, skipped, total):
-            return -1
-        else:
-            return total - (skipped + failed)
+        return -1 if -1 in (failed, skipped, total) else total - (skipped + failed)
 
     def _failed_tests(self, report_url):
         """ Return the number of failed tests. """
-        failures = self.__test_count(report_url, 'failures')
+        failed = self.__failure_count(report_url)
         errors = self.__test_count(report_url, 'errors')
-        if -1 in (failures, errors):
-            return -1
-        else:
-            return failures + errors
+        return -1 if -1 in (failed, errors) else failed + errors
 
     def _skipped_tests(self, report_url):
         """ Return the number of skipped tests. """
         skipped = self.__test_count(report_url, 'skipped')
         disabled = self.__test_count(report_url, 'disabled')
-        if -1 in (skipped, disabled):
-            return -1
-        else:
-            return skipped + disabled
+        return -1 if -1 in (skipped, disabled) else skipped + disabled
 
     def _report_datetime(self, report_url):
         """ Return the date and time of the report. """
@@ -89,9 +80,22 @@ class JunitTestReport(test_report.TestReport):
             logging.warn("Couldn't find test suites in: %s", report_url)
             return -1
 
+    def __failure_count(self, report_url):
+        """ Return the number of test cases that have failures (failed assertions). """
+        try:
+            root = self.__element_tree(report_url)
+        except UrlOpener.url_open_exceptions:
+            return -1
+        return len(root.findall('.//testcase[failure]'))
+
     def __test_suites(self, report_url):
         """ Return the test suites in the report. """
-        contents = self._url_open(report_url).read()
-        root = xml.etree.ElementTree.fromstring(contents)
+        root = self.__element_tree(report_url)
         return [root] if root.tag == 'testsuite' else root.findall('testsuite')
+
+    @utils.memoized
+    def __element_tree(self, report_url):
+        """ Return the report contents as ElementTree. """
+        contents = self._url_open(report_url).read()
+        return xml.etree.ElementTree.fromstring(contents)
 

@@ -1,3 +1,8 @@
+2016-08-30  Release 1.55.1
+
+  * Junit reports would be reported as missing when the number of failures is higher than the number of test cases.
+  
+  
 2016-08-28  Release 1.55.0
   
   * Use CamelCase requirement names for consistency with metric and metric source names.
