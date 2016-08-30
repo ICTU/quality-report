@@ -1,3 +1,8 @@
+2016-08-30  Release 1.56.1
+
+  * Previous version didn't install correctly.
+  
+
 2016-08-30  Release 1.56.0
 
   * Add a requirement and two metrics for tracking the number of user stories without security and performance risk
