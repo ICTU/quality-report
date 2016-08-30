@@ -61,10 +61,10 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     low_target_value = 15
 
     def _nr_ltcs_ok(self):
-        return self._metric_source.reviewed_ltcs(self._metric_source_id)
+        return self._metric_source.reviewed_ltcs()
 
     def _nr_ltcs(self):
-        return self._metric_source.nr_ltcs(self._metric_source_id)
+        return self._metric_source.nr_ltcs()
 
 
 class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
@@ -77,10 +77,10 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     low_target_value = 10
 
     def _nr_ltcs_ok(self):
-        return self._metric_source.approved_ltcs(self._metric_source_id)
+        return self._metric_source.approved_ltcs()
 
     def _nr_ltcs(self):
-        return self._metric_source.reviewed_ltcs(self._metric_source_id)
+        return self._metric_source.reviewed_ltcs()
 
 
 class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
@@ -95,10 +95,10 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     low_target_value = 15
 
     def _nr_ltcs_ok(self):
-        return self._metric_source.nr_automated_ltcs(self._metric_source_id)
+        return self._metric_source.nr_automated_ltcs()
 
     def _nr_ltcs(self):
-        return self._metric_source.nr_ltcs_to_be_automated(self._metric_source_id)
+        return self._metric_source.nr_ltcs_to_be_automated()
 
 
 class ManualLogicalTestCases(LowerIsBetterMetric):
@@ -128,18 +128,17 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
         return -1 if self._missing() else (datetime.datetime.now() - self._date()).days
 
     def url(self):
-        url = self._metric_source.manual_test_execution_url(self._metric_source_id, self.__version())
+        url = self._metric_source.manual_test_execution_url(self.__version())
         return self.create_url_dict('Birt', url)
 
     def _date(self):
-        date = self._metric_source.date_of_last_manual_test(self._metric_source_id, self.__version())
+        date = self._metric_source.date_of_last_manual_test(self.__version())
         return datetime.datetime.min if date == -1 else date
 
     def _parameters(self):
         parameters = super(ManualLogicalTestCases, self)._parameters()
-        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs(self._metric_source_id, self.__version())
-        parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old(self._metric_source_id,
-                                                                                          self.__version(),
+        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs(self.__version())
+        parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old(self.__version(),
                                                                                           self.target())
         return parameters
 
@@ -148,7 +147,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
             else super(ManualLogicalTestCases, self)._get_template()
 
     def _missing(self):
-        return self._metric_source.date_of_last_manual_test(self._metric_source_id, self.__version()) in (-1, None)
+        return self._metric_source.date_of_last_manual_test(self.__version()) in (-1, None)
 
     def __version(self):
         """ Return the version number for the product this metric is reporting on. """
@@ -165,14 +164,14 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     low_target_value = 50
 
     def _nr_ltcs_ok(self):
-        nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._metric_source.nr_manual_ltcs(self._metric_source_id)
+        nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._metric_source.nr_manual_ltcs()
         if -1 in (nr_ltcs, nr_manual_ltcs) or None in (nr_ltcs, nr_manual_ltcs):
             return -1
         else:
             return nr_ltcs - nr_manual_ltcs
 
     def _nr_ltcs(self):
-        return self._metric_source.nr_ltcs(self._metric_source_id)
+        return self._metric_source.nr_ltcs()
 
 
 class DurationOfManualLogicalTestCases(LowerIsBetterMetric):

@@ -26,25 +26,25 @@ class FakeBirt(object):
         self.down = False
 
     @staticmethod
-    def approved_user_stories(birt_id):  # pylint: disable=unused-argument
+    def approved_user_stories():
         """ Return the number of approved user stories. """
         return 20
 
-    def reviewed_user_stories(self, birt_id):  # pylint: disable=unused-argument
+    def reviewed_user_stories(self):
         """ Return the number of reviewed user stories. """
         return -1 if self.down else 23
 
-    def nr_user_stories(self, birt_id):  # pylint: disable=unused-argument
+    def nr_user_stories(self):
         """ Return the total number of user stories. """
         return -1 if self.down else 25
 
     @staticmethod
-    def nr_user_stories_with_sufficient_ltcs(birt_id):  # pylint: disable=unused-argument
+    def nr_user_stories_with_sufficient_ltcs():
         """ Return the number of user stories with enough logical test cases. """
         return 23
 
     @staticmethod
-    def whats_missing_url(product):  # pylint: disable=unused-argument
+    def whats_missing_url():
         """ Return the url for the what's missing report. """
         return 'http://whats_missing'
 
@@ -160,7 +160,7 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.whats_missing_url('product')), self.__metric.url())
+        self.assertEqual(dict(Birt=self.__birt.whats_missing_url()), self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk version. """
