@@ -726,7 +726,7 @@ class BirtTest(unittest.TestCase):
     def test_sprint_progress_url(self):
         """ Test the sprint progress url. """
         self.assertEqual('http://birt/birt/preview?__report=reports/sprint_voortgang.rptdesign',
-                         self.__birt.sprint_progress_url('team'))
+                         self.__birt.sprint_progress_url())
 
     def test_nr_user_stories_with_sufficient_ltcs(self):
         """ Test that the number of user stories with sufficient number of logical test cases is correct. """
@@ -844,27 +844,27 @@ class BirtSprintProgressReportTest(unittest.TestCase):
     """ Unit tests for the Birt sprint progress report. """
 
     def setUp(self):
-        self.__birt = BirtSprintProgressReportUnderTest('http://birt/%s')
+        self.__birt = BirtSprintProgressReportUnderTest('http://birt/')
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML
 
     def test_actual_velocity(self):
         """ Test that the actual velocity is the number of points realized per day so far. """
-        self.assertEqual(20 / 14., self.__birt.actual_velocity('birt_id'))
+        self.assertEqual(20 / 14., self.__birt.actual_velocity())
 
     def test_planned_velocity(self):
         """ Test that the planned velocity is correct. """
-        self.assertEqual(23.5 / 15, self.__birt.planned_velocity('birt_id'))
+        self.assertEqual(23.5 / 15, self.__birt.planned_velocity())
 
     def test_required_velocity(self):
         """ Test that the required velocity is correct. """
-        self.assertEqual(3.5 / 2, self.__birt.required_velocity('birt_id'))
+        self.assertEqual(3.5 / 2, self.__birt.required_velocity())
 
     def test_days_in_sprint_no_end_date(self):
         """ Test that the days in the sprint is zero when the end date is unknown. """
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
-        self.assertEqual(0, self.__birt.days_in_sprint('birt_id'))
+        self.assertEqual(0, self.__birt.days_in_sprint())
 
     def test_missing_velocity(self):
         """ Test that the actual velocity is zero when the data is missing. """
         self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
-        self.assertEqual(0., self.__birt.actual_velocity('birt_id'))
+        self.assertEqual(0., self.__birt.actual_velocity())

@@ -17,9 +17,8 @@ from __future__ import absolute_import
 
 import datetime
 import logging
-import urllib2
 
-from . import beautifulsoup
+from . import beautifulsoup, url_opener
 from .. import utils, domain
 
 
@@ -37,66 +36,63 @@ class BirtReport(beautifulsoup.BeautifulSoupOpener):
 class SprintProgressReport(BirtReport):
     """ Class representing the sprint progress Birt report. """
 
-    def url(self, team):
-        return super(SprintProgressReport, self).url().format(proj=team)
-
-    def actual_velocity(self, team):
+    def actual_velocity(self):
         """ Return the actual velocity (in points per day) of the team in the current sprint. """
-        current_day = max(1, self.day_in_sprint(team))
-        return self.nr_points_realized(team) / float(current_day)
+        current_day = max(1, self.day_in_sprint())
+        return self.nr_points_realized() / float(current_day)
 
-    def planned_velocity(self, team):
+    def planned_velocity(self):
         """ Return the planned velocity (in points per day) of the team in the current sprint. """
-        sprint_length = max(1, self.days_in_sprint(team))
-        return self.nr_points_planned(team) / float(sprint_length)
+        sprint_length = max(1, self.days_in_sprint())
+        return self.nr_points_planned() / float(sprint_length)
 
-    def required_velocity(self, team):
+    def required_velocity(self):
         """ Return the required velocity (in points per day) of the team in the current sprint. """
-        points_to_do = self.__nr_points_to_do(team)
-        days_left = max(1, self.__days_left(team))
+        points_to_do = self.__nr_points_to_do()
+        days_left = max(1, self.__days_left())
         return points_to_do / float(days_left)
 
-    def nr_points_realized(self, team):
+    def nr_points_realized(self):
         """ Return the number of points realized in the current sprint of the specified team. """
-        return self.__parse_float(self.__summary_table_cell(team, 0, 1))
+        return self.__parse_float(self.__summary_table_cell(0, 1))
 
-    def nr_points_planned(self, team):
+    def nr_points_planned(self):
         """ Return the sprint commitment of the team for the current sprint. """
-        return self.__parse_float(self.__summary_table_cell(team, 1, 1))
+        return self.__parse_float(self.__summary_table_cell(1, 1))
 
-    def days_in_sprint(self, team):
+    def days_in_sprint(self):
         """ Return the number of days in the current sprint. """
-        start_date = self.__sprint_start_date(team)
-        end_date = self.__sprint_end_date(team)
+        start_date = self.__sprint_start_date()
+        end_date = self.__sprint_end_date()
         if start_date and end_date:
             return utils.workdays_in_period(start_date, end_date)
         else:
             return 0
 
-    def day_in_sprint(self, team):
+    def day_in_sprint(self):
         """ Return the number of the current day in the sprint. """
-        return self.__parse_float(self.__summary_table_cell(team, 4, 1))
+        return self.__parse_float(self.__summary_table_cell(4, 1))
 
-    def __days_left(self, team):
+    def __days_left(self):
         """ Return the number of days left in the current sprint of the team. """
-        return 1 + self.days_in_sprint(team) - self.day_in_sprint(team)
+        return 1 + self.days_in_sprint() - self.day_in_sprint()
 
-    def __nr_points_to_do(self, team):
-        """ Return the number of points to be realized in the current sprint of the specified team. """
-        return max(0, self.nr_points_planned(team) - self.nr_points_realized(team))
+    def __nr_points_to_do(self):
+        """ Return the number of points to be realized in the current sprint. """
+        return max(0, self.nr_points_planned() - self.nr_points_realized())
 
-    def __sprint_start_date(self, team):
+    def __sprint_start_date(self):
         """ Return the start date of the current sprint of the team. """
-        return self.__parse_date(self.__summary_table_cell(team, 2, 1))
+        return self.__parse_date(self.__summary_table_cell(2, 1))
 
-    def __sprint_end_date(self, team):
+    def __sprint_end_date(self):
         """ Return the end date of the current sprint of the team. """
-        return self.__parse_date(self.__summary_table_cell(team, 3, 1))
+        return self.__parse_date(self.__summary_table_cell(3, 1))
 
     @utils.memoized
-    def __summary_table_cell(self, team, row_index, column_index):
+    def __summary_table_cell(self, row_index, column_index):
         """ Return a specific cell from the sprint progress table in the sprint progress Birt report. """
-        summary_table = self.__summary_table(team)
+        summary_table = self.__summary_table()
         if summary_table:
             row = summary_table('tr')[row_index]
             cell = row('td')[column_index]
@@ -105,14 +101,14 @@ class SprintProgressReport(BirtReport):
             return ''
 
     @utils.memoized
-    def __summary_table(self, team):
+    def __summary_table(self):
         """ Return the sprint progress table in the sprint progress Birt report. """
-        url = self.url(team)
+        url = self.url()
         soup = self.soup(url)
         try:
             return soup('table')[0]('table')[0]('table')[0]
         except IndexError:
-            logging.warning("There's no active sprint for team %s in the sprint progress report at %s", team, url)
+            logging.warning("There's no active sprint in the sprint progress report at %s", url)
             return
 
     @staticmethod
@@ -142,7 +138,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     """ Class representing the Birt report engine instance. """
 
     metric_source_name = 'Birt reports'
-    needs_metric_source_id = True
 
     def __init__(self, birt_url):
         birt_url += 'birt/'
@@ -155,7 +150,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         sprint_progress_url = birt_report_url + 'sprint_voortgang.rptdesign'
         self.__sprint_progress_report = SprintProgressReport(sprint_progress_url)
         self.__test_design_report = None
-        self.__manual_test_report = None
 
     def __getattr__(self, attribute):  # pragma: no cover
         # Forward method calls that this class doesn't support to the sprint progress report.
@@ -171,9 +165,9 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the url for the Birt manual test execution report. """
         return self.__manual_test_execution_url.format(ver=version)
 
-    def sprint_progress_url(self, team):
+    def sprint_progress_url(self):
         """ Return the url for the Birt sprint progress report. """
-        return self.__sprint_progress_report.url(team)
+        return self.__sprint_progress_report.url()
 
     def whats_missing_url(self):
         """ Return the What's missing report url for the product. """
@@ -279,7 +273,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         url = self.__manual_test_execution_url.format(ver=version)
         try:
             soup = self.soup(url)
-        except (urllib2.HTTPError, urllib2.URLError) as reason:
+        except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warn("Could not open manual test dates report at %s: %s", url, reason)
             return -1
         inner_table = soup('table', {'id': '__bookmark_1'})[0]
@@ -305,7 +299,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         if not self.__test_design_report:
             try:
                 self.__test_design_report = self.soup(self.__test_design_url)
-            except (urllib2.HTTPError, urllib2.URLError) as reason:
+            except url_opener.UrlOpener.url_open_exceptions as reason:
                 logging.warn("Could not open %s: %s", self.__test_design_url, reason)
                 return -1
         try:

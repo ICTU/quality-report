@@ -21,45 +21,44 @@ from qualitylib import metric, domain, metric_source
 
 class FakeBirt(object):
     """ Fake Birt so we can return fake velocity information. """
-    # pylint: disable=unused-argument
 
     @staticmethod
-    def planned_velocity(birt_id):
+    def planned_velocity():
         """ Return the planned velocity of the team. """
         return 1
 
     @staticmethod
-    def actual_velocity(birt_id):
+    def actual_velocity():
         """ Return the actual velocity of the team so far. """
         return 0.5
 
     @staticmethod
-    def required_velocity(birt_id):
+    def required_velocity():
         """ Return the required velocity of the team. """
         return 2
 
     @staticmethod
-    def nr_points_planned(birt_id):
+    def nr_points_planned():
         """ Return the number of points planned for the sprint. """
         return 20
 
     @staticmethod
-    def nr_points_realized(birt_id):
+    def nr_points_realized():
         """ Return the number of points realized so far. """
         return 10
 
     @staticmethod
-    def days_in_sprint(birt_id):
+    def days_in_sprint():
         """ Return the number of working days in the sprint. """
         return 20
 
     @staticmethod
-    def day_in_sprint(birt_id):
+    def day_in_sprint():
         """ Return the current day in the sprint. """
         return 10
 
     @staticmethod
-    def sprint_progress_url(birt_id):
+    def sprint_progress_url():
         """ Return the url of the sprint progress report. """
         return 'http://birt/report/'
 
