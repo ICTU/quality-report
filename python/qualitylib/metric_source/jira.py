@@ -49,27 +49,15 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         """ Return the number of open bugs. """
         return self.__query_total(self.__open_bug_query_id)
 
-    def has_open_bugs_query(self):
-        """ Return whether Jira has a query for the number of open bugs. """
-        return self.__open_bug_query_id
-
     @utils.memoized
     def nr_open_security_bugs(self):
         """ Return the number of open security bugs. """
         return self.__query_total(self.__open_security_bug_query_id)
 
-    def has_open_security_bugs_query(self):
-        """ Return whether Jira has a query for the number of open security bugs. """
-        return self.__open_security_bug_query_id
-
     @utils.memoized
     def nr_technical_debt_issues(self):
         """ Return the number of technical debt issues. """
         return self.__query_total(self.__technical_debt_issues_query_id)
-
-    def has_technical_debt_issues_query(self):
-        """ Return whether Jira has a query for the number of technical debt issues. """
-        return self.__technical_debt_issues_query_id
 
     @utils.memoized
     def manual_test_cases_time(self):
@@ -86,46 +74,34 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         """ Return the number of manual test cases whose duration has not been measured. """
         return self.__query_field_empty(self.__manual_test_cases_query_id, self.__manual_test_cases_duration_field)
 
-    def has_manual_test_cases_query(self):
-        """ Return whether Jira has a query for the manual test cases in a project. """
-        return self.__manual_test_cases_query_id
-
     @utils.memoized
     def nr_story_points_ready(self):
         """ Return the number of user story points ready. """
         return self.__query_sum(self.__user_stories_ready_query_id, self.__user_story_points_field)
-
-    def has_user_stories_ready_query(self):
-        """ Return whether Jira has a query for ready user stories. """
-        return self.__user_stories_ready_query_id
 
     @utils.memoized
     def nr_user_stories_without_security_risk_assessment(self):
         """ Return the number of user stories without security risk assessment. """
         return self.__query_total(self.__user_stories_without_security_risk_query_id)
 
-    def has_user_stories_without_security_risk_assessment_query(self):
-        """ Return whether Jira has a query for user stories without security risk assessment. """
-        return self.__user_stories_without_security_risk_query_id
-
     @utils.memoized
     def nr_user_stories_without_performance_risk_assessment(self):
         """ Return the number of user stories without performance risk assessment. """
         return self.__query_total(self.__user_stories_without_performance_risk_query_id)
 
-    def has_user_stories_without_performance_risk_assessment_query(self):
-        """ Return whether Jira has a query for user stories without performance risk assessment. """
-        return self.__user_stories_without_performance_risk_query_id
-
     @utils.memoized
     def __query_total(self, query_id):
         """ Return the number of results of the specified query. """
+        if not query_id:
+            return -1
         query_url = self.__get_query_url(query_id)
         json_string = self.url_open(query_url).read()
         return int(utils.eval_json(json_string)['total'])
 
     def __query_sum(self, query_id, field):
         """ Return the sum of the fields as returned by the query. """
+        if not query_id:
+            return -1
         query_url = self.__get_query_url(query_id)
         json_string = utils.eval_json(self.url_open(query_url).read())
         total = 0
@@ -139,6 +115,8 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def __query_field_empty(self, query_id, field):
         """ Return the number of query results with field empty (null). """
+        if not query_id:
+            return -1
         query_url = self.__get_query_url(query_id)
         json_string = utils.eval_json(self.url_open(query_url).read())
         total = 0
