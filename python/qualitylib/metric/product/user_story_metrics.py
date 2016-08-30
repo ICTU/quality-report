@@ -40,7 +40,7 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 
     def _nr_user_stories(self):
         """ Return the total number of user stories. """
-        return self._metric_source.nr_user_stories(self._metric_source_id)
+        return self._metric_source.nr_user_stories()
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -59,7 +59,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
     low_target_value = 5
 
     def _nr_user_stories_ok(self):
-        return self._metric_source.reviewed_user_stories(self._metric_source_id)
+        return self._metric_source.reviewed_user_stories()
 
 
 class UserStoriesNotApproved(UserStoryMetric):
@@ -72,11 +72,11 @@ class UserStoriesNotApproved(UserStoryMetric):
     low_target_value = 3
 
     def _nr_user_stories_ok(self):
-        return self._metric_source.approved_user_stories(self._metric_source_id)
+        return self._metric_source.approved_user_stories()
 
     def _nr_user_stories(self):
         """ Override the total number of user stories. """
-        return self._metric_source.reviewed_user_stories(self._metric_source_id)
+        return self._metric_source.reviewed_user_stories()
 
 
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
@@ -91,4 +91,4 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     low_target_value = 5
 
     def _nr_user_stories_ok(self):
-        return self._metric_source.nr_user_stories_with_sufficient_ltcs(self._metric_source_id)
+        return self._metric_source.nr_user_stories_with_sufficient_ltcs()

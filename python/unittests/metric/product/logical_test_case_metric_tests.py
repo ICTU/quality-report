@@ -30,21 +30,21 @@ class FakeBirt(object):
         self.down = False
 
     @staticmethod
-    def approved_ltcs(birt_id):
+    def approved_ltcs():
         """ Return the number of approved logical test cases. """
         return 100
 
-    def nr_ltcs(self, birt_id):
+    def nr_ltcs(self):
         """ Return the number of logical test cases. """
         return -1 if self.down else 120
 
     @staticmethod
-    def reviewed_ltcs(birt_id):
+    def reviewed_ltcs():
         """ Return the number of reviewed logical test cases. """
         return 110
 
     @staticmethod
-    def whats_missing_url(product):
+    def whats_missing_url():
         """ Return the url for the what's missing report. """
         return 'http://whats_missing'
 
@@ -53,21 +53,21 @@ class FakeBirt(object):
         return self.date_of_last_manual_tests
 
     @staticmethod
-    def nr_manual_ltcs(birt_id, version='trunk'):
+    def nr_manual_ltcs(version='trunk'):
         """ Return the number of manual logical test cases. """
         return 10
 
     @staticmethod
-    def nr_manual_ltcs_too_old(birt_id, version, target):
-        """ Return the number of manual logical test cases that haven't been  executed recently enough. """
+    def nr_manual_ltcs_too_old(version, target):
+        """ Return the number of manual logical test cases that haven't been executed recently enough. """
         return 5
 
     @staticmethod
-    def nr_automated_ltcs(birt_id):
+    def nr_automated_ltcs():
         """ Return the number of automated logical test cases. """
         return 20
 
-    def nr_ltcs_to_be_automated(self, birt_id):
+    def nr_ltcs_to_be_automated(self):
         """ Return the number of logical test cases that should be automated. """
         return -1 if self.down else 25
 
@@ -131,7 +131,7 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.whats_missing_url('product')), self.__metric.url())
+        self.assertEqual(dict(Birt=self.__birt.whats_missing_url()), self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk versions. """

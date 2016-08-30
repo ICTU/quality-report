@@ -60,7 +60,7 @@ class FakeBirt(object):
     # pylint: disable=too-few-public-methods
 
     @staticmethod
-    def whats_missing_url(*args):  # pylint: disable=unused-argument
+    def whats_missing_url():
         """ Return the url for the What's Missing report. """
         return 'http://birt/whatsmissing/'
 

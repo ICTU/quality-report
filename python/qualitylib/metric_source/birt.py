@@ -167,7 +167,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the url for the Birt test design report. """
         return self.__test_design_url
 
-    def manual_test_execution_url(self, product, version='trunk'):
+    def manual_test_execution_url(self, version='trunk'):
         """ Return the url for the Birt manual test execution report. """
         return self.__manual_test_execution_url.format(ver=version)
 
@@ -175,89 +175,81 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the url for the Birt sprint progress report. """
         return self.__sprint_progress_report.url(team)
 
-    def whats_missing_url(self, product):
+    def whats_missing_url(self):
         """ Return the What's missing report url for the product. """
-        return self.__whats_missing_url.format(app=product)
-
-    # Misc
-
-    @utils.memoized
-    def has_test_design(self, product):
-        """ Return whether the product has a test design (i.e. user stories, logical test cases, reviews of
-            user stories and logical test cases, etc.) """
-        return True  # The product parameter is no longer used in Birt2
+        return self.__whats_missing_url.format()
 
     # Metrics calculated from other metrics:
 
-    def nr_user_stories_with_sufficient_ltcs(self, product):
+    def nr_user_stories_with_sufficient_ltcs(self):
         """ Return the number of user stories that have a sufficient number of logical test cases."""
-        nr_user_stories = self.nr_user_stories(product)
+        nr_user_stories = self.nr_user_stories()
         if nr_user_stories == -1:
             return -1
         else:
-            return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs(product))
+            return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs())
 
-    def nr_automated_ltcs(self, product):
+    def nr_automated_ltcs(self):
         """ Return the number of logical test cases that have been implemented as automated tests. """
-        nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated(product)
+        nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated()
         if nr_ltcs_to_be_automated == -1:
             return -1
         else:
-            return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs(product))
+            return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs())
 
     # Metrics available directly in Birt:
 
-    def nr_user_stories(self, product):
+    def nr_user_stories(self):
         """ Return the number of user stories . """
         return self.__test_design_metric(row_nr=0)
 
-    def __nr_user_stories_with_too_few_ltcs(self, product):
+    def __nr_user_stories_with_too_few_ltcs(self):
         """ Return the number of user stories that have not enough logical test cases associated with them. """
         return self.__test_design_metric(row_nr=2)
 
-    def reviewed_user_stories(self, product):
+    def reviewed_user_stories(self):
         """ Return the number of reviewed user stories. """
         return self.__test_design_metric(row_nr=3)
 
-    def approved_user_stories(self, product):
+    def approved_user_stories(self):
         """ Return the number of approved user stories. """
         return self.__test_design_metric(row_nr=4)
 
-    def not_approved_user_stories(self, product):
+    def not_approved_user_stories(self):
         """ Return the number of not approved user stories. """
         return self.__test_design_metric(row_nr=5)
 
-    def nr_ltcs(self, product):
+    def nr_ltcs(self):
         """ Return the number of logical test cases. """
         return self.__test_design_metric(row_nr=6)
 
-    def reviewed_ltcs(self, product):
+    def reviewed_ltcs(self):
         """ Return the number of reviewed logical test cases for the product. """
         return self.__test_design_metric(row_nr=7)
 
-    def approved_ltcs(self, product):
+    def approved_ltcs(self):
         """ Return the number of approved logical test casess. """
         return self.__test_design_metric(row_nr=8)
 
-    def not_approved_ltcs(self, product):
+    def not_approved_ltcs(self):
         """ Return the number of disapproved logical test cases. """
         return self.__test_design_metric(row_nr=9)
 
-    def nr_ltcs_to_be_automated(self, product):
+    def nr_ltcs_to_be_automated(self):
         """ Return the number of logical test cases for the product that have to be automated. """
         return self.__test_design_metric(row_nr=10)
 
-    def nr_manual_ltcs(self, product, version='trunk'):
+    def nr_manual_ltcs(self, version='trunk'):
         """ Return the number of logical test cases for the product that are executed manually. """
-        test_dates = self.__manual_test_dates(product, version)
+        test_dates = self.__manual_test_dates(version)
         if test_dates == -1:
             return -1
         else:
             return len(test_dates)
 
-    def nr_manual_ltcs_too_old(self, product, version, target):
+    def nr_manual_ltcs_too_old(self, version, target):
         """ Return the number of manual logical test cases that have not been executed for target amount of days. """
-        test_dates = self.__manual_test_dates(product, version)
+        test_dates = self.__manual_test_dates(version)
         if test_dates == -1:
             return -1
         else:
@@ -265,14 +257,14 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             too_old = [date for date in test_dates if (now - date).days > target]
             return len(too_old)
 
-    def __nr_missing_automated_ltcs(self, product):
+    def __nr_missing_automated_ltcs(self):
         """ Return the number of logical test cases for the product that should be automated but have not. """
         return self.__test_design_metric(row_nr=13)
 
     @utils.memoized
-    def date_of_last_manual_test(self, product, version='trunk'):
+    def date_of_last_manual_test(self, version='trunk'):
         """ Return the date when the product/version was last tested manually. """
-        test_dates = self.__manual_test_dates(product, version)
+        test_dates = self.__manual_test_dates(version)
         if test_dates == -1:
             return -1
         else:
@@ -282,7 +274,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         return min(test_dates)
 
     @utils.memoized
-    def __manual_test_dates(self, product, version):
+    def __manual_test_dates(self, version):
         """ Return the manual test cases. """
         url = self.__manual_test_execution_url.format(ver=version)
         try:

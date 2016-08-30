@@ -64,8 +64,7 @@ class BirtTestDesignMetricMixin(object):
     def url(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
             What's Missing report allows users to click to the user stories and test cases in Jira. """
-        url = self._metric_source.whats_missing_url(self._metric_source_id)
-        return self.create_url_dict('Birt', url)
+        return self.create_url_dict('Birt', self._metric_source.whats_missing_url())
 
 
 class VersionControlSystemMetricMixin(object):  # pylint: disable=too-few-public-methods

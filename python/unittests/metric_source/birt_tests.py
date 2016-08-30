@@ -710,93 +710,88 @@ class BirtTest(unittest.TestCase):
     def test_whats_missing_url(self):
         """ Test the what's missing report url. """
         self.assertEqual('http://birt/birt/preview?__report=reports/whats_missing.rptdesign',
-                         self.__birt.whats_missing_url('product'))
+                         self.__birt.whats_missing_url())
 
     def test_manual_test_url_trunk(self):
         """ Test the manual test execution url for the trunk. """
         self.assertEqual(
             'http://birt/birt/preview?__report=reports/manual_test_execution_report.rptdesign&version=trunk',
-            self.__birt.manual_test_execution_url('product'))
+            self.__birt.manual_test_execution_url())
 
     def test_manual_test_url_version(self):
         """ Test the manual test execution url with a specific version. """
         self.assertEqual('http://birt/birt/preview?__report=reports/manual_test_execution_report.rptdesign&version=1',
-                         self.__birt.manual_test_execution_url('product', '1'))
+                         self.__birt.manual_test_execution_url('1'))
 
     def test_sprint_progress_url(self):
         """ Test the sprint progress url. """
         self.assertEqual('http://birt/birt/preview?__report=reports/sprint_voortgang.rptdesign',
                          self.__birt.sprint_progress_url('team'))
 
-    def test_has_test_design(self):
-        """ Test that has_test_design always returns true, because the product parameter is ignored in Birt2.  """
-        self.__birt.html = TEST_DESIGN_HTML
-        self.assertTrue(self.__birt.has_test_design('whatever'))
-
     def test_nr_user_stories_with_sufficient_ltcs(self):
         """ Test that the number of user stories with sufficient number of logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(22, self.__birt.nr_user_stories_with_sufficient_ltcs('bulk'))
+        self.assertEqual(22, self.__birt.nr_user_stories_with_sufficient_ltcs())
 
     def test_nr_user_stories_with_sufficient_ltcs_on_error(self):
         """ Test that the number of user stories is -1 when Birt is unavailable. """
         self.__birt.html = 'raise'
-        self.assertEqual(-1, self.__birt.nr_user_stories_with_sufficient_ltcs('bulk'))
+        self.assertEqual(-1, self.__birt.nr_user_stories_with_sufficient_ltcs())
 
     def test_nr_automated_ltcs(self):
         """ Test the number of automated logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(111, self.__birt.nr_automated_ltcs('bulk'))
+        self.assertEqual(111, self.__birt.nr_automated_ltcs())
 
     def test_nr_automated_ltcs_on_error(self):
         """ Test that the number of automated logical test cases is -1 when Birt is unavailable. """
         self.__birt.html = 'raise'
-        self.assertEqual(-1, self.__birt.nr_automated_ltcs('bulk'))
+        self.assertEqual(-1, self.__birt.nr_automated_ltcs())
 
     def test_nr_user_stories(self):
         """ Test that the number of user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(23, self.__birt.nr_user_stories('bulk'))
+        self.assertEqual(23, self.__birt.nr_user_stories())
 
     def test_reviewed_user_stories(self):
         """ Test that the number of reviewed user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(23, self.__birt.reviewed_user_stories('bulk'))
+        self.assertEqual(23, self.__birt.reviewed_user_stories())
 
     def test_approved_user_stories(self):
         """ Test that the number of approved user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(23, self.__birt.approved_user_stories('bulk'))
+        self.assertEqual(23, self.__birt.approved_user_stories())
 
     def test_not_approved_user_stories(self):
         """ Test that the number of not approved user stories is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(0, self.__birt.not_approved_user_stories('bulk'))
+        self.assertEqual(0, self.__birt.not_approved_user_stories())
 
     def test_nr_ltcs(self):
         """ Test that the number of logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(182, self.__birt.nr_ltcs('bulk'))
+        self.assertEqual(182, self.__birt.nr_ltcs())
 
     def test_reviewed_ltcs(self):
         """ Test that the number of reviewed logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(182, self.__birt.reviewed_ltcs('bulk'))
+        self.assertEqual(182, self.__birt.reviewed_ltcs())
 
     def test_approved_ltcs(self):
         """ Test that the number of approved logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(182, self.__birt.approved_ltcs('bulk'))
+        self.assertEqual(182, self.__birt.approved_ltcs())
 
     def test_not_approved_ltcs(self):
         """ Test that the number of not approved logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(0, self.__birt.not_approved_ltcs('bulk'))
+        self.assertEqual(0, self.__birt.not_approved_ltcs())
 
     def test_nr_ltcs_to_be_automated(self):
         """ Test that the number of logical test cases to be automated is correct. """
         self.__birt.html = TEST_DESIGN_HTML
-        self.assertEqual(165, self.__birt.nr_ltcs_to_be_automated('bulk'))
+        self.assertEqual(165, self.__birt.nr_ltcs_to_be_automated())
 
     def test_nr_manual_ltcs(self):
         """ Test that the number of manual logical test cases is correct. """
@@ -811,29 +806,29 @@ class BirtTest(unittest.TestCase):
     def test_nr_manual_ltcs_too_old(self):
         """ Test that the number of manual logical test cases that have not been tested recently is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
-        self.assertEqual(3, self.__birt.nr_manual_ltcs_too_old('bulk', 'trunk', 7))
+        self.assertEqual(3, self.__birt.nr_manual_ltcs_too_old('trunk', 7))
 
     def test_nr_manual_ltcs_too_old_on_error(self):
         """ Test that the number of manual logical test cases is -1 whe Birt is not available. """
         self.__birt.html = 'raise'
-        self.assertEqual(-1, self.__birt.nr_manual_ltcs_too_old('bulk', 'trunk', 7))
+        self.assertEqual(-1, self.__birt.nr_manual_ltcs_too_old('trunk', 7))
 
     def test_no_date_manual_tests(self):
         """ Test that the date of the last manual test execution is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED
-        date = self.__birt.date_of_last_manual_test('bulk')
+        date = self.__birt.date_of_last_manual_test()
         self.assertEqual(datetime.datetime(1, 1, 1), date)
 
     def test_late_date_manual_tests(self):
         """ Test that the date of the last manual test execution is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML
-        date = self.__birt.date_of_last_manual_test('bulk')
+        date = self.__birt.date_of_last_manual_test()
         self.assertEqual(datetime.datetime(2015, 8, 19), date)
 
     def test_date_of_last_manual_test_on_error(self):
         """ Test that the date of the last manual test execution is the min date when Birt is unavailable. """
         self.__birt.html = 'raise'
-        self.assertEqual(-1, self.__birt.date_of_last_manual_test('bulk'))
+        self.assertEqual(-1, self.__birt.date_of_last_manual_test())
 
 
 class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disable=too-few-public-methods
