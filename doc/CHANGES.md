@@ -1,3 +1,9 @@
+2016-08-30  Release 1.56.0
+
+  * Add a requirement and two metrics for tracking the number of user stories without security and performance risk
+    assessment.
+
+
 2016-08-30  Release 1.55.1
 
   * Junit reports would be reported as missing when the number of failures is higher than the number of test cases.

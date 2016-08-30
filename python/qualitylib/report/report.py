@@ -29,6 +29,7 @@ class QualityReport(domain.DomainObject):
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
                 requirement.CodeQuality, requirement.Performance, requirement.TrackActions, requirement.TrackRisks,
                 requirement.TrackBugs, requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
+                requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence, requirement.NoSnapshotDependencies,
@@ -147,7 +148,8 @@ class QualityReport(domain.DomainObject):
         metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions,
                                                   requirement.TrackRisks, requirement.TrackBugs,
                                                   requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
-                                                  requirement.TrackReadyUS)
+                                                  requirement.TrackReadyUS,
+                                                  requirement.TrackSecurityAndPerformanceRisks)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
 

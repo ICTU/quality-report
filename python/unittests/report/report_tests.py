@@ -191,7 +191,7 @@ class QualityReportMetricsTest(unittest.TestCase):
                     requirement.TrackSonarVersion, requirement.TrackActions,
                     requirement.TrackRisks, requirement.TrackJavaConsistency,
                     requirement.TrackCIJobs, requirement.TrackTechnicalDebt,
-                    requirement.TrackBugs, requirement.TrackManualLTCs]:
+                    requirement.TrackBugs, requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(requirements=[req]))
 

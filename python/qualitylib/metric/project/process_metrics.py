@@ -16,7 +16,7 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from ...domain import HigherIsBetterMetric
+from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 from ... import metric_source
 
 
@@ -37,3 +37,43 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
 
     def url(self):
         return self.create_url_dict('Jira', self._metric_source.user_stories_ready_url())
+
+
+class UserStoriesWithoutSecurityRiskAssessment(LowerIsBetterMetric):
+    """ Metric for measuring the number of user stories without security risk assessment. """
+
+    name = 'Hoeveelheid user stories zonder security risk beoordeling'
+    unit = 'user stories'
+    norm_template = 'Het aantal {unit} zonder security risk beoordeling is minder dan {target}. ' \
+                    'Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} is {value}.'
+    target_value = 3
+    low_target_value = 0
+    metric_source_classes = (metric_source.Jira,)
+
+    def value(self):
+        nr_stories = self._metric_source.nr_user_stories_without_security_risk_assessment()
+        return -1 if nr_stories in (-1, None) else nr_stories
+
+    def url(self):
+        return self.create_url_dict('Jira', self._metric_source.user_stories_without_security_risk_assessment_url())
+
+
+class UserStoriesWithoutPerformanceRiskAssessment(LowerIsBetterMetric):
+    """ Metric for measuring the number of user stories without performance risk assessment. """
+
+    name = 'Hoeveelheid user stories zonder performance risk beoordeling'
+    unit = 'user stories'
+    norm_template = 'Het aantal {unit} zonder performance risk beoordeling is minder dan {target}. ' \
+                    'Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} is {value}.'
+    target_value = 3
+    low_target_value = 0
+    metric_source_classes = (metric_source.Jira,)
+
+    def value(self):
+        nr_stories = self._metric_source.nr_user_stories_without_performance_risk_assessment()
+        return -1 if nr_stories in (-1, None) else nr_stories
+
+    def url(self):
+        return self.create_url_dict('Jira', self._metric_source.user_stories_without_performance_risk_assessment_url())

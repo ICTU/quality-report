@@ -22,7 +22,7 @@ from .product_quality import TrustedProductMaintainability, OWASPDependencies, O
     ARTCoverage, CodeQuality, JSFCodeQuality, Performance, NoSnapshotDependencies, TrackBranches
 from .sonar import Java, CSharp, JavaScript, Web
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, \
-    TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS
+    TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, TrackSecurityAndPerformanceRisks
 from .environment import TrackJavaConsistency, TrackCIJobs, TrackSonarVersion
 from .team import ScrumTeam, TrackSpirit, TrackAbsence
 from .document import TrackDocumentAge
