@@ -24,7 +24,7 @@ from ... import utils
 
 class JaCoCo(coverage_report.CoverageReport):
     """ Class representing an JaCoCo coverage report. """
-    metric_source_name = 'JaCoCo coverage report'
+    metric_source_name = 'JaCoCo coverage rapport'
 
     @staticmethod
     def _get_coverage_date_url(coverage_url):

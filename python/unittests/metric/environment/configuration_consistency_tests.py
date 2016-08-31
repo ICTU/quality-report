@@ -26,6 +26,7 @@ class FakeAnsibleConfigReport(object):
 
     report_date = datetime.datetime.now()
     report_java_versions = 2
+    metric_source_name = metric_source.AnsibleConfigReport.metric_source_name
 
     def java_versions(self, *args):
         """ Return the number of different java versions. """
@@ -57,7 +58,7 @@ class JavaVersionConsistencyTests(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric equals the url of Jenkins. """
-        self.assertEqual({'Ansible configuration report': 'http://ansible_report'}, self.__metric.url())
+        self.assertEqual({FakeAnsibleConfigReport.metric_source_name: 'http://ansible_report'}, self.__metric.url())
 
     def test_report(self):
         """ Test the metric report. """

@@ -21,6 +21,7 @@ from qualitylib import metric, domain, metric_source
 
 class FakeBirt(object):
     """ Fake Birt so we can return fake velocity information. """
+    metric_source_name = metric_source.Birt.metric_source_name
 
     @staticmethod
     def planned_velocity():
@@ -85,7 +86,7 @@ class TeamProgressTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric is the url of the Birt report. """
-        self.assertEqual(dict(Birt='http://birt/report/'), self.__metric.url())
+        self.assertEqual({FakeBirt.metric_source_name: FakeBirt.sprint_progress_url()}, self.__metric.url())
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """

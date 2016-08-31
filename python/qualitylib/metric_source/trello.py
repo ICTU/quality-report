@@ -165,9 +165,9 @@ class TrelloBoard(TrelloObject):
 
 class TrelloActionsBoard(TrelloBoard):
     """ Actions board in Trello. """
-    metric_source_name = 'Trello actions board'
+    metric_source_name = 'Trello acties'
 
 
 class TrelloRiskBoard(TrelloBoard):
     """ Risk log in Trello. """
-    metric_source_name = 'Trello risk board'
+    metric_source_name = 'Trello risicolog'

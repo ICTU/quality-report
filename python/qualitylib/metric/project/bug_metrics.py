@@ -35,7 +35,7 @@ class OpenBugs(LowerIsBetterMetric):
         return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
 
     def url(self):
-        return self.create_url_dict('Jira', self._metric_source.nr_open_bugs_url())
+        return self.create_url_dict(self._metric_source.metric_source_name, self._metric_source.nr_open_bugs_url())
 
 
 class OpenSecurityBugs(LowerIsBetterMetric):

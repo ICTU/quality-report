@@ -23,6 +23,8 @@ from qualitylib.metric_source import TrelloUnreachableException
 
 class FakeBoard(object):
     """ Fake a Trello board. """
+    metric_source_name = metric_source.TrelloActionsBoard.metric_source_name
+
     @staticmethod
     def url():
         """ Return a fake url. """
@@ -46,6 +48,8 @@ class FakeBoard(object):
 
 class UnreachableBoard(object):
     """ Pretend that Trello is down. """
+    metric_source_name = metric_source.TrelloActionsBoard.metric_source_name
+
     @staticmethod
     def url():
         """ Fake that Trello is down. """
@@ -78,7 +82,7 @@ class RiskLogTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric uses the url of the risk log board. """
-        self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
+        self.assertEqual({FakeBoard.metric_source_name: FakeBoard().url()}, self.__metric.url())
 
     def test_value(self):
         """ Test that the value is the number of days since the last update. """
@@ -98,7 +102,7 @@ class UnreachableRiskLogTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric uses the url of the risk log board. """
-        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+        self.assertEqual({'Trello acties': 'http://trello.com'}, self.__metric.url())
 
     def test_value(self):
         """ Test that the value is the number of days since the last update. """

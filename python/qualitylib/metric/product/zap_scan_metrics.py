@@ -54,7 +54,7 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
             return []
 
     def url(self):
-        return self.create_url_dict(('ZAP Scan rapport'), *self.__report_urls())
+        return self.create_url_dict(self._metric_source.metric_source_name, *self.__report_urls())
 
     def _parameters(self):
         parameters = super(ZAPScanAlertsMetric, self)._parameters()

@@ -23,6 +23,7 @@ from qualitylib import metric, domain, metric_source
 class FakeBirt(object):
     """ Provide for a fake Birt object. """
     # pylint: disable=unused-argument
+    metric_source_name = metric_source.Birt.metric_source_name
     date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=5)
 
     def __init__(self, test_design=True):
@@ -294,11 +295,12 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.manual_test_execution_url()), self.__metric.url())
+        self.assertEqual({'Birt reports': self.__birt.manual_test_execution_url()}, self.__metric.url())
 
 
 class FakeJira(object):
     """ A fake Jira for testing purposes. """
+    metric_source_name = metric_source.Jira.metric_source_name
 
     @staticmethod
     def manual_test_cases_time():
@@ -351,7 +353,7 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Jira': 'http://jira'}, self.__metric.url())
+        self.assertEqual({FakeJira.metric_source_name: FakeJira.manual_test_cases_url()}, self.__metric.url())
 
 
 class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
@@ -384,4 +386,4 @@ class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Jira': 'http://jira'}, self.__metric.url())
+        self.assertEqual({FakeJira.metric_source_name: FakeJira.manual_test_cases_url()}, self.__metric.url())

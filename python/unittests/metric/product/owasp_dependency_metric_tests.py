@@ -38,6 +38,8 @@ class FakeSubject(object):
 class FakeJenkinsOWASPDependenciesReport(object):
     """ Fake a Jenkins OWASP dependency report for unit test purposes. """
 
+    metric_source_name = metric_source.JenkinsOWASPDependencyReport.metric_source_name
+
     @staticmethod
     def nr_warnings(job_names, priority):
         """ Return the number of warnings for the jobs. """
@@ -88,15 +90,15 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'OWASP dependency report': self.__jenkins.report_url('jenkins_job')},
+        self.assertEqual({'OWASP dependency rapport': self.__jenkins.report_url('jenkins_job')},
                          self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         dependencies = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual({'OWASP dependency report (1/2)': self.__jenkins.report_url('a'),
-                          'OWASP dependency report (2/2)': self.__jenkins.report_url('b')},
+        self.assertEqual({'OWASP dependency rapport (1/2)': self.__jenkins.report_url('a'),
+                          'OWASP dependency rapport (2/2)': self.__jenkins.report_url('b')},
                          dependencies.url())
 
     def test_norm(self):

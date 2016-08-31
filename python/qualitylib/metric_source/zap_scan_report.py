@@ -23,7 +23,7 @@ from . import url_opener, beautifulsoup
 
 class ZAPScanReport(domain.MetricSource):
     """ Class representing ZAP Scan reports. """
-    metric_source_name = 'ZAP Scan report'
+    metric_source_name = 'ZAP Scan rapport'
     needs_metric_source_id = True
 
     def __init__(self, url_open=None, **kwargs):

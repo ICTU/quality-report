@@ -40,7 +40,7 @@ class SonarVersion(HigherIsBetterMetric):
         return -1 if self._missing() else LooseVersion(self._metric_source.version_number())
 
     def url(self):
-        return self.create_url_dict('Sonar', self._metric_source.url())
+        return self.create_url_dict(self._metric_source.metric_source_name, self._metric_source.url())
 
     def _missing(self):
         return self._metric_source.version_number() is None
@@ -83,7 +83,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
             return LooseVersion(profile_version)
 
     def url(self):
-        return self.create_url_dict('Sonar', self._metric_source.quality_profiles_url())
+        return self.create_url_dict(self._metric_source.metric_source_name, self._metric_source.quality_profiles_url())
 
     def _parameters(self):
         parameters = super(SonarQualityProfileVersion, self)._parameters()
@@ -156,7 +156,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return LooseVersion('0.0' if self._missing() else self._metric_source.plugin_version(self.plugin_key))
 
     def url(self):
-        return self.create_url_dict('Sonar', self._metric_source.plugins_url())
+        return self.create_url_dict(self._metric_source.metric_source_name, self._metric_source.plugins_url())
 
     def _parameters(self):
         parameters = super(SonarPluginVersion, self)._parameters()

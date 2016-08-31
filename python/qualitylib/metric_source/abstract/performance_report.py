@@ -24,7 +24,7 @@ from ..url_opener import UrlOpener
 
 class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     """ Abstract class representing a performance report. """
-    metric_source_name = 'Performance report'
+    metric_source_name = 'Performancerapport'
     needs_metric_source_id = True
     COLUMN_90_PERC = 0  # Subclass responsibility
 

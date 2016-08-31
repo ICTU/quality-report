@@ -60,7 +60,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
             return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
     def url(self):
-        return self.create_url_dict('Test report', *self.__report_urls())
+        return self.create_url_dict(self._metric_source.metric_source_name, *self.__report_urls())
 
 
 class RegressionTestAge(LowerIsBetterMetric):
@@ -130,7 +130,7 @@ class _ARTCoverage(HigherIsBetterMetric):
             self._metric_source.coverage_date(self._metric_source_id)
 
     def url(self):
-        return self.create_url_dict(self.metric_source_classes[0].__name__, self._metric_source_id)
+        return self.create_url_dict(self._metric_source.metric_source_name, self._metric_source_id)
 
     def _parameters(self):
         # pylint: disable=protected-access

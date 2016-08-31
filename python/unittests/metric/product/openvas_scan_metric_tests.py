@@ -38,6 +38,8 @@ class FakeSubject(object):
 class FakeOpenVASReport(object):  # pylint: disable=too-few-public-methods
     """ Fake a Open VAS Scan report for unit test purposes. """
 
+    metric_source_name = metric_source.OpenVASScanReport.metric_source_name
+
     @staticmethod
     def alerts(risk_level, *report_urls):
         """ Return the number of warnings for the jobs. """

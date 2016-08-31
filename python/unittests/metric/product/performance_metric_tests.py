@@ -24,6 +24,8 @@ class FakePerformanceReport(object):
     """ Fake a JMeter performance report. """
     # pylint: disable=unused-argument, invalid-name
 
+    metric_source_name = metric_source.PerformanceReport.metric_source_name
+
     def __init__(self, queries=0, queries_violating_max_responsetime=0, queries_violating_wished_responsetime=0):
         self.__queries = queries
         self.__queries_violating_max_responsetime = queries_violating_max_responsetime

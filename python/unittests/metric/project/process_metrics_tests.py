@@ -22,6 +22,8 @@ from qualitylib import metric, domain, metric_source, requirement
 class FakeJira(object):
     """ Fake Jira. """
 
+    metric_source_name = metric_source.Jira.metric_source_name
+
     @staticmethod
     def nr_story_points_ready():
         """ Return a fake number of ready user story points. """

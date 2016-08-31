@@ -38,6 +38,8 @@ class FakeSubject(object):
 class FakeZAPScanReport(object):  # pylint: disable=too-few-public-methods
     """ Fake a ZAP Scan report for unit test purposes. """
 
+    metric_source_name = metric_source.ZAPScanReport.metric_source_name
+
     @staticmethod
     def alerts(risk_level, *report_urls):
         """ Return the number of warnings for the jobs. """

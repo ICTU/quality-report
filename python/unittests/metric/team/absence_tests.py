@@ -23,6 +23,8 @@ from qualitylib import metric, domain, metric_source
 class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
     """ Fake a holiday planner. """
 
+    metric_source_name = metric_source.HolidayPlanner.metric_source_name
+
     def __init__(self):
         self.period = 6
 
@@ -68,7 +70,7 @@ class TeamAbsenceTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the url of the holiday planner. """
-        self.assertEqual(dict(Planner=FakeHolidayPlanner.url()), self.__metric.url())
+        self.assertEqual({FakeHolidayPlanner.metric_source_name: FakeHolidayPlanner.url()}, self.__metric.url())
 
     def test_is_applicable(self):
         """ Test that the metric is applicable. """

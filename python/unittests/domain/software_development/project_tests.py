@@ -284,7 +284,7 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(metric_sources={metric_source.CoverageReport: ncover})
         product = domain.Product(project, 'Short name', metric_source_ids={ncover: 'ncover_url'})
         project.add_product(product)
-        self.assertTrue(('NCover coverage report %s' % product.name(), 'ncover_url') in project.project_resources())
+        self.assertTrue(('NCover coverage rapport %s' % product.name(), 'ncover_url') in project.project_resources())
 
     def test_ncover_only_for_trunk(self):
         """ Test that only the NCover reports for trunk versions of products are included. """
@@ -293,7 +293,7 @@ class ProjectResourcesTest(unittest.TestCase):
         product = domain.Product(project, 'Short name', metric_source_ids={ncover: 'ncover_url'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        self.assertTrue(('NCover coverage report %s' % product.name(), 'ncover_url') in project.project_resources())
+        self.assertTrue(('NCover coverage rapport %s' % product.name(), 'ncover_url') in project.project_resources())
 
     def test_jacoco(self):
         """ Test that the JacCoCo reports are in the project resources. """
@@ -301,7 +301,7 @@ class ProjectResourcesTest(unittest.TestCase):
         project = self.project(metric_sources={metric_source.JaCoCo: jacoco})
         product = domain.Product(project, 'Short name', metric_source_ids={jacoco: 'jacoco_url'})
         project.add_product(product)
-        self.assertTrue(('JaCoCo coverage report %s' % product.name(), 'jacoco_url') in project.project_resources())
+        self.assertTrue(('JaCoCo coverage rapport %s' % product.name(), 'jacoco_url') in project.project_resources())
 
     def test_jacoco_only_for_trunk(self):
         """ Test that only the JaCoCo reports for trunk versions of products are included. """
@@ -310,7 +310,7 @@ class ProjectResourcesTest(unittest.TestCase):
         product = domain.Product(project, 'Short name', metric_source_ids={jacoco: 'jacoco_url'})
         project.add_product(product)
         project.add_product_with_version(product.name(), '1.1')
-        self.assertTrue(('JaCoCo coverage report %s' % product.name(), 'jacoco_url') in project.project_resources())
+        self.assertTrue(('JaCoCo coverage rapport %s' % product.name(), 'jacoco_url') in project.project_resources())
 
     def test_release_candidates(self):
         """ Test that the release candidates file is in the project resources. """

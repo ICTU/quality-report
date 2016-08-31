@@ -23,6 +23,8 @@ from qualitylib import metric, domain, metric_source
 class FakeWiki(object):
     """ Fake a wiki metric source. """
 
+    metric_source_name = metric_source.Wiki.metric_source_name
+
     def __init__(self):
         self.date_of_last_measurement = datetime.datetime.now()
 
