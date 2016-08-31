@@ -16,7 +16,6 @@ limitations under the License.
 
 import io
 import unittest
-import urllib2
 
 from qualitylib.metric_source import Jira
 
@@ -30,11 +29,8 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static content. """
-        if 'None' in url:
-            raise urllib2.HTTPError(None, None, None, None, None)
-        else:
-            return io.StringIO(u'{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
-                               u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
+        return io.StringIO(u'{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
+                           u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
 
 
 class JiraTest(unittest.TestCase):
