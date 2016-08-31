@@ -1,3 +1,9 @@
+2016-08-31  Release 1.57.0
+
+  * Allow for overriding the url of a metric by passing a url via the metric options:
+    `Product(..., metric_options={metric.FailingRegressionTests: dict(url='http://path/to/html/test/report/')})`
+  
+
 2016-08-30  Release 1.56.2
 
   * Changed target_value and low_target_value for user stories without security and performance risk assessment.

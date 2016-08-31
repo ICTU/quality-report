@@ -181,6 +181,11 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric has no default url. """
         self.assertFalse(self.__metric.url())
 
+    def test_optional_url(self):
+        """ Test that the url can be overridden via the metric options. """
+        self.__subject.options = dict(url='http://optional')
+        self.assertEqual({'Unknown metric source': 'http://optional'}, self.__metric.url())
+
     def test_default_url_label(self):
         """ Test that the metric has no default url label. """
         self.assertFalse(self.__metric.url_label())

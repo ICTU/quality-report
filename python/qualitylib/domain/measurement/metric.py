@@ -247,8 +247,14 @@ class Metric(object):
 
     def _metric_source_urls(self):
         """ Return a list of metric source urls to be used to create the url dict. """
-        # Default implementation assumes the metric source id is a (list of) url(s).
-        urls = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+        try:
+            url = self._subject.metric_options(self.__class__).get('url')
+        except AttributeError:
+            url = None
+        if url:
+            urls = [url]
+        else:
+            urls = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
         return [url for url in urls if url]  # Weed out urls that are empty or None
 
     @classmethod
