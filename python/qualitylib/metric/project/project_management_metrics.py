@@ -46,12 +46,12 @@ class RiskLog(LowerIsBetterMetric):
         except TrelloUnreachableException:
             return datetime.datetime.min
 
-    def url(self):
+    def _metric_source_urls(self):
         try:
             url = self._metric_source.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
-        return self._create_url_dict(self._metric_source.metric_source_name, url)
+        return [url]
 
 
 class ActionActivity(LowerIsBetterMetric):
@@ -78,12 +78,12 @@ class ActionActivity(LowerIsBetterMetric):
         except TrelloUnreachableException:
             return datetime.datetime.min
 
-    def url(self):
+    def _metric_source_urls(self):
         try:
             url = self._metric_source.url()
         except TrelloUnreachableException:
             url = 'http://trello.com'
-        return self._create_url_dict('Trello', url)
+        return [url]
 
 
 class ActionAge(LowerIsBetterMetric):
@@ -110,5 +110,5 @@ class ActionAge(LowerIsBetterMetric):
         try:
             urls = self._metric_source.over_due_or_inactive_cards_url()
         except TrelloUnreachableException:
-            urls = dict(Trello='http://trello.com')
+            urls = {self._metric_source.metric_source_name: 'http://trello.com'}
         return dict() if urls is None else urls

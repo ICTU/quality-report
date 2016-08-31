@@ -28,13 +28,9 @@ class SonarMetricMixin(object):
         super(SonarMetricMixin, self).__init__(*args, **kwargs)
         self.__sonar_product_info = metric_info.SonarProductInfo(self._metric_source, self._subject)
 
-    def url(self):
+    def _metric_source_urls(self):
         """ Return the url to Sonar. """
-        return self._create_url_dict(self._metric_source.metric_source_name, self._sonar_url())
-
-    def _sonar_url(self):
-        """ Return the Sonar url to use for the metric url. """
-        return self._metric_source.url()
+        return [self._metric_source.url()]
 
     def _sonar_id(self):
         """ Return the id of the subject in Sonar. """
@@ -43,16 +39,16 @@ class SonarMetricMixin(object):
 
 class SonarDashboardMetricMixin(SonarMetricMixin):
     """ Mixin class for metrics that use the Sonar dashboard. """
-    def _sonar_url(self):
+    def _metric_source_urls(self):
         """ Return the url to the Sonar dashboard. """
-        return self._metric_source.dashboard_url(self._sonar_id())
+        return [self._metric_source.dashboard_url(self._sonar_id())]
 
 
 class SonarViolationsMetricMixin(SonarMetricMixin):
     """ Mixin class for metrics that use the Sonar violations. """
-    def _sonar_url(self):
+    def _metric_source_urls(self):
         """ Return the url to the Sonar violations. """
-        return self._metric_source.violations_url(self._sonar_id())
+        return [self._metric_source.violations_url(self._sonar_id())]
 
 
 class BirtTestDesignMetricMixin(object):
@@ -61,10 +57,10 @@ class BirtTestDesignMetricMixin(object):
 
     metric_source_classes = (metric_source.Birt,)
 
-    def url(self):
+    def _metric_source_urls(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
             What's Missing report allows users to click to the user stories and test cases in Jira. """
-        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source.whats_missing_url())
+        return [self._metric_source.whats_missing_url()]
 
 
 class VersionControlSystemMetricMixin(object):  # pylint: disable=too-few-public-methods

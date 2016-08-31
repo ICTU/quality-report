@@ -37,9 +37,9 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         """ Return the number of days since the document was last changed. """
         return -1 if self._missing() else (datetime.datetime.now() - self.__changed_date()).days
 
-    def url(self):
+    def _metric_source_urls(self):
         """ Return the url to the document. """
-        return self._create_url_dict(self._vcs_product_info.metric_source_name, self._subject.url())
+        return [self._subject.url()]
 
     def __changed_date(self):
         """ Return the date that the document was last changed. """

@@ -124,7 +124,7 @@ class ActionActivityTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
+        self.assertEqual({FakeBoard.metric_source_name: FakeBoard().url()}, self.__metric.url())
 
     def test_should_be_measured(self):
         """ Test that the metric should be measured when the project has the appropriate requirement. """
@@ -146,7 +146,7 @@ class UnreachableActionActivityTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+        self.assertEqual({UnreachableBoard.metric_source_name: 'http://trello.com'}, self.__metric.url())
 
 
 class ActionAgeTest(unittest.TestCase):
@@ -188,4 +188,4 @@ class UnreachableActionAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+        self.assertEqual({UnreachableBoard.metric_source_name: 'http://trello.com'}, self.__metric.url())

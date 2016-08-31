@@ -231,14 +231,10 @@ class Metric(object):
             logging.error('Key missing in parameters of %s: %s', self.__class__.__name__, self._parameters())
             raise
 
-    def url(self):  # pylint: disable=no-self-use
+    def url(self):
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
-        return dict()
-
-    @staticmethod
-    def _create_url_dict(label, *urls):
-        """ Create a dict from a label and a list of urls. Can be used in subclasses to implement url(). """
-        urls = [url for url in urls if url]  # Weed out urls that are empty or None
+        label = self._metric_source.metric_source_name if self._metric_source else 'Unknown metric source'
+        urls = [url for url in self._metric_source_urls() if url]  # Weed out urls that are empty or None
         if len(urls) == 1:
             return {label: urls[0]}
         else:
@@ -248,6 +244,10 @@ class Metric(object):
                 numbered_label = '{label} ({index}/{count})'.format(label=label, index=index, count=count)
                 url_dict[numbered_label] = url
             return url_dict
+
+    def _metric_source_urls(self):
+        """ Return a list of metric source urls to be used to create the url dict. """
+        return []
 
     @classmethod
     def url_label(cls):

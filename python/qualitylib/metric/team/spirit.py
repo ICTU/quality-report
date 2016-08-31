@@ -65,5 +65,5 @@ class TeamSpirit(Metric):
     def _missing(self):
         return not self._metric_source.team_spirit(self._metric_source_id)
 
-    def url(self):
-        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source.url())
+    def _metric_source_urls(self):
+        return [self._metric_source.url()]

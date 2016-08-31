@@ -53,8 +53,8 @@ class TeamProgress(LowerIsBetterMetric):
         velocity = self._metric_source.required_velocity()
         return -1 if velocity is None else velocity
 
-    def url(self):
-        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source.sprint_progress_url())
+    def _metric_source_urls(self):
+        return [self._metric_source.sprint_progress_url()]
 
     def _parameters(self):
         # pylint: disable=protected-access

@@ -40,9 +40,8 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
     def value(self):
         return -1 if self._missing() else self._nr_warnings()
 
-    def url(self):
-        urls = [self._metric_source.report_url(report_id) for report_id in self._report_ids()]
-        return self._create_url_dict(self._metric_source.metric_source_name, *urls)
+    def _metric_source_urls(self):
+        return [self._metric_source.report_url(report_id) for report_id in self._report_ids()]
 
     def _missing(self):
         return self._nr_warnings() < 0

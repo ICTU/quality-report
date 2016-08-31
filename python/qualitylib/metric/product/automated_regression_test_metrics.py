@@ -37,30 +37,26 @@ class FailingRegressionTests(LowerIsBetterMetric):
         if self._missing():
             return -1
         else:
-            urls = self.__report_urls()
+            urls = self._metric_source_urls()
             return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
 
     def _missing(self):
-        urls = self.__report_urls()
+        urls = self._metric_source_urls()
         return self._metric_source.passed_tests(*urls) < 0 or self._metric_source.failed_tests(*urls) < 0 or \
                self._metric_source.skipped_tests(*urls) < 0
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingRegressionTests, self)._parameters()
-        passed_tests = self._metric_source.passed_tests(*self.__report_urls())
+        passed_tests = self._metric_source.passed_tests(*self._metric_source_urls())
         parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters
 
-    def __report_urls(self):
-        """ Return the test report urls. """
+    def _metric_source_urls(self):
         if self._metric_source_id is None:
             return []
         else:
             return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-
-    def url(self):
-        return self._create_url_dict(self._metric_source.metric_source_name, *self.__report_urls())
 
 
 class RegressionTestAge(LowerIsBetterMetric):
@@ -78,20 +74,16 @@ class RegressionTestAge(LowerIsBetterMetric):
 
     def value(self):
         return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.report_datetime(*self.__report_urls())).days
+            (datetime.datetime.now() - self._metric_source.report_datetime(*self._metric_source_urls())).days
 
     def _missing(self):
-        return self._metric_source.report_datetime(*self.__report_urls()) in (None, datetime.datetime.min)
+        return self._metric_source.report_datetime(*self._metric_source_urls()) in (None, datetime.datetime.min)
 
-    def __report_urls(self):
-        """ Return the test report urls. """
+    def _metric_source_urls(self):
         if self._metric_source_id is None:
             return []
         else:
             return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-
-    def url(self):
-        return self._create_url_dict('Test report', *self.__report_urls())
 
 
 class _ARTCoverage(HigherIsBetterMetric):
@@ -129,8 +121,8 @@ class _ARTCoverage(HigherIsBetterMetric):
         return datetime.datetime.min if self._metric_source_id is None else \
             self._metric_source.coverage_date(self._metric_source_id)
 
-    def url(self):
-        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source_id)
+    def _metric_source_urls(self):
+        return [self._metric_source_id]
 
     def _parameters(self):
         # pylint: disable=protected-access

@@ -250,10 +250,10 @@ class RegressionTestAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Test report': 'jenkins_job'}, self.__metric.url())
+        self.assertEqual({'Jenkins testreport': 'jenkins_job'}, self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         failing_tests = metric.RegressionTestAge(subject=subject, project=self.__project)
-        self.assertEqual({'Test report (1/2)': 'a', 'Test report (2/2)': 'b'}, failing_tests.url())
+        self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())

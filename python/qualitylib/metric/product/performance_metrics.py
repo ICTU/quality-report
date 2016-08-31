@@ -106,9 +106,8 @@ class ResponseTimes(domain.Metric):
     def _date(self):
         return self._metric_source.date(*self.__product_id())
 
-    def url(self):
-        urls = self._metric_source.urls(*self.__product_id()) or []
-        return self._create_url_dict(self._metric_source.metric_source_name, *urls)
+    def _metric_source_urls(self):
+        return self._metric_source.urls(*self.__product_id()) or []
 
     def __report_exists(self):
         """ Return whether a performance report exists for the product and version this metric reports on. """

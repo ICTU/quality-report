@@ -185,23 +185,6 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric has no default url label. """
         self.assertFalse(self.__metric.url_label())
 
-    def test_create_url_dict_one_url(self):
-        """ Test the url dict with one url. """
-        self.assertEqual(dict(Foo='http://url/'), self.__metric._create_url_dict('Foo', 'http://url/'))
-
-    def test_create_url_dict_two_urls(self):
-        """ Test the url dict with multiple urls. """
-        self.assertEqual({'Foo (1/2)': 'http://url/1', 'Foo (2/2)': 'http://url/2'},
-                         self.__metric._create_url_dict('Foo', 'http://url/1', 'http://url/2'))
-
-    def test_create_url_dict_no_urls(self):
-        """ Test the url dict without urls. """
-        self.assertEqual(dict(), self.__metric._create_url_dict('Foo'))
-
-    def test_create_url_dict_url_is_none(self):
-        """ Test that urls that are None are skipped. """
-        self.assertEqual({'Foo': 'http://url/1'}, self.__metric._create_url_dict('Foo', None, 'http://url/1'))
-
     def test_recent_history(self):
         """ Test that the metric has no history by default. """
         self.assertFalse(self.__metric.recent_history())

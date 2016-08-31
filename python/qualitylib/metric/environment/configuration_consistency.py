@@ -40,8 +40,8 @@ class JavaVersionConsistency(LowerIsBetterMetric):
         versions = self._metric_source.java_versions(self._metric_source_id)
         return -1 if versions is None else versions
 
-    def url(self):
-        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source_id)
+    def _metric_source_urls(self):
+        return [self._metric_source_id]
 
     def _date(self):
         """ Return the last measurement date. """

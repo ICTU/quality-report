@@ -34,8 +34,8 @@ class OpenBugs(LowerIsBetterMetric):
         nr_open_bugs = self._metric_source.nr_open_bugs()
         return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
 
-    def url(self):
-        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source.nr_open_bugs_url())
+    def _metric_source_urls(self):
+        return [self._metric_source.nr_open_bugs_url()]
 
 
 class OpenSecurityBugs(LowerIsBetterMetric):
@@ -55,8 +55,8 @@ class OpenSecurityBugs(LowerIsBetterMetric):
         nr_open_security_bugs = self._metric_source.nr_open_security_bugs()
         return -1 if nr_open_security_bugs in (-1, None) else nr_open_security_bugs
 
-    def url(self):
-        return self._create_url_dict('Jira', self._metric_source.nr_open_security_bugs_url())
+    def _metric_source_urls(self):
+        return [self._metric_source.nr_open_security_bugs_url()]
 
 
 class TechnicalDebtIssues(LowerIsBetterMetric):
@@ -74,5 +74,5 @@ class TechnicalDebtIssues(LowerIsBetterMetric):
         nr_issues = self._metric_source.nr_technical_debt_issues()
         return -1 if nr_issues in (-1, None) else nr_issues
 
-    def url(self):
-        return self._create_url_dict('Jira', self._metric_source.nr_technical_debt_issues_url())
+    def _metric_source_urls(self):
+        return [self._metric_source.nr_technical_debt_issues_url()]
