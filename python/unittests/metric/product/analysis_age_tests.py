@@ -24,6 +24,8 @@ class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
     # pylint: disable=unused-argument
 
+    metric_source_name = metric_source.Sonar.metric_source_name
+
     def __init__(self, age=10):
         self.age = age
 
@@ -67,7 +69,7 @@ class SonarAnalysisAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self.__metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar.dashboard_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report of the metric is correct. """

@@ -66,4 +66,4 @@ class TeamSpirit(Metric):
         return not self._metric_source.team_spirit(self._metric_source_id)
 
     def url(self):
-        return self.create_url_dict(self._metric_source.metric_source_name, self._metric_source.url())
+        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source.url())

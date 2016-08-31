@@ -30,7 +30,7 @@ class SonarMetricMixin(object):
 
     def url(self):
         """ Return the url to Sonar. """
-        return self.create_url_dict('Sonar', self._sonar_url())
+        return self._create_url_dict(self._metric_source.metric_source_name, self._sonar_url())
 
     def _sonar_url(self):
         """ Return the Sonar url to use for the metric url. """
@@ -64,7 +64,7 @@ class BirtTestDesignMetricMixin(object):
     def url(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
             What's Missing report allows users to click to the user stories and test cases in Jira. """
-        return self.create_url_dict('Birt', self._metric_source.whats_missing_url())
+        return self._create_url_dict(self._metric_source.metric_source_name, self._metric_source.whats_missing_url())
 
 
 class VersionControlSystemMetricMixin(object):  # pylint: disable=too-few-public-methods

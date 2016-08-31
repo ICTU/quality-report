@@ -22,6 +22,9 @@ from qualitylib import metric, domain, metric_source
 class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
     # pylint: disable=unused-argument
+
+    metric_source_name = metric_source.Sonar.metric_source_name
+
     def __init__(self, blocker_violations=0, critical_violations=0, major_violations=0):
         self.__blocker_violations = blocker_violations
         self.__critical_violations = critical_violations
@@ -99,7 +102,7 @@ class ViolationsTestMixin(object):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self._metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().dashboard_url()}, self._metric.url())
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
@@ -142,4 +145,4 @@ class FalsePositivesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the false positives url of Sonar is used. """
-        self.assertEqual(dict(Sonar=FakeSonar().false_positives_url()), self.__metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().false_positives_url()}, self.__metric.url())

@@ -236,7 +236,7 @@ class Metric(object):
         return dict()
 
     @staticmethod
-    def create_url_dict(label, *urls):
+    def _create_url_dict(label, *urls):
         """ Create a dict from a label and a list of urls. Can be used in subclasses to implement url(). """
         urls = [url for url in urls if url]  # Weed out urls that are empty or None
         if len(urls) == 1:

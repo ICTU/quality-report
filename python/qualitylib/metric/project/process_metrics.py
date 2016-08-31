@@ -36,8 +36,8 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
         return -1 if nr_points in (-1, None) else nr_points
 
     def url(self):
-        return self.create_url_dict(self._metric_source.metric_source_name,
-                                    self._metric_source.user_stories_ready_url())
+        return self._create_url_dict(self._metric_source.metric_source_name,
+                                     self._metric_source.user_stories_ready_url())
 
 
 class UserStoriesWithoutSecurityRiskAssessment(LowerIsBetterMetric):
@@ -57,8 +57,8 @@ class UserStoriesWithoutSecurityRiskAssessment(LowerIsBetterMetric):
         return -1 if nr_stories in (-1, None) else nr_stories
 
     def url(self):
-        return self.create_url_dict(self._metric_source.metric_source_name,
-                                    self._metric_source.user_stories_without_security_risk_assessment_url())
+        return self._create_url_dict(self._metric_source.metric_source_name,
+                                     self._metric_source.user_stories_without_security_risk_assessment_url())
 
 
 class UserStoriesWithoutPerformanceRiskAssessment(LowerIsBetterMetric):
@@ -78,5 +78,5 @@ class UserStoriesWithoutPerformanceRiskAssessment(LowerIsBetterMetric):
         return -1 if nr_stories in (-1, None) else nr_stories
 
     def url(self):
-        return self.create_url_dict(self._metric_source.metric_source_name,
-                                    self._metric_source.user_stories_without_performance_risk_assessment_url())
+        return self._create_url_dict(self._metric_source.metric_source_name,
+                                     self._metric_source.user_stories_without_performance_risk_assessment_url())

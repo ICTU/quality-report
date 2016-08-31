@@ -54,7 +54,7 @@ class OpenVASScanAlertsMetric(LowerIsBetterMetric):
             return []
 
     def url(self):
-        return self.create_url_dict(self._metric_source.metric_source_name, *self.__report_urls())
+        return self._create_url_dict(self._metric_source.metric_source_name, *self.__report_urls())
 
     def _parameters(self):
         parameters = super(OpenVASScanAlertsMetric, self)._parameters()

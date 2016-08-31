@@ -23,6 +23,8 @@ class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
     # pylint: disable=unused-argument
 
+    metric_source_name = metric_source.Sonar.metric_source_name
+
     @staticmethod
     def dashboard_url(*args):
         """ Return a fake dashboard url. """
@@ -53,7 +55,7 @@ class DuplicationTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self._metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar.dashboard_url()}, self._metric.url())
 
 
 class JsfDuplicationTest(unittest.TestCase):
@@ -71,5 +73,5 @@ class JsfDuplicationTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self._metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().dashboard_url()}, self._metric.url())
 

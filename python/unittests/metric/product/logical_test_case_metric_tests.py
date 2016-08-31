@@ -132,7 +132,7 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.whats_missing_url()), self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk versions. """
@@ -148,9 +148,9 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
 class LogicalTestCasesNotReviewedTest(unittest.TestCase):
     """ Unit tests for the unreviewed logical test cases metric. """
     def setUp(self):
-        birt = FakeBirt()
+        self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.LogicalTestCasesNotReviewed(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -159,7 +159,7 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -180,9 +180,9 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
 class LogicalTestCasesNotApprovedTest(unittest.TestCase):
     """ Unit tests for the unapproved logical test case metric. """
     def setUp(self):
-        birt = FakeBirt()
+        self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.LogicalTestCasesNotApproved(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -191,7 +191,7 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -247,7 +247,7 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
 
 class ManualLogicalTestCasesTest(unittest.TestCase):
