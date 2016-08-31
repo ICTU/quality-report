@@ -52,12 +52,6 @@ class FailingRegressionTests(LowerIsBetterMetric):
         parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters
 
-    def _metric_source_urls(self):
-        if self._metric_source_id is None:
-            return []
-        else:
-            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-
 
 class RegressionTestAge(LowerIsBetterMetric):
     """ Metric for measuring the number of days since the regression test last ran. """
@@ -78,12 +72,6 @@ class RegressionTestAge(LowerIsBetterMetric):
 
     def _missing(self):
         return self._metric_source.report_datetime(*self._metric_source_urls()) in (None, datetime.datetime.min)
-
-    def _metric_source_urls(self):
-        if self._metric_source_id is None:
-            return []
-        else:
-            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
 
 class _ARTCoverage(HigherIsBetterMetric):
@@ -120,9 +108,6 @@ class _ARTCoverage(HigherIsBetterMetric):
         """ Return the date of the last coverage measurement from the coverage report. """
         return datetime.datetime.min if self._metric_source_id is None else \
             self._metric_source.coverage_date(self._metric_source_id)
-
-    def _metric_source_urls(self):
-        return [self._metric_source_id]
 
     def _parameters(self):
         # pylint: disable=protected-access

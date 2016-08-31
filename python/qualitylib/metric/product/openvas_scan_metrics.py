@@ -46,12 +46,6 @@ class OpenVASScanAlertsMetric(LowerIsBetterMetric):
         """ Return the number of alerts. """
         return self._metric_source.alerts(self.risk_level_key, *self._metric_source_urls())
 
-    def _metric_source_urls(self):
-        if self._metric_source_id:
-            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-        else:
-            return []
-
     def _parameters(self):
         parameters = super(OpenVASScanAlertsMetric, self)._parameters()
         parameters['risk_level'] = self.risk_level
