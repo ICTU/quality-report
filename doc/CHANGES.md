@@ -1,3 +1,8 @@
+2016-08-31  Release 1.57.1
+
+  * Bug fix: Don't crash when a Document has no version control system.
+  
+
 2016-08-31  Release 1.57.0
 
   * Allow for overriding the url of a metric by passing a url via the metric options:
