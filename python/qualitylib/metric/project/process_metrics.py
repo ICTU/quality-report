@@ -43,9 +43,8 @@ class UserStoriesWithoutSecurityRiskAssessment(LowerIsBetterMetric):
     """ Metric for measuring the number of user stories without security risk assessment. """
 
     name = 'Hoeveelheid user stories zonder security risk beoordeling'
-    unit = 'user stories'
-    norm_template = 'Het aantal {unit} zonder security risk beoordeling is minder dan {target}. ' \
-                    'Meer dan {low_target} {unit} is rood.'
+    unit = 'user stories zonder security risk beoordeling'
+    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3
@@ -63,9 +62,8 @@ class UserStoriesWithoutPerformanceRiskAssessment(LowerIsBetterMetric):
     """ Metric for measuring the number of user stories without performance risk assessment. """
 
     name = 'Hoeveelheid user stories zonder performance risk beoordeling'
-    unit = 'user stories'
-    norm_template = 'Het aantal {unit} zonder performance risk beoordeling is minder dan {target}. ' \
-                    'Meer dan {low_target} {unit} is rood.'
+    unit = 'user stories zonder performance risk beoordeling'
+    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3

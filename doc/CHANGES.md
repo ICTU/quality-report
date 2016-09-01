@@ -1,3 +1,8 @@
+2016-09-01  Release 1.57.2 (to be released)
+
+  * Bug fix: Better report for the metrics that count user stories without security and performance risk assessment.
+  
+  
 2016-08-31  Release 1.57.1
 
   * Bug fix: Don't crash when a Document has no version control system.
