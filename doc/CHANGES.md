@@ -1,6 +1,7 @@
-2016-09-01  Release 1.57.2 (to be released)
+2016-09-01  Release 1.57.2
 
   * Bug fix: Better report for the metrics that count user stories without security and performance risk assessment.
+  * More consistent dashboard layout.
   
   
 2016-08-31  Release 1.57.1
