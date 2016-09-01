@@ -1,3 +1,8 @@
+2016-09-01  Release 1.57.3
+
+  * Roll back dashboard change.
+  
+  
 2016-09-01  Release 1.57.2
 
   * Bug fix: Better report for the metrics that count user stories without security and performance risk assessment.

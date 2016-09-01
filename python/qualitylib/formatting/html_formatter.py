@@ -411,7 +411,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         """ Return the rows of the dashboard. """
         dashboard_rows = report.dashboard()[1]
         td_template = td_indent + \
-            '''<td colspan={colspan} rowspan={rowspan} align="center" valign="bottom" bgcolor="{bg_color}">
+            '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
                                         <div class="link_section_{ID}" title="{title}"></div>
                                         <div id="section_summary_chart_{ID}"></div>
                                         <div id="section_summary_trunk_chart_{ID}"></div>

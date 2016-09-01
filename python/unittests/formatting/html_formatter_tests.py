@@ -80,7 +80,7 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_dashboard(self):
         """ Test that the report contains the dashboard. """
         html = self.__formatter.process(fake_report.Report())
-        self.assertTrue("""<td colspan=1 rowspan=1 align="center" valign="bottom" bgcolor="lightsteelblue">
+        self.assertTrue("""<td colspan=1 rowspan=1 align="center" bgcolor="lightsteelblue">
                                         <div class="link_section_ID" title="Section title"></div>
                                         <div id="section_summary_chart_ID"></div>
                                         <div id="section_summary_trunk_chart_ID"></div>
