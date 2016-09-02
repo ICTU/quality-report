@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import xml.etree.ElementTree
+import re
 
 from ..abstract import owasp_dependency_report
 from .. import url_opener
@@ -29,16 +30,11 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         super(OWASPDependencyXMLReport, self).__init__()
 
     def nr_warnings(self, report_urls, priority):
-        """ Return the number of warnings in the reports with the specified priority. """
         assert priority in ('low', 'normal', 'high')
         if priority == 'normal':
             priority = 'medium'
-        warnings = [self.__nr_warnings_for_prio(report_url, priority.capitalize()) for report_url in report_urls]
+        warnings = [self.__nr_warnings(report_url)[priority.capitalize()] for report_url in report_urls]
         return -1 if -1 in warnings else sum(warnings)
-
-    def __nr_warnings_for_prio(self, report_url, priority):
-        """ Return the number of warnings of the specified priority in the report. """
-        return self.__nr_warnings(report_url)[priority]
 
     @utils.memoized
     def __nr_warnings(self, report_url):
@@ -52,11 +48,8 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         namespace = root.tag.split('}')[0][1:]
         # Using XPath, find all vulnerability nodes with a severity child node:
         severity_nodes = root.findall(".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace))
-        warnings = dict()
-        for priority in ('Low', 'Medium', 'High'):
-            warnings[priority] = len([node for node in severity_nodes if node.text == priority])
-        return warnings
+        return {priority: len([node for node in severity_nodes if node.text == priority])
+                for priority in ('Low', 'Medium', 'High')}
 
     def report_url(self, report_url):
-        """ Return the url of the report. """
-        return report_url
+        return re.sub(r'xml$', 'html', report_url)
