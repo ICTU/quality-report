@@ -1,3 +1,8 @@
+2016-09-02  Release 1.58.0 (to be released)
+
+  * Roll back overriding the url of a metric (release 1.57.0).
+  
+  
 2016-09-01  Release 1.57.3
 
   * Roll back dashboard change.
