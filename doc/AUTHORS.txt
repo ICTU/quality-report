@@ -13,8 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
-This software was developed by ICTU (http://www.ictu.nl) to support the 
-development of the Landelijk Register Kinderopvang for the Ministerie van
+This software was initially developed by ICTU (http://www.ictu.nl) to support
+the development of the Landelijk Register Kinderopvang for the Ministerie van
 Sociale Zaken en Werkgelegenheid.
 
 Point of contact: Frank Niessink <frank.niessink@ictu.nl>
