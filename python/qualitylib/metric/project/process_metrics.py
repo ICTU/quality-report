@@ -46,7 +46,7 @@ class UserStoriesWithoutSecurityRiskAssessment(LowerIsBetterMetric):
     unit = 'user stories'
     norm_template = 'Het aantal {unit} zonder security risk beoordeling is minder dan {target}. ' \
                     'Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
+    template = 'Het aantal {unit} zonder security risk assessment is {value}.'
     target_value = 1
     low_target_value = 3
     metric_source_classes = (metric_source.Jira,)
@@ -66,7 +66,7 @@ class UserStoriesWithoutPerformanceRiskAssessment(LowerIsBetterMetric):
     unit = 'user stories'
     norm_template = 'Het aantal {unit} zonder performance risk beoordeling is minder dan {target}. ' \
                     'Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
+    template = 'Het aantal {unit} zonder performance risk assessment is {value}.'
     target_value = 1
     low_target_value = 3
     metric_source_classes = (metric_source.Jira,)
