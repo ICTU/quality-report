@@ -29,6 +29,10 @@ class MetricSourceTests(unittest.TestCase):
         """ Test that the name can be given as a parameter. """
         self.assertEqual('ABC', domain.MetricSource(name='ABC').name())
 
+    def test_metric_source_url(self):
+        """ Test that the metric source id is returned as url. """
+        self.assertEqual('http://url/to/subject', domain.MetricSource().metric_source_url('http://url/to/subject'))
+
 
 class MissingMetricSourceTests(unittest.TestCase):
     """ Unit tests for the missing metric source domain class. """

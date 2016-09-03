@@ -51,5 +51,5 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         return {priority: len([node for node in severity_nodes if node.text == priority])
                 for priority in ('Low', 'Medium', 'High')}
 
-    def report_url(self, report_url):
+    def metric_source_url(self, report_url):
         return re.sub(r'xml$', 'html', report_url)

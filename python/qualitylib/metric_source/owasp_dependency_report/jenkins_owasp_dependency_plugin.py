@@ -46,6 +46,6 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
             return -1
         return int(report_dict['numberOf{}PriorityWarnings'.format(priority.capitalize())])
 
-    def report_url(self, job_name):
+    def metric_source_url(self, job_name):
         """ Return the url of the job. """
         return self.__report_url.format(job=self.resolve_job_name(job_name))

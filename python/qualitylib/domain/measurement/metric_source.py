@@ -29,6 +29,10 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
             kwargs['name'] = self.metric_source_name or 'Unknown metric source'
         super(MetricSource, self).__init__(*args, **kwargs)
 
+    def metric_source_url(self, metric_source_id):
+        """ Return the url of the report. """
+        return metric_source_id  # Default implementation assumes the metric source id is a url.
+
 
 class MissingMetricSource(MetricSource):
     """ Class that represents a missing metric source. """
