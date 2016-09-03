@@ -248,8 +248,14 @@ class Metric(object):
 
     def _metric_source_urls(self):
         """ Return a list of metric source urls to be used to create the url dict. """
-        urls = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-        return [url for url in urls if url]  # Weed out urls that are empty or None
+        if self._metric_source:
+            if self._metric_source.needs_metric_source_id:
+                ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+                return [self._metric_source.metric_source_url(id_) for id_ in ids if id_]
+            else:
+                return [self._metric_source.url()]
+        else:
+            return []
 
     @classmethod
     def url_label(cls):

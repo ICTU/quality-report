@@ -20,9 +20,10 @@ import unittest
 from qualitylib import metric, domain, metric_source
 
 
-class FakeNCover(object):
+class FakeNCover(domain.MetricSource):
     """ Fake NCover. """
     metric_source_name = metric_source.NCover.metric_source_name
+    needs_metric_source_id = metric_source.CoverageReport.needs_metric_source_id
     url = 'http://ncover'
 
     @staticmethod
@@ -149,9 +150,10 @@ class ARTBranchCoverageNCoverTest(unittest.TestCase):
         self.assertTrue(self.__metric.report().startswith('FakeSubject ART branch coverage is 98%'))
 
 
-class FakeJenkinsTestReport(object):
+class FakeJenkinsTestReport(domain.MetricSource):
     """ Fake a Jenkins test report instance for unit test purposes. """
     metric_source_name = metric_source.JenkinsTestReport.metric_source_name
+    needs_metric_source_id = True
 
     def __init__(self):
         self.passed = 14

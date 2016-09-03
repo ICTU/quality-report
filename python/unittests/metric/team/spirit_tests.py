@@ -20,10 +20,11 @@ import unittest
 from qualitylib import metric, domain, metric_source
 
 
-class FakeWiki(object):
+class FakeWiki(domain.MetricSource):
     """ Fake a wiki metric source. """
 
     metric_source_name = metric_source.Wiki.metric_source_name
+    needs_metric_source_id = metric_source.Wiki.needs_metric_source_id
 
     def __init__(self):
         self.date_of_last_measurement = datetime.datetime.now()

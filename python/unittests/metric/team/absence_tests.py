@@ -24,6 +24,7 @@ class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
     """ Fake a holiday planner. """
 
     metric_source_name = metric_source.HolidayPlanner.metric_source_name
+    needs_metric_source_id = metric_source.HolidayPlanner.needs_metric_source_id
 
     def __init__(self):
         self.period = 6

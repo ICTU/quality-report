@@ -39,9 +39,6 @@ class SonarVersion(HigherIsBetterMetric):
     def value(self):
         return -1 if self._missing() else LooseVersion(self._metric_source.version_number())
 
-    def _metric_source_urls(self):
-        return [self._metric_source.url()]
-
     def _missing(self):
         return self._metric_source.version_number() is None
 

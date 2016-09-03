@@ -35,10 +35,11 @@ class FakeSubject(object):
         return self.__metric_source_ids.get(the_metric_source)
 
 
-class FakeZAPScanReport(object):  # pylint: disable=too-few-public-methods
+class FakeZAPScanReport(domain.MetricSource):  # pylint: disable=too-few-public-methods
     """ Fake a ZAP Scan report for unit test purposes. """
 
     metric_source_name = metric_source.ZAPScanReport.metric_source_name
+    needs_metric_source_id = metric_source.ZAPScanReport.needs_metric_source_id
 
     @staticmethod
     def alerts(risk_level, *report_urls):
