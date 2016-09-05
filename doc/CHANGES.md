@@ -1,7 +1,9 @@
-2016-09-02  Release 1.58.0 (to be released)
+2016-09-05  Release 1.58.0 (to be released)
 
   * Roll back overriding the url of a metric (release 1.57.0).
   * The OWASP dependency warnings metrics now link to the HTML report when using the XML report as source.
+  * The test report metrics, when using a JUnit test report as source, now links to the HTML JUnit report 
+    instead of the XML JUnit report.
   
   
 2016-09-01  Release 1.57.3
