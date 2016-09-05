@@ -20,10 +20,11 @@ import logging
 import os
 import re
 
-from ... import domain, utils
+from ... import utils
+from . import archive_system
 
 
-class VersionControlSystem(domain.MetricSource):
+class VersionControlSystem(archive_system.ArchiveSystem):
     """ Abstract base class for version control systems such as Subversion and Git. """
 
     metric_source_name = 'Version control system'

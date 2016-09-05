@@ -31,6 +31,9 @@ from .abstract.performance_report import PerformanceReport
 from .performance_report.jmeter import JMeter
 from .performance_report.ymor import Ymor
 
+# Archive system
+from .abstract.archive_system import ArchiveSystem
+
 # Version control system
 from .abstract.version_control_system import VersionControlSystem
 from .version_control_system.git import Git
