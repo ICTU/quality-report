@@ -239,19 +239,15 @@ class Metric(object):
         if len(urls) == 1:
             return {label: urls[0]}
         else:
-            url_dict = {}
-            count = len(urls)
-            for index, url in enumerate(urls, start=1):
-                numbered_label = '{label} ({index}/{count})'.format(label=label, index=index, count=count)
-                url_dict[numbered_label] = url
-            return url_dict
+            return {'{label} ({index}/{count})'.format(label=label, index=index, count=len(urls)): url
+                    for index, url in enumerate(urls, start=1)}
 
     def _metric_source_urls(self):
         """ Return a list of metric source urls to be used to create the url dict. """
         if self._metric_source:
             if self._metric_source.needs_metric_source_id:
                 ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-                return [self._metric_source.metric_source_url(id_) for id_ in ids if id_]
+                return self._metric_source.metric_source_urls(*[id_ for id_ in ids if id_])
             else:
                 return [self._metric_source.url()]
         else:

@@ -100,7 +100,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """
-        self.assertEqual('http://url/', self.__report.metric_source_url('http://url/'))
+        self.assertEqual(['http://url/'], self.__report.metric_source_urls('http://url/'))
 
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """

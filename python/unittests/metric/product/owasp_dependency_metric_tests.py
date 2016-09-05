@@ -35,10 +35,11 @@ class FakeSubject(object):
         return self.__metric_source_ids.get(the_metric_source)
 
 
-class FakeJenkinsOWASPDependenciesReport(object):
+class FakeJenkinsOWASPDependenciesReport(domain.MetricSource):
     """ Fake a Jenkins OWASP dependency report for unit test purposes. """
 
     metric_source_name = metric_source.JenkinsOWASPDependencyReport.metric_source_name
+    needs_metric_source_id = metric_source.JenkinsOWASPDependencyReport.needs_metric_source_id
 
     @staticmethod
     def nr_warnings(job_names, priority):
@@ -46,9 +47,9 @@ class FakeJenkinsOWASPDependenciesReport(object):
         return -1 if job_names == [None] else dict(high=4, normal=2, low=14)[priority]
 
     @staticmethod
-    def metric_source_url(job_name):
+    def metric_source_urls(*job_names):
         """ Return the url for the job. """
-        return 'http://jenkins/{}'.format(job_name)
+        return ['http://jenkins/{}'.format(job_name) for job_name in job_names]
 
 
 class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
@@ -90,15 +91,15 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'OWASP dependency rapport': self.__jenkins.metric_source_url('jenkins_job')},
+        self.assertEqual({'OWASP dependency rapport': self.__jenkins.metric_source_urls('jenkins_job')[0]},
                          self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         dependencies = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual({'OWASP dependency rapport (1/2)': self.__jenkins.metric_source_url('a'),
-                          'OWASP dependency rapport (2/2)': self.__jenkins.metric_source_url('b')},
+        self.assertEqual({'OWASP dependency rapport (1/2)': self.__jenkins.metric_source_urls('a')[0],
+                          'OWASP dependency rapport (2/2)': self.__jenkins.metric_source_urls('b')[0]},
                          dependencies.url())
 
     def test_norm(self):

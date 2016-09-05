@@ -31,7 +31,7 @@ class MetricSourceTests(unittest.TestCase):
 
     def test_metric_source_url(self):
         """ Test that the metric source id is returned as url. """
-        self.assertEqual('http://url/to/subject', domain.MetricSource().metric_source_url('http://url/to/subject'))
+        self.assertEqual(['http://url/to/subject'], domain.MetricSource().metric_source_urls('http://url/to/subject'))
 
 
 class MissingMetricSourceTests(unittest.TestCase):
