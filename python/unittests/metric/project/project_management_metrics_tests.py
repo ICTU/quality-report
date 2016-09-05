@@ -18,7 +18,6 @@ import datetime
 import unittest
 
 from qualitylib import metric, domain, metric_source, requirement
-from qualitylib.metric_source import TrelloUnreachableException
 
 
 class FakeBoard(object):

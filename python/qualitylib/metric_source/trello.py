@@ -22,11 +22,7 @@ import time
 import urllib2
 
 from .. import utils, domain
-
-
-class TrelloUnreachableException(Exception):
-    """ Exception for situations where we can't reach Trello. """
-    pass
+from ..metric_source import url_opener
 
 
 class TrelloObject(domain.MetricSource):
@@ -56,8 +52,9 @@ class TrelloObject(domain.MetricSource):
         url = self.url_template.format(**parameters)
         try:
             json_string = self.__urlopen(url).read()
-        except (urllib2.URLError, httplib.BadStatusLine) as reason:
-            raise TrelloUnreachableException(reason)
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.warn("Couldn't open %s: %s", url, reason)
+            raise
         return utils.eval_json(json_string)
 
     def name(self):
@@ -68,14 +65,14 @@ class TrelloObject(domain.MetricSource):
         """ Return the url of this Trello object. """
         try:
             return self._json()['url']
-        except TrelloUnreachableException:
+        except url_opener.UrlOpener.url_open_exceptions:
             return 'http://trello.com'
 
     def date_of_last_update(self):
         """ Return the date of the last action at this Trello object. """
         try:
             last_action = self._json(argument='/actions', extra_parameters='&filter=all')[0]
-        except TrelloUnreachableException:
+        except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         return self.date_time_from_string(last_action['date'])
 
@@ -135,7 +132,7 @@ class TrelloBoard(TrelloObject):
             specified number of days or are over due. """
         try:
             return len(self.over_due_or_inactive_cards(days))
-        except TrelloUnreachableException:
+        except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
     @utils.memoized
@@ -157,7 +154,7 @@ class TrelloBoard(TrelloObject):
                     remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
                 label = u'{card} ({remarks})'.format(card=card.name(), remarks=u' en '.join(remarks))
                 urls[label] = card.url()
-        except TrelloUnreachableException:
+        except url_opener.UrlOpener.url_open_exceptions:
             return {self.metric_source_name: 'http://trello'}
         return urls
 
@@ -166,7 +163,7 @@ class TrelloBoard(TrelloObject):
         """ Return the (non-archived) cards on this Trello board. """
         try:
             return [self.__create_card(card['id']) for card in self._json(argument='/cards')]
-        except TrelloUnreachableException as reason:
+        except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't get cards from Trello board: %s", reason)
             return []
 
