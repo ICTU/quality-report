@@ -22,11 +22,35 @@ from qualitylib import metric_source
 from qualitylib.metric_source import TrelloUnreachableException
 
 
-class RiskLog(LowerIsBetterMetric):
+class ActivityMetric(LowerIsBetterMetric):
+    """ Metrics for tracking actuality using Trello. """
+
+    unit = 'dagen'
+
+    def value(self):
+        date = self._date()
+        if date is None:
+            return -1
+        return (datetime.datetime.now() - date).days
+
+    def _date(self):
+        try:
+            return self._metric_source.date_of_last_update()
+        except TrelloUnreachableException:
+            return datetime.datetime.min
+
+    def _metric_source_urls(self):
+        try:
+            url = self._metric_source.url()
+        except TrelloUnreachableException:
+            url = 'http://trello.com'
+        return [url]
+
+
+class RiskLog(ActivityMetric):
     """ Metric for measuring the number of days since the risk log was last updated. """
 
     name = 'Actualiteit van de risico log'
-    unit = 'dagen'
     norm_template = 'Het risicolog wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
         'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
     template = 'Het risicolog is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
@@ -34,56 +58,17 @@ class RiskLog(LowerIsBetterMetric):
     low_target_value = 28
     metric_source_classes = (metric_source.TrelloRiskBoard,)
 
-    def value(self):
-        date = self._date()
-        if date is None:
-            return -1
-        return (datetime.datetime.now() - date).days
 
-    def _date(self):
-        try:
-            return self._metric_source.date_of_last_update()
-        except TrelloUnreachableException:
-            return datetime.datetime.min
-
-    def _metric_source_urls(self):
-        try:
-            url = self._metric_source.url()
-        except TrelloUnreachableException:
-            url = 'http://trello.com'
-        return [url]
-
-
-class ActionActivity(LowerIsBetterMetric):
+class ActionActivity(ActivityMetric):
     """ Metric for measuring the number of days since the actions were last updated. """
 
     name = 'Actualiteit van de actielijst'
-    unit = 'dagen'
     norm_template = 'De actie- en besluitenlijst wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
         'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
     template = 'De actie- en besluitenlijst is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
     target_value = 7
     low_target_value = 14
     metric_source_classes = (metric_source.TrelloActionsBoard,)
-
-    def value(self):
-        date = self._date()
-        if date is None:
-            return -1
-        return (datetime.datetime.now() - date).days
-
-    def _date(self):
-        try:
-            return self._metric_source.date_of_last_update()
-        except TrelloUnreachableException:
-            return datetime.datetime.min
-
-    def _metric_source_urls(self):
-        try:
-            url = self._metric_source.url()
-        except TrelloUnreachableException:
-            url = 'http://trello.com'
-        return [url]
 
 
 class ActionAge(LowerIsBetterMetric):
@@ -106,9 +91,9 @@ class ActionAge(LowerIsBetterMetric):
             return -1
         return -1 if nr_cards is None else nr_cards
 
-    def url(self):
+    def _metric_source_urls(self):
         try:
-            urls = self._metric_source.over_due_or_inactive_cards_url()
+            url = self._metric_source.over_due_or_inactive_cards_url()
         except TrelloUnreachableException:
-            urls = {self._metric_source.metric_source_name: 'http://trello.com'}
-        return dict() if urls is None else urls
+            url = 'http://trello.com'
+        return [url]
