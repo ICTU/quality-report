@@ -39,13 +39,6 @@ class ActivityMetric(LowerIsBetterMetric):
         except TrelloUnreachableException:
             return datetime.datetime.min
 
-    def _metric_source_urls(self):
-        try:
-            url = self._metric_source.url()
-        except TrelloUnreachableException:
-            url = 'http://trello.com'
-        return [url]
-
 
 class RiskLog(ActivityMetric):
     """ Metric for measuring the number of days since the risk log was last updated. """
@@ -92,8 +85,4 @@ class ActionAge(LowerIsBetterMetric):
         return -1 if nr_cards is None else nr_cards
 
     def _metric_source_urls(self):
-        try:
-            url = self._metric_source.over_due_or_inactive_cards_url()
-        except TrelloUnreachableException:
-            url = 'http://trello.com'
-        return [url]
+        return [self._metric_source.over_due_or_inactive_cards_url()]

@@ -66,7 +66,10 @@ class TrelloObject(domain.MetricSource):
 
     def url(self):
         """ Return the url of this Trello object. """
-        return self._json()['url']
+        try:
+            return self._json()['url']
+        except TrelloUnreachableException:
+            return 'http://trello.com'
 
     def date_of_last_update(self):
         """ Return the date of the last action at this Trello object. """
@@ -137,16 +140,19 @@ class TrelloBoard(TrelloObject):
     def over_due_or_inactive_cards_url(self, days=14):
         """ Return the urls for the (non-archived) cards on this Trello board that are over due or inactive. """
         urls = dict()
-        for card in self.over_due_or_inactive_cards(days):
-            remarks = []
-            if card.is_over_due():
-                time_delta = utils.format_timedelta(card.over_due_time_delta())
-                remarks.append('{time_delta} te laat'.format(time_delta=time_delta))
-            if card.is_inactive(days):
-                time_delta = utils.format_timedelta(card.last_update_time_delta())
-                remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
-            label = u'{card} ({remarks})'.format(card=card.name(), remarks=u' en '.join(remarks))
-            urls[label] = card.url()
+        try:
+            for card in self.over_due_or_inactive_cards(days):
+                remarks = []
+                if card.is_over_due():
+                    time_delta = utils.format_timedelta(card.over_due_time_delta())
+                    remarks.append('{time_delta} te laat'.format(time_delta=time_delta))
+                if card.is_inactive(days):
+                    time_delta = utils.format_timedelta(card.last_update_time_delta())
+                    remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
+                label = u'{card} ({remarks})'.format(card=card.name(), remarks=u' en '.join(remarks))
+                urls[label] = card.url()
+        except TrelloUnreachableException:
+            return {self.metric_source_name: 'http://trello'}
         return urls
 
     @utils.memoized

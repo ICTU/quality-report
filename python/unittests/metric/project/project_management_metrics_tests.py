@@ -24,6 +24,7 @@ from qualitylib.metric_source import TrelloUnreachableException
 class FakeBoard(object):
     """ Fake a Trello board. """
     metric_source_name = metric_source.TrelloActionsBoard.metric_source_name
+    needs_metric_source_id = metric_source.TrelloActionsBoard.needs_metric_source_id
 
     @staticmethod
     def url():
@@ -46,14 +47,13 @@ class FakeBoard(object):
         return 5
 
 
-class UnreachableBoard(object):
+class UnreachableBoard(FakeBoard):
     """ Pretend that Trello is down. """
-    metric_source_name = metric_source.TrelloActionsBoard.metric_source_name
 
     @staticmethod
     def url():
-        """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+        """ Return a fake url. """
+        return 'http://trello.com'
 
     @staticmethod
     def date_of_last_update():
@@ -61,12 +61,12 @@ class UnreachableBoard(object):
         raise TrelloUnreachableException
 
     @staticmethod
-    def nr_of_over_due_or_inactive_cards():
-        """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+    def over_due_or_inactive_cards_url():
+        """ Fake the url. """
+        return 'http://trello.com'
 
     @staticmethod
-    def over_due_or_inactive_cards_url():
+    def nr_of_over_due_or_inactive_cards():
         """ Fake that Trello is down. """
         raise TrelloUnreachableException
 
