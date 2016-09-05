@@ -1,4 +1,4 @@
-2016-09-05  Release 1.58.0 (to be released)
+2016-09-05  Release 1.58.0
 
   * Roll back overriding the url of a metric (release 1.57.0).
   * The OWASP dependency warnings metrics now link to the HTML report when using the XML report as source.
