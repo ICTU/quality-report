@@ -1,3 +1,9 @@
+2016-09-05  Release 1.58.1
+
+  * Bug fix: The test report metrics, when using a JUnit test report as source, would try to read the HTML
+    Junit report to get the data instead of the XML JUnit report.
+    
+    
 2016-09-05  Release 1.58.0
 
   * Roll back overriding the url of a metric (release 1.57.0).
