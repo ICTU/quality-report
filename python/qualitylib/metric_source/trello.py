@@ -73,7 +73,10 @@ class TrelloObject(domain.MetricSource):
 
     def date_of_last_update(self):
         """ Return the date of the last action at this Trello object. """
-        last_action = self._json(argument='/actions', extra_parameters='&filter=all')[0]
+        try:
+            last_action = self._json(argument='/actions', extra_parameters='&filter=all')[0]
+        except TrelloUnreachableException:
+            return datetime.datetime.min
         return self.date_time_from_string(last_action['date'])
 
     def last_update_time_delta(self):
@@ -130,7 +133,10 @@ class TrelloBoard(TrelloObject):
     def nr_of_over_due_or_inactive_cards(self, days=14):
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
             specified number of days or are over due. """
-        return len(self.over_due_or_inactive_cards(days))
+        try:
+            return len(self.over_due_or_inactive_cards(days))
+        except TrelloUnreachableException:
+            return -1
 
     @utils.memoized
     def over_due_or_inactive_cards(self, days=14):

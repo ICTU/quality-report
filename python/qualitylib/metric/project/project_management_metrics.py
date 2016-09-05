@@ -19,7 +19,6 @@ import datetime
 
 from qualitylib.domain import LowerIsBetterMetric
 from qualitylib import metric_source
-from qualitylib.metric_source import TrelloUnreachableException
 
 
 class ActivityMetric(LowerIsBetterMetric):
@@ -34,10 +33,7 @@ class ActivityMetric(LowerIsBetterMetric):
         return (datetime.datetime.now() - date).days
 
     def _date(self):
-        try:
-            return self._metric_source.date_of_last_update()
-        except TrelloUnreachableException:
-            return datetime.datetime.min
+        return self._metric_source.date_of_last_update()
 
 
 class RiskLog(ActivityMetric):
@@ -78,10 +74,7 @@ class ActionAge(LowerIsBetterMetric):
     metric_source_classes = (metric_source.TrelloActionsBoard,)
 
     def value(self):
-        try:
-            nr_cards = self._metric_source.nr_of_over_due_or_inactive_cards()
-        except TrelloUnreachableException:
-            return -1
+        nr_cards = self._metric_source.nr_of_over_due_or_inactive_cards()
         return -1 if nr_cards is None else nr_cards
 
     def _metric_source_urls(self):

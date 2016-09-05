@@ -58,7 +58,7 @@ class UnreachableBoard(FakeBoard):
     @staticmethod
     def date_of_last_update():
         """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+        return datetime.datetime.min
 
     @staticmethod
     def over_due_or_inactive_cards_url():
@@ -68,7 +68,7 @@ class UnreachableBoard(FakeBoard):
     @staticmethod
     def nr_of_over_due_or_inactive_cards():
         """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+        return -1
 
 
 class RiskLogTest(unittest.TestCase):
