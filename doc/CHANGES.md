@@ -1,3 +1,8 @@
+2016-09-06  Release 1.58.4
+
+  * Bug fix: Don't crash when Trello isn't configured.
+  
+
 2016-09-06  Release 1.58.3
 
   * Bug fix: Uncommitted changes were included in the previous release.
