@@ -1,3 +1,8 @@
+2016-09-06  Release 1.58.3
+
+  * Bug fix: Uncommitted changes were included in the previous release.
+  
+
 2016-09-06  Release 1.58.2
 
   * Bug fix: The Trello urls to overdue cards wouldn't be correct, making the quality report appear empty.
