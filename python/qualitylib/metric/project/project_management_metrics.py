@@ -77,5 +77,5 @@ class ActionAge(LowerIsBetterMetric):
         nr_cards = self._metric_source.nr_of_over_due_or_inactive_cards()
         return -1 if nr_cards is None else nr_cards
 
-    def _metric_source_urls(self):
-        return [self._metric_source.over_due_or_inactive_cards_url()]
+    def url(self):
+        return self._metric_source.over_due_or_inactive_cards_url()

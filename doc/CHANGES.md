@@ -1,3 +1,8 @@
+2016-09-06  Release 1.58.2
+
+  * Bug fix: The Trello urls to overdue cards wouldn't be correct, making the quality report appear empty.
+  
+
 2016-09-05  Release 1.58.1
 
   * Bug fix: The test report metrics, when using a JUnit test report as source, would try to read the HTML
