@@ -80,13 +80,13 @@ class HighRiskZAPScanAlertsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        expected_report = 'FakeSubject heeft {} {} risico waarschuwingen.'.format(
+        expected_report = 'FakeSubject heeft {} {} risico security waarschuwingen.'.format(
             self.expected_alerts('url'), self.class_under_test.risk_level)
         self.assertEqual(expected_report, self.__metric.report())
 
     def test_norm(self):
         """ Test that the norm is correct. """
-        expected_norm = 'Het product heeft geen {} risico ZAP Scan waarschuwingen. ' \
+        expected_norm = 'Het product heeft geen {} risico ZAP Scan security waarschuwingen. ' \
                         'Meer dan {} is rood.'.format(self.class_under_test.risk_level,
                                                       self.class_under_test.low_target_value)
         self.assertEqual(expected_norm,

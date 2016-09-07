@@ -22,7 +22,7 @@ from ...domain import LowerIsBetterMetric
 class ZAPScanAlertsMetric(LowerIsBetterMetric):
     """ Base class for metrics that measure the number of ZAP Scan alerts with a certain risk level. """
 
-    unit = 'waarschuwingen'
+    unit = 'security waarschuwingen'
     risk_level = risk_level_key = 'Subclass responsilbility'
     norm_template = 'Het product heeft geen {risk_level} risico ZAP Scan {unit}. ' \
                     'Meer dan {low_target} is rood.'
