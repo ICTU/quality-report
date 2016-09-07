@@ -33,6 +33,7 @@ from .performance_report.ymor import Ymor
 
 # Archive system
 from .abstract.archive_system import ArchiveSystem
+from .archive_system.nexus import Nexus
 
 # Version control system
 from .abstract.version_control_system import VersionControlSystem

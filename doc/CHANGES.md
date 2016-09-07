@@ -1,3 +1,8 @@
+2016-09-07  Release 1.59.0
+
+  * Added a new possible location for documents: Nexus.
+  
+  
 2016-09-06  Release 1.58.4
 
   * Bug fix: Don't crash when Trello isn't configured.
