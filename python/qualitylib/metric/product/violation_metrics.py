@@ -100,6 +100,6 @@ class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
         false_positives = self._metric_source.false_positives(self._sonar_id())
         return -1 if false_positives is None else false_positives
 
-    def _sonar_url(self):
+    def _metric_source_urls(self):
         """ Return the url to the Sonar violations. """
-        return self._metric_source.false_positives_url(self._sonar_id())
+        return [self._metric_source.false_positives_url(self._sonar_id())]

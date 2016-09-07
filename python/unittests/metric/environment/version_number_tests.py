@@ -25,6 +25,9 @@ from qualitylib import metric, domain, metric_source
 class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
 
+    metric_source_name = metric_source.Sonar.metric_source_name
+    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
+
     @staticmethod
     def version_number():
         """ Return a fake version number. """
@@ -72,7 +75,7 @@ class SonarVersionTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().url()), self.__metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().url()}, self.__metric.url())
 
     def test_status(self):
         """ Test that the metric is green. """
@@ -113,7 +116,7 @@ class SonarQualityProfileVersionTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().quality_profiles_url()), self.__metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().quality_profiles_url()}, self.__metric.url())
 
     def test_status(self):
         """ Test that the metric is red. """
@@ -147,7 +150,7 @@ class SonarPluginVersionTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().plugins_url()), self.__metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().plugins_url()}, self.__metric.url())
 
     def test_status(self):
         """ Test that the metric is green. """

@@ -1,3 +1,54 @@
+2016-09-06  Release 1.58.4
+
+  * Bug fix: Don't crash when Trello isn't configured.
+  
+
+2016-09-06  Release 1.58.3
+
+  * Bug fix: Uncommitted changes were included in the previous release.
+  
+
+2016-09-06  Release 1.58.2
+
+  * Bug fix: The Trello urls to overdue cards wouldn't be correct, making the quality report appear empty.
+  
+
+2016-09-05  Release 1.58.1
+
+  * Bug fix: The test report metrics, when using a JUnit test report as source, would try to read the HTML
+    Junit report to get the data instead of the XML JUnit report.
+    
+    
+2016-09-05  Release 1.58.0
+
+  * Roll back overriding the url of a metric (release 1.57.0).
+  * The OWASP dependency warnings metrics now link to the HTML report when using the XML report as source.
+  * The test report metrics, when using a JUnit test report as source, now links to the HTML JUnit report 
+    instead of the XML JUnit report.
+  
+  
+2016-09-01  Release 1.57.3
+
+  * Roll back dashboard change.
+  
+  
+2016-09-01  Release 1.57.2
+
+  * Bug fix: Better report for the metrics that count user stories without security and performance risk assessment.
+  * More consistent dashboard layout.
+  
+  
+2016-08-31  Release 1.57.1
+
+  * Bug fix: Don't crash when a Document has no version control system.
+  
+
+2016-08-31  Release 1.57.0
+
+  * Allow for overriding the url of a metric by passing a url via the metric options:
+    `Product(..., metric_options={metric.FailingRegressionTests: dict(url='http://path/to/html/test/report/')})`
+  
+
 2016-08-30  Release 1.56.2
 
   * Changed target_value and low_target_value for user stories without security and performance risk assessment.

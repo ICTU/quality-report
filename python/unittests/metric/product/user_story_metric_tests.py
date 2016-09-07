@@ -22,6 +22,8 @@ from qualitylib import metric, domain, metric_source
 class FakeBirt(object):
     """ Provide for a fake Birt object. """
 
+    metric_source_name = metric_source.Birt.metric_source_name
+
     def __init__(self):
         self.down = False
 
@@ -100,7 +102,7 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({FakeBirt.metric_source_name: FakeBirt.whats_missing_url()}, self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk versions. """
@@ -132,7 +134,7 @@ class UserStoriesNotApprovedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({FakeBirt.metric_source_name: FakeBirt.whats_missing_url()}, self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk version. """
@@ -160,7 +162,7 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.whats_missing_url()), self.__metric.url())
+        self.assertEqual({FakeBirt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk version. """

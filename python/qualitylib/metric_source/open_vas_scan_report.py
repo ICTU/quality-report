@@ -21,7 +21,7 @@ from . import url_opener, beautifulsoup
 
 class OpenVASScanReport(domain.MetricSource):
     """ Class representing open VAS Scan reports. """
-    metric_source_name = 'Open VAS Scan report'
+    metric_source_name = 'Open VAS Scan rapport'
     needs_metric_source_id = True
 
     def __init__(self, url_open=None, **kwargs):

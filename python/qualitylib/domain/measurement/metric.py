@@ -73,6 +73,7 @@ class Metric(object):
                     break
             else:
                 logging.warning("Couldn't find metric source for %s", self._subject)
+                self._metric_source = None
                 self._metric_source_id = None
         else:
             try:
@@ -231,23 +232,26 @@ class Metric(object):
             logging.error('Key missing in parameters of %s: %s', self.__class__.__name__, self._parameters())
             raise
 
-    def url(self):  # pylint: disable=no-self-use
+    def url(self):
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
-        return dict()
-
-    @staticmethod
-    def create_url_dict(label, *urls):
-        """ Create a dict from a label and a list of urls. Can be used in subclasses to implement url(). """
-        urls = [url for url in urls if url]  # Weed out urls that are empty or None
+        label = self._metric_source.metric_source_name if self._metric_source else 'Unknown metric source'
+        urls = [url for url in self._metric_source_urls() if url]  # Weed out urls that are empty or None
         if len(urls) == 1:
             return {label: urls[0]}
         else:
-            url_dict = {}
-            count = len(urls)
-            for index, url in enumerate(urls, start=1):
-                numbered_label = '{label} ({index}/{count})'.format(label=label, index=index, count=count)
-                url_dict[numbered_label] = url
-            return url_dict
+            return {'{label} ({index}/{count})'.format(label=label, index=index, count=len(urls)): url
+                    for index, url in enumerate(urls, start=1)}
+
+    def _metric_source_urls(self):
+        """ Return a list of metric source urls to be used to create the url dict. """
+        if self._metric_source:
+            if self._metric_source.needs_metric_source_id:
+                ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+                return self._metric_source.metric_source_urls(*[id_ for id_ in ids if id_])
+            else:
+                return [self._metric_source.url()]
+        else:
+            return []
 
     @classmethod
     def url_label(cls):

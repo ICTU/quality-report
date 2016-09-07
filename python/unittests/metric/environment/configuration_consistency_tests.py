@@ -20,12 +20,14 @@ import unittest
 from qualitylib import metric, domain, metric_source
 
 
-class FakeAnsibleConfigReport(object):
+class FakeAnsibleConfigReport(domain.MetricSource):
     """ Fake Ansible configuration report instance for testing purposes. """
     # pylint: disable=unused-argument
 
     report_date = datetime.datetime.now()
     report_java_versions = 2
+    metric_source_name = metric_source.AnsibleConfigReport.metric_source_name
+    needs_metric_source_id = metric_source.AnsibleConfigReport.needs_metric_source_id
 
     def java_versions(self, *args):
         """ Return the number of different java versions. """
@@ -41,9 +43,8 @@ class JavaVersionConsistencyTests(unittest.TestCase):
 
     def setUp(self):
         """ Create the text fixture. """
-        self.__report = FakeAnsibleConfigReport()
-        self.__project = domain.Project(metric_sources={metric_source.AnsibleConfigReport: self.__report},
-                                        metric_source_ids={self.__report: 'http://ansible_report'})
+        self.__report = FakeAnsibleConfigReport(url='http://ansible_report/')
+        self.__project = domain.Project(metric_sources={metric_source.AnsibleConfigReport: self.__report})
         self.__metric = metric.JavaVersionConsistency(subject=self.__project, project=self.__project)
 
     def test_norm_template_default_values(self):
@@ -57,7 +58,7 @@ class JavaVersionConsistencyTests(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric equals the url of Jenkins. """
-        self.assertEqual({'Ansible configuration report': 'http://ansible_report'}, self.__metric.url())
+        self.assertEqual({FakeAnsibleConfigReport.metric_source_name: 'http://ansible_report/'}, self.__metric.url())
 
     def test_report(self):
         """ Test the metric report. """

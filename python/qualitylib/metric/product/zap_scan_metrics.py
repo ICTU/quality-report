@@ -44,17 +44,7 @@ class ZAPScanAlertsMetric(LowerIsBetterMetric):
 
     def __nr_alerts(self):
         """ Return the number of alerts. """
-        return self._metric_source.alerts(self.risk_level_key, *self.__report_urls())
-
-    def __report_urls(self):
-        """ Return the ZAP Scan report urls. """
-        if self._metric_source_id:
-            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-        else:
-            return []
-
-    def url(self):
-        return self.create_url_dict(('ZAP Scan rapport'), *self.__report_urls())
+        return self._metric_source.alerts(self.risk_level_key, *self._metric_source_urls())
 
     def _parameters(self):
         parameters = super(ZAPScanAlertsMetric, self)._parameters()

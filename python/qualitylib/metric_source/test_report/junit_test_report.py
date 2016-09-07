@@ -18,6 +18,7 @@ from __future__ import absolute_import
 
 import datetime
 import logging
+import re
 import xml.etree.ElementTree
 
 from ..abstract import test_report
@@ -28,7 +29,9 @@ from ..url_opener import UrlOpener
 class JunitTestReport(test_report.TestReport):
     """ Class representing Junit test reports. """
     metric_source_name = 'Junit test report'
-    needs_metric_source_id = True
+
+    def metric_source_urls(self, *report_urls):
+        return [re.sub(r'junit/junit\.xml$', 'html/htmlReport.html', report_url) for report_url in report_urls]
 
     def _passed_tests(self, report_url):
         """ Return the number of passed tests. """

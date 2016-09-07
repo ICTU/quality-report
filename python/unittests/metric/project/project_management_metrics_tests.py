@@ -18,11 +18,13 @@ import datetime
 import unittest
 
 from qualitylib import metric, domain, metric_source, requirement
-from qualitylib.metric_source import TrelloUnreachableException
 
 
 class FakeBoard(object):
     """ Fake a Trello board. """
+    metric_source_name = metric_source.TrelloActionsBoard.metric_source_name
+    needs_metric_source_id = metric_source.TrelloActionsBoard.needs_metric_source_id
+
     @staticmethod
     def url():
         """ Return a fake url. """
@@ -36,7 +38,7 @@ class FakeBoard(object):
     @staticmethod
     def over_due_or_inactive_cards_url():
         """ Fake the url. """
-        return 'http://trello/over_due_or_inactive_cards'
+        return {'Some card': 'http://trello/some_card', 'Some other card': 'http://trello/other_card'}
 
     @staticmethod
     def nr_of_over_due_or_inactive_cards():
@@ -44,27 +46,28 @@ class FakeBoard(object):
         return 5
 
 
-class UnreachableBoard(object):
+class UnreachableBoard(FakeBoard):
     """ Pretend that Trello is down. """
+
     @staticmethod
     def url():
-        """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+        """ Return a fake url. """
+        return 'http://trello.com'
 
     @staticmethod
     def date_of_last_update():
         """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+        return datetime.datetime.min
+
+    @staticmethod
+    def over_due_or_inactive_cards_url():
+        """ Fake the url. """
+        return {UnreachableBoard.metric_source_name: 'http://trello.com'}
 
     @staticmethod
     def nr_of_over_due_or_inactive_cards():
         """ Fake that Trello is down. """
-        raise TrelloUnreachableException
-
-    @staticmethod
-    def over_due_or_inactive_cards_url():
-        """ Fake that Trello is down. """
-        raise TrelloUnreachableException
+        return -1
 
 
 class RiskLogTest(unittest.TestCase):
@@ -78,7 +81,7 @@ class RiskLogTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric uses the url of the risk log board. """
-        self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
+        self.assertEqual({FakeBoard.metric_source_name: FakeBoard().url()}, self.__metric.url())
 
     def test_value(self):
         """ Test that the value is the number of days since the last update. """
@@ -98,7 +101,7 @@ class UnreachableRiskLogTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url of the metric uses the url of the risk log board. """
-        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+        self.assertEqual({'Trello acties': 'http://trello.com'}, self.__metric.url())
 
     def test_value(self):
         """ Test that the value is the number of days since the last update. """
@@ -120,7 +123,7 @@ class ActionActivityTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(dict(Trello=FakeBoard().url()), self.__metric.url())
+        self.assertEqual({FakeBoard.metric_source_name: FakeBoard().url()}, self.__metric.url())
 
     def test_should_be_measured(self):
         """ Test that the metric should be measured when the project has the appropriate requirement. """
@@ -142,7 +145,7 @@ class UnreachableActionActivityTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+        self.assertEqual({UnreachableBoard.metric_source_name: 'http://trello.com'}, self.__metric.url())
 
 
 class ActionAgeTest(unittest.TestCase):
@@ -184,4 +187,4 @@ class UnreachableActionAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(dict(Trello='http://trello.com'), self.__metric.url())
+        self.assertEqual({UnreachableBoard.metric_source_name: 'http://trello.com'}, self.__metric.url())

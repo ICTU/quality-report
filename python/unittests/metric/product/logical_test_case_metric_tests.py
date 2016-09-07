@@ -23,6 +23,7 @@ from qualitylib import metric, domain, metric_source
 class FakeBirt(object):
     """ Provide for a fake Birt object. """
     # pylint: disable=unused-argument
+    metric_source_name = metric_source.Birt.metric_source_name
     date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=5)
 
     def __init__(self, test_design=True):
@@ -131,7 +132,7 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.whats_missing_url()), self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_will_be_measured_for_trunk_product(self):
         """ Test that the metric will be measured for trunk versions. """
@@ -147,9 +148,9 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
 class LogicalTestCasesNotReviewedTest(unittest.TestCase):
     """ Unit tests for the unreviewed logical test cases metric. """
     def setUp(self):
-        birt = FakeBirt()
+        self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.LogicalTestCasesNotReviewed(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -158,7 +159,7 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -179,9 +180,9 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
 class LogicalTestCasesNotApprovedTest(unittest.TestCase):
     """ Unit tests for the unapproved logical test case metric. """
     def setUp(self):
-        birt = FakeBirt()
+        self.__birt = FakeBirt()
         self.__subject = FakeSubject()
-        self.__project = domain.Project(metric_sources={metric_source.Birt: birt})
+        self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.LogicalTestCasesNotApproved(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -190,7 +191,7 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -246,7 +247,7 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Birt': 'http://whats_missing'}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
 
 class ManualLogicalTestCasesTest(unittest.TestCase):
@@ -294,11 +295,12 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Birt=self.__birt.manual_test_execution_url()), self.__metric.url())
+        self.assertEqual({'Birt reports': self.__birt.manual_test_execution_url()}, self.__metric.url())
 
 
 class FakeJira(object):
     """ A fake Jira for testing purposes. """
+    metric_source_name = metric_source.Jira.metric_source_name
 
     @staticmethod
     def manual_test_cases_time():
@@ -351,7 +353,7 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Jira': 'http://jira'}, self.__metric.url())
+        self.assertEqual({FakeJira.metric_source_name: FakeJira.manual_test_cases_url()}, self.__metric.url())
 
 
 class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
@@ -384,4 +386,4 @@ class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({'Jira': 'http://jira'}, self.__metric.url())
+        self.assertEqual({FakeJira.metric_source_name: FakeJira.manual_test_cases_url()}, self.__metric.url())

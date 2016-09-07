@@ -25,7 +25,7 @@ from .. import utils, domain
 
 class AnsibleConfigReport(domain.MetricSource):
     """ Class for Ansible config reports. """
-    metric_source_name = 'Ansible config report'
+    metric_source_name = 'Ansible configuratierapport'
 
     def __init__(self, url_open=None, **kwargs):
         self.__url_open = url_open or url_opener.UrlOpener(**kwargs).url_open

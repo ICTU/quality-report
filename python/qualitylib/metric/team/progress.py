@@ -45,28 +45,27 @@ class TeamProgress(LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         super(TeamProgress, self).__init__(*args, **kwargs)
-        planned_velocity = self._metric_source.planned_velocity(self._metric_source_id) or 0
+        planned_velocity = self._metric_source.planned_velocity() or 0
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
 
     def value(self):
-        velocity = self._metric_source.required_velocity(self._metric_source_id)
+        velocity = self._metric_source.required_velocity()
         return -1 if velocity is None else velocity
 
-    def url(self):
-        return self.create_url_dict('Birt', self._metric_source.sprint_progress_url(self._metric_source_id))
+    def _metric_source_urls(self):
+        return [self._metric_source.sprint_progress_url()]
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamProgress, self)._parameters()
-        birt_team_id = self._metric_source_id
         birt = self._metric_source
-        parameters['sprint_goal'] = birt.nr_points_planned(birt_team_id)
-        parameters['actual_points'] = birt.nr_points_realized(birt_team_id)
-        parameters['actual_velocity'] = birt.actual_velocity(birt_team_id)
-        parameters['planned_velocity'] = birt.planned_velocity(birt_team_id)
-        parameters['sprint_length'] = birt.days_in_sprint(birt_team_id)
-        parameters['sprint_day'] = birt.day_in_sprint(birt_team_id)
+        parameters['sprint_goal'] = birt.nr_points_planned()
+        parameters['actual_points'] = birt.nr_points_realized()
+        parameters['actual_velocity'] = birt.actual_velocity()
+        parameters['planned_velocity'] = birt.planned_velocity()
+        parameters['sprint_length'] = birt.days_in_sprint()
+        parameters['sprint_day'] = birt.day_in_sprint()
         parameters['target_factor'] = self.target_factor
         parameters['low_target_factor'] = self.low_target_factor
         return parameters

@@ -35,8 +35,11 @@ class FakeSubject(object):
         return self.__metric_source_ids.get(the_metric_source)
 
 
-class FakeOpenVASReport(object):  # pylint: disable=too-few-public-methods
+class FakeOpenVASReport(domain.MetricSource):  # pylint: disable=too-few-public-methods
     """ Fake a Open VAS Scan report for unit test purposes. """
+
+    metric_source_name = metric_source.OpenVASScanReport.metric_source_name
+    needs_metric_source_id = metric_source.OpenVASScanReport.needs_metric_source_id
 
     @staticmethod
     def alerts(risk_level, *report_urls):

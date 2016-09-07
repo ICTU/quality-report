@@ -40,9 +40,6 @@ class JavaVersionConsistency(LowerIsBetterMetric):
         versions = self._metric_source.java_versions(self._metric_source_id)
         return -1 if versions is None else versions
 
-    def url(self):
-        return self.create_url_dict('Ansible configuration report', self._metric_source_id)
-
     def _date(self):
         """ Return the last measurement date. """
         date = self._metric_source.date(self._metric_source_id)

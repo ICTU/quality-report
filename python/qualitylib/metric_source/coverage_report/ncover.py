@@ -24,7 +24,7 @@ from ... import utils
 
 class NCover(coverage_report.CoverageReport):
     """ Class representing a NCover coverage report. """
-    metric_source_name = 'NCover coverage report'
+    metric_source_name = 'NCover coverage rapport'
 
     def _parse_statement_coverage_percentage(self, soup):
         return self.__parse_coverage_percentage(soup, 'sequencePointCoverage')

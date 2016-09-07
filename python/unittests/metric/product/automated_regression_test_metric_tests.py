@@ -20,8 +20,10 @@ import unittest
 from qualitylib import metric, domain, metric_source
 
 
-class FakeNCover(object):
+class FakeNCover(domain.MetricSource):
     """ Fake NCover. """
+    metric_source_name = metric_source.NCover.metric_source_name
+    needs_metric_source_id = metric_source.CoverageReport.needs_metric_source_id
     url = 'http://ncover'
 
     @staticmethod
@@ -39,6 +41,7 @@ class FakeNCover(object):
 
 class FakeJaCoCo(FakeNCover):
     """ Fake JaCoCo. """
+    metric_source_name = metric_source.JaCoCo.metric_source_name
     url = 'http://jacoco'
 
 
@@ -77,7 +80,7 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(CoverageReport='http://jacoco'), self.__metric.url())
+        self.assertEqual({'JaCoCo coverage rapport': 'http://jacoco'}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -98,7 +101,7 @@ class ARTStatementCoverageNCoverTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(CoverageReport='http://ncover'), self.__metric.url())
+        self.assertEqual({'NCover coverage rapport': 'http://ncover'}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -119,7 +122,7 @@ class ARTBranchCoverageJacocoTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(CoverageReport='http://jacoco'), self.__metric.url())
+        self.assertEqual({'JaCoCo coverage rapport': 'http://jacoco'}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -140,15 +143,18 @@ class ARTBranchCoverageNCoverTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(CoverageReport='http://ncover'), self.__metric.url())
+        self.assertEqual({'NCover coverage rapport': 'http://ncover'}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith('FakeSubject ART branch coverage is 98%'))
 
 
-class FakeJenkinsTestReport(object):
+class FakeJenkinsTestReport(domain.MetricSource):
     """ Fake a Jenkins test report instance for unit test purposes. """
+    metric_source_name = metric_source.JenkinsTestReport.metric_source_name
+    needs_metric_source_id = True
+
     def __init__(self):
         self.passed = 14
 
@@ -203,13 +209,13 @@ class FailingRegressionTestsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Test report': 'jenkins_job'}, self.__metric.url())
+        self.assertEqual({'Jenkins testreport': 'jenkins_job'}, self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         failing_tests = metric.FailingRegressionTests(subject=subject, project=self.__project)
-        self.assertEqual({'Test report (1/2)': 'a', 'Test report (2/2)': 'b'}, failing_tests.url())
+        self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())
 
 
 class RegressionTestAgeTest(unittest.TestCase):
@@ -246,10 +252,10 @@ class RegressionTestAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Test report': 'jenkins_job'}, self.__metric.url())
+        self.assertEqual({'Jenkins testreport': 'jenkins_job'}, self.__metric.url())
 
     def test_url_multiple_jobs(self):
         """ Test that the url points to the Jenkins jobs. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         failing_tests = metric.RegressionTestAge(subject=subject, project=self.__project)
-        self.assertEqual({'Test report (1/2)': 'a', 'Test report (2/2)': 'b'}, failing_tests.url())
+        self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())

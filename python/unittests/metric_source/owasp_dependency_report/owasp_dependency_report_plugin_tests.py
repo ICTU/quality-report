@@ -56,8 +56,8 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """
-        self.assertEqual('http://jenkins/job/job_name/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/',
-                         self.__jenkins.report_url('job_name'))
+        self.assertEqual(['http://jenkins/job/job_name/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/'],
+                         self.__jenkins.metric_source_urls('job_name'))
 
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """

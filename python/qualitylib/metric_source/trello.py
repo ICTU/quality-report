@@ -22,11 +22,7 @@ import time
 import urllib2
 
 from .. import utils, domain
-
-
-class TrelloUnreachableException(Exception):
-    """ Exception for situations where we can't reach Trello. """
-    pass
+from ..metric_source import url_opener
 
 
 class TrelloObject(domain.MetricSource):
@@ -56,8 +52,9 @@ class TrelloObject(domain.MetricSource):
         url = self.url_template.format(**parameters)
         try:
             json_string = self.__urlopen(url).read()
-        except (urllib2.URLError, httplib.BadStatusLine) as reason:
-            raise TrelloUnreachableException(reason)
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.warn("Couldn't open %s: %s", url, reason)
+            raise
         return utils.eval_json(json_string)
 
     def name(self):
@@ -66,11 +63,17 @@ class TrelloObject(domain.MetricSource):
 
     def url(self):
         """ Return the url of this Trello object. """
-        return self._json()['url']
+        try:
+            return self._json()['url']
+        except url_opener.UrlOpener.url_open_exceptions:
+            return 'http://trello.com'
 
     def date_of_last_update(self):
         """ Return the date of the last action at this Trello object. """
-        last_action = self._json(argument='/actions', extra_parameters='&filter=all')[0]
+        try:
+            last_action = self._json(argument='/actions', extra_parameters='&filter=all')[0]
+        except url_opener.UrlOpener.url_open_exceptions:
+            return datetime.datetime.min
         return self.date_time_from_string(last_action['date'])
 
     def last_update_time_delta(self):
@@ -127,7 +130,10 @@ class TrelloBoard(TrelloObject):
     def nr_of_over_due_or_inactive_cards(self, days=14):
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
             specified number of days or are over due. """
-        return len(self.over_due_or_inactive_cards(days))
+        try:
+            return len(self.over_due_or_inactive_cards(days))
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
 
     @utils.memoized
     def over_due_or_inactive_cards(self, days=14):
@@ -137,16 +143,19 @@ class TrelloBoard(TrelloObject):
     def over_due_or_inactive_cards_url(self, days=14):
         """ Return the urls for the (non-archived) cards on this Trello board that are over due or inactive. """
         urls = dict()
-        for card in self.over_due_or_inactive_cards(days):
-            remarks = []
-            if card.is_over_due():
-                time_delta = utils.format_timedelta(card.over_due_time_delta())
-                remarks.append('{time_delta} te laat'.format(time_delta=time_delta))
-            if card.is_inactive(days):
-                time_delta = utils.format_timedelta(card.last_update_time_delta())
-                remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
-            label = u'{card} ({remarks})'.format(card=card.name(), remarks=u' en '.join(remarks))
-            urls[label] = card.url()
+        try:
+            for card in self.over_due_or_inactive_cards(days):
+                remarks = []
+                if card.is_over_due():
+                    time_delta = utils.format_timedelta(card.over_due_time_delta())
+                    remarks.append('{time_delta} te laat'.format(time_delta=time_delta))
+                if card.is_inactive(days):
+                    time_delta = utils.format_timedelta(card.last_update_time_delta())
+                    remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
+                label = u'{card} ({remarks})'.format(card=card.name(), remarks=u' en '.join(remarks))
+                urls[label] = card.url()
+        except url_opener.UrlOpener.url_open_exceptions:
+            return {self.metric_source_name: 'http://trello'}
         return urls
 
     @utils.memoized
@@ -154,7 +163,7 @@ class TrelloBoard(TrelloObject):
         """ Return the (non-archived) cards on this Trello board. """
         try:
             return [self.__create_card(card['id']) for card in self._json(argument='/cards')]
-        except TrelloUnreachableException as reason:
+        except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't get cards from Trello board: %s", reason)
             return []
 
@@ -165,9 +174,9 @@ class TrelloBoard(TrelloObject):
 
 class TrelloActionsBoard(TrelloBoard):
     """ Actions board in Trello. """
-    metric_source_name = 'Trello actions board'
+    metric_source_name = 'Trello acties'
 
 
 class TrelloRiskBoard(TrelloBoard):
     """ Risk log in Trello. """
-    metric_source_name = 'Trello risk board'
+    metric_source_name = 'Trello risicolog'

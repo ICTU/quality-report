@@ -40,10 +40,6 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
     def value(self):
         return -1 if self._missing() else self._nr_warnings()
 
-    def url(self):
-        urls = [self._metric_source.report_url(report_id) for report_id in self._report_ids()]
-        return self.create_url_dict('OWASP dependency report', *urls)
-
     def _missing(self):
         return self._nr_warnings() < 0
 

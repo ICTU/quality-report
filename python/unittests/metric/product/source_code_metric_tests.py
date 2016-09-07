@@ -23,6 +23,8 @@ class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
     # pylint: disable=unused-argument
 
+    metric_source_name = metric_source.Sonar.metric_source_name
+
     @staticmethod
     def dashboard_url(*args):
         """ Return a fake dashboard url. """
@@ -63,7 +65,7 @@ class SonarViolationsUrlTestMixin(object):
     """ Mixin for metrics whose url refers to the Sonar violations page. """
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().violations_url()), self._metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().violations_url()}, self._metric.url())
 
 
 class CommentedLOCTest(unittest.TestCase):
@@ -80,7 +82,7 @@ class CommentedLOCTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual(dict(Sonar=FakeSonar().dashboard_url()), self._metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().dashboard_url()}, self._metric.url())
 
 
 class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):

@@ -31,6 +31,9 @@ from .abstract.performance_report import PerformanceReport
 from .performance_report.jmeter import JMeter
 from .performance_report.ymor import Ymor
 
+# Archive system
+from .abstract.archive_system import ArchiveSystem
+
 # Version control system
 from .abstract.version_control_system import VersionControlSystem
 from .version_control_system.git import Git
@@ -54,7 +57,7 @@ from .open_vas_scan_report import OpenVASScanReport
 from .pom import Pom
 from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
-from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard, TrelloUnreachableException
+from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard
 from .wiki import Wiki
 from .open_vas_scan_report import OpenVASScanReport
 from .zap_scan_report import ZAPScanReport

@@ -98,3 +98,8 @@ class JunitTestReportTest(unittest.TestCase):
         """ Test that the minimum datetime is returned when the xml is incomplete. """
         self.__opener.contents = u'<testsuites><testsuite></testsuite></testsuites>'
         self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('url'))
+
+    def test_urls(self):
+        """ Test that the urls point to the HTML versions of the reports. """
+        self.assertEqual(['http://server/html/htmlReport.html'],
+                         self.__junit.metric_source_urls('http://server/junit/junit.xml'))
