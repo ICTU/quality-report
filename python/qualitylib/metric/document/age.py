@@ -17,11 +17,11 @@ from __future__ import absolute_import
 
 import datetime
 
-from qualitylib.domain import LowerIsBetterMetric
-from qualitylib.metric.metric_source_mixin import VersionControlSystemMetricMixin
+from ...domain import LowerIsBetterMetric
+from ... import metric_source
 
 
-class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
+class DocumentAge(LowerIsBetterMetric):
     """ Metric for measuring the progress of a team. """
 
     name = 'Document update leeftijd'
@@ -32,6 +32,7 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     missing_template = 'Het document "{name}" is niet aangetroffen.'
     target_value = 180
     low_target_value = 200
+    metric_source_classes = (metric_source.ArchiveSystem,)
 
     def value(self):
         """ Return the number of days since the document was last changed. """
@@ -43,7 +44,10 @@ class DocumentAge(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def __changed_date(self):
         """ Return the date that the document was last changed. """
-        return self._vcs_product_info.last_changed_date(self._vcs_path())
+        if self._metric_source and self._metric_source_id:
+            return self._metric_source.last_changed_date(self._metric_source.normalize_path(self._metric_source_id))
+        else:
+            return datetime.datetime.min
 
     def _missing(self):
         """ Return whether the age of the document could be established. """
