@@ -23,6 +23,7 @@ from ..abstract.archive_system import ArchiveSystem
 
 class Nexus(ArchiveSystem):
     """ Class representing a Nexus archive system. """
+    metric_source_name = 'Nexus'
 
     def __init__(self, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
