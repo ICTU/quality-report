@@ -23,6 +23,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
                       metric_source.Jenkins: BUILD_SERVER,
                       metric_source.VersionControlSystem: SUBVERSION,
+                      metric_source.ArchiveSystem: SUBVERSION,
                       metric_source.Sonar: SONAR,
                       metric_source.JaCoCo: JACOCO,
                       metric_source.Pom: POM,
