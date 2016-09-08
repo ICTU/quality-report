@@ -95,7 +95,12 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         if not query_id:
             return -1
         query_url = self.__get_query_url(query_id)
-        json_string = self.url_open(query_url).read()
+        if not query_url:
+            return -1
+        try:
+            json_string = self.url_open(query_url).read()
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
         return int(utils.eval_json(json_string)['total'])
 
     def __query_sum(self, query_id, field):
@@ -103,9 +108,14 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         if not query_id:
             return -1
         query_url = self.__get_query_url(query_id)
-        json_string = utils.eval_json(self.url_open(query_url).read())
+        if not query_url:
+            return -1
+        try:
+            json_string = self.url_open(query_url).read()
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
         total = 0
-        issues = json_string['issues']
+        issues = utils.eval_json(json_string)['issues']
         for issue in issues:
             try:
                 total += float(issue['fields'][field])
@@ -132,7 +142,10 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     def __get_query_url(self, query_id, search=True):
         """ Get the query url based on the query id. """
         url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)
-        json_string = self.url_open(url).read()
+        try:
+            json_string = self.url_open(url).read()
+        except url_opener.UrlOpener.url_open_exceptions:
+            return None
         url_type = 'searchUrl' if search else 'viewUrl'
         return utils.eval_json(json_string)[url_type]
 

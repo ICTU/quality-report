@@ -16,6 +16,7 @@ limitations under the License.
 
 import io
 import unittest
+import urllib2
 
 from qualitylib.metric_source import Jira
 
@@ -29,8 +30,11 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static content. """
-        return io.StringIO(u'{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
-                           u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
+        if 'raise' in url:
+            raise urllib2.HTTPError(None, None, None, None, None)
+        else:
+            return io.StringIO(u'{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
+                               u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
 
 
 class JiraTest(unittest.TestCase):
@@ -150,3 +154,24 @@ class JiraTest(unittest.TestCase):
         """ Test that the number of user stories is -1 when Jira hasn't got the right query. """
         self.assertEqual(-1, self.__jira_no_queries.nr_user_stories_without_performance_risk_assessment())
 
+
+class JiraWhenFailingTest(unittest.TestCase):
+    """ Unit tests for a Jira that's unavailable. """
+    def setUp(self):
+        self.__jira = JiraUnderTest('http://raise', 'username', 'password', open_bug_query_id=123,
+                                    open_security_bug_query_id=456, manual_test_cases_query_id=654,
+                                    technical_debt_issues_query_id=444, user_stories_ready_query_id=555,
+                                    user_stories_without_security_risk_query_id=567,
+                                    user_stories_without_performance_risk_query_id=789)
+
+    def test_nr_open_bugs(self):
+        """ Test that the number of open bugs is -1 when Jira is not available. """
+        self.assertEqual(-1, self.__jira.nr_open_bugs())
+
+    def test_nr_open_bugs_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual(None, self.__jira.nr_open_bugs_url())
+
+    def test_points_ready(self):
+        """ Test that the total number points of ready user stories is -1 when Jira is not available. """
+        self.assertEqual(-1, self.__jira.nr_story_points_ready())
