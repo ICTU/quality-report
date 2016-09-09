@@ -1,6 +1,10 @@
 2016-09-09  Release 1.60.0
 
   * Rename `metric_source.Ymor` to `metric_source.SilkPerformer`.
+  * Split the response times metric into two separate metrics: one for performance test warnings and one for 
+    performance test errors. Performance test warnings are performance test queries that take longer than the
+    desirable response time. Performance test errors are performance test queries that take longer than the
+    maximum response time.
   
   
 2016-09-07  Release 1.59.0
