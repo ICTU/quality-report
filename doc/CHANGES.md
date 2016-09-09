@@ -1,3 +1,8 @@
+2016-09-09  Release 1.60.1
+
+  * Bug fix: Don't crash when reporting the new performance test metrics.
+  
+  
 2016-09-09  Release 1.60.0
 
   * Rename `metric_source.Ymor` to `metric_source.SilkPerformer`.
