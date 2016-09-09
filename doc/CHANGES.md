@@ -1,3 +1,8 @@
+2016-09-09  Release 1.60.0
+
+  * Rename `metric_source.Ymor` to `metric_source.SilkPerformer`.
+  
+  
 2016-09-07  Release 1.59.0
 
   * Added a new possible location for documents: Nexus.

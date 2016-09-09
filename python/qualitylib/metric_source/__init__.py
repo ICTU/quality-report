@@ -29,7 +29,7 @@ from .coverage_report.ncover import NCover
 # Performance report
 from .abstract.performance_report import PerformanceReport
 from .performance_report.jmeter import JMeter
-from .performance_report.ymor import Ymor
+from .performance_report.silkperformer import SilkPerformer
 
 # Archive system
 from .abstract.archive_system import ArchiveSystem

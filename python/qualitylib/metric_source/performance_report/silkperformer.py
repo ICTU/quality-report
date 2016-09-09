@@ -24,9 +24,9 @@ from ..abstract import performance_report
 from ... import utils
 
 
-class Ymor(performance_report.PerformanceReport):
-    """ The Ymor performance report is a variant of a JMeter report. """
-    metric_source_name = 'Ymor performance report'
+class SilkPerformer(performance_report.PerformanceReport):
+    """ The Silk Performer performance report is a variant of a JMeter report. """
+    metric_source_name = 'Silk Performer performance report'
     COLUMN_90_PERC = 5
 
     @utils.memoized
@@ -63,4 +63,4 @@ class Ymor(performance_report.PerformanceReport):
     @utils.memoized
     def urls(self, product, version):  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
-        return [self.url()]  # FIXME: Do Ymor reports contain the product and version?
+        return [self.url()]  # The Silk Performer reports don't contain the product and version

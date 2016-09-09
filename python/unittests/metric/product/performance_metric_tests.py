@@ -48,16 +48,6 @@ class FakePerformanceReport(object):
         """ Return a list of urls for the JMeter reports. """
         return ['http://report1', 'http://report2']
 
-    @staticmethod
-    def exists(*args):
-        """ Return whether a product exists in the report. """
-        return True
-
-    @staticmethod
-    def date(*args):
-        """ Return the report date. """
-        return datetime.datetime.now()
-
 
 class FakeSubject(object):
     """ Provide for a fake subject. """
@@ -80,117 +70,61 @@ class FakeSubject(object):
         return self.__performance_report_id
 
 
-class ResponseTimesTestsMixin(object):
-    """ Unit tests for the response times metric. """
+class PerformanceTestWarningsTest(unittest.TestCase):
+    """ Unit tests for the performance test warnings metric. """
+    metric_class = metric.PerformanceTestWarnings
+    expected_violations = 4
+    expected_status = 'yellow'
 
-    expected_queries = -1  # Subclass responsibility
-    expected_max_violations = -1  # Subclass responsibility
-    expected_wish_violations = -1  # Subclass responsibility
-    expected_status = -1  # Subclass responsibility
-    expected_report = -1  # Subclass responsibility
-    product_version = ''
-
-    def setUp(self):  # pylint: disable=invalid-name
-        """ Test fixture. """
-        self.__subject = FakeSubject(self.product_version)
-        report = FakePerformanceReport(queries=10, queries_violating_max_responsetime=self.expected_max_violations,
-                                       queries_violating_wished_responsetime=self.expected_wish_violations)
-        self.__project = domain.Project(metric_sources={metric_source.PerformanceReport: report})
-        self._metric = metric.ResponseTimes(subject=self.__subject, project=self.__project)
+    def setUp(self):
+        self.__subject = FakeSubject()
+        self.__report = FakePerformanceReport(queries=10, queries_violating_max_responsetime=self.expected_violations,
+                                              queries_violating_wished_responsetime=self.expected_violations)
+        self.__project = domain.Project(metric_sources={metric_source.PerformanceReport: self.__report})
+        self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
-        """ Test that the value of the metric equals None since it is not used. """
-        self.assertEqual(None, self._metric.value())
+        self.assertEqual(self.expected_violations, self.__metric.value())
 
-    def test_numerical_value(self):
-        """ Test that the numerical value of the metric equals to number of queries that are below the wished and
-            maximal response times. """
-        self.assertEqual(self.expected_max_violations + self.expected_wish_violations, self._metric.numerical_value())
+    def test_url(self):
+        self.assertEqual({'Performancerapport (1/2)': 'http://report1',
+                          'Performancerapport (2/2)': 'http://report2'}, self.__metric.url())
+
+    def test_report(self):
+        self.assertEqual('4 van de 10 performancetestqueries van FakeSubject overschrijden de {}.'.
+                         format(self.metric_class.level), self.__metric.report())
 
     def test_status(self):
         """ Test the status of the metric. """
-        self.assertEqual(self.expected_status, self._metric.status())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'Performancerapport (1/2)': 'http://report1',
-                          'Performancerapport (2/2)': 'http://report2'},
-                         self._metric.url())
-
-    def test_report(self):
-        """ Test the report is correct. """
-        self.assertTrue(self._metric.report().startswith(self.expected_report))
+        self.assertEqual(self.expected_status, self.__metric.status())
 
     def test_missing_performance_report_for_version(self):
         """ Test the metric report when the performance report is missing. """
 
-        class MissingPerformanceReport(object):
-            # pylint: disable=too-few-public-methods
+        class MissingPerformanceReport(object):  # pylint: disable=too-few-public-methods
             """ Fake a missing performance report. """
-            @staticmethod
-            def exists(*args):  # pylint: disable=unused-argument
-                """ Return whether the report exists. """
-                return False
-
-            @staticmethod
-            def date(*args):  # pylint: disable=unused-argument
-                """ Return the date of the report. """
-                return datetime.datetime.min
 
             @staticmethod
             def queries_violating_max_responsetime(*args):  # pylint: disable=unused-argument
                 """ Return a default value. """
-                return 10
+                return -1
 
-            queries_violating_wished_responsetime = queries_violating_max_responsetime
+            queries = queries_violating_wished_responsetime = queries_violating_max_responsetime
 
         project = domain.Project(metric_sources={metric_source.PerformanceReport: MissingPerformanceReport()})
-        rt_metric = metric.ResponseTimes(subject=FakeSubject(), project=project)
-        self.assertTrue(rt_metric.report().startswith('Er is geen performancetestrapport voor'))
+        performance_metric = self.metric_class(subject=FakeSubject(), project=project)
+        self.assertTrue(performance_metric.report().endswith('kon niet gemeten worden omdat niet alle benodigde '
+                                                             'bronnen beschikbaar zijn.'))
+
+    def test_norm_default_values(self):
+        """ Test that the norm template can be printed. """
+        self.assertEqual('Het product heeft geen performancetestqueries die de {0} overschrijden. '
+                         'Meer dan {1} performancetestqueries die de {0} overschrijden is '
+                         'rood.'.format(self.metric_class.level, self.metric_class.low_target_value),
+                         self.metric_class.norm_template.format(**self.metric_class.norm_template_default_values()))
 
 
-class BadResponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
-    """ Unit tests for the response times metric with bad performance. """
-
-    expected_queries = 10
-    expected_max_violations = 4
-    expected_wish_violations = 3
+class PerformanceTestErrorsTest(PerformanceTestWarningsTest):
+    """ Unit tests for the performance test errors metric. """
+    metric_class = metric.PerformanceTestErrors
     expected_status = 'red'
-    product_version = '1.1'
-    expected_report = '{0} van de {1} performancetestqueries draaien niet in 90% van de gevallen binnen de maximale ' \
-        'responsetijd en {2} van de {3} performancetestqueries draaien niet in 90% van de gevallen binnen de ' \
-        'gewenste responsetijd (meting '.format(expected_max_violations, expected_queries, expected_wish_violations,
-                                                expected_queries)
-
-
-class PerfectReponseTimesTest(ResponseTimesTestsMixin, unittest.TestCase):
-    """ Unit tests for the response times metric with perfect response times. """
-
-    expected_queries = 10
-    expected_max_violations = 0
-    expected_wish_violations = 0
-    expected_status = 'perfect'
-    expected_report = 'Alle {} performancetestqueries draaien in 90% van de gevallen binnen de gewenste ' \
-                      'responsetijd (meting '.format(expected_queries)
-
-
-class OnlyMaxResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
-    """ Unit tests for the response times metric with max response times violated. """
-
-    expected_queries = 10
-    expected_max_violations = 4
-    expected_wish_violations = 0
-    expected_status = 'red'
-    expected_report = '{0} van de {1} performancetestqueries draaien niet in 90% van de gevallen binnen de maximale ' \
-                      'responsetijd (meting '.format(expected_max_violations, expected_queries)
-
-
-class OnlyWishedResponseTimesViolated(ResponseTimesTestsMixin, unittest.TestCase):
-    """ Unit tests for the response times metric with wished response times violated. """
-
-    expected_queries = 10
-    expected_max_violations = 0
-    expected_wish_violations = 3
-    expected_status = 'yellow'
-    expected_report = '{0} van de {1} performancetestqueries draaien niet in 90% van de gevallen binnen de gewenste ' \
-                      'responsetijd (meting '.format(expected_wish_violations, expected_queries)
