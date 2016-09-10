@@ -1,3 +1,8 @@
+2016-09-11  Release 1.61.0
+
+  * Add metrics for performance endurance testing.
+  
+
 2016-09-09  Release 1.60.1
 
   * Bug fix: Don't crash when reporting the new performance test metrics.

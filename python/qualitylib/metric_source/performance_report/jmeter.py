@@ -24,7 +24,7 @@ from ..abstract import performance_report
 from ... import utils
 
 
-class JMeter(performance_report.PerformanceReport):
+class JMeterPerformanceReport(performance_report.PerformanceReport):
     """ Class representing the JMeter performance report. """
 
     metric_source_name = 'Jmeter performance report'
@@ -117,3 +117,14 @@ class JMeter(performance_report.PerformanceReport):
     def __parse_date(date_text):
         """ Return a parsed version of the date text. """
         return utils.parse_uk_date_time_year_last(date_text)
+
+
+class JMeterPerformanceLoadTestReport(JMeterPerformanceReport):
+    """ A performance load test done with JMeter. """
+    metric_source_name = 'Jmeter performanceloadtestrapport'
+
+
+class JMeterPerformanceEnduranceTestReport(JMeterPerformanceReport):
+    """ A performance endurance test done with JMeter. """
+    metric_source_name = 'Jmeter performanceduurtestrapport'
+

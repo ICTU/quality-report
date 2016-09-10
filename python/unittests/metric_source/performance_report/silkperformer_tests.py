@@ -18,7 +18,7 @@ import datetime
 import unittest
 import urllib2
 
-from qualitylib.metric_source import SilkPerformer
+from qualitylib.metric_source import SilkPerformerPerformanceLoadTestReport
 
 HTML = r"""
 <html>
@@ -330,11 +330,10 @@ Reporting engine
 """
 
 
-class SilkPerfomerUnderTest(SilkPerformer):
+class SilkPerfomerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the Silk Performer performance report to return the url as report contents. """
-    # pylint: disable=unused-argument,no-self-use
 
-    def url_open(self, url):
+    def url_open(self, url):  # pylint: disable=no-self-use
         """ Return the static html. """
         if 'error' in url:
             raise urllib2.URLError('reason')
@@ -381,11 +380,13 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_queries_violating_max_responsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries_violating_max_responsetime('product', 'version'))
+        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries_violating_max_responsetime('product',
+                                                                                                       'version'))
 
     def test_queries_violating_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries_violating_wished_responsetime('product', 'version'))
+        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries_violating_wished_responsetime('product',
+                                                                                                          'version'))
 
     def test_date_with_missing_report(self):
         """ Test that the date of a missing report is the min date. """

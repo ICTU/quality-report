@@ -24,9 +24,8 @@ from ..abstract import performance_report
 from ... import utils
 
 
-class SilkPerformer(performance_report.PerformanceReport):
+class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
     """ The Silk Performer performance report is a variant of a JMeter report. """
-    metric_source_name = 'Silk Performer performance report'
     COLUMN_90_PERC = 5
 
     @utils.memoized
@@ -64,3 +63,13 @@ class SilkPerformer(performance_report.PerformanceReport):
     def urls(self, product, version):  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
         return [self.url()]  # The Silk Performer reports don't contain the product and version
+
+
+class SilkPerformerPerformanceLoadTestReport(SilkPerformerPerformanceReport):
+    """ A performance load test done with Silk Performer. """
+    metric_source_name = 'Silk Performer performanceloadtestrapport'
+
+
+class SilkPerformerPerformanceEnduranceTestReport(SilkPerformerPerformanceReport):
+    """ A performance endurance test done with Silk Performer. """
+    metric_source_name = 'Silk Performer performanceduurtestrapport'

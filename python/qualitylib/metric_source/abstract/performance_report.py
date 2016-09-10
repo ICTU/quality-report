@@ -49,14 +49,14 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def queries_violating_max_responsetime(self, product, version):
         """ Return the number of performance queries that violate the maximum response time. """
         try:
-            return self._queries_violating_response_time(product, version, 'red')
+            return self.__queries_violating_response_time(product, version, 'red')
         except UrlOpener.url_open_exceptions:
             return -1
 
     def queries_violating_wished_responsetime(self, product, version):
         """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
         try:
-            return self._queries_violating_response_time(product, version, 'yellow')
+            return self.__queries_violating_response_time(product, version, 'yellow')
         except UrlOpener.url_open_exceptions:
             return -1
 
@@ -78,10 +78,40 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the queries for the specified product and version. """
         raise NotImplementedError  # pragma: no cover
 
-    def _queries_violating_response_time(self, product, version, color):
+    def __queries_violating_response_time(self, product, version, color):
         """ Return the number of queries that are violating either the maximum or the desired response time. """
         return len([row for row in self._query_rows(product, version)
                     if row('td')[self.COLUMN_90_PERC]['class'] == color])
+
+    def _date_from_soup(self, soup):
+        """ Return the date when the performance was last measured based on the report at the url. """
+        raise NotImplementedError  # pragma: no cover
+
+
+class PerformanceLoadTestReport(PerformanceReport):
+    """ Performance load test report. """
+    def urls(self, product, version):
+        """ Return the report urls for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def _query_rows(self, product, version):
+        """ Return the queries for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def _date_from_soup(self, soup):
+        """ Return the date when the performance was last measured based on the report at the url. """
+        raise NotImplementedError  # pragma: no cover
+
+
+class PerformanceEnduranceTestReport(PerformanceReport):
+    """ Performance endurance test report. """
+    def urls(self, product, version):
+        """ Return the report urls for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def _query_rows(self, product, version):
+        """ Return the queries for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
 
     def _date_from_soup(self, soup):
         """ Return the date when the performance was last measured based on the report at the url. """

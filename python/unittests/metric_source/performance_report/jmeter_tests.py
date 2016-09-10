@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib.metric_source import JMeter
+from qualitylib.metric_source import JMeterPerformanceLoadTestReport
 
 HTML = """
 <table>
@@ -113,7 +113,7 @@ HTML = """
 </table>"""
 
 
-class JMeterUnderTest(JMeter):
+class JMeterUnderTest(JMeterPerformanceLoadTestReport):
     """ Override the JMeter performance report to return the url as report contents. """
     # pylint: disable=unused-argument,no-self-use
 

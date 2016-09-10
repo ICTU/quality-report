@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import datetime
 import unittest
 
 from qualitylib import metric, domain, metric_source
@@ -24,7 +23,7 @@ class FakePerformanceReport(object):
     """ Fake a JMeter performance report. """
     # pylint: disable=unused-argument, invalid-name
 
-    metric_source_name = metric_source.PerformanceReport.metric_source_name
+    metric_source_name = 'Performancerapport'
 
     def __init__(self, queries=0, queries_violating_max_responsetime=0, queries_violating_wished_responsetime=0):
         self.__queries = queries
@@ -70,9 +69,9 @@ class FakeSubject(object):
         return self.__performance_report_id
 
 
-class PerformanceTestWarningsTest(unittest.TestCase):
-    """ Unit tests for the performance test warnings metric. """
-    metric_class = metric.PerformanceTestWarnings
+class PerformanceLoadTestWarningsTest(unittest.TestCase):
+    """ Unit tests for the performance load test warnings metric. """
+    metric_class = metric.PerformanceLoadTestWarnings
     expected_violations = 4
     expected_status = 'yellow'
 
@@ -80,7 +79,7 @@ class PerformanceTestWarningsTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__report = FakePerformanceReport(queries=10, queries_violating_max_responsetime=self.expected_violations,
                                               queries_violating_wished_responsetime=self.expected_violations)
-        self.__project = domain.Project(metric_sources={metric_source.PerformanceReport: self.__report})
+        self.__project = domain.Project(metric_sources={self.metric_class.metric_source_classes[0]: self.__report})
         self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -91,8 +90,8 @@ class PerformanceTestWarningsTest(unittest.TestCase):
                           'Performancerapport (2/2)': 'http://report2'}, self.__metric.url())
 
     def test_report(self):
-        self.assertEqual('4 van de 10 performancetestqueries van FakeSubject overschrijden de {}.'.
-                         format(self.metric_class.level), self.__metric.report())
+        self.assertEqual('4 van de 10 {} van FakeSubject overschrijden de {}.'.
+                         format(self.metric_class.unit, self.metric_class.level), self.__metric.report())
 
     def test_status(self):
         """ Test the status of the metric. """
@@ -111,20 +110,33 @@ class PerformanceTestWarningsTest(unittest.TestCase):
 
             queries = queries_violating_wished_responsetime = queries_violating_max_responsetime
 
-        project = domain.Project(metric_sources={metric_source.PerformanceReport: MissingPerformanceReport()})
+        project = domain.Project(metric_sources={
+            self.metric_class.metric_source_classes[0]: MissingPerformanceReport()})
         performance_metric = self.metric_class(subject=FakeSubject(), project=project)
         self.assertTrue(performance_metric.report().endswith('kon niet gemeten worden omdat niet alle benodigde '
                                                              'bronnen beschikbaar zijn.'))
 
     def test_norm_default_values(self):
         """ Test that the norm template can be printed. """
-        self.assertEqual('Het product heeft geen performancetestqueries die de {0} overschrijden. '
-                         'Meer dan {1} performancetestqueries die de {0} overschrijden is '
-                         'rood.'.format(self.metric_class.level, self.metric_class.low_target_value),
+        self.assertEqual('Het product heeft geen {0} die de {1} overschrijden. Meer dan {2} {0} die de {1} '
+                         'overschrijden is rood.'.format(self.metric_class.unit, self.metric_class.level,
+                                                         self.metric_class.low_target_value),
                          self.metric_class.norm_template.format(**self.metric_class.norm_template_default_values()))
 
 
-class PerformanceTestErrorsTest(PerformanceTestWarningsTest):
-    """ Unit tests for the performance test errors metric. """
-    metric_class = metric.PerformanceTestErrors
+class PerformanceLoadTestErrorsTest(PerformanceLoadTestWarningsTest):
+    """ Unit tests for the performance load test errors metric. """
+    metric_class = metric.PerformanceLoadTestErrors
+    expected_status = 'red'
+
+
+class PerformanceEnduranceTestWarningsTest(PerformanceLoadTestWarningsTest):
+    """ Unit tests for the performance endurance test warnings metrics. """
+    metric_class = metric.PerformanceEnduranceTestWarnings
+    expected_status = 'yellow'
+
+
+class PerformanceEnduranceTestErrorsTest(PerformanceLoadTestWarningsTest):
+    """ Unit tests for the performance endurance test errors metrics. """
+    metric_class = metric.PerformanceEnduranceTestErrors
     expected_status = 'red'

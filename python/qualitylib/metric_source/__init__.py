@@ -27,9 +27,9 @@ from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
 
 # Performance report
-from .abstract.performance_report import PerformanceReport
-from .performance_report.jmeter import JMeter
-from .performance_report.silkperformer import SilkPerformer
+from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport
+from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPerformanceEnduranceTestReport
+from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, SilkPerformerPerformanceEnduranceTestReport
 
 # Archive system
 from .abstract.archive_system import ArchiveSystem

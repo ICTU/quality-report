@@ -20,13 +20,11 @@ from ... import domain, metric_source
 
 class PerformanceMetric(domain.LowerIsBetterMetric):
     """ Base class for performance metrics. """
-    unit = 'performancetestqueries'
     target_value = 0
-    level = 'Subclass responsibility'
+    level = unit = 'Subclass responsibility'
     norm_template = 'Het product heeft geen {unit} die de {level} overschrijden. ' \
                     'Meer dan {low_target} {unit} die de {level} overschrijden is rood.'
     template = '{value} van de {total} {unit} van {name} overschrijden de {level}.'
-    metric_source_classes = (metric_source.PerformanceReport,)
 
     @classmethod
     def norm_template_default_values(cls):
@@ -59,9 +57,26 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         return self._metric_source_id, self._subject.product_version()
 
 
-class PerformanceTestWarnings(PerformanceMetric):
-    """ Performance test warnings metric. """
-    name = 'Hoeveelheid performance test warnings'
+# We have different types of performance test metrics, organized along two dimensions: test type and severity.
+# The test types are load test and endurance test. The severities are warnings and errors. The warnings metrics
+# count the number of performance test cases that take longer than the desired response times and the error metrics
+# count the number of performance test cases that take longer than the maximum response times. The limits for warning
+# and error are determined by the test reports.
+
+
+class PerformanceLoadTestMetric(PerformanceMetric):
+    """ Base class for performance load test metrics. """
+    unit = 'performanceloadtestgevallen'
+    metric_source_classes = (metric_source.PerformanceLoadTestReport,)
+
+    def _violating_queries(self):
+        """ Return the number of queries not meting the required response times. """
+        raise NotImplementedError  # pragma: no cover
+
+
+class PerformanceLoadTestWarnings(PerformanceLoadTestMetric):
+    """ Performance load test warnings metric. """
+    name = 'Hoeveelheid performanceloadtestwaarschuwingen'
     level = 'gewenste responsetijd'
     low_target_value = 5
 
@@ -69,11 +84,43 @@ class PerformanceTestWarnings(PerformanceMetric):
         return self._metric_source.queries_violating_wished_responsetime(*self._product_id())
 
 
-class PerformanceTestErrors(PerformanceMetric):
-    """ Performance test errors metric. """
-    name = 'Hoeveelheid performance test errors'
+class PerformanceLoadTestErrors(PerformanceLoadTestMetric):
+    """ Performance load test errors metric. """
+    name = 'Hoeveelheid performanceloadtestoverschrijdingen'
     level = 'maximale responstijd'
     low_target_value = 0
 
     def _violating_queries(self):
         return self._metric_source.queries_violating_max_responsetime(*self._product_id())
+
+
+class PerformanceEnduranceTestMetric(PerformanceMetric):
+    """ Base class for performance endurance test metrics. """
+    unit = 'performanceduurtestgevallen'
+    metric_source_classes = (metric_source.PerformanceEnduranceTestReport,)
+
+    def _violating_queries(self):
+        """ Return the number of queries not meting the required response times. """
+        raise NotImplementedError  # pragma: no cover
+
+
+class PerformanceEnduranceTestWarnings(PerformanceEnduranceTestMetric):
+    """ Performance endurance test warnings metric. """
+    name = 'Hoeveelheid performanceduurtestwaarschuwingen'
+    level = 'gewenste responsetijd'
+    low_target_value = 5
+
+    def _violating_queries(self):
+        return self._metric_source.queries_violating_wished_responsetime(*self._product_id())
+
+
+class PerformanceEnduranceTestErrors(PerformanceEnduranceTestMetric):
+    """ Performance endurance test errors metric. """
+    name = 'Hoeveelheid performanceduurtestoverschrijdingen'
+    level = 'maximale responstijd'
+    low_target_value = 0
+
+    def _violating_queries(self):
+        return self._metric_source.queries_violating_max_responsetime(*self._product_id())
+
+

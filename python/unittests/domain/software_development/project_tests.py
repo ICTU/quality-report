@@ -275,7 +275,7 @@ class ProjectResourcesTest(unittest.TestCase):
     def test_performance_report(self):
         """ Test that the performance report is in the project resources. """
         performance_report = FakeResource('Performance reports')
-        project = self.project(metric_sources={metric_source.PerformanceReport: performance_report})
+        project = self.project(metric_sources={metric_source.PerformanceLoadTestReport: performance_report})
         self.assertTrue((performance_report.name(), performance_report.url()) in project.project_resources())
 
     def test_ncover(self):
