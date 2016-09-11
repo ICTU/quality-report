@@ -76,7 +76,7 @@ class JSFCodeQuality(Requirement):
 class Performance(Requirement):
     _name = 'Performance'
     _metric_classes = (metric.PerformanceLoadTestWarnings, metric.PerformanceLoadTestErrors,
-                       metric.PerformanceEnduranceTestErrors, metric.PerformanceEnduranceTestErrors)
+                       metric.PerformanceEnduranceTestWarnings, metric.PerformanceEnduranceTestErrors)
 
 
 class NoSnapshotDependencies(Requirement):
