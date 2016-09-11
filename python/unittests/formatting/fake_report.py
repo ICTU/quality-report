@@ -173,7 +173,7 @@ class Report(object):
                 return [('resource', 'url'), ('missing', None)]
 
             @staticmethod
-            def metric_source(metric_source_class):
+            def metric_source(metric_source_class):  # pylint: disable=unused-argument
                 """ Return the metric source instances for a metric source class. """
                 class FakeGit(object):  # pylint: disable=too-few-public-methods
                     """ Fake a Git repository. """
