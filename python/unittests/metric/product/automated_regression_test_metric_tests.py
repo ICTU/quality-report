@@ -68,86 +68,51 @@ class FakeSubject(object):
 
 class ARTStatementCoverageJacocoTest(unittest.TestCase):
     """ Unit tests for the ART coverage metric. """
+    metric_class = metric.ARTStatementCoverage
+    metric_source_class = FakeJaCoCo
+    metric_source_id = 'http://jacoco'
+
     def setUp(self):
-        self.__jacoco = FakeJaCoCo()
-        self.__subject = FakeSubject(metric_source_ids={self.__jacoco: 'http://jacoco'}, version='1.1')
-        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__jacoco})
-        self.__metric = metric.ARTStatementCoverage(subject=self.__subject, project=self.__project)
+        self.__coverage_report = self.metric_source_class()
+        self.__subject = FakeSubject(metric_source_ids={self.__coverage_report: self.metric_source_id})
+        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__coverage_report})
+        self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
         """ Test that value of the metric equals the coverage as reported by Jacoco. """
-        self.assertEqual(self.__jacoco.statement_coverage(None), self.__metric.value())
+        self.assertEqual(self.__coverage_report.statement_coverage(None), self.__metric.value())
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual({'JaCoCo coverage rapport': 'http://jacoco'}, self.__metric.url())
+        self.assertEqual({self.metric_source_class.metric_source_name: self.metric_source_id}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertTrue(self.__metric.report().startswith('FakeSubject ART statement coverage is 98%'))
+        self.assertTrue(self.__metric.report().startswith(
+            'FakeSubject ART {} coverage is 98%'.format(self.metric_class.covered_item)))
+
+    def test_missing_id(self):
+        """ Test that the value is -1 when the metric source id hasn't been configured. """
+        subject = FakeSubject()
+        coverage_metric = self.metric_class(subject=subject, project=self.__project)
+        self.assertEqual(-1, coverage_metric.value())
 
 
-class ARTStatementCoverageNCoverTest(unittest.TestCase):
-    """ Unit tests for the ART statement coverage metric. """
-    def setUp(self):
-        self.__ncover = FakeNCover()
-        self.__subject = FakeSubject(metric_source_ids={self.__ncover: 'http://ncover'})
-        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__ncover})
-        self.__metric = metric.ARTStatementCoverage(subject=self.__subject, project=self.__project)
-
-    def test_value(self):
-        """ Test that value of the metric equals the coverage as reported by NCover. """
-        self.assertEqual(self.__ncover.statement_coverage(None), self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'NCover coverage rapport': 'http://ncover'}, self.__metric.url())
-
-    def test_report(self):
-        """ Test that the report is correct. """
-        self.assertTrue(self.__metric.report().startswith('FakeSubject ART statement coverage is 98%'))
-
-
-class ARTBranchCoverageJacocoTest(unittest.TestCase):
+class ARTBranchCoverageJacocoTest(ARTStatementCoverageJacocoTest):
     """ Unit tests for the ART branch metric. """
-    def setUp(self):
-        self.__jacoco = FakeJaCoCo()
-        self.__subject = FakeSubject(metric_source_ids={self.__jacoco: 'http://jacoco'}, version='1.1')
-        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__jacoco})
-        self.__metric = metric.ARTBranchCoverage(subject=self.__subject, project=self.__project)
-
-    def test_value(self):
-        """ Test that value of the metric equals the coverage as reported by Jacoco. """
-        self.assertEqual(self.__jacoco.branch_coverage(None), self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'JaCoCo coverage rapport': 'http://jacoco'}, self.__metric.url())
-
-    def test_report(self):
-        """ Test that the report is correct. """
-        self.assertTrue(self.__metric.report().startswith('FakeSubject ART branch coverage is 98%'))
+    metric_class = metric.ARTBranchCoverage
 
 
-class ARTBranchCoverageNCoverTest(unittest.TestCase):
+class ARTStatementCoverageNCoverTest(ARTStatementCoverageJacocoTest):
+    """ Unit tests for the ART statement coverage metric. """
+    metric_class = metric.ARTStatementCoverage
+    metric_source_class = FakeNCover
+    metric_source_id = 'http://ncover'
+
+
+class ARTBranchCoverageNCoverTest(ARTStatementCoverageNCoverTest):
     """ Unit tests for the ART branch coverage metric. """
-    def setUp(self):
-        self.__ncover = FakeNCover()
-        self.__subject = FakeSubject(metric_source_ids={self.__ncover: 'http://ncover'})
-        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__ncover})
-        self.__metric = metric.ARTBranchCoverage(subject=self.__subject, project=self.__project)
-
-    def test_value(self):
-        """ Test that value of the metric equals the coverage as reported by NCover. """
-        self.assertEqual(self.__ncover.branch_coverage(None), self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'NCover coverage rapport': 'http://ncover'}, self.__metric.url())
-
-    def test_report(self):
-        """ Test that the report is correct. """
-        self.assertTrue(self.__metric.report().startswith('FakeSubject ART branch coverage is 98%'))
+    metric_class = metric.ARTBranchCoverage
 
 
 class FakeJenkinsTestReport(domain.MetricSource):
@@ -157,6 +122,7 @@ class FakeJenkinsTestReport(domain.MetricSource):
 
     def __init__(self):
         self.passed = 14
+        super(FakeJenkinsTestReport, self).__init__()
 
     @staticmethod
     def failed_tests(*args):  # pylint: disable=unused-argument
