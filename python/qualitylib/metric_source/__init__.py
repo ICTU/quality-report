@@ -29,7 +29,8 @@ from .coverage_report.ncover import NCover
 # Performance report
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport
 from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPerformanceEnduranceTestReport
-from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, SilkPerformerPerformanceEnduranceTestReport
+from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
+    SilkPerformerPerformanceEnduranceTestReport
 
 # Archive system
 from .abstract.archive_system import ArchiveSystem
@@ -60,6 +61,5 @@ from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
 from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard
 from .wiki import Wiki
-from .open_vas_scan_report import OpenVASScanReport
 from .zap_scan_report import ZAPScanReport
 from .url_opener import UrlOpener
