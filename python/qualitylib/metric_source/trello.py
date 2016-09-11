@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 import datetime
-import httplib
 import logging
 import time
 import urllib2
