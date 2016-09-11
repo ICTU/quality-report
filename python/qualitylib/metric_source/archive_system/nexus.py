@@ -40,7 +40,7 @@ class Nexus(ArchiveSystem):
 
     def __parse_date_time(self, date_time_string):
         """ Parse the date time string and return a datetime instance. """
-        date, time, timezone = date_time_string.split(' ')
+        date, time = date_time_string.split(' ')[:2]  # Ignore timezone
         year, month, day = date.split('-')
         hms, milliseconds = time.split('.')
         hour, minute, second = hms.split(':')
