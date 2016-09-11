@@ -104,7 +104,10 @@ class SprintProgressReport(BirtReport):
     def __summary_table(self):
         """ Return the sprint progress table in the sprint progress Birt report. """
         url = self.url()
-        soup = self.soup(url)
+        try:
+            soup = self.soup(url)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return
         try:
             return soup('table')[0]('table')[0]('table')[0]
         except IndexError:
