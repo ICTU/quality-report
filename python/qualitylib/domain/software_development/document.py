@@ -34,11 +34,3 @@ class Document(RequirementSubject, MeasurableObject):
     def id_string(self):
         """ Return an id string for the document. """
         return self.name().lower().replace(' ', '_')
-
-    def product_version(self):
-        """ Documents have no versions. """
-        return None
-
-    def product_branch_id(self, vcs):
-        """ Documents have no branches. """
-        return None
