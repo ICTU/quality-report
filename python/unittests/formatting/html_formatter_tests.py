@@ -139,29 +139,29 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test that the report contains a list of metric source classes it can use. """
         html = self.__formatter.process(fake_report.Report())
         table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Metriekbron</th><th>Identifier</th><th>Instanties</th></tr>'
+                       '<th>Metriekbron (<code>Identifier</code>)</th><th>Instanties</th></tr>'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_source_class(self):
         """ Test that the report shows which metric source classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Git</td>' \
-                    '<td><code>Git</code></td><td><a href="http://git/" target="_blank">http://git/</a></td></tr>'
+        table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Git ' \
+                    '(<code>Git</code>)</td><td><a href="http://git/" target="_blank">http://git/</a></td></tr>'
         self.assertTrue(table_row in html)
 
     def test_requirements(self):
         """ Test that the report contains a list of requirements it can report on. """
         html = self.__formatter.process(fake_report.Report())
         table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Eis</th><th>Identifier</th><th>Metrieken</th></tr>'
+                       '<th>Eis (<code>Identifier</code>)</th><th>Metrieken</th></tr>'
         self.assertTrue(table_header in html)
 
     def test_not_included_requirements(self):
         """ Test that the report shows which requirements are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td></td><td>Automated regression tests</td><td><code>ART</code></td>'
+        table_row = '<tr><td></td><td>Automated regression tests (<code>ART</code>)</td>'
         self.assertTrue(table_row in html)
         table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' \
-                    '<td>Automated regression test coverage</td><td><code>ARTCoverage</code></td>'
+                    '<td>Automated regression test coverage (<code>ARTCoverage</code>)</td>'
         self.assertTrue(table_row in html)
 

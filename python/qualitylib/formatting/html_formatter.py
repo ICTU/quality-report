@@ -326,12 +326,12 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __metric_sources(report):
         """ Return a HTML table of the metric sources the software can collect data from. """
-        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{ins}</td></tr>'
+        row = '  <tr><td>{icon}</td><td>{name} (<code>{id}</code>)</td><td>{ins}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         anchor = '<a href="{url}" target="_blank">{url}</a>'
         result = list()
-        result.append('<table class="table table-striped first-col-centered">')
-        result.append('  <tr><th>In dit rapport?</th><th>Metriekbron</th><th>Identifier</th><th>Instanties</th></tr>')
+        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
+                      '<th>Metriekbron (<code>Identifier</code>)</th><th>Instanties</th></tr>')
         for metric_source_class in report.metric_source_classes():
             name = metric_source_class.metric_source_name
             identifier = metric_source_class.__name__
@@ -346,11 +346,11 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __requirements(report):
         """ Return a HTML table of the requirements. """
-        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{metrics}</td></tr>'
+        row = '  <tr><td>{icon}</td><td>{name} (<code>{id}</code>)</td><td>{metrics}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         result = list()
         result.append('<table class="table table-striped first-col-centered">')
-        result.append('  <tr><th>In dit rapport?</th><th>Eis</th><th>Identifier</th><th>Metrieken</th></tr>')
+        result.append('  <tr><th>In dit rapport?</th><th>Eis (<code>Identifier</code>)</th><th>Metrieken</th></tr>')
         for requirement_class in report.requirement_classes():
             name = requirement_class.name()
             identifier = requirement_class.__name__
