@@ -120,8 +120,23 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="help_menu">
                                 <li>
-                                    <a id="help_dialog" href="#modal_help_dialog"  data-toggle="modal">
+                                    <a id="help_dialog" href="#modal_help_dialog" data-toggle="modal">
                                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Over het kwaliteitssysteem
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_metrics" href="#modal_help_metrics_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Metrieken
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_metric_sources" href="#modal_help_metric_sources_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-open" aria-hidden="true"></span> Metriekbronnen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_requirements" href="#modal_help_requirements_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-check" aria-hidden="true"></span> Eisen
                                     </a>
                                 </li>
                                 <li>
@@ -238,17 +253,73 @@
                             meten van de stemming is momenteel de enige niet-geautomatiseerde meting binnen het
                             kwaliteitssysteem.
                         </p>
-                        <h4>
-                            Lijst van metrieken
-                        </h4>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_metrics_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_metrics_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_metrics_dialog_title">Metrieken</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van metrieken die het kwaliteitssysteem kan meten. Per metriek is
+                            aangegeven of de metriek in dit rapport gemeten wordt. Of een metriek gemeten wordt
+                            hangt af van de eisen die van toepassing zijn op het project (zie Eisen in het Help menu).
+                        </p>
                         {metric_classes}
-                        <h4>
-                            Lijst van metriekbronnen
-                        </h4>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_metric_sources_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_metric_sources_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_metric_sources_dialog_title">Metriekbronnen</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van metriekbronnen die het kwaliteitssysteem kan raadplegen. Per
+                            metriekbron is aangegeven of de metriekbron in dit rapport gebruikt wordt. Of een
+                            metriekbron gebruikt wordt hangt af van de metrieken die van gemeten worden
+                            (zie Metrieken in het Help menu).
+                        </p>
                         {metric_sources}
-                        <h4>
-                            Lijst van eisen
-                        </h4>
+                        </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_requirements_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_requirements_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_requirements_dialog_title">Eisen</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van eisen die het kwaliteitssysteem kan borgen. Per
+                            eis is aangegeven of de eis van toepassing op het project. Of een eis van toepassing is,
+                            is in de project definitie geconfigureerd. Bij iedere eis staan de metrieken die gemeten
+                            worden als de betreffende eis van toepassing is (zie Metrieken in het Help menu).
+                        </p>
                         {requirements}
                     </div>
                     <div class="modal-footer">
