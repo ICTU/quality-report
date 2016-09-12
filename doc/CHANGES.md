@@ -1,6 +1,7 @@
 2016-09-12  Release 1.61.2
 
   * Remove resources tab as most of the information is now also in the help menu.
+  * Reorganize help menu.
   
 
 2016-09-11  Release 1.61.1
