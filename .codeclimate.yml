@@ -20,5 +20,5 @@ ratings:
   - "**.js"
   - "**.jsx"
   - "**.py"
-exclude_paths: []
+exclude_paths:
 - "js/bootstrap.min.js"
