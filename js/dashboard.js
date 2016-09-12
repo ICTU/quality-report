@@ -193,7 +193,7 @@ function show_section_summary_charts(filter_value) {
         var section = sections[index];
         var trunk_chart_div = document.getElementById('section_summary_trunk_chart_' + section);
         if (trunk_chart_div !== null) {
-            trunk_chart_div.style.display = show_trunk_only ? 'block' : 'none';;
+            trunk_chart_div.style.display = show_trunk_only ? 'block' : 'none';
         }
         var summary_chart_div = document.getElementById('section_summary_chart_' + section);
         if (summary_chart_div !== null) {
@@ -364,6 +364,11 @@ function draw_section_summary_chart(section) {
     draw_pie_chart(section);
 }
 
+function status_count(section, color) {
+   return window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section},
+                                          {column: METRICS_COLUMN_STATUS_TEXT, value: color}]).length;
+}
+
 function draw_column_chart(chart_div, sections) {
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Versie');
@@ -374,15 +379,10 @@ function draw_column_chart(chart_div, sections) {
     data.addColumn('number', 'Ontbrekend');
     for(var index = 0; index < sections.length; index++) {
         var version = sections[index];
-        var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
-        var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
-        var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
-        var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
-        var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
-        var missing_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing'}]);
-        var missing_source_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: version}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing_source'}]);
-        data.addRow([version, green_rows.length + perfect_rows.length, yellow_rows.length, red_rows.length,
-                     grey_rows.length, missing_rows.length + missing_source_rows.length]);
+        data.addRow([version, status_count(version, 'green') + status_count(version, 'perfect'),
+                     status_count(version, 'yellow'), status_count(version, 'red'),
+                     status_count(version, 'grey'), status_count(version, 'missing') +
+                     status_count(version, 'missing_source')]);
     }
 
     var bg_color = chart_div.parentNode.getAttribute('bgcolor');
@@ -407,23 +407,15 @@ function draw_pie_chart(section) {
         return;
     }
 
-    var red_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'red'}]);
-    var yellow_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'yellow'}]);
-    var green_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'green'}]);
-    var perfect_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'perfect'}]);
-    var grey_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'grey'}]);
-    var missing_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing'}]);
-    var missing_source_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}, {column: METRICS_COLUMN_STATUS_TEXT, value: 'missing_source'}]);
-
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Status');
     data.addColumn('number', 'Number');
     data.addRows([
-      ['Groen', green_rows.length + perfect_rows.length],
-      ['Geel', yellow_rows.length],
-      ['Rood', red_rows.length],
-      ['Grijs', grey_rows.length],
-      ['Ontbrekend', missing_rows.length + missing_source_rows.length]
+      ['Groen', status_count(section, 'green') + status_count(section, 'perfect')],
+      ['Geel', status_count(section, 'yellow')],
+      ['Rood', status_count(section, 'red')],
+      ['Grijs', status_count(section, 'grey')],
+      ['Ontbrekend', status_count(section, 'missing') + status_count(section, 'missing_source')]
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
