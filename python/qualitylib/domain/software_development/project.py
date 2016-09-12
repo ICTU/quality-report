@@ -143,25 +143,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the dashboard layout for the project. """
         return self.__dashboard
 
-    def project_resources(self):
-        """ Return all resources of the project. """
-        resources = []
-        for source in self.__metric_sources.values():
-            self.__add_metric_source_to_resources(source, resources)
-        for team in self.teams():
-            resources.extend(team.team_resources())
-        for product in self.products():
-            resources.extend(product.product_resources())
-        return resources
-
-    @staticmethod
-    def __add_metric_source_to_resources(source, resources):
-        if isinstance(source, list):
-            for subsource in source:
-                resources.append((subsource.name(), subsource.url()))
-        else:
-            resources.append((source.name(), source.url()))
-
     def __check_short_section_name(self, name):
         """ Raise an exception when the short section name is already in use. """
         if name in self.__short_section_names:

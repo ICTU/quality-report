@@ -67,16 +67,6 @@ class HTMLFormatterTest(unittest.TestCase):
         for number in range(1, 5):
             self.assertTrue('MM-{}'.format(number) in html, html)
 
-    def test_project_resources(self):
-        """ Test that the report contains the project resources. """
-        html = self.__formatter.process(fake_report.Report())
-        self.assertTrue('<li>resource: <a href="url">url</a></li>' in html)
-
-    def test_missing_project_resource(self):
-        """ Test that the report notes missing project resources. """
-        html = self.__formatter.process(fake_report.Report())
-        self.assertTrue('<li>missing: Geen url geconfigureerd</li>' in html)
-
     def test_dashboard(self):
         """ Test that the report contains the dashboard. """
         html = self.__formatter.process(fake_report.Report())

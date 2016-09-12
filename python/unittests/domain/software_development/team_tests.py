@@ -54,9 +54,3 @@ class TeamTest(unittest.TestCase):
         piet = domain.Person(name='Piet Programmer')
         self.__team.add_member(piet)
         self.assertTrue(piet in self.__team.members())
-
-    def test_members_in_resources(self):
-        """ Test that team members are listed as team resource. """
-        piet = domain.Person(name='Piet Programmer')
-        self.__team.add_member(piet)
-        self.assertTrue(('Piet Programmer', '') in self.__team.team_resources())

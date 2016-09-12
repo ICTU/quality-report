@@ -43,13 +43,6 @@ class Team(RequirementSubject, MeasurableObject):
         """ Return an abbreviation of the team name. """
         return self.__short_name
 
-    def team_resources(self):
-        """ Return the resources of the team. """
-        resources = []
-        for member in self.members():
-            resources.append((member.name(), member.url()))
-        return resources
-
     def members(self):
         """ Return the team members. """
         return self.__members

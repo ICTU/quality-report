@@ -176,23 +176,6 @@ class Product(RequirementSubject, MeasurableObject):
         version_target = super(Product, self).technical_debt_target((metric_class, self.product_version()))
         return version_target if version_target else super(Product, self).technical_debt_target(metric_class)
 
-    def product_resources(self):
-        """ Return the resources of the product. """
-        from qualitylib import metric_source
-        resources = []
-        if not self.product_version():
-            # Only include these resources for trunk versions:
-            for metric_source_class in [metric_source.CoverageReport,
-                                        metric_source.NCover,
-                                        metric_source.JaCoCo]:
-                source = self.__project.metric_source(metric_source_class)
-                coverage_url = self.metric_source_id(source)
-                if coverage_url:
-                    resources.append(('{src} {prd}'.format(src=source.name(), prd=self.name()), coverage_url))
-            if self.__vcs_path():
-                resources.append(('Broncode repository {prd}'.format(prd=self.name()), self.__vcs_path()))
-        return resources
-
     @utils.memoized
     def dependencies(self, recursive=True, version=None, user=None):
         """ Return the dependencies of this product and version, recursively. """

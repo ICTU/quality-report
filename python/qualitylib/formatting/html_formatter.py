@@ -57,7 +57,6 @@ class HTMLFormatter(base_formatter.Formatter):
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
         parameters['dashboard'] = DashboardFormatter.format(report)
-        parameters['project_resources'] = self.__project_resources(report)
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
@@ -290,17 +289,6 @@ class HTMLFormatter(base_formatter.Formatter):
         return '<span class="link_section_{sec}" title="{prd}:{ver}" ' \
                'style="color: {clr};"></span>'.format(sec=section_id, prd=product_name, ver=product_version or 'trunk',
                                                       clr=color)
-
-    @staticmethod
-    def __project_resources(report):
-        """ Return a HTML version of the project resources. """
-        result = list()
-        result.append('<ul>')
-        for name, url in report.project().project_resources():
-            url_text = '<a href="{url}">{url}</a>'.format(url=url) if url else 'Geen url geconfigureerd'
-            result.append('<li>{name}: {url_text}</li>'.format(name=name, url_text=url_text))
-        result.append('</ul>')
-        return '\n'.join(result)
 
     @staticmethod
     def __metric_classes(report):
