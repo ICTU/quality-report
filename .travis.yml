@@ -1,5 +1,9 @@
 language: python
 sudo: false
-install: pip install -r python/requirements.txt
-script: python python/run_unittests.py discover -s python/unittests -p "*_tests.py"
-
+install:
+- pip install -r python/requirements.txt
+- pip install codeclimate-test-reporter
+script: coverage run --branch python/run_unittests.py discover -s python/unittests -p "*_tests.py"
+addons:
+  code_climate:
+    repo_token: 58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
