@@ -125,14 +125,14 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())
         table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Metriek</th><th>Identifier</th><th>Norm</th>'
+                       '<th>Metriek (<code>Identifier</code>)</th><th>Norm</th>'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_classes(self):
         """ Test that the report shows which metric classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td></td><td>Automatic regression test statement coverage</td>' \
-                    '<td><code>ARTStatementCoverage</code></td>'
+        table_row = '<tr><td></td><td>Automatic regression test statement coverage ' \
+                    '(<code>ARTStatementCoverage</code>)</td>'
         self.assertTrue(table_row in html)
 
     def test_metric_source_classes(self):

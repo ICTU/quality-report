@@ -305,11 +305,11 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __metric_classes(report):
         """ Return a HTML table of the metrics the software can measure. """
-        row = '  <tr><td>{icon}</td><td>{name}</td><td><code>{id}</code></td><td>{norm}</td></tr>'
+        row = '  <tr><td>{icon}</td><td>{name} (<code>{id}</code>)</td><td>{norm}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         result = list()
         result.append('<table class="table table-striped first-col-centered">')
-        result.append('  <tr><th>In dit rapport?</th><th>Metriek</th><th>Identifier</th><th>Norm</th></tr>')
+        result.append('  <tr><th>In dit rapport?</th><th>Metriek (<code>Identifier</code>)</th><th>Norm</th></tr>')
         for metric_class in report.metric_classes():
             name = metric_class.name
             identifier = metric_class.__name__
