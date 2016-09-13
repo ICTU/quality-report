@@ -116,3 +116,18 @@ class PerformanceEnduranceTestReport(PerformanceReport):
     def _date_from_soup(self, soup):
         """ Return the date when the performance was last measured based on the report at the url. """
         raise NotImplementedError  # pragma: no cover
+
+
+class PerformanceScalabilityTestReport(PerformanceReport):
+    """ Performance scalability test report. """
+    def urls(self, product, version):
+        """ Return the report urls for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def _query_rows(self, product, version):
+        """ Return the queries for the specified product and version. """
+        raise NotImplementedError  # pragma: no cover
+
+    def _date_from_soup(self, soup):
+        """ Return the date when the performance was last measured based on the report at the url. """
+        raise NotImplementedError  # pragma: no cover

@@ -73,3 +73,8 @@ class SilkPerformerPerformanceLoadTestReport(SilkPerformerPerformanceReport):
 class SilkPerformerPerformanceEnduranceTestReport(SilkPerformerPerformanceReport):
     """ A performance endurance test done with Silk Performer. """
     metric_source_name = 'Silk Performer performanceduurtestrapport'
+
+
+class SilkPerformerPerformanceScalabilityTestReport(SilkPerformerPerformanceReport):
+    """ A performance scalability test done with Silk Performer. """
+    metric_source_name = 'Silk Performer performanceschaalbaarheidstestrapport'

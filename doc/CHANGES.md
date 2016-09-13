@@ -1,3 +1,8 @@
+2016-09-13  Release 1.62.0
+
+  * Add performance scalability test metrics.
+  
+  
 2016-09-12  Release 1.61.2
 
   * Remove resources tab as most of the information is now also in the help menu.

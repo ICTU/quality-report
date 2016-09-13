@@ -121,10 +121,14 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
 
 class JMeterPerformanceLoadTestReport(JMeterPerformanceReport):
     """ A performance load test done with JMeter. """
-    metric_source_name = 'Jmeter performanceloadtestrapport'
+    metric_source_name = 'JMeter performanceloadtestrapport'
 
 
 class JMeterPerformanceEnduranceTestReport(JMeterPerformanceReport):
     """ A performance endurance test done with JMeter. """
-    metric_source_name = 'Jmeter performanceduurtestrapport'
+    metric_source_name = 'JMeter performanceduurtestrapport'
 
+
+class JMeterPerformanceScalabilityTestReport(JMeterPerformanceReport):
+    """ A performance scalability test done with JMeter. """
+    metric_source_name = 'JMeter performanceschaalbaarheidstestrapport'

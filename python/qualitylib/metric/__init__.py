@@ -30,7 +30,8 @@ from .product.logical_test_case_metrics import (
 from .product.openvas_scan_metrics import HighRiskOpenVASScanAlertsMetric, MediumRiskOpenVASScanAlertsMetric
 from .product.owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
 from .product.performance_metrics import PerformanceLoadTestWarnings, PerformanceLoadTestErrors, \
-    PerformanceEnduranceTestWarnings, PerformanceEnduranceTestErrors
+    PerformanceEnduranceTestWarnings, PerformanceEnduranceTestErrors, PerformanceScalabilityTestWarnings, \
+    PerformanceScalabilityTestErrors
 from .product.size_metrics import ProductLOC, TotalLOC
 from .product.source_code_metrics import CommentedLOC, CyclomaticComplexity, LongMethods, ManyParameters
 from .product.unit_and_integration_test_metrics import (

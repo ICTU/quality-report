@@ -140,3 +140,15 @@ class PerformanceEnduranceTestErrorsTest(PerformanceLoadTestWarningsTest):
     """ Unit tests for the performance endurance test errors metrics. """
     metric_class = metric.PerformanceEnduranceTestErrors
     expected_status = 'red'
+
+
+class PerformanceScalabilityTestWarningsTest(PerformanceLoadTestWarningsTest):
+    """ Unit tests for the performance scalability test warnings metrics. """
+    metric_class = metric.PerformanceScalabilityTestWarnings
+    expected_status = 'yellow'
+
+
+class PerformanceScalabilityTestErrorsTest(PerformanceLoadTestWarningsTest):
+    """ Unit tests for the performance scalability test errors metrics. """
+    metric_class = metric.PerformanceScalabilityTestErrors
+    expected_status = 'red'

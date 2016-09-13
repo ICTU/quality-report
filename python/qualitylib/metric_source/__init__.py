@@ -27,10 +27,12 @@ from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
 
 # Performance report
-from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport
-from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPerformanceEnduranceTestReport
+from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
+    PerformanceScalabilityTestReport
+from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPerformanceEnduranceTestReport, \
+    JMeterPerformanceScalabilityTestReport
 from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
-    SilkPerformerPerformanceEnduranceTestReport
+    SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
 
 # Archive system
 from .abstract.archive_system import ArchiveSystem

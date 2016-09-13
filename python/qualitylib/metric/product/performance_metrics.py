@@ -124,3 +124,32 @@ class PerformanceEnduranceTestErrors(PerformanceEnduranceTestMetric):
         return self._metric_source.queries_violating_max_responsetime(*self._product_id())
 
 
+class PerformanceScalabilityTestMetric(PerformanceMetric):
+    """ Base class for performance scalability test metrics. """
+    unit = 'performanceschaalbaarheidstestgevallen'
+    metric_source_classes = (metric_source.PerformanceScalabilityTestReport,)
+
+    def _violating_queries(self):
+        """ Return the number of queries not meting the required response times. """
+        raise NotImplementedError  # pragma: no cover
+
+
+class PerformanceScalabilityTestWarnings(PerformanceScalabilityTestMetric):
+    """ Performance scalability test warnings metric. """
+    name = 'Hoeveelheid performanceschaalbaarheidstestwaarschuwingen'
+    level = 'gewenste responsetijd'
+    low_target_value = 5
+
+    def _violating_queries(self):
+        return self._metric_source.queries_violating_wished_responsetime(*self._product_id())
+
+
+class PerformanceScalabilityTestErrors(PerformanceScalabilityTestMetric):
+    """ Performance scalability test errors metric. """
+    name = 'Hoeveelheid performanceschaalbaarheidstestoverschrijdingen'
+    level = 'maximale responstijd'
+    low_target_value = 0
+
+    def _violating_queries(self):
+        return self._metric_source.queries_violating_max_responsetime(*self._product_id())
+
