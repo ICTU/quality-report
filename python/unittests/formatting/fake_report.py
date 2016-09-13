@@ -164,14 +164,9 @@ class Report(object):
         return [('ME', 1)], [(('id', 'lightsteelblue'),), ]
 
     def project(self):
-        """ Return the project resources. """
+        """ Return the project. """
         class FakeProject(object):  # pylint: disable=too-few-public-methods
             """ Fake a project. """
-            @staticmethod
-            def project_resources():
-                """ Return the project's resources. """
-                return [('resource', 'url'), ('missing', None)]
-
             @staticmethod
             def metric_source(metric_source_class):  # pylint: disable=unused-argument
                 """ Return the metric source instances for a metric source class. """
