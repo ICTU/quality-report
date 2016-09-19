@@ -1,6 +1,11 @@
+2016-09-19  Release 1.62.2
+
+  * Bug fix: Links to Trello boards were missing.
+  
+
 2016-09-19  Release 1.62.1
 
-  * Don't crash when Trello reports there are no cards.
+  * Bug fix: Don't crash when Trello reports there are no cards.
   
 
 2016-09-13  Release 1.62.0
