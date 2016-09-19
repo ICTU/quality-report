@@ -70,10 +70,10 @@ class TrelloObject(domain.MetricSource):
     def date_of_last_update(self):
         """ Return the date of the last action at this Trello object. """
         try:
-            last_action = self._json(argument='/actions', extra_parameters='&filter=all')[0]
+            actions = self._json(argument='/actions', extra_parameters='&filter=all')
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
-        return self.date_time_from_string(last_action['date'])
+        return self.date_time_from_string(actions[0]['date']) if actions else datetime.datetime.min
 
     def last_update_time_delta(self):
         """ Return the amount of time since the last update. """
