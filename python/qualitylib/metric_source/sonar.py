@@ -38,7 +38,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__violations_api_url = sonar_url + 'api/resources?resource={resource}&' \
             'metrics=blocker_violations,critical_violations,major_violations,' \
             'minor_violations,info_violations&rules=true&includetrends=true'
-        self.__resource_api_url = sonar_url + 'api/resources?resource={resource}'
+        self.__resource_api_url = sonar_url + 'api/resources?resource={resource}'  # FIXME: Resource API is deprecated!
         self.__resources_api_url = sonar_url + 'api/resources/index'
         self.__metrics_api_url = self.__resource_api_url + '&metrics={metrics}'
         self.__false_positives_api_url = sonar_url + \
