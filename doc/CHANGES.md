@@ -1,3 +1,8 @@
+2016-09-19  Release 1.62.3
+
+  * Bug fix: Add missing import statement.
+  
+  
 2016-09-19  Release 1.62.2
 
   * Bug fix: Links to Trello boards were missing.
