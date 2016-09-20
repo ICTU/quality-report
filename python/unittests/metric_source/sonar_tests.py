@@ -356,39 +356,39 @@ class SonarTest(unittest.TestCase):
 
     def test_commented_loc(self):
         """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
-        self.__sonar.json = u"""{"total": 40}"""
+        self.__sonar.json = u"""{"paging": {"total": 40}}"""
         self.assertEqual(40, self.__sonar.commented_loc('product'))
 
     def test_commented_loc_missing(self):
         """ Test that the number of commented loc is zero when none of the rules return a result. """
-        self.__sonar.json = u"""{"total": 0}"""
+        self.__sonar.json = u"""{"paging": {"total": 0}}"""
         self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_complex_methods(self):
         """ Test that the number of complex methods equals the number of complex methods returned by the
             violations page. """
-        self.__sonar.json = u"""{"total": 50}"""
+        self.__sonar.json = u"""{"paging": {"total": 50}}"""
         self.assertEqual(50, self.__sonar.complex_methods('product'))
 
     def test_complex_methods_missing(self):
         """ Test that the number of complex methods is zero when none of the rules return a result. """
-        self.__sonar.json = u"""{"total": 0}"""
+        self.__sonar.json = u"""{"paging": {"total": 0}}"""
         self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_long_methods(self):
         """ Test that the number of long methods equals the number of long methods returned by the violations page. """
-        self.__sonar.json = u"""{"total": 50}"""
+        self.__sonar.json = u"""{"paging": {"total": 50}}"""
         self.assertEqual(50, self.__sonar.long_methods('product'))
 
     def test_many_parameters_methods(self):
         """ Test that the number of methods with many parameters equals the number of methods with many parameters
             returned by the violations page. """
-        self.__sonar.json = u"""{"total": 50}"""
+        self.__sonar.json = u"""{"paging": {"total": 50}}"""
         self.assertEqual(50, self.__sonar.many_parameters_methods('product'))
 
     def test_many_parameters_methods_missing(self):
         """ Test that the number of methods with many parameters is zero when none of the rules return a result. """
-        self.__sonar.json = u"""{"total": 0}"""
+        self.__sonar.json = u"""{"paging": {"total": 0}}"""
         self.assertEqual(0, self.__sonar.many_parameters_methods('product'))
 
     def test_missing_metric_value(self):
@@ -398,17 +398,17 @@ class SonarTest(unittest.TestCase):
 
     def test_missing_violation_value(self):
         """ Test that the default value is returned for missing violations. """
-        self.__sonar.json = u"""{"total": 0}"""
+        self.__sonar.json = u"""{"paging": {"total": 0}}"""
         self.assertEqual(0, self.__sonar.long_methods('product'))
 
     def test_no_sonar(self):
         """ Test that by default the number of no sonar violations is zero. """
-        self.__sonar.json = u"""{"total": 0}"""
+        self.__sonar.json = u"""{"paging": {"total": 0}}"""
         self.assertEqual(0, self.__sonar.no_sonar('product'))
 
     def test_no_sonar_found(self):
         """ Test that no sonar violations. """
-        self.__sonar.json = u"""{"total": 10}"""
+        self.__sonar.json = u"""{"paging": {"total": 10}}"""
         self.assertEqual(10, self.__sonar.no_sonar('product'))
 
     def test_false_positives(self):

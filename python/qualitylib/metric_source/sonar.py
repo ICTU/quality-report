@@ -323,7 +323,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             json = self.__get_json(self.__issues_api_url.format(component=product, rule=rule_name))
         except self.url_open_exceptions:
             return default
-        return int(json['total'])
+        return int(json['paging']['total'])
 
     def __false_positives(self, product, default=0):
         """ Return the number of issues resolved as false positive. """
