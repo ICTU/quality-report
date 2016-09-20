@@ -34,7 +34,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         maven = maven or Maven()
         self.__runner = sonar_runner.SonarRunner(self, maven, version_control_system)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
-        self.__base_violations_url = sonar_url + 'api/issues/search?componentRoots='
+        self.__base_violations_url = sonar_url + 'issues/search#componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&rules={rule}'
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}'  # FIXME: Resource API is deprecated!
         self.__projects_api_url = sonar_url + 'api/projects/index'
