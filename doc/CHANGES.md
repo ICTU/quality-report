@@ -1,3 +1,8 @@
+2016-06-20  Release 1.62.4
+
+  * Support SonarQube API changes starting with SonarQube 5.4.
+  
+
 2016-09-19  Release 1.62.3
 
   * Bug fix: Add missing import statement.

@@ -24,12 +24,14 @@ from qualitylib.metric_source import Sonar
 class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     """ Override the url open method to be able to return test data. """
 
+    project_json = u"""[{"k": "product"}]"""
+
     json = violations_json = u"""
 [
     {"version": "4.2",
      "lang": "java",
      "date": "2016-04-07T16:27:27+0000",
-     "key": "product",
+     "k": "product",
      "msr":
          [
             {"val": 100, "rule_name": "", "rule_key": ""},
@@ -48,7 +50,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 [
     {"version": "4.2",
      "lang": "java",
-     "key": "product",
+     "k": "product",
      "msr":
          []
     }
@@ -58,7 +60,6 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     [
         {"version": "4.2",
          "lang": "java",
-         "key": "product",
          "msr":
              [
                 {"val": 100, "key": "critical_violations"},
@@ -238,7 +239,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 
     def url_open(self, url):
         """ Return the static contents. """
-        if 'metrics=true' in url:
+        if 'projects/index' in url:
+            json = self.project_json
+        elif 'metrics=true' in url:
             json = self.metrics_json
         elif 'FALSE-POSITIVE' in url:
             json = self.false_positives_json
@@ -263,7 +266,8 @@ class SonarTest(unittest.TestCase):
 
     def test_violations_url(self):
         """ Test the url of a violations page for a specific product. """
-        self.assertEqual('http://sonar/drilldown/violations/product', self.__sonar.violations_url('product'))
+        self.assertEqual('http://sonar/api/issues/search?componentRoots=product',
+                         self.__sonar.violations_url('product'))
 
     def test_version(self):
         """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
@@ -352,51 +356,39 @@ class SonarTest(unittest.TestCase):
 
     def test_commented_loc(self):
         """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
+        self.__sonar.json = u"""{"total": 40}"""
         self.assertEqual(40, self.__sonar.commented_loc('product'))
-
-    def test_commented_loc_cs(self):
-        """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
-        self.__sonar.json = u"""
-        [
-            {"version": "4.2",
-             "lang": "cs",
-             "key": "product",
-             "msr":
-                 [
-                    {"val": 30, "rule_name": "Comment should not include code",
-                     "rule_key": "csharpsquid:CommentedCode"}
-                ]
-            }
-        ]"""
-        self.assertEqual(30, self.__sonar.commented_loc('product'))
 
     def test_commented_loc_missing(self):
         """ Test that the number of commented loc is zero when none of the rules return a result. """
-        self.__sonar.json = self.__sonar.no_violations_json
+        self.__sonar.json = u"""{"total": 0}"""
         self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_complex_methods(self):
         """ Test that the number of complex methods equals the number of complex methods returned by the
             violations page. """
+        self.__sonar.json = u"""{"total": 50}"""
         self.assertEqual(50, self.__sonar.complex_methods('product'))
 
     def test_complex_methods_missing(self):
         """ Test that the number of complex methods is zero when none of the rules return a result. """
-        self.__sonar.json = self.__sonar.no_violations_json
+        self.__sonar.json = u"""{"total": 0}"""
         self.assertEqual(0, self.__sonar.commented_loc('product'))
 
     def test_long_methods(self):
         """ Test that the number of long methods equals the number of long methods returned by the violations page. """
+        self.__sonar.json = u"""{"total": 50}"""
         self.assertEqual(50, self.__sonar.long_methods('product'))
 
     def test_many_parameters_methods(self):
         """ Test that the number of methods with many parameters equals the number of methods with many parameters
             returned by the violations page. """
+        self.__sonar.json = u"""{"total": 50}"""
         self.assertEqual(50, self.__sonar.many_parameters_methods('product'))
 
     def test_many_parameters_methods_missing(self):
         """ Test that the number of methods with many parameters is zero when none of the rules return a result. """
-        self.__sonar.json = self.__sonar.no_violations_json
+        self.__sonar.json = u"""{"total": 0}"""
         self.assertEqual(0, self.__sonar.many_parameters_methods('product'))
 
     def test_missing_metric_value(self):
@@ -406,25 +398,17 @@ class SonarTest(unittest.TestCase):
 
     def test_missing_violation_value(self):
         """ Test that the default value is returned for missing violations. """
-        self.__sonar.json = u'[{"key": "product", "lang": "java"}]'
+        self.__sonar.json = u"""{"total": 0}"""
         self.assertEqual(0, self.__sonar.long_methods('product'))
 
     def test_no_sonar(self):
         """ Test that by default the number of no sonar violations is zero. """
+        self.__sonar.json = u"""{"total": 0}"""
         self.assertEqual(0, self.__sonar.no_sonar('product'))
 
     def test_no_sonar_found(self):
         """ Test that no sonar violations. """
-        self.__sonar.json = u"""
-        [
-            {"key": "product",
-             "msr":
-                 [
-                    {"val": 10, "rule_key": "squid:NoSonar",
-                     "rule_name": "Avoid use of //NOSONAR marker"}
-                ]
-            }
-        ]"""
+        self.__sonar.json = u"""{"total": 10}"""
         self.assertEqual(10, self.__sonar.no_sonar('product'))
 
     def test_false_positives(self):

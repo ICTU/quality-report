@@ -34,20 +34,19 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         maven = maven or Maven()
         self.__runner = sonar_runner.SonarRunner(self, maven, version_control_system)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
-        self.__base_violations_url = sonar_url + 'drilldown/violations/'
-        self.__violations_api_url = sonar_url + 'api/resources?resource={resource}&' \
-            'metrics=blocker_violations,critical_violations,major_violations,' \
-            'minor_violations,info_violations&rules=true&includetrends=true'
+        self.__base_violations_url = sonar_url + 'api/issues/search?componentRoots='
+        self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&rules={rule}'
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}'  # FIXME: Resource API is deprecated!
-        self.__resources_api_url = sonar_url + 'api/resources/index'
+        self.__projects_api_url = sonar_url + 'api/projects/index'
+        self.__project_api_url = sonar_url + 'api/projects/{project}'
         self.__metrics_api_url = self.__resource_api_url + '&metrics={metrics}'
+        self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
         self.__false_positives_api_url = sonar_url + \
             'api/issues/search?resolutions=FALSE-POSITIVE&componentRoots={resource}'
         self.__false_positives_url = sonar_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
-        self.__version_number_url = sonar_url + 'api/server/index'
-        self.__projects_api_url = sonar_url + 'api/projects/{project}'
-        self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'
-        self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}'
+        self.__version_number_url = sonar_url + 'api/server/index'  # Deprecated APU
+        self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
+        self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}'  # Deprecated API
 
     @utils.memoized
     def version(self, product):
@@ -101,15 +100,15 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def projects(self):
         """ Return all projects in Sonar. """
         try:
-            json = self.__get_json(self.__resources_api_url)
-            return [resource['key'] for resource in json]
+            json = self.__get_json(self.__projects_api_url)
+            return [project['k'] for project in json]
         except self.url_open_exceptions:
             return []
 
     def delete_project(self, project):
         """ Delete a project (analysis) from Sonar. """
         try:
-            self.url_delete(self.__projects_api_url.format(project=project))
+            self.url_delete(self.__project_api_url.format(project=project))
             logging.info('Removed Sonar analysis for %s', project)
             return True
         except self.url_open_exceptions as reason:
@@ -192,57 +191,57 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def complex_methods(self, product):
         """ Return the number of methods that violate the Cyclomatic complexity threshold. """
-        violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
-                           'pmd:CyclomaticComplexity',
-                           'squid:MethodCyclomaticComplexity',
-                           'csharpsquid:S1541',
-                           'FunctionComplexity',
-                           'Web:ComplexityCheck',
-                           'python:FunctionComplexity')
-        for violation_name in violation_names:
-            nr_complex_methods = self.__violation(product, violation_name)
+        rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
+                      'pmd:CyclomaticComplexity',
+                      'squid:MethodCyclomaticComplexity',
+                      'csharpsquid:S1541',
+                      'FunctionComplexity',
+                      'Web:ComplexityCheck',
+                      'python:FunctionComplexity')
+        for rule_name in rule_names:
+            nr_complex_methods = self.__rule_violation(product, rule_name)
             if nr_complex_methods:
                 return nr_complex_methods
         return 0
 
     def long_methods(self, product):
         """ Return the number of methods in the product that have to many non-comment statements. """
-        violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
-                           'AvoidLongMethodsRule',
-                           'Pylint:R0915')
-        for violation_name in violation_names:
-            nr_long_methods = self.__violation(product, violation_name)
+        rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
+                      'AvoidLongMethodsRule',
+                      'Pylint:R0915')
+        for rule_name in rule_names:
+            nr_long_methods = self.__rule_violation(product, rule_name)
             if nr_long_methods:
                 return nr_long_methods
         return 0
 
     def many_parameters_methods(self, product):
         """ Return the number of methods in the product that have too many parameters. """
-        violation_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck',
-                           'pmd:ExcessiveParameterList',
-                           'csharpsquid:S107',
-                           'squid:S00107',
-                           'AvoidLongParameterListsRule',
-                           'python:S107')
-        for violation_name in violation_names:
-            nr_many_parameters = self.__violation(product, violation_name)
+        rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck',
+                      'pmd:ExcessiveParameterList',
+                      'csharpsquid:S107',
+                      'squid:S00107',
+                      'AvoidLongParameterListsRule',
+                      'python:S107')
+        for rule_name in rule_names:
+            nr_many_parameters = self.__rule_violation(product, rule_name)
             if nr_many_parameters:
                 return nr_many_parameters
         return 0
 
     def commented_loc(self, product):
         """ Return the number of commented out lines in the source code of the product. """
-        violation_names = ('csharpsquid:CommentedCode', 'csharpsquid:S125', 'squid:CommentedOutCodeLine',
-                           'javascript:CommentedCode', 'python:S125')
-        for violation_name in violation_names:
-            nr_commented_loc = self.__violation(product, violation_name)
+        rule_names = ('csharpsquid:CommentedCode', 'csharpsquid:S125', 'squid:CommentedOutCodeLine',
+                      'javascript:CommentedCode', 'python:S125')
+        for rule_name in rule_names:
+            nr_commented_loc = self.__rule_violation(product, rule_name)
             if nr_commented_loc:
                 return nr_commented_loc
         return 0
 
     def no_sonar(self, product):
         """ Return the number of NOSONAR usages in the source code of the product. """
-        return self.__violation(product, 'squid:NoSonar')
+        return self.__rule_violation(product, 'squid:NoSonar')
 
     def violations_url(self, product):
         """ Return the url for the violations of the product. """
@@ -290,6 +289,16 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return a specific metric value for the product. """
         if not self.has_project(product):
             return -1
+
+        # First try API starting with SonarQube 5.4:
+        try:
+            json = self.__get_json(self.__measures_api_url.format(component=product, metric=metric_name))
+            for measure in json['component']['measures']:
+                if measure['metric'] == metric_name:
+                    return measure['value']
+        except self.url_open_exceptions + (TypeError, KeyError):
+            pass
+        # Then try older API:
         json = self.__all_metrics(product)
         for metric in json[0]['msr']:
             if metric['key'] == metric_name:
@@ -306,24 +315,15 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return [{'msr': []}]
 
     @utils.memoized
-    def __violation(self, product, violation_name, default=0):
+    def __rule_violation(self, product, rule_name, default=0):
         """ Return a specific violation value for the product. """
         if not self.has_project(product):
             return -1
         try:
-            json = self.__get_json(self.__violations_api_url.format(resource=product))
+            json = self.__get_json(self.__issues_api_url.format(component=product, rule=rule_name))
         except self.url_open_exceptions:
             return default
-        try:
-            violations = json[0]['msr']
-        except (IndexError, KeyError):
-            logging.debug("Can't get %s value for %s from %s", violation_name, product, json)
-            return default
-        violation_name = violation_name.lower()
-        for violation in violations:
-            if violation_name in violation['rule_name'].lower() or violation_name in violation['rule_key'].lower():
-                return int(violation['val'])
-        return default
+        return int(json['total'])
 
     def __false_positives(self, product, default=0):
         """ Return the number of issues resolved as false positive. """
