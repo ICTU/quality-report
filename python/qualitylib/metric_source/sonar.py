@@ -295,6 +295,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             json = self.__get_json(self.__measures_api_url.format(component=product, metric=metric_name))
             for measure in json['component']['measures']:
                 if measure['metric'] == metric_name:
+                    logging.info('%s: %s', metric_name, measure['value'])
                     return measure['value']
         except self.url_open_exceptions + (TypeError, KeyError):
             pass
