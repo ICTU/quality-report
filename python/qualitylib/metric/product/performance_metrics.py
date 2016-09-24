@@ -58,10 +58,10 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
 
 
 # We have different types of performance test metrics, organized along two dimensions: test type and severity.
-# The test types are load test and endurance test. The severities are warnings and errors. The warnings metrics
-# count the number of performance test cases that take longer than the desired response times and the error metrics
-# count the number of performance test cases that take longer than the maximum response times. The limits for warning
-# and error are determined by the test reports.
+# The test types are load test, endurance test, and scalability test. The severities are warnings and errors.
+# The warnings metrics count the number of performance test cases that take longer than the desired response
+# times and the error metrics count the number of performance test cases that take longer than the maximum
+# response times. The limits for warning and error are determined by the test reports.
 
 
 class PerformanceLoadTestMetric(PerformanceMetric):
