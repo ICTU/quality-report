@@ -31,10 +31,6 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def __init__(self, report_url, *args, **kwargs):
         super(PerformanceReport, self).__init__(url=report_url, *args, **kwargs)
 
-    def exists(self, product, version):
-        """ Return whether a performance report exists for the specified product and version. """
-        return bool(self.urls(product, version))
-
     def urls(self, product, version):
         """ Return the report urls for the specified product and version. """
         raise NotImplementedError  # pragma: no cover

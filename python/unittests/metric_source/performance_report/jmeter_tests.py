@@ -164,7 +164,3 @@ class JMeterTest(unittest.TestCase):
     def test_urls(self):
         """ Test the urls. """
         self.assertEqual(['http://report/1'], self.__performance_report.urls(('01', 'lrk-pp'), '12.5.5'))
-
-    def test_exists(self):
-        """ Test that the report exists. """
-        self.failUnless(self.__performance_report.exists(('01', 'lrk-pp'), '12.5.5'))
