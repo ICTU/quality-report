@@ -1,6 +1,7 @@
 2016-09-29  Release 1.62.5
 
   * Better norm explanation for the metric measuring the amount of logical test cases without duration filled in.
+  * Support multiple Silk Performer reports for the performance scalability metric.
   
   
 2016-09-20  Release 1.62.4

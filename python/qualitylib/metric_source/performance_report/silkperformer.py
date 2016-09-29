@@ -28,6 +28,10 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
     """ The Silk Performer performance report is a variant of a JMeter report. """
     COLUMN_90_PERC = 5
 
+    def __init__(self, *args, **kwargs):
+        self.__report_urls = kwargs.pop('report_urls', None)
+        super(SilkPerformerPerformanceReport, self).__init__(*args, **kwargs)
+
     @utils.memoized
     def _query_rows(self, product, version):
         """ Return the queries for the specified product and version. """
@@ -62,7 +66,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
     @utils.memoized
     def urls(self, product, version):  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
-        return [self.url()]  # The Silk Performer reports don't contain the product and version
+        return self.__report_urls or [self.url()]  # The Silk Performer reports don't contain the product and version
 
 
 class SilkPerformerPerformanceLoadTestReport(SilkPerformerPerformanceReport):

@@ -343,36 +343,51 @@ class SilkPerfomerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: 
 
 class SilkPerformerTest(unittest.TestCase):
     """ Unit tests for the Silk Performer performance report metric source. """
+    expected_queries = 17
 
     def setUp(self):
-        self.__performance_report = SilkPerfomerUnderTest('http://report/')
+        self._performance_report = SilkPerfomerUnderTest('http://report/')
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual('http://report/', self.__performance_report.url())
+        self.assertEqual('http://report/', self._performance_report.url())
 
     def test_queries_non_existing(self):
         """ Test that the number of queries for a product/version that is not found is zero. """
-        self.assertEqual(0, self.__performance_report.queries('product', 'version'))
+        self.assertEqual(0, self._performance_report.queries('product', 'version'))
 
     def test_queries(self):
         """ Test that the total number of queries for a product/version that is in the report. """
-        self.assertEqual(17, self.__performance_report.queries(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
+        self.assertEqual(self.expected_queries, self._performance_report.queries(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
 
     def test_queries_violating_max_responsetime(self):
         """ Test that the number of queries violating the maximum response times is zero. """
-        self.assertEqual(0, self.__performance_report.queries_violating_max_responsetime(('.*[0-9][0-9].*', 'dummy'),
+        self.assertEqual(0, self._performance_report.queries_violating_max_responsetime(('.*[0-9][0-9].*', 'dummy'),
                                                                                          '12.5.5'))
 
     def test_queries_violating_wished_reponsetime(self):
         """ Test that the number of queries violating the wished response times is zero. """
-        self.assertEqual(0, self.__performance_report.queries_violating_wished_responsetime(('.*[0-9][0-9].*', 'dummy'),
+        self.assertEqual(0, self._performance_report.queries_violating_wished_responsetime(('.*[0-9][0-9].*', 'dummy'),
                                                                                             '12.5.5'))
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
-                         self.__performance_report.date(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
+                         self._performance_report.date(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
+
+
+class SilkPerformerMultipleReportsTest(SilkPerformerTest):
+    """ Unit tests for the Silk Performer performance report metric source with multiple reports. """
+
+    expected_queries = 2 * SilkPerformerTest.expected_queries
+
+    def setUp(self):
+        self._performance_report = SilkPerfomerUnderTest('http://report/',
+                                                         report_urls=['http://report/1', 'http://report/2'])
+
+
+class SilkPerformerMissingTest(unittest.TestCase):
+    """ Unit tests for a mkissing Silk Performer performance report metric source. """
 
     def test_queries_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
