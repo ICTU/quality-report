@@ -205,7 +205,8 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
 
     name = 'Hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd'
     unit = 'handmatige logische testgevallen'
-    norm_template = 'Van alle {unit} is de uitvoeringstijd ingevuld.'
+    norm_template = 'Van alle {unit} is de uitvoeringstijd ingevuld. Meer dan {low_target} {unit} niet ingevuld is ' \
+                    'rood.'
     template = 'Van {value} van de {total} {unit} is de uitvoeringstijd niet ingevuld.'
     target_value = 0
     low_target_value = 5

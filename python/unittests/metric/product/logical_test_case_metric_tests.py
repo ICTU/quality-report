@@ -381,7 +381,8 @@ class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
 
     def test_norm(self):
         """ Test the norm text. """
-        self.assertEqual('Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld.',
+        self.assertEqual('Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld. '
+                         'Meer dan 5 handmatige logische testgevallen niet ingevuld is rood.',
                          self.__metric.norm())
 
     def test_url(self):

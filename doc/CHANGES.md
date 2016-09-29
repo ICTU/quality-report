@@ -1,4 +1,9 @@
-2016-06-20  Release 1.62.4
+2016-09-29  Release 1.62.5
+
+  * Better norm explanation for the metric measuring the amount of logical test cases without duration filled in.
+  
+  
+2016-09-20  Release 1.62.4
 
   * Support SonarQube API changes starting with SonarQube 5.4.
   
