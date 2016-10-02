@@ -50,7 +50,7 @@ class TeamSpiritTest(unittest.TestCase):
     def setUp(self):
         self.__wiki = FakeWiki()
         self.__team = domain.Team(metric_source_ids={self.__wiki: 'team'})
-        self.__project = domain.Project(metric_sources={metric_source.Wiki: self.__wiki})
+        self.__project = domain.Project(metric_sources={metric_source.TeamSpirit: self.__wiki})
         self.__metric = metric.TeamSpirit(subject=self.__team, project=self.__project)
 
     def test_value(self):
