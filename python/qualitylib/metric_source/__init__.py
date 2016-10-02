@@ -15,42 +15,19 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-
-# Test report
-from .abstract.test_report import TestReport
-from .test_report.jenkins_test_report import JenkinsTestReport
-from .test_report.junit_test_report import JunitTestReport
-
-# Coverage report
+from .abstract.archive_system import ArchiveSystem
 from .abstract.coverage_report import CoverageReport
-from .coverage_report.jacoco import JaCoCo
-from .coverage_report.ncover import NCover
-
-# Performance report
+from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
-from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPerformanceEnduranceTestReport, \
-    JMeterPerformanceScalabilityTestReport
-from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
-    SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
-
-# Archive system
-from .abstract.archive_system import ArchiveSystem
-from .archive_system.nexus import Nexus
-
-# Version control system
+from .abstract.team_spirit import TeamSpirit
+from .abstract.test_report import TestReport
 from .abstract.version_control_system import VersionControlSystem
-from .version_control_system.git import Git
-from .version_control_system.subversion import Subversion
-
-# OWASP dependency report
-from .abstract.owasp_dependency_report import OWASPDependencyReport
-from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
-from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport
-
-# Other metric sources
 from .ansible_config_report import AnsibleConfigReport
+from .archive_system.nexus import Nexus
 from .birt import Birt
+from .coverage_report.jacoco import JaCoCo
+from .coverage_report.ncover import NCover
 from .dependencies import Dependencies
 from .history import History
 from .holiday_planner import HolidayPlanner
@@ -58,10 +35,20 @@ from .jenkins import Jenkins
 from .jira import Jira
 from .maven import Maven
 from .open_vas_scan_report import OpenVASScanReport
+from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
+from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport
+from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPerformanceEnduranceTestReport, \
+    JMeterPerformanceScalabilityTestReport
+from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
+    SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
 from .pom import Pom
 from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
+from .team_spirit.wiki import Wiki
+from .test_report.jenkins_test_report import JenkinsTestReport
+from .test_report.junit_test_report import JunitTestReport
 from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard
-from .wiki import Wiki
-from .zap_scan_report import ZAPScanReport
 from .url_opener import UrlOpener
+from .version_control_system.git import Git
+from .version_control_system.subversion import Subversion
+from .zap_scan_report import ZAPScanReport

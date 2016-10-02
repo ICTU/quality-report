@@ -13,3 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+from ... import domain
+
+
+class TeamSpirit(domain.MetricSource):
+    """ Abstract class representing a team spirit indicator. """
+    metric_source_name = 'Team spirit'
+
+    def team_spirit(self, team_id):
+        """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
+        raise NotImplementedError  # pragma: nocover
+
+    def date_of_last_team_spirit_measurement(self, team_id):
+        """ Return the date that the team spirit of the team was last measured. """
+        raise NotImplementedError  # pragma: nocover

@@ -1,3 +1,8 @@
+2016-10-02  Release 1.63.0
+
+  * Prepare for multiple metric source types for the team spirit measurement.
+  
+  
 2016-09-29  Release 1.62.5
 
   * Better norm explanation for the metric measuring the amount of logical test cases without duration filled in.

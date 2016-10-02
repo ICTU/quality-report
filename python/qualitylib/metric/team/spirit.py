@@ -36,7 +36,7 @@ class TeamSpirit(Metric):
     numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2}
     old_age = datetime.timedelta(days=21)
     max_old_age = 2 * old_age
-    metric_source_classes = (metric_source.Wiki,)
+    metric_source_classes = (metric_source.TeamSpirit,)
 
     def value(self):
         return self._metric_source.team_spirit(self._metric_source_id) or '?'

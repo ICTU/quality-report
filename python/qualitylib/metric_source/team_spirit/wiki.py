@@ -20,12 +20,13 @@ import logging
 import re
 import time
 
-from . import beautifulsoup
-from .. import utils, domain
-from .url_opener import UrlOpener
+from qualitylib.metric_source import beautifulsoup
+from qualitylib import utils
+from qualitylib.metric_source.abstract import team_spirit
+from qualitylib.metric_source.url_opener import UrlOpener
 
 
-class Wiki(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
+class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
     """ Class representing the Wiki instance. """
 
     metric_source_name = 'Wiki'
