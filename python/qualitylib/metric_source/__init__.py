@@ -44,6 +44,7 @@ from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestRe
 from .pom import Pom
 from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
+from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki
 from .test_report.jenkins_test_report import JenkinsTestReport
 from .test_report.junit_test_report import JunitTestReport

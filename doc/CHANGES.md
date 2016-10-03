@@ -1,3 +1,8 @@
+2016-10-02  Release 1.63.1
+
+  * Support the ICTU Happiness metric source for team smileys.
+
+
 2016-10-02  Release 1.63.0
 
   * Prepare for multiple metric source types for the team spirit measurement.
