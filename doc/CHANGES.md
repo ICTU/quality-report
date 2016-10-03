@@ -1,4 +1,9 @@
-2016-10-02  Release 1.63.1
+2016-10-03  Release 1.63.2
+
+  * Bug fix: The happiness metric source wouldn't correctly read the JSON.
+  
+
+2016-10-03  Release 1.63.1
 
   * Support the ICTU Happiness metric source for team smileys.
 

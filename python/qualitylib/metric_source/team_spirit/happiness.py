@@ -39,7 +39,7 @@ class Happiness(team_spirit.TeamSpirit):
     def team_spirit(self, team_id):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
-            json = utils.eval_json(self.__url_open(self.__api_url()))
+            json = utils.eval_json(self.__url_open(self.__api_url()).read())
         except UrlOpener.url_open_exceptions:
             logging.warning("Could not open %s to read spirit of team %s", self.__api_url(), team_id)
             return ''
@@ -53,7 +53,7 @@ class Happiness(team_spirit.TeamSpirit):
     def date_of_last_team_spirit_measurement(self, team_id):
         """ Return the date that the team spirit of the team was last measured. """
         try:
-            json = utils.eval_json(self.__url_open(self.__api_url()))
+            json = utils.eval_json(self.__url_open(self.__api_url()).read())
         except UrlOpener.url_open_exceptions:
             logging.warning("Could not open %s to read date of least spirit measurement of team %s", self.__api_url(),
                             team_id)

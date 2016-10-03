@@ -17,20 +17,21 @@ limitations under the License.
 import datetime
 import unittest
 import urllib2
+import StringIO
 
 from qualitylib.metric_source import Happiness
 
 
 class Opener(object):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
-    json = """[{"datum":"2016-08-29","smiley":"4"},{"datum":"2016-09-22","smiley":"3"}]"""
+    json = u"""[{"datum":"2016-08-29","smiley":"4"},{"datum":"2016-09-22","smiley":"3"}]"""
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
         if 'raise' in url:
             raise urllib2.HTTPError(None, None, None, None, None)
         else:
-            return self.json
+            return StringIO.StringIO(self.json)
 
 
 class HappinessTest(unittest.TestCase):
