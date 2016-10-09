@@ -17,7 +17,7 @@ limitations under the License.
 import copy
 import unittest
 
-from qualitylib import domain, metric_source
+from qualitylib import domain, metric_source, requirement
 
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods
@@ -291,3 +291,30 @@ class BranchProductTest(unittest.TestCase):
         """ Test that a branch product is not part of the main system. """
         self.__product.set_product_branch('branch1')
         self.assertFalse(self.__product.is_main())
+
+
+class ComponentTest(unittest.TestCase):
+    """ Unit test for the component class. """
+    def test_default_rquirements(self):
+        """ Test that the default requirements are correct. """
+        self.assertEqual({requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches},
+                         domain.Component.default_requirements())
+
+    def test_optional_requirements(self):
+        """ Test that the optional requirements don't contain the default requirements. """
+        self.failIf(domain.Component.default_requirements() & domain.Component.optional_requirements())
+
+
+class ApplicationTest(unittest.TestCase):
+    """ Unit test for the application class. """
+    def test_default_rquirements(self):
+        """ Test that the default requirements are correct. """
+        self.assertEqual({requirement.CodeQuality, requirement.TrackBranches, requirement.Performance,
+                          requirement.ART, requirement.ARTCoverage, requirement.OWASPZAP, requirement.OWASPDependencies,
+                          requirement.OpenVAS},
+                         domain.Application.default_requirements())
+
+    def test_optional_requirements(self):
+        """ Test that the optional requirements don't contain the default requirements. """
+        self.failIf(domain.Application.default_requirements() & domain.Application.optional_requirements())
+

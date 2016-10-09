@@ -269,10 +269,19 @@ class Component(Product):
         from ... import requirement
         return {requirement.CodeQuality, requirement.TrackBranches, requirement.UnitTests}
 
+    @staticmethod
+    def optional_requirements():
+        return super(Component, Component).optional_requirements() - Component.default_requirements()
+
 
 class Application(Product):
     """ Class representing a software application. """
     @staticmethod
     def default_requirements():
         from ... import requirement
-        return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage}
+        return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage,
+                requirement.Performance, requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS}
+
+    @staticmethod
+    def optional_requirements():
+        return super(Application, Application).optional_requirements() - Application.default_requirements()

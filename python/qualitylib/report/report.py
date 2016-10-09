@@ -26,7 +26,7 @@ class QualityReport(domain.DomainObject):
     @staticmethod
     def domain_object_classes():
         """ Return a set of all domain object classes that the report can report on. """
-        return {domain.Project, domain.Product, domain.Document, domain.Team}
+        return {domain.Project, domain.Product, domain.Component, domain.Application, domain.Document, domain.Team}
 
     @classmethod
     def requirement_classes(cls):

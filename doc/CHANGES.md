@@ -1,4 +1,9 @@
-2016-10-06  Release 1.64.0
+2016-10-09  Release 1.64.1
+ 
+  * Add component and application domain objects.
+  
+  
+2016-10-09  Release 1.64.0
 
   * Give domain objects default requirements. See the help menu domain objects for the default and optional requirements
     for each type of domain object.

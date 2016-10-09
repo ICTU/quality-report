@@ -28,7 +28,7 @@ from .measurement.metric_mixin import MetaMetricMixin
 
 from .measurement.target import TechnicalDebtTarget, DynamicTechnicalDebtTarget
 
-from .software_development.product import Product
+from .software_development.product import Product, Component, Application
 from .software_development.team import Team
 from .software_development.person import Person
 from .software_development.project import Project
