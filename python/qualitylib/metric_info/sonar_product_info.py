@@ -23,6 +23,8 @@ class SonarProductInfo(object):
 
     def sonar_id(self):
         """ Return the id that identifies the product in Sonar. """
+        if not self.__product:
+            return ''
         version = self.__product.product_version()
         sonar_id = self.__product.old_metric_source_id(self.__sonar, version)
         if not sonar_id:
