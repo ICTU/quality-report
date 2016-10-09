@@ -43,6 +43,14 @@ class Product(RequirementSubject, MeasurableObject):
         self.__product_branch = product_branch
         self.__product_branches = product_branches or {}
 
+    @staticmethod
+    def optional_requirements():
+        from ... import requirement
+        return {requirement.ARTCoverage, requirement.ART, requirement.CodeQuality, requirement.JSFCodeQuality,
+                requirement.NoSnapshotDependencies, requirement.OpenVAS, requirement.OWASPDependencies,
+                requirement.OWASPZAP, requirement.Performance, requirement.TrackBranches,
+                requirement.UnitTests, requirement.UserStoriesAndLTCs}
+
     def __eq__(self, other):
         return self.product_label() == other.product_label()
 
@@ -252,3 +260,19 @@ class Product(RequirementSubject, MeasurableObject):
         vcs = self.__project.metric_source(metric_source.VersionControlSystem)
         vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs, self)
         return vcs_product_info.vcs_path(version, branch)
+
+
+class Component(Product):
+    """ Class representing a software component. """
+    @staticmethod
+    def default_requirements():
+        from ... import requirement
+        return {requirement.CodeQuality, requirement.TrackBranches, requirement.UnitTests}
+
+
+class Application(Product):
+    """ Class representing a software application. """
+    @staticmethod
+    def default_requirements():
+        from ... import requirement
+        return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage}

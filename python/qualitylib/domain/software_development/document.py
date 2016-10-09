@@ -22,10 +22,10 @@ from .requirement import RequirementSubject
 class Document(RequirementSubject, MeasurableObject):
     """ Class representing a document. """
 
-    def __init__(self, *args, **kwargs):
+    @staticmethod
+    def default_requirements():
         from ... import requirement  # Run time import to prevent circular dependency.
-        kwargs['requirements'] = [requirement.TrackDocumentAge]
-        super(Document, self).__init__(*args, **kwargs)
+        return {requirement.TrackDocumentAge}
 
     def __str__(self):
         """ Return the id string of the document. """

@@ -29,6 +29,16 @@ class Team(RequirementSubject, MeasurableObject):
         self.__short_name = short_name or self.name()[:2].upper()
         self.__members = set()
 
+    @staticmethod
+    def default_requirements():
+        from ... import requirement  # Run time import to prevent circular dependency.
+        return {requirement.TrackSpirit}
+
+    @staticmethod
+    def optional_requirements():
+        from ... import requirement  # Run time import to prevent circular dependency.
+        return {requirement.TrackAbsence, requirement.ScrumTeam}
+
     def __eq__(self, other):
         return self.id_string() == other.id_string()
 

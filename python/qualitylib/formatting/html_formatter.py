@@ -57,6 +57,7 @@ class HTMLFormatter(base_formatter.Formatter):
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
         parameters['dashboard'] = DashboardFormatter.format(report)
+        parameters['domain_object_classes'] = self.__domain_object_classes(report)
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
@@ -345,6 +346,26 @@ class HTMLFormatter(base_formatter.Formatter):
             metrics = ', '.join(metric_class.name for metric_class in requirement_class.metric_classes())
             icon = icon_span if requirement_class in report.included_requirement_classes() else ''
             result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))
+        result.append('</table>')
+        return '\n'.join(result)
+
+    @staticmethod
+    def __domain_object_classes(report):
+        """ Return a HTML table of the domain objects. """
+        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{default_requirements}</td>' \
+              '<td>{optional_requirements}</td></tr>'
+        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
+        result = list()
+        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
+                      '<th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th>'
+                      '<th>Optionele eisen</th></tr>')
+        for domain_object_class in report.domain_object_classes():
+            name = identifier = domain_object_class.__name__
+            default_requirements = ', '.join(req.name() for req in domain_object_class.default_requirements())
+            optional_requirements = ', '.join(req.name() for req in domain_object_class.optional_requirements())
+            icon = icon_span if domain_object_class in report.included_domain_object_classes() else ''
+            result.append(row.format(icon=icon, name=name, id=identifier, default_requirements=default_requirements,
+                                     optional_requirements=optional_requirements))
         result.append('</table>')
         return '\n'.join(result)
 

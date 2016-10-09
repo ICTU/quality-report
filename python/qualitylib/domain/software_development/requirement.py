@@ -38,10 +38,25 @@ class RequirementSubject(DomainObject):
     """ Measurable objects that have requirements. """
     def __init__(self, *args, **kwargs):
         self.__requirements = kwargs.pop('requirements', set())
+        if not self.__requirements:
+            added_requirements = set(kwargs.pop('added_requirements', []))
+            assert added_requirements.issubset(self.optional_requirements())
+            removed_requirements = set(kwargs.pop('removed_requirements', []))
+            self.__requirements = (self.default_requirements() | added_requirements) - removed_requirements
         super(RequirementSubject, self).__init__(*args, **kwargs)
 
+    @staticmethod
+    def default_requirements():
+        """ Return the default requirements of the subject. """
+        return set()
+
+    @staticmethod
+    def optional_requirements():
+        """ Return the optional requirements of the subject. """
+        return set()
+
     def requirements(self):
-        """ Return the requirements of the object. """
+        """ Return the requirements of the subject. """
         return self.__requirements
 
     def required_metric_classes(self):

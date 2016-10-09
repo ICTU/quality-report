@@ -23,6 +23,11 @@ from .. import metric, metric_source, metric_info, domain, requirement
 class QualityReport(domain.DomainObject):
     """ Quality report on a project. """
 
+    @staticmethod
+    def domain_object_classes():
+        """ Return a set of all domain object classes that the report can report on. """
+        return {domain.Project, domain.Product, domain.Document, domain.Team}
+
     @classmethod
     def requirement_classes(cls):
         """ Return a list of all requirement classes that the report can report on. """
@@ -124,6 +129,10 @@ class QualityReport(domain.DomainObject):
     def included_metric_source_classes(self):
         """ Return the metric classes actually configured in the project. """
         return self.__project.metric_source_classes()
+
+    def included_domain_object_classes(self):
+        """ Return the domain object classes actually configured in the project. """
+        return {self.__project.__class__} | self.__project.domain_object_classes()
 
     def teams(self):
         """ Return the teams we report on. """

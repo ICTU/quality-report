@@ -1,3 +1,9 @@
+2016-10-06  Release 1.64.0
+
+  * Give domain objects default requirements. See the help menu domain objects for the default and optional requirements
+    for each type of domain object.
+
+
 2016-10-03  Release 1.63.2
 
   * Bug fix: The happiness metric source wouldn't correctly read the JSON.

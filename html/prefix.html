@@ -140,6 +140,11 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a id="help_domain_objects" href="#modal_help_domain_objects_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Domeinobjecten
+                                    </a>
+                                </li>
+                                <li>
                                     <a id="help_configuration" href="#modal_help_configuration_dialog" data-toggle="modal">
                                        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Configuratie
                                     </a>
@@ -321,6 +326,29 @@
                             worden als de betreffende eis van toepassing is (zie Metrieken in het Help menu).
                         </p>
                         {requirements}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_domain_objects_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_domain_objects_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_domain_objects_dialog_title">Domeinobjecten</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van domeinobjecten waaraan het kwaliteitssysteem kan meten. Per
+                            domeinobject is aangegeven of het domeinobject voorkomt in deze rapportage.
+                            Bij ieder domeinobject staan de eisen die
+                            standaard van toepassing zijn op het domeinobject.
+                        </p>
+                        {domain_object_classes}
                     </div>
                     <div class="modal-footer">
                         <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>

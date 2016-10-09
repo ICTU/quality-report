@@ -94,7 +94,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_team(self):
         """ Test that the report has 2 sections when we add a team. """
-        team = domain.Team(name='Team', requirements=[requirement.TrackSpirit])
+        team = domain.Team(name='Team')
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual(2, len(quality_report.sections()))
@@ -131,6 +131,15 @@ class QualityReportTest(unittest.TestCase):
         """ Test the list of included requirements. """
         self.__report.sections()
         self.assertEqual(set(), self.__report.included_requirement_classes())
+
+    def test_get_domain_object_classes(self):
+        """ Test the set of all domain objects. """
+        self.assertEqual({domain.Project, domain.Product, domain.Team, domain.Document},
+                         self.__report.domain_object_classes())
+
+    def test_get_included_donain_object_classes(self):
+        """ Test the set of included domain objects. """
+        self.assertEqual({self.__report.project().__class__}, self.__report.included_domain_object_classes())
 
 
 class ReportFactory(object):  # pylint: disable=too-few-public-methods
@@ -197,9 +206,12 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_team_requirements(self):
         """ Test that the team metrics are added if required. """
-        for req in [requirement.ScrumTeam, requirement.TrackSpirit, requirement.TrackAbsence]:
+        for req in domain.Team.default_requirements():
             for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class, team_kwargs=dict(requirements=[req]))
+                self.__assert_metric(metric_class, team_kwargs=dict())
+        for req in domain.Team.optional_requirements():
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, team_kwargs=dict(added_requirements=[req]))
 
     def test_document_requirements(self):
         """ Test that the document metrics are added if a document is added to the project. """

@@ -36,6 +36,15 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         self.__dashboard = [], []  # rows, columns
         super(Project, self).__init__(*args, **kwargs)
 
+    @staticmethod
+    def optional_requirements():
+        from ... import requirement  # Run time import to prevent circular dependency.
+        return {requirement.CSharp, requirement.Java, requirement.JavaScript, requirement.TrackActions,
+                requirement.TrackBugs, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
+                requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
+                requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,
+                requirement.TrackSonarVersion, requirement.TrackTechnicalDebt, requirement.Web}
+
     def organization(self):
         """ Return the name of the organization. """
         return self.__organization
@@ -47,6 +56,9 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def metric_source_classes(self):
         """ Return a set of all metric source classes. """
         return self.__metric_sources.keys()
+
+    def domain_object_classes(self):
+        return {domain_object.__class__ for domain_object in self.products() + self.teams() + self.documents()}
 
     def add_product(self, product):
         """ Add a product to the project. """
