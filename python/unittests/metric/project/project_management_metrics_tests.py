@@ -87,6 +87,10 @@ class RiskLogTest(unittest.TestCase):
         """ Test that the value is the number of days since the last update. """
         self.assertEqual(0, self.__metric.value())
 
+    def test_value_without_metric_source(self):
+        """ Test that the value is -1 when the metric source hasn't been configured. """
+        self.assertEqual(-1, metric.RiskLog(project=domain.Project(requirements=[requirement.TrackRisks])).value())
+
     def test_should_be_measured(self):
         """ Test that the risk log should be measured if the project has the appropriate requirement. """
         self.assertTrue(metric.RiskLog.should_be_measured(self.__project))
