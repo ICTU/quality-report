@@ -1,5 +1,6 @@
+sudo: required
+dist: trusty
 language: java
-sudo: false
 install:
 - pip install -r python/requirements.txt
 - pip install codeclimate-test-reporter
@@ -9,9 +10,9 @@ script:
 - CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 addons:
+  sonarqube: true
   code_climate:
     repo_token: 58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
-  sonarqube: true
 env:
   global:
     - secure: mOpbXELefnD2snAx7ie+wQwcF52/ee1n1ILeqjnSunDGHCZzitpYwVR1+hhqXyK0bNy+HdALCXf2rlqzJUvOsQmAYefj19w4K5SzejVd27MVeJ15EFX9NAruRo0Z3qg1jr5s0argFra5JrdXbfGGLWqY7Ejj5ZzG40VlRjKMx88=
