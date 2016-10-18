@@ -1,6 +1,4 @@
-language:
-- python
-- java
+language: java
 sudo: false
 install:
 - pip install -r python/requirements.txt
