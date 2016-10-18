@@ -209,15 +209,6 @@ class SonarPluginVersionCSharp(SonarPluginVersion):
     low_target_value = LooseVersion('4.2')
 
 
-class SonarPluginVersionReSharper(SonarPluginVersion):
-    """ Measure the version number of the ReSharper Sonar plugin. """
-    name = 'Versie van de Sonar ReSharper plugin'
-    plugin_key = 'resharper'
-    plugin_name = 'ReSharper'
-    target_value = LooseVersion('2.0')
-    low_target_value = LooseVersion('1.9')
-
-
 class SonarPluginVersionStyleCop(SonarPluginVersion):
     """ Measure the version number of the StyleCop Sonar plugin. """
     name = 'Versie van de Sonar StyleCop plugin'

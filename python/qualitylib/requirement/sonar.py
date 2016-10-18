@@ -29,7 +29,7 @@ class Java(Requirement):
 class CSharp(Requirement):
     _name = 'C#'
     _metric_classes = (metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
-                       metric.SonarPluginVersionReSharper, metric.SonarQualityProfileVersionCSharp)
+                       metric.SonarQualityProfileVersionCSharp)
 
 
 class JavaScript(Requirement):

@@ -1,3 +1,9 @@
+2016-10-18  Release 1.64.2
+
+  * Remove ReSharper SonarQube plugin version measurement from C# requirements because the ReSharper plugin has been 
+    deprecated.
+  
+  
 2016-10-09  Release 1.64.1
  
   * Add component and application domain objects.
