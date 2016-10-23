@@ -38,11 +38,11 @@ class HappinessTest(unittest.TestCase):
     """ Unit tests for the Happiness class. """
 
     def setUp(self):
-        self.__happiness = Happiness('http://opener/api', url_open=Opener().url_open)
+        self.__happiness = Happiness('http://opener/', url_open=Opener().url_open)
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual('http://opener/api', self.__happiness.url())
+        self.assertEqual('http://opener/', self.__happiness.url())
 
     def test_team_spirit(self):
         """ Test the spirit of the team. """
@@ -66,12 +66,12 @@ class HappinessTest(unittest.TestCase):
         """ Test the spirit when the smiley isn't recognized. """
         opener = Opener()
         opener.json = u"""[{"datum":"2016-09-22","smiley":"0"}]"""
-        self.assertEqual('', Happiness('http://opener/api', url_open=opener.url_open).team_spirit('team'))
+        self.assertEqual('', Happiness('http://opener/', url_open=opener.url_open).team_spirit('team'))
 
     def test_date_without_data(self):
         """ Test the date when there haven't been any smileys registered. """
         opener = Opener()
         opener.json = u"""[{}]"""
         self.assertEqual(datetime.datetime.min,
-                         Happiness('http://opener/api',
+                         Happiness('http://opener',
                                    url_open=opener.url_open).date_of_last_team_spirit_measurement('team'))
