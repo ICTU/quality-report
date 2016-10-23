@@ -97,6 +97,16 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
         coverage_metric = self.metric_class(subject=subject, project=self.__project)
         self.assertEqual(-1, coverage_metric.value())
 
+    def test_old_age(self):
+        """ Test that the old age is set for trunk versions. """
+        self.assertEqual(datetime.timedelta(hours=3 * 24), self.__metric.old_age)
+
+    def test_old_age_for_released_products(self):
+        """ Test that the old ager is not set for released products because it doesn't make matter how long ago the
+            test was run as long as it has been run. """
+        self.assertEqual(datetime.timedelta.max,
+                         self.metric_class(subject=FakeSubject(version='1.1'), project=self.__project).old_age)
+
 
 class ARTBranchCoverageJacocoTest(ARTStatementCoverageJacocoTest):
     """ Unit tests for the ART branch metric. """
