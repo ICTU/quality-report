@@ -24,7 +24,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     metric_source_name = 'Jira'
 
     def __init__(self, url, username, password, open_bug_query_id=None,
-                 open_security_bug_query_id=None,
+                 open_security_bug_query_id=None, open_static_security_analysis_bug_query_id=None,
                  manual_test_cases_query_id=None,
                  user_stories_ready_query_id=None,
                  technical_debt_issues_query_id=None,
@@ -35,6 +35,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         self.__url = url
         self.__open_bug_query_id = open_bug_query_id
         self.__open_security_bug_query_id = open_security_bug_query_id
+        self.__open_static_security_analysis_bug_query_id = open_static_security_analysis_bug_query_id
         self.__manual_test_cases_query_id = manual_test_cases_query_id
         self.__manual_test_cases_duration_field = manual_test_cases_duration_field
         self.__user_stories_ready_query_id = user_stories_ready_query_id
@@ -53,6 +54,11 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     def nr_open_security_bugs(self):
         """ Return the number of open security bugs. """
         return self.__query_total(self.__open_security_bug_query_id)
+
+    @utils.memoized
+    def nr_open_static_security_analysis_bugs(self):
+        """ Return the number of open static security analysis bugs. """
+        return self.__query_total(self.__open_static_security_analysis_bug_query_id)
 
     @utils.memoized
     def nr_technical_debt_issues(self):
@@ -156,6 +162,10 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     def nr_open_security_bugs_url(self):
         """ Return the url for the nr of open security bug reports query. """
         return self.__get_query_url(self.__open_security_bug_query_id, search=False)
+
+    def nr_open_static_security_analysis_bugs_url(self):
+        """ Return the url for the nr of open static security analysis bug reports query. """
+        return self.__get_query_url(self.__open_static_security_analysis_bug_query_id, search=False)
 
     def manual_test_cases_url(self):
         """ Return the url for the manual test cases query. """

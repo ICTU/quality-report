@@ -59,6 +59,26 @@ class OpenSecurityBugs(LowerIsBetterMetric):
         return [self._metric_source.nr_open_security_bugs_url()]
 
 
+class OpenStaticSecurityAnalysisBugs(LowerIsBetterMetric):
+    """ Metric for measuring the number of open static security analysis bugs. """
+
+    name = 'Hoeveelheid open beveiligingsbugreports uit statische security analyse'
+    unit = 'beveiligingsbugreports uit statische security analyse'
+    norm_template = 'Het aantal {unit} dat meer dan een sprint open staat is minder dan {target}. ' \
+                    'Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} dat meer dan een sprint open staat is {value}.'
+    target_value = 0
+    low_target_value = 3
+    metric_source_classes = (metric_source.Jira,)
+
+    def value(self):
+        nr_open_static_security_analysis_bugs = self._metric_source.nr_open_static_security_analysis_bugs()
+        return -1 if nr_open_static_security_analysis_bugs in (-1, None) else nr_open_static_security_analysis_bugs
+
+    def _metric_source_urls(self):
+        return [self._metric_source.nr_open_static_security_analysis_bugs_url()]
+
+
 class TechnicalDebtIssues(LowerIsBetterMetric):
     """ Metric for measuring the number of technical debt issues. """
 

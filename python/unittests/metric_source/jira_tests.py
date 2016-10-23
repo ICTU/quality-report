@@ -43,9 +43,9 @@ class JiraTest(unittest.TestCase):
     def setUp(self):
         self.__jira_url = 'http://jira/'
         self.__jira = JiraUnderTest(self.__jira_url, 'username', 'password', open_bug_query_id=123,
-                                    open_security_bug_query_id=456, manual_test_cases_query_id=654,
-                                    technical_debt_issues_query_id=444, user_stories_ready_query_id=555,
-                                    user_stories_without_security_risk_query_id=567,
+                                    open_security_bug_query_id=456, open_static_security_analysis_bug_query_id=567,
+                                    manual_test_cases_query_id=654, technical_debt_issues_query_id=444,
+                                    user_stories_ready_query_id=555, user_stories_without_security_risk_query_id=567,
                                     user_stories_without_performance_risk_query_id=789)
         self.__jira_no_queries = JiraUnderTest(self.__jira_url, 'username', 'password')
 
@@ -76,6 +76,18 @@ class JiraTest(unittest.TestCase):
     def test_nr_open_security_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_security_bugs_url())
+
+    def test_nr_open_static_security_analysis_bugs(self):
+        """ Test that the number of open static security analysis bugs is correct. """
+        self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_static_security_analysis_bugs())
+
+    def test_nr_open_static_security_analysis_bugs_without_query(self):
+        """ Test that the number of open security bugs is -1 when Jira has no query id. """
+        self.assertEqual(-1, self.__jira_no_queries.nr_open_static_security_analysis_bugs())
+
+    def test_nr_open_static_security_analysis_bugs_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual(self.__jira.view_url, self.__jira.nr_open_static_security_analysis_bugs_url())
 
     def test_nr_manual_tests(self):
         """ Test that the correct number of manual test cases is returned. """

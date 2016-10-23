@@ -1,3 +1,12 @@
+2016-10-19  Release 1.65.0
+
+  * Add a metric for the number of open security bugs from static security analysis listed in Jira. To use it,
+    define a filter in Jira that lists the number of open static security analysis bugs and pass it to Jira:
+    `myJira = metric_source.Jira('http://jira/', 'username', 'password', open_static_security_analysis_bug_query_id=567)`
+    The `metric.OpenStaticSecurityAnalysisBugs` will be added to the project provided the project has the
+    `requirement.TrackBugs`.
+ 
+  
 2016-10-18  Release 1.64.2
 
   * Remove ReSharper SonarQube plugin version measurement from C# requirements because the ReSharper plugin has been 

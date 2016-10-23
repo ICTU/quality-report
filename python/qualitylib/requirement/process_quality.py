@@ -35,7 +35,7 @@ class TrackManualLTCs(Requirement):
 
 class TrackBugs(Requirement):
     _name = 'Track open bug reports'
-    _metric_classes = (metric.OpenBugs, metric.OpenSecurityBugs)
+    _metric_classes = (metric.OpenBugs, metric.OpenSecurityBugs, metric.OpenStaticSecurityAnalysisBugs)
 
 
 class TrackTechnicalDebt(Requirement):

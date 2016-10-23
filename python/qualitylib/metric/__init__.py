@@ -44,7 +44,7 @@ from .product.violation_metrics import BlockerViolations, CriticalViolations, Ma
 from .product.zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAPScanAlertsMetric
 
 # Project metrics
-from .project.bug_metrics import OpenBugs, OpenSecurityBugs, TechnicalDebtIssues
+from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
     UserStoriesWithoutPerformanceRiskAssessment
 from .project.project_management_metrics import RiskLog, ActionActivity, ActionAge

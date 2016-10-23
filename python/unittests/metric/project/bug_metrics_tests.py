@@ -45,14 +45,24 @@ class FakeJira(object):
         return 'http://opensecuritybugs/'
 
     @staticmethod
-    def nr_technical_debt_issues_url():
-        """ Return a fake url for the number of technical debt issues query. """
-        return 'http://technicaldebtissues/'
+    def nr_open_static_security_analysis_bugs():
+        """ Return a fake number of static security analysis bugs. """
+        return 8
+
+    @staticmethod
+    def nr_open_static_security_analysis_bugs_url():
+        """ Return a fake url for the number of open static security analysis bugs query. """
+        return 'http://openstaticsecurityanalysisbugs/'
 
     @staticmethod
     def nr_technical_debt_issues():
         """ Return the number of technical debt issues. """
         return 8
+
+    @staticmethod
+    def nr_technical_debt_issues_url():
+        """ Return a fake url for the number of technical debt issues query. """
+        return 'http://technicaldebtissues/'
 
 
 class OpenBugsTest(unittest.TestCase):
@@ -95,6 +105,27 @@ class OpenSecurityBugsTest(unittest.TestCase):
     def test_should_be_measured(self):
         """ Test that the metric should be measured when the project has the appropriate requirement. """
         self.assertTrue(metric.OpenSecurityBugs.should_be_measured(self.__project))
+
+
+class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
+    """ Unit tests for the number of open static security analysis bugs metric. """
+
+    def setUp(self):
+        self.__project = domain.Project(metric_sources={metric_source.Jira: FakeJira()},
+                                        requirements=[requirement.TrackBugs])
+        self.__metric = metric.OpenStaticSecurityAnalysisBugs(project=self.__project)
+
+    def test_value(self):
+        """ Test that the value is correct. """
+        self.assertEqual(FakeJira.nr_open_static_security_analysis_bugs(), self.__metric.value())
+
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual({'Jira': FakeJira.nr_open_static_security_analysis_bugs_url()}, self.__metric.url())
+
+    def test_should_be_measured(self):
+        """ Test that the metric should be measured when the project has the appropriate requirement. """
+        self.assertTrue(metric.OpenStaticSecurityAnalysisBugs.should_be_measured(self.__project))
 
 
 class TechnicalDebtIssuesTest(unittest.TestCase):
