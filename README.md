@@ -1,5 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/quality_report.svg)](https://badge.fury.io/py/quality_report)
 [![Build Status](https://travis-ci.org/ICTU/quality-report.png?branch=master)](https://travis-ci.org/ICTU/quality-report)
+[![Quality Gate](https://sonarqube.com/api/badges/gate?key=nl.ictu:quality_report)](https://sonarqube.com/dashboard/index/nl.ictu:quality_report)
 [![Test Coverage](https://codeclimate.com/github/ICTU/quality-report/badges/coverage.svg)](https://codeclimate.com/github/ICTU/quality-report/coverage)
 [![Code Climate](https://codeclimate.com/github/ICTU/quality-report/badges/gpa.svg)](https://codeclimate.com/github/ICTU/quality-report)
 [![Code Health](https://landscape.io/github/ICTU/quality-report/master/landscape.svg?style=flat)](https://landscape.io/github/ICTU/quality-report/master)
