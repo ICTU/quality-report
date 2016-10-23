@@ -56,3 +56,22 @@ class HappinessTest(unittest.TestCase):
         """ Test the date of the last measurement of the spirit of the team. """
         self.assertEqual(datetime.datetime(2016, 9, 22),
                          self.__happiness.date_of_last_team_spirit_measurement('team_2'))
+
+    def test_missing_date_of_last_measurement(self):
+        """ Test the date when an error is raised. """
+        self.assertEqual(datetime.datetime.min,
+                         Happiness('raise', url_open=Opener().url_open).date_of_last_team_spirit_measurement('team'))
+
+    def test_team_spirit_wrong_smiley(self):
+        """ Test the spirit when the smiley isn't recognized. """
+        opener = Opener()
+        opener.json = u"""[{"datum":"2016-09-22","smiley":"0"}]"""
+        self.assertEqual('', Happiness('http://opener/api', url_open=opener.url_open).team_spirit('team'))
+
+    def test_date_without_data(self):
+        """ Test the date when there haven't been any smileys registered. """
+        opener = Opener()
+        opener.json = u"""[{}]"""
+        self.assertEqual(datetime.datetime.min,
+                         Happiness('http://opener/api',
+                                   url_open=opener.url_open).date_of_last_team_spirit_measurement('team'))
