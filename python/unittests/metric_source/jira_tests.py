@@ -158,6 +158,10 @@ class JiraTest(unittest.TestCase):
         """ Test that the number of user stories is -1 when Jira hasn't got the right query. """
         self.assertEqual(-1, self.__jira_no_queries.nr_user_stories_without_security_risk_assessment())
 
+    def test_user_stories_without_security_risk_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual('http://view', self.__jira.user_stories_without_security_risk_assessment_url())
+
     def test_user_stories_without_performance_risk(self):
         """ Test that the correct number of user stories without performance risk assessment is returned. """
         self.assertEqual(5, self.__jira.nr_user_stories_without_performance_risk_assessment())
@@ -165,6 +169,10 @@ class JiraTest(unittest.TestCase):
     def test_user_stories_without_performance_risk_without_query(self):
         """ Test that the number of user stories is -1 when Jira hasn't got the right query. """
         self.assertEqual(-1, self.__jira_no_queries.nr_user_stories_without_performance_risk_assessment())
+
+    def test_user_stories_without_performance_risk_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual('http://view', self.__jira.user_stories_without_performance_risk_assessment_url())
 
 
 class JiraWhenFailingTest(unittest.TestCase):
