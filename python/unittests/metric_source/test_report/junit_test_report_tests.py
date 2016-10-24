@@ -72,6 +72,13 @@ class JunitTestReportTest(unittest.TestCase):
         self.assertEqual(-1, self.__junit.passed_tests('raise'))
         self.assertEqual(-1, self.__junit.skipped_tests('raise'))
 
+    def test_missing_url(self):
+        """ Test that the default is returned when no urls are provided. """
+        self.assertEqual(-1, self.__junit.failed_tests())
+        self.assertEqual(-1, self.__junit.passed_tests())
+        self.assertEqual(-1, self.__junit.skipped_tests())
+        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime())
+
     def test_incomplete_xml(self):
         """ Test that the default is returned when the xml is incomplete. """
         self.__opener.contents = u'<testsuites></testsuites>'

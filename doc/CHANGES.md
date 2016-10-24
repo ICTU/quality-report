@@ -1,3 +1,8 @@
+2016-10-24  Release 1.65.2
+
+  * Bug fix: Don't crash when `requirement.ART` is required, but no test reports are provided as metric source.
+  
+  
 2016-10-24  Release 1.65.1
 
   * Bug fix: The metrics that report on individual SonarQube violations, such as cyclomatic complexity, included resolved

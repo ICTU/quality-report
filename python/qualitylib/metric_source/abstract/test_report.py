@@ -16,6 +16,8 @@ limitations under the License.
 
 from __future__ import absolute_import
 
+import datetime
+
 from .. import url_opener
 from ... import domain
 
@@ -31,19 +33,20 @@ class TestReport(domain.MetricSource):
 
     def report_datetime(self, *report_urls):
         """ Return the (oldest) date and time of the reports. """
-        return min([self._report_datetime(report_url) for report_url in report_urls])
+        return min([self._report_datetime(report_url) for report_url in report_urls]) if report_urls else \
+            datetime.datetime.min
 
     def passed_tests(self, *report_urls):
         """ Return the number of passed tests. """
-        return sum([self._passed_tests(report_url) for report_url in report_urls])
+        return sum([self._passed_tests(report_url) for report_url in report_urls]) if report_urls else -1
 
     def failed_tests(self, *report_urls):
         """ Return the number of failed tests. """
-        return sum([self._failed_tests(report_url) for report_url in report_urls])
+        return sum([self._failed_tests(report_url) for report_url in report_urls]) if report_urls else -1
 
     def skipped_tests(self, *report_urls):
         """ Return the number of skipped tests. """
-        return sum([self._skipped_tests(report_url) for report_url in report_urls])
+        return sum([self._skipped_tests(report_url) for report_url in report_urls]) if report_urls else -1
 
     def _report_datetime(self, report_url):
         """ Return the date and time of the report. """
