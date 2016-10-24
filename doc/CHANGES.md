@@ -1,4 +1,10 @@
-2016-10-19  Release 1.65.0
+2016-10-24  Release 1.65.1
+
+  * Bug fix: The metrics that report on individual SonarQube violations, such as cyclomatic complexity, included resolved
+    issues in their count.
+    
+
+2016-10-23  Release 1.65.0
 
   * Add a metric for the number of open security bugs from static security analysis listed in Jira. To use it,
     define a filter in Jira that lists the number of open static security analysis bugs and pass it to Jira:

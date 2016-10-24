@@ -266,7 +266,7 @@ class SonarTest(unittest.TestCase):
 
     def test_violations_url(self):
         """ Test the url of a violations page for a specific product. """
-        self.assertEqual('http://sonar/issues/search#componentRoots=product',
+        self.assertEqual('http://sonar/issues/search#resolved=false|componentRoots=product',
                          self.__sonar.violations_url('product'))
 
     def test_version(self):
