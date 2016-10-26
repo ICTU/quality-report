@@ -161,8 +161,8 @@ class Pom(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
                 try:
                     resolved_value = templated_value % properties
                     resolved_properties[property_tag] = resolved_value
-                except KeyError:
-                    logging.warn("Couldn't resolve property %s: %s", property_tag, value)
+                except (KeyError, ValueError) as reason:
+                    logging.warn("Couldn't resolve property %s with value %s due to %s", property_tag, value, reason)
         properties.update(resolved_properties)
 
     @staticmethod

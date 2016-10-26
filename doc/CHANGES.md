@@ -1,3 +1,8 @@
+2016-10-26  Release 1.65.3
+
+  * Bug fix: Don't crash when a property in a pom file can't be resolved.
+  
+
 2016-10-24  Release 1.65.2
 
   * Bug fix: Don't crash when `requirement.ART` is required, but no test reports are provided as metric source.
