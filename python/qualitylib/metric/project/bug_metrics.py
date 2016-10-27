@@ -38,18 +38,13 @@ class OpenBugs(LowerIsBetterMetric):
         return [self._metric_source.nr_open_bugs_url()]
 
 
-class OpenSecurityBugs(LowerIsBetterMetric):
+class OpenSecurityBugs(OpenBugs):
     """ Metric for measuring the number of open security bugs. """
 
     name = 'Hoeveelheid open beveiligingsbugreports'
-    unit = 'beveiligingsbugreports'
-    norm_template = 'Het aantal {unit} met prioriteit major of hoger dat meer dan een ' \
-        'sprint open staat is minder dan {target}. Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} met prioriteit major of hoger dat meer dan een sprint ' \
-        'open staat is {value}.'
+    unit = 'open beveiligingsbugreports'
     target_value = 0
     low_target_value = 3
-    metric_source_classes = (metric_source.Jira,)
 
     def value(self):
         nr_open_security_bugs = self._metric_source.nr_open_security_bugs()
@@ -59,17 +54,11 @@ class OpenSecurityBugs(LowerIsBetterMetric):
         return [self._metric_source.nr_open_security_bugs_url()]
 
 
-class OpenStaticSecurityAnalysisBugs(LowerIsBetterMetric):
+class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
     """ Metric for measuring the number of open static security analysis bugs. """
 
     name = 'Hoeveelheid open beveiligingsbugreports uit statische security analyse'
-    unit = 'beveiligingsbugreports uit statische security analyse'
-    norm_template = 'Het aantal {unit} dat meer dan een sprint open staat is minder dan {target}. ' \
-                    'Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} dat meer dan een sprint open staat is {value}.'
-    target_value = 0
-    low_target_value = 3
-    metric_source_classes = (metric_source.Jira,)
+    unit = 'open beveiligingsbugreports uit statische security analyse'
 
     def value(self):
         nr_open_static_security_analysis_bugs = self._metric_source.nr_open_static_security_analysis_bugs()
