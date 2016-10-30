@@ -1,4 +1,4 @@
 # Required Python packages
 beautifulsoup4==4.5.1
-coverage==3.5
+coverage==4.2
 xmlrunner==1.7.7
