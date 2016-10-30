@@ -1,3 +1,8 @@
+2016-10-30  Release 1.65.4
+
+  * Update dependencies to latest versions.
+  
+
 2016-10-26  Release 1.65.3
 
   * Bug fix: Don't crash when a property in a pom file can't be resolved.
