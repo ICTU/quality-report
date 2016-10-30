@@ -55,7 +55,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
     def _date_from_soup(self, soup):
         """ Return the date when performance was last measured. """
         try:
-            table = soup('table', attrs={'class': 'config'})[0]
+            table = soup('table', attrs={'class': ['config']})[0]
             date_string = table('tr')[2]('td')[1].string
         except IndexError:
             logging.warning("Can't get date from performance report")

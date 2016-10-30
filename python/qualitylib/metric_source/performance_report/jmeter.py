@@ -102,7 +102,7 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
     def __report_contains_queries(soup, product_query_id):
         """ Return whether the performance report contains queries with the specified query id. """
         product_query_re = re.compile(product_query_id)
-        query_names = soup('td', attrs={'class': 'name'})
+        query_names = soup('td', attrs={'class': ['name']})
         for query_name in query_names:
             if product_query_re.match(query_name.string):
                 return True
