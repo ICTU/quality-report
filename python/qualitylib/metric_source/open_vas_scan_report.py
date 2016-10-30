@@ -15,6 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import bs4
+
 from .. import domain
 from . import url_opener, beautifulsoup
 
@@ -34,7 +36,7 @@ class OpenVASScanReport(domain.MetricSource):
         nr_alerts = 0
         for url in report_urls:
             try:
-                soup = beautifulsoup.BeautifulSoup(self._url_open(url))
+                soup = bs4.BeautifulSoup(self._url_open(url), "html.parser")
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
             else:

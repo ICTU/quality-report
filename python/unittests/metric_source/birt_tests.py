@@ -14,11 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import bs4
 import datetime
 import unittest
 import urllib2
-
-import BeautifulSoup
 
 from qualitylib.metric_source import Birt
 from qualitylib.metric_source.birt import SprintProgressReport
@@ -689,7 +688,7 @@ class BirtUnderTest(Birt):  # pylint: disable=too-few-public-methods
         if self.html == 'raise':
             raise urllib2.URLError('Birt down')
         else:
-            return BeautifulSoup.BeautifulSoup(self.html)
+            return bs4.BeautifulSoup(self.html, "html.parser")
 
 
 class BirtTest(unittest.TestCase):
@@ -837,7 +836,7 @@ class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disabl
 
     def soup(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
-        return BeautifulSoup.BeautifulSoup(self.html)
+        return bs4.BeautifulSoup(self.html, "html.parser")
 
 
 class BirtSprintProgressReportTest(unittest.TestCase):

@@ -14,10 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import bs4
 import datetime
 import unittest
-
-import BeautifulSoup
 
 from qualitylib.metric_source import Wiki
 
@@ -43,7 +42,7 @@ class WikiUnderTest(Wiki):  # pylint: disable=too-few-public-methods
 
     def soup(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
-        return BeautifulSoup.BeautifulSoup(self.html)
+        return bs4.BeautifulSoup(self.html, "html.parser")
 
 
 class WikiTest(unittest.TestCase):

@@ -41,13 +41,13 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         for url in urls:
             soup = self.soup(url)
             for row in soup('tr'):
-                query_names = row('td', attrs={'class': 'name'})
+                query_names = row('td', attrs={'class': ['name']})
                 if not query_names:
                     continue  # Header row
                 query_name = query_names[0].string
                 if not product_query_re.match(query_name):
                     continue  # Not our product
-                if len(row('td')) < self.COLUMN_90_PERC + 1 or not row('td')[self.COLUMN_90_PERC].has_key('class'):
+                if len(row('td')) < self.COLUMN_90_PERC + 1 or not row('td')[self.COLUMN_90_PERC].has_attr('class'):
                     continue  # No color in 90 perc column
                 rows.append(row)
         return rows

@@ -16,8 +16,7 @@ limitations under the License.
 from __future__ import absolute_import
 
 import datetime
-
-from BeautifulSoup import BeautifulSoup
+import bs4
 
 from ..url_opener import UrlOpener
 from ... import utils, domain
@@ -36,7 +35,7 @@ class CoverageReport(domain.MetricSource):
     def statement_coverage(self, coverage_url):
         """ Return the ART statement coverage for a specific product. """
         try:
-            soup = self.__get_report_soup(coverage_url)
+            soup = self.__get_soup(coverage_url)
         except UrlOpener.url_open_exceptions:
             coverage = -1
         else:
@@ -51,7 +50,7 @@ class CoverageReport(domain.MetricSource):
     def branch_coverage(self, coverage_url):
         """ Return the ART branch coverage for a specific product. """
         try:
-            soup = self.__get_report_soup(coverage_url)
+            soup = self.__get_soup(coverage_url)
         except UrlOpener.url_open_exceptions:
             coverage = -1
         else:
@@ -67,7 +66,7 @@ class CoverageReport(domain.MetricSource):
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
         coverage_date_url = self._get_coverage_date_url(coverage_url)
         try:
-            soup = BeautifulSoup(self.__url_open(coverage_date_url))
+            soup = self.__get_soup(coverage_date_url)
         except UrlOpener.url_open_exceptions:
             coverage_date = now()
         else:
@@ -84,6 +83,6 @@ class CoverageReport(domain.MetricSource):
         return coverage_url
 
     @utils.memoized
-    def __get_report_soup(self, coverage_url):
-        """ Get a beautiful soup of the coverage report. """
-        return BeautifulSoup(self.__url_open(coverage_url))
+    def __get_soup(self, url):
+        """ Get a beautiful soup of the HTML at the url. """
+        return bs4.BeautifulSoup(self.__url_open(url), "html.parser")

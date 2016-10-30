@@ -391,18 +391,16 @@ class SilkPerformerMissingTest(unittest.TestCase):
 
     def test_queries_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('product', 'version'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('p1', 'v1'))
 
     def test_queries_violating_max_responsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('product',
-                                                                                                       'version'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('p2', 'v2'))
 
     def test_queries_violating_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('product',
-                                                                                                          'version'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('p3', 'v3'))
 
     def test_date_with_missing_report(self):
         """ Test that the date of a missing report is the min date. """
-        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').date('product', 'version'))
+        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').date('p4', 'v4'))

@@ -45,7 +45,7 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
                 query_name = query_names[0].string
                 if not product_query_re.match(query_name):
                     continue  # Not our product
-                if not row('td')[self.COLUMN_90_PERC].has_key('class'):
+                if not row('td')[self.COLUMN_90_PERC].has_attr('class'):
                     continue  # No color in 90 perc column
                 rows.append(row)
         return rows

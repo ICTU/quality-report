@@ -16,7 +16,7 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 from . import url_opener
 from .. import utils
@@ -28,4 +28,4 @@ class BeautifulSoupOpener(url_opener.UrlOpener):
     @utils.memoized
     def soup(self, url):
         """ Return a BeautifulSoup version of the url. """
-        return BeautifulSoup(self.url_open(url))
+        return BeautifulSoup(self.url_open(url), "html.parser")
