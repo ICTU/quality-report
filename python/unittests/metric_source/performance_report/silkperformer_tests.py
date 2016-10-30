@@ -387,7 +387,7 @@ class SilkPerformerMultipleReportsTest(SilkPerformerTest):
 
 
 class SilkPerformerMissingTest(unittest.TestCase):
-    """ Unit tests for a mkissing Silk Performer performance report metric source. """
+    """ Unit tests for a missing Silk Performer performance report metric source. """
 
     def test_queries_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
