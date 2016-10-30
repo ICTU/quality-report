@@ -59,7 +59,11 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def failing_jobs_url(self):
         """ Return the urls for the failing Jenkins jobs. """
         urls = {}
-        for failing_job in self.__failing_jobs():
+        try:
+            failing_jobs = self.__failing_jobs()
+        except url_opener.UrlOpener.url_open_exceptions:
+            return None
+        for failing_job in failing_jobs:
             failing_job_description = failing_job['name']
             age = self.__age_of_last_stable_build(failing_job)
             failing_job_description += ' ({days} dagen)'.format(days=age.days)
@@ -69,7 +73,11 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def unused_jobs_url(self):
         """ Return the urls for the unused Jenkins jobs. """
         urls = {}
-        for unused_job in self.__unused_jobs():
+        try:
+            unused_jobs = self.__unused_jobs()
+        except url_opener.UrlOpener.url_open_exceptions:
+            return None
+        for unused_job in unused_jobs:
             unused_job_description = unused_job['name']
             age = self.__age_of_last_stable_build(unused_job)
             unused_job_description += ' ({days} dagen)'.format(days=age.days)

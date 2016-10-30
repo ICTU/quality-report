@@ -1,3 +1,8 @@
+2016-10-30  Release 1.65.5
+
+  * Bug fix: Don't crash when Jenkins isn't available.
+  
+  
 2016-10-30  Release 1.65.4
 
   * Update dependencies to latest versions.
