@@ -330,7 +330,7 @@ Reporting engine
 """
 
 
-class SilkPerfomerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
+class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the Silk Performer performance report to return the url as report contents. """
 
     def url_open(self, url):  # pylint: disable=no-self-use
@@ -346,7 +346,7 @@ class SilkPerformerTest(unittest.TestCase):
     expected_queries = 17
 
     def setUp(self):
-        self._performance_report = SilkPerfomerUnderTest('http://report/')
+        self._performance_report = SilkPerformerUnderTest('http://report/')
 
     def test_url(self):
         """ Test that the url is correct. """
@@ -382,8 +382,8 @@ class SilkPerformerMultipleReportsTest(SilkPerformerTest):
     expected_queries = 2 * SilkPerformerTest.expected_queries
 
     def setUp(self):
-        self._performance_report = SilkPerfomerUnderTest('http://report/',
-                                                         report_urls=['http://report/1', 'http://report/2'])
+        self._performance_report = SilkPerformerUnderTest('http://report/',
+                                                          report_urls=['http://report/1', 'http://report/2'])
 
 
 class SilkPerformerMissingTest(unittest.TestCase):
@@ -391,18 +391,18 @@ class SilkPerformerMissingTest(unittest.TestCase):
 
     def test_queries_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries('product', 'version'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('product', 'version'))
 
     def test_queries_violating_max_responsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries_violating_max_responsetime('product',
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('product',
                                                                                                        'version'))
 
     def test_queries_violating_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerfomerUnderTest('http://error/').queries_violating_wished_responsetime('product',
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('product',
                                                                                                           'version'))
 
     def test_date_with_missing_report(self):
         """ Test that the date of a missing report is the min date. """
-        self.assertEqual(datetime.datetime.min, SilkPerfomerUnderTest('http://error/').date('product', 'version'))
+        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').date('product', 'version'))
