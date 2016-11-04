@@ -3,15 +3,9 @@
 from qualitylib.domain import Project, Product, Team, Document, Person, Application, Component
 from qualitylib import metric_source, requirement
 
-from isd.convention import HISTORY_FILE_LOCATION
-
-
-# Locations, URLs and addresses of back end tools and systems
-
-HISTORY_LOC = HISTORY_FILE_LOCATION('test_all_requirements_no_sources')
 
 # Sources
-HISTORY = metric_source.History(HISTORY_LOC)
+HISTORY = metric_source.History('python/integrationtests/test_all_requirements_no_sources')
 
 # The project
 PROJECT = Project(
