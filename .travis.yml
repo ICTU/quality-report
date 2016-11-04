@@ -8,6 +8,7 @@ jdk: oraclejdk8
 script:
 - coverage run --branch python/run_unittests.py discover -s python/unittests -p "*_tests.py"
 - coverage xml
+- python python/setup.py sdist
 - coverage run --branch python/run_integrationtests.py discover -s python/integrationtests -p "*_tests.py"
 - coverage xml -o it-coverage.xml
 - CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter
