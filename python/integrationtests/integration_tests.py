@@ -18,6 +18,7 @@ import unittest
 import os
 import tempfile
 import bs4
+import quality_report
 
 
 class IntegrationTests(unittest.TestCase):
@@ -25,8 +26,8 @@ class IntegrationTests(unittest.TestCase):
     def setUpClass(cls):
         """ Create the report. """
         cls.report_folder = tempfile.mkdtemp()
-        os.system('python python/quality_report.py --project python/integrationtests/test_all_requirements_no_sources '
-                  '--report {} --log ERROR'.format(cls.report_folder))
+        project_folder = 'python/integrationtests/test_all_requirements_no_sources'
+        quality_report.Reporter(project_folder=project_folder).create_report(cls.report_folder)
 
     def test_report_exists(self):
         """ Test that the report exists. """

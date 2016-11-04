@@ -16,7 +16,8 @@ coverage.xml
 python/.coverage
 python/htmlcov
 python/test-reports
-python/integration-test-reports
+integration-test-reports
+
 
 # Ignore build folders
 python/dist
