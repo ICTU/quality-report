@@ -453,12 +453,11 @@ function draw_area_chart(section, history) {
 }
 
 function show_or_hide_dashboard() {
-    var display_style = '';
     if (settings.show_dashboard) {
-        display_style = 'block';
+        var display_style = 'block';
         show_links_to('dashboard');
     } else {
-        display_style = 'none';
+        var display_style = 'none';
         hide_links_to('dashboard');
     }
     document.getElementById('section_dashboard').style.display = display_style;
