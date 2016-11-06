@@ -11,7 +11,8 @@ script:
 - cd python
 - python setup.py sdist
 - cd ..
-- coverage run --branch python/run_integrationtests.py discover -s python/integrationtests -p "*_tests.py"
+- coverage run --parallel-mode --branch python/run_integrationtests.py discover -s python/integrationtests -p "*_tests.py"
+- coverage combine .
 - coverage xml -o it-coverage.xml
 - CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN

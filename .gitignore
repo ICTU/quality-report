@@ -12,12 +12,12 @@ python/qualitylib/formatting/img
 python/qualitylib/formatting/js
 
 # Ignore generated coverage and test reports:
+.coverage*
 coverage.xml
 python/.coverage
 python/htmlcov
 python/test-reports
 integration-test-reports
-
 
 # Ignore build folders
 python/dist
