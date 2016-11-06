@@ -241,7 +241,7 @@ function user_wants_to_hide_table(section) {
     // the section contains a product or team table OR if the user wants to
     // see the product and team tables but this section contains the one big
     // table.
-    show_multiple_tables = settings.show_multiple_tables;
+    var show_multiple_tables = settings.show_multiple_tables;
     return section === 'all' ? show_multiple_tables : !show_multiple_tables;
 }
 
@@ -507,11 +507,11 @@ function section_contains_tagged_product(section) {
     if (section === 'all') {
         return false;
     } else {
-        section_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}]);
-        tagged_product_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'tag'}]);
+        var section_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}]);
+        var tagged_product_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'tag'}]);
         // Add the rows for product versions that are to be released since they are tagged too:
         tagged_product_rows.concat(window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'release'}]));
-        tagged_product_rows_in_section = intersection(section_rows, tagged_product_rows);
+        var tagged_product_rows_in_section = intersection(section_rows, tagged_product_rows);
         return tagged_product_rows_in_section.length === section_rows.length;
     }
 }
