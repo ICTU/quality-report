@@ -16,18 +16,32 @@ limitations under the License.
 
 import unittest
 import os
+import shutil
 import tempfile
 import bs4
-import quality_report
 
 
-class IntegrationTests(unittest.TestCase):
+class IntegrationTestCase(unittest.TestCase):
+    """ Base class for integration test cases that examine a generated report. """
+    project_folder = 'Subclass responsibility'
+
     @classmethod
     def setUpClass(cls):
         """ Create the report. """
         cls.report_folder = tempfile.mkdtemp()
-        project_folder = 'python/integrationtests/test_all_requirements_no_sources'
-        quality_report.Reporter(project_folder=project_folder).create_report(cls.report_folder)
+        os.system('python python/quality_report.py --project {0} --report {1} --log ERROR'.format(cls.project_folder,
+                                                                                                  cls.report_folder))
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Remove the report. """
+        shutil.rmtree(cls.report_folder)
+
+
+class AllRequirementsNoSourcesTests(IntegrationTestCase):
+    """ Integration tests using a report with all requirements, but no sources defined. """
+    project_folder = 'python/integrationtests/test_all_requirements_no_sources'
+    expected_title = 'all requirements but no sources'
 
     def test_report_exists(self):
         """ Test that the report exists. """
@@ -37,5 +51,11 @@ class IntegrationTests(unittest.TestCase):
         """ Test the report title. """
         with open('{}/index.html'.format(self.report_folder)) as contents:
             soup = bs4.BeautifulSoup(contents.read(), "html.parser")
-            self.assertEqual('Kwaliteitsrapportage ICTU/Quality report with all requirements but no sources',
+            self.assertEqual('Kwaliteitsrapportage Integrationtest/{}'.format(self.expected_title),
                              soup('head')[0]('title')[0].string)
+
+
+class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
+    """ Integration tests using a report with all requirements and all sources, but no source ids defined. """
+    project_folder = 'python/integrationtests/test_no_source_ids'
+    expected_title = 'all requirements and sources, but no source ids'

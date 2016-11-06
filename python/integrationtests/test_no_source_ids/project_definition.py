@@ -1,20 +1,28 @@
-""" Project definition for testing a project with all requirements but no sources. """
+""" Project definition for testing a project with all requirements and sources, but no source ids. """
 
-from qualitylib.domain import Project, Product, Team, Document, Person, Application, Component
+from qualitylib.domain import Project, Product, Team, Document, Person
 from qualitylib import metric_source, requirement
 
 
 # Sources
-HISTORY = metric_source.History('python/integrationtests/test_all_requirements_no_sources/history.json')
+HISTORY = metric_source.History('python/integrationtests/test_no_source_ids/history.json')
+GIT = metric_source.Git(url='http://git/repo')
+SONAR = metric_source.Sonar('http://sonar/')
+JIRA = metric_source.Jira(url='http://jira/', username='user', password='pass')
 
 # The project
 PROJECT = Project(
-    'Integrationtest', name='all requirements but no sources',
-    metric_sources={metric_source.History: HISTORY},
+    'Integrationtest', name='all requirements and sources, but no source ids',
+    metric_sources={
+        metric_source.History: HISTORY,
+        metric_source.ArchiveSystem: GIT,
+        metric_source.VersionControlSystem: GIT,
+        metric_source.Jira: JIRA,
+        metric_source.Sonar: SONAR},
     requirements=[requirement.TrustedProductMaintainability, requirement.Web, requirement.JavaScript,
                   requirement.CSharp, requirement.Java, requirement.TrackManualLTCs,
                   requirement.TrackBugs, requirement.TrackTechnicalDebt,
-                  requirement.TrackActions, requirement.TrackRisks, requirement.TrackSecurityAndPerformanceRisks,
+                  requirement.TrackActions, requirement.TrackRisks,
                   requirement.TrackReadyUS, requirement.TrackJavaConsistency,
                   requirement.TrackCIJobs, requirement.TrackSonarVersion])
 
@@ -33,10 +41,9 @@ PROJECT.add_team(TEAM)
 # Products the project(s) develop(s).
 PRODUCT = Product(
     PROJECT, 'PR', name='Product ABC',
-    requirements=[requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS,
-                  requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
-                  requirement.CodeQuality, requirement.Performance,
-                  requirement.NoSnapshotDependencies, requirement.TrackBranches],
+    requirements=[requirement.OWASPDependencies, requirement.OWASPZAP, requirement.UserStoriesAndLTCs,
+                  requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.CodeQuality,
+                  requirement.Performance, requirement.NoSnapshotDependencies, requirement.TrackBranches],
     unittests=Product(
         PROJECT, name='Product ABC unit tests'),
     art=Product(
@@ -57,14 +64,9 @@ PRODUCT_V1 = Product(
     jsf=Product(
         PROJECT, name='Product ABC v1 JSF', requirements=[requirement.JSFCodeQuality]))
 
-APPLICATION = Application(PROJECT, 'AP', name='Application FOO')
-
-COMPONENT = Component(PROJECT, 'CO', name='Component FOO')
 
 PROJECT.add_product(PRODUCT)
 PROJECT.add_product(PRODUCT_V1)
-PROJECT.add_product(APPLICATION)
-PROJECT.add_product(COMPONENT)
 
 # Dashboard layout
 
@@ -76,9 +78,7 @@ DASHBOARD_COLUMNS = [('Products', 1), ('Teams', 1), ('Algemeen', 2)]
 # tuples that describe a cell in the dashboard. Each cell is a tuple containing
 # the product or team and the color. Optionally the cell tuple can contain a
 # third value which is a tuple containing the column and row span for the cell.
-DASHBOARD_ROWS = [((PRODUCT, 'lightsteelblue'), (TEAM, 'lavender', (1, 4)), ('PD', 'lightgrey'), ('PE', 'lightgrey')),
-                  ((PRODUCT_V1, 'lightsteelblue'), ('PC', 'lightgrey', (1, 3)), ('MM', 'lightgrey', (1, 3))),
-                  ((APPLICATION, 'lightsteelblue'),),
-                  ((COMPONENT, 'lightsteelblue'),)]
+DASHBOARD_ROWS = [((PRODUCT, 'lightsteelblue'), (TEAM, 'lavender', (1, 2)), ('PD', 'lightgrey'), ('PE', 'lightgrey')),
+                  ((PRODUCT_V1, 'lightsteelblue'), ('PC', 'lightgrey'), ('MM', 'lightgrey'))]
 
 PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)
