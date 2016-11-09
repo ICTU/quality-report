@@ -1,3 +1,8 @@
+2016-11-09  Release 1.66.0
+
+  * Remove the dependency graph feature.
+  
+  
 2016-10-30  Release 1.65.5
 
   * Bug fix: Don't crash when Jenkins isn't available.
