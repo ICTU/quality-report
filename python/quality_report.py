@@ -62,7 +62,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__add_latest_release_of_products()
         self.__add_release_candidates_of_products()
         self.__add_branches_of_products()
-        self.__add_dependencies()
         self.__analyse_products()
 
         quality_report = report.QualityReport(self.__project)
@@ -100,12 +99,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                              product.name(), branch)
                 self.__project.add_product_with_branch(product.name(), branch)
 
-    def __add_dependencies(self):
-        """ Add product versions that other products depend on. """
-        for name, version in self.__project.product_dependencies():
-            logging.info('Adding %s:%s to the project because it is a dependency.', name, version)
-            self.__project.add_product_with_version(name, version)
-
     def __analyse_products(self):
         """ Make sure Sonar contains the right analysis projects. """
         sonar = self.__project.metric_source(metric_source.Sonar)
@@ -118,7 +111,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
         cls.__create_html_file(quality_report, report_dir)
-        cls.__create_dependency_graph(quality_report, report_dir)
         cls.__create_resources(report_dir)
         cls.__create_trend_images(quality_report, report_dir)
 
@@ -135,20 +127,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)
         filesystem.make_file_readable(html_filename)
-
-    @classmethod
-    def __create_dependency_graph(cls, quality_report, report_dir):
-        """ Create and write the dependency graph. """
-        cls.__create_graph(quality_report, report_dir, formatting.DependencyFormatter, 'dependency')
-
-    @classmethod
-    def __create_graph(cls, quality_report, report_dir, formatter, filename):
-        """ Create and write a graph using the passed formatter. """
-        dot_filename = os.path.join(report_dir, filename + '.dot')
-        cls.__format_and_write_report(quality_report, formatter, dot_filename, 'w', 'ascii')
-        svg_filename = os.path.join(report_dir, filename + '.svg')
-        os.system('dot -Tsvg %s > %s' % (dot_filename, svg_filename))
-        filesystem.make_file_readable(svg_filename)
 
     @staticmethod
     def __create_resources(report_dir):
