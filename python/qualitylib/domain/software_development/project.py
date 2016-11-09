@@ -123,13 +123,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         matches = [each_product for each_product in self.__products if match(each_product)]
         return matches[0] if matches else None
 
-    def product_dependencies(self):
-        """ Return a set of all dependencies of all products. """
-        result = set()
-        for product in self.products():
-            result.update(product.dependencies(recursive=True))
-        return result
-
     def add_team(self, team):
         """ Add a team to the project. """
         self.__check_short_section_name(team.short_name())

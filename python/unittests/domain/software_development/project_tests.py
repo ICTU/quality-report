@@ -158,11 +158,6 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_product(FakeProduct())
         self.assertFalse(self.__project.get_product('Missing product'))
 
-    def test_product_dependencies(self):
-        """ Test collecting the dependencies of products. """
-        self.__project.add_product(FakeProduct())
-        self.assertEqual(1, len(self.__project.product_dependencies()))
-
     def test_teams(self):
         """ Test that a newly created project has no teams. """
         self.assertFalse(self.__project.teams())
