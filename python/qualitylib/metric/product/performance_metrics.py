@@ -45,7 +45,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
             else -1
 
     def _metric_source_urls(self):
-        return self._metric_source.urls(*self._product_id()) or []
+        return self._metric_source.urls(*self._product_id()) if self._metric_source and self._metric_source_id else []
 
     def _parameters(self):
         parameters = super(PerformanceMetric, self)._parameters()

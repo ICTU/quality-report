@@ -1,3 +1,8 @@
+2016-11-11  Release 1.66.1
+
+  * Bug fix: Don't crash when a product has a `requirement.Performance`, but hasn't got a metric source id for the performance report.
+  
+  
 2016-11-09  Release 1.66.0
 
   * Remove the dependency graph feature.
