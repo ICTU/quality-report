@@ -6,6 +6,7 @@ RUN addgroup jenkins && adduser -s /bin/bash -D -G jenkins jenkins
 
 RUN pip install quality_report
 RUN apk --update add \
+		bash \
 		git \
 		subversion \
 	&& rm -rf \
