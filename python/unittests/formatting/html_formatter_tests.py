@@ -42,13 +42,6 @@ class HTMLFormatterTest(unittest.TestCase):
         html = self.__formatter.process(fake_report.Report())
         self.assertEqual(1, html.count('<h1>Section title'))
 
-    def test_section_with_link(self):
-        """ Test that the section can contain links. """
-        product = fake_domain.Product(dependencies=True)
-        html = self.__formatter.section(fake_report.Report(), fake_report.Section(product=product))
-        name, version = product.name(), product.product_version()
-        self.assertTrue('{name}:{version} gebruikt:'.format(name=name, version=version) in html)
-
     def test_one_metric(self):
         """ Test that the report contains one metric. """
         metric = fake_domain.Metric()

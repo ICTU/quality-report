@@ -87,11 +87,10 @@ class HTMLFormatter(base_formatter.Formatter):
     def section(self, report, section):
         """ Return a HTML formatted version of the section. """
         subtitle = self.__format_subtitle(section.subtitle())
-        links = self.__format_product_links(report, section.product())
         meta_data = self.__format_product_meta_data(section.product())
         extra = '<div id="meta_metrics_history_graph"></div>' if section.has_history() else ''
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, product_meta_data=meta_data,
-                          product_links=links, extra=extra)
+                          extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
     def metric(self, metric):
@@ -244,25 +243,6 @@ class HTMLFormatter(base_formatter.Formatter):
         return template.format(href=href, anchor=utils.html_escape(anchor))
 
     @classmethod
-    def __format_product_links(cls, report, product):
-        """ Return a HTML formatted paragraph with the dependencies and users of the product. """
-        if not product:
-            return ''
-        product_label = '{prod}:{ver}'.format(prod=product.name(), ver=product.product_version() or 'trunk')
-        dependencies = product.dependencies(recursive=False)
-        users = [(user.name(), user.product_version()) for user in product.users(recursive=False)]
-        product_template = '<p>{prod} {rel}: {links}</p>'
-        result = []
-        for linked_products, link_text in ((dependencies, 'gebruikt'), (users, 'wordt gebruikt door')):
-            if not linked_products:
-                continue
-            links = [cls.__format_product_link(report, name, version) for name, version in sorted(linked_products)]
-            result.append(product_template.format(prod=product_label, rel=link_text, links=', '.join(links)))
-        if result:
-            result.append('')
-        return '\n'.join(result)
-
-    @classmethod
     def __format_product_meta_data(cls, product):
         """ Return a HTML formatted paragraph with meta data about the product. """
         if not product:
@@ -278,18 +258,6 @@ class HTMLFormatter(base_formatter.Formatter):
         if result:
             result.append('')
         return '\n'.join(result)
-
-    @classmethod
-    def __format_product_link(cls, report, product_name, product_version):
-        """ Return a HTML formatted product link. """
-        product = report.get_product(product_name, product_version)
-        section = report.get_product_section(product)
-        color = section.color()
-        color = 'gold' if color == 'yellow' else color
-        section_id = section.id_prefix()
-        return '<span class="link_section_{sec}" title="{prd}:{ver}" ' \
-               'style="color: {clr};"></span>'.format(sec=section_id, prd=product_name, ver=product_version or 'trunk',
-                                                      clr=color)
 
     @staticmethod
     def __metric_classes(report):

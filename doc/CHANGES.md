@@ -1,3 +1,8 @@
+2016-11-11  Release 1.66.2
+
+  * Bug fix: Remove links to dependencies from the HTML report.
+  
+  
 2016-11-11  Release 1.66.1
 
   * Bug fix: Don't crash when a product has a `requirement.Performance`, but hasn't got a metric source id for the performance report.
