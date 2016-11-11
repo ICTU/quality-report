@@ -6,12 +6,8 @@ RUN addgroup jenkins && adduser -s /bin/bash -D -G jenkins jenkins
 
 RUN pip install quality_report
 RUN apk --update add \
-		bash \
-		curl \
 		git \
-		graphviz \
 		subversion \
-		ttf-dejavu \
 	&& rm -rf \
 		/var/cache/apk/* \
 		/tmp/
