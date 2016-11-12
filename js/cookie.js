@@ -29,8 +29,7 @@ function write_cookie(name, value, days) {
 }
 
 function read_cookie(name, default_value) {
-    // Read and parse the cookie. If the cookie has no value, the default
-    // value is returned.
+    // Read and parse the cookie. If the cookie has no value, the default value is returned.
     var name_assignment = name + '=';
     var cookies = document.cookie.split(';');
     for(var i=0; i < cookies.length; i++) {
