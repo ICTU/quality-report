@@ -87,12 +87,6 @@ class HTMLFormatterTest(unittest.TestCase):
         self.assertTrue('title="Direct actie vereist: norm niet gehaald of '
                         'meting te oud (sinds {})'.format(expected_formatted_date) in html)
 
-    def test_product_meta_data_release_candidate(self):
-        """ Test that the report shows whether a product is a release candidate. """
-        release_candidate = fake_domain.Product(is_release_candidate=True)
-        html = self.__formatter.process(fake_report.Report([release_candidate]))
-        self.assertTrue(' is een releasekandidaat.</p>\n' in html)
-
     def test_product_meta_data_latest_release(self):
         """ Test that the report shows whether a product/version is the latest release of the product. """
         latest_release = fake_domain.Product(is_latest_release=True)

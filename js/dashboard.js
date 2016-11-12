@@ -120,7 +120,7 @@ function create_dashboard(metrics_data, history_data) {
     };
 
     // Event handlers for the filter by product version menu items.
-    var versions = ['filter_version_all', 'filter_version_trunk', 'filter_version_release'];
+    var versions = ['filter_version_all', 'filter_version_trunk'];
     for (index = 0; index < versions.length; index++) {
         document.getElementById(versions[index]).onclick = (function() {
             var version = versions[index];
@@ -334,10 +334,6 @@ function table_view(section) {
         if (filtered_version === 'filter_version_trunk') {
             var trunk_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'trunk'}]);
             filtered_rows = filtered_rows.concat(trunk_rows);
-        }
-        if (filtered_version === 'filter_version_release') {
-            var release_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'release'}]);
-            filtered_rows = filtered_rows.concat(release_rows);
         }
         rows = intersection(rows, filtered_rows);
     }

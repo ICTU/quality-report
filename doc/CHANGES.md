@@ -1,3 +1,8 @@
+2016-11-12  Release 1.67.0
+
+  * Remove the release candidate feature.
+  
+  
 2016-11-11  Release 1.66.2
 
   * Bug fix: Remove links to dependencies from the HTML report.

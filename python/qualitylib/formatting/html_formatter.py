@@ -249,12 +249,9 @@ class HTMLFormatter(base_formatter.Formatter):
             return ''
         product_label = '{prod}:{ver}'.format(prod=product.name(), ver=product.product_version() or 'trunk')
         latest_release_template = '<p>{prod} is de meest recente versie.</p>'
-        release_candidate_template = '<p>{prod} is een releasekandidaat.</p>'
         result = []
         if product.is_latest_release():
             result.append(latest_release_template.format(prod=product_label))
-        if product.is_release_candidate():
-            result.append(release_candidate_template.format(prod=product_label))
         if result:
             result.append('')
         return '\n'.join(result)

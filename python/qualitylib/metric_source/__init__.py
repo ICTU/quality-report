@@ -42,7 +42,6 @@ from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPe
 from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
     SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
 from .pom import Pom
-from .release_candidates import ReleaseCandidates
 from .sonar import Sonar
 from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki

@@ -122,34 +122,6 @@ class ProductTest(unittest.TestCase):
         self.__product.set_product_version('1.1')
         self.assertEqual('tag', self.__product.product_version_type())
 
-    def test_version_type_release(self):
-        """ Test that the product version type of a product to be released is release. """
-        release_candidates = FakeReleaseCandidates()
-        project = domain.Project('Organization', metric_sources={metric_source.ReleaseCandidates: release_candidates})
-        product = domain.Product(project, metric_source_ids={release_candidates: 'P'})
-        product.set_product_version('1.1')
-        self.assertEqual('release', product.product_version_type())
-
-    def test_is_release_candidate(self):
-        """ Test that the product is a release candidate when it's listed as such. """
-        release_candidates = FakeReleaseCandidates()
-        project = domain.Project('Organization', metric_sources={metric_source.ReleaseCandidates: release_candidates})
-        product = domain.Product(project, metric_source_ids={release_candidates: 'P'})
-        product.set_product_version('1.1')
-        self.assertTrue(product.is_release_candidate())
-
-    def test_is_releaese_candidate_when_user_is_one(self):
-        """ Test that the product is a release candidate when one of its users is listed as such. """
-        release_candidates = FakeReleaseCandidates()
-        project = domain.Project('Organization', metric_sources={metric_source.ReleaseCandidates: release_candidates,
-                                                                 metric_source.Pom: FakePom()})
-        user = domain.Product(project, name='user', short_name='US', metric_source_ids={release_candidates: 'user'})
-        project.add_product(user)
-        project.add_product_with_version('user', '1.1')
-        project.add_product(domain.Product(project, name='product', short_name='PR'))
-        product1_2 = project.add_product_with_version('product', '1.2')
-        self.assertTrue(product1_2.is_release_candidate())
-
     def test_trunk_is_not_latest_release(self):
         """ Test that the trunk version of a product is not the latest release. """
         self.assertFalse(self.__product.is_latest_release())

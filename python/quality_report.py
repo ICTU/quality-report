@@ -60,7 +60,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """
         self.__add_latest_release_of_products()
-        self.__add_release_candidates_of_products()
         self.__add_branches_of_products()
         self.__analyse_products()
 
@@ -80,16 +79,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 logging.info('Adding %s:%s to the project because it is the latest version.',
                              product.name(), latest_version)
                 self.__project.add_product_with_version(product.name(), latest_version)
-
-    def __add_release_candidates_of_products(self):
-        """ Add the versions of the products that are scheduled to be released
-            to operations. """
-        for product in self.__project.products()[:]:
-            release_candidate = product.release_candidate()
-            if release_candidate:
-                logging.info('Adding %s:%s to the project because it is a release candidate.',
-                             product.name(), release_candidate)
-                self.__project.add_product_with_version(product.name(), release_candidate)
 
     def __add_branches_of_products(self):
         """ Add the branches of the products that have to be monitored. """

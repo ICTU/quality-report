@@ -83,10 +83,8 @@ class Product(RequirementSubject, MeasurableObject):
         self.__product_branch = product_branch
 
     def product_version_type(self):
-        """ Return whether the version of this product is trunk, tagged or release candidate. """
-        if self.is_release_candidate():
-            return 'release'
-        elif self.product_version():
+        """ Return whether the version of this product is trunk, tagged or branch. """
+        if self.product_version():
             return 'tag'
         elif self.product_branch():
             return 'branch'
@@ -126,24 +124,6 @@ class Product(RequirementSubject, MeasurableObject):
             return product_version == vcs_product_info.latest_released_product_version()
         else:
             return False
-
-    def release_candidate(self):
-        """ Return the version of this product that is the candidate for release to operations. """
-        from qualitylib import metric_source
-        release_candidates = self.__project.metric_source(metric_source.ReleaseCandidates)
-        release_candidate_id = self.metric_source_id(release_candidates)
-        return release_candidates.release_candidate(release_candidate_id)
-
-    def is_release_candidate(self):
-        """ Return whether this product/version is a release candidate. """
-        if self.product_version():
-            if self.product_version() == self.release_candidate():
-                return True
-            else:  # Consider this a release candidate when any of its users is
-                for user in self.users(recursive=True):
-                    if user.is_release_candidate():
-                        return True
-        return False
 
     def short_name(self):
         """ Return a short (two letter) abbreviation of the product name. """

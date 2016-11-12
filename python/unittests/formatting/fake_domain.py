@@ -21,11 +21,10 @@ import datetime
 
 class Product(object):
     """ Fake the product domain class. """
-    def __init__(self, dependencies=False, version='1', is_release_candidate=False, is_latest_release=False):
+    def __init__(self, dependencies=False, version='1', is_latest_release=False):
         self.__dependencies = dependencies
         self.__branch = ''
         self.__version = version
-        self.__is_release_candidate = is_release_candidate
         self.__is_latest_release = is_latest_release
 
     @staticmethod
@@ -76,10 +75,6 @@ class Product(object):
     def is_latest_release(self):
         """ Return whether this product version is the latest release. """
         return self.__is_latest_release
-
-    def is_release_candidate(self):
-        """ Return whether this product version is a release candidate. """
-        return self.__is_release_candidate
 
 
 class Metric(object):
