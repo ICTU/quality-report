@@ -316,11 +316,6 @@ class HTMLFormatter(base_formatter.Formatter):
         result.append('</table>')
         return '\n'.join(result)
 
-    @staticmethod
-    def product_url(product):
-        """ Return a url to the product section in the HTML report for the specified product. """
-        return 'index.html#section_{prd}'.format(prd=product.short_name())
-
     def __new_release_text(self):
         """ Return a line of text if there is a new version of the software available. """
         latest = self.__latest_software_version

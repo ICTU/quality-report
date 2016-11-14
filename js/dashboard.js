@@ -72,7 +72,7 @@ function create_dashboard(metrics_data, history_data) {
     google.visualization.events.addListener(tables.all, 'sort',
         (function() {
             return function(event) {
-                save_sort_order(event, 'all');
+                save_sort_order(event);
             };
         })());
     for (var index in sections) {
@@ -80,9 +80,8 @@ function create_dashboard(metrics_data, history_data) {
         tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
         google.visualization.events.addListener(tables[section], 'sort',
             (function() {
-                var section_ = section;
                 return function(event) {
-                    save_sort_order(event, section_);
+                    save_sort_order(event);
                 };
             })());
         draw_section_summary_chart(section);
@@ -135,7 +134,7 @@ function read_settings_from_cookies() {
     settings.table_sort_ascending = read_cookie('table_sort_ascending', 'true') === 'true';
 }
 
-function save_sort_order(event, section) {
+function save_sort_order(event) {
     // Save the sort order. We use the same sort order for each column.
     var column = event.column;
     settings.table_sort_column = column;
