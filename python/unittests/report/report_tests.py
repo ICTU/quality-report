@@ -155,7 +155,7 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
     @staticmethod
     def __create_product(project, product_kwargs):
         """ Create a product according to the provided arguments. """
-        for component_name in ('unittests', 'jsf', 'art'):
+        for component_name in 'unittests', 'jsf', 'art':
             component_kwargs = product_kwargs.pop(component_name, dict())
             if component_kwargs:
                 component = domain.Product(project, **component_kwargs)
