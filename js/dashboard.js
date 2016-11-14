@@ -69,21 +69,11 @@ function create_dashboard(metrics_data, history_data) {
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
-    google.visualization.events.addListener(tables.all, 'sort',
-        (function() {
-            return function(event) {
-                save_sort_order(event);
-            };
-        })());
+    google.visualization.events.addListener(tables.all, 'sort', save_sort_order);
     for (var index in sections) {
         var section = sections[index];
         tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
-        google.visualization.events.addListener(tables[section], 'sort',
-            (function() {
-                return function(event) {
-                    save_sort_order(event);
-                };
-            })());
+        google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
     draw_area_chart('meta_metrics_history_graph', history_data);
