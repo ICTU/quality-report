@@ -4,7 +4,7 @@ language: java
 install:
 - pip install -r python/requirements.txt
 - pip install codeclimate-test-reporter
-jdk: oraclejdk8
+#jdk: oraclejdk8
 script:
 - coverage run --branch python/run_unittests.py discover -s python/unittests -p "*_tests.py"
 - coverage xml
