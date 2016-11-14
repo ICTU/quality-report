@@ -23,10 +23,6 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of user stories. """
     unit = 'user stories'
 
-    @classmethod
-    def should_be_measured(cls, product):
-        return super(UserStoryMetric, cls).should_be_measured(product) and not product.product_version()
-
     def value(self):
         nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()
         if -1 in [nr_user_stories, nr_user_stories_ok] or None in [nr_user_stories, nr_user_stories_ok]:

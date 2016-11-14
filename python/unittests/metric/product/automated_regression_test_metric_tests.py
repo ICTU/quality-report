@@ -47,8 +47,7 @@ class FakeJaCoCo(FakeNCover):
 
 class FakeSubject(object):
     """ Provide for a fake subject. """
-    def __init__(self, version='', art='', metric_source_ids=None):
-        self.__version = version
+    def __init__(self, art='', metric_source_ids=None):
         self.__art = art
         self.__metric_source_ids = metric_source_ids or dict()
 
@@ -56,10 +55,6 @@ class FakeSubject(object):
     def name():
         """ Return the name of the subject. """
         return 'FakeSubject'
-
-    def product_version(self):
-        """ Return the version of the subject. """
-        return self.__version
 
     def metric_source_id(self, the_metric_source):
         """ Return the id of the subject for the metric source. """
@@ -100,12 +95,6 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
     def test_old_age(self):
         """ Test that the old age is set for trunk versions. """
         self.assertEqual(datetime.timedelta(hours=3 * 24), self.__metric.old_age)
-
-    def test_old_age_for_released_products(self):
-        """ Test that the old ager is not set for released products because it doesn't make matter how long ago the
-            test was run as long as it has been run. """
-        self.assertEqual(datetime.timedelta.max,
-                         self.metric_class(subject=FakeSubject(version='1.1'), project=self.__project).old_age)
 
 
 class ARTBranchCoverageJacocoTest(ARTStatementCoverageJacocoTest):

@@ -77,7 +77,6 @@ class TotalLOCTest(unittest.TestCase):
         project.add_product(product)
         # Add products that should be ignored:
         project.add_product(product_without_sonar_id)
-        project.add_product_with_version('FakeSubject', '1.1')
         project.add_product(test_product)
         self.__metric = metric.TotalLOC(subject=project, project=project)
 
@@ -91,8 +90,8 @@ class TotalLOCTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Het totaal aantal regels code voor de producten FakeSubject:trunk, '
-                         'ProductWithoutSonarId:trunk is 123 regels code.', self.__metric.report())
+        self.assertEqual('Het totaal aantal regels code voor de producten FakeSubject, '
+                         'ProductWithoutSonarId is 123 regels code.', self.__metric.report())
 
     def test_recent_history(self):
         """ Test that the recent history subtracts the minimum value of each value so that more data can be plotted. """

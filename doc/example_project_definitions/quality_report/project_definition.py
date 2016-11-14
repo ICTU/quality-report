@@ -8,14 +8,11 @@ from qualitylib.domain import Project, Product, Team, Document, TechnicalDebtTar
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
-MAVEN = metric_source.Maven(binary='mvn3')
 SUBVERSION = metric_source.Subversion()
-SONAR = metric_source.Sonar('http://sonar/', username='sonar_user', password='sonar_admin', maven=MAVEN,
-                            version_control_system=SUBVERSION)
+SONAR = metric_source.Sonar('http://sonar/', username='sonar_user', password='sonar_admin')
 HISTORY = metric_source.History('quality-data/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
-POM = metric_source.Pom(sonar=SONAR, version_control_system=SUBVERSION)
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 
 # The project
@@ -26,7 +23,6 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.ArchiveSystem: SUBVERSION,
                       metric_source.Sonar: SONAR,
                       metric_source.JaCoCo: JACOCO,
-                      metric_source.Pom: POM,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY},
                   # Override the total loc metric targets:

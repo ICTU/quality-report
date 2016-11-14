@@ -41,20 +41,16 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
 
     def __total_queries(self):
         """ Return the total number of queries. """
-        return self._metric_source.queries(*self._product_id()) if self._metric_source and self._metric_source_id \
+        return self._metric_source.queries(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else -1
 
     def _metric_source_urls(self):
-        return self._metric_source.urls(*self._product_id()) if self._metric_source and self._metric_source_id else []
+        return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id else []
 
     def _parameters(self):
         parameters = super(PerformanceMetric, self)._parameters()
         parameters.update(dict(level=self.level, total=self.__total_queries()))
         return parameters
-
-    def _product_id(self):
-        """ Return the performance report id and version of the product. """
-        return self._metric_source_id, self._subject.product_version()
 
 
 # We have different types of performance test metrics, organized along two dimensions: test type and severity.
@@ -81,7 +77,7 @@ class PerformanceLoadTestWarnings(PerformanceLoadTestMetric):
     low_target_value = 5
 
     def _violating_queries(self):
-        return self._metric_source.queries_violating_wished_responsetime(*self._product_id())
+        return self._metric_source.queries_violating_wished_responsetime(self._metric_source_id)
 
 
 class PerformanceLoadTestErrors(PerformanceLoadTestMetric):
@@ -91,7 +87,7 @@ class PerformanceLoadTestErrors(PerformanceLoadTestMetric):
     low_target_value = 0
 
     def _violating_queries(self):
-        return self._metric_source.queries_violating_max_responsetime(*self._product_id())
+        return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
 
 
 class PerformanceEnduranceTestMetric(PerformanceMetric):
@@ -111,7 +107,7 @@ class PerformanceEnduranceTestWarnings(PerformanceEnduranceTestMetric):
     low_target_value = 5
 
     def _violating_queries(self):
-        return self._metric_source.queries_violating_wished_responsetime(*self._product_id())
+        return self._metric_source.queries_violating_wished_responsetime(self._metric_source_id)
 
 
 class PerformanceEnduranceTestErrors(PerformanceEnduranceTestMetric):
@@ -121,7 +117,7 @@ class PerformanceEnduranceTestErrors(PerformanceEnduranceTestMetric):
     low_target_value = 0
 
     def _violating_queries(self):
-        return self._metric_source.queries_violating_max_responsetime(*self._product_id())
+        return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
 
 
 class PerformanceScalabilityTestMetric(PerformanceMetric):
@@ -141,7 +137,7 @@ class PerformanceScalabilityTestWarnings(PerformanceScalabilityTestMetric):
     low_target_value = 5
 
     def _violating_queries(self):
-        return self._metric_source.queries_violating_wished_responsetime(*self._product_id())
+        return self._metric_source.queries_violating_wished_responsetime(self._metric_source_id)
 
 
 class PerformanceScalabilityTestErrors(PerformanceScalabilityTestMetric):
@@ -151,5 +147,5 @@ class PerformanceScalabilityTestErrors(PerformanceScalabilityTestMetric):
     low_target_value = 0
 
     def _violating_queries(self):
-        return self._metric_source.queries_violating_max_responsetime(*self._product_id())
+        return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
 

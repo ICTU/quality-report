@@ -21,10 +21,6 @@ from qualitylib import domain
 
 class FakeProduct(object):
     """ Fake the product class for unit test purposes. """
-    def __init__(self):
-        self.__version = None
-        self.__branch = None
-
     @staticmethod
     def name():
         """ Return the name of the product. """
@@ -34,31 +30,6 @@ class FakeProduct(object):
     def short_name():
         """ Return the short name of the product. """
         return 'FP'
-
-    def product_version_type(self):
-        """ Return the version type of the product. """
-        if self.__branch:
-            return 'branch'
-        elif self.__version:
-            return 'tag'
-        else:
-            return 'trunk'
-
-    def product_version(self):
-        """ Return the product version. """
-        return self.__version
-
-    def product_branch(self):
-        """ Return the product branch. """
-        return self.__branch
-
-    def set_product_branch(self, branch):
-        """ Set the product branch. """
-        self.__branch = branch
-
-    def set_product_version(self, version):
-        """ Set the product version. """
-        self.__version = version
 
     @staticmethod
     def dependencies(recursive=False):  # pylint: disable=unused-argument
@@ -90,62 +61,10 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_product(product)
         self.assertEqual([product], self.__project.products())
 
-    def test_add_product_with_version(self):
-        """ Test that a product with a specific version can be added to the project. """
-        product = FakeProduct()
-        self.__project.add_product(product)
-        product1_1 = self.__project.add_product_with_version('FakeProduct', '1.1')
-        self.assertEqual([product, product1_1], self.__project.products())
-
-    def test_add_trunk_product(self):
-        """ Test that a product without a specific version won't be added to the project. """
-        product = FakeProduct()
-        self.__project.add_product(product)
-        self.assertFalse(self.__project.add_product_with_version('FakeProduct', ''))
-        self.assertEqual([product], self.__project.products())
-
-    def test_add_product_with_version_twice(self):
-        """ Test that adding a product/version twice is not possible. """
-        product = FakeProduct()
-        self.__project.add_product(product)
-        product1_1 = self.__project.add_product_with_version('FakeProduct', '1.1')
-        self.__project.add_product_with_version('FakeProduct', '1.1')
-        self.assertEqual([product, product1_1], self.__project.products())
-
     def test_add_two_products_with_same_abbrev(self):
         """ Test that adding two products with the same abbreviation raises an exception. """
         self.__project.add_product(FakeProduct())
         self.assertRaises(ValueError, self.__project.add_product, FakeProduct())
-
-    def test_add_version_to_missing_product(self):
-        """ Test that adding a version for a missing product fails silently. """
-        self.__project.add_product(FakeProduct())
-        self.__project.add_product_with_version('Missing product', '1.1')
-
-    def test_add_branch_without_branch(self):
-        """ Test that a product without a specific branch won't be added to the project. """
-        product = FakeProduct()
-        self.__project.add_product(product)
-        self.assertFalse(self.__project.add_product_with_branch('FakeProduct', ''))
-        self.assertEqual([product], self.__project.products())
-
-    def test_add_branch_to_missing_product(self):
-        """ Test that adding a branch for a missing product fails silently. """
-        self.__project.add_product(FakeProduct())
-        self.__project.add_product_with_branch('Missing product', 'branch')
-
-    def test_add_branch(self):
-        """ Test that adding a branch for an existing product works. """
-        trunk = self.__project.add_product(FakeProduct())
-        branch = self.__project.add_product_with_branch('FakeProduct', 'branch')
-        self.assertEqual([trunk, branch], self.__project.products())
-
-    def test_add_existing_branch(self):
-        """ Test that adding an existing branch does nothing. """
-        trunk = self.__project.add_product(FakeProduct())
-        branch = self.__project.add_product_with_branch('FakeProduct', 'branch')
-        self.assertFalse(self.__project.add_product_with_branch('FakeProduct', 'branch'))
-        self.assertEqual([trunk, branch], self.__project.products())
 
     def test_get_product(self):
         """ Test that an added product can be found. """

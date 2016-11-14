@@ -43,7 +43,7 @@ PRODUCT = Product(
     PROJECT, 'PR', name='Product ABC',
     requirements=[requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS,
                   requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
-                  requirement.CodeQuality, requirement.Performance, requirement.NoSnapshotDependencies,
+                  requirement.CodeQuality, requirement.Performance,
                   requirement.TrackBranches],
     unittests=Product(
         PROJECT, name='Product ABC unit tests'),
@@ -52,24 +52,11 @@ PRODUCT = Product(
     jsf=Product(
         PROJECT, name='Product ABC JSF', requirements=[requirement.JSFCodeQuality]))
 
-PRODUCT_V1 = Product(
-    PROJECT, 'PT', name='Product ABC v1',
-    product_version='1',
-    requirements=[requirement.OWASPDependencies, requirement.OWASPZAP, requirement.UserStoriesAndLTCs,
-                  requirement.UnitTests, requirement.ART, requirement.CodeQuality, requirement.Performance,
-                  requirement.NoSnapshotDependencies, requirement.TrackBranches],
-    unittests=Product(
-        PROJECT, name='Product ABC v1 unit tests'),
-    art=Product(
-        PROJECT, name='Product ABC v1 ART', requirements=[requirement.CodeQuality, requirement.TrackBranches]),
-    jsf=Product(
-        PROJECT, name='Product ABC v1 JSF', requirements=[requirement.JSFCodeQuality]))
 
 APPLICATION = Application(PROJECT, 'AP', name='Application FOO')
 COMPONENT = Component(PROJECT, 'CO', name='Component FOO')
 
 PROJECT.add_product(PRODUCT)
-PROJECT.add_product(PRODUCT_V1)
 PROJECT.add_product(APPLICATION)
 PROJECT.add_product(COMPONENT)
 
@@ -83,9 +70,8 @@ DASHBOARD_COLUMNS = [('Products', 1), ('Teams', 1), ('Algemeen', 2)]
 # tuples that describe a cell in the dashboard. Each cell is a tuple containing
 # the product or team and the color. Optionally the cell tuple can contain a
 # third value which is a tuple containing the column and row span for the cell.
-DASHBOARD_ROWS = [((PRODUCT, 'lightsteelblue'), (TEAM, 'lavender', (1, 4)), ('PD', 'lightgrey'), ('PE', 'lightgrey')),
-                  ((PRODUCT_V1, 'lightsteelblue'), ('PC', 'lightgrey', (1, 3)), ('MM', 'lightgrey', (1, 3))),
-                  ((APPLICATION, 'lightsteelblue'),),
+DASHBOARD_ROWS = [((PRODUCT, 'lightsteelblue'), (TEAM, 'lavender', (1, 3)), ('PD', 'lightgrey'), ('PE', 'lightgrey')),
+                  ((APPLICATION, 'lightsteelblue'), ('PC', 'lightgrey', (1, 2)), ('MM', 'lightgrey', (1, 2))),
                   ((COMPONENT, 'lightsteelblue'),)]
 
 PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)

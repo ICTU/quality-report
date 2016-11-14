@@ -56,8 +56,7 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
         self.__project = domain.Project('Organization', name='Project name',
                                         metric_sources={metric_source.Subversion: self.__subversion})
         self.__product = domain.Product(self.__project,
-                                        metric_source_ids={self.__subversion: 'http://svn/product/trunk/'},
-                                        product_branches={'branch1': {self.__subversion: 'br1'}})
+                                        metric_source_ids={self.__subversion: 'http://svn/product/trunk/'})
         self.__subversion_product_info = metric_info.VersionControlSystemProductInfo([self.__subversion],
                                                                                      self.__product)
 
@@ -68,42 +67,6 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
     def test_svn_path(self):
         """ Test that the Subversion path of the product equals the passed path. """
         self.assertEqual('http://svn/product/trunk/', self.__subversion_product_info.vcs_path())
-
-    def test_old_svn_path(self):
-        """ Test that the old Subversion path is returned, if any. """
-
-        product = domain.Product(self.__project, metric_source_ids={self.__subversion: 'http://svn/product/trunk/'},
-                                 old_metric_source_ids={self.__subversion: {'1.1': 'http://svn/old/'}})
-
-        product.set_product_version('1.1')
-        subversion_product_info = metric_info.VersionControlSystemProductInfo([self.__subversion], product)
-        self.assertEqual('http://svn/old/', subversion_product_info.vcs_path())
-
-    def test_svn_path_of_branch(self):
-        """ Test that the subversion path is the branch folder. """
-        self.__product.set_product_branch('branch1')
-        subversion_product_info = metric_info.VersionControlSystemProductInfo([self.__subversion], self.__product)
-        self.assertEqual('http://svn/product/branches/br1/', subversion_product_info.vcs_path())
-
-    def test_latest_released_product_version(self):
-        """ Test that the latest release product version is retrieved from Subversion. """
-        self.assertEqual('1.1', self.__subversion_product_info.latest_released_product_version())
-
-    def test_latest_release_without_svn_path(self):
-        """ Test that a product without Subversion path doesn't have a latest released product version. """
-        subversion_product_info = metric_info.VersionControlSystemProductInfo([self.__subversion],
-                                                                              domain.Product(self.__project))
-        self.assertFalse(subversion_product_info.latest_released_product_version())
-
-    def test_is_latest_release(self):
-        """ Test that the product is the latest release if its product version
-            is the same as the latest release returned by Subversion. """
-        self.__product.set_product_version('1.1')
-        self.assertTrue(self.__subversion_product_info.is_latest_release())
-
-    def test_is_not_latest_release(self):
-        """ Test that trunk versions are never the latest release. """
-        self.assertFalse(self.__subversion_product_info.is_latest_release())
 
     def test_last_changed_date(self):
         """ Test that the date the product was last changed is the date reported by Subversion. """
@@ -119,43 +82,13 @@ class MultipleVersionControlSystemProductInfoTests(unittest.TestCase):
         self.__vcs_repos = [self.__vcs1, self.__vcs2]
         self.__project = domain.Project('Organization', name='Project name',
                                         metric_sources={metric_source.Subversion: self.__vcs_repos})
-        self.__product1 = domain.Product(self.__project, metric_source_ids={self.__vcs1: 'trunk/'},
-                                         old_metric_source_ids={self.__vcs1: {'1.5':'http://svn1/old/'}},
-                                         product_branches={'branch1': {self.__vcs1: 'br1'}})
-        self.__product2 = domain.Product(self.__project, metric_source_ids={self.__vcs2: 'trunk/'},
-                                         old_metric_source_ids={self.__vcs2: {'2.0':'http://svn2/old/'}},
-                                         product_branches={'branch2': {self.__vcs2: 'br2'}})
+        self.__product1 = domain.Product(self.__project, metric_source_ids={self.__vcs1: 'trunk/'})
+        self.__product2 = domain.Product(self.__project, metric_source_ids={self.__vcs2: 'trunk/'})
 
     def test_svn_path(self):
         """ Test that the vcs path of the product equals the passed path. """
         self.__assert_svn_path(self.__product1, 'http://svn1/productx/trunk/')
         self.__assert_svn_path(self.__product2, 'http://svn2/producty/trunk/')
-
-    def test_old_svn_path(self):
-        """ Test that the old vcs path is returned, if any. """
-        self.__assert_old_svn_path(self.__product1, '1.5', 'http://svn1/old/')
-        self.__assert_old_svn_path(self.__product2, '2.0', 'http://svn2/old/')
-
-    def test_svn_path_of_branch(self):
-        """ Test that the vcs path is the branch folder. """
-        self.__assert_svn_path_of_branch(self.__product1, 'branch1', 'http://svn1/productx/branches/br1/')
-        self.__assert_svn_path_of_branch(self.__product2, 'branch2', 'http://svn2/producty/branches/br2/')
-
-    def test_latest_released_product_version(self):
-        """ Test that the latest release product version is retrieved from vcs. """
-        self.__assert_latest_released_product_version(self.__product1, '1.5')
-        self.__assert_latest_released_product_version(self.__product2, '2.0')
-
-    def test_is_latest_release(self):
-        """ Test that the product is the latest release if its product version
-            is the same as the latest release returned by vcs. """
-        self.__assert_is_latest_release(self.__product1, '1.5')
-        self.__assert_is_latest_release(self.__product2, '2.0')
-
-    def test_is_not_lastest_release(self):
-        """ Test that trunk versions are never the latest release. """
-        self.assertFalse(self.__vcs_prodinfo(self.__product1).is_latest_release())
-        self.assertFalse(self.__vcs_prodinfo(self.__product2).is_latest_release())
 
     def test_last_changed_date(self):
         """ Test that the date the product was last changed is the date reported by vcs. """
@@ -172,18 +105,3 @@ class MultipleVersionControlSystemProductInfoTests(unittest.TestCase):
 
     def __assert_svn_path(self, product, expected_path):
         self.assertEqual(expected_path, self.__vcs_prodinfo(product).vcs_path())
-
-    def __assert_old_svn_path(self, product, version_to_set, expected_path):
-        product.set_product_version(version_to_set)
-        self.__assert_svn_path(product, expected_path)
-
-    def __assert_svn_path_of_branch(self, product, branch_to_set, expected_path):
-        product.set_product_branch(branch_to_set)
-        self.__assert_svn_path(product, expected_path)
-
-    def __assert_latest_released_product_version(self, product, expected_product_version):
-        self.assertEqual(expected_product_version, self.__vcs_prodinfo(product).latest_released_product_version())
-
-    def __assert_is_latest_release(self, product, product_version_to_set):
-        product.set_product_version(product_version_to_set)
-        self.assertTrue(self.__vcs_prodinfo(product).is_latest_release())

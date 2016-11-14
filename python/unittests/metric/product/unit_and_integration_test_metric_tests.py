@@ -58,13 +58,6 @@ class FakeSubject(object):
         return 'FakeSubject'
 
     @staticmethod
-    def old_metric_source_id(*args):
-        """ Return a default value. """
-        return
-
-    product_version = product_branch = old_metric_source_id
-
-    @staticmethod
     def metric_source_id(*args):
         """ Return a product id. """
         return 'some:fake:id'

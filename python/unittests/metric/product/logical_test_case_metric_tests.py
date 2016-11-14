@@ -97,14 +97,6 @@ class FakeSubject(object):
         """ Return the Birt id of the subject. """
         return 'birt id' if self.__birt_id else ''
 
-    def product_version(self):
-        """ Return the version of the subject. """
-        return self.version
-
-    def product_version_type(self):
-        """ Return the version type of the product. """
-        return self.version_type
-
     @staticmethod
     def required_metric_classes():
         """ Return the required metric classes for this subject. """
@@ -134,16 +126,6 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
         """ Test the url is correct. """
         self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk versions. """
-        self.assertTrue(metric.LogicalTestCasesNotAutomated.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric will only be measured for trunk versions. """
-        product = FakeSubject()
-        product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotAutomated.is_applicable(product))
-
 
 class LogicalTestCasesNotReviewedTest(unittest.TestCase):
     """ Unit tests for the unreviewed logical test cases metric. """
@@ -166,16 +148,6 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
         self.assertEqual('FakeSubject heeft 10 niet gereviewde logische testgevallen van in totaal 120 '
                          'logische testgevallen.', self.__metric.report())
 
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk versions. """
-        self.assertTrue(metric.LogicalTestCasesNotReviewed.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric will only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotReviewed.is_applicable(product))
-
 
 class LogicalTestCasesNotApprovedTest(unittest.TestCase):
     """ Unit tests for the unapproved logical test case metric. """
@@ -197,16 +169,6 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertEqual('FakeSubject heeft 10 niet goedgekeurde logische testgevallen van in totaal 110 gereviewde '
                          'logische testgevallen.', self.__metric.report())
-
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk versions. """
-        self.assertTrue(metric.LogicalTestCasesNotApproved.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric will only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertFalse(metric.LogicalTestCasesNotApproved.is_applicable(product))
 
 
 class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
@@ -234,16 +196,6 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
         """ Test the norm text. """
         self.assertEqual('Maximaal 10 van de logische testgevallen is handmatig. Meer dan 50 is rood.',
                          self.__metric.norm())
-
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk versions. """
-        self.assertTrue(metric.NumberOfManualLogicalTestCases.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric will only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertFalse(metric.NumberOfManualLogicalTestCases.is_applicable(product))
 
     def test_url(self):
         """ Test the url is correct. """
@@ -286,12 +238,6 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
         self.assertEqual('De 10 handmatige logische testgevallen van FakeSubject zijn nog niet allemaal uitgevoerd.',
                          self.__metric.report())
-
-    def test_target_when_release(self):
-        """ Test that the target is stricter for release candidates. """
-        self.__subject.version = '1.1'
-        self.__subject.version_type = 'release'
-        self.assertEqual(0, self.__metric.target())
 
     def test_url(self):
         """ Test that the url is correct. """

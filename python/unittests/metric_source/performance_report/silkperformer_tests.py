@@ -354,26 +354,24 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_queries_non_existing(self):
         """ Test that the number of queries for a product/version that is not found is zero. """
-        self.assertEqual(0, self._performance_report.queries('product', 'version'))
+        self.assertEqual(0, self._performance_report.queries('product'))
 
     def test_queries(self):
         """ Test that the total number of queries for a product/version that is in the report. """
-        self.assertEqual(self.expected_queries, self._performance_report.queries(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
+        self.assertEqual(self.expected_queries, self._performance_report.queries(('.*[0-9][0-9].*', 'dummy')))
 
     def test_queries_violating_max_responsetime(self):
         """ Test that the number of queries violating the maximum response times is zero. """
-        self.assertEqual(0, self._performance_report.queries_violating_max_responsetime(('.*[0-9][0-9].*', 'dummy'),
-                                                                                         '12.5.5'))
+        self.assertEqual(0, self._performance_report.queries_violating_max_responsetime(('.*[0-9][0-9].*', 'dummy')))
 
     def test_queries_violating_wished_reponsetime(self):
         """ Test that the number of queries violating the wished response times is zero. """
-        self.assertEqual(0, self._performance_report.queries_violating_wished_responsetime(('.*[0-9][0-9].*', 'dummy'),
-                                                                                            '12.5.5'))
+        self.assertEqual(0, self._performance_report.queries_violating_wished_responsetime(('.*[0-9][0-9].*', 'dummy')))
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
-                         self._performance_report.date(('.*[0-9][0-9].*', 'dummy'), '12.5.5'))
+                         self._performance_report.date(('.*[0-9][0-9].*', 'dummy')))
 
 
 class SilkPerformerMultipleReportsTest(SilkPerformerTest):
@@ -391,16 +389,16 @@ class SilkPerformerMissingTest(unittest.TestCase):
 
     def test_queries_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('p1', 'v1'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('p1'))
 
     def test_queries_violating_max_responsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('p2', 'v2'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('p2'))
 
     def test_queries_violating_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('p3', 'v3'))
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('p3'))
 
     def test_date_with_missing_report(self):
         """ Test that the date of a missing report is the min date. """
-        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').date('p4', 'v4'))
+        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').date('p4'))

@@ -20,7 +20,7 @@ from __future__ import absolute_import
 from .product.analysis_age import SonarAnalysisAge
 from .product.automated_regression_test_metrics import (
     FailingRegressionTests, RegressionTestAge, ARTStatementCoverage, ARTBranchCoverage)
-from .product.dependency_metrics import CyclicDependencies, SnapshotDependencies
+from .product.dependency_metrics import CyclicDependencies
 from .product.duplication_metrics import JavaDuplication, JsfDuplication
 from .product.integration_test_metrics import IntegrationtestLineCoverage, IntegrationtestBranchCoverage
 from .product.logical_test_case_metrics import (

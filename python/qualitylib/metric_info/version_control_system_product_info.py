@@ -32,10 +32,8 @@ class VersionControlSystemProductInfo(object):
         """ Return the version control system where the product lives. """
         return self.__vcs
 
-    def vcs_path(self, version=None, branch=None):
+    def vcs_path(self, version=None):
         """ Return the version control system path of the product. """
-        version = version or self.__product.product_version()
-        branch = branch or self.__product.product_branch_id(self.__vcs)
         old_vcs_path = self.__product.old_metric_source_id(self.__vcs, version)
         if old_vcs_path:
             return old_vcs_path
@@ -45,22 +43,7 @@ class VersionControlSystemProductInfo(object):
         result = self.__vcs.normalize_path(result)
         if version:
             result = self.__vcs.tags_folder_for_version(result, version)
-        elif branch:
-            result = self.__vcs.branch_folder_for_branch(result, branch)
         return result
-
-    def latest_released_product_version(self):
-        """ Return the latest released version of the product. """
-        vcs_path = self.__product.metric_source_id(self.__vcs)
-        if not vcs_path:
-            return ''
-        vcs_path = self.__vcs.normalize_path(vcs_path)
-        return self.__vcs.latest_tagged_product_version(vcs_path)
-
-    def is_latest_release(self):
-        """ Return whether the version of the product is the latest released version. """
-        product_version = self.__product.product_version()
-        return product_version == self.latest_released_product_version() if product_version else False
 
     def branch_folder_for_branch(self, path, branch):
         """ Return the folder for the branch. """

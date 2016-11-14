@@ -31,11 +31,11 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
     COLUMN_90_PERC = 10
 
     @utils.memoized
-    def _query_rows(self, product, version):
-        """ Return the queries for the specified product and version. """
+    def _query_rows(self, product):
+        """ Return the queries for the specified product. """
         rows = []
         product_query_re = re.compile(product[0])
-        urls = self.urls(product, version)
+        urls = self.urls(product)
         for url in urls:
             soup = self.soup(url)
             for row in soup('tr'):
@@ -60,12 +60,11 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
         return self.__parse_date(date_text)
 
     @utils.memoized
-    def urls(self, product, version):
-        """ Return the url(s) of the performance report for the specified product and version. """
+    def urls(self, product):
+        """ Return the url(s) of the performance report for the specified product. """
         urls = {0: set()}  # {test_run_number: set(of urls)}
         for filename, url in self.__report_urls():
-            if self.__report_covers_product_and_version(url, product, version):
-                urls.setdefault(self.__test_run_number(filename), set()).add(url)
+            urls.setdefault(self.__test_run_number(filename), set()).add(url)
         return urls[max(urls.keys())]  # Return the latest test run
 
     @utils.memoized
@@ -79,34 +78,6 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
             if filename.endswith('.html'):
                 urls.append((filename, base_url + filename))
         return urls
-
-    @utils.memoized
-    def __report_covers_product_and_version(self, url, product, version):
-        """ Return whether the performance report covers the specified product and version. """
-        product_query_id, product_long_id = product
-        soup = self.soup(url)
-        if not self.__report_contains_queries(soup, product_query_id):
-            return False
-        for table in soup('table')[:2]:  # First two tables contain products
-            for cell in table('td'):
-                try:
-                    covered_product, covered_version = cell.string.split('-ear')
-                except ValueError:
-                    return False
-                covered_version = covered_version.strip('-')
-                if covered_product == product_long_id and version in (covered_version, ''):
-                    return True
-        return False
-
-    @staticmethod
-    def __report_contains_queries(soup, product_query_id):
-        """ Return whether the performance report contains queries with the specified query id. """
-        product_query_re = re.compile(product_query_id)
-        query_names = soup('td', attrs={'class': ['name']})
-        for query_name in query_names:
-            if product_query_re.match(query_name.string):
-                return True
-        return False
 
     @staticmethod
     def __test_run_number(filename):

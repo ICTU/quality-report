@@ -100,17 +100,3 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_comment_url_label(self):
         """ Test the label for the comment urls. """
         self.assertEqual('Genegeerde branches', self.__metric.comment_url_label())
-
-    def test_is_applicable(self):
-        """ Test that the metric is applicable if the product is the trunk version. """
-        self.assertTrue(metric.UnmergedBranches.is_applicable(self.__subject))
-
-    def test_is_not_applicable_if_release(self):
-        """ Test that the metric isn't applicable for released versions. """
-        self.__subject.set_product_version('1.1')
-        self.assertFalse(metric.UnmergedBranches.is_applicable(self.__subject))
-
-    def test_is_not_applicable_if_branch(self):
-        """ Test that the metric isn't applicable for released versions. """
-        self.__subject.set_product_branch('branch')
-        self.assertFalse(metric.UnmergedBranches.is_applicable(self.__subject))

@@ -1,3 +1,9 @@
+2016-11-14  Release 1.68.0
+
+  * Remove the latest release, dependency and branch feature: this means that the quality report only contains trunk versions of
+    software products.
+  
+
 2016-11-12  Release 1.67.0
 
   * Remove the release candidate feature.

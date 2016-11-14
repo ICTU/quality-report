@@ -51,7 +51,7 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     def _parameters(self):
         parameters = super(TotalLOC, self)._parameters()
         products = self.__main_products()
-        parameters['products'] = ', '.join([product.product_label() for product in products])
+        parameters['products'] = ', '.join([product.name() for product in products])
         return parameters
 
     def value(self):

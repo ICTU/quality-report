@@ -45,16 +45,6 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return the date when the url was last changed. """
         raise NotImplementedError  # pragma: no cover
 
-    @utils.memoized
-    def latest_tagged_product_version(self, path):
-        """ Return the latest version as tagged in the VCS. """
-        tags = self.tags(path)
-        if not tags:
-            return
-        versions = [self._parse_version(tag) for tag in tags]
-        versions.sort()
-        return versions[-1][1]  # Return the text version of the highest number
-
     def branches(self, path):  # pylint: disable=unused-argument
         """ Return a list of branch names for the specified path. """
         raise NotImplementedError  # pragma: no cover

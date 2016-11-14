@@ -25,24 +25,7 @@ class SonarProductInfo(object):
         """ Return the id that identifies the product in Sonar. """
         if not self.__product:
             return ''
-        version = self.__product.product_version()
-        sonar_id = self.__product.old_metric_source_id(self.__sonar, version)
-        if not sonar_id:
-            sonar_id = self.__product.metric_source_id(self.__sonar) or ''
-        branch = self.__product.product_branch()
-        if sonar_id:
-            if sonar_id.endswith(':jsf') or sonar_id.endswith(':ut'):
-                sep = '_'
-            else:
-                sep = ':'
-            if branch and version:
-                sonar_id += sep + branch + '_' + version
-            else:
-                if branch:
-                    sonar_id += sep + branch
-                if version:
-                    sonar_id += sep + version
-        return sonar_id
+        return self.__product.metric_source_id(self.__sonar) or ''
 
     def all_sonar_ids(self):
         """ Return all Sonar ids of the product: the Sonar id of the product itself and its unit tests
@@ -57,13 +40,8 @@ class SonarProductInfo(object):
 
     def latest_version(self):
         """ Return the latest version of the product. """
-        version = self.__product.product_version()
-        if version:
-            return version
-        elif self.sonar_id():
+        if self.sonar_id():
             # Product is a branch or trunk version, get the SNAPSHOT version number from Sonar
-            sonar_version = self.__sonar.version(self.sonar_id())
-            branch = self.__product.product_branch()
-            return branch + ':' + sonar_version if branch else sonar_version
+            return self.__sonar.version(self.sonar_id())
         else:
             return ''

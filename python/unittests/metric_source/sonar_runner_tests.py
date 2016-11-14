@@ -17,8 +17,7 @@ limitations under the License.
 import io
 import unittest
 
-from qualitylib.metric_source import Sonar, Maven
-from qualitylib.metric_source import VersionControlSystem
+from qualitylib.metric_source import Sonar
 from qualitylib.metric_source.sonar_runner import SonarRunner
 
 
@@ -33,13 +32,8 @@ class FakeSonar(Sonar):  # pylint: disable=too-few-public-methods
 class FakeProduct(object):  # pylint: disable=too-few-public-methods
     """ Fake a product. """
     @staticmethod
-    def product_label():
-        """ Return the product label. """
-        return 'fakeproduct'
-
-    @staticmethod
-    def product_version(*args):  # pylint: disable=unused-argument
-        """ Return the product version. """
+    def unittests(*args):  # pylint: disable=unused-argument
+        """ Return the unittests. """
         return
 
     @staticmethod
@@ -47,15 +41,14 @@ class FakeProduct(object):  # pylint: disable=too-few-public-methods
         """ Return the Sonar id. """
         return 'a:b'
 
-    jsf = unittests = product_branch = product_branch_id = old_metric_source_id = metric_source_options = \
-        product_version
+    jsf = unittests
 
 
 class SonarRunnerTest(unittest.TestCase):
     """ Unit tests for the Sonar runner that creates and deletes Sonar analyses. """
 
     def setUp(self):
-        self.__runner = SonarRunner(FakeSonar('http://sonar/'), Maven(), VersionControlSystem())
+        self.__runner = SonarRunner(FakeSonar('http://sonar/'))
 
     def test_analyse_no_products(self):
         """ Test that the runner does nothing when analysing an empty set of products. """

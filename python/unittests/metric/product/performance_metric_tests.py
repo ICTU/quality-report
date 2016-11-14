@@ -51,18 +51,13 @@ class FakePerformanceReport(object):
 class FakeSubject(object):
     """ Provide for a fake subject. """
 
-    def __init__(self, version='', performance_report_id='performance report id'):
-        self.__version = version
+    def __init__(self, performance_report_id='performance report id'):
         self.__performance_report_id = performance_report_id
 
     @staticmethod
     def name():
         """ Return the name of the subject. """
         return 'FakeSubject'
-
-    def product_version(self):
-        """ Return the version of the subject. """
-        return self.__version
 
     def metric_source_id(self, performance_report):  # pylint: disable=unused-argument
         """ Return the performance report id of the subject. """
@@ -97,7 +92,7 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
         """ Test the status of the metric. """
         self.assertEqual(self.expected_status, self.__metric.status())
 
-    def test_missing_performance_report_for_version(self):
+    def test_missing_performance_report(self):
         """ Test the metric report when the performance report is missing. """
 
         class MissingPerformanceReport(object):  # pylint: disable=too-few-public-methods

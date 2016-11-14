@@ -37,7 +37,7 @@ class QualityReport(domain.DomainObject):
                 requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
-                requirement.TrackSpirit, requirement.TrackAbsence, requirement.NoSnapshotDependencies,
+                requirement.TrackSpirit, requirement.TrackAbsence,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS, requirement.Java,
                 requirement.CSharp, requirement.JavaScript, requirement.Web,
                 requirement.TrustedProductMaintainability, requirement.TrackBranches)
@@ -103,8 +103,7 @@ class QualityReport(domain.DomainObject):
 
     def get_product_section(self, product):
         """ Return the section for a specific product. """
-        return {section.product().product_label(): section for section in self.sections()
-                if section.product()}[product.product_label()]
+        return {section.product().name(): section for section in self.sections() if section.product()}[product.name()]
 
     def get_meta_section(self):
         """ Return the section with the meta metrics. """
@@ -141,11 +140,6 @@ class QualityReport(domain.DomainObject):
     def products(self):
         """ Return the products we report on. """
         return self.__products
-
-    def get_product(self, product_name, product_version):
-        """ Return the product with the specified name and version. """
-        return [product for product in self.products() if product.name() == product_name and
-                product.product_version() == product_version][0]
 
     def __latest_product_version(self, product):
         """ Return the most recent version of the product. """
@@ -186,10 +180,6 @@ class QualityReport(domain.DomainObject):
                                                   requirement.CodeQuality, requirement.Performance,
                                                   requirement.OWASPDependencies, requirement.OWASPZAP,
                                                   requirement.OpenVAS)
-        for metric_class in requirement.NoSnapshotDependencies.metric_classes():
-            if metric_class.should_be_measured(product) and metric_class.is_applicable(product):
-                self.__requirements.add(requirement.NoSnapshotDependencies)
-                metrics.append(metric_class(product, report=self, project=self.__project))
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
@@ -218,16 +208,8 @@ class QualityReport(domain.DomainObject):
 
     def __art_metrics(self, art):
         """ Return a list of Automated Regression Test metrics for the (ART) product. """
-        metrics = []
-        if not art:
-            return metrics
-        if art.product_version_type() == 'trunk':
-            # Only add the ART if we're reporting on the trunk version because we currently can only report on the
-            # trunk version of the ART.
-            metrics.extend(self.__required_subject_metrics(art, requirement.CodeQuality, requirement.ARTCoverage,
-                                                           requirement.ART))
-        metrics.extend(self.__required_subject_metrics(art, requirement.TrackBranches))
-        return metrics
+        return self.__required_subject_metrics(art, requirement.CodeQuality, requirement.ARTCoverage,
+                                               requirement.ART, requirement.TrackBranches) if art else []
 
     def __jsf_metrics(self, jsf):
         """ Return a list of JSF metrics for the (JSF) product. """

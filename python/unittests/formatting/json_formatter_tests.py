@@ -47,7 +47,7 @@ class JSONFormatterTest(unittest.TestCase):
     def test_prefix_product(self):
         """ Test that the prefix contains the version of the products that not have been released
             (i.e. the version of the trunk). """
-        report = fake_report.Report([fake_domain.Product(version=''), fake_domain.Product()])
+        report = fake_report.Report([fake_domain.Product()])
         self.assertEqual('{"Product-version": "2", "date": "2012-01-01 12:00:00", ', self.__formatter.prefix(report))
 
     def test_formatting_error(self):

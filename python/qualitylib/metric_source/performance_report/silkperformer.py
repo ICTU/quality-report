@@ -33,11 +33,11 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         super(SilkPerformerPerformanceReport, self).__init__(*args, **kwargs)
 
     @utils.memoized
-    def _query_rows(self, product, version):
-        """ Return the queries for the specified product and version. """
+    def _query_rows(self, product):
+        """ Return the queries for the specified product. """
         rows = []
         product_query_re = re.compile(product[0])
-        urls = self.urls(product, version)
+        urls = self.urls(product)
         for url in urls:
             soup = self.soup(url)
             for row in soup('tr'):
@@ -64,9 +64,9 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         return datetime.datetime(*date_parts)
 
     @utils.memoized
-    def urls(self, product, version):  # pylint: disable=unused-argument
+    def urls(self, product):  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
-        return self.__report_urls or [self.url()]  # The Silk Performer reports don't contain the product and version
+        return self.__report_urls or [self.url()]
 
 
 class SilkPerformerPerformanceLoadTestReport(SilkPerformerPerformanceReport):

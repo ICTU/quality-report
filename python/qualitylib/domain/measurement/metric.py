@@ -206,13 +206,8 @@ class Metric(object):
 
     def _parameters(self):
         """ Return the parameters for the metric report template and for the metric norm template. """
-        try:
-            version = self._subject.product_version()
-        except AttributeError:
-            version = '<no version>'
         return dict(name=self.__subject_name(),
                     metric=self.name[0].lower()+self.name[1:],
-                    version=version,
                     unit=self.unit,
                     target=self.target(),
                     low_target=self.low_target(),
@@ -336,14 +331,6 @@ class Metric(object):
             regular value, assuming it is already numerical. Metrics that don't have a numerical value by default
             can override this method to convert the non-numerical value into a numerical value. """
         return self.value()
-
-    def product_version_type(self):
-        """ Return whether this metric measures a product and if so, whether it's a trunk version, a tagged version
-            or a release candidate. """
-        try:
-            return self._subject.product_version_type()
-        except AttributeError:
-            return 'no_product'
 
     def __subject_name(self):
         """ Return the subject name, or a string representation if the subject has no name. """

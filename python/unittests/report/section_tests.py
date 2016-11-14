@@ -58,9 +58,8 @@ class SectionTest(unittest.TestCase):
 
     def setUp(self):
         self.__header = SectionHeader('TE', 'title', 'subtitle')
-        self.__metrics = [FakeMetric('green'), FakeMetric('perfect'),
-                          FakeMetric('yellow'), FakeMetric('grey'),
-                          FakeMetric('red'), FakeMetric('missing')]
+        self.__metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('grey'),
+                          FakeMetric('red')]
         self.__section = Section(self.__header, self.__metrics)
 
     def test_title(self):
@@ -68,13 +67,11 @@ class SectionTest(unittest.TestCase):
         self.assertEqual(self.__header.title(), self.__section.title())
 
     def test_subtitle(self):
-        """ Test that the subtitle of the section is the subtitle of the
-            header. """
+        """ Test that the subtitle of the section is the subtitle of the header. """
         self.assertEqual(self.__header.subtitle(), self.__section.subtitle())
 
     def test_id_prefix(self):
-        """ Test that the id prefix of the section is the id prefix of the
-            header. """
+        """ Test that the id prefix of the section is the id prefix of the header. """
         self.assertEqual(self.__header.id_prefix(), self.__section.id_prefix())
 
     def test_str(self):
@@ -91,32 +88,31 @@ class SectionTest(unittest.TestCase):
 
     def test_color_red(self):
         """ Test that the section is red when one metric is red. """
-        self.assertEqual('red', self.__section.color())
+        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('red'), FakeMetric('grey'),
+                   FakeMetric('yellow'), FakeMetric('missing')]
+        section = Section(self.__header, metrics)
+        self.assertEqual('red', section.color())
 
     def test_color_red_when_missing(self):
         """ Test that the section is red when one metric is missing and the rest is green or yellow. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'),
-                   FakeMetric('yellow'), FakeMetric('missing')]
+        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('missing')]
         section = Section(self.__header, metrics)
         self.assertEqual('red', section.color())
 
     def test_color_red_when_missing_source(self):
         """ Test that the section is red when one metric source is missing and the rest is green or yellow. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'),
-                   FakeMetric('yellow'), FakeMetric('missing_source')]
+        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('missing_source')]
         section = Section(self.__header, metrics)
         self.assertEqual('red', section.color())
 
     def test_color_yellow(self):
         """ Test that the section is yellow when no metrics are red and at least one is yellow. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'),
-                   FakeMetric('yellow'), FakeMetric('grey')]
+        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('grey')]
         section = Section(self.__header, metrics)
         self.assertEqual('yellow', section.color())
 
     def test_color_grey(self):
-        """ Test that the section is grey when no metrics are red or yellow and
-            at least one is grey. """
+        """ Test that the section is grey when no metrics are red or yellow and at least one is grey. """
         metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('grey')]
         section = Section(self.__header, metrics)
         self.assertEqual('grey', section.color())
@@ -164,16 +160,3 @@ class SectionTest(unittest.TestCase):
         """ Test that the section returns the product. """
         section = Section(None, [], product='Product')
         self.assertEqual('Product', section.product())
-
-    def test_trunk_product(self):
-        """ Test that the section returns whether the product is a trunk version. """
-
-        class FakeProduct(object):  # pylint: disable=too-few-public-methods
-            """ Fake a trunk product. """
-            @staticmethod
-            def product_version_type():
-                """ Fake a trunk version. """
-                return 'trunk'
-
-        section = Section(None, [], product=FakeProduct())
-        self.assertTrue(section.contains_trunk_product())

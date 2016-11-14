@@ -62,65 +62,17 @@ class Project(RequirementSubject, measurable.MeasurableObject):
 
     def add_product(self, product):
         """ Add a product to the project. """
-        if product.product_version_type() == 'trunk':
-            self.__check_short_section_name(product.short_name())
+        self.__check_short_section_name(product.short_name())
         self.__products.append(product)
         return product
-
-    def add_product_with_version(self, product_name, product_version):
-        """ Add product with the specified version to the project. """
-        if not product_version:
-            return  # Don't need to add trunk versions
-        if self.get_product(product_name, version=product_version):
-            return  # Product/version combination already exists
-        trunk = self.get_product(product_name)
-        if trunk:
-            product_copy = copy.copy(trunk)
-            product_copy.set_product_version(product_version)
-            self.add_product(product_copy)
-            return product_copy
-        else:
-            logging.error("Couldn't find %s:trunk, so couldn't add version %s",
-                          product_name, product_version)
-
-    def add_product_with_branch(self, product_name, product_branch):
-        """ Add product with the specified branch to the project. """
-        if not product_branch:
-            return  # Don't need to add trunk versions
-        if self.get_product(product_name, branch=product_branch):
-            return  # Product/branch combination already exists
-        trunk = self.get_product(product_name)
-        if trunk:
-            product_copy = copy.copy(trunk)
-            product_copy.set_product_branch(product_branch)
-            self.add_product(product_copy)
-            return product_copy
-        else:
-            logging.error("Couldn't find %s:trunk, so couldn't add branch %s",
-                          product_name, product_branch)
 
     def products(self):
         """ Return the products of the project. """
         return self.__products
 
-    def get_product(self, name, version=None, branch=None):
-        """ Find a product by name, version and branch. Return the trunk version if version and branch are not
-            specified. """
-        def match_version(product):
-            """ Return whether the product version matches the target version, if any. """
-            this_version = product.product_version()
-            return this_version == version if version else not this_version
-
-        def match_branch(product):
-            """ Return whether the product branch matches the target branch, if any. """
-            this_branch = product.product_branch()
-            return this_branch == branch if branch else not this_branch
-
-        def match(product):
-            """ Return whether the product name, version and branch match the ones we're looking for. """
-            return name == product.name() and match_version(product) and match_branch(product)
-
-        matches = [each_product for each_product in self.__products if match(each_product)]
+    def get_product(self, name):
+        """ Find a product by name. """
+        matches = [product for product in self.__products if product.name() == name]
         return matches[0] if matches else None
 
     def add_team(self, team):

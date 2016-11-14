@@ -26,10 +26,6 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of logical test cases. """
     unit = 'logische testgevallen'
 
-    @classmethod
-    def is_applicable(cls, product):
-        return super(LogicalTestCaseMetric, cls).is_applicable(product) and not product.product_version()
-
     def value(self):
         nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
         if -1 in (nr_ltcs_ok, nr_ltcs) or None in (nr_ltcs_ok, nr_ltcs):
@@ -115,30 +111,20 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     low_target_value = 28
     metric_source_classes = (metric_source.Birt,)
 
-    def target(self):
-        if self._subject.product_version_type() == 'release':
-            return 0  # Release candidates should already be tested
-        else:
-            return self.target_value
-
-    def low_target(self):
-        return self.target() + 7
-
     def value(self):
         return -1 if self._missing() else (datetime.datetime.now() - self._date()).days
 
     def _metric_source_urls(self):
-        return [self._metric_source.manual_test_execution_url(self.__version())]
+        return [self._metric_source.manual_test_execution_url()]
 
     def _date(self):
-        date = self._metric_source.date_of_last_manual_test(self.__version())
+        date = self._metric_source.date_of_last_manual_test()
         return datetime.datetime.min if date == -1 else date
 
     def _parameters(self):
         parameters = super(ManualLogicalTestCases, self)._parameters()
-        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs(self.__version())
-        parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old(self.__version(),
-                                                                                          self.target())
+        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()
+        parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old('trunk', self.target())
         return parameters
 
     def _get_template(self):
@@ -146,11 +132,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
             else super(ManualLogicalTestCases, self)._get_template()
 
     def _missing(self):
-        return self._metric_source.date_of_last_manual_test(self.__version()) in (-1, None)
-
-    def __version(self):
-        """ Return the version number for the product this metric is reporting on. """
-        return self._subject.product_version() or 'trunk'
+        return self._metric_source.date_of_last_manual_test() in (-1, None)
 
 
 class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):

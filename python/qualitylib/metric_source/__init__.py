@@ -28,12 +28,10 @@ from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
-from .dependencies import Dependencies
 from .history import History
 from .holiday_planner import HolidayPlanner
 from .jenkins import Jenkins
 from .jira import Jira
-from .maven import Maven
 from .open_vas_scan_report import OpenVASScanReport
 from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
 from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport
@@ -41,7 +39,6 @@ from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPe
     JMeterPerformanceScalabilityTestReport
 from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
     SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
-from .pom import Pom
 from .sonar import Sonar
 from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki

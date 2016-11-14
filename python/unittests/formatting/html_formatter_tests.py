@@ -66,7 +66,6 @@ class HTMLFormatterTest(unittest.TestCase):
         self.assertTrue("""<td colspan=1 rowspan=1 align="center" bgcolor="lightsteelblue">
                                         <div class="link_section_ID" title="Section title"></div>
                                         <div id="section_summary_chart_ID"></div>
-                                        <div id="section_summary_trunk_chart_ID"></div>
                                     </td>""" in html)
 
     def test_hover_unknown_start(self):
@@ -86,12 +85,6 @@ class HTMLFormatterTest(unittest.TestCase):
         expected_formatted_date = utils.format_date(expected_date, year=True)
         self.assertTrue('title="Direct actie vereist: norm niet gehaald of '
                         'meting te oud (sinds {})'.format(expected_formatted_date) in html)
-
-    def test_product_meta_data_latest_release(self):
-        """ Test that the report shows whether a product/version is the latest release of the product. """
-        latest_release = fake_domain.Product(is_latest_release=True)
-        html = self.__formatter.process(fake_report.Report([latest_release]))
-        self.assertTrue(' is de meest recente versie.</p>\n' in html)
 
     def test_history(self):
         """ Test that the report contains the history of the meta metrics. """

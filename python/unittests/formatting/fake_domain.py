@@ -21,16 +21,8 @@ import datetime
 
 class Product(object):
     """ Fake the product domain class. """
-    def __init__(self, dependencies=False, version='1', is_latest_release=False):
+    def __init__(self, dependencies=False):
         self.__dependencies = dependencies
-        self.__branch = ''
-        self.__version = version
-        self.__is_latest_release = is_latest_release
-
-    @staticmethod
-    def old_metric_source_id(*args):  # pylint: disable=unused-argument
-        """ Return the old Sonar id of the product. """
-        return ''
 
     @staticmethod
     def metric_source_id(*args):  # pylint: disable=unused-argument
@@ -47,21 +39,9 @@ class Product(object):
         """ Return the short version of the name of the product. """
         return 'FP'
 
-    def product_branch(self):
-        """ Return the branch of the product. """
-        return self.__branch
-
-    def product_version(self):
-        """ Return the version of the product. """
-        return self.__version
-
     def product_label(self):
         """ Return the label of the product. """
-        return self.name() + ':' + self.branch_version_label()
-
-    def branch_version_label(self):
-        """ Return the branch and/or version. """
-        return self.product_version() or 'trunk'
+        return self.name() + ':' + 'trunk'
 
     def dependencies(self, recursive=False):  # pylint: disable=unused-argument
         """ Return a list of dependencies of the product. """
@@ -71,10 +51,6 @@ class Product(object):
     def users(recursive=False):  # pylint: disable=unused-argument
         """ Return a list of users of the product. """
         return []
-
-    def is_latest_release(self):
-        """ Return whether this product version is the latest release. """
-        return self.__is_latest_release
 
 
 class Metric(object):
@@ -141,8 +117,3 @@ class Metric(object):
     def comment_url_label():
         """ Return the label for the urls. """
         return ''
-
-    @staticmethod
-    def product_version_type():
-        """ Return a fake version type. """
-        return 'trunk'

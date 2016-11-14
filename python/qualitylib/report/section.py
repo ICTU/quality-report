@@ -99,7 +99,3 @@ class Section(object):
     def product(self):
         """ Return the product this section is about. """
         return self.__product
-
-    def contains_trunk_product(self):
-        """ Return whether this section describes a trunk version of a product. """
-        return self.product() and self.product().product_version_type() == 'trunk'

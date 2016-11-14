@@ -46,7 +46,6 @@ var METRICS_COLUMN_STATUS_ICON = 4;
 var METRICS_COLUMN_MEASUREMENT = 5;
 var METRICS_COLUMN_NORM = 6;
 var METRICS_COLUMN_COMMENT = 7;
-var METRICS_COLUMN_VERSION = 8;
 
 function create_metrics_table(metrics_data) {
     var metrics = new google.visualization.DataTable();
@@ -59,7 +58,6 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Meting');
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
-    metrics.addColumn('string', 'Version');
     metrics.addRows(metrics_data);
     color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
@@ -92,11 +90,9 @@ function create_dashboard(metrics_data, history_data) {
     draw_area_chart('meta_metrics_history_graph', history_data);
 
     set_radio_indicator('filter_color', settings.filter_color);
-    set_radio_indicator('filter_version', settings.filter_version);
     set_check_indicator('show_dashboard', settings.show_dashboard);
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
     show_or_hide_dashboard();
-    show_section_summary_charts(settings.filter_version);
     draw_tables(tables);
 
     // Event handler for navigating between tabs
@@ -119,17 +115,6 @@ function create_dashboard(metrics_data, history_data) {
         });
     };
 
-    // Event handlers for the filter by product version menu items.
-    var versions = ['filter_version_all', 'filter_version_trunk'];
-    for (index = 0; index < versions.length; index++) {
-        document.getElementById(versions[index]).onclick = (function() {
-            var version = versions[index];
-            return function() {
-                set_filter('filter_version', version, tables);
-            };
-        })();
-    }
-
     // Event handlers for the filter by color menu items.
     var colors = ['filter_color_all', 'filter_color_red_and_yellow', 'filter_color_grey'];
     for (index = 0; index < colors.length; index++) {
@@ -144,7 +129,6 @@ function create_dashboard(metrics_data, history_data) {
 
 function read_settings_from_cookies() {
     settings.filter_color = read_cookie('filter_color', 'filter_color_all');
-    settings.filter_version = read_cookie('filter_version', 'filter_version_trunk');
     settings.show_dashboard = read_cookie('show_dashboard', 'true') === 'true';
     settings.show_multiple_tables = read_cookie('show_multiple_tables', 'true') === 'true';
     settings.table_sort_column = parseInt(read_cookie('table_sort_column', '0'), 10);
@@ -152,14 +136,8 @@ function read_settings_from_cookies() {
 }
 
 function save_sort_order(event, section) {
-    // Save the sort order. We use the same sort order for each column. Since
-    // the tables that report on tagged products don't contain a trend column,
-    // and because the event.column index is the index of the visible column,
-    // we need to adapt the column number.
+    // Save the sort order. We use the same sort order for each column.
     var column = event.column;
-    if (section_contains_tagged_product(section) && column > 0) {
-        column += 1;
-    }
     settings.table_sort_column = column;
     settings.table_sort_ascending = event.ascending;
     write_cookie('table_sort_column', column.toString());
@@ -179,27 +157,6 @@ function set_filter(filter, filter_value, tables) {
     write_cookie(filter, filter_value);
     set_radio_indicator(filter, filter_value);
     draw_tables(tables);
-    if (filter === 'filter_version') {
-        show_section_summary_charts(filter_value);
-    }
-}
-
-function show_section_summary_charts(filter_value) {
-    // Show either the column chart or the pie chart depending on whether the
-    // user wants to see all versions or only trunk versions.
-    var show_trunk_only = (filter_value === 'filter_version_trunk');
-    var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
-    for (var index = 0; index < sections.length; index++) {
-        var section = sections[index];
-        var trunk_chart_div = document.getElementById('section_summary_trunk_chart_' + section);
-        if (trunk_chart_div !== null) {
-            trunk_chart_div.style.display = show_trunk_only ? 'block' : 'none';
-        }
-        var summary_chart_div = document.getElementById('section_summary_chart_' + section);
-        if (summary_chart_div !== null) {
-            summary_chart_div.style.display = show_trunk_only ? 'none' : 'block';
-        }
-    }
 }
 
 function color_metrics(color_green, color_yellow, color_red, color_grey, color_missing) {
@@ -258,23 +215,8 @@ function show_or_hide_table(table, section) {
 function show_table(table, section, view) {
     document.getElementById('section_' + section).style.display = 'block';
     show_links_to(section);
-    var is_tagged_product = ['tag', 'release'].indexOf(view.getValue(0, METRICS_COLUMN_VERSION)) > -1;
-    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT, METRICS_COLUMN_VERSION];
+    var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT];
     var sort_column = settings.table_sort_column;
-    if (is_tagged_product) {
-        // Hide the trend column since this table, showing a tagged product,
-        // has no history.
-        columns_to_hide.push(METRICS_COLUMN_TREND);
-        if (sort_column === METRICS_COLUMN_SECTION) {
-            // We can't sort on this column since it's invisible.
-            sort_column = -1;
-        } else if (sort_column > METRICS_COLUMN_SECTION) {
-            // Subtract one because the trend column is not visible.
-            sort_column = sort_column - 1;
-        } else {
-            // Sort column remains unchanged.
-        }
-    }
     var columns_to_hide_when_empty = [METRICS_COLUMN_COMMENT];
     for (var index = 0; index < columns_to_hide_when_empty.length; index++) {
         var column_index = columns_to_hide_when_empty[index];
@@ -326,37 +268,11 @@ function table_view(section) {
         }
         rows = intersection(rows, colored_rows);
     }
-
-    // Product versions
-    var filtered_version = settings.filter_version;
-    if (filtered_version !== 'filter_version_all') {
-        var filtered_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'no_product'}]);
-        if (filtered_version === 'filter_version_trunk') {
-            var trunk_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'trunk'}]);
-            filtered_rows = filtered_rows.concat(trunk_rows);
-        }
-        rows = intersection(rows, filtered_rows);
-    }
-
     view.setRows(rows);
     return view;
 }
 
 function draw_section_summary_chart(section) {
-    var section_summary_chart_div = document.getElementById('section_summary_chart_' + section);
-    if (section_summary_chart_div === null) {
-        // Not all sections have a summary chart, e.g. the meta metrics (MM) section.
-        return;
-    }
-    // Collect all sections that contain the same product
-    var all_sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
-    var sections = [];
-    for (var index = 0; index < all_sections.length; index++) {
-        if (all_sections[index].substring(0, section.length) === section) {
-            sections.push(all_sections[index]);
-        }
-    }
-    draw_column_chart(section_summary_chart_div, sections)
     draw_pie_chart(section);
 }
 
@@ -365,39 +281,8 @@ function status_count(section, color) {
                                           {column: METRICS_COLUMN_STATUS_TEXT, value: color}]).length;
 }
 
-function draw_column_chart(chart_div, sections) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Versie');
-    data.addColumn('number', 'Groen');
-    data.addColumn('number', 'Geel');
-    data.addColumn('number', 'Rood');
-    data.addColumn('number', 'Grijs');
-    data.addColumn('number', 'Ontbrekend');
-    for(var index = 0; index < sections.length; index++) {
-        var version = sections[index];
-        data.addRow([version, status_count(version, 'green') + status_count(version, 'perfect'),
-                     status_count(version, 'yellow'), status_count(version, 'red'),
-                     status_count(version, 'grey'), status_count(version, 'missing') +
-                     status_count(version, 'missing_source')]);
-    }
-
-    var bg_color = chart_div.parentNode.getAttribute('bgcolor');
-    var options = {
-      series: {0: {color: COLOR_GREEN}, 1: {color: COLOR_YELLOW},
-               2: {color: COLOR_RED}, 3: {color: COLOR_GREY},
-               4: {color: COLOR_MISSING}},
-      legend: 'none',
-      width: 80, height: 80,
-      backgroundColor: bg_color,
-      chartArea: {left:7, top:7, width:66, height:66},
-      isStacked: true
-    };
-    var chart = new google.visualization.ColumnChart(chart_div);
-    chart.draw(data, options);
-}
-
 function draw_pie_chart(section) {
-    var piechart_div = document.getElementById('section_summary_trunk_chart_' + section);
+    var piechart_div = document.getElementById('section_summary_chart_' + section);
     if (piechart_div === null) {
         // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
         return;
@@ -497,19 +382,6 @@ function set_check_indicator(id_of_check_item, check) {
     var element = document.getElementById(id_of_check_item);
     var icon = check ? 'glyphicon glyphicon-ok' : '';
     element.getElementsByTagName('span')[0].setAttribute('class', icon);
-}
-
-function section_contains_tagged_product(section) {
-    if (section === 'all') {
-        return false;
-    } else {
-        var section_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}]);
-        var tagged_product_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'tag'}]);
-        // Add the rows for product versions that are to be released since they are tagged too:
-        tagged_product_rows.concat(window.metrics.getFilteredRows([{column: METRICS_COLUMN_VERSION, value: 'release'}]));
-        var tagged_product_rows_in_section = intersection(section_rows, tagged_product_rows);
-        return tagged_product_rows_in_section.length === section_rows.length;
-    }
 }
 
 function intersection(array1, array2) {

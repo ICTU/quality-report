@@ -80,11 +80,6 @@ class Performance(Requirement):
                        metric.PerformanceScalabilityTestWarnings, metric.PerformanceScalabilityTestErrors)
 
 
-class NoSnapshotDependencies(Requirement):
-    _name = 'No snapshot dependencies'
-    _metric_classes = (metric.SnapshotDependencies,)
-
-
 class TrackBranches(Requirement):
     _name = 'Track branches'
     _metric_classes = (metric.UnmergedBranches,)

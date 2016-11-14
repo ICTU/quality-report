@@ -85,10 +85,13 @@ class RegressionTestAge(LowerIsBetterMetric):
 class _ARTCoverage(HigherIsBetterMetric):
     """ Metric for measuring the coverage of automated regression tests (ART) for a product. """
     unit = '%'
-    norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde functionele ' \
-                    'tests. Minder dan {low_target}{unit} is rood.'
+    norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde ' \
+                    'functionele tests en de coverage meting is niet ouder dan {old_age}. Minder dan ' \
+                    '{low_target}{unit} of meting ouder dan {max_old_age} is rood.'
     template = '{name} ART {covered_item} coverage is {value}{unit} ({date}, {age} geleden).'
     perfect_value = 100
+    old_age = datetime.timedelta(hours=3 * 24)
+    max_old_age = datetime.timedelta(hours=5 * 24)
     metric_source_classes = [metric_source.CoverageReport]
     covered_items = covered_item = 'Subclass responsibility'
 
@@ -98,16 +101,6 @@ class _ARTCoverage(HigherIsBetterMetric):
         values['covered_items'] = cls.covered_items
         values['covered_item'] = cls.covered_item
         return values
-
-    def __init__(self, *args, **kwargs):
-        super(_ARTCoverage, self).__init__(*args, **kwargs)
-        if not self._subject.product_version():
-            # Trunk version, ART coverage measurement should not be too old.
-            self.old_age = datetime.timedelta(hours=3 * 24)
-            self.max_old_age = datetime.timedelta(hours=5 * 24)
-            self.norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde ' \
-                'functionele tests en de coverage meting is niet ouder dan {old_age}. Minder dan ' \
-                '{low_target}{unit} of meting ouder dan {max_old_age} is rood.'
 
     def value(self):
         raise NotImplementedError  # pragma: nocover

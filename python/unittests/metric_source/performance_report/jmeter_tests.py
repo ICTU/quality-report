@@ -121,7 +121,7 @@ class JMeterUnderTest(JMeterPerformanceLoadTestReport):
         """ Return the static HTML. """
         return HTML
 
-    def urls(self, product, version):
+    def urls(self, product):
         """ Return a list of urls for the performance report. """
         return ['http://report/1'] if product != 'product' else []
 
@@ -138,29 +138,29 @@ class JMeterTest(unittest.TestCase):
 
     def test_queries_non_existing(self):
         """ Test that the number of queries for a product/version that is not found is zero. """
-        self.assertEqual(0, self.__performance_report.queries('product', 'version'))
+        self.assertEqual(0, self.__performance_report.queries('product'))
 
     def test_queries(self):
         """ Test that the total number of queries for a product/version that is in the report. """
-        self.assertEqual(2, self.__performance_report.queries(('01', 'lrk-pp'), '12.5.5'))
+        self.assertEqual(2, self.__performance_report.queries(('01', 'lrk-pp')))
 
     def test_queries_violating_max_responsetime(self):
         """ Test that the number of queries violating the maximum response times is zero. """
-        self.assertEqual(1, self.__performance_report.queries_violating_max_responsetime(('01', 'lrk-pp'), '12.5.5'))
+        self.assertEqual(1, self.__performance_report.queries_violating_max_responsetime(('01', 'lrk-pp')))
 
     def test_queries_violating_wished_reponsetime(self):
         """ Test that the number of queries violating the wished response times is zero. """
-        self.assertEqual(0, self.__performance_report.queries_violating_wished_responsetime(('01', 'lrk-pp'), '12.5.5'))
+        self.assertEqual(0, self.__performance_report.queries_violating_wished_responsetime(('01', 'lrk-pp')))
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30),
-                         self.__performance_report.date(('01', 'lrk-pp'), '12.5.5'))
+                         self.__performance_report.date(('01', 'lrk-pp')))
 
     def test_date_product_not_found(self):
         """ Test the date when the product/version is not in the report. """
-        self.assertEqual(datetime.datetime.min, self.__performance_report.date('product', 'version'))
+        self.assertEqual(datetime.datetime.min, self.__performance_report.date('product'))
 
     def test_urls(self):
         """ Test the urls. """
-        self.assertEqual(['http://report/1'], self.__performance_report.urls(('01', 'lrk-pp'), '12.5.5'))
+        self.assertEqual(['http://report/1'], self.__performance_report.urls(('01', 'lrk-pp')))

@@ -34,12 +34,6 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     target_value = 0
     low_target_value = 1
 
-    @classmethod
-    def is_applicable(cls, product):
-        """ Unmerged branches can only be measured for trunk versions of products that are under version control. """
-        return super(UnmergedBranches, cls).is_applicable(product) and \
-            not product.product_version() and not product.product_branch()
-
     def value(self):
         unmerged_branches = self.__unmerged_branches()
         return -1 if unmerged_branches is None else len(unmerged_branches)

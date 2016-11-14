@@ -63,13 +63,9 @@ class FakeSubject(object):
         """ Return the name of the subject. """
         return 'FakeSubject'
 
-    def metric_source_id(self, metric_scr):  # pylint: disable=unused-argument
+    def metric_source_id(self, metric_src):  # pylint: disable=unused-argument
         """ Return the metric source id of the subject for the metric source. """
         return 'birt id' if self.__birt_id else ''
-
-    def product_version(self):
-        """ Return the product version. """
-        return self.version
 
     @staticmethod
     def required_metric_classes():
@@ -104,16 +100,6 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
         """ Test the url is correct. """
         self.assertEqual({FakeBirt.metric_source_name: FakeBirt.whats_missing_url()}, self.__metric.url())
 
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk versions. """
-        self.assertTrue(metric.UserStoriesNotReviewed.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric can only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertFalse(metric.UserStoriesNotReviewed.should_be_measured(product))
-
 
 class UserStoriesNotApprovedTest(unittest.TestCase):
     """ Unit tests for the user stories that are not approved. """
@@ -136,16 +122,6 @@ class UserStoriesNotApprovedTest(unittest.TestCase):
         """ Test the url is correct. """
         self.assertEqual({FakeBirt.metric_source_name: FakeBirt.whats_missing_url()}, self.__metric.url())
 
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk version. """
-        self.assertTrue(metric.UserStoriesNotApproved.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric can only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertFalse(metric.UserStoriesNotApproved.should_be_measured(product))
-
 
 class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
     """ Unit tests for the user-stories-with-enough-logical-test-cases-metric. """
@@ -163,13 +139,3 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
     def test_url(self):
         """ Test the url is correct. """
         self.assertEqual({FakeBirt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
-
-    def test_will_be_measured_for_trunk_product(self):
-        """ Test that the metric will be measured for trunk version. """
-        self.assertTrue(metric.UserStoriesWithTooFewLogicalTestCases.should_be_measured(self.__subject))
-
-    def test_wont_be_measured_for_released_product(self):
-        """ Test that the metric will only be measured for trunk versions. """
-        product = self.__subject
-        product.version = '1.1'
-        self.assertFalse(metric.UserStoriesWithTooFewLogicalTestCases.should_be_measured(product))

@@ -33,22 +33,14 @@ class JSONFormatter(base_formatter.Formatter):
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
         for product in report.products():
-            if not product.product_version():
-                sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
-                sonar_id = sonar_product_info.sonar_id()
-                latest_version = sonar_product_info.latest_version()
-                prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,
-                                                                                  version=latest_version))
+            sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+            sonar_id = sonar_product_info.sonar_id()
+            latest_version = sonar_product_info.latest_version()
+            prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,
+                                                                              version=latest_version))
         # Add the current date to the prefix
         prefix_elements.append('"date": "{date}"'.format(date=report.date().strftime('%Y-%m-%d %H:%M:%S')))
         return '{' + ', '.join(prefix_elements) + ', '
-
-    @staticmethod
-    def sections(report):
-        """ Only return sections that describe trunk versions of products or that don't describe products.
-            We ignore sections that describe tagged products, since tagged products don't have a history that
-            needs to be written to the JSON file. """
-        return [section for section in report.sections() if not section.product() or section.contains_trunk_product()]
 
     def metric(self, metric):
         """ Return a JSON formatted version of the metric. """

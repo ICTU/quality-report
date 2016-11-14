@@ -27,7 +27,7 @@ import xmlrpclib
 
 import pkg_resources
 
-from qualitylib import formatting, commandlineargs, report, metric_source, metric_info, log, filesystem, VERSION
+from qualitylib import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -59,8 +59,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """
-        self.__add_latest_release_of_products()
-        self.__add_branches_of_products()
         self.__analyse_products()
 
         quality_report = report.QualityReport(self.__project)
@@ -68,25 +66,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                                        sonar=self.__project.metric_source(metric_source.Sonar))
         self.__create_report(quality_report, report_folder)
         metric_source.History(self.__history_filename).clean_history()
-
-    def __add_latest_release_of_products(self):
-        """ Add the latest released version of each product. """
-        vcs = self.__project.metric_source(metric_source.VersionControlSystem)
-        for product in self.__project.products()[:]:
-            vcs_product_info = metric_info.VersionControlSystemProductInfo(vcs, product)
-            latest_version = vcs_product_info.latest_released_product_version()
-            if latest_version:
-                logging.info('Adding %s:%s to the project because it is the latest version.',
-                             product.name(), latest_version)
-                self.__project.add_product_with_version(product.name(), latest_version)
-
-    def __add_branches_of_products(self):
-        """ Add the branches of the products that have to be monitored. """
-        for product in self.__project.products()[:]:
-            for branch in product.product_branches():
-                logging.info('Adding %s:%s to the project because it is a branch to be monitored.',
-                             product.name(), branch)
-                self.__project.add_product_with_branch(product.name(), branch)
 
     def __analyse_products(self):
         """ Make sure Sonar contains the right analysis projects. """
@@ -135,8 +114,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __create_trend_images(cls, quality_report, report_dir):
         """ Retrieve and write the trend images. """
         for metric in quality_report.metrics():
-            if metric.product_version_type() in ('tag', 'release'):
-                continue
             try:
                 history = ','.join([str(value) for value in metric.recent_history()])
             except ValueError:

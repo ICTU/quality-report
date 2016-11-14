@@ -19,7 +19,6 @@ import datetime
 import logging
 
 from . import url_opener, sonar_runner
-from .maven import Maven
 from .. import utils, domain
 
 
@@ -31,8 +30,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def __init__(self, sonar_url, maven=None, version_control_system=None,
                  *args, **kwargs):
         super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
-        maven = maven or Maven()
-        self.__runner = sonar_runner.SonarRunner(self, maven, version_control_system)
+        self.__runner = sonar_runner.SonarRunner(self)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'

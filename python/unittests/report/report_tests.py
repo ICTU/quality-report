@@ -113,14 +113,6 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([product], quality_report.products())
 
-    def test_get_product(self):
-        """ Test that a product can be retrieved by version number. """
-        product = domain.Product(self.__project, name='Product')
-        product.set_product_version('1.1')
-        self.__project.add_product(product)
-        quality_report = report.QualityReport(self.__project)
-        self.assertEqual(product, quality_report.get_product('Product', '1.1'))
-
     def test_get_included_metric_classes(self):
         """ Test the list of included metric classes. """
         self.__report.sections()  # Generate report
@@ -227,12 +219,6 @@ class QualityReportMetricsTest(unittest.TestCase):
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]))
 
-    def test_product_requirements_not_applicable(self):
-        """ Test that product metrics that can't be measured on trunk versions are not included. """
-        for req in [requirement.NoSnapshotDependencies]:
-            for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]), include=False)
-
     def test_product_art_requirements(self):
         """ Test that the product ART metrics are added if required. """
         for req in [requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches]:
@@ -244,32 +230,6 @@ class QualityReportMetricsTest(unittest.TestCase):
         for req in [requirement.JSFCodeQuality]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(jsf=dict(requirements=[req])))
-
-    def test_product_with_version_requirements(self):
-        """ Test that metrics that can only be measured on non-trunk product versions are included. """
-        for req in [requirement.NoSnapshotDependencies]:
-            for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class, product_kwargs=dict(product_version='1.1', requirements=[req]))
-
-    def test_product_art_code_with_version(self):
-        """ Test that the code metrics are not added if the ART is not a trunk version. """
-        for req in [requirement.CodeQuality]:
-            for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class,
-                                     product_kwargs=dict(product_version='1.1', art=dict(requirements=[req])),
-                                     include=False)
-
-    def test_product_with_version_exclude(self):
-        """ Test that metrics that can't be measured on non-trunk product versions aren't included ."""
-        for metric_class in [metric.UserStoriesNotApproved, metric.UserStoriesNotReviewed,
-                             metric.UserStoriesWithTooFewLogicalTestCases, metric.LogicalTestCasesNotApproved,
-                             metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotAutomated,
-                             metric.UnmergedBranches]:
-            self.__assert_metric(metric_class,
-                                 product_kwargs=dict(product_version='1.1',
-                                                     requirements=[requirement.UserStoriesAndLTCs,
-                                                                   requirement.TrackBranches]),
-                                 include=False)
 
     def test_unittest_metrics(self):
         """ Test that the unit test metrics are added if required. """

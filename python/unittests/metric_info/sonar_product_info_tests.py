@@ -41,35 +41,9 @@ class SonarProductInfoTests(unittest.TestCase):
         """ Test that the Sonar id of the product equals the passed id. """
         self.assertEqual('sonar:id', self.__sonar_product_info.sonar_id())
 
-    def test_sonar_id_with_version(self):
-        """ Test that the Sonar id includes the version for released products. """
-        self.__product.set_product_version('1.2.3')
-        self.assertEqual('sonar:id:1.2.3', self.__sonar_product_info.sonar_id())
-
-    def test_sonar_id_with_branch(self):
-        """ Test that the Sonar id includes the branch for branch products. """
-        self.__product.set_product_branch('product-branch')
-        self.assertEqual('sonar:id:product-branch', self.__sonar_product_info.sonar_id())
-
-    def test_sonar_id_with_branch_version(self):
-        """ Test that the Sonar id includes the branch and version. """
-        self.__product.set_product_branch('product-branch')
-        self.__product.set_product_version('1.2.3')
-        self.assertEqual('sonar:id:product-branch_1.2.3', self.__sonar_product_info.sonar_id())
-
-    def test_old_sonar_id(self):
-        """ Test that the Sonar id for an old version can be different. """
-        self.__product.set_product_version('old.version')
-        self.assertEqual('old-sonar:id:old.version', self.__sonar_product_info.sonar_id())
-
     def test_all_sonar_ids(self):
         """ Test that by default all Sonar ids consist of just the product Sonar id. """
         self.assertEqual(set(['sonar:id']), self.__sonar_product_info.all_sonar_ids())
-
-    def test_all_sonar_ids_released(self):
-        """ Test that for a released product, the set of all Sonar ids only contains the product:version id. """
-        self.__product.set_product_version('1.2.3')
-        self.assertEqual(set(['sonar:id:1.2.3']), self.__sonar_product_info.all_sonar_ids())
 
     def test_all_sonar_ids_unittests(self):
         """ Test that for a product with unittests, the Sonar id of the
@@ -96,13 +70,6 @@ class SonarProductInfoTests(unittest.TestCase):
                                  jsf=domain.Product(self.__project))
         sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
         self.assertEqual(set(['sonar:id']), sonar_product_info.all_sonar_ids())
-
-    def test_latest_version_of_a_released_product(self):
-        """ Test that the version number equals the set version. """
-        product = domain.Product(self.__project)
-        product.set_product_version('1.1')
-        sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
-        self.assertEqual('1.1', sonar_product_info.latest_version())
 
     def test_latest_version_of_a_trunk_product(self):
         """ Test that the version number equals the version number as given by Sonar. """

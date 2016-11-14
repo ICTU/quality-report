@@ -39,8 +39,7 @@ class HTMLFormatter(base_formatter.Formatter):
                    u"""border="0" />'}}""",
                    u"'{text}'",
                    u"'{norm}'",
-                   u"'{comment}'",
-                   u"'{version}'"]
+                   u"'{comment}'"]
     columns = u'[' + u', '.join(column_list) + u']'
 
     def __init__(self, *args, **kwargs):
@@ -87,10 +86,8 @@ class HTMLFormatter(base_formatter.Formatter):
     def section(self, report, section):
         """ Return a HTML formatted version of the section. """
         subtitle = self.__format_subtitle(section.subtitle())
-        meta_data = self.__format_product_meta_data(section.product())
         extra = '<div id="meta_metrics_history_graph"></div>' if section.has_history() else ''
-        parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, product_meta_data=meta_data,
-                          extra=extra)
+        parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
     def metric(self, metric):
@@ -196,7 +193,6 @@ class HTMLFormatter(base_formatter.Formatter):
         kwargs['status'] = metric.status()
         kwargs['metric_id'] = metric.id_string()
         kwargs['section'] = metric.id_string().split('-')[0]
-        kwargs['version'] = metric.product_version_type()
         kwargs['text'] = self.__format_metric_text(metric)
         kwargs['norm'] = metric.norm()
         kwargs['comment'] = self.__format_metric_comment(metric)
@@ -241,20 +237,6 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return a HTML formatted url. """
         template = u'<a href="{href}" target="_blank">{anchor}</a>'
         return template.format(href=href, anchor=utils.html_escape(anchor))
-
-    @classmethod
-    def __format_product_meta_data(cls, product):
-        """ Return a HTML formatted paragraph with meta data about the product. """
-        if not product:
-            return ''
-        product_label = '{prod}:{ver}'.format(prod=product.name(), ver=product.product_version() or 'trunk')
-        latest_release_template = '<p>{prod} is de meest recente versie.</p>'
-        result = []
-        if product.is_latest_release():
-            result.append(latest_release_template.format(prod=product_label))
-        if result:
-            result.append('')
-        return '\n'.join(result)
 
     @staticmethod
     def __metric_classes(report):
@@ -388,7 +370,6 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
             '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
                                         <div class="link_section_{ID}" title="{title}"></div>
                                         <div id="section_summary_chart_{ID}"></div>
-                                        <div id="section_summary_trunk_chart_{ID}"></div>
                                     </td>
 '''
         rows = list()
