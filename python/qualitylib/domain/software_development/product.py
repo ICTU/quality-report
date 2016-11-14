@@ -73,7 +73,8 @@ class Product(RequirementSubject, MeasurableObject):
         """ Return a product that represents the JSF of this product. """
         return self.__copy_component(self.__jsf)
 
-    def __copy_component(self, component):
+    @staticmethod
+    def __copy_component(component):
         """ Return a product that represents a component of this product. """
         return copy.copy(component) if component else None
 
