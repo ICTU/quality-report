@@ -16,11 +16,8 @@ limitations under the License.
 from __future__ import absolute_import
 
 import copy
-import logging
-import urllib2
 
 from ..measurement.measurable import MeasurableObject
-from ... import utils
 from .requirement import RequirementSubject
 
 
