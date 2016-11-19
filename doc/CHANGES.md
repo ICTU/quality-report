@@ -1,3 +1,9 @@
+2016-11-19  Release 1.69.0
+
+  * Remove the ability to remove Sonar analyses, which isn't needed anymore since the quality report software doesn't create
+    Sonar anlyses anymore.
+  
+  
 2016-11-14  Release 1.68.0
 
   * Remove the latest release, dependency and branch feature: this means that the quality report only contains trunk versions of

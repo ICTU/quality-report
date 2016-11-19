@@ -59,19 +59,11 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """
-        self.__analyse_products()
-
         quality_report = report.QualityReport(self.__project)
         self.__format_and_write_report(quality_report, formatting.JSONFormatter, self.__history_filename, 'a', 'ascii',
                                        sonar=self.__project.metric_source(metric_source.Sonar))
         self.__create_report(quality_report, report_folder)
         metric_source.History(self.__history_filename).clean_history()
-
-    def __analyse_products(self):
-        """ Make sure Sonar contains the right analysis projects. """
-        sonar = self.__project.metric_source(metric_source.Sonar)
-        if sonar:
-            sonar.analyse_products(self.__project.products())
 
     @classmethod
     def __create_report(cls, quality_report, report_dir):

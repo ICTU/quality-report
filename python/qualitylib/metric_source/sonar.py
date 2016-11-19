@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import datetime
 import logging
 
-from . import url_opener, sonar_runner
+from . import url_opener
 from .. import utils, domain
 
 
@@ -27,10 +27,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     metric_source_name = 'SonarQube'
 
-    def __init__(self, sonar_url, maven=None, version_control_system=None,
-                 *args, **kwargs):
+    def __init__(self, sonar_url, *args, **kwargs):
         super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
-        self.__runner = sonar_runner.SonarRunner(self)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
@@ -102,16 +100,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return [project['k'] for project in json]
         except self.url_open_exceptions:
             return []
-
-    def delete_project(self, project):
-        """ Delete a project (analysis) from Sonar. """
-        try:
-            self.url_delete(self.__project_api_url.format(project=project))
-            logging.info('Removed Sonar analysis for %s', project)
-            return True
-        except self.url_open_exceptions as reason:
-            logging.warning("Can't remove Sonar analysis for %s: %s", project, reason)
-            return False
 
     # Metrics
 
@@ -273,12 +261,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
-
-    # Analysis
-
-    def analyse_products(self, products):
-        """ Run Sonar on the products and remove old analyses. """
-        self.__runner.analyse_products(products)
 
     # Helper methods
 
