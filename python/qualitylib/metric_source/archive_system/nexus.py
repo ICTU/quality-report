@@ -38,11 +38,11 @@ class Nexus(ArchiveSystem):
         most_recent_string = sorted(node.text for node in root.findall('.//lastModified'))[-1]
         return self.__parse_date_time(most_recent_string)
 
-    def __parse_date_time(self, date_time_string):
+    @staticmethod
+    def __parse_date_time(date_time_string):
         """ Parse the date time string and return a datetime instance. """
         date, time = date_time_string.split(' ')[:2]  # Ignore timezone
         year, month, day = date.split('-')
-        hms, milliseconds = time.split('.')
+        hms, millisecond = time.split('.')
         hour, minute, second = hms.split(':')
-        return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second),
-                                 int(milliseconds))
+        return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(millisecond))
