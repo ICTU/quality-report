@@ -15,7 +15,6 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-import copy
 import logging
 
 from ..measurement import metric_source, measurable
