@@ -16,9 +16,7 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ... import metric_source
 from ...domain import LowerIsBetterMetric
-from ...formatting import HTMLFormatter
 
 
 class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
