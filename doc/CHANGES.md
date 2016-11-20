@@ -1,7 +1,7 @@
 2016-11-19  Release 1.69.0
 
   * Remove the ability to remove Sonar analyses, which isn't needed anymore since the quality report software doesn't create
-    Sonar anlyses anymore.
+    Sonar analyses anymore.
   
   
 2016-11-14  Release 1.68.0
