@@ -24,7 +24,7 @@ class OpenVASScanAlertsMetric(LowerIsBetterMetric):
 
     unit = 'waarschuwingen'
     risk_level = risk_level_key = 'Subclass responsilbility'
-    norm_template = 'Het product heeft geen {risk_level} risico Open VAS Scan {unit}. ' \
+    norm_template = 'De gescande omgevingen hebben geen {risk_level} risico Open VAS Scan {unit}. ' \
                     'Meer dan {low_target} is rood.'
     template = '{name} heeft {value} {risk_level} risico {unit}.'
     target_value = 0

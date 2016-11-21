@@ -86,7 +86,7 @@ class HighRiskOpenVASAlertsTest(unittest.TestCase):
 
     def test_norm(self):
         """ Test that the norm is correct. """
-        expected_norm = 'Het product heeft geen {} risico Open VAS Scan waarschuwingen. ' \
+        expected_norm = 'De gescande omgevingen hebben geen {} risico Open VAS Scan waarschuwingen. ' \
                         'Meer dan {} is rood.'.format(self.class_under_test.risk_level,
                                                       self.class_under_test.low_target_value)
         self.assertEqual(expected_norm,
