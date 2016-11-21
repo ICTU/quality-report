@@ -42,7 +42,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
                 requirement.TrackBugs, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
                 requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,
-                requirement.TrackSonarVersion, requirement.TrackTechnicalDebt, requirement.Web}
+                requirement.TrackSonarVersion, requirement.TrackTechnicalDebt, requirement.Web, requirement.OpenVAS}
 
     def organization(self):
         """ Return the name of the organization. """

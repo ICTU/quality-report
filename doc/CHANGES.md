@@ -1,3 +1,8 @@
+2016-11-21  Release 1.69.1
+
+  * Bug fix: Add `requirement.OpenVAS` to optional project requirements.
+  
+  
 2016-11-21  Release 1.69.0
 
   * Remove the ability to remove Sonar analyses, which isn't needed anymore since the quality report software doesn't create
