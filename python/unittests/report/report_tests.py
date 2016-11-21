@@ -192,7 +192,8 @@ class QualityReportMetricsTest(unittest.TestCase):
                     requirement.TrackSonarVersion, requirement.TrackActions,
                     requirement.TrackRisks, requirement.TrackJavaConsistency,
                     requirement.TrackCIJobs, requirement.TrackTechnicalDebt,
-                    requirement.TrackBugs, requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks]:
+                    requirement.TrackBugs, requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
+                    requirement.OpenVAS]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(requirements=[req]))
 
@@ -215,7 +216,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the product metrics are added if required. """
         for req in [requirement.CodeQuality, requirement.ART, requirement.ARTCoverage,
                     requirement.UserStoriesAndLTCs, requirement.TrackBranches, requirement.OWASPDependencies,
-                    requirement.OWASPZAP, requirement.OpenVAS, requirement.Performance]:
+                    requirement.OWASPZAP, requirement.Performance]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(requirements=[req]))
 

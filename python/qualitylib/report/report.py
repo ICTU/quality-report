@@ -161,7 +161,8 @@ class QualityReport(domain.DomainObject):
         metrics = self.__required_subject_metrics(self.__project, requirement.TrackCIJobs,
                                                   requirement.TrackJavaConsistency,
                                                   requirement.TrackSonarVersion, requirement.Java,
-                                                  requirement.CSharp, requirement.JavaScript, requirement.Web)
+                                                  requirement.CSharp, requirement.JavaScript, requirement.Web,
+                                                  requirement.OpenVAS)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
 
@@ -178,8 +179,7 @@ class QualityReport(domain.DomainObject):
         metrics = self.__required_subject_metrics(product, requirement.UnitTests, requirement.ART,
                                                   requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
                                                   requirement.CodeQuality, requirement.Performance,
-                                                  requirement.OWASPDependencies, requirement.OWASPZAP,
-                                                  requirement.OpenVAS)
+                                                  requirement.OWASPDependencies, requirement.OWASPZAP)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))

@@ -18,11 +18,11 @@ from __future__ import absolute_import
 
 # Package for concrete requirements, not specific to a specific project.
 
-from .product_quality import TrustedProductMaintainability, OWASPDependencies, OWASPZAP, OpenVAS, UnitTests, ART, \
+from .product_quality import TrustedProductMaintainability, OWASPDependencies, OWASPZAP, UnitTests, ART, \
     ARTCoverage, CodeQuality, JSFCodeQuality, Performance, TrackBranches
 from .sonar import Java, CSharp, JavaScript, Web
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, \
     TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, TrackSecurityAndPerformanceRisks
-from .environment import TrackJavaConsistency, TrackCIJobs, TrackSonarVersion
+from .environment import TrackJavaConsistency, TrackCIJobs, TrackSonarVersion, OpenVAS
 from .team import ScrumTeam, TrackSpirit, TrackAbsence
 from .document import TrackDocumentAge

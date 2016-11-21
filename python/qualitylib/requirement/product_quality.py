@@ -32,11 +32,6 @@ class OWASPZAP(Requirement):
     _metric_classes = (metric.HighRiskZAPScanAlertsMetric, metric.MediumRiskZAPScanAlertsMetric)
 
 
-class OpenVAS(Requirement):
-    _name = 'Open VAS'
-    _metric_classes = (metric.HighRiskOpenVASScanAlertsMetric, metric.MediumRiskOpenVASScanAlertsMetric)
-
-
 class TrustedProductMaintainability(Requirement):
     _name = 'Trusted Product Maintainability, version 6.1'
     url = 'http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/'

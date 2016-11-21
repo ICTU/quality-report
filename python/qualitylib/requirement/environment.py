@@ -31,3 +31,9 @@ class TrackCIJobs(Requirement):
 class TrackSonarVersion(Requirement):
     _name = 'Track Sonar version'
     _metric_classes = (metric.SonarVersion,)
+
+
+class OpenVAS(Requirement):
+    _name = 'Open VAS'
+    _metric_classes = (metric.HighRiskOpenVASScanAlertsMetric, metric.MediumRiskOpenVASScanAlertsMetric)
+

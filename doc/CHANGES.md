@@ -1,7 +1,10 @@
-2016-11-19  Release 1.69.0
+2016-11-21  Release 1.69.0
 
   * Remove the ability to remove Sonar analyses, which isn't needed anymore since the quality report software doesn't create
     Sonar analyses anymore.
+  * Move the OpenVAS metrics to the environment quality section, because the OpenVAS scan primarily scans the application hosts
+    and not so much the software itself. This means `requirement.OpenVAS` should be passed to the project to have the OpenVAS
+    metrics added.
   
   
 2016-11-14  Release 1.68.0

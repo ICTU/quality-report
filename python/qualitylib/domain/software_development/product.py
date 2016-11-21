@@ -39,7 +39,7 @@ class Product(RequirementSubject, MeasurableObject):
     def optional_requirements():
         from ... import requirement
         return {requirement.ARTCoverage, requirement.ART, requirement.CodeQuality, requirement.JSFCodeQuality,
-                requirement.OpenVAS, requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Performance,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Performance,
                 requirement.TrackBranches, requirement.UnitTests, requirement.UserStoriesAndLTCs}
 
     def __eq__(self, other):
@@ -94,7 +94,7 @@ class Application(Product):
     def default_requirements():
         from ... import requirement
         return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage,
-                requirement.Performance, requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS}
+                requirement.Performance, requirement.OWASPDependencies, requirement.OWASPZAP}
 
     @staticmethod
     def optional_requirements():

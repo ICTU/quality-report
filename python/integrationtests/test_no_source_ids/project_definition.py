@@ -24,7 +24,7 @@ PROJECT = Project(
                   requirement.TrackBugs, requirement.TrackTechnicalDebt,
                   requirement.TrackActions, requirement.TrackRisks, requirement.TrackSecurityAndPerformanceRisks,
                   requirement.TrackReadyUS, requirement.TrackJavaConsistency,
-                  requirement.TrackCIJobs, requirement.TrackSonarVersion])
+                  requirement.TrackCIJobs, requirement.TrackSonarVersion, requirement.OpenVAS])
 
 # Documents.
 DOC = Document(name='Document XYZ')
@@ -41,7 +41,7 @@ PROJECT.add_team(TEAM)
 # Products the project(s) develop(s).
 PRODUCT = Product(
     PROJECT, 'PR', name='Product ABC',
-    requirements=[requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS,
+    requirements=[requirement.OWASPDependencies, requirement.OWASPZAP,
                   requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
                   requirement.CodeQuality, requirement.Performance,
                   requirement.TrackBranches],

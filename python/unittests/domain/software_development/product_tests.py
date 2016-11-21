@@ -89,8 +89,8 @@ class ApplicationTest(unittest.TestCase):
     def test_default_rquirements(self):
         """ Test that the default requirements are correct. """
         self.assertEqual({requirement.CodeQuality, requirement.TrackBranches, requirement.Performance,
-                          requirement.ART, requirement.ARTCoverage, requirement.OWASPZAP, requirement.OWASPDependencies,
-                          requirement.OpenVAS},
+                          requirement.ART, requirement.ARTCoverage, requirement.OWASPZAP,
+                          requirement.OWASPDependencies},
                          domain.Application.default_requirements())
 
     def test_optional_requirements(self):
