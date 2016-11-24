@@ -7,11 +7,19 @@
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![](https://images.microbadger.com/badges/image/ictu/quality-report.svg)](https://microbadger.com/images/ictu/quality-report "Get your own image badge on microbadger.com")
 
-HQ Quality Reporting
-=====================
+HQ - Holistics Software Quality Reporting
+=========================================
 
-HQ - Holistic Quality Reporting. Python script to generate quality reports for 
-software development projects.
+Application to generate quality reports for software development projects.
+Holistic because HQ attempts to measure as many aspects of software development as
+possible, seeing how software development can go off the rails in so many ways.
+
+HQ itself is developed in Python, but can report on the quality of software 
+developed in any language as it doesn't measure the quality itself, but instead
+relies on other tools to feed it information. Metric sources include SonarQube, Jenkins,
+Jira, Jacoco, JMeter, OWASP dependency checker, and more.
+
+The user interface is in Dutch.
 
 This software was developed by ICTU (http://www.ictu.nl) to support the 
 development of the Landelijk Register Kinderopvang for the Ministerie van
