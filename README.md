@@ -7,11 +7,11 @@
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![](https://images.microbadger.com/badges/image/ictu/quality-report.svg)](https://microbadger.com/images/ictu/quality-report "Get your own image badge on microbadger.com")
 
-Quality-report
-==============
+HQ Quality Reporting
+=====================
 
-Quality report generator. Python script to generate a quality report for a 
-software development project.
+HQ - Holistic Quality Reporting. Python script to generate quality reports for 
+software development projects.
 
 This software was developed by ICTU (http://www.ictu.nl) to support the 
 development of the Landelijk Register Kinderopvang for the Ministerie van
