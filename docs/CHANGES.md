@@ -1,6 +1,7 @@
-2016-11-24  Release 1....
+2016-11-24  Release 1.70.0
 
   * Give the software a proper name: HQ - Holistic Quality.
+  * Rename doc folders to docs to prepare for Github Pages.
   
 
 2016-11-21  Release 1.69.1

@@ -1,0 +1,90 @@
+Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+How to add a new project to the quality system.
+===
+
+1. Add a project definition file to a quality-data repository. For example,
+   $ vim quality-data/new_project/project_definition.py
+
+   A project definition with one KPI may look as simple as this:
+
+   from qualitylib import metric_source
+   from qualitylib.domain import Project
+
+   JIRA = metric_source.Jira('https://jira/', username='jira_user',
+                             password='jira_password', open_bug_query_id=123)
+   HISTORY = metric_source.History('projects/new_project/history.json')
+   WIKI = metric_source.Wiki('http://wiki/ManualKPIsNewProject')
+
+   project = Project('Organization', name='New Project',
+                     metric_sources={metric_source.Jira: JIRA,
+                                     metric_source.History: HISTORY})
+
+   The doc/example_project_definitions folder contains a number of project
+   definition examples.
+
+   See the section "How to define a project" below for more information on how
+   to define products, teams, documents, etc. and how to override default metric
+   target values.
+
+2. Add the project definition file to version control. For example:
+   $ svn add quality-data/new_project/project_definition.py
+
+3. Add an empty history file for the project to new_project/ and add it to
+   version control. For example:
+   $ touch quality-data/new_project/history.json
+   $ svn add quality-data/new_project/history.json
+
+4. Test the new project by running the quality report from the command line:
+   $ python python/quality_report.py --project quality-data/new_project/project_definition.py --report . --log INFO
+
+5. Commit the changes to version control.
+   $ svn commit -m "Added new_project to the quality system."
+
+6. Add the new quality report to Jenkins as a job, preferably by copying an
+   existing Jenkins job. Make sure the following is listed as a shell script
+   build step of the job:
+
+   # Activate the virtual python environment
+   . /home/nfsusers/jenkins/quality-report-pyenv/bin/activate
+   PROJECT=quality-data/new_project
+   # Create the quality report
+   quality_report.py --project $PROJECT/project_definition.py --report . --json $PROJECT/history.json --log INFO
+   svn commit -m "Updated history from Jenkins." $PROJECT
+
+   Also make sure the Jenkins job runs periodically, for example every 15
+   minutes during office hours: "*/15 7-19 * * 1-5"
+
+
+How to define a project.
+===
+
+To generate a quality report, the quality report software uses a project
+definition file. This project definition is a python file that defines what
+software components the project consists of, which teams there are, and what the
+available metric sources are.
+
+Since the project definition is a python file there's a lot of freedom on how
+to organize it, but in general it will contain the following elements:
+- Import statements
+- Metric sources
+- Project
+- Teams
+- Documents
+- Components
+- Dashboard layout
+
+See the example_project_definitions folder for an example.
