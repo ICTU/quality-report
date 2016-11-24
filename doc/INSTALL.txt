@@ -22,19 +22,16 @@ Prerequisites for running the quality system.
 Installing the software
 ===
 
-PYENV_HOME=/home/nfsusers/jenkins/quality-report-pyenv  # For example
+$HQ_VIRTUAL_ENV=/home/nfsusers/jenkins/hq-pyenv  # For example
 
-# Delete previously built virtualenv
-if [ -d $PYENV_HOME ]; then
-    rm -rf $PYENV_HOME
+# Delete previous version
+if [ -d $HQ_VIRTUAL_ENV ]; then
+    rm -rf $HQ_VIRTUAL_ENV
 fi
 
 # Create virtualenv and activate it
-virtualenv $PYENV_HOME
-. $PYENV_HOME/bin/activate
+virtualenv $HQ_VIRTUAL_ENV
+. $HQ_VIRTUAL_ENV/bin/activate
 
-# Install the quality report software
-cd quality-report/python
-python setup.py bdist_egg
-easy_install dist/quality_report-*.egg
-cd ../..
+# Install HQ
+pip install quality_report
