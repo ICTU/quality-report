@@ -7,8 +7,8 @@
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![](https://images.microbadger.com/badges/image/ictu/quality-report.svg)](https://microbadger.com/images/ictu/quality-report "Get your own image badge on microbadger.com")
 
-HQ - Holistics Software Quality Reporting
-=========================================
+HQ - Holistic Software Quality Reporting
+========================================
 
 Application to generate quality reports for software development projects.
 Holistic because HQ attempts to measure as many aspects of software development as
