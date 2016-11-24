@@ -37,7 +37,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 </tr>
 <tr>
 <td>Task:</td>
-<td>openvas_lib_scan_www.mediawiki.isd-security-test.ictu_l6UiQdmEfzscxiYSFnoY</td>
+<td>openvas_lib_scan_www.mediawiki.dep.org</td>
 </tr>
 </table>
 <h2>Host Summary</h2>
@@ -53,7 +53,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 <td>False Positive</td>
 </tr>
 <tr>
-<td><a href="#10.25.144.121">10.25.144.121 (www.mediawiki.isd-security-test.ictu)</a></td>
+<td><a href="#22.33.44.55">22.33.44.55 (www.mediawiki.dep.org)</a></td>
 <td>Aug 8, 12:31:36</td>
 <td>Aug 8, 12:37:04</td>
 <td>0</td>

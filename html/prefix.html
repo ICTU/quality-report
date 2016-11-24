@@ -101,7 +101,7 @@
                             <ul class="dropdown-menu" aria-labelledby="help_menu">
                                 <li>
                                     <a id="help_dialog" href="#modal_help_dialog" data-toggle="modal">
-                                       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Over het kwaliteitssysteem
+                                       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Over HQ
                                     </a>
                                 </li>
                                 <li>
@@ -144,11 +144,11 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <a class="close" data-dismiss="modal">&times;</a>
-                        <h2 id="modal_help_configuration_dialog_title">Configuratie van het kwaliteitssysteem</h2>
+                        <h2 id="modal_help_configuration_dialog_title">Configuratie van HQ</h2>
                     </div>
                     <div class="modal-body">
                         <p>
-                            De configuratie van het kwaliteitssysteem vindt grotendeels
+                            De configuratie van HQ vindt grotendeels
                             plaats met behulp van een project definitie die beschreven
                             wordt in een <code>project_definition.py</code> python bestand.
                             Zie <a href="https://github.com/ICTU/quality-report" target="_blank">Github</a>
@@ -167,34 +167,34 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <a class="close" data-dismiss="modal">&times;</a>
-                        <h2 id="modal_help_dialog_title">Over het ICTU Kwaliteitssysteem</h2>
+                        <h2 id="modal_help_dialog_title">Over HQ</h2>
                     </div>
                     <div class="modal-body">
                         <p>
-                            <em>Quality-report versie {current_version}.{new_version_available}</em>
+                            <em>HQ versie {current_version}.{new_version_available}</em>
                             <a href="https://github.com/ICTU/quality-report/blob/master/doc/CHANGES.md" target="_blank">
                                 Wijzigingsgeschiedenis</a>.
                         </p>
                         <p>
-                            Het ICTU kwaliteitssysteem is een geautomatiseerd systeem dat frequent
+                            HQ (Holistic Quality) is een geautomatiseerd systeem dat frequent
                             (elke 20-30 minuten tijdens kantoortijden) allerlei metingen doet aan de producten,
-                            processen en teams binnen softwareontwikkelprojecten die door ICTU worden uitgevoerd.
-                            Doel van het kwaliteitssysteem is inzicht te geven in de kwaliteit van de producten en de
+                            processen en teams binnen softwareontwikkelprojecten.
+                            Doel van HQ is inzicht te geven in de kwaliteit van de producten en de
                             uitvoering van processen van een project &eacute;n om technische schuld te voorkomen.
                         </p>
                         <h3>
                             Voor wie is het kwaliteitssysteem bedoeld?
                         </h3>
                         <p>
-                            Het ICTU Kwaliteitssysteem is primair bedoeld voor projectleiders, ontwerpers,
+                            HQ is primair bedoeld voor projectleiders, ontwerpers,
                             ontwikkelaars en testers van softwareontwikkelprojecten. Projectleiders kunnen zien in
                             hoeverre de kwaliteit van hun project(en) voldoet aan de kwaliteitscriteria. Ontwerpers,
                             ontwikkelaars en testers kunnen zien in hoeverre hun werk voldoet aan de kwaliteitscriteria
                             en waar eventueel nog verbetering moeten worden doorgevoerd.
                         </p>
                         <p>
-                            Daarnaast dient het kwaliteitsysteem om niet direct betrokkenen zoals opdrachtgever,
-                            beheerders en andere belanghebbenden te laten zien dat de kwaliteit van de producten die
+                            Daarnaast laten de kwaliteitsrapportages aan direct betrokkenen zoals opdrachtgever,
+                            beheerders en andere belanghebbenden zien dat de kwaliteit van de producten die
                             binnen een project worden gebouwd voldoen aan de kwaliteitscriteria.
                         </p>
                         <h3>
@@ -204,39 +204,37 @@
                             De metingen en de normen voor de metingen zijn deels gebaseerd op de
                             <a href="http://www.sig.eu/en/Services/Software%%20Product%%20Certification/Evaluation%%20Criteria/" target="_blank">
                             SIG-TUViT Evaluation Criteria for Trusted Product Maintainability</a>. Daarnaast zijn de
-                            metingen en de normen gebaseerd op het Scrumproces zoals dat bij ICTU uitgevoerd wordt.
+                            metingen en de normen gebaseerd op het Scrumproces.
                             Welke metingen in een rapportage zijn opgenomen hangt af van de eisen die voor het project
-                            gelden, zie hieronder.s
+                            gelden, zie hieronder.
                         </p>
                         <h3>
-                            Wat meet het kwaliteitssysteem?
+                            Wat meet HQ?
                         </h3>
                         <p>
-                            Het kwaliteitssysteem meet (kwaliteits)eigenschappen van de softwareproducten, het proces
-                            en de teams.
+                            HQ meet (kwaliteits)eigenschappen van de softwareproducten, het proces en de teams.
                         </p>
                         <h4>
                             Metingen aan de software
                         </h4>
                         <p>
-                            Om de lange-termijn onderhoudbaarheid van de software te bevorderen meet het
-                            kwaliteitsysteem (met behulp van SonarQube; een tool voor metingen aan software) kenmerken
+                            Om de lange-termijn onderhoudbaarheid van de software te bevorderen meet HQ
+                            (met behulp van SonarQube; een tool voor metingen aan software) kenmerken
                             van de software zoals complexiteit, lengte en overtredingen van "good practices".
                         </p>
                         <h4>
                             Metingen aan het proces
                         </h4>
                         <p>
-                            Om te zorgen dat het proces goed wordt uitgevoerd meet het kwaliteitssysteem of
+                            Om te zorgen dat het proces goed wordt uitgevoerd meet HQ of
                             werkproducten zoals user stories en logische testgevallen zijn gereviewd en goedgekeurd.
                         </p>
                         <h4>
                             Metingen van en aan de teams
                         </h4>
                         <p>
-                            Het kwaliteitssysteem meet de velocity van de teams en de stemming binnen de teams. Dat
-                            meten van de stemming is momenteel de enige niet-geautomatiseerde meting binnen het
-                            kwaliteitssysteem.
+                            HQ meet de velocity van de teams en de stemming binnen de teams. Dat
+                            meten van de stemming is momenteel de enige niet-geautomatiseerde meting.
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -255,7 +253,7 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            Hieronder de lijst van metrieken die het kwaliteitssysteem kan meten. Per metriek is
+                            Hieronder de lijst van metrieken die HQ kan meten. Per metriek is
                             aangegeven of de metriek in dit rapport gemeten wordt. Of een metriek gemeten wordt
                             hangt af van de eisen die van toepassing zijn op het project (zie Eisen in het Help menu).
                         </p>
@@ -277,7 +275,7 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            Hieronder de lijst van metriekbronnen die het kwaliteitssysteem kan raadplegen. Per
+                            Hieronder de lijst van metriekbronnen die HQ kan raadplegen. Per
                             metriekbron is aangegeven of de metriekbron in dit rapport gebruikt wordt. Of een
                             metriekbron gebruikt wordt hangt af van de metrieken die van gemeten worden
                             (zie Metrieken in het Help menu).
@@ -300,7 +298,7 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            Hieronder de lijst van eisen die het kwaliteitssysteem kan borgen. Per
+                            Hieronder de lijst van eisen die HQ kan borgen. Per
                             eis is aangegeven of de eis van toepassing op het project. Of een eis van toepassing is,
                             is in de project definitie geconfigureerd. Bij iedere eis staan de metrieken die gemeten
                             worden als de betreffende eis van toepassing is (zie Metrieken in het Help menu).
@@ -323,7 +321,7 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            Hieronder de lijst van domeinobjecten waaraan het kwaliteitssysteem kan meten. Per
+                            Hieronder de lijst van domeinobjecten waaraan HQ kan meten. Per
                             domeinobject is aangegeven of het domeinobject voorkomt in deze rapportage.
                             Bij ieder domeinobject staan de eisen die
                             standaard van toepassing zijn op het domeinobject.

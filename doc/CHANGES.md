@@ -1,3 +1,8 @@
+2016-11-24  Release 1....
+
+  * Give the software a proper name: HQ - Holistic Quality.
+  
+
 2016-11-21  Release 1.69.1
 
   * Bug fix: Add `requirement.OpenVAS` to optional project requirements.
