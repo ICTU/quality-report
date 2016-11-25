@@ -9,8 +9,8 @@ from qualitylib.domain import Project, Application, Product, Team, Document, Tec
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
-SUBVERSION = metric_source.Subversion()
-SONAR = metric_source.Sonar('http://sonar/', username='sonar_user', password='sonar_admin')
+GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
+SONAR = metric_source.Sonar('https://sonarqube.com/')
 HISTORY = metric_source.History('quality-data/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
@@ -20,8 +20,8 @@ ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
                       metric_source.Jenkins: BUILD_SERVER,
-                      metric_source.VersionControlSystem: SUBVERSION,
-                      metric_source.ArchiveSystem: SUBVERSION,
+                      metric_source.VersionControlSystem: GIT,
+                      metric_source.ArchiveSystem: GIT,
                       metric_source.Sonar: SONAR,
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
@@ -39,22 +39,21 @@ PROJECT.add_team(QUALITY_TEAM)
 # Documents of the project.
 QUALITY_PLAN_URL = 'http://svn/commons/docs/quality_plan.doc'
 PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
-                              metric_source_ids={SUBVERSION: QUALITY_PLAN_URL}))
+                              metric_source_ids={GIT: QUALITY_PLAN_URL}))
 
 # Products the project(s) develop(s).
 QUALITY_REPORT_UNITTESTS = Product(
     PROJECT,
     metric_source_ids={
-        SONAR: 'nl.ictu.quality-report:quality-report',
-        SUBVERSION: 'http://svn/commons/scripts/quality-report/'})
+        SONAR: 'nl.ictu:quality_report'})
 
 QUALITY_REPORT = Application(
     PROJECT, 'QR', name='Example product',
     unittests=QUALITY_REPORT_UNITTESTS,
     metric_source_ids={
-        SONAR: 'nl.ictu.quality-report:quality-report',
+        SONAR: 'nl.ictu:quality_report',
         JACOCO: 'quality-report-coverage-report',
-        SUBVERSION: 'http://svn/commons/scripts/quality-report/',
+        GIT: '.',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
     metric_options={
         metric.UnittestLineCoverage:
