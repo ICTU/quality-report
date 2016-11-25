@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>Kwaliteitsrapportage Organization name/Quality Report</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet" />
+        <style type="text/css">
+            body {
+                padding-top: 70px;
+                padding-bottom: 40px;
+            }
+        </style>
+        <link href="css/quality_report.css" rel="stylesheet" />
+        <style type="text/css" media="print">.navbar { visibility: hidden; }</style>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/compatibility.js"></script>
+        <script type="text/javascript" src="js/cookie.js"></script>
+        <script type="text/javascript" src="js/dashboard.js"></script>
+        <script type="text/javascript">
+            google.setOnLoadCallback(function() {create_dashboard([[{f: 'PD-1', v: 'PD-01'}, 'PD', 'missing', '<img src="img/PD-1.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De totale omvang van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/" target="_blank">SonarQube</a>]', 'Maximaal 1000000 regels code. Meer dan 2000000 regels code (herbouwtijd 30 jaar) is rood.', ''],
+[{f: 'PD-2', v: 'PD-02'}, 'PD', 'missing', '<img src="img/PD-2.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'Het document &quot;Quality plan&quot; is niet aangetroffen. [<a href="http://svn/commons/docs/quality_plan.doc" target="_blank">Subversion</a>]', 'Dit document wordt minimaal een keer per 180 dag(en) bijgewerkt. Als het document langer dan 200 dag(en) geleden is bijgewerkt is deze metriek rood.', ''],
+[{f: 'PE-1', v: 'PE-01'}, 'PE', 'missing', '<img src="img/PE-1.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De sonar versie van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/" target="_blank">SonarQube</a>]', 'Sonar heeft minimaal versie 4.5.7, lager dan versie 4.5.6 is rood.', ''],
+[{f: 'PE-2', v: 'PE-02'}, 'PE', 'missing', '<img src="img/PE-2.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De versie van de Sonar Java plugin van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/updatecenter/" target="_blank">SonarQube</a>]', 'Sonar plugin Java heeft minimaal versie 3.14, lager dan versie 3.13.1 is rood.', ''],
+[{f: 'PE-3', v: 'PE-03'}, 'PE', 'missing', '<img src="img/PE-3.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De versie van de Sonar CheckStyle plugin van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/updatecenter/" target="_blank">SonarQube</a>]', 'Sonar plugin CheckStyle heeft minimaal versie 2.4, lager dan versie 2.3 is rood.', ''],
+[{f: 'PE-4', v: 'PE-04'}, 'PE', 'missing', '<img src="img/PE-4.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De versie van de Sonar PMD plugin van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/updatecenter/" target="_blank">SonarQube</a>]', 'Sonar plugin PMD heeft minimaal versie 2.5, lager dan versie 2.4.1 is rood.', ''],
+[{f: 'PE-5', v: 'PE-05'}, 'PE', 'missing', '<img src="img/PE-5.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De versie van de Sonar FindBugs plugin van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/updatecenter/" target="_blank">SonarQube</a>]', 'Sonar plugin FindBugs heeft minimaal versie 3.3, lager dan versie 3.2 is rood.', ''],
+[{f: 'PE-6', v: 'PE-06'}, 'PE', 'missing', '<img src="img/PE-6.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De sonar Java quality profile versie van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/profiles/" target="_blank">SonarQube</a>]', 'Sonar Java quality profile heeft minimaal versie 1.8, lager dan versie 1.7 is rood.', ''],
+[{f: 'PE-7', v: 'PE-07'}, 'PE', 'missing', '<img src="img/PE-7.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De versie van de Sonar JavaScript plugin van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/updatecenter/" target="_blank">SonarQube</a>]', 'Sonar plugin JavaScript heeft minimaal versie 2.13, lager dan versie 2.12 is rood.', ''],
+[{f: 'PE-8', v: 'PE-08'}, 'PE', 'missing', '<img src="img/PE-8.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De sonar JavaScript quality profile versie van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/profiles/" target="_blank">SonarQube</a>]', 'Sonar JavaScript quality profile heeft minimaal versie 1.4, lager dan versie 1.2 is rood.', ''],
+[{f: 'PE-9', v: 'PE-09'}, 'PE', 'missing', '<img src="img/PE-9.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De versie van de Sonar Web plugin van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/updatecenter/" target="_blank">SonarQube</a>]', 'Sonar plugin Web heeft minimaal versie 2.4, lager dan versie 2.3 is rood.', ''],
+[{f: 'PE-10', v: 'PE-10'}, 'PE', 'missing', '<img src="img/PE-10.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De sonar Web quality profile versie van Quality Report kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/profiles/" target="_blank">SonarQube</a>]', 'Sonar Web quality profile heeft minimaal versie 1.1, lager dan versie 1.0 is rood.', ''],
+[{f: 'QR-1', v: 'QR-01'}, 'QR', 'missing', '<img src="img/QR-1.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid falende unittesten van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Alle unittesten slagen.', ''],
+[{f: 'QR-2', v: 'QR-02'}, 'QR', 'missing', '<img src="img/QR-2.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De unit test broncode dekking (line coverage) van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Minimaal 98% van de regels code wordt gedekt door unittests. Lager dan 90% is rood.', 'De op dit moment geaccepteerde technische schuld is 0%. Sonar incorrectly reports 0% unit test coverage'],
+[{f: 'QR-3', v: 'QR-03'}, 'QR', 'missing', '<img src="img/QR-3.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De unit test broncode dekking (branch coverage) van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Minimaal 80% van de code branches wordt gedekt door unittests. Lager dan 60% is rood.', ''],
+[{f: 'QR-4', v: 'QR-04'}, 'QR', 'missing_source', '<img src="img/QR-4.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid falende regressietesten van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): TestReport.', 'Alle regressietesten slagen.', ''],
+[{f: 'QR-5', v: 'QR-05'}, 'QR', 'missing_source', '<img src="img/QR-5.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De regressietestleeftijd van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): TestReport.', 'De regressietest is maximaal 3 dagen geleden gedraaid. Langer dan 7 dagen geleden is rood.', ''],
+[{f: 'QR-6', v: 'QR-06'}, 'QR', 'missing', '<img src="img/QR-6.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid blocker violations van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0 blocker violations. Meer dan 0 blocker violations is rood.', ''],
+[{f: 'QR-7', v: 'QR-07'}, 'QR', 'missing', '<img src="img/QR-7.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid critical violations van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0 critical violations. Meer dan 1 critical violations is rood.', ''],
+[{f: 'QR-8', v: 'QR-08'}, 'QR', 'missing', '<img src="img/QR-8.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid major violations van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 25 major violations. Meer dan 50 major violations is rood.', 'Het doel is dat de technische schuld vermindert van 47 violations op 12 februari 2014 naar 25 violations op 1 juni 2014. De op dit moment geaccepteerde technische schuld is 25 violations.'],
+[{f: 'QR-9', v: 'QR-09'}, 'QR', 'missing', '<img src="img/QR-9.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De cyclomatische complexiteit van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/issues/search#resolved=false|componentRoots=nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0% van de methoden heeft een cyclomatische complexiteit van 10 of hoger. Meer dan 5% is rood.', ''],
+[{f: 'QR-10', v: 'QR-10'}, 'QR', 'missing', '<img src="img/QR-10.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid cyclische afhankelijkheden van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0 cyclische afhankelijkheden tussen packages. Meer dan 10 is rood.', ''],
+[{f: 'QR-11', v: 'QR-11'}, 'QR', 'missing', '<img src="img/QR-11.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De duplicatie van Java broncode van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0% gedupliceerde regels code. Meer dan 5% is rood.', ''],
+[{f: 'QR-12', v: 'QR-12'}, 'QR', 'missing', '<img src="img/QR-12.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De component omvang van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 50000 regels code.', ''],
+[{f: 'QR-13', v: 'QR-13'}, 'QR', 'missing', '<img src="img/QR-13.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De lengte van methoden van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/issues/search#resolved=false|componentRoots=nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0% van de methoden heeft een lengte van meer dan 20 NCSS (Non-Comment Source Statements). Meer dan 5% is rood.', ''],
+[{f: 'QR-14', v: 'QR-14'}, 'QR', 'missing', '<img src="img/QR-14.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid methoden met te veel parameters van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/issues/search#resolved=false|componentRoots=nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 0% van de methoden heeft meer dan 5 parameters. Meer dan 5% is rood.', ''],
+[{f: 'QR-15', v: 'QR-15'}, 'QR', 'missing', '<img src="img/QR-15.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid uitgecommentarieerde broncode van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 1% van de regels code is uitgecommentarieerd. Meer dan 5% is rood.', ''],
+[{f: 'QR-16', v: 'QR-16'}, 'QR', 'missing', '<img src="img/QR-16.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid violation-onderdrukkingen met //NOSONAR van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/issues/search#resolved=false|componentRoots=nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Violations worden maximaal 25 keer onderdrukt met //NOSONAR. Meer dan 50 violation-onderdrukkingen is rood.', ''],
+[{f: 'QR-17', v: 'QR-17'}, 'QR', 'missing', '<img src="img/QR-17.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid false positives van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/issues/search#resolutions=FALSE-POSITIVE|componentRoots=nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'Maximaal 25 violations zijn gemarkeerd als false positive. Meer dan 50 false positives is rood.', ''],
+[{f: 'QR-18', v: 'QR-18'}, 'QR', 'missing', '<img src="img/QR-18.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De leeftijd van de meest recente Sonar analyse van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://sonar/dashboard/index/nl.ictu.quality-report:quality-report" target="_blank">SonarQube</a>]', 'De meest recente Sonar analyse is maximaal 42 dagen oud. Meer dan 63 dagen is rood.', ''],
+[{f: 'QR-19', v: 'QR-19'}, 'QR', 'missing_source', '<img src="img/QR-19.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid performanceloadtestwaarschuwingen van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): PerformanceLoadTestReport.', 'Het product heeft geen performanceloadtestgevallen die de gewenste responsetijd overschrijden. Meer dan 5 performanceloadtestgevallen die de gewenste responsetijd overschrijden is rood.', ''],
+[{f: 'QR-20', v: 'QR-20'}, 'QR', 'missing_source', '<img src="img/QR-20.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid performanceloadtestoverschrijdingen van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): PerformanceLoadTestReport.', 'Het product heeft geen performanceloadtestgevallen die de maximale responstijd overschrijden. Meer dan 0 performanceloadtestgevallen die de maximale responstijd overschrijden is rood.', ''],
+[{f: 'QR-21', v: 'QR-21'}, 'QR', 'missing_source', '<img src="img/QR-21.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid performanceduurtestwaarschuwingen van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): PerformanceEnduranceTestReport.', 'Het product heeft geen performanceduurtestgevallen die de gewenste responsetijd overschrijden. Meer dan 5 performanceduurtestgevallen die de gewenste responsetijd overschrijden is rood.', ''],
+[{f: 'QR-22', v: 'QR-22'}, 'QR', 'missing_source', '<img src="img/QR-22.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid performanceduurtestoverschrijdingen van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): PerformanceEnduranceTestReport.', 'Het product heeft geen performanceduurtestgevallen die de maximale responstijd overschrijden. Meer dan 0 performanceduurtestgevallen die de maximale responstijd overschrijden is rood.', ''],
+[{f: 'QR-23', v: 'QR-23'}, 'QR', 'missing_source', '<img src="img/QR-23.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid performanceschaalbaarheidstestwaarschuwingen van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): PerformanceScalabilityTestReport.', 'Het product heeft geen performanceschaalbaarheidstestgevallen die de gewenste responsetijd overschrijden. Meer dan 5 performanceschaalbaarheidstestgevallen die de gewenste responsetijd overschrijden is rood.', ''],
+[{f: 'QR-24', v: 'QR-24'}, 'QR', 'missing_source', '<img src="img/QR-24.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid performanceschaalbaarheidstestoverschrijdingen van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): PerformanceScalabilityTestReport.', 'Het product heeft geen performanceschaalbaarheidstestgevallen die de maximale responstijd overschrijden. Meer dan 0 performanceschaalbaarheidstestgevallen die de maximale responstijd overschrijden is rood.', ''],
+[{f: 'QR-25', v: 'QR-25'}, 'QR', 'missing', '<img src="img/QR-25.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid ZAP Scan waarschuwingen met hoog risiconiveau van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://jenkins/job/zap_scan/ws/report.html" target="_blank">ZAP Scan rapport</a>]', 'Het product heeft geen hoog risico ZAP Scan security waarschuwingen. Meer dan 3 is rood.', ''],
+[{f: 'QR-26', v: 'QR-26'}, 'QR', 'missing', '<img src="img/QR-26.png" border="0" width="100" height="25" />', {v: '5', f: '<img src="img/missing.png" alt="x" width="48" height="48" title="Ontbrekend: metriek kan niet gemeten worden (sinds 25 november 2016)" border="0" />'}, 'De hoeveelheid ZAP Scan waarschuwingen met medium risiconiveau van &lt;no name&gt; kon niet gemeten worden omdat niet alle benodigde bronnen beschikbaar zijn. [<a href="http://jenkins/job/zap_scan/ws/report.html" target="_blank">ZAP Scan rapport</a>]', 'Het product heeft geen medium risico ZAP Scan security waarschuwingen. Meer dan 10 is rood.', ''],
+[{f: 'QU-1', v: 'QU-01'}, 'QU', 'missing_source', '<img src="img/QU-1.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De team voortgang van Quality team kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): Birt.', 'De vereiste velocity om het sprintdoel te halen is lager dan of gelijk aan 1.2 maal de geplande velocity. Als de velocity die nodig is om het sprintdoel te halen hoger wordt dan 1.5 maal de geplande velocity is deze metriek rood.', ''],
+[{f: 'QU-2', v: 'QU-02'}, 'QU', 'missing_source', '<img src="img/QU-2.png" border="0" width="100" height="25" />', {v: '6', f: '<img src="img/missing_source.png" alt="%" width="48" height="48" title="Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd (sinds 25 november 2016)" border="0" />'}, 'De team stemming van Quality team kon niet gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): TeamSpirit.', 'De stemming wordt door het team zelf bepaald door het kiezen van een smiley. De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood. Als de meting ouder is dan 21 dagen dagen is de status geel, ouder dan 42 dagen dagen is rood.', ''],
+[{f: 'MM-1', v: 'MM-01'}, 'MM', 'red', '<img src="img/MM-1.png" border="0" width="100" height="25" />', {v: '0', f: '<img src="img/sad.png" alt=":-(" width="48" height="48" title="Direct actie vereist: norm niet gehaald of meting te oud (sinds 25 november 2016)" border="0" />'}, '0% van de metrieken (0 van de 40) scoort boven de norm.', 'Minimaal 90% van de metrieken scoort groen (op of boven de norm). Minder dan 80% is rood.', ''],
+[{f: 'MM-2', v: 'MM-02'}, 'MM', 'perfect', '<img src="img/MM-2.png" border="0" width="100" height="25" />', {v: '3', f: '<img src="img/biggrin.png" alt=":-D" width="48" height="48" title="Perfect: score kan niet beter (sinds 25 november 2016)" border="0" />'}, '0% van de metrieken (0 van de 40) scoort rood.', 'Maximaal 2% van de metrieken scoort rood (direct actie vereist). Meer dan 5% is rood.', ''],
+[{f: 'MM-3', v: 'MM-03'}, 'MM', 'perfect', '<img src="img/MM-3.png" border="0" width="100" height="25" />', {v: '3', f: '<img src="img/biggrin.png" alt=":-D" width="48" height="48" title="Perfect: score kan niet beter (sinds 25 november 2016)" border="0" />'}, '0% van de metrieken (0 van de 40) scoort geel.', 'Maximaal 5% van de metrieken scoort geel (onder de norm maar niet direct actie vereist). Meer dan 10% is rood.', ''],
+[{f: 'MM-4', v: 'MM-04'}, 'MM', 'perfect', '<img src="img/MM-4.png" border="0" width="100" height="25" />', {v: '3', f: '<img src="img/biggrin.png" alt=":-D" width="48" height="48" title="Perfect: score kan niet beter (sinds 25 november 2016)" border="0" />'}, '0% van de metrieken (0 van de 40) scoort grijs.', 'Maximaal 2% van de metrieken scoort grijs (geaccepteerde technische schuld). Meer dan 5% is rood.', ''],
+[{f: 'MM-5', v: 'MM-05'}, 'MM', 'red', '<img src="img/MM-5.png" border="0" width="100" height="25" />', {v: '0', f: '<img src="img/sad.png" alt=":-(" width="48" height="48" title="Direct actie vereist: norm niet gehaald of meting te oud (sinds 25 november 2016)" border="0" />'}, '100% van de metrieken (40 van de 40) kan niet gemeten worden.', 'Maximaal 0% van de metrieken kan niet gemeten worden. Meer dan 5% is rood.', '']], [])});
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Kwaliteitsrapportage Organization name/Quality Report</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a id="navigation_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                                Ga naar<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navigation_menu">
+                                <li>
+                                    <a class="link_section_dashboard" href="#section_dashboard">
+                                        <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Dashboard</a>
+                                </li>
+                                <li><a class="link_section_PD" href="#section_PD">Productkwaliteit algemeen</a></li>
+<li><a class="link_section_PE" href="#section_PE">Kwaliteit omgevingen</a></li>
+<li><a class="link_section_QR" href="#section_QR"><no name></a></li>
+<li><a class="link_section_QU" href="#section_QU">Team Quality team</a></li>
+<li><a class="link_section_MM" href="#section_MM">Meta metrieken</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a id="toon_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                                Toon<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="toon_menu">
+                                <li>
+                                    <a id="show_dashboard" href="#">
+                                        <span class="" aria-hidden="true"></span> Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="show_multiple_tables" href="#">
+                                        <span class="" aria-hidden="true"></span> Tabel per product/team
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a id="filter_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                                Filter<b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="filter_menu">
+                                <li>
+                                    <a class="filter_color" id="filter_color_all" href="#">
+                                        <span class="" aria-hidden="true"></span> Metrieken met alle kleuren
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="filter_color" id="filter_color_red_and_yellow" href="#">
+                                        <span class="" aria-hidden="true"></span> Alleen metrieken die onder de norm scoren (geel en rood)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="filter_color" id="filter_color_grey" href="#">
+                                        <span class="" aria-hidden="true"></span> Alleen metrieken met technische schuld (grijs)
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a id="help_menu" class="dropdown-toggle" role="button"
+                               data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
+                                Help<b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="help_menu">
+                                <li>
+                                    <a id="help_dialog" href="#modal_help_dialog" data-toggle="modal">
+                                       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Over HQ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_metrics" href="#modal_help_metrics_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Metrieken
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_metric_sources" href="#modal_help_metric_sources_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-open" aria-hidden="true"></span> Metriekbronnen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_requirements" href="#modal_help_requirements_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-check" aria-hidden="true"></span> Eisen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_domain_objects" href="#modal_help_domain_objects_dialog" data-toggle="modal">
+                                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Domeinobjecten
+                                    </a>
+                                </li>
+                                <li>
+                                    <a id="help_configuration" href="#modal_help_configuration_dialog" data-toggle="modal">
+                                       <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Configuratie
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="navbar-text pull-right">
+                        Rapportage van 25-11-16 11:32
+                    </p>
+                </div>
+            </div><!-- /.container -->
+        </nav>
+        <div class="modal fade" id="modal_help_configuration_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_configuration_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_configuration_dialog_title">Configuratie van HQ</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            De configuratie van HQ vindt grotendeels
+                            plaats met behulp van een project definitie die beschreven
+                            wordt in een <code>project_definition.py</code> python bestand.
+                            Zie <a href="https://github.com/ICTU/quality-report" target="_blank">Github</a>
+                            voor meer informatie en voorbeelden.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_dialog_title">Over HQ</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <em>HQ versie 1.70.0.</em>
+                            <a href="https://github.com/ICTU/quality-report/blob/master/docs/CHANGES.md" target="_blank">
+                                Wijzigingsgeschiedenis</a>.
+                        </p>
+                        <p>
+                            HQ (Holistic Software Quality Reporting) is een geautomatiseerd systeem dat het mogelijk
+                            maakt frequent metingen te doen aan de producten, processen en teams binnen
+                            softwareontwikkelprojecten en op basis daarvan kwaliteitsrapportages te genereren.
+                            De rapportages geven inzicht in de kwaliteit van de producten en de
+                            uitvoering van processen van een project, maken eventuele technische schuld inzichtelijk
+                            en geven aan waar actie benodigd is om technische schuld juist te voorkomen.
+                        </p>
+                        <p>
+                            HQ haalt de benodigde meetgegevens uit andere tools en rapportages die toch al vaak gebruikt
+                            worden bij softwareontwikkeling, zoals SonarQube, Jenkins, JaCoCo, NCover, Nexus, Git,
+                            Subversion, etc.
+                        </p>
+                        <h3>
+                            Voor wie is het kwaliteitssysteem bedoeld?
+                        </h3>
+                        <p>
+                            HQ is primair bedoeld voor projectleiders, ontwerpers,
+                            ontwikkelaars en testers van softwareontwikkelprojecten. Projectleiders kunnen zien in
+                            hoeverre de kwaliteit van hun project(en) voldoet aan de kwaliteitscriteria. Ontwerpers,
+                            ontwikkelaars en testers kunnen zien in hoeverre hun werk voldoet aan de kwaliteitscriteria
+                            en waar eventueel nog verbeteringen moeten worden doorgevoerd.
+                        </p>
+                        <p>
+                            Daarnaast laten de kwaliteitsrapportages aan direct betrokkenen zoals opdrachtgever,
+                            beheerders en andere belanghebbenden zien dat de kwaliteit van de producten die
+                            binnen een project worden gebouwd voldoen aan de kwaliteitscriteria.
+                        </p>
+                        <h3>
+                            Waar zijn de normen op gebaseerd?
+                        </h3>
+                        <p>
+                            De metingen en de normen voor de metingen zijn deels gebaseerd op de
+                            <a href="http://www.sig.eu/en/Services/Software%%20Product%%20Certification/Evaluation%%20Criteria/" target="_blank">
+                            SIG-TUViT Evaluation Criteria for Trusted Product Maintainability</a>. Daarnaast zijn de
+                            metingen en de normen gebaseerd op het Scrumproces.
+                            Welke metingen in een rapportage zijn opgenomen hangt af van de eisen die voor het project
+                            gelden, zie hieronder.
+                        </p>
+                        <h3>
+                            Wat meet HQ?
+                        </h3>
+                        <p>
+                            HQ meet (kwaliteits)eigenschappen van de softwareproducten, het proces en de teams.
+                        </p>
+                        <h4>
+                            Metingen aan de software
+                        </h4>
+                        <p>
+                            Om de lange-termijn onderhoudbaarheid van de software te bevorderen meet HQ
+                            (met behulp van SonarQube; een tool voor metingen aan software) kenmerken
+                            van de software zoals complexiteit, lengte en overtredingen van "good practices".
+                        </p>
+                        <h4>
+                            Metingen aan het proces
+                        </h4>
+                        <p>
+                            Om te zorgen dat het proces goed wordt uitgevoerd meet HQ of
+                            werkproducten zoals user stories en logische testgevallen zijn gereviewd en goedgekeurd.
+                        </p>
+                        <h4>
+                            Metingen van en aan de teams
+                        </h4>
+                        <p>
+                            HQ meet de velocity van de teams en de stemming binnen de teams. Dat
+                            meten van de stemming is momenteel de enige niet-geautomatiseerde meting.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_metrics_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_metrics_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_metrics_dialog_title">Metrieken</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van metrieken die HQ kan meten. Per metriek is
+                            aangegeven of de metriek in dit rapport gemeten wordt. Of een metriek gemeten wordt
+                            hangt af van de eisen die van toepassing zijn op het project (zie Eisen in het Help menu).
+                        </p>
+                        <table class="table table-striped first-col-centered">
+  <tr><th>In dit rapport?</th><th>Metriek (<code><small>Identifier</small></code>)</th><th>Norm</th></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid falende unittesten (<code><small>FailingUnittests</small></code>)</td><td>Alle unittesten slagen.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Unit test broncode dekking (line coverage) (<code><small>UnittestLineCoverage</small></code>)</td><td>Minimaal 98% van de regels code wordt gedekt door unittests. Lager dan 90% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Unit test broncode dekking (branch coverage) (<code><small>UnittestBranchCoverage</small></code>)</td><td>Minimaal 80% van de code branches wordt gedekt door unittests. Lager dan 60% is rood.</td></tr>
+  <tr><td></td><td>Integratietest broncode dekking (line coverage) (<code><small>IntegrationtestLineCoverage</small></code>)</td><td>Minimaal 98% van de regels code wordt gedekt door integratietests. Lager dan 90% is rood.</td></tr>
+  <tr><td></td><td>Integratietest broncode dekking (branch coverage) (<code><small>IntegrationtestBranchCoverage</small></code>)</td><td>Minimaal 80% van de code branches wordt gedekt door integratietests. Lager dan 60% is rood.</td></tr>
+  <tr><td></td><td>Gecombineerde unit- en integratietest broncode dekking (line coverage) (<code><small>UnitAndIntegrationTestLineCoverage</small></code>)</td><td>Minimaal 98% van de regels code wordt gedekt door unit- en integratietests samen. Lager dan 90% is rood.</td></tr>
+  <tr><td></td><td>Gecombineerde unit- en integratietest broncode dekking (branch coverage) (<code><small>UnitAndIntegrationTestBranchCoverage</small></code>)</td><td>Minimaal 80% van de code branches wordt gedekt door unit- en integratietests samen. Lager dan 60% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid falende regressietesten (<code><small>FailingRegressionTests</small></code>)</td><td>Alle regressietesten slagen.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Regressietestleeftijd (<code><small>RegressionTestAge</small></code>)</td><td>De regressietest is maximaal 3 dagen geleden gedraaid. Langer dan 7 dagen geleden is rood.</td></tr>
+  <tr><td></td><td>Automatic regression test statement coverage (<code><small>ARTStatementCoverage</small></code>)</td><td>Minimaal 80% van de statements wordt gedekt door geautomatiseerde functionele tests en de coverage meting is niet ouder dan 3 dagen. Minder dan 70% of meting ouder dan 5 dagen is rood.</td></tr>
+  <tr><td></td><td>Automatic regression test branch coverage (<code><small>ARTBranchCoverage</small></code>)</td><td>Minimaal 75% van de branches wordt gedekt door geautomatiseerde functionele tests en de coverage meting is niet ouder dan 3 dagen. Minder dan 60% of meting ouder dan 5 dagen is rood.</td></tr>
+  <tr><td></td><td>Reviewstatus van user stories (<code><small>UserStoriesNotReviewed</small></code>)</td><td>Maximaal 0 van de user stories is niet gereviewd. Meer dan 5 is rood.</td></tr>
+  <tr><td></td><td>Goedgekeuring van user stories (<code><small>UserStoriesNotApproved</small></code>)</td><td>Maximaal 0 van de gereviewde user stories is niet goedgekeurd. Meer dan 3 is rood.</td></tr>
+  <tr><td></td><td>Reviewstatus van logische testgevallen (<code><small>LogicalTestCasesNotReviewed</small></code>)</td><td>Maximaal 0 van de logische testgevallen is niet gereviewd. Meer dan 15 is rood.</td></tr>
+  <tr><td></td><td>Goedkeuring van logische testgevallen (<code><small>LogicalTestCasesNotApproved</small></code>)</td><td>Maximaal 0 van de gereviewde logische testgevallen is niet goedgekeurd. Meer dan 10 is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid logische testgevallen per user story (<code><small>UserStoriesWithTooFewLogicalTestCases</small></code>)</td><td>Maximaal 3 van de user stories heeft onvoldoende logische testgevallen. Meer dan 5 is rood.</td></tr>
+  <tr><td></td><td>Automatisering van logische testgevallen (<code><small>LogicalTestCasesNotAutomated</small></code>)</td><td>Maximaal 9 van de te automatiseren logische testgevallen is niet geautomatiseerd. Meer dan 15 is rood.</td></tr>
+  <tr><td></td><td>Tijdige uitvoering van handmatige logische testgevallen (<code><small>ManualLogicalTestCases</small></code>)</td><td>Alle handmatige logische testgevallen zijn minder dan 21 dagen geleden uitgevoerd. Langer dan 28 dagen geleden is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid handmatige logische testgevallen (<code><small>NumberOfManualLogicalTestCases</small></code>)</td><td>Maximaal 10 van de logische testgevallen is handmatig. Meer dan 50 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid blocker violations (<code><small>BlockerViolations</small></code>)</td><td>Maximaal 0 blocker violations. Meer dan 0 blocker violations is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid critical violations (<code><small>CriticalViolations</small></code>)</td><td>Maximaal 0 critical violations. Meer dan 1 critical violations is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid major violations (<code><small>MajorViolations</small></code>)</td><td>Maximaal 25 major violations. Meer dan 50 major violations is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Cyclomatische complexiteit (<code><small>CyclomaticComplexity</small></code>)</td><td>Maximaal 0% van de methoden heeft een cyclomatische complexiteit van 10 of hoger. Meer dan 5% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid cyclische afhankelijkheden (<code><small>CyclicDependencies</small></code>)</td><td>Maximaal 0 cyclische afhankelijkheden tussen packages. Meer dan 10 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Duplicatie van Java broncode (<code><small>JavaDuplication</small></code>)</td><td>Maximaal 0% gedupliceerde regels code. Meer dan 5% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Component omvang (<code><small>ProductLOC</small></code>)</td><td>Maximaal 50000 regels code.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Lengte van methoden (<code><small>LongMethods</small></code>)</td><td>Maximaal 0% van de methoden heeft een lengte van meer dan 20 NCSS (Non-Comment Source Statements). Meer dan 5% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid methoden met te veel parameters (<code><small>ManyParameters</small></code>)</td><td>Maximaal 0% van de methoden heeft meer dan 5 parameters. Meer dan 5% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid uitgecommentarieerde broncode (<code><small>CommentedLOC</small></code>)</td><td>Maximaal 1% van de regels code is uitgecommentarieerd. Meer dan 5% is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid violation-onderdrukkingen met //NOSONAR (<code><small>NoSonar</small></code>)</td><td>Violations worden maximaal 25 keer onderdrukt met //NOSONAR. Meer dan 50 violation-onderdrukkingen is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid false positives (<code><small>FalsePositives</small></code>)</td><td>Maximaal 25 violations zijn gemarkeerd als false positive. Meer dan 50 false positives is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Leeftijd van de meest recente Sonar analyse (<code><small>SonarAnalysisAge</small></code>)</td><td>De meest recente Sonar analyse is maximaal 42 dagen oud. Meer dan 63 dagen is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid performanceloadtestwaarschuwingen (<code><small>PerformanceLoadTestWarnings</small></code>)</td><td>Het product heeft geen performanceloadtestgevallen die de gewenste responsetijd overschrijden. Meer dan 5 performanceloadtestgevallen die de gewenste responsetijd overschrijden is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid performanceloadtestoverschrijdingen (<code><small>PerformanceLoadTestErrors</small></code>)</td><td>Het product heeft geen performanceloadtestgevallen die de maximale responstijd overschrijden. Meer dan 0 performanceloadtestgevallen die de maximale responstijd overschrijden is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid performanceduurtestwaarschuwingen (<code><small>PerformanceEnduranceTestWarnings</small></code>)</td><td>Het product heeft geen performanceduurtestgevallen die de gewenste responsetijd overschrijden. Meer dan 5 performanceduurtestgevallen die de gewenste responsetijd overschrijden is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid performanceduurtestoverschrijdingen (<code><small>PerformanceEnduranceTestErrors</small></code>)</td><td>Het product heeft geen performanceduurtestgevallen die de maximale responstijd overschrijden. Meer dan 0 performanceduurtestgevallen die de maximale responstijd overschrijden is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid performanceschaalbaarheidstestwaarschuwingen (<code><small>PerformanceScalabilityTestWarnings</small></code>)</td><td>Het product heeft geen performanceschaalbaarheidstestgevallen die de gewenste responsetijd overschrijden. Meer dan 5 performanceschaalbaarheidstestgevallen die de gewenste responsetijd overschrijden is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid performanceschaalbaarheidstestoverschrijdingen (<code><small>PerformanceScalabilityTestErrors</small></code>)</td><td>Het product heeft geen performanceschaalbaarheidstestgevallen die de maximale responstijd overschrijden. Meer dan 0 performanceschaalbaarheidstestgevallen die de maximale responstijd overschrijden is rood.</td></tr>
+  <tr><td></td><td>Actualiteit van de actielijst (<code><small>ActionActivity</small></code>)</td><td>De actie- en besluitenlijst wordt minimaal een keer per 7 dagen bijgewerkt. Meer dan 14 dagen niet bijgewerkt is rood.</td></tr>
+  <tr><td></td><td>Tijdigheid van de acties (<code><small>ActionAge</small></code>)</td><td>Geen van de acties en besluiten in de actie- en besluitenlijst is te laat of te lang (14 dagen) niet bijgewerkt. Meer dan 3 acties te laat of te lang niet bijgewerkt is rood.</td></tr>
+  <tr><td></td><td>Actualiteit van de risico log (<code><small>RiskLog</small></code>)</td><td>Het risicolog wordt minimaal een keer per 14 dagen bijgewerkt. Meer dan 28 dagen niet bijgewerkt is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid open bugreports (<code><small>OpenBugs</small></code>)</td><td>Het aantal open bugreports is minder dan 50. Meer dan 100 open bugreports is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid open beveiligingsbugreports (<code><small>OpenSecurityBugs</small></code>)</td><td>Het aantal open beveiligingsbugreports is minder dan 0. Meer dan 3 open beveiligingsbugreports is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid open beveiligingsbugreports uit statische security analyse (<code><small>OpenStaticSecurityAnalysisBugs</small></code>)</td><td>Het aantal open beveiligingsbugreports uit statische security analyse is minder dan 0. Meer dan 3 open beveiligingsbugreports uit statische security analyse is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid technische schuld issues (<code><small>TechnicalDebtIssues</small></code>)</td><td>Het aantal technische schuld issues is maximaal 10. Meer dan 50 technische schuld issues is rood.</td></tr>
+  <tr><td></td><td>Uitvoeringstijd van handmatige logische testgevallen (<code><small>DurationOfManualLogicalTestCases</small></code>)</td><td>De uitvoering van de handmatige logische testgevallen kost maximaal 120 minuten. Meer dan 240 is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd (<code><small>ManualLogicalTestCasesWithoutDuration</small></code>)</td><td>Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld. Meer dan 5 handmatige logische testgevallen niet ingevuld is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid user stories zonder security risk beoordeling (<code><small>UserStoriesWithoutSecurityRiskAssessment</small></code>)</td><td>Het aantal user stories zonder security risk beoordeling is minder dan 1. Meer dan 3 user stories zonder security risk beoordeling is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid user stories zonder performance risk beoordeling (<code><small>UserStoriesWithoutPerformanceRiskAssessment</small></code>)</td><td>Het aantal user stories zonder performance risk beoordeling is minder dan 1. Meer dan 3 user stories zonder performance risk beoordeling is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid ready user story punten (<code><small>ReadyUserStoryPoints</small></code>)</td><td>Het aantal ready user story punten is meer dan 10. Minder dan 20 ready user story punten is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid falende CI-jobs (<code><small>FailingCIJobs</small></code>)</td><td>Maximaal 0 van de actieve CI-jobs faalt. Meer dan 2 CI-jobs is rood. Een CI-job faalt als de laatste bouwpoging niet is geslaagd en er de afgelopen 24 uur geen geslaagde bouwpogingen zijn geweest. Inactieve jobs worden genegeerd.</td></tr>
+  <tr><td></td><td>Hoeveelheid ongebruikte CI-jobs (<code><small>UnusedCIJobs</small></code>)</td><td>Maximaal 0 van de actieve CI-jobs is ongebruikt. Meer dan 2 CI-jobs is rood. Een CI-job is ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn geweest. Inactieve CI-jobs worden genegeerd.</td></tr>
+  <tr><td></td><td>Java versie consistentie (<code><small>JavaVersionConsistency</small></code>)</td><td>Er is precies een versie van Java in gebruik. Meer dan 2 verschillende Java versies is rood. De rapportage is maximaal 3 dagen oud. Meer dan 7 dagen oud is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Sonar versie (<code><small>SonarVersion</small></code>)</td><td>Sonar heeft minimaal versie 4.5.7, lager dan versie 4.5.6 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Document update leeftijd (<code><small>DocumentAge</small></code>)</td><td>Dit document wordt minimaal een keer per 180 dag(en) bijgewerkt. Als het document langer dan 200 dag(en) geleden is bijgewerkt is deze metriek rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Team voortgang (<code><small>TeamProgress</small></code>)</td><td>De vereiste velocity om het sprintdoel te halen is lager dan of gelijk aan 1.2 maal de geplande velocity. Als de velocity die nodig is om het sprintdoel te halen hoger wordt dan 1.5 maal de geplande velocity is deze metriek rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Team stemming (<code><small>TeamSpirit</small></code>)</td><td>De stemming wordt door het team zelf bepaald door het kiezen van een smiley. De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood. Als de meting ouder is dan 21 dagen dagen is de status geel, ouder dan 42 dagen dagen is rood.</td></tr>
+  <tr><td></td><td>Absentie (<code><small>TeamAbsence</small></code>)</td><td>Het aantal aaneengesloten werkdagen dat meerdere teamleden tegelijk gepland afwezig zijn is lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit (Lijst van teamleden).</td></tr>
+  <tr><td></td><td>Hoeveelheid OWASP dependency waarschuwingen met hoge prioriteit (<code><small>HighPriorityOWASPDependencyWarnings</small></code>)</td><td>Dependencies van het product hebben geen hoge prioriteit OWASP waarschuwingen. Meer dan 3 is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid OWASP dependency waarschuwingen met normale prioriteit (<code><small>NormalPriorityOWASPDependencyWarnings</small></code>)</td><td>Dependencies van het product hebben geen normale prioriteit OWASP waarschuwingen. Meer dan 10 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid ZAP Scan waarschuwingen met hoog risiconiveau (<code><small>HighRiskZAPScanAlertsMetric</small></code>)</td><td>Het product heeft geen hoog risico ZAP Scan security waarschuwingen. Meer dan 3 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Hoeveelheid ZAP Scan waarschuwingen met medium risiconiveau (<code><small>MediumRiskZAPScanAlertsMetric</small></code>)</td><td>Het product heeft geen medium risico ZAP Scan security waarschuwingen. Meer dan 10 is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid Open VAS Scan waarschuwingen met hoog risiconiveau (<code><small>HighRiskOpenVASScanAlertsMetric</small></code>)</td><td>De gescande omgevingen hebben geen hoog risico Open VAS Scan waarschuwingen. Meer dan 3 is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid Open VAS Scan waarschuwingen met medium risiconiveau (<code><small>MediumRiskOpenVASScanAlertsMetric</small></code>)</td><td>De gescande omgevingen hebben geen medium risico Open VAS Scan waarschuwingen. Meer dan 10 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Versie van de Sonar Java plugin (<code><small>SonarPluginVersionJava</small></code>)</td><td>Sonar plugin Java heeft minimaal versie 3.14, lager dan versie 3.13.1 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Versie van de Sonar CheckStyle plugin (<code><small>SonarPluginVersionCheckStyle</small></code>)</td><td>Sonar plugin CheckStyle heeft minimaal versie 2.4, lager dan versie 2.3 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Versie van de Sonar PMD plugin (<code><small>SonarPluginVersionPMD</small></code>)</td><td>Sonar plugin PMD heeft minimaal versie 2.5, lager dan versie 2.4.1 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Versie van de Sonar FindBugs plugin (<code><small>SonarPluginVersionFindBugs</small></code>)</td><td>Sonar plugin FindBugs heeft minimaal versie 3.3, lager dan versie 3.2 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Sonar Java quality profile versie (<code><small>SonarQualityProfileVersionJava</small></code>)</td><td>Sonar Java quality profile heeft minimaal versie 1.8, lager dan versie 1.7 is rood.</td></tr>
+  <tr><td></td><td>Versie van de Sonar C# plugin (<code><small>SonarPluginVersionCSharp</small></code>)</td><td>Sonar plugin C# heeft minimaal versie 5.2, lager dan versie 4.2 is rood.</td></tr>
+  <tr><td></td><td>Versie van de Sonar StyleCop plugin (<code><small>SonarPluginVersionStyleCop</small></code>)</td><td>Sonar plugin StyleCop heeft minimaal versie 1.1, lager dan versie 1.0 is rood.</td></tr>
+  <tr><td></td><td>Sonar C# quality profile versie (<code><small>SonarQualityProfileVersionCSharp</small></code>)</td><td>Sonar C# quality profile heeft minimaal versie 1.1, lager dan versie 1.0 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Versie van de Sonar JavaScript plugin (<code><small>SonarPluginVersionJS</small></code>)</td><td>Sonar plugin JavaScript heeft minimaal versie 2.13, lager dan versie 2.12 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Sonar JavaScript quality profile versie (<code><small>SonarQualityProfileVersionJS</small></code>)</td><td>Sonar JavaScript quality profile heeft minimaal versie 1.4, lager dan versie 1.2 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Versie van de Sonar Web plugin (<code><small>SonarPluginVersionWeb</small></code>)</td><td>Sonar plugin Web heeft minimaal versie 2.4, lager dan versie 2.3 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Sonar Web quality profile versie (<code><small>SonarQualityProfileVersionWeb</small></code>)</td><td>Sonar Web quality profile heeft minimaal versie 1.1, lager dan versie 1.0 is rood.</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Totale omvang (<code><small>TotalLOC</small></code>)</td><td>Maximaal 160000 regels code. Meer dan 175000 regels code (herbouwtijd 30 jaar) is rood.</td></tr>
+  <tr><td></td><td>Hoeveelheid ongemergde branches (<code><small>UnmergedBranches</small></code>)</td><td>Maximaal 0 branches met ongemergde code. Meer dan 1 branches is rood.</td></tr>
+</table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_metric_sources_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_metric_sources_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_metric_sources_dialog_title">Metriekbronnen</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van metriekbronnen die HQ kan raadplegen. Per
+                            metriekbron is aangegeven of de metriekbron in dit rapport gebruikt wordt. Of een
+                            metriekbron gebruikt wordt hangt af van de metrieken die van gemeten worden
+                            (zie Metrieken in het Help menu).
+                        </p>
+                        <table class="table table-striped first-col-centered">
+  <tr><th>In dit rapport?</th><th>Metriekbron (<code><small>Identifier</small></code>)</th><th>Instanties</th></tr>
+  <tr><td></td><td>Test report (<code><small>TestReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Birt reports (<code><small>Birt</small></code>)</td><td></td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Archive system (<code><small>ArchiveSystem</small></code>)</td><td></td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Jenkins build server (<code><small>Jenkins</small></code>)</td><td><a href="http://jenkins/" target="_blank">http://jenkins/</a></td></tr>
+  <tr><td></td><td>Performancerapport (<code><small>PerformanceEnduranceTestReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Open VAS Scan rapport (<code><small>OpenVASScanReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Performancerapport (<code><small>PerformanceScalabilityTestReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Ansible configuratierapport (<code><small>AnsibleConfigReport</small></code>)</td><td></td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>SonarQube (<code><small>Sonar</small></code>)</td><td><a href="http://sonar/" target="_blank">http://sonar/</a></td></tr>
+  <tr><td></td><td>Jira (<code><small>Jira</small></code>)</td><td></td></tr>
+  <tr><td></td><td>ICTU Vakantie Planner (<code><small>HolidayPlanner</small></code>)</td><td></td></tr>
+  <tr><td></td><td>OWASP dependency rapport (<code><small>OWASPDependencyReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Performancerapport (<code><small>PerformanceLoadTestReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Team spirit (<code><small>TeamSpirit</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Trello risicolog (<code><small>TrelloRiskBoard</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Coverage report (<code><small>CoverageReport</small></code>)</td><td></td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>ZAP Scan rapport (<code><small>ZAPScanReport</small></code>)</td><td></td></tr>
+  <tr><td></td><td>Trello acties (<code><small>TrelloActionsBoard</small></code>)</td><td></td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Version control system (<code><small>VersionControlSystem</small></code>)</td><td></td></tr>
+</table>
+                        </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_requirements_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_requirements_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_requirements_dialog_title">Eisen</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van eisen die HQ kan borgen. Per
+                            eis is aangegeven of de eis van toepassing op het project. Of een eis van toepassing is,
+                            is in de project definitie geconfigureerd. Bij iedere eis staan de metrieken die gemeten
+                            worden als de betreffende eis van toepassing is (zie Metrieken in het Help menu).
+                        </p>
+                        <table class="table table-striped first-col-centered">
+  <tr><th>In dit rapport?</th><th>Eis (<code><small>Identifier</small></code>)</th><th>Metrieken</th></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Unit and/or integration tests (<code><small>UnitTests</small></code>)</td><td>Hoeveelheid falende unittesten, Unit test broncode dekking (line coverage), Unit test broncode dekking (branch coverage), Integratietest broncode dekking (line coverage), Integratietest broncode dekking (branch coverage), Gecombineerde unit- en integratietest broncode dekking (line coverage), Gecombineerde unit- en integratietest broncode dekking (branch coverage)</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Automated regression tests (<code><small>ART</small></code>)</td><td>Hoeveelheid falende regressietesten, Regressietestleeftijd</td></tr>
+  <tr><td></td><td>Automated regression test coverage (<code><small>ARTCoverage</small></code>)</td><td>Automatic regression test statement coverage, Automatic regression test branch coverage</td></tr>
+  <tr><td></td><td>User stories and logical test cases (<code><small>UserStoriesAndLTCs</small></code>)</td><td>Reviewstatus van user stories, Goedgekeuring van user stories, Reviewstatus van logische testgevallen, Goedkeuring van logische testgevallen, Hoeveelheid logische testgevallen per user story, Automatisering van logische testgevallen, Tijdige uitvoering van handmatige logische testgevallen, Hoeveelheid handmatige logische testgevallen</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Code quality (<code><small>CodeQuality</small></code>)</td><td>Hoeveelheid blocker violations, Hoeveelheid critical violations, Hoeveelheid major violations, Cyclomatische complexiteit, Hoeveelheid cyclische afhankelijkheden, Duplicatie van Java broncode, Component omvang, Lengte van methoden, Hoeveelheid methoden met te veel parameters, Hoeveelheid uitgecommentarieerde broncode, Hoeveelheid violation-onderdrukkingen met //NOSONAR, Hoeveelheid false positives, Leeftijd van de meest recente Sonar analyse</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Performance (<code><small>Performance</small></code>)</td><td>Hoeveelheid performanceloadtestwaarschuwingen, Hoeveelheid performanceloadtestoverschrijdingen, Hoeveelheid performanceduurtestwaarschuwingen, Hoeveelheid performanceduurtestoverschrijdingen, Hoeveelheid performanceschaalbaarheidstestwaarschuwingen, Hoeveelheid performanceschaalbaarheidstestoverschrijdingen</td></tr>
+  <tr><td></td><td>Track actions (<code><small>TrackActions</small></code>)</td><td>Actualiteit van de actielijst, Tijdigheid van de acties</td></tr>
+  <tr><td></td><td>Track risks (<code><small>TrackRisks</small></code>)</td><td>Actualiteit van de risico log</td></tr>
+  <tr><td></td><td>Track open bug reports (<code><small>TrackBugs</small></code>)</td><td>Hoeveelheid open bugreports, Hoeveelheid open beveiligingsbugreports, Hoeveelheid open beveiligingsbugreports uit statische security analyse</td></tr>
+  <tr><td></td><td>Track technical debt (<code><small>TrackTechnicalDebt</small></code>)</td><td>Hoeveelheid technische schuld issues</td></tr>
+  <tr><td></td><td>Track manual logical test cases (<code><small>TrackManualLTCs</small></code>)</td><td>Uitvoeringstijd van handmatige logische testgevallen, Hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd</td></tr>
+  <tr><td></td><td>Track whether user stories have security and performance risks (<code><small>TrackSecurityAndPerformanceRisks</small></code>)</td><td>Hoeveelheid user stories zonder security risk beoordeling, Hoeveelheid user stories zonder performance risk beoordeling</td></tr>
+  <tr><td></td><td>Track ready user stories (<code><small>TrackReadyUS</small></code>)</td><td>Hoeveelheid ready user story punten</td></tr>
+  <tr><td></td><td>Track status and usage of continuous integration jobs (<code><small>TrackCIJobs</small></code>)</td><td>Hoeveelheid falende CI-jobs, Hoeveelheid ongebruikte CI-jobs</td></tr>
+  <tr><td></td><td>Track Java consistency (<code><small>TrackJavaConsistency</small></code>)</td><td>Java versie consistentie</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Track Sonar version (<code><small>TrackSonarVersion</small></code>)</td><td>Sonar versie</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Track document age (<code><small>TrackDocumentAge</small></code>)</td><td>Document update leeftijd</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Scrum team (<code><small>ScrumTeam</small></code>)</td><td>Team voortgang</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Track spirit (<code><small>TrackSpirit</small></code>)</td><td>Team stemming</td></tr>
+  <tr><td></td><td>Track absence (<code><small>TrackAbsence</small></code>)</td><td>Absentie</td></tr>
+  <tr><td></td><td>OWASP Top 10 2013 Dependencies (<code><small>OWASPDependencies</small></code>)</td><td>Hoeveelheid OWASP dependency waarschuwingen met hoge prioriteit, Hoeveelheid OWASP dependency waarschuwingen met normale prioriteit</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>OWASP Top 10 2013 ZAP (<code><small>OWASPZAP</small></code>)</td><td>Hoeveelheid ZAP Scan waarschuwingen met hoog risiconiveau, Hoeveelheid ZAP Scan waarschuwingen met medium risiconiveau</td></tr>
+  <tr><td></td><td>Open VAS (<code><small>OpenVAS</small></code>)</td><td>Hoeveelheid Open VAS Scan waarschuwingen met hoog risiconiveau, Hoeveelheid Open VAS Scan waarschuwingen met medium risiconiveau</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Java (<code><small>Java</small></code>)</td><td>Versie van de Sonar Java plugin, Versie van de Sonar CheckStyle plugin, Versie van de Sonar PMD plugin, Versie van de Sonar FindBugs plugin, Sonar Java quality profile versie</td></tr>
+  <tr><td></td><td>C# (<code><small>CSharp</small></code>)</td><td>Versie van de Sonar C# plugin, Versie van de Sonar StyleCop plugin, Sonar C# quality profile versie</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>JavaScript (<code><small>JavaScript</small></code>)</td><td>Versie van de Sonar JavaScript plugin, Sonar JavaScript quality profile versie</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Web (<code><small>Web</small></code>)</td><td>Versie van de Sonar Web plugin, Sonar Web quality profile versie</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Trusted Product Maintainability, version 6.1 (<code><small>TrustedProductMaintainability</small></code>)</td><td>Totale omvang</td></tr>
+  <tr><td></td><td>Track branches (<code><small>TrackBranches</small></code>)</td><td>Hoeveelheid ongemergde branches</td></tr>
+</table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal_help_domain_objects_dialog" tabindex="-1"
+             role="dialog" aria-labelledby="modal_help_domain_objects_dialog_title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h2 id="modal_help_domain_objects_dialog_title">Domeinobjecten</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hieronder de lijst van domeinobjecten waaraan HQ kan meten. Per
+                            domeinobject is aangegeven of het domeinobject voorkomt in deze rapportage.
+                            Bij ieder domeinobject staan de eisen die
+                            standaard van toepassing zijn op het domeinobject.
+                        </p>
+                        <table class="table table-striped first-col-centered">
+  <tr><th>In dit rapport?</th><th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th><th>Optionele eisen</th></tr>
+  <tr><td></td><td>Component (<code><small>Component</small></code>)</td><td>Unit and/or integration tests, Code quality, Track branches</td><td>Automated regression test coverage, Automated regression tests, Performance, OWASP Top 10 2013 ZAP, JSF code quality, OWASP Top 10 2013 Dependencies, User stories and logical test cases</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Document (<code><small>Document</small></code>)</td><td>Track document age</td><td></td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Team (<code><small>Team</small></code>)</td><td>Track spirit</td><td>Track absence, Scrum team</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Product (<code><small>Product</small></code>)</td><td></td><td>Automated regression test coverage, Automated regression tests, Unit and/or integration tests, Track branches, Performance, Code quality, OWASP Top 10 2013 ZAP, JSF code quality, OWASP Top 10 2013 Dependencies, User stories and logical test cases</td></tr>
+  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Project (<code><small>Project</small></code>)</td><td></td><td>Track ready user stories, Java, Track Sonar version, Track risks, Track status and usage of continuous integration jobs, Track actions, Track Java consistency, Track technical debt, Trusted Product Maintainability, version 6.1, Web, Track open bug reports, JavaScript, Track manual logical test cases, Track whether user stories have security and performance risks, C#, Open VAS</td></tr>
+  <tr><td></td><td>Application (<code><small>Application</small></code>)</td><td>Automated regression test coverage, Automated regression tests, Track branches, Performance, OWASP Top 10 2013 ZAP, OWASP Top 10 2013 Dependencies, Code quality</td><td>JSF code quality, Unit and/or integration tests, User stories and logical test cases</td></tr>
+</table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="section_dashboard">
+                        <ul class="nav nav-tabs" id="dashboard_tab_control">
+                            <li class="active" role="presentation">
+                                <a href="#piecharts_tab" role="tab" aria-controls="piecharts_tab" data-toggle="tab">Overzicht</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="piecharts_tab" role="tabpanel">
+                                                        <table class="table table-condensed table-bordered">
+                            <thead>
+                                <tr style="color: white; font-weight: bold; background-color: #2F95CF;">
+                                    <th colspan="1" style="text-align: center;">Products</th>
+                                    <th colspan="1" style="text-align: center;">Teams</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan=1 rowspan=1 align="center" bgcolor="lightsteelblue">
+                                        <div class="link_section_QR" title="<no name>"></div>
+                                        <div id="section_summary_chart_QR"></div>
+                                    </td>
+
+                                    <td colspan=1 rowspan=1 align="center" bgcolor="lavender">
+                                        <div class="link_section_QU" title="Team Quality team"></div>
+                                        <div id="section_summary_chart_QU"></div>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <section id="section_all" style="display:none">
+                        <div id="table_all"></div>
+                    </section>
+                    <section id="section_PD" style="display:block">
+                        <br>
+                        <div class="page-header">
+                            <h1>Productkwaliteit algemeen</h1>
+                        </div>
+                        <div id="table_PD"></div>
+                        
+                    </section>
+                    <section id="section_PE" style="display:block">
+                        <br>
+                        <div class="page-header">
+                            <h1>Kwaliteit omgevingen</h1>
+                        </div>
+                        <div id="table_PE"></div>
+                        
+                    </section>
+                    <section id="section_QR" style="display:block">
+                        <br>
+                        <div class="page-header">
+                            <h1><no name> <small>?</small></h1>
+                        </div>
+                        <div id="table_QR"></div>
+                        
+                    </section>
+                    <section id="section_QU" style="display:block">
+                        <br>
+                        <div class="page-header">
+                            <h1>Team Quality team</h1>
+                        </div>
+                        <div id="table_QU"></div>
+                        
+                    </section>
+                    <section id="section_MM" style="display:block">
+                        <br>
+                        <div class="page-header">
+                            <h1>Meta metrieken</h1>
+                        </div>
+                        <div id="table_MM"></div>
+                        <div id="meta_metrics_history_graph"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

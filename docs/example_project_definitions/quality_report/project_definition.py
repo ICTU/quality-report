@@ -29,8 +29,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
                   requirements=[requirement.TrustedProductMaintainability, requirement.Web, requirement.JavaScript,
-                                requirement.Java, requirement.TrackCIJobs,
-                                requirement.TrackSonarVersion])
+                                requirement.Java, requirement.TrackSonarVersion])
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', requirements=[requirement.ScrumTeam, requirement.TrackSpirit])
@@ -52,7 +51,7 @@ QUALITY_REPORT = \
     Product(PROJECT, 'QR',
             unittests=QUALITY_REPORT_UNITTESTS,
             requirements=[requirement.OWASPZAP, requirement.UnitTests, requirement.ART, requirement.CodeQuality,
-                          requirement.Performance, requirement.NoSnapshotDependencies],
+                          requirement.Performance],
             metric_source_ids={
                 SONAR: 'nl.ictu.quality-report:quality-report',
                 JACOCO: 'quality-report-coverage-report',
@@ -65,8 +64,7 @@ QUALITY_REPORT = \
                     dict(debt_target=DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 12),
                                                                 25, datetime.datetime(2014, 6, 1))),
                 metric.UnmergedBranches:
-                    dict(branches_to_ignore='spike', comment="Ignore the spike branch (2016-06-15).")},
-            product_branches={'auto-discovery-branch': {SUBVERSION: 'auto-discovery', SONAR: 'auto_discovery'}})
+                    dict(branches_to_ignore='spike', comment="Ignore the spike branch (2016-06-15).")})
 
 PROJECT.add_product(QUALITY_REPORT)
 
