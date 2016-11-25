@@ -80,6 +80,10 @@ class HolidayPlannerTests(unittest.TestCase):
         # Number of days may differ due to how weekends fall.
         self.assertTrue(5 <= self.__planner.days(self.__team)[0] <= 6)
 
+    def test_value_with_future_start_date(self):
+        """ Test the absence when ignoring nearby future. """
+        self.assertEqual(0, self.__planner.days(self.__team, start_date=datetime.date(9998, 1, 1))[0])
+
     def test_value_team_members(self):
         """ Test that the absent team members are returned. """
         self.assertEqual(sorted([self.__derk, self.__piet]), sorted(self.__planner.days(self.__team)[3]))

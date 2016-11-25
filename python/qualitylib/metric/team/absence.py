@@ -44,7 +44,8 @@ class TeamAbsence(LowerIsBetterMetric):
         return values
 
     def value(self):
-        return self._metric_source.days(self._subject)[0] if self._metric_source else -1
+        start_date = self._subject.metric_options(self.__class__).get('start_date')
+        return self._metric_source.days(self._subject, start_date=start_date)[0] if self._metric_source else -1
 
     def _parameters(self):
         # pylint: disable=protected-access

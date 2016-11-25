@@ -1,3 +1,9 @@
+2016-11-25  Release 1.71.0
+
+  * Allow for ignoring known future overlapping absences by passing a start_date option to the team absence metric:
+    `Team(..., metric_options={metric.TeamAbsence: dict(start_date=datetime.date(2016, 4, 1))})`
+    
+    
 2016-11-24  Release 1.70.0
 
   * Give the software a proper name: HQ - Holistic Quality.

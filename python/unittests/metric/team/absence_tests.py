@@ -29,10 +29,10 @@ class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
     def __init__(self):
         self.period = 6
 
-    def days(self, team):  # pylint: disable=unused-argument
+    def days(self, team, start_date=None):  # pylint: disable=unused-argument
         """ Return the number of consecutive days more than one team member is absent. """
-        return (self.period, datetime.date.today(), datetime.date.today() + datetime.timedelta(days=self.period),
-                team.members())
+        period = 0 if start_date else self.period
+        return period, datetime.date.today(), datetime.date.today() + datetime.timedelta(days=period), team.members()
 
     @staticmethod
     def url():
@@ -54,6 +54,12 @@ class TeamAbsenceTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(6, self.__metric.value())
+
+    def test_value_when_ignoring_near_future(self):
+        """ Test that the near future can be ignored. """
+        team = domain.Team(name='Team', metric_options={metric.TeamAbsence: dict(start_date=datetime.date(9999, 1, 1))})
+        absence = metric.TeamAbsence(team, project=self.__project)
+        self.assertEqual(0, absence.value())
 
     def test_report(self):
         """ Test that the report is correct. """

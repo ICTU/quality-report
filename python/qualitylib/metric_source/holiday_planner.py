@@ -31,12 +31,12 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
         self.__api_url = kwargs.pop('api_url')
         super(HolidayPlanner, self).__init__(*args, **kwargs)
 
-    def days(self, team):
+    def days(self, team, start_date=None):
         """ Return the number of consecutive days that multiple team members are absent. """
         absence_days = self.__absence_days(team)
         longest_stretch = current_stretch = 0
         current_start = longest_start = longest_end = None
-        today = datetime.date.today()
+        today = start_date or datetime.date.today()
         for day_offset in range(366):
             day = today + datetime.timedelta(days=day_offset)
             if day.weekday() >= 5:
