@@ -3,7 +3,8 @@
 import datetime
 
 from qualitylib import metric_source, metric, requirement
-from qualitylib.domain import Project, Product, Team, Document, TechnicalDebtTarget, DynamicTechnicalDebtTarget
+from qualitylib.domain import Project, Application, Product, Team, Document, TechnicalDebtTarget, \
+    DynamicTechnicalDebtTarget
 
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
@@ -32,7 +33,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                                 requirement.Java, requirement.TrackSonarVersion])
 
 # Teams of the project.
-QUALITY_TEAM = Team(name='Quality team', requirements=[requirement.ScrumTeam, requirement.TrackSpirit])
+QUALITY_TEAM = Team(name='Quality team')
 PROJECT.add_team(QUALITY_TEAM)
 
 # Documents of the project.
@@ -41,30 +42,28 @@ PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
                               metric_source_ids={SUBVERSION: QUALITY_PLAN_URL}))
 
 # Products the project(s) develop(s).
-QUALITY_REPORT_UNITTESTS = \
-    Product(PROJECT,
-            metric_source_ids={
-                SONAR: 'nl.ictu.quality-report:quality-report',
-                SUBVERSION: 'http://svn/commons/scripts/quality-report/'})
+QUALITY_REPORT_UNITTESTS = Product(
+    PROJECT,
+    metric_source_ids={
+        SONAR: 'nl.ictu.quality-report:quality-report',
+        SUBVERSION: 'http://svn/commons/scripts/quality-report/'})
 
-QUALITY_REPORT = \
-    Product(PROJECT, 'QR',
-            unittests=QUALITY_REPORT_UNITTESTS,
-            requirements=[requirement.OWASPZAP, requirement.UnitTests, requirement.ART, requirement.CodeQuality,
-                          requirement.Performance],
-            metric_source_ids={
-                SONAR: 'nl.ictu.quality-report:quality-report',
-                JACOCO: 'quality-report-coverage-report',
-                SUBVERSION: 'http://svn/commons/scripts/quality-report/',
-                ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
-            metric_options={
-                metric.UnittestLineCoverage:
-                    dict(debt_target=TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% unit test coverage')),
-                metric.MajorViolations:
-                    dict(debt_target=DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 12),
-                                                                25, datetime.datetime(2014, 6, 1))),
-                metric.UnmergedBranches:
-                    dict(branches_to_ignore='spike', comment="Ignore the spike branch (2016-06-15).")})
+QUALITY_REPORT = Application(
+    PROJECT, 'QR', name='Example product',
+    unittests=QUALITY_REPORT_UNITTESTS,
+    metric_source_ids={
+        SONAR: 'nl.ictu.quality-report:quality-report',
+        JACOCO: 'quality-report-coverage-report',
+        SUBVERSION: 'http://svn/commons/scripts/quality-report/',
+        ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
+    metric_options={
+        metric.UnittestLineCoverage:
+            dict(debt_target=TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% unit test coverage')),
+        metric.MajorViolations:
+            dict(debt_target=DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 12),
+                                                        25, datetime.datetime(2014, 6, 1))),
+        metric.UnmergedBranches:
+            dict(branches_to_ignore='spike', comment="Ignore the spike branch (2016-06-15).")})
 
 PROJECT.add_product(QUALITY_REPORT)
 
