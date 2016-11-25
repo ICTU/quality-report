@@ -64,4 +64,5 @@ class TeamAbsence(LowerIsBetterMetric):
 
     def __start_date(self):
         """ Return the date from which to start monitoring. """
-        return self._subject.metric_options(self.__class__).get('start_date')
+        start_date = self._subject.metric_options(self.__class__).get('start_date')
+        return start_date if start_date and start_date > datetime.date.today() else None
