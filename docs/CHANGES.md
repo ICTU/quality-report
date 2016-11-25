@@ -1,3 +1,8 @@
+2016-11-25  Release 1.71.1
+
+  * Better metric report for metric.TeamAbsence.
+  
+  
 2016-11-25  Release 1.71.0
 
   * Allow for ignoring known future overlapping absences by passing a start_date option to the team absence metric:

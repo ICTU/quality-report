@@ -66,8 +66,8 @@ class TeamAbsenceTest(unittest.TestCase):
         today = datetime.date.today()
         start = today.isoformat()
         end = (today + datetime.timedelta(days=6)).isoformat()
-        self.assertEqual('De langste periode dat meerdere teamleden tegelijk gepland afwezig zijn is 6 werkdagen '
-                         '({start} tot en met {end}). Afwezig zijn: Derk Designer, '
+        self.assertEqual('De langste periode na vandaag dat meerdere teamleden tegelijk gepland afwezig zijn is 6 '
+                         'werkdagen ({start} tot en met {end}). Afwezig zijn: Derk Designer, '
                          'Piet Programmer.'.format(start=start, end=end), self.__metric.report())
 
     def test_report_without_absence(self):
@@ -92,8 +92,8 @@ class TeamAbsenceTest(unittest.TestCase):
     def test_default_norm(self):
         """ Test that the norm can be shown without instantiating the class. """
         defaults = metric.TeamAbsence.norm_template_default_values()
-        self.assertEqual('Het aantal aaneengesloten werkdagen dat meerdere teamleden tegelijk gepland afwezig zijn is '
-                         'lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit '
+        self.assertEqual('Het aantal aaneengesloten werkdagen na vandaag dat meerdere teamleden tegelijk gepland '
+                         'afwezig zijn is lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit '
                          '(Lijst van teamleden).', metric.TeamAbsence.norm_template.format(**defaults))
 
     def test_parameters_without_planner(self):
