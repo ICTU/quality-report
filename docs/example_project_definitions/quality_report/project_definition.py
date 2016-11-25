@@ -63,7 +63,7 @@ QUALITY_REPORT = Application(
             dict(debt_target=DynamicTechnicalDebtTarget(47, datetime.datetime(2014, 2, 12),
                                                         25, datetime.datetime(2014, 6, 1))),
         metric.UnmergedBranches:
-            dict(branches_to_ignore='spike', comment="Ignore the spike branch (2016-06-15).")})
+            dict(branches_to_ignore=['spike'], comment="Ignore the spike branch (2016-06-15).")})
 
 PROJECT.add_product(QUALITY_REPORT)
 
