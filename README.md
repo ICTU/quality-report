@@ -19,7 +19,9 @@ developed in any language as it doesn't measure the quality itself, but instead
 relies on other tools to feed it information. Metric sources include SonarQube, Jenkins,
 Jira, Jacoco, JMeter, OWASP dependency checker, and more.
 
-The user interface is in Dutch.
+The user interface is in Dutch. 
+
+An example report is available via http://ictu.github.io/quality-report/.
 
 This software was developed by ICTU (http://www.ictu.nl) to support the 
 development of the Landelijk Register Kinderopvang for the Ministerie van
