@@ -40,7 +40,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     api_postfix = 'api/python'
     jobs_api_postfix = api_postfix + '?tree=jobs[name,description,color,url,buildable]'
 
-    def __init__(self, url, username, password, job_re=''):
+    def __init__(self, url, username='', password='', job_re=''):
         super(Jenkins, self).__init__(url=url, username=username, password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = url + 'job/{job}/'
