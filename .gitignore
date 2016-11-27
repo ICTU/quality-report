@@ -4,13 +4,6 @@
 # Ignore python byte-compiled files:
 *.pyc
 
-# Ignore data files that are copied in when creating the distribution:
-python/qualitylib/formatting/css
-python/qualitylib/formatting/fonts
-python/qualitylib/formatting/html
-python/qualitylib/formatting/img
-python/qualitylib/formatting/js
-
 # Ignore generated coverage and test reports and test data:
 .coverage*
 coverage.xml

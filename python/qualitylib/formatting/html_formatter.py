@@ -75,12 +75,7 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __get_html_fragment(name):
         """ Read and return a HTML fragment from the html folder. """
-        module_path = os.path.dirname(os.path.abspath(__file__))
-        filename = module_path + '/../../../html/{name}.html'.format(name=name)
-        try:
-            fragment = codecs.open(filename, 'r', 'utf-8').read()
-        except IOError:
-            fragment = pkg_resources.ResourceManager().resource_string(__name__, 'html/{name}.html'.format(name=name))
+        fragment = pkg_resources.ResourceManager().resource_string(__name__, 'html/{name}.html'.format(name=name))
         return unicode(fragment)
 
     def section(self, report, section):

@@ -16,24 +16,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import glob
-import os
-import shutil
-
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
 from qualitylib import VERSION
 
-
-for src_files in ('../css/*.css', '../css/*.css.map', '../fonts/glyphicons-halflings-regular.*', '../html/*.html',
-                  '../img/*.png', '../js/*.js'):
-    destination_dir = os.path.join('qualitylib', 'formatting', src_files.split('/')[1])
-    if not os.path.exists(destination_dir):
-        os.mkdir(destination_dir)
-    for src_file in glob.glob(src_files):
-        shutil.copy(src_file, destination_dir)
 
 setup(name='quality_report',
       version=VERSION,
