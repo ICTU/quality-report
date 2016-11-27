@@ -22,3 +22,6 @@ ratings:
   - "**.py"
 exclude_paths:
 - "python/qualitylib/formatting/js/bootstrap.min.js"
+- "docs/examples/"
+- "python/unittests"
+- "python/integrationtests"
