@@ -1,3 +1,8 @@
+2016-11-28  Release 1.71.2
+
+  * Bug fix: Use creation date of manual test cases as last execution date as long as the test hasn't been executed yet.
+
+
 2016-11-25  Release 1.71.1
 
   * Better metric report for metric.TeamAbsence.

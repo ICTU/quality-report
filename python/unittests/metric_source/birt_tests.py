@@ -816,7 +816,7 @@ class BirtTest(unittest.TestCase):
         """ Test that the date of the last manual test execution is correct. """
         self.__birt.html = MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED
         date = self.__birt.date_of_last_manual_test()
-        self.assertEqual(datetime.datetime(1, 1, 1), date)
+        self.assertEqual(datetime.datetime(2015, 8, 4), date)
 
     def test_late_date_manual_tests(self):
         """ Test that the date of the last manual test execution is correct. """
