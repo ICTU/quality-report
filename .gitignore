@@ -9,9 +9,9 @@
 coverage.xml
 python/.coverage
 python/htmlcov
-python/test-reports
-python/integrationtests/*/history.json
+test-reports
 integration-test-reports
+tests/integrationtests/*/history.json
 
 # Ignore build folders
 python/dist
