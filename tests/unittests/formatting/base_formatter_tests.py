@@ -16,9 +16,9 @@ limitations under the License.
 
 import unittest
 
-from qualitylib.formatting.base_formatter import Formatter
 from unittests.formatting import fake_domain
 
+from qualitylib.formatting import Formatter
 from tests.unittests.formatting import fake_report
 
 

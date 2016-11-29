@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import StringIO
 import datetime
 import unittest
 import urllib2
-import StringIO
 
 from qualitylib.metric_source import Happiness
 

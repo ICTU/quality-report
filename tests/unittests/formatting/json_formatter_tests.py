@@ -16,10 +16,9 @@ limitations under the License.
 
 import unittest
 
-from qualitylib.formatting import JSONFormatter
-from unittests.formatting import fake_domain
+from tests.unittests.formatting import fake_domain, fake_report
 
-from tests.unittests.formatting import fake_report
+from qualitylib.formatting import JSONFormatter
 
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods

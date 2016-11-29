@@ -6,7 +6,6 @@ from qualitylib import metric_source, metric, requirement
 from qualitylib.domain import Project, Application, Product, Team, Document, TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
-
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')

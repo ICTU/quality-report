@@ -17,10 +17,10 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib import utils
-from qualitylib.formatting import HTMLFormatter
 from unittests.formatting import fake_domain
 
+from qualitylib import utils
+from qualitylib.formatting import HTMLFormatter
 from tests.unittests.formatting import fake_report
 
 

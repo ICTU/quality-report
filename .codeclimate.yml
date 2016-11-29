@@ -21,7 +21,7 @@ ratings:
   - "**.jsx"
   - "**.py"
 exclude_paths:
-- "python/qualitylib/formatting/js/bootstrap.min.js"
+- "qualitylib/formatting/js/bootstrap.min.js"
 - "docs/examples/"
 - "tests/unittests/"
 - "tests/integrationtests/"

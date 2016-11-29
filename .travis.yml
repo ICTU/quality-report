@@ -2,7 +2,7 @@ sudo: required
 dist: trusty
 language: java
 install:
-- pip install -r python/requirements.txt
+- pip install -r requirements.txt
 - pip install codeclimate-test-reporter
 script:
 - coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"

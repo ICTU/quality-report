@@ -15,9 +15,9 @@ limitations under the License.
 """
 
 import datetime
+import io
 import unittest
 import urllib2
-import io
 
 from qualitylib.metric_source import Nexus
 

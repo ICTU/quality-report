@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import io
 import unittest
 import urllib2
-import io
 
 from qualitylib import metric_source
 

@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from qualitylib import domain, requirement
+from qualitylib import domain
 
 
 class TeamTest(unittest.TestCase):

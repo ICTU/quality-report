@@ -1,8 +1,7 @@
 """ Project definition for testing a project with all requirements but no sources. """
 
-from qualitylib.domain import Project, Product, Team, Document, Person, Application, Component
 from qualitylib import metric_source, requirement
-
+from qualitylib.domain import Project, Product, Team, Document, Person, Application, Component
 
 # Sources
 HISTORY = metric_source.History('python/integrationtests/test_all_requirements_no_sources/history.json')

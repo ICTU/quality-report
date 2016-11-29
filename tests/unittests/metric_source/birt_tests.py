@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import bs4
 import datetime
 import unittest
 import urllib2
 
+import bs4
+
 from qualitylib.metric_source import Birt
 from qualitylib.metric_source.birt import SprintProgressReport
-
 
 TEST_DESIGN_HTML = """
 <html>

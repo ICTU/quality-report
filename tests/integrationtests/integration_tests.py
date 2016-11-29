@@ -30,7 +30,7 @@ class IntegrationTestCase(unittest.TestCase):
     def setUpClass(cls):
         """ Create the report. """
         cls.report_folder = tempfile.mkdtemp()
-        os.system('coverage run --parallel-mode --branch python/quality_report.py --project {0} --report {1} '
+        os.system('coverage run --parallel-mode --branch quality_report.py --project {0} --report {1} '
                   '--log ERROR'.format(cls.project_folder, cls.report_folder))
 
     @classmethod

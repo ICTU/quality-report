@@ -63,7 +63,8 @@ class TeamAbsenceTest(unittest.TestCase):
 
     def test_start_date_in_the_past(self):
         """ Test that a start date in the past is ignored. """
-        team = domain.Team(name='Team', metric_options={metric.TeamAbsence: dict(start_date=datetime.date.today() - datetime.timedelta(days=10))})
+        team = domain.Team(name='Team', metric_options={
+            metric.TeamAbsence: dict(start_date=datetime.date.today() - datetime.timedelta(days=10))})
         absence = metric.TeamAbsence(team, project=self.__project)
         self.assertNotEqual('Er zijn geen teamleden tegelijk gepland afwezig.', absence.report())
 

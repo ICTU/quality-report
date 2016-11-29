@@ -18,9 +18,8 @@ limitations under the License.
 
 import datetime
 
-from qualitylib import metric, metric_source, requirement, domain
-
 import fake_domain
+from qualitylib import metric, metric_source, requirement, domain
 
 
 class Section(object):

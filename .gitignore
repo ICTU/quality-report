@@ -6,19 +6,13 @@
 
 # Ignore generated coverage and test reports and test data:
 .coverage*
-coverage.xml
-python/.coverage
-python/htmlcov
 test-reports
 integration-test-reports
 tests/integrationtests/*/history.json
 
 # Ignore build folders
-python/dist
-python/quality_report.egg-info/
-
-# Ignore the virtual python environment created by virtual env:
-.pyenv
+dist
+quality_report.egg-info/
 
 # Ignore OS specific folders and files
 .DS_Store
