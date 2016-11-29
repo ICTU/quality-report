@@ -9,6 +9,7 @@
 test-reports
 integration-test-reports
 tests/integrationtests/*/history.json
+repos
 
 # Ignore build folders
 dist
