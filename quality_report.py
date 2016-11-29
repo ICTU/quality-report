@@ -26,7 +26,7 @@ import urllib2
 import xmlrpclib
 import pkg_resources
 
-from qualitylib import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION
+from quality_report import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods

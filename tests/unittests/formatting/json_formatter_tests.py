@@ -19,7 +19,7 @@ import unittest
 import fake_domain
 import fake_report
 
-from qualitylib.formatting import JSONFormatter
+from quality_report.formatting import JSONFormatter
 
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods

@@ -15,8 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from qualitylib import metric_source
-from qualitylib.domain import LowerIsBetterMetric
+from quality_report import metric_source
+from quality_report.domain import LowerIsBetterMetric
 
 
 class FailingCIJobs(LowerIsBetterMetric):

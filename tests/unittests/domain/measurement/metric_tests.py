@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib import domain, metric_source
+from quality_report import domain, metric_source
 from tests.unittests.domain.measurement.fake import FakeHistory, FakeSubject
 
 

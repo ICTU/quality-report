@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib.metric_source import History
+from quality_report.metric_source import History
 
 HISTORY = ['{"date": "2013-02-28 17:16:46", "OpenBugsNone": "38", '
            '"OpenBugsFoo": ("3", "green", "2013-02-27 15:45:32"), '

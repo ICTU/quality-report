@@ -19,7 +19,7 @@ import io
 import unittest
 import urllib2
 
-from qualitylib.metric_source import JenkinsTestReport
+from quality_report.metric_source import JenkinsTestReport
 
 
 class FakeUrlOpener(object):

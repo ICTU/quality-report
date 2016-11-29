@@ -18,7 +18,7 @@ import datetime
 import io
 import unittest
 
-from qualitylib.metric_source import Sonar
+from quality_report.metric_source import Sonar
 
 
 class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods

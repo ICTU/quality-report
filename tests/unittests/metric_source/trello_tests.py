@@ -19,7 +19,7 @@ import io
 import unittest
 import urllib2
 
-from qualitylib.metric_source.trello import TrelloCard, TrelloBoard
+from quality_report.metric_source.trello import TrelloCard, TrelloBoard
 
 
 class FakeCard(object):

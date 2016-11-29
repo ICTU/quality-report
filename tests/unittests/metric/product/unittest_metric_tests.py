@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from qualitylib import metric, domain, metric_source
+from quality_report import metric, domain, metric_source
 
 
 class FakeSonar(object):

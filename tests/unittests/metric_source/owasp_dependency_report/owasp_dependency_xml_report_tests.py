@@ -18,7 +18,7 @@ import io
 import unittest
 import urllib2
 
-from qualitylib import metric_source
+from quality_report import metric_source
 
 
 class OWASPDependencyXMLReportTest(unittest.TestCase):

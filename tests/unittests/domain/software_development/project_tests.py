@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from qualitylib import domain
+from quality_report import domain
 
 
 class FakeProduct(object):

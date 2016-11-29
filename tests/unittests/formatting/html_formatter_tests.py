@@ -19,8 +19,8 @@ import unittest
 
 from unittests.formatting import fake_domain
 
-from qualitylib import utils
-from qualitylib.formatting import HTMLFormatter
+from quality_report import utils
+from quality_report.formatting import HTMLFormatter
 from tests.unittests.formatting import fake_report
 
 

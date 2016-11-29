@@ -18,7 +18,7 @@ import datetime
 import unittest
 import urllib2
 
-from qualitylib.metric_source import NCover
+from quality_report.metric_source import NCover
 
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods

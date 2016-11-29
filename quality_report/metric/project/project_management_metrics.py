@@ -17,8 +17,8 @@ from __future__ import absolute_import
 
 import datetime
 
-from qualitylib import metric_source
-from qualitylib.domain import LowerIsBetterMetric
+from quality_report import metric_source
+from quality_report.domain import LowerIsBetterMetric
 
 
 class ActivityMetric(LowerIsBetterMetric):

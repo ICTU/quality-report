@@ -17,7 +17,7 @@ limitations under the License.
 import unittest
 import urllib2
 
-from qualitylib.metric_source import url_opener
+from quality_report.metric_source import url_opener
 
 
 class FakeBuildOpener(object):  # pylint: disable=too-few-public-methods

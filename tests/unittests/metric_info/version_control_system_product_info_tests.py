@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib import metric_source, metric_info, domain
+from quality_report import metric_source, metric_info, domain
 
 
 class FakeVersionControlSystem(object):

@@ -19,9 +19,9 @@ import datetime
 import logging
 import time
 
-from qualitylib import utils
-from qualitylib.metric_source.abstract import team_spirit
-from qualitylib.metric_source.url_opener import UrlOpener
+from quality_report import utils
+from quality_report.metric_source.abstract import team_spirit
+from quality_report.metric_source.url_opener import UrlOpener
 
 
 class Happiness(team_spirit.TeamSpirit):

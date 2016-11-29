@@ -81,7 +81,7 @@ class Metric(object):
             except AttributeError:
                 self._metric_source_id = None
         self.__id_string = self.stable_id()
-        from qualitylib import metric_source
+        from quality_report import metric_source
         self.__history = self._project.metric_source(metric_source.History)
 
     def stable_id(self):

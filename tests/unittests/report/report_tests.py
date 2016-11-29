@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from qualitylib import report, domain, metric, metric_source, requirement
+from quality_report import report, domain, metric, metric_source, requirement
 
 
 class QualityReportTest(unittest.TestCase):

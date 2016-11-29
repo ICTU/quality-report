@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from qualitylib import metric_source, metric_info, domain
+from quality_report import metric_source, metric_info, domain
 
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods
