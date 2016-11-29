@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from quality_report import metric, domain, metric_source
+from hqlib import metric, domain, metric_source
 
 
 class FakeWiki(domain.MetricSource):

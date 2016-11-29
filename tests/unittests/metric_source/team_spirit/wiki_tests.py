@@ -19,7 +19,7 @@ import unittest
 
 import bs4
 
-from quality_report.metric_source import Wiki
+from hqlib.metric_source import Wiki
 
 
 class WikiUnderTest(Wiki):  # pylint: disable=too-few-public-methods

@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from quality_report import domain
+from hqlib import domain
 
 
 class RequirementUnderTest(domain.Requirement):  # pylint: disable=too-few-public-methods

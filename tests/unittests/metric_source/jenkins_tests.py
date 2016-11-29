@@ -18,7 +18,7 @@ import datetime
 import io
 import unittest
 
-from quality_report.metric_source import Jenkins
+from hqlib.metric_source import Jenkins
 
 
 def to_jenkins_timestamp(date_time, epoch=datetime.datetime(1970, 1, 1)):

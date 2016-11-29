@@ -26,7 +26,7 @@ import urllib2
 import xmlrpclib
 import pkg_resources
 
-from quality_report import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION
+from hqlib import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -138,7 +138,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             logging.warn("Can't create connection to %s: %s", python_package_index_url, reason)
             return '0'
 
-        logging.info('Latest quality_report package release is %s', latest_version)
+        logging.info('Latest HQ release is %s', latest_version)
         return latest_version
 
     @staticmethod

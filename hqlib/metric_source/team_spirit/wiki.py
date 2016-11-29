@@ -20,10 +20,10 @@ import logging
 import re
 import time
 
-from quality_report import utils
-from quality_report.metric_source import beautifulsoup
-from quality_report.metric_source.abstract import team_spirit
-from quality_report.metric_source.url_opener import UrlOpener
+from hqlib import utils
+from hqlib.metric_source import beautifulsoup
+from hqlib.metric_source.abstract import team_spirit
+from hqlib.metric_source.url_opener import UrlOpener
 
 
 class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):

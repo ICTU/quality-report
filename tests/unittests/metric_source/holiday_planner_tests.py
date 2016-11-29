@@ -18,8 +18,8 @@ import datetime
 import io
 import unittest
 
-from quality_report import domain
-from quality_report.metric_source import HolidayPlanner
+from hqlib import domain
+from hqlib.metric_source import HolidayPlanner
 
 
 class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public-methods

@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from quality_report.metric_source import Git
+from hqlib.metric_source import Git
 
 
 class GitUnderTest(Git):  # pylint: disable=too-few-public-methods

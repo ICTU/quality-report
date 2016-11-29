@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from quality_report.metric_source import Subversion
+from hqlib.metric_source import Subversion
 
 
 class SubversionUnderTest(Subversion):

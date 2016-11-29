@@ -18,7 +18,7 @@ import datetime
 import unittest
 import urllib2
 
-from quality_report.metric_source import SilkPerformerPerformanceLoadTestReport
+from hqlib.metric_source import SilkPerformerPerformanceLoadTestReport
 
 HTML = r"""
 <html>

@@ -1,3 +1,9 @@
+2016-11-29  Release 1.71.3
+
+  * Bug fix: Resolve name conflict between library and script. The library is now called `hqlib`. The script is
+    still called `quality_report.py`.
+  
+  
 2016-11-29  Release 1.71.2
 
   * Bug fix: Use creation date of manual test cases as last execution date as long as the test hasn't been executed yet.

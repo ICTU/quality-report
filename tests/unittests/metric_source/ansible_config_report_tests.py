@@ -19,7 +19,7 @@ import io
 import unittest
 import urllib2
 
-from quality_report.metric_source import AnsibleConfigReport
+from hqlib.metric_source import AnsibleConfigReport
 
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods

@@ -1,7 +1,7 @@
 include requirements.txt
-include quality_report/formatting/css/*.css
-include quality_report/formatting/css/*.css.map
-include quality_report/formatting/fonts/glyphicons-halflings-regular.*
-include quality_report/formatting/html/*.html
-include quality_report/formatting/img/*.png
-include quality_report/formatting/js/*.js
+include hqlib/formatting/css/*.css
+include hqlib/formatting/css/*.css.map
+include hqlib/formatting/fonts/glyphicons-halflings-regular.*
+include hqlib/formatting/html/*.html
+include hqlib/formatting/img/*.png
+include hqlib/formatting/js/*.js

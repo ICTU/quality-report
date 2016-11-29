@@ -19,7 +19,7 @@ import io
 import logging
 import unittest
 
-from quality_report import utils
+from hqlib import utils
 
 
 class PercentageTest(unittest.TestCase):

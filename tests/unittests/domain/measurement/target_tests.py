@@ -17,8 +17,8 @@ limitations under the License.
 import datetime
 import unittest
 
-from quality_report.domain import TechnicalDebtTarget, DynamicTechnicalDebtTarget
-from quality_report.utils import format_date
+from hqlib.domain import TechnicalDebtTarget, DynamicTechnicalDebtTarget
+from hqlib.utils import format_date
 
 
 class TechnicalDebtTargetTests(unittest.TestCase):

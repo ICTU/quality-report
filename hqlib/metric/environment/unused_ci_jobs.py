@@ -15,8 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from quality_report import metric_source
-from quality_report.domain import LowerIsBetterMetric
+from hqlib import metric_source
+from hqlib.domain import LowerIsBetterMetric
 
 
 class UnusedCIJobs(LowerIsBetterMetric):

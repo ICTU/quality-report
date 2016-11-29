@@ -19,7 +19,7 @@ from __future__ import absolute_import
 import unittest
 from distutils.version import LooseVersion
 
-from quality_report import metric, domain, metric_source
+from hqlib import metric, domain, metric_source
 
 
 class FakeSonar(object):

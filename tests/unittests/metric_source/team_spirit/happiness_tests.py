@@ -19,7 +19,7 @@ import datetime
 import unittest
 import urllib2
 
-from quality_report.metric_source import Happiness
+from hqlib.metric_source import Happiness
 
 
 class Opener(object):  # pylint: disable=too-few-public-methods

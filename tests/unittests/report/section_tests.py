@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from quality_report.report.section import Section, SectionHeader
+from hqlib.report.section import Section, SectionHeader
 
 
 class FakeMetric(object):

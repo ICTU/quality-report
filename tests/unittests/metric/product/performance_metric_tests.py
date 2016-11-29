@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from quality_report import metric, domain
+from hqlib import metric, domain
 
 
 class FakePerformanceReport(object):

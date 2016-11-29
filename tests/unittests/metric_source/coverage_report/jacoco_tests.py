@@ -18,7 +18,7 @@ import datetime
 import unittest
 import urllib2
 
-from quality_report.metric_source import JaCoCo
+from hqlib.metric_source import JaCoCo
 
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods

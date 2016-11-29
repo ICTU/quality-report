@@ -16,8 +16,8 @@ limitations under the License.
 
 import unittest
 
-from quality_report.domain.measurement.measurable import MeasurableObject
-from quality_report.domain import TechnicalDebtTarget
+from hqlib.domain.measurement.measurable import MeasurableObject
+from hqlib.domain import TechnicalDebtTarget
 
 
 class MeasurableObjectTests(unittest.TestCase):

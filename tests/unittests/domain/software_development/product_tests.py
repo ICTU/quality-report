@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from quality_report import domain, requirement
+from hqlib import domain, requirement
 
 
 class ProductTest(unittest.TestCase):

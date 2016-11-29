@@ -2,8 +2,8 @@
 
 import datetime
 
-from quality_report import metric_source, metric, requirement
-from quality_report.domain import Project, Application, Product, Team, Document, TechnicalDebtTarget, \
+from hqlib import metric_source, metric, requirement
+from hqlib.domain import Project, Application, Product, Team, Document, TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',

@@ -20,8 +20,8 @@ import urllib2
 
 import bs4
 
-from quality_report.metric_source import Birt
-from quality_report.metric_source.birt import SprintProgressReport
+from hqlib.metric_source import Birt
+from hqlib.metric_source.birt import SprintProgressReport
 
 TEST_DESIGN_HTML = """
 <html>

@@ -17,7 +17,7 @@ limitations under the License.
 import unittest
 import urllib2
 
-from quality_report.metric_source import OpenVASScanReport
+from hqlib.metric_source import OpenVASScanReport
 
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods

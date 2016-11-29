@@ -18,7 +18,7 @@ import io
 import unittest
 import urllib2
 
-from quality_report.metric_source import Jira
+from hqlib.metric_source import Jira
 
 
 class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods

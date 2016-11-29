@@ -19,7 +19,7 @@ limitations under the License.
 import datetime
 
 import fake_domain
-from quality_report import metric, metric_source, requirement, domain
+from hqlib import metric, metric_source, requirement, domain
 
 
 class Section(object):

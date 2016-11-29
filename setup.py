@@ -20,7 +20,7 @@ from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
-from quality_report import VERSION
+from hqlib import VERSION
 
 
 setup(name='quality_report',
