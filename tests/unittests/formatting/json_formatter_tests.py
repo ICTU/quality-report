@@ -16,7 +16,8 @@ limitations under the License.
 
 import unittest
 
-from tests.unittests.formatting import fake_domain, fake_report
+import fake_domain
+import fake_report
 
 from qualitylib.formatting import JSONFormatter
 

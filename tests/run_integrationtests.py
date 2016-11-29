@@ -19,10 +19,13 @@ limitations under the License.
 import StringIO
 import logging
 import unittest
-
 import xmlrunner
+import os
+import sys
+
 
 if __name__ == '__main__':  # pragma: no branch
+    sys.path.insert(0, os.path.abspath('.'))
     # Make sure log messages are not shown on stdout/stderr. We can't simply
     # increase the log level since some integration tests may expect logging to happen.
     logging.getLogger().addHandler(logging.StreamHandler(StringIO.StringIO()))
