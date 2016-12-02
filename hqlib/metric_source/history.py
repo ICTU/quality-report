@@ -47,8 +47,7 @@ class History(domain.MetricSource):
         return self.__historic_values(recent_only=False)
 
     def clean_history(self):
-        """ Remove detail data from old history records. """
-        self.__clean_old_details()
+        """ Remove duplicate data from the history. """
         self.__deduplicate_history()
 
     def status_start_date(self, metric_id, current_status, now=datetime.datetime.now):
@@ -143,22 +142,3 @@ class History(domain.MetricSource):
             self.__write_history(lines_kept)
         logging.info('Deduplicating the history file %s: %d duplicate lines out of %d total lines removed',
                      self.__history_filename, lines_skipped, len(lines))
-
-    def __clean_old_details(self):
-        """ Remove detail data from old history records. """
-        lines = self.__load_history(recent_only=False)
-        count = 0
-        if len(lines) > self.__recent_history:
-            for index in xrange(len(lines) - self.__recent_history):
-                count += 1
-                record = eval(lines[index])
-                new_record = dict(
-                    date=record['date'],
-                    GreenMetaMetric=record.get('GreenMetaMetric', 0),
-                    RedMetaMetric=record.get('RedMetaMetric', 0),
-                    YellowMetaMetric=record.get('YellowMetaMetric', 0),
-                    GreyMetaMetric=record.get('GreyMetaMetric', 0),
-                    MissingMetaMetric=record.get('MissingMetaMetric', 0))
-                lines[index] = str(new_record)
-        self.__write_history(lines)
-        logging.info('Cleaning the history file %s: removed details from %d lines', self.__history_filename, count)

@@ -72,7 +72,7 @@ class EmptyHistoryTest(unittest.TestCase):
     def test_clean_history(self):
         """ Test cleaning the empty history. """
         self.__history.clean_history()
-        self.assertEqual(['\r\n'], FakeFile.written_content)
+        self.assertEqual([], FakeFile.written_content)
 
 
 class FailingFile(FakeFile):
@@ -114,7 +114,7 @@ class HistoryTest(unittest.TestCase):
         """ Test that the file is not changed since it has no big history. """
         FakeFile.initial_content = HISTORY
         self.__history.clean_history()
-        self.assertEqual(HISTORY, FakeFile.written_content)
+        self.assertEqual([], FakeFile.written_content)
 
     def test_clean_big_history(self):
         """ Test that history details are removed. """
