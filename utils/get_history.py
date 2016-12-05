@@ -91,8 +91,8 @@ class RevisionCollector(object):
     def collect(self, revisions, last_revision):
         """ Get the revisions and append the last measurement of each revision to the full history file. """
         nr_revisions = len(revisions)
-        last_revision_nr = last_revision.get()
-        start_index = revisions.index(last_revision_nr) + 1 if last_revision_nr else 0
+        last_revision_processed = last_revision.get()
+        start_index = revisions.index(last_revision_processed) + 1 if last_revision_processed else 0
         for index, revision in enumerate(revisions[start_index:]):
             logging.info('Retrieving revision %s (%s/%s)', revision, index + start_index + 1, nr_revisions)
             self.__get_revision(revision)
