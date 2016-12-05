@@ -1,7 +1,7 @@
-2016-12-02  Release 1.71.4
+2016-12-05  Release 1.71.4
 
-  * Don't remove details from old measurements in the history file to make it easier to use the history for 
-    research purposes.
+  * Don't remove details and repeated measurements from old measurements in the history file to make it easier to use 
+    the history for research purposes.
     
     
 2016-11-29  Release 1.71.3

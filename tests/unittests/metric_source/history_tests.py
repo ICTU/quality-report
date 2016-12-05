@@ -69,11 +69,6 @@ class EmptyHistoryTest(unittest.TestCase):
         """ Test that there is no history when the history file does not exist. """
         self.assertEqual([], self.__history.complete_history())
 
-    def test_clean_history(self):
-        """ Test cleaning the empty history. """
-        self.__history.clean_history()
-        self.assertEqual([], FakeFile.written_content)
-
 
 class FailingFile(FakeFile):
     """ Fake a file that raises an IO exception. """
@@ -109,30 +104,6 @@ class HistoryTest(unittest.TestCase):
         """ Test the recent history of a non-existing metric. """
         FakeFile.initial_content = HISTORY
         self.assertEqual([], self.__history.recent_history('Non existing'))
-
-    def test_clean_history(self):
-        """ Test that the file is not changed since it has no big history. """
-        FakeFile.initial_content = HISTORY
-        self.__history.clean_history()
-        self.assertEqual([], FakeFile.written_content)
-
-    def test_clean_big_history(self):
-        """ Test that history details are removed. """
-        FakeFile.initial_content = HISTORY * 5
-        self.__history.clean_history()
-        self.assertEqual(['38'] * 3, self.__history.recent_history('OpenBugsNone'))
-
-    def test_clean_old_history(self):
-        """ Test that old history details without some of the meta metrics are removed. """
-        FakeFile.initial_content = OLD_HISTORY * 5 + HISTORY
-        self.__history.clean_history()
-        self.assertEqual(['35', '35', '38'], self.__history.recent_history('OpenBugsNone'))
-
-    def test_clean_clean_history(self):
-        """ Test that differing details are not cleaned. """
-        FakeFile.initial_content = OLD_HISTORY + HISTORY + OLD_HISTORY + HISTORY + OLD_HISTORY
-        self.__history.clean_history()
-        self.assertEqual(['35', '38', '35'], self.__history.recent_history('OpenBugsNone'))
 
     def test_status_start_date(self):
         """ Test that the status start date is returned correctly. """

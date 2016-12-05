@@ -46,10 +46,6 @@ class History(domain.MetricSource):
         """ Return the complete history. """
         return self.__historic_values(recent_only=False)
 
-    def clean_history(self):
-        """ Remove duplicate data from the history. """
-        self.__deduplicate_history()
-
     def status_start_date(self, metric_id, current_status, now=datetime.datetime.now):
         """ Return the start date of the current status of the metric. """
         last_status, date = self.__last_status(metric_id)
@@ -107,38 +103,3 @@ class History(domain.MetricSource):
             lines = lines[-self.__recent_history:]
         logging.info('Read %d lines from %s', len(lines), self.__history_filename)
         return [line.strip() for line in lines if line.strip()]
-
-    def __write_history(self, lines):
-        """ Write the lines to the history file. """
-        self.__file(self.__history_filename, 'w').write('\r\n'.join(lines) + '\r\n')
-
-    def __deduplicate_history(self):
-        """ Remove duplicate entries from the history file. """
-
-        def get_data(line):
-            """ Get the data, without the date. """
-            data = eval(line)
-            del data['date']
-            return data
-
-        def line_differs(previous_line, line, next_line):
-            """ Return whether the line is different from the previous or the next line. """
-            data = get_data(line)
-            return data != get_data(previous_line) or data != get_data(next_line)
-
-        lines_skipped = 0  # Count the number of lines that will be removed
-        lines = self.__load_history(recent_only=False)
-        if lines:
-            lines_kept = [lines[0]]  # Always keep the first line
-            for index in range(1, len(lines) - 2):
-                previous_line, line, next_line = lines[index - 1:index + 2]
-                if line_differs(previous_line, line, next_line):
-                    lines_kept.append(lines[index])
-                else:
-                    lines_skipped += 1
-            lines_kept.append(lines[-1])  # Always keep the last line
-
-        if lines_skipped:
-            self.__write_history(lines_kept)
-        logging.info('Deduplicating the history file %s: %d duplicate lines out of %d total lines removed',
-                     self.__history_filename, lines_skipped, len(lines))

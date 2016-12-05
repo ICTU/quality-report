@@ -62,7 +62,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         self.__format_and_write_report(quality_report, formatting.JSONFormatter, self.__history_filename, 'a', 'ascii',
                                        sonar=self.__project.metric_source(metric_source.Sonar))
         self.__create_report(quality_report, report_folder)
-        metric_source.History(self.__history_filename).clean_history()
 
     @classmethod
     def __create_report(cls, quality_report, report_dir):
