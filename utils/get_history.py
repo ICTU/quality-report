@@ -17,12 +17,18 @@ limitations under the License.
 # Utility to recreate a complete history file from the committed revisions.
 # This script assumes Subversion was used to store the history file.
 # The strategy is to get the last line of each revision and append it to the
-# complete history file.
+# complete history file. Three classes do the work:
+# - Revisions is a list of all revisions, retrieved using svn log.
+# - LastRevisionProcessed is used to get and set the last revision processed, so we can
+#   continue where we left off after a restart.
+# - RevisionCollector gets the revisions from Subversion one by one and adds the
+#   last line of each revision to the full history file.
 
+
+import argparse
+import logging
 import os
 import sys
-import logging
-import argparse
 import xml.etree.ElementTree
 
 
@@ -42,6 +48,7 @@ def init_logging(log_level):
 
 class Revisions(list):
     """ The revisions of the history file. """
+
     def __init__(self, url):
         filename = 'history.json.log.xml'
         logging.info('svn log --xml %s > %s', url, filename)
@@ -52,8 +59,31 @@ class Revisions(list):
         super(Revisions, self).__init__(revisions)
 
 
+class LastRevisionProcessed(object):
+    """ Keep track of the last revision processed. """
+
+    def __init__(self):
+        self.__filename = 'history.json.last_revision.txt'
+
+    def get(self):
+        """ Get the last processed revision. """
+        if os.path.exists(self.__filename):
+            logging.info('Reading last revision from %s', self.__filename)
+            with open(self.__filename, mode='r') as last_revision_file:
+                return int(last_revision_file.read())
+        else:
+            logging.info('No revisions processed yet')
+            return None
+
+    def set(self, revision):
+        """ Set the last processed revision. """
+        with open(self.__filename, mode='w') as last_revision_file:
+            last_revision_file.write(bytes(revision))
+
+
 class RevisionCollector(object):
     """ Get individual revisions of the history file from Subversion collect them in one complete history file. """
+
     def __init__(self, url):
         self.__url = url
         self.__filename = 'history.json'
@@ -74,29 +104,7 @@ class RevisionCollector(object):
             sys.exit('Subversion terminated abnormally')
 
 
-class LastRevision(object):
-    """ Keep track of the last revision processed. """
-    def __init__(self):
-        self.__filename = 'history.json.last_revision.txt'
-
-    def get(self):
-        """ Get the last processed revision. """
-        if os.path.exists(self.__filename):
-            logging.info('Reading last revision from %s', self.__filename)
-            with open(self.__filename, mode='r') as last_revision_file:
-                return int(last_revision_file.read())
-        else:
-            logging.info('No revisions processed yet')
-            return None
-
-    def set(self, revision):
-        """ Set the last processed revision. """
-        with open(self.__filename, mode='w') as last_revision_file:
-            last_revision_file.write(bytes(revision))
-
-
 if __name__ == '__main__':
     arguments = parse_args()
-    url = arguments.url
     init_logging(arguments.log)
-    RevisionCollector(url).collect(Revisions(url), LastRevision())
+    RevisionCollector(arguments.url).collect(Revisions(arguments.url), LastRevisionProcessed())
