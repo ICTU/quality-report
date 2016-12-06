@@ -68,11 +68,19 @@ class JSFCodeQuality(Requirement):
     _metric_classes = (metric.JsfDuplication, metric.ProductLOC)
 
 
-class Performance(Requirement):
-    _name = 'Performance'
-    _metric_classes = (metric.PerformanceLoadTestWarnings, metric.PerformanceLoadTestErrors,
-                       metric.PerformanceEnduranceTestWarnings, metric.PerformanceEnduranceTestErrors,
-                       metric.PerformanceScalabilityTestWarnings, metric.PerformanceScalabilityTestErrors)
+class PerformanceLoad(Requirement):
+    _name = 'Performance load'
+    _metric_classes = (metric.PerformanceLoadTestWarnings, metric.PerformanceLoadTestErrors)
+
+
+class PerformanceEndurance(Requirement):
+    _name = 'Performance endurance'
+    _metric_classes = (metric.PerformanceEnduranceTestWarnings, metric.PerformanceEnduranceTestErrors)
+
+
+class PerformanceScalability(Requirement):
+    _name = 'Performance scalability'
+    _metric_classes = (metric.PerformanceScalabilityTestWarnings, metric.PerformanceScalabilityTestErrors)
 
 
 class TrackBranches(Requirement):

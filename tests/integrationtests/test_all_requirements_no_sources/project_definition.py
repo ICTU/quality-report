@@ -34,7 +34,8 @@ PRODUCT = Product(
     PROJECT, 'PR', name='Product ABC',
     requirements=[requirement.OWASPDependencies, requirement.OWASPZAP,
                   requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
-                  requirement.CodeQuality, requirement.Performance, requirement.TrackBranches],
+                  requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
+                  requirement.PerformanceScalability, requirement.TrackBranches],
     unittests=Product(
         PROJECT, name='Product ABC unit tests'),
     art=Product(

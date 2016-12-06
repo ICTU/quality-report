@@ -16,6 +16,7 @@ limitations under the License.
 
 import unittest
 import os
+import sys
 import shutil
 import tempfile
 import bs4
@@ -30,8 +31,8 @@ class IntegrationTestCase(unittest.TestCase):
     def setUpClass(cls):
         """ Create the report. """
         cls.report_folder = tempfile.mkdtemp()
-        os.system('coverage run --parallel-mode --branch quality_report.py --project {0} --report {1} '
-                  '--log ERROR'.format(cls.project_folder, cls.report_folder))
+        os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
+                  '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
 
     @classmethod
     def tearDownClass(cls):
@@ -43,7 +44,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
     expected_title = 'all requirements but no sources'
-    expected_number_of_metrics = 135
+    expected_number_of_metrics = 133
 
     def report(self):
         """ Read the report and return as beautiful soup. """

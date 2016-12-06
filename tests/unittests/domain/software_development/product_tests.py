@@ -86,11 +86,11 @@ class ComponentTest(unittest.TestCase):
 
 class ApplicationTest(unittest.TestCase):
     """ Unit test for the application class. """
-    def test_default_rquirements(self):
+    def test_default_requirements(self):
         """ Test that the default requirements are correct. """
-        self.assertEqual({requirement.CodeQuality, requirement.TrackBranches, requirement.Performance,
-                          requirement.ART, requirement.ARTCoverage, requirement.OWASPZAP,
-                          requirement.OWASPDependencies},
+        self.assertEqual({requirement.CodeQuality, requirement.TrackBranches, requirement.PerformanceLoad,
+                          requirement.PerformanceEndurance, requirement.ART, requirement.ARTCoverage,
+                          requirement.OWASPZAP, requirement.OWASPDependencies},
                          domain.Application.default_requirements())
 
     def test_optional_requirements(self):

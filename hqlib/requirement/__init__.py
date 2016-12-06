@@ -19,7 +19,8 @@ from __future__ import absolute_import
 # Package for concrete requirements, not specific to a specific project.
 
 from .product_quality import TrustedProductMaintainability, OWASPDependencies, OWASPZAP, UnitTests, ART, \
-    ARTCoverage, CodeQuality, JSFCodeQuality, Performance, TrackBranches
+    ARTCoverage, CodeQuality, JSFCodeQuality, PerformanceLoad, PerformanceEndurance, PerformanceScalability,\
+    TrackBranches
 from .sonar import Java, CSharp, JavaScript, Web
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, \
     TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, TrackSecurityAndPerformanceRisks

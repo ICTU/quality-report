@@ -32,7 +32,8 @@ class QualityReport(domain.DomainObject):
     def requirement_classes(cls):
         """ Return a list of all requirement classes that the report can report on. """
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-                requirement.CodeQuality, requirement.Performance, requirement.TrackActions, requirement.TrackRisks,
+                requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
+                requirement.PerformanceScalability, requirement.TrackActions, requirement.TrackRisks,
                 requirement.TrackBugs, requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
                 requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
@@ -178,7 +179,8 @@ class QualityReport(domain.DomainObject):
         """ Return the section for the product. """
         metrics = self.__required_subject_metrics(product, requirement.UnitTests, requirement.ART,
                                                   requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-                                                  requirement.CodeQuality, requirement.Performance,
+                                                  requirement.CodeQuality, requirement.PerformanceLoad,
+                                                  requirement.PerformanceEndurance, requirement.PerformanceScalability,
                                                   requirement.OWASPDependencies, requirement.OWASPZAP)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))

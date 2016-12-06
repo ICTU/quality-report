@@ -1,3 +1,11 @@
+2016-12-06  Release 1.72.0
+
+  * Split `requirement.Performance` into separate requirements for load, endurance, and scalability:
+    `requirement.PerformanceLoad`, `requirement.PerformanceEndurance`, and `requirement.PerformanceScalability`.
+    This makes is possible to specify that an application or component only has certain types of performance tests
+    required.
+
+
 2016-12-05  Release 1.71.4
 
   * Don't remove details and repeated measurements from old measurements in the history file to make it easier to use 
