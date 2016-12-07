@@ -6,6 +6,7 @@
 [![Code Health](https://landscape.io/github/ICTU/quality-report/master/landscape.svg?style=flat)](https://landscape.io/github/ICTU/quality-report/master)
 [![BCH compliance](https://bettercodehub.com/edge/badge/ICTU/quality-report)](https://bettercodehub.com)
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
+[![Updates](https://pyup.io/repos/github/ictu/quality-report/shield.svg)](https://pyup.io/repos/github/ictu/quality-report/)
 [![](https://images.microbadger.com/badges/image/ictu/quality-report.svg)](https://microbadger.com/images/ictu/quality-report "Get your own image badge on microbadger.com")
 
 HQ - Holistic Software Quality Reporting
