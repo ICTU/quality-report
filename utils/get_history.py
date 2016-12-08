@@ -46,43 +46,44 @@ def init_logging(log_level):
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=getattr(logging, log_level.upper(), None))
 
 
-class Revisions(list):
-    """ The revisions of the history file. """
-
-    def __init__(self, url):
-        filename = 'history.json.log.xml'
-        logging.info('svn log --xml %s > %s', url, filename)
-        os.system('svn log --xml {} > {}'.format(url, filename))
-        tree = xml.etree.ElementTree.parse(filename)
-        revisions = sorted([int(log_entry.attrib['revision']) for log_entry in tree.getroot()])
-        logging.info('Read %d revisions from %s', len(revisions), filename)
-        super(Revisions, self).__init__(revisions)
-
-
-class LastRevisionProcessed(object):
-    """ Keep track of the last revision processed. """
+class LastRevisionCollected(object):
+    """ Keep track of the last revision collected. """
 
     def __init__(self):
         self.__filename = 'history.json.last_revision.txt'
 
     def get(self):
-        """ Get the last processed revision. """
+        """ Get the last collected revision. """
         if os.path.exists(self.__filename):
             logging.info('Reading last revision from %s', self.__filename)
             with open(self.__filename, mode='r') as last_revision_file:
                 return int(last_revision_file.read())
         else:
-            logging.info('No revisions processed yet')
+            logging.info('No revisions collected yet')
             return None
 
     def set(self, revision):
-        """ Set the last processed revision. """
+        """ Set the last collected revision. """
         with open(self.__filename, mode='w') as last_revision_file:
             last_revision_file.write(bytes(revision))
 
 
+class RevisionsToCollect(list):
+    """ The revisions of the history file still to collect. """
+
+    def __init__(self, url, last_revision):
+        filename = 'history.json.log.xml'
+        start_revision = last_revision.get() or 0
+        logging.info('svn log --xml -r %d:HEAD %s > %s', start_revision, url, filename)
+        os.system('svn log --xml -r {}:HEAD {} > {}'.format(start_revision, url, filename))
+        tree = xml.etree.ElementTree.parse(filename)
+        revisions = sorted([int(log_entry.attrib['revision']) for log_entry in tree.getroot()])
+        logging.info('Read %d revisions from %s', len(revisions), filename)
+        super(RevisionsToCollect, self).__init__(revisions)
+
+
 class RevisionCollector(object):
-    """ Get individual revisions of the history file from Subversion collect them in one complete history file. """
+    """ Get individual revisions of the history file from Subversion and collect them in one complete history file. """
 
     def __init__(self, url):
         self.__url = url
@@ -107,4 +108,5 @@ class RevisionCollector(object):
 if __name__ == '__main__':
     arguments = parse_args()
     init_logging(arguments.log)
-    RevisionCollector(arguments.url).collect(Revisions(arguments.url), LastRevisionProcessed())
+    last = LastRevisionCollected()
+    RevisionCollector(arguments.url).collect(RevisionsToCollect(arguments.url, last), last)
