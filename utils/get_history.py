@@ -55,11 +55,9 @@ class LastRevisionCollected(object):
     def get(self):
         """ Get the last collected revision. """
         if os.path.exists(self.__filename):
-            logging.info('Reading last revision from %s', self.__filename)
             with open(self.__filename, mode='r') as last_revision_file:
                 return int(last_revision_file.read())
         else:
-            logging.info('No revisions collected yet')
             return None
 
     def set(self, revision):
@@ -73,7 +71,7 @@ class RevisionsToCollect(list):
 
     def __init__(self, url, last_revision):
         filename = 'history.json.log.xml'
-        start_revision = last_revision.get() or 0
+        start_revision = last_revision.get() + 1 if last_revision.get() else 0
         logging.info('svn log --xml -r %d:HEAD %s > %s', start_revision, url, filename)
         os.system('svn log --xml -r {}:HEAD {} > {}'.format(start_revision, url, filename))
         tree = xml.etree.ElementTree.parse(filename)
@@ -93,10 +91,8 @@ class RevisionCollector(object):
     def collect(self, revisions):
         """ Get the revisions and append the last measurement of each revision to the full history file. """
         nr_revisions = len(revisions)
-        last_revision_processed = self.__last_revision.get()
-        start_index = revisions.index(last_revision_processed) + 1 if last_revision_processed else 0
-        for index, revision in enumerate(revisions[start_index:]):
-            logging.info('Retrieving revision %s (%s/%s)', revision, index + start_index + 1, nr_revisions)
+        for index, revision in enumerate(revisions):
+            logging.info('Retrieving revision %s (%s/%s)', revision, index + 1, nr_revisions)
             self.__get_revision(revision)
             self.__last_revision.set(revision)
 
