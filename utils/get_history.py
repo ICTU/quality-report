@@ -85,19 +85,20 @@ class RevisionsToCollect(list):
 class RevisionCollector(object):
     """ Get individual revisions of the history file from Subversion and collect them in one complete history file. """
 
-    def __init__(self, url):
+    def __init__(self, url, last_revision):
         self.__url = url
+        self.__last_revision = last_revision
         self.__filename = 'history.json'
 
-    def collect(self, revisions, last_revision):
+    def collect(self, revisions):
         """ Get the revisions and append the last measurement of each revision to the full history file. """
         nr_revisions = len(revisions)
-        last_revision_processed = last_revision.get()
+        last_revision_processed = self.__last_revision.get()
         start_index = revisions.index(last_revision_processed) + 1 if last_revision_processed else 0
         for index, revision in enumerate(revisions[start_index:]):
             logging.info('Retrieving revision %s (%s/%s)', revision, index + start_index + 1, nr_revisions)
             self.__get_revision(revision)
-            last_revision.set(revision)
+            self.__last_revision.set(revision)
 
     def __get_revision(self, revision):
         """ Get the revision and append the measurement to the full history file. """
@@ -109,4 +110,5 @@ if __name__ == '__main__':
     arguments = parse_args()
     init_logging(arguments.log)
     last = LastRevisionCollected()
-    RevisionCollector(arguments.url).collect(RevisionsToCollect(arguments.url, last), last)
+    todo = RevisionsToCollect(arguments.url, last)
+    RevisionCollector(arguments.url, last).collect(todo)
