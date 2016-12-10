@@ -18,9 +18,9 @@ limitations under the License.
 # This script assumes Subversion was used to store the history file.
 # The strategy is to get the last line of each revision and append it to the
 # complete history file. Three classes do the work:
-# - Revisions is a list of all revisions, retrieved using svn log.
 # - LastRevisionProcessed is used to get and set the last revision processed, so we can
 #   continue where we left off after a restart.
+# - RevisionsToCollect is a list of the revisions still to be collected, retrieved using svn log.
 # - RevisionCollector gets the revisions from Subversion one by one and adds the
 #   last line of each revision to the full history file.
 
