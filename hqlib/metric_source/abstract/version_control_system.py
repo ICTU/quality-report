@@ -48,7 +48,8 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return a list of tag names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
-    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore=''):
+    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
+                          list_of_branches_to_include=None):
         # pylint: disable=unused-argument
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
             unmerged revisions. Branches listed in the list of branches to ignore or that match the regular
