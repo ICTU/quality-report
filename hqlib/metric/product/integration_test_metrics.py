@@ -20,7 +20,7 @@ from ... import metric_info
 from ...domain import HigherIsBetterMetric
 
 
-class IntegrationtestMetricMixin(SonarDashboardMetricMixin):
+class IntegrationtestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=too-few-public-methods
     """ Mixin class for Sonar metrics about integration tests. """
 
     @classmethod
