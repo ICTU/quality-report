@@ -21,22 +21,26 @@ from ..domain import Requirement
 
 
 class Java(Requirement):
+    """ Require Sonar to be ready for analyzing Java code. """
     _name = 'Java'
     _metric_classes = (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
                        metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava)
 
 
 class CSharp(Requirement):
+    """ Require Sonar to be ready for analyzing C# code. """
     _name = 'C#'
     _metric_classes = (metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
                        metric.SonarQualityProfileVersionCSharp)
 
 
 class JavaScript(Requirement):
+    """ Require Sonar to be ready for analyzing JavaScript code. """
     _name = 'JavaScript'
     _metric_classes = (metric.SonarPluginVersionJS, metric.SonarQualityProfileVersionJS)
 
 
 class Web(Requirement):
+    """ Require Sonar to be ready for analyzing Web (HTML, JSF) code. """
     _name = 'Web'
     _metric_classes = (metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb)

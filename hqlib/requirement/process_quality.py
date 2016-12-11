@@ -21,6 +21,7 @@ from ..domain import Requirement
 
 
 class UserStoriesAndLTCs(Requirement):
+    """ Require user stories and logical testes to be reviewed and approved, and logical test cases to be automated. """
     _name = 'User stories and logical test cases'
     _metric_classes = (metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
                        metric.LogicalTestCasesNotReviewed, metric.LogicalTestCasesNotApproved,
@@ -29,36 +30,43 @@ class UserStoriesAndLTCs(Requirement):
 
 
 class TrackManualLTCs(Requirement):
+    """ Require the execution time of manual logical test cases to be recorded and not be too long. """
     _name = 'Track manual logical test cases'
     _metric_classes = (metric.DurationOfManualLogicalTestCases, metric.ManualLogicalTestCasesWithoutDuration)
 
 
 class TrackBugs(Requirement):
+    """ Require bug reports to be tracked. """
     _name = 'Track open bug reports'
     _metric_classes = (metric.OpenBugs, metric.OpenSecurityBugs, metric.OpenStaticSecurityAnalysisBugs)
 
 
 class TrackTechnicalDebt(Requirement):
+    """ Require technical debt to be tracked. """
     _name = 'Track technical debt'
     _metric_classes = (metric.TechnicalDebtIssues,)
 
 
 class TrackActions(Requirement):
+    """ Require actions to be tracked. """
     _name = 'Track actions'
     _metric_classes = (metric.ActionActivity, metric.ActionAge)
 
 
 class TrackRisks(Requirement):
+    """ Require risks to be tracked. """
     _name = 'Track risks'
     _metric_classes = (metric.RiskLog,)
 
 
 class TrackReadyUS(Requirement):
+    """ Require the amount of ready user stories to be tracked. """
     _name = 'Track ready user stories'
     _metric_classes = (metric.ReadyUserStoryPoints,)
 
 
 class TrackSecurityAndPerformanceRisks(Requirement):
+    """ Require user stories to have security and performance risks to be assessed. """
     _name = 'Track whether user stories have security and performance risks'
     _metric_classes = (metric.UserStoriesWithoutSecurityRiskAssessment,
                        metric.UserStoriesWithoutPerformanceRiskAssessment)

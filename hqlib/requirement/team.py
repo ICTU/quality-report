@@ -21,15 +21,18 @@ from ..domain import Requirement
 
 
 class ScrumTeam(Requirement):
+    """ The team is a Scrum team, so progress should be tracked. """
     _name = 'Scrum team'
     _metric_classes = (metric.TeamProgress,)
 
 
 class TrackSpirit(Requirement):
+    """ Track the team spirit. """
     _name = 'Track spirit'
     _metric_classes = (metric.TeamSpirit,)
 
 
 class TrackAbsence(Requirement):
+    """ Track the absence of team members. """
     _name = 'Track absence'
     _metric_classes = (metric.TeamAbsence,)

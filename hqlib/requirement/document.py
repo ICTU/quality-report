@@ -21,5 +21,6 @@ from ..domain import Requirement
 
 
 class TrackDocumentAge(Requirement):
+    """ Requirements for tracking document age. """
     _name = 'Track document age'
     _metric_classes = (metric.DocumentAge,)
