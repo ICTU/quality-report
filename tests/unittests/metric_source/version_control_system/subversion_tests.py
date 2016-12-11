@@ -94,15 +94,3 @@ class SubversionTests(unittest.TestCase):
     def test_normalize_path_adds_trunk(self):
         """ Test that the normalized path has a trunk folder at the end. """
         self.assertEqual('http://svn/trunk/', self.__svn.normalize_path('http://svn'))
-
-    def test_checkout(self):
-        """ Test the check out command. """
-        self.__svn.check_out('http://svn/trunk/', 'folder')
-        self.assertEqual(['svn', 'co', 'http://svn/trunk/', 'folder'], self.__svn.last_command)
-
-    def test_checkout_with_credentials(self):
-        """ Test the check out command with credentials. """
-        svn = SubversionUnderTest(url='http://svn/', username='john', password='doe')
-        svn.check_out('http://svn/trunk/', 'folder')
-        self.assertEqual(['svn', 'co', 'http://svn/trunk/', 'folder','--no-auth-cache',
-                          '--username', 'john', '--password', 'doe'], svn.last_command)

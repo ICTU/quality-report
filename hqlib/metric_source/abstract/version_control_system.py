@@ -36,10 +36,6 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         self._shell_command = run_shell_command
         super(VersionControlSystem, self).__init__(url=url)
 
-    def check_out(self, path, folder):
-        """ Check out the path in the folder. """
-        raise NotImplementedError  # pragma: no cover
-
     def last_changed_date(self, url):
         """ Return the date when the url was last changed. """
         raise NotImplementedError  # pragma: no cover

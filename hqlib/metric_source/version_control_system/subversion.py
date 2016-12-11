@@ -30,13 +30,6 @@ class Subversion(version_control_system.VersionControlSystem):
 
     metric_source_name = 'Subversion'
 
-    def check_out(self, svn_path, folder):
-        """ Check out the subversion path into the folder. """
-        shell_command = ['svn', 'co', svn_path, folder]
-        if self._username and self._password:
-            shell_command.extend(['--no-auth-cache', '--username', self._username, '--password', self._password])
-        self._run_shell_command(shell_command, log_level=logging.ERROR)
-
     @utils.memoized
     def tags_folder_for_version(self, trunk_url, version):
         """ Return the tags folder for the specified version. """
