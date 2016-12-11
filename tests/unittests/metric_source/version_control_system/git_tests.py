@@ -38,7 +38,7 @@ class GitTests(unittest.TestCase):
 
     def test_tags(self):
         """ Test that there are no tags by default. """
-        self.failIf(self.__git.tags('path'))
+        self.assertFalse(self.__git.tags('path'))
 
     def test_no_tags_folder_for_version(self):
         """ Test that there is no tags folder by default. """
@@ -46,7 +46,7 @@ class GitTests(unittest.TestCase):
 
     def test_branches(self):
         """ Test that there are no branches by default. """
-        self.failIf(self.__git.branches('path'))
+        self.assertFalse(self.__git.branches('path'))
 
     def test_unmerged_branches(self):
         """ Test that there are no unmerged branches by default. """

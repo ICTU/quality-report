@@ -88,7 +88,7 @@ class MetricTest(unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.Birt: ['Birt1']})
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
         # pylint: disable=protected-access
-        self.failIf(MetricUnderTest(project=project, subject=product)._metric_source_id)
+        self.assertFalse(MetricUnderTest(project=project, subject=product)._metric_source_id)
         MetricUnderTest.metric_source_classes = []
 
     def test_missing_metric_sources_status(self):

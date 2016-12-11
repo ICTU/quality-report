@@ -43,7 +43,7 @@ class SubversionTests(unittest.TestCase):
 
     def test_tags(self):
         """ Test that there are no tags by default. """
-        self.failIf(self.__svn.tags('path'))
+        self.assertFalse(self.__svn.tags('path'))
 
     def test_no_tags_folder_for_version(self):
         """ Test that there is no tags folder by default. """
@@ -51,7 +51,7 @@ class SubversionTests(unittest.TestCase):
 
     def test_branches(self):
         """ Test that there are no branches by default. """
-        self.failIf(self.__svn.branches('path'))
+        self.assertFalse(self.__svn.branches('path'))
 
     def test_unmerged_branches(self):
         """ Test that there are no unmerged branches by default. """

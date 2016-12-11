@@ -53,7 +53,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def test_report_exists(self):
         """ Test that the report exists. """
-        self.failUnless(os.path.exists('{}/index.html'.format(self.report_folder)))
+        self.assertTrue(os.path.exists('{}/index.html'.format(self.report_folder)))
 
     def test_report_title(self):
         """ Test the report title. """

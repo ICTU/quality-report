@@ -81,7 +81,7 @@ class ComponentTest(unittest.TestCase):
 
     def test_optional_requirements(self):
         """ Test that the optional requirements don't contain the default requirements. """
-        self.failIf(domain.Component.default_requirements() & domain.Component.optional_requirements())
+        self.assertFalse(domain.Component.default_requirements() & domain.Component.optional_requirements())
 
 
 class ApplicationTest(unittest.TestCase):
@@ -95,5 +95,5 @@ class ApplicationTest(unittest.TestCase):
 
     def test_optional_requirements(self):
         """ Test that the optional requirements don't contain the default requirements. """
-        self.failIf(domain.Application.default_requirements() & domain.Application.optional_requirements())
+        self.assertFalse(domain.Application.default_requirements() & domain.Application.optional_requirements())
 

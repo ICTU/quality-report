@@ -107,5 +107,5 @@ class TeamAbsenceTest(unittest.TestCase):
         """ Test that the parameters are correct when the holiday planner hasn't been configured. """
         project = domain.Project()
         parameters = metric.TeamAbsence(self.__team, project=project)._parameters()
-        self.failUnless('team' in parameters)
-        self.failIf('absentees' in parameters)
+        self.assertTrue('team' in parameters)
+        self.assertFalse('absentees' in parameters)

@@ -27,6 +27,7 @@ class FakeUrlOpener(object):
     contents = u'{}'
 
     def url_open(self, url):
+        """ Fake opening the url or raise an exception. """
         if 'raise' in url:
             raise urllib2.HTTPError(None, None, None, None, None)
         else:

@@ -166,7 +166,7 @@ class FailingRegressionTestsTest(unittest.TestCase):
     def test_value_when_missing(self):
         """ Test that the value is negative when the test report is missing. """
         self.__jenkins.passed = -1
-        self.failUnless(self.__metric.value() < 0)
+        self.assertTrue(self.__metric.value() < 0)
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
@@ -207,7 +207,7 @@ class RegressionTestAgeTest(unittest.TestCase):
     def test_value_when_missing(self):
         """ Test that the value is negative when the test report is missing. """
         self.__jenkins.passed = -1
-        self.failUnless(self.__metric.value() < 0)
+        self.assertTrue(self.__metric.value() < 0)
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
