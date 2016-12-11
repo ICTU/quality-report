@@ -97,12 +97,6 @@ class FakeSubject(object):
         """ Return the Birt id of the subject. """
         return 'birt id' if self.__birt_id else ''
 
-    @staticmethod
-    def required_metric_classes():
-        """ Return the required metric classes for this subject. """
-        return [metric.LogicalTestCasesNotAutomated, metric.LogicalTestCasesNotReviewed,
-                metric.LogicalTestCasesNotApproved, metric.NumberOfManualLogicalTestCases]
-
 
 class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
     """ Unit tests for the logical test cases to be automated metric. """
