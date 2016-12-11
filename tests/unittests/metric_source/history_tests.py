@@ -95,6 +95,10 @@ class HistoryTest(unittest.TestCase):
         self.__history = History('fake file', file_=FakeFile, recent_history=3)
         FakeFile.written_content = []
 
+    def test_filename(self):
+        """ Test getting the filename. """
+        self.assertEqual('fake file', self.__history.filename())
+
     def test_recent_history(self):
         """ Test the recent history of a specific metric. """
         FakeFile.initial_content = HISTORY

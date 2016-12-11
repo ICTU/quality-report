@@ -26,11 +26,15 @@ class History(domain.MetricSource):
     """ Class representing the history file. """
     metric_source_name = 'Measurement history file'
 
-    def __init__(self, history_filename, recent_history=250, file_=file):
+    def __init__(self, history_filename, recent_history=250, file_=None):
         self.__history_filename = history_filename
         self.__recent_history = recent_history
-        self.__file = file_
+        self.__file = file_ if file_ else open
         super(History, self).__init__(url=history_filename)
+
+    def filename(self):
+        """ Return the history filename """
+        return self.__history_filename
 
     def recent_history(self, *metric_ids):
         """ Retrieve the recent history for the metric_ids. """

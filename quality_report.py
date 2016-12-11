@@ -33,7 +33,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     """ Class for creating the quality report for a specific project. """
 
     PROJECT_DEFINITION_FILENAME = 'project_definition.py'
-    HISTORY_FILENAME = 'history.json'
     EMPTY_HISTORY_PNG = "\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00" \
                         "\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 " \
                         "IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00" \
@@ -41,7 +40,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     def __init__(self, project_folder):
         self.__project = self.__import_project(project_folder, self.PROJECT_DEFINITION_FILENAME)
-        self.__history_filename = os.path.join(project_folder, self.HISTORY_FILENAME)
 
     @staticmethod
     def __import_project(project_folder, project_definition_filename):
@@ -59,7 +57,8 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """
         quality_report = report.QualityReport(self.__project)
-        self.__format_and_write_report(quality_report, formatting.JSONFormatter, self.__history_filename, 'a', 'ascii',
+        history_filename = self.__project.metric_source(metric_source.History).filename()
+        self.__format_and_write_report(quality_report, formatting.JSONFormatter, history_filename, 'a', 'ascii',
                                        sonar=self.__project.metric_source(metric_source.Sonar))
         self.__create_report(quality_report, report_folder)
 
