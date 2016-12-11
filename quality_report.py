@@ -114,7 +114,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             try:
                 image = urllib2.urlopen(url).read()
             except metric_source.UrlOpener.url_open_exceptions as reason:
-                logging.warn("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
+                logging.warning("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
                 image = cls.EMPTY_HISTORY_PNG
             filename = os.path.join(report_dir, 'img', '%s.png' % metric.id_string())
             filesystem.write_file(image, filename, mode='wb', encoding=None)
@@ -133,7 +133,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         try:
             latest_version = max(client.package_releases('quality_report'))
         except (socket.gaierror, xmlrpclib.ProtocolError) as reason:
-            logging.warn("Can't create connection to %s: %s", python_package_index_url, reason)
+            logging.warning("Can't create connection to %s: %s", python_package_index_url, reason)
             return '0'
 
         logging.info('Latest HQ release is %s', latest_version)

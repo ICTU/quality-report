@@ -44,7 +44,7 @@ class ZAPScanReport(domain.MetricSource):
             try:
                 nr_alerts += self.__parse_alerts(soup, risk_level)
             except IndexError as reason:
-                logging.warn("Couldn't parse alerts with %s risk level from %s: %s", risk_level, url, reason)
+                logging.warning("Couldn't parse alerts with %s risk level from %s: %s", risk_level, url, reason)
                 return -1
         return nr_alerts
 

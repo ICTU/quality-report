@@ -64,10 +64,10 @@ class JunitTestReport(test_report.TestReport):
             if date_times:
                 return min(date_times)
             else:
-                logging.warn("Couldn't find timestamps in test suites in: %s", report_url)
+                logging.warning("Couldn't find timestamps in test suites in: %s", report_url)
                 return datetime.datetime.min
         else:
-            logging.warn("Couldn't find test suites in: %s", report_url)
+            logging.warning("Couldn't find test suites in: %s", report_url)
             return datetime.datetime.min
 
     @utils.memoized
@@ -80,7 +80,7 @@ class JunitTestReport(test_report.TestReport):
         if test_suites:
             return sum(int(test_suite.get(result_type, 0)) for test_suite in test_suites)
         else:
-            logging.warn("Couldn't find test suites in: %s", report_url)
+            logging.warning("Couldn't find test suites in: %s", report_url)
             return -1
 
     def __failure_count(self, report_url):

@@ -154,7 +154,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         try:
             build_time = datetime.datetime.utcfromtimestamp(float(timestamp)/1000)
         except ValueError:
-            logging.warn("Couldn't convert timestamp %s from %s to datetime.", timestamp, builds_url)
+            logging.warning("Couldn't convert timestamp %s from %s to datetime.", timestamp, builds_url)
             return UnknownAge()
         return datetime.datetime.utcnow() - build_time
 

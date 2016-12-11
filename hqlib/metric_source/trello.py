@@ -52,7 +52,7 @@ class TrelloObject(domain.MetricSource):
         try:
             json_string = self.__urlopen(url).read()
         except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.warn("Couldn't open %s: %s", url, reason)
+            logging.warning("Couldn't open %s: %s", url, reason)
             raise
         return utils.eval_json(json_string)
 

@@ -277,7 +277,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         try:
             soup = self.soup(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.warn("Could not open manual test dates report at %s: %s", url, reason)
+            logging.warning("Could not open manual test dates report at %s: %s", url, reason)
             return -1
         inner_table = soup('table', {'id': '__bookmark_1'})[0]
         rows = inner_table('tr')[1:]  # Skip header row
@@ -304,10 +304,10 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             try:
                 self.__test_design_report = self.soup(self.__test_design_url)
             except url_opener.UrlOpener.url_open_exceptions as reason:
-                logging.warn("Could not open %s: %s", self.__test_design_url, reason)
+                logging.warning("Could not open %s: %s", self.__test_design_url, reason)
                 return -1
         try:
             return int(self.__test_design_report('div', {'class': 'style_4'})[row_nr].string.replace(',', ''))
         except (ValueError, IndexError) as reason:
-            logging.warn("Could not obtain row %s from Birt report %s: %s", row_nr, self.__test_design_url, reason)
+            logging.warning("Could not obtain row %s from Birt report %s: %s", row_nr, self.__test_design_url, reason)
             return -1

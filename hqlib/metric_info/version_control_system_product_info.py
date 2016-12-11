@@ -72,6 +72,6 @@ class VersionControlSystemProductInfo(object):
             try:
                 return [repo for repo in vcs if product.metric_source_id(repo)][0]
             except IndexError:
-                logging.warn('There is no VCS configured for %s',
-                             product.name() if hasattr(product, 'name') else product)
+                logging.warning('There is no VCS configured for %s',
+                                product.name() if hasattr(product, 'name') else product)
         return domain.MissingMetricSource()

@@ -42,7 +42,7 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         try:
             report_dict = self._api(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.warn("Couldn't open %s to read warning count %s: %s", url, priority, reason)
+            logging.warning("Couldn't open %s to read warning count %s: %s", url, priority, reason)
             return -1
         return int(report_dict['numberOf{}PriorityWarnings'.format(priority.capitalize())])
 

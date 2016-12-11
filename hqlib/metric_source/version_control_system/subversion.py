@@ -48,7 +48,7 @@ class Subversion(version_control_system.VersionControlSystem):
         if version in folders:
             return tags_folder + folders[version] + '/' + trunk_url.split('/trunk/')[1]
         else:
-            logging.warn('No tag folder for %s version %s in %s', trunk_url, version, tags_folder)
+            logging.warning('No tag folder for %s version %s in %s', trunk_url, version, tags_folder)
             return ''
 
     @classmethod

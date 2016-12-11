@@ -61,8 +61,8 @@ class JenkinsTestReport(test_report.TestReport):
         try:
             report_dict = eval(contents)
         except (SyntaxError, NameError, TypeError) as reason:
-            logging.warn("Couldn't eval %s to read test count %s: %s\nData received: %s",
-                         url, result_type, reason, contents)
+            logging.warning("Couldn't eval %s to read test count %s: %s\nData received: %s",
+                            url, result_type, reason, contents)
             return -1
         return int(report_dict[result_type])
 
@@ -79,6 +79,6 @@ class JenkinsTestReport(test_report.TestReport):
         try:
             report_dict = eval(contents)
         except (SyntaxError, NameError, TypeError) as reason:
-            logging.warn("Couldn't eval %s to read date and time: %s\nData received: %s", url, reason, contents)
+            logging.warning("Couldn't eval %s to read date and time: %s\nData received: %s", url, reason, contents)
             return datetime.datetime.min
         return datetime.datetime.fromtimestamp(float(report_dict["timestamp"])/1000.)

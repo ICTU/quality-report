@@ -38,7 +38,7 @@ class Git(VersionControlSystem):
 
     def check_out(self, path, folder):
         """ Check out the path into the folder. """
-        logging.warn("Can't check out %s in %s; not implemented yet.", path, folder)
+        logging.warning("Can't check out %s in %s; not implemented yet.", path, folder)
 
     @utils.memoized
     def last_changed_date(self, path):
