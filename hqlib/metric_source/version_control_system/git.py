@@ -36,10 +36,6 @@ class Git(VersionControlSystem):
         self.__repo_folder = None
         self.__get_repo()
 
-    def check_out(self, path, folder):
-        """ Check out the path into the folder. """
-        logging.warning("Can't check out %s in %s; not implemented yet.", path, folder)
-
     @utils.memoized
     def last_changed_date(self, path):
         """ Return the date when the url was last changed in Git. """

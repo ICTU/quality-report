@@ -59,8 +59,3 @@ class GitTests(unittest.TestCase):
     def test_normalize_path_does_not_add_trailing_slash(self):
         """ Test that the normalized path has a trailing slash. """
         self.assertEqual('http://git/master', self.__git.normalize_path('http://git/master'))
-
-    def test_checkout(self):
-        """ Test the check out command. """
-        self.__git.check_out('http://git/master/', 'folder')
-        self.assertEqual(['git', 'clone', 'http://git/'], self.__git.last_command[:3])
