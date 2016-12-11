@@ -57,6 +57,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         return self.__metric_sources.keys()
 
     def domain_object_classes(self):
+        """ Return a set of all the domain object classes used. """
         return {domain_object.__class__ for domain_object in self.products() + self.teams() + self.documents()}
 
     def add_product(self, product):
