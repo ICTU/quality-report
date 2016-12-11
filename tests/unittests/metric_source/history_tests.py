@@ -40,11 +40,6 @@ class FakeFile(object):
         pass
 
     @classmethod
-    def write(cls, contents):
-        """ Keep the contents written to the file. """
-        cls.written_content.append(contents)
-
-    @classmethod
     def readlines(cls):
         """ Return the fake contents of the file. """
         return cls.initial_content
