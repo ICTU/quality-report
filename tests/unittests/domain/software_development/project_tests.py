@@ -31,11 +31,6 @@ class FakeProduct(object):
         """ Return the short name of the product. """
         return 'FP'
 
-    @staticmethod
-    def dependencies(recursive=False):  # pylint: disable=unused-argument
-        """ Return a set of dependent products. """
-        return {FakeProduct()}
-
 
 class ProjectTest(unittest.TestCase):
     """ Test case for the Project domain class. """
