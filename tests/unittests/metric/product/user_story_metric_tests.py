@@ -67,12 +67,6 @@ class FakeSubject(object):
         """ Return the metric source id of the subject for the metric source. """
         return 'birt id' if self.__birt_id else ''
 
-    @staticmethod
-    def required_metric_classes():
-        """ Return a list of reuired metric classes. """
-        return [metric.UserStoriesNotReviewed, metric.UserStoriesNotApproved,
-                metric.UserStoriesWithTooFewLogicalTestCases]
-
 
 class UserStoriesNotReviewedTest(unittest.TestCase):
     """ Unit tests for the user stories that are not reviewed. """
