@@ -32,15 +32,6 @@ class Section(object):
         """ Return the metrics in this section. """
         return self.__metrics
 
-    def product(self):
-        """ Return product of this section. """
-        return self.__product
-
-    @staticmethod
-    def contains_trunk_product():
-        """ Return whether the product of the section is a trunk version. """
-        return True
-
     @staticmethod
     def has_history():
         """ Return whether this section has history. """
@@ -55,11 +46,6 @@ class Section(object):
                 {'GreenMetaMetric': '94',
                  'date': '2012-04-05 17:16:58',
                  'RedMetaMetric': '1', 'metric_id': '0'}]
-
-    @staticmethod
-    def color():
-        """ Return an arbitrary color. """
-        return 'green'
 
     @staticmethod
     def title():
@@ -132,11 +118,6 @@ class Report(object):
     def products(self):
         """ Return the products in the report. """
         return self.__products
-
-    @staticmethod
-    def get_product(name, version):  # pylint: disable=unused-argument
-        """ Return a fake product. """
-        return fake_domain.Product()
 
     def get_section(self, section_id):  # pylint: disable=unused-argument
         """ Return a fake section. """

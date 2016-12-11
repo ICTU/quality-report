@@ -29,29 +29,6 @@ class Product(object):
         """ Return the Sonar id of the product. """
         return 'Product'
 
-    @staticmethod
-    def name():
-        """ Return the name of the product. """
-        return 'Fake Product'
-
-    @staticmethod
-    def short_name():
-        """ Return the short version of the name of the product. """
-        return 'FP'
-
-    def product_label(self):
-        """ Return the label of the product. """
-        return self.name() + ':' + 'trunk'
-
-    def dependencies(self, recursive=False):  # pylint: disable=unused-argument
-        """ Return a list of dependencies of the product. """
-        return [('Fake Dependency', 1)] if self.__dependencies else []
-
-    @staticmethod
-    def users(recursive=False):  # pylint: disable=unused-argument
-        """ Return a list of users of the product. """
-        return []
-
 
 class Metric(object):
     """ Fake a metric class. """
