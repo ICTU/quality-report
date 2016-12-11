@@ -30,16 +30,6 @@ class FakeVersionControlSystem(object):
         self.__latest_release = latest_release
         self.__last_changed_date = last_changed_date
 
-    def latest_tagged_product_version(self, svn_path):
-        # pylint: disable=unused-argument
-        """ Return the latest tagged product version from Subversion. """
-        return self.__latest_release
-
-    @staticmethod
-    def branch_folder_for_branch(trunk, branch):
-        """ Return the branch folder for the branch. """
-        return metric_source.Subversion.branch_folder_for_branch(trunk, branch)
-
     def last_changed_date(self, svn_path):  # pylint: disable=unused-argument
         """ Return the date the path was last changed in Subversion. """
         return self.__last_changed_date
