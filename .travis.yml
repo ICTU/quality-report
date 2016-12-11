@@ -4,10 +4,12 @@ language: java
 install:
 - pip install -r requirements.txt
 - pip install codeclimate-test-reporter
+- pip install codacy-coverage
 script:
 - coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"
 - coverage xml
 - CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter
+- python-codacy-coverage -r coverage.xml
 - coverage run --parallel-mode --branch tests/run_integrationtests.py discover -s tests/integrationtests -p "*_tests.py"
 - coverage combine .
 - coverage xml -o it-coverage.xml
