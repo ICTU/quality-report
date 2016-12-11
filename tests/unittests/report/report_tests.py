@@ -175,15 +175,12 @@ class QualityReportMetricsTest(unittest.TestCase):
     """ Unit tests for the quality report class that test whether the right metrics are added. """
 
     def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, product_kwargs=None,
-                        number_of_teams=1, include=True):
+                        number_of_teams=1):
         """ Check that the metric class is included in the report. """
         quality_report = ReportFactory.report(project_kwargs or dict(), team_kwargs or dict(),
                                               product_kwargs or dict(), number_of_teams)
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
-        if include:
-            self.assertTrue(included, '{} should be included in the report but was not.'.format(metric_class))
-        else:
-            self.assertFalse(included, '{} should not be included in the report but was.'.format(metric_class))
+        self.assertTrue(included, '{} should be included in the report but was not.'.format(metric_class))
 
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
