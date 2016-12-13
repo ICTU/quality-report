@@ -3,7 +3,6 @@
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=nl.ictu:quality_report)](https://sonarqube.com/dashboard/index/nl.ictu:quality_report)
 [![Test Coverage](https://codeclimate.com/github/ICTU/quality-report/badges/coverage.svg)](https://codeclimate.com/github/ICTU/quality-report/coverage)
 [![Code Climate](https://codeclimate.com/github/ICTU/quality-report/badges/gpa.svg)](https://codeclimate.com/github/ICTU/quality-report)
-[![Code Health](https://landscape.io/github/ICTU/quality-report/master/landscape.svg?style=flat)](https://landscape.io/github/ICTU/quality-report/master)
 [![BCH compliance](https://bettercodehub.com/edge/badge/ICTU/quality-report)](https://bettercodehub.com)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/90b2d74043284cdda06aecc442182946)](https://www.codacy.com/app/frank_10/quality-report?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ICTU/quality-report&amp;utm_campaign=Badge_Grade)
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
