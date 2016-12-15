@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
+import bs4
 
 from hqlib.metric_source import JMeterPerformanceLoadTestReport
 
@@ -121,9 +122,9 @@ class JMeterUnderTest(JMeterPerformanceLoadTestReport):
         """ Return the static HTML. """
         return HTML
 
-    def urls(self, product):
-        """ Return a list of urls for the performance report. """
-        return ['http://report/1'] if product != 'product' else []
+    def soup(self, url):
+        return bs4.BeautifulSoup('<li><a>1.html</a></li>', "html.parser") if url == self.url() \
+            else super(JMeterUnderTest, self).soup(url)
 
 
 class JMeterTest(unittest.TestCase):
@@ -159,8 +160,8 @@ class JMeterTest(unittest.TestCase):
 
     def test_date_product_not_found(self):
         """ Test the date when the product/version is not in the report. """
-        self.assertEqual(datetime.datetime.min, self.__performance_report.date('product'))
+        self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30), self.__performance_report.date('product'))
 
     def test_urls(self):
         """ Test the urls. """
-        self.assertEqual(['http://report/1'], self.__performance_report.urls(('01', 'lrk-pp')))
+        self.assertEqual({u'http://report/1.html'}, self.__performance_report.urls(('01', 'lrk-pp')))
