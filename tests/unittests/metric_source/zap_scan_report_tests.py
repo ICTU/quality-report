@@ -27,20 +27,24 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 <table width="45%" border="0">
 <tr bgcolor="#666666">
 <td width="45%" height="24"><strong><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif">Risk
-      Level</font></strong></td><td width="55%" align="center"><strong><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif">Number
-      of Alerts</font></strong></td>
+      Level</font></strong></td><td width="55%" align="center"><strong><font color="#FFFFFF" size="2"
+      face="Arial, Helvetica, sans-serif">Number of Alerts</font></strong></td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#high">High</a></font></td><td align="center"><font size="2" face="Arial, Helvetica, sans-serif">0</font></td>
+<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#high">High</a></font></td>
+<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">0</font></td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#medium">Medium</a></font></td><td align="center"><font size="2" face="Arial, Helvetica, sans-serif">1</font></td>
+<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#medium">Medium</a></font></td>
+<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">1</font></td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#low">Low</a></font></td><td align="center"><font size="2" face="Arial, Helvetica, sans-serif">4</font></td>
+<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#low">Low</a></font></td>
+<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">4</font></td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#info">Informational</a></font></td><td align="center"><font size="2" face="Arial, Helvetica, sans-serif">2</font></td>
+<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#info">Informational</a></font></td>
+<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">2</font></td>
 </tr>
 </table>
 </body>
@@ -86,4 +90,3 @@ class ZAPScanReportTest(unittest.TestCase):
         """ Test that a missing table can be handled. """
         self.__opener.html = '<html></html>'
         self.assertEqual(-1, self.__report.alerts('high', 'url'))
-
