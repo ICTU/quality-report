@@ -53,6 +53,9 @@ class TeamSpirit(Metric):
         # If not, check whether the spirit is too low.
         return True if super(TeamSpirit, self)._needs_immediate_action() else self.value() == self.low_target()
 
+    def _is_value_better_than(self, target):
+        return self.numerical_value() > self.numerical_value_map.get(target, -1)
+
     def _is_below_target(self):
         # First check whether the metric needs action because it was measured too long ago.
         # If not, check whether the spirit is low.

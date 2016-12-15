@@ -92,3 +92,9 @@ class TeamSpiritTest(unittest.TestCase):
             'De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood. Als de meting '
             'ouder is dan 21 dagen dagen is de status geel, ouder dan 42 dagen dagen is rood.',
             self.__metric.norm())
+
+    def test_is_value_better_than(self):
+        """ Test that comparison works. """
+        self.assertFalse(self.__metric._is_value_better_than(':-)'))
+        self.assertTrue(self.__metric._is_value_better_than(':-|'))
+        self.assertTrue(self.__metric._is_value_better_than(':-('))
