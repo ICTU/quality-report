@@ -1,3 +1,8 @@
+2016-12-15  Release 1.72.1
+
+  * Bug fix: The JSF code quality requirement was missing from the help menu.
+  
+  
 2016-12-06  Release 1.72.0
 
   * Split `requirement.Performance` into separate requirements for load, endurance, and scalability:

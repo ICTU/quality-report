@@ -32,10 +32,10 @@ class QualityReport(domain.DomainObject):
     def requirement_classes(cls):
         """ Return a list of all requirement classes that the report can report on. """
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-                requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
-                requirement.PerformanceScalability, requirement.TrackActions, requirement.TrackRisks,
-                requirement.TrackBugs, requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
-                requirement.TrackSecurityAndPerformanceRisks,
+                requirement.CodeQuality, requirement.JSFCodeQuality, requirement.PerformanceLoad,
+                requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
+                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackTechnicalDebt,
+                requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence,
