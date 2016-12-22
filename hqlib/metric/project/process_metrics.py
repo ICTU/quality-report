@@ -39,39 +39,37 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
         return [self._metric_source.user_stories_ready_url()]
 
 
-class UserStoriesWithoutSecurityRiskAssessment(LowerIsBetterMetric):
-    """ Metric for measuring the number of user stories without security risk assessment. """
-
-    name = 'Hoeveelheid user stories zonder security risk beoordeling'
-    unit = 'user stories zonder security risk beoordeling'
+class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
+    """ Metric for measuring the number of user stories without the proper assessment. """
     norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3
     metric_source_classes = (metric_source.Jira,)
+    nr_user_stories_without_risk_assessment = 'subclass responsibility'
 
     def value(self):
-        nr_stories = self._metric_source.nr_user_stories_without_security_risk_assessment()
+        nr_stories = getattr(self._metric_source, self.nr_user_stories_without_risk_assessment)()
         return -1 if nr_stories in (-1, None) else nr_stories
+
+
+class UserStoriesWithoutSecurityRiskAssessment(UserStoriesWithoutAssessmentMetric):
+    """ Metric for measuring the number of user stories without security risk assessment. """
+
+    name = 'Hoeveelheid user stories zonder security risk beoordeling'
+    unit = 'user stories zonder security risk beoordeling'
+    nr_user_stories_without_risk_assessment = 'nr_user_stories_without_security_risk_assessment'
 
     def _metric_source_urls(self):
         return [self._metric_source.user_stories_without_security_risk_assessment_url()]
 
 
-class UserStoriesWithoutPerformanceRiskAssessment(LowerIsBetterMetric):
+class UserStoriesWithoutPerformanceRiskAssessment(UserStoriesWithoutAssessmentMetric):
     """ Metric for measuring the number of user stories without performance risk assessment. """
 
     name = 'Hoeveelheid user stories zonder performance risk beoordeling'
     unit = 'user stories zonder performance risk beoordeling'
-    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
-    target_value = 1
-    low_target_value = 3
-    metric_source_classes = (metric_source.Jira,)
-
-    def value(self):
-        nr_stories = self._metric_source.nr_user_stories_without_performance_risk_assessment()
-        return -1 if nr_stories in (-1, None) else nr_stories
+    nr_user_stories_without_risk_assessment = 'nr_user_stories_without_performance_risk_assessment'
 
     def _metric_source_urls(self):
         return [self._metric_source.user_stories_without_performance_risk_assessment_url()]

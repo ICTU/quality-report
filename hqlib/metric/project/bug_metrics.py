@@ -29,9 +29,10 @@ class OpenBugs(LowerIsBetterMetric):
     target_value = 50
     low_target_value = 100
     metric_source_classes = (metric_source.Jira,)
+    nr_open_bugs = 'nr_open_bugs'
 
     def value(self):
-        nr_open_bugs = self._metric_source.nr_open_bugs()
+        nr_open_bugs = getattr(self._metric_source, self.nr_open_bugs)()
         return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
 
     def _metric_source_urls(self):
@@ -45,10 +46,7 @@ class OpenSecurityBugs(OpenBugs):
     unit = 'open beveiligingsbugreports'
     target_value = 0
     low_target_value = 3
-
-    def value(self):
-        nr_open_security_bugs = self._metric_source.nr_open_security_bugs()
-        return -1 if nr_open_security_bugs in (-1, None) else nr_open_security_bugs
+    nr_open_bugs = 'nr_open_security_bugs'
 
     def _metric_source_urls(self):
         return [self._metric_source.nr_open_security_bugs_url()]
@@ -59,10 +57,7 @@ class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
 
     name = 'Hoeveelheid open beveiligingsbugreports uit statische security analyse'
     unit = 'open beveiligingsbugreports uit statische security analyse'
-
-    def value(self):
-        nr_open_static_security_analysis_bugs = self._metric_source.nr_open_static_security_analysis_bugs()
-        return -1 if nr_open_static_security_analysis_bugs in (-1, None) else nr_open_static_security_analysis_bugs
+    nr_open_bugs = 'nr_open_static_security_analysis_bugs'
 
     def _metric_source_urls(self):
         return [self._metric_source.nr_open_static_security_analysis_bugs_url()]
