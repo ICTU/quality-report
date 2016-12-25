@@ -45,7 +45,8 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
             else -1
 
     def _metric_source_urls(self):
-        return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id else []
+        return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \
+            else []
 
     def _parameters(self):
         parameters = super(PerformanceMetric, self)._parameters()
@@ -148,4 +149,3 @@ class PerformanceScalabilityTestErrors(PerformanceScalabilityTestMetric):
 
     def _violating_queries(self):
         return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
-

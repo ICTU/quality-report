@@ -22,7 +22,13 @@ from hqlib import metric, domain, metric_source
 class SonarMetricMixinUnderTest(metric.metric_source_mixin.SonarMetricMixin, domain.Metric):
     """ Create a testable class by mixing the mixin class with a metric class. """
     # pylint: disable=too-few-public-methods
-    pass
+    def value(self):
+        """ Return a dummy value. """
+        return 0
+
+    def _is_value_better_than(self, target):
+        """ Return a dummy value. """
+        return True
 
 
 class SonarMetricMixinTest(unittest.TestCase):
@@ -52,7 +58,13 @@ class SonarMetricMixinTest(unittest.TestCase):
 class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMetricMixin, domain.Metric):
     """ Create a testable class by mixing the mixin class with a metric class. """
     # pylint: disable=too-few-public-methods
-    pass
+    def value(self):
+        """ Return a dummy value. """
+        return 0
+
+    def _is_value_better_than(self, target):
+        """ Return a dummy value. """
+        return True
 
 
 class FakeBirt(object):

@@ -28,6 +28,10 @@ class DummyMetric(domain.Metric):
         """ Return a dummy value. """
         return 0
 
+    def _is_value_better_than(self, target):
+        """ Return a dummy value. """
+        return True
+
 
 class MetaMetricUnderTest(domain.MetaMetricMixin, domain.HigherPercentageIsBetterMetric):
     # pylint: disable=too-few-public-methods

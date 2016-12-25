@@ -18,10 +18,11 @@ limitations under the License.
 
 import StringIO
 import logging
-import unittest
-import xmlrunner
 import os
 import sys
+import unittest
+
+import xmlrunner
 
 
 if __name__ == '__main__':  # pragma: no branch

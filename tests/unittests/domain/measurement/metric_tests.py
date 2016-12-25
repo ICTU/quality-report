@@ -38,6 +38,10 @@ class MetricUnderTest(domain.Metric):
     def _date(self):
         return self.date if self.date else super(MetricUnderTest, self)._date()
 
+    def _is_value_better_than(self, target):
+        """ Return a dummy value. """
+        return True
+
 
 class MetricTest(unittest.TestCase):
     """ Test case for the Metric domain class. """

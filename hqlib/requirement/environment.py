@@ -40,4 +40,3 @@ class OpenVAS(Requirement):
     """ Use OpenVAS to check for security vulnerabilities. """
     _name = 'Open VAS'
     _metric_classes = (metric.HighRiskOpenVASScanAlertsMetric, metric.MediumRiskOpenVASScanAlertsMetric)
-
