@@ -70,7 +70,7 @@ function create_dashboard(metrics_data, history_data) {
 
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
     google.visualization.events.addListener(tables.all, 'sort', save_sort_order);
-    for (var index in sections) {
+    for (var index = 0; index < sections.length; index++) {
         var section = sections[index];
         tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
@@ -152,11 +152,9 @@ function color_metrics(color_green, color_yellow, color_red, color_grey, color_m
     var numberOfColumns = window.metrics.getNumberOfColumns();
     var statusToColor = {'perfect': color_green, 'green': color_green, 'yellow': color_yellow, 'red': color_red,
                          'grey': color_grey, 'missing': color_missing, 'missing_source': color_missing};
-    for (var row_index = 0; row_index < window.metrics.getNumberOfRows();
-         row_index++) {
+    for (var row_index = 0; row_index < window.metrics.getNumberOfRows(); row_index++) {
         var bg_color = statusToColor[window.metrics.getValue(row_index, METRICS_COLUMN_STATUS_TEXT)];
-        for (var column_index = 0; column_index < numberOfColumns;
-             column_index++) {
+        for (var column_index = 0; column_index < numberOfColumns; column_index++) {
             var style = 'background-color: ' + bg_color;
             if (column_index === METRICS_COLUMN_TREND || column_index === METRICS_COLUMN_STATUS_ICON) {
                 style += '; text-align: center';
@@ -169,7 +167,9 @@ function color_metrics(color_green, color_yellow, color_red, color_grey, color_m
 function draw_tables(tables) {
     // Draw or hide the tables in each of the sections.
     for (var section in tables) {
-        draw_table(tables[section], section);
+        if (tables.hasOwnProperty(section)) {
+            draw_table(tables[section], section);
+        }
     }
 }
 
