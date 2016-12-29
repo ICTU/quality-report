@@ -15,8 +15,6 @@ limitations under the License.
 """
 
 import datetime
-import io
-import logging
 import unittest
 
 from hqlib import utils
