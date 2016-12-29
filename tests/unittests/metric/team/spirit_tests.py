@@ -90,6 +90,14 @@ class TeamSpiritTest(unittest.TestCase):
 
     def test_is_value_better_than(self):
         """ Test that comparison works. """
-        self.assertFalse(self.__metric._is_value_better_than(':-)'))
-        self.assertTrue(self.__metric._is_value_better_than(':-|'))
-        self.assertTrue(self.__metric._is_value_better_than(':-('))
+
+        class TeamSpiritUnderTest(metric.TeamSpirit):
+            """ Subclass the metric class to provide access to the protected method we want to test. """
+            def is_value_better_than(self, *args, **kwargs):
+                """ Provide access to the protected method in a way that code quality checkers won't complain. """
+                return self._is_value_better_than(*args, **kwargs)
+
+        spirit = TeamSpiritUnderTest(subject=self.__team, project=self.__project)
+        self.assertFalse(spirit.is_value_better_than(':-)'))
+        self.assertTrue(spirit.is_value_better_than(':-|'))
+        self.assertTrue(spirit.is_value_better_than(':-('))
