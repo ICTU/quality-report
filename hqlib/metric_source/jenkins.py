@@ -58,31 +58,22 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def failing_jobs_url(self):
         """ Return the urls for the failing Jenkins jobs. """
-        urls = {}
         try:
-            failing_jobs = self.__failing_jobs()
+            return self.__job_urls(self.__failing_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return None
-        for failing_job in failing_jobs:
-            failing_job_description = failing_job['name']
-            age = self.__age_of_last_stable_build(failing_job)
-            failing_job_description += ' ({days} dagen)'.format(days=age.days)
-            urls[failing_job_description] = failing_job['url']
-        return urls
 
     def unused_jobs_url(self):
         """ Return the urls for the unused Jenkins jobs. """
-        urls = {}
         try:
-            unused_jobs = self.__unused_jobs()
+            return self.__job_urls(self.__unused_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return None
-        for unused_job in unused_jobs:
-            unused_job_description = unused_job['name']
-            age = self.__age_of_last_stable_build(unused_job)
-            unused_job_description += ' ({days} dagen)'.format(days=age.days)
-            urls[unused_job_description] = unused_job['url']
-        return urls
+
+    def __job_urls(self, jobs):
+        """ Return the urls for the Jenkins jobs. """
+        return {'{0} ({1} dagen)'.format(job['name'], self.__age_of_last_stable_build(job).days): job['url']
+                for job in jobs}
 
     @utils.memoized
     def __failing_jobs(self):
