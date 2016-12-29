@@ -152,11 +152,6 @@ def format_date(date_time, year=None):
     return formatted_date
 
 
-def format_month(date):
-    """ Return a (Dutch) formatted version of the month and year. """
-    return '{month} {year}'.format(month=MONTHS[date.month], year=date.year)
-
-
 def format_timedelta(timedelta):
     """ Return a (Dutch) formatted version of the timedelta. """
 
