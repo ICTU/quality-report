@@ -60,7 +60,6 @@ class QualityReport(domain.DomainObject):
         # Use None as name to keep the history consistent of metrics that have the report as subject:
         super(QualityReport, self).__init__(name='None')
         self.__project = project
-        self.__title = 'Kwaliteitsrapportage {org}/{proj}'.format(org=project.organization(), proj=project.name())
         self.__products = sorted(project.products(), key=lambda product: (product.name(), product.short_name()))
         self.__teams = sorted(project.teams(), key=str)
         self.__sections = []
@@ -69,11 +68,11 @@ class QualityReport(domain.DomainObject):
         self.__requirements = set()
 
     def __str__(self):
-        return self.__title
+        return self.title()
 
     def title(self):
         """ Return the title of the quality report. """
-        return self.__title
+        return 'Kwaliteitsrapportage {org}/{proj}'.format(org=self.__project.organization(), proj=self.__project.name())
 
     def project(self):
         """ Return the project this report is about. """
