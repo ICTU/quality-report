@@ -22,6 +22,8 @@ ratings:
   - "**.py"
 exclude_paths:
 - "hqlib/formatting/js/bootstrap.min.js"
+- "hqlib/formatting/js/compatibility.js"
 - "docs/examples/"
 - "tests/unittests/"
 - "tests/integrationtests/"
+- ".pylintrc"
