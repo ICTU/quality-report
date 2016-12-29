@@ -47,33 +47,6 @@ class PercentageTest(unittest.TestCase):
         self.assertEqual(0, utils.percentage(0, 0, zero_divided_by_zero_is_zero=True))
 
 
-class MonthAgoTest(unittest.TestCase):
-    """ Unit tests of the percentage method. """
-    def test_june(self):
-        """ Test that a month ago in June is May. """
-        self.assertEqual(datetime.date(2010, 5, 1), utils.month_ago(datetime.date(2010, 6, 1)))
-
-    def test_january(self):
-        """ Test that a month ago in January is December of the previous
-            year. """
-        self.assertEqual(datetime.date(2011, 12, 13), utils.month_ago(datetime.date(2012, 1, 13)))
-
-    def test_31st(self):
-        """ Test that a month ago on day 31 is day 30 in the previous
-            month. """
-        self.assertEqual(datetime.date(2012, 6, 30), utils.month_ago(datetime.date(2012, 7, 31)))
-
-    def test_march(self):
-        """ Test that a month ago on March 31st is February 28st. """
-        self.assertEqual(datetime.date(2011, 2, 28), utils.month_ago(datetime.date(2011, 3, 31)))
-
-    def test_today(self):
-        """ Test a month ago compared to today. """
-        month = datetime.date.today().month
-        expected_month_ago = month - 1 if month > 1 else 12
-        self.assertEqual(expected_month_ago, utils.month_ago().month)
-
-
 class WorkdaysInPeriodTest(unittest.TestCase):
     """ Unit tests of the workdays in period method. """
     def assert_period(self, period_length, period_start, period_end):

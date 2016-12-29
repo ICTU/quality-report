@@ -179,23 +179,6 @@ def format_timedelta(timedelta):
     return '{minutes} minuten'.format(minutes=minutes) if minutes > 1 else 'een minuut'
 
 
-def month_ago(date=None, day_correction=0):
-    """ Return the date that is one month earlier on the same day of the month
-        (or earlier if needed to prevent invalid days). """
-    date = date or datetime.date.today()
-    month = date.month - 1
-    year = date.year
-    day = date.day - day_correction
-    while month < 1:
-        month += 12
-        year -= 1
-
-    try:
-        return date.replace(year=year, month=month, day=day)
-    except ValueError:
-        return month_ago(date, day_correction + 1)
-
-
 def workdays_in_period(start_date, end_date):
     """ Return the number of work days in the period. All days between
         start date and end date are considered, including the start date and
