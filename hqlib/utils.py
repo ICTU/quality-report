@@ -136,10 +136,7 @@ def parse_iso_datetime(datetime_string):
 def percentage(numerator, denominator, zero_divided_by_zero_is_zero=False):
     """ Return numerator / denominator * 100. """
     if float(denominator) == 0.0:
-        if float(numerator) == 0.0 and zero_divided_by_zero_is_zero:
-            return 0
-        else:
-            return 100
+        return 0 if float(numerator) == 0.0 and zero_divided_by_zero_is_zero else 100
     else:
         return int(round((numerator / denominator) * 100))
 
@@ -171,10 +168,7 @@ def format_timedelta(timedelta):
         return '{days} dagen'.format(days=days)
 
     if days > 0:
-        if hours > 0:
-            return 'een dag en {hours} uur'.format(hours=hours)
-        else:
-            return '24 uur'
+        return 'een dag en {hours} uur'.format(hours=hours) if hours > 0 else '24 uur'
 
     if hours > 0:
         result = '{hours} uur'.format(hours=hours)
@@ -182,15 +176,12 @@ def format_timedelta(timedelta):
             result += ' en {minutes} minuten'.format(minutes=minutes)
         return result
 
-    if minutes > 1:
-        return '{minutes} minuten'.format(minutes=minutes)
-
-    return 'een minuut'
+    return '{minutes} minuten'.format(minutes=minutes) if minutes > 1 else 'een minuut'
 
 
 def month_ago(date=None, day_correction=0):
-    """ Return the date that is one month earlier on the same day of the
-        month (or earlier if needed to prevent invalid days). """
+    """ Return the date that is one month earlier on the same day of the month
+        (or earlier if needed to prevent invalid days). """
     date = date or datetime.date.today()
     month = date.month - 1
     year = date.year
