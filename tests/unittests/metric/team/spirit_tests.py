@@ -28,7 +28,7 @@ class FakeWiki(domain.MetricSource):
 
     def __init__(self):
         self.date_of_last_measurement = datetime.datetime.now()
-        super(FakeWiki, self).__init__()
+        super(FakeWiki, self).__init__(url='http://wiki')
 
     @staticmethod
     def team_spirit(*args):  # pylint: disable=unused-argument
@@ -38,11 +38,6 @@ class FakeWiki(domain.MetricSource):
     def date_of_last_team_spirit_measurement(self, *args):  # pylint: disable=unused-argument
         """ Return a fake date. """
         return self.date_of_last_measurement
-
-    @staticmethod
-    def url():
-        """ Return a fake url. """
-        return 'http://wiki'
 
 
 class TeamSpiritTest(unittest.TestCase):
@@ -81,8 +76,8 @@ class TeamSpiritTest(unittest.TestCase):
 
     def test_old(self):
         """ Test that the metric becomes yellow when old. """
-        self.__wiki.date_of_last_measurement = datetime.datetime.now() - metric.TeamSpirit.old_age - \
-                                               datetime.timedelta(hours=1)
+        self.__wiki.date_of_last_measurement = \
+            datetime.datetime.now() - metric.TeamSpirit.old_age - datetime.timedelta(hours=1)
         self.assertEqual('yellow', self.__metric.status())
 
     def test_norm(self):
