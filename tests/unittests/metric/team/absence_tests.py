@@ -103,9 +103,9 @@ class TeamAbsenceTest(unittest.TestCase):
                          'afwezig zijn is lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat uit '
                          '(Lijst van teamleden).', metric.TeamAbsence.norm_template.format(**defaults))
 
-    def test_parameters_without_planner(self):
-        """ Test that the parameters are correct when the holiday planner hasn't been configured. """
-        project = domain.Project()
-        parameters = metric.TeamAbsence(self.__team, project=project)._parameters()
-        self.assertTrue('team' in parameters)
-        self.assertFalse('absentees' in parameters)
+    def test_norm(self):
+        """ Test that the norm is correct when the holiday planner hasn't been configured. """
+        absence = metric.TeamAbsence(self.__team, project=domain.Project())
+        self.assertEqual('Het aantal aaneengesloten werkdagen na vandaag dat meerdere teamleden tegelijk gepland '
+                         'afwezig zijn is lager dan 5 werkdagen. Meer dan 10 werkdagen is rood. Het team bestaat '
+                         'uit Derk Designer, Piet Programmer.', absence.norm())

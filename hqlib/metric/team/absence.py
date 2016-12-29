@@ -52,7 +52,7 @@ class TeamAbsence(LowerIsBetterMetric):
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(TeamAbsence, self)._parameters()
-        parameters['team'] = ', '.join([member.name() for member in self._subject.members()])
+        parameters['team'] = ', '.join(sorted([member.name() for member in self._subject.members()]))
         parameters['start_date'] = self.__start_date() or 'vandaag'
         if self._metric_source:
             length, start, end, members = self._metric_source.days(self._subject)
