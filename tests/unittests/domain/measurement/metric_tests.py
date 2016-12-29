@@ -270,6 +270,12 @@ class MetricTest(unittest.TestCase):
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo. Debt. Subject.',
                          self.__metric.comment())
 
+    def test_status_when_technical_debt(self):
+        """ Test that the status is grey when the metric has accepted technical debt. """
+        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
+        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
+        self.assertEqual('grey', self.__metric.status())
+
     def test_numerical_value(self):
         """ Test that the numerical value is the value by default. """
         self.assertEqual(self.__metric.numerical_value(), self.__metric.value())
