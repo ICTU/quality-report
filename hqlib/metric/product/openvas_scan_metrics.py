@@ -15,41 +15,17 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+from .alerts_metrics import AlertsMetric
 from ... import metric_source
-from ...domain import LowerIsBetterMetric
 
 
-class OpenVASScanAlertsMetric(LowerIsBetterMetric):
+class OpenVASScanAlertsMetric(AlertsMetric):
     """ Base class for metrics that measure the number of Open VAS Scan alerts with a certain risk level. """
 
     unit = 'waarschuwingen'
-    risk_level = risk_level_key = 'Subclass responsilbility'
     norm_template = 'De gescande omgevingen hebben geen {risk_level} risico Open VAS Scan {unit}. ' \
                     'Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} {risk_level} risico {unit}.'
-    target_value = 0
     metric_source_classes = (metric_source.OpenVASScanReport,)
-
-    @classmethod
-    def norm_template_default_values(cls):
-        values = super(OpenVASScanAlertsMetric, cls).norm_template_default_values()
-        values['risk_level'] = cls.risk_level
-        return values
-
-    def value(self):
-        return -1 if self._missing() else self.__nr_alerts()
-
-    def _missing(self):
-        return self.__nr_alerts() < 0
-
-    def __nr_alerts(self):
-        """ Return the number of alerts. """
-        return self._metric_source.alerts(self.risk_level_key, *self._metric_source_urls())
-
-    def _parameters(self):
-        parameters = super(OpenVASScanAlertsMetric, self)._parameters()
-        parameters['risk_level'] = self.risk_level
-        return parameters
 
 
 class HighRiskOpenVASScanAlertsMetric(OpenVASScanAlertsMetric):

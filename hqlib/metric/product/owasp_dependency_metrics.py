@@ -15,38 +15,24 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+from .alerts_metrics import AlertsMetric
 from ... import metric_source
-from ...domain import LowerIsBetterMetric
 
 
-class OWASPDependencyWarnings(LowerIsBetterMetric):
+class OWASPDependencyWarnings(AlertsMetric):
     """ Base class for metrics that measure the number of external dependencies of the project that have OWASP
         warnings with a certain priority. """
 
     unit = 'waarschuwingen'
-    priority = priority_key = 'Subclass responsibility'
-    norm_template = 'Dependencies van het product hebben geen {priority} prioriteit OWASP {unit}. ' \
+    norm_template = 'Dependencies van het product hebben geen {risk_level} prioriteit OWASP {unit}. ' \
                     'Meer dan {low_target} is rood.'
-    template = 'Dependencies van {name} hebben {value} {priority} prioriteit {unit}.'
-    target_value = 0
+    template = 'Dependencies van {name} hebben {value} {risk_level} prioriteit {unit}.'
     metric_source_classes = (metric_source.OWASPDependencyReport,)
 
-    @classmethod
-    def norm_template_default_values(cls):
-        values = super(OWASPDependencyWarnings, cls).norm_template_default_values()
-        values['priority'] = cls.priority
-        return values
-
-    def value(self):
-        return -1 if self._missing() else self._nr_warnings()
-
-    def _missing(self):
-        return self._nr_warnings() < 0
-
-    def _nr_warnings(self):
+    def _nr_alerts(self):
         """ Return the number of warnings. """
         ids = self._report_ids()
-        return self._metric_source.nr_warnings(ids, self.priority_key) if ids else -1
+        return self._metric_source.nr_warnings(ids, self.risk_level_key) if ids else -1
 
     def _report_ids(self):
         """ Return the Jenkins report ids (job names). """
@@ -55,19 +41,14 @@ class OWASPDependencyWarnings(LowerIsBetterMetric):
         else:
             return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
-    def _parameters(self):
-        parameters = super(OWASPDependencyWarnings, self)._parameters()
-        parameters['priority'] = self.priority
-        return parameters
-
 
 class HighPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
     """ Metric for measuring the number of external dependencies of the project that have high priority OWASP
         warnings. """
 
     name = 'Hoeveelheid OWASP dependency waarschuwingen met hoge prioriteit'
-    priority = 'hoge'
-    priority_key = 'high'
+    risk_level = 'hoge'
+    risk_level_key = 'high'
     low_target_value = 3
 
 
@@ -76,6 +57,6 @@ class NormalPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
         warnings. """
 
     name = 'Hoeveelheid OWASP dependency waarschuwingen met normale prioriteit'
-    priority = 'normale'
-    priority_key = 'normal'
+    risk_level = 'normale'
+    risk_level_key = 'normal'
     low_target_value = 10

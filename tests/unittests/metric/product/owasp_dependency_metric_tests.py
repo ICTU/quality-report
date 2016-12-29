@@ -65,7 +65,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def expected_warnings(self, job):
         """ Return the number of expected warnings. """
-        return self.__jenkins.nr_warnings(job, self.class_under_test.priority_key)
+        return self.__jenkins.nr_warnings(job, self.class_under_test.risk_level_key)
 
     def test_value(self):
         """ Test that value of the metric equals the number of warnings as reported by Jenkins. """
@@ -86,7 +86,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report for the metric is correct. """
         expected_report = 'Dependencies van FakeSubject hebben {} {} prioriteit waarschuwingen.'.format(
-            self.expected_warnings('jenkins_job'), self.class_under_test.priority)
+            self.expected_warnings('jenkins_job'), self.class_under_test.risk_level)
         self.assertEqual(expected_report, self.__metric.report())
 
     def test_url(self):
@@ -105,7 +105,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
     def test_norm(self):
         """ Test that the norm is correct. """
         expected_norm = 'Dependencies van het product hebben geen {} prioriteit OWASP waarschuwingen. ' \
-                        'Meer dan {} is rood.'.format(self.class_under_test.priority,
+                        'Meer dan {} is rood.'.format(self.class_under_test.risk_level,
                                                       self.class_under_test.low_target_value)
         self.assertEqual(expected_norm,
                          self.__metric.norm_template.format(**self.__metric.norm_template_default_values()))
