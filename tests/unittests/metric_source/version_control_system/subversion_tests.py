@@ -24,6 +24,10 @@ class SubversionUnderTest(Subversion):
     """ Override the Subversion class to prevent it from running shell commands. """
     mergeinfo = ''
 
+    def __init__(self, *args, **kwargs):
+        super(SubversionUnderTest, self).__init__(*args, **kwargs)
+        self.last_command = None
+
     def _run_shell_command(self, command, *args, **kwargs):  # pylint: disable=unused-argument
         self.last_command = command
         if command[1] == 'mergeinfo':
