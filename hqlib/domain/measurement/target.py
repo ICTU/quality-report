@@ -33,12 +33,16 @@ class TechnicalDebtTarget(object):
 
     def explanation(self, unit=''):
         """ Return the explanation for the technical debt. """
-        unit = ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit
-        explanation = 'De op dit moment geaccepteerde technische schuld is {val}{unit}.'.format(val=self.target_value(),
-                                                                                                unit=unit)
+        explanation = 'De op dit moment geaccepteerde technische schuld is {val}{unit}.'.format(
+            val=self.target_value(), unit=self._space_unit(unit))
         if self.__explanation:
             explanation += ' ' + self.__explanation
         return explanation
+
+    @staticmethod
+    def _space_unit(unit):
+        """ Add a space before the unit if necessary. """
+        return ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit
 
 
 class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
@@ -65,11 +69,10 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
             return int(round(fraction * delta + self.__initial_target_value))
 
     def explanation(self, unit=''):
-        unit = ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit
         start_date = format_date(self.__initial_datetime, year=True)
         end_date = format_date(self.__end_datetime, year=True)
         explanation = 'Het doel is dat de technische schuld vermindert van {old_val}{unit} op {old_date} ' \
-            'naar {new_val}{unit} op {new_date}.'.format(unit=unit,
+            'naar {new_val}{unit} op {new_date}.'.format(unit=self._space_unit(unit),
                                                          old_val=self.__initial_target_value,
                                                          old_date=start_date,
                                                          new_val=self.__end_target_value,
