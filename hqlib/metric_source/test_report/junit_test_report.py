@@ -101,4 +101,3 @@ class JunitTestReport(test_report.TestReport):
         """ Return the report contents as ElementTree. """
         contents = self._url_open(report_url).read()
         return xml.etree.ElementTree.fromstring(contents)
-

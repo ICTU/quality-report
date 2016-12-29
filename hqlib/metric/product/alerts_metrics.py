@@ -43,4 +43,3 @@ class AlertsMetric(LowerIsBetterMetric):
         parameters = super(AlertsMetric, self)._parameters()
         parameters['risk_level'] = self.risk_level
         return parameters
-

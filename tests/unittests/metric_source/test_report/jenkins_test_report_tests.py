@@ -79,4 +79,3 @@ class JenkinsTestReportTest(unittest.TestCase):
         """ Test that the minimum datetime is returned when the json invalid. """
         self.__opener.contents = u'{"timestamp":}'
         self.assertEqual(datetime.datetime.min, self.__jenkins.report_datetime('job/'))
-

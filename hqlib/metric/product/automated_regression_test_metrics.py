@@ -148,4 +148,3 @@ class ARTBranchCoverage(_ARTCoverage):
             return -1
         coverage = self._metric_source.branch_coverage(self._metric_source_id)
         return -1 if coverage is None else int(round(coverage))
-

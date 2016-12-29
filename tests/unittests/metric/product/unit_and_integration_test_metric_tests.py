@@ -121,4 +121,3 @@ class UnitAndIntegrationTestBranchCoverageTest(CommonUnitAndIntegrationTestMetri
     class_under_test = metric.UnitAndIntegrationTestBranchCoverage
     expected_value = 87
     expected_report = 'FakeSubject gecombineerde unit- en integratietest branch coverage is 87%.'
-

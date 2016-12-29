@@ -74,4 +74,3 @@ class JsfDuplicationTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({FakeSonar.metric_source_name: FakeSonar().dashboard_url()}, self._metric.url())
-

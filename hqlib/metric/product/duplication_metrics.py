@@ -48,4 +48,3 @@ class JsfDuplication(Duplication):
     name = 'Duplicatie van JSF broncode'
     target_value = 10
     low_target_value = 20
-
