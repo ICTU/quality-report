@@ -214,15 +214,6 @@ class memoized(object):  # pylint: disable=invalid-name,too-few-public-methods
         return self.__func.__doc__
 
 
-def rmtree(folder, remove_tree=shutil.rmtree, exists=os.path.exists):
-    """ Remove folder recursively. """
-    if exists(folder):
-        try:
-            remove_tree(folder)
-        except OSError as reason:
-            logging.warning("Couldn't remove %s: %s", folder, reason)
-
-
 def html_escape(text):
     """ Return the text with all HTML characters escaped. """
     for character, html_code in [('&', '&amp;'), ('"', '&quot;'), ("'", '&#39;'), (">", '&gt;'), ("<", '&lt;')]:

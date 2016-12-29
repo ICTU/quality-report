@@ -223,41 +223,6 @@ class MemoizedTest(unittest.TestCase):
         self.assertEqual(dict(unhashable=2), self.__instance.test_func_with_args_calls)
 
 
-class RemoveTreeTest(unittest.TestCase):
-    """ Unit tests for the remove tree method. """
-    def setUp(self):
-        self.removed_folder = None
-
-    @staticmethod
-    def test_non_existing_folder():
-        """ Test that a non existing folder is silently ignored. """
-        utils.rmtree('non-existing folder')
-
-    def test_existing_folder(self):
-        """ Test that an existing folder is removed. """
-
-        def remove_tree(folder):
-            """ Fake remove method. """
-            self.removed_folder = folder
-
-        utils.rmtree('existing folder', remove_tree, lambda folder: True)
-        self.assertEqual('existing folder', self.removed_folder)
-
-    def test_removal_fails(self):
-        """ Test that an existing folder that cannot be removed is logged. """
-
-        def remove_tree(folder):
-            """ Fake remove method that fails to remove the folder. """
-            raise OSError('OSError removing {folder}'.format(folder=folder))
-
-        log_string = io.BytesIO()
-        handler = logging.StreamHandler(log_string)
-        logging.getLogger().addHandler(handler)
-        utils.rmtree('folder', remove_tree, lambda folder: True)
-        logging.getLogger().removeHandler(handler)
-        self.assertEqual("Couldn't remove folder: OSError removing folder\n", log_string.getvalue())
-
-
 class EvalJSONTest(unittest.TestCase):
     """ Unit tests for the json evaluation method. """
     def test_empty_json(self):
