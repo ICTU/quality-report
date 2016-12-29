@@ -20,19 +20,6 @@ from hqlib import domain, metric, metric_source
 from tests.unittests.domain.measurement.fake import FakeHistory, FakeSubject
 
 
-class DummyMetric(domain.Metric):
-    # pylint: disable=too-few-public-methods
-    """ Override to implement abstract methods that are needed for running the unit tests. """
-    @staticmethod
-    def value():
-        """ Return a dummy value. """
-        return 0
-
-    def _is_value_better_than(self, target):
-        """ Return a dummy value. """
-        return True
-
-
 class MetaMetricUnderTest(metric.meta_metrics.MetaMetricMixin, domain.HigherPercentageIsBetterMetric):
     # pylint: disable=too-few-public-methods
     """ Use MetaMetricMixin to create a concrete meta metric that can be tested. """
@@ -44,7 +31,7 @@ class MetaMetricMixinTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.History: FakeHistory()})
-        subject = [DummyMetric(FakeSubject(), project=project)]
+        subject = [metric.CriticalViolations(FakeSubject(), project=project)]
         self.__metric = MetaMetricUnderTest(subject, project=project)
 
     def test_value(self):
