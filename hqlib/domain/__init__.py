@@ -21,10 +21,10 @@ from __future__ import absolute_import
 
 from .base import DomainObject
 
-from .measurement.metric import Metric, HigherIsBetterMetric, HigherPercentageIsBetterMetric, \
-    LowerPercentageIsBetterMetric, LowerIsBetterMetric
+from .measurement.metric import Metric
+from .measurement.directed_metric import HigherIsBetterMetric, LowerIsBetterMetric
+from .measurement.percentage_metric import HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
 from .measurement.metric_source import MetricSource, MissingMetricSource
-from .measurement.metric_mixin import MetaMetricMixin
 
 from .measurement.target import TechnicalDebtTarget, DynamicTechnicalDebtTarget
 

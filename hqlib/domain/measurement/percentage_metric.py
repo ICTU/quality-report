@@ -15,6 +15,7 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+from . import directed_metric
 from ... import utils
 
 
@@ -56,15 +57,36 @@ class PercentageMixin(object):
         return 0, 100
 
 
-class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
-    """ Mixin class for meta metrics. Assumes that meta metrics are percentage metrics and that the subclass
-        specifies the metric statuses (colors) that the meta metric is measuring. """
-    metric_statuses = []  # Subclass responsibility
+class LowerPercentageIsBetterMetric(PercentageMixin, directed_metric.LowerIsBetterMetric):
+    """ Metric measured as a percentage with lower values being better. """
+
+    zero_divided_by_zero_is_zero = True
 
     def _numerator(self):
-        """ Return the numerator (the number above the divider) for the meta metric. """
-        return len([metric for metric in self._subject if metric.status() in self.metric_statuses])
+        raise NotImplementedError  # pragma: no cover
 
     def _denominator(self):
-        """ Return the denominator (the number below the divider) for the meta metric. """
-        return len(self._subject)
+        raise NotImplementedError  # pragma: no cover
+
+    def _is_perfect(self):
+        """ Return whether the metric has a perfect value. This is the case when the numerator is zero. We ignore
+            the denominator to prevent a ZeroDivisionError exception. """
+        return self._numerator() == 0 and super(LowerPercentageIsBetterMetric, self)._is_perfect()
+
+
+class HigherPercentageIsBetterMetric(PercentageMixin, directed_metric.HigherIsBetterMetric):
+    """ Metric measured as a percentage with higher values being better. """
+
+    perfect_value = 100
+    zero_divided_by_zero_is_zero = False
+
+    def _numerator(self):
+        raise NotImplementedError  # pragma: no cover
+
+    def _denominator(self):
+        raise NotImplementedError  # pragma: no cover
+
+    def _is_perfect(self):
+        """ Return whether the metric has a perfect value. This is the case when the numerator and denominator
+            are equal. """
+        return self._numerator() == self._denominator() and super(HigherPercentageIsBetterMetric, self)._is_perfect()

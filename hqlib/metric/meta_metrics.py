@@ -15,7 +15,21 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-from ..domain import MetaMetricMixin, HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
+from ..domain import HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
+
+
+class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
+    """ Mixin class for meta metrics. Assumes that meta metrics are percentage metrics and that the subclass
+        specifies the metric statuses (colors) that the meta metric is measuring. """
+    metric_statuses = []  # Subclass responsibility
+
+    def _numerator(self):
+        """ Return the numerator (the number above the divider) for the meta metric. """
+        return len([metric for metric in self._subject if metric.status() in self.metric_statuses])
+
+    def _denominator(self):
+        """ Return the denominator (the number below the divider) for the meta metric. """
+        return len(self._subject)
 
 
 class GreenMetaMetric(MetaMetricMixin, HigherPercentageIsBetterMetric):

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import datetime
 import logging
 
-from . import metric_mixin
 from ... import utils
 
 
@@ -338,82 +337,3 @@ class Metric(object):
             return self._subject.name()
         except AttributeError:
             return str(self._subject)
-
-
-class LowerIsBetterMetric(Metric):
-    """ Metric for which a lower value means the metric is scoring better. """
-
-    perfect_value = 0
-
-    def value(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _is_below_target(self):
-        """ Return whether the metric meets or exceeds the target. """
-        # The metric is below target when the actual value is *higher*
-        # than the target value, because the target value is the maximum value
-        return not(self.perfect_value <= self.value() <= self.target()) or \
-            super(LowerIsBetterMetric, self)._is_below_target()
-
-    def _needs_immediate_action(self):
-        """ Return whether the metric scores so bad that immediate action is required. """
-        return not(self.perfect_value <= self.value() <= self.low_target()) or \
-            super(LowerIsBetterMetric, self)._needs_immediate_action()
-
-    def _is_value_better_than(self, target):
-        return self.perfect_value <= self.value() <= target
-
-
-class HigherIsBetterMetric(Metric):
-    """ Metric for which a higher value means the metric is scoring better. """
-
-    def value(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _is_below_target(self):
-        """ Return whether the metric meets or exceeds the target. """
-        # The metric is below target when the actual value is *lower*
-        # than the target value, because the target value is the minimum value
-        return self.value() < self.target() or super(HigherIsBetterMetric, self)._is_below_target()
-
-    def _needs_immediate_action(self):
-        """ Return whether the metric scores so bad that immediate action is required. """
-        return self.value() < self.low_target() or super(HigherIsBetterMetric, self)._needs_immediate_action()
-
-    def _is_value_better_than(self, target):
-        return self.value() >= target
-
-
-class LowerPercentageIsBetterMetric(metric_mixin.PercentageMixin, LowerIsBetterMetric):
-    """ Metric measured as a percentage with lower values being better. """
-
-    zero_divided_by_zero_is_zero = True
-
-    def _numerator(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _denominator(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _is_perfect(self):
-        """ Return whether the metric has a perfect value. This is the case when the numerator is zero. We ignore
-            the denominator to prevent a ZeroDivisionError exception. """
-        return self._numerator() == 0 and super(LowerPercentageIsBetterMetric, self)._is_perfect()
-
-
-class HigherPercentageIsBetterMetric(metric_mixin.PercentageMixin, HigherIsBetterMetric):
-    """ Metric measured as a percentage with higher values being better. """
-
-    perfect_value = 100
-    zero_divided_by_zero_is_zero = False
-
-    def _numerator(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _denominator(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _is_perfect(self):
-        """ Return whether the metric has a perfect value. This is the case when the numerator and denominator
-            are equal. """
-        return self._numerator() == self._denominator() and super(HigherPercentageIsBetterMetric, self)._is_perfect()
