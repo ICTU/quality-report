@@ -20,6 +20,7 @@ import urllib2
 
 from hqlib.metric_source import SilkPerformerPerformanceLoadTestReport
 
+
 HTML = r"""
 <html>
     <head>
@@ -78,7 +79,8 @@ Reporting engine
     <tr><td class="name">Evaluated</td><td>Requirements are evaluated against this value</td></tr>
     <tr><td class="name">Baseline</td><td>Baseline reference evaluated value</td></tr>
     <tr><td class="name">Current</td><td>This measurement's evaluated value, to be compared with baseline</td></tr>
-    <tr><td class="name">Delta %</td><td>Comparison of evaluated values between current and baseline, relative to the baseline<br>
+    <tr><td class="name">Delta %</td><td>Comparison of evaluated values between current and baseline,
+    relative to the baseline<br>
     Color codes for delta field:<br>
     red indicates substantial increase of responsetimes (delta > 15%)<br>
     green indicates substantial reduction of responsetimes (delta < -15%)</td></tr>
@@ -100,10 +102,14 @@ Reporting engine
 
 <table width="100%" cellspacing="2" cellpadding="5" border="0" class="details">
     <tr valign="top">
-    <th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank">Evaluated</th><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank">Baseline</th><th class="blank">Current</th><th class="blank"/>
+    <th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank">
+    Evaluated</th><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/><th class="blank"/>
+    <th class="blank">Baseline</th><th class="blank">Current</th><th class="blank"/>
     </tr>
     <tr valign="top">
-    <th>Id</th><th>Transaction</th><th>Success</th><th>Min</th><th>Avg</th><th>90 perc</th><th>Max</th><th>StDev</th><th>Failed</th><th>Canceled</th><th class="blank"></th><th>v7.2.0.46</br>2016.04.18.13.47.02</th><th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
+    <th>Id</th><th>Transaction</th><th>Success</th><th>Min</th><th>Avg</th><th>90 perc</th><th>Max</th><th>StDev</th>
+    <th>Failed</th><th>Canceled</th><th class="blank"></th><th>v7.2.0.46</br>2016.04.18.13.47.02</th>
+    <th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
     </tr>
     <tr valign="top" class="">
     <td>1</td><td class="name">Ingeschrevenen_01_Openen</td>
@@ -163,7 +169,9 @@ Reporting engine
     <tr valign="top" class="">
 
     <tr valign="top">
-    <th>Id</th><th>Transaction</th><th>Success</th><th>Min</th><th>Avg</th><th>90 perc</th><th>Max</th><th>StDev</th><th>Failed</th><th>Canceled</th><th class="blank"></th><th>v7.2.0.46</br>2016.04.18.13.47.02</th><th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
+    <th>Id</th><th>Transaction</th><th>Success</th><th>Min</th><th>Avg</th><th>90 perc</th><th>Max</th><th>StDev</th>
+    <th>Failed</th><th>Canceled</th><th class="blank"></th><th>v7.2.0.46</br>2016.04.18.13.47.02</th>
+    <th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
     </tr>
     <tr valign="top" class="">
     <td>6</td><td class="name">Beheerder_03_ZoekenHouder</td>
@@ -211,7 +219,9 @@ Reporting engine
     </tr>
 
     <tr valign="top">
-    <th>Id</th><th>Transaction</th><th>Success</th><th>Min</th><th>Avg</th><th>90 perc</th><th>Max</th><th>StDev</th><th>Failed</th><th>Canceled</th><th class="blank"></th><th>v7.2.0.46</br>2016.04.18.13.47.02</th><th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
+    <th>Id</th><th>Transaction</th><th>Success</th><th>Min</th><th>Avg</th><th>90 perc</th><th>Max</th><th>StDev</th>
+    <th>Failed</th><th>Canceled</th><th class="blank"></th><th>v7.2.0.46</br>2016.04.18.13.47.02</th>
+    <th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
     </tr>
 
     <tr valign="top" class="">
