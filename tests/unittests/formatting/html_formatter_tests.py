@@ -17,10 +17,9 @@ limitations under the License.
 import datetime
 import unittest
 
-from . import fake_domain, fake_report
-
 from hqlib import utils
 from hqlib.formatting import HTMLFormatter
+from . import fake_domain, fake_report
 
 
 class HTMLFormatterTest(unittest.TestCase):

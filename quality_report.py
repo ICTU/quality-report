@@ -24,6 +24,7 @@ import socket
 import sys
 import urllib2
 import xmlrpclib
+
 import pkg_resources
 
 from hqlib import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION

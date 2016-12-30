@@ -24,7 +24,6 @@ import unittest
 
 import xmlrunner
 
-
 if __name__ == '__main__':  # pragma: no branch
     sys.path.insert(0, os.path.abspath('.'))
     # Make sure log messages are not shown on stdout/stderr. We can't simply

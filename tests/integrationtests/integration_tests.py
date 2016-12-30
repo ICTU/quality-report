@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import unittest
 import os
-import sys
-import shutil
-import tempfile
-import bs4
 import re
+import shutil
+import sys
+import tempfile
+import unittest
+
+import bs4
 
 
 class IntegrationTestCase(unittest.TestCase):

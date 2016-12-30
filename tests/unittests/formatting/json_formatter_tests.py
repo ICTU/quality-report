@@ -16,9 +16,8 @@ limitations under the License.
 
 import unittest
 
-from . import fake_domain, fake_report
-
 from hqlib.formatting import JSONFormatter
+from . import fake_domain, fake_report
 
 
 class FakeSonar(object):  # pylint: disable=too-few-public-methods
