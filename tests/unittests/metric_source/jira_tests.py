@@ -37,21 +37,30 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
                                u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
 
 
-class JiraTest(unittest.TestCase):
-    """ Unit tests for the Jira class. """
+class JiraTestCase(unittest.TestCase):
+    """ Base class for Jira tests. """
 
-    def setUp(self):
-        self.__jira_url = 'http://jira/'
-        self.__jira = JiraUnderTest(self.__jira_url, 'username', 'password', open_bug_query_id=123,
-                                    open_security_bug_query_id=456, open_static_security_analysis_bug_query_id=567,
-                                    manual_test_cases_query_id=654, technical_debt_issues_query_id=444,
-                                    user_stories_ready_query_id=555, user_stories_without_security_risk_query_id=567,
-                                    user_stories_without_performance_risk_query_id=789)
-        self.__jira_no_queries = JiraUnderTest(self.__jira_url, 'username', 'password')
+    url = 'http://jira/'
+
+    def jira(self, *args, **kwargs):
+        """ Factory function for creating Jira instances. """
+        return JiraUnderTest(self.url, 'username', 'password', *args, **kwargs)
+
+
+class JiraTest(JiraTestCase):
+    """ Unit tests for the Jira class. """
 
     def test_url(self):
         """ Test the Jira url. """
-        self.assertEqual(self.__jira_url, self.__jira.url())
+        self.assertEqual(self.url, self.jira().url())
+
+
+class JiraBugTest(JiraTestCase):
+    """ Unit tests for the Jira bug queries. """
+
+    def setUp(self):
+        self.__jira = self.jira(open_bug_query_id=123, open_security_bug_query_id=456,
+                                open_static_security_analysis_bug_query_id=567)
 
     def test_nr_open_bugs(self):
         """ Test that the number of open bugs is correct. """
@@ -59,7 +68,7 @@ class JiraTest(unittest.TestCase):
 
     def test_nr_open_bugs_without_query(self):
         """ Test that the number of open bugs is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_open_bugs())
+        self.assertEqual(-1, self.jira().nr_open_bugs())
 
     def test_nr_open_bugs_url(self):
         """ Test that the url is correct. """
@@ -71,7 +80,7 @@ class JiraTest(unittest.TestCase):
 
     def test_nr_open_security_bugs_without_query(self):
         """ Test that the number of open security bugs is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_open_security_bugs())
+        self.assertEqual(-1, self.jira().nr_open_security_bugs())
 
     def test_nr_open_security_bugs_url(self):
         """ Test that the url is correct. """
@@ -83,11 +92,18 @@ class JiraTest(unittest.TestCase):
 
     def test_nr_open_static_security_analysis_bugs_without_query(self):
         """ Test that the number of open security bugs is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_open_static_security_analysis_bugs())
+        self.assertEqual(-1, self.jira().nr_open_static_security_analysis_bugs())
 
     def test_nr_open_static_security_analysis_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_static_security_analysis_bugs_url())
+
+
+class JiraManualTestCasesTest(JiraTestCase):
+    """ Unit tests for the Jira manual test cases queries. """
+
+    def setUp(self):
+        self.__jira = self.jira(manual_test_cases_query_id=654)
 
     def test_nr_manual_tests(self):
         """ Test that the correct number of manual test cases is returned. """
@@ -95,7 +111,7 @@ class JiraTest(unittest.TestCase):
 
     def test_nr_manual_tests_without_query(self):
         """ Test that the number of manual tests is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_manual_test_cases())
+        self.assertEqual(-1, self.jira().nr_manual_test_cases())
 
     def test_manual_test_time(self):
         """ Test that the total number of minutes spend on manual test cases is correct. """
@@ -106,7 +122,7 @@ class JiraTest(unittest.TestCase):
 
     def test_manual_test_time_without_query(self):
         """ Test that the manual test time is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.manual_test_cases_time())
+        self.assertEqual(-1, self.jira().manual_test_cases_time())
 
     def test_nr_manual_tests_not_measured(self):
         """ Test that the number of manual test cases not measured is correct. """
@@ -117,11 +133,18 @@ class JiraTest(unittest.TestCase):
 
     def test_nr_manual_tests_not_measured_without_query(self):
         """ Test that the number of manual test cases not measured is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_manual_test_cases_not_measured())
+        self.assertEqual(-1, self.jira().nr_manual_test_cases_not_measured())
 
     def test_manual_test_time_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.manual_test_cases_url())
+
+
+class JiraReadyUserStoriesTest(JiraTestCase):
+    """ Unit tests for the Jira ready user stories query. """
+
+    def setUp(self):
+        self.__jira = self.jira(user_stories_ready_query_id=555)
 
     def test_points_ready(self):
         """ Test that the total number points of ready user stories is correct. """
@@ -132,11 +155,18 @@ class JiraTest(unittest.TestCase):
 
     def test_points_ready_without_query(self):
         """ Test that the number of points is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_story_points_ready())
+        self.assertEqual(-1, self.jira().nr_story_points_ready())
 
     def test_user_stories_ready_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.user_stories_ready_url())
+
+
+class JiraTechnicalDebtTest(JiraTestCase):
+    """ Unit tests for the Jira technical debt issues query. """
+
+    def setUp(self):
+        self.__jira = self.jira(technical_debt_issues_query_id=444)
 
     def test_nr_technical_debt_issues(self):
         """ Test that the correct number of technical debt issues is returned. """
@@ -144,11 +174,19 @@ class JiraTest(unittest.TestCase):
 
     def test_nr_technical_debt_issues_without_query(self):
         """ Test that the number of technical debt issues is -1 when Jira has no query id. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_technical_debt_issues())
+        self.assertEqual(-1, self.jira().nr_technical_debt_issues())
 
     def test_technical_debt_issues_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_technical_debt_issues_url())
+
+
+class JiraUserStoryAssessmentTest(JiraTestCase):
+    """ Unit tests for the user stories without assessment queries of Jira. """
+
+    def setUp(self):
+        self.__jira = self.jira(user_stories_without_security_risk_query_id=567,
+                                user_stories_without_performance_risk_query_id=789)
 
     def test_user_stories_without_security_risk(self):
         """ Test that the correct number of user stories without security risk assessment is returned. """
@@ -156,7 +194,7 @@ class JiraTest(unittest.TestCase):
 
     def test_user_stories_without_security_risk_without_query(self):
         """ Test that the number of user stories is -1 when Jira hasn't got the right query. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_user_stories_without_security_risk_assessment())
+        self.assertEqual(-1, self.jira().nr_user_stories_without_security_risk_assessment())
 
     def test_user_stories_without_security_risk_url(self):
         """ Test that the url is correct. """
@@ -168,21 +206,23 @@ class JiraTest(unittest.TestCase):
 
     def test_user_stories_without_performance_risk_without_query(self):
         """ Test that the number of user stories is -1 when Jira hasn't got the right query. """
-        self.assertEqual(-1, self.__jira_no_queries.nr_user_stories_without_performance_risk_assessment())
+        self.assertEqual(-1, self.jira().nr_user_stories_without_performance_risk_assessment())
 
     def test_user_stories_without_performance_risk_url(self):
         """ Test that the url is correct. """
         self.assertEqual('http://view', self.__jira.user_stories_without_performance_risk_assessment_url())
 
 
-class JiraWhenFailingTest(unittest.TestCase):
+class JiraWhenFailingTest(JiraTestCase):
     """ Unit tests for a Jira that's unavailable. """
+
+    url = 'http://raise'
+
     def setUp(self):
-        self.__jira = JiraUnderTest('http://raise', 'username', 'password', open_bug_query_id=123,
-                                    open_security_bug_query_id=456, manual_test_cases_query_id=654,
-                                    technical_debt_issues_query_id=444, user_stories_ready_query_id=555,
-                                    user_stories_without_security_risk_query_id=567,
-                                    user_stories_without_performance_risk_query_id=789)
+        self.__jira = self.jira(open_bug_query_id=123, open_security_bug_query_id=456, manual_test_cases_query_id=654,
+                                technical_debt_issues_query_id=444, user_stories_ready_query_id=555,
+                                user_stories_without_security_risk_query_id=567,
+                                user_stories_without_performance_risk_query_id=789)
 
     def test_nr_open_bugs(self):
         """ Test that the number of open bugs is -1 when Jira is not available. """
