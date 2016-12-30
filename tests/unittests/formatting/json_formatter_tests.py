@@ -16,8 +16,7 @@ limitations under the License.
 
 import unittest
 
-import fake_domain
-import fake_report
+from . import fake_domain, fake_report
 
 from hqlib.formatting import JSONFormatter
 

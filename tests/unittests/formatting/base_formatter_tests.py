@@ -16,10 +16,9 @@ limitations under the License.
 
 import unittest
 
-from unittests.formatting import fake_domain
+from . import fake_domain, fake_report
 
 from hqlib.formatting import Formatter
-from tests.unittests.formatting import fake_report
 
 
 class FormatterUnderTest(Formatter):

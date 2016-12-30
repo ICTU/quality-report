@@ -17,11 +17,10 @@ limitations under the License.
 import datetime
 import unittest
 
-from unittests.formatting import fake_domain
+from . import fake_domain, fake_report
 
 from hqlib import utils
 from hqlib.formatting import HTMLFormatter
-from tests.unittests.formatting import fake_report
 
 
 class HTMLFormatterTest(unittest.TestCase):
