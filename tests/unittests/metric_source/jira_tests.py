@@ -62,39 +62,39 @@ class JiraBugTest(JiraTestCase):
         self.__jira = self.jira(open_bug_query_id=123, open_security_bug_query_id=456,
                                 open_static_security_analysis_bug_query_id=567)
 
-    def test_nr_open_bugs(self):
+    def test_bugs(self):
         """ Test that the number of open bugs is correct. """
         self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_bugs())
 
-    def test_nr_open_bugs_without_query(self):
+    def test_bugs_without_query(self):
         """ Test that the number of open bugs is -1 when Jira has no query id. """
         self.assertEqual(-1, self.jira().nr_open_bugs())
 
-    def test_nr_open_bugs_url(self):
+    def test_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_bugs_url())
 
-    def test_nr_open_security_bugs(self):
+    def test_security_bugs(self):
         """ Test that the number of open security bugs is correct. """
         self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_security_bugs())
 
-    def test_nr_open_security_bugs_without_query(self):
+    def test_security_bugs_without_query(self):
         """ Test that the number of open security bugs is -1 when Jira has no query id. """
         self.assertEqual(-1, self.jira().nr_open_security_bugs())
 
-    def test_nr_open_security_bugs_url(self):
+    def test_security_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_security_bugs_url())
 
-    def test_nr_open_static_security_analysis_bugs(self):
+    def test_static_security_analysis_bugs(self):
         """ Test that the number of open static security analysis bugs is correct. """
         self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_static_security_analysis_bugs())
 
-    def test_nr_open_static_security_analysis_bugs_without_query(self):
+    def test_static_security_analysis_bugs_without_query(self):
         """ Test that the number of open security bugs is -1 when Jira has no query id. """
         self.assertEqual(-1, self.jira().nr_open_static_security_analysis_bugs())
 
-    def test_nr_open_static_security_analysis_bugs_url(self):
+    def test_static_security_analysis_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_static_security_analysis_bugs_url())
 
