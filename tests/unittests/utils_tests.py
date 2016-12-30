@@ -117,27 +117,23 @@ class FormatTimeDeltaTest(unittest.TestCase):
 
     def test_one_hour(self):
         """ Test that exactly one hour doesn't include minutes. """
-        self.assert_format('1 uur', hours=1)
+        self.assert_format('een uur', hours=1)
 
     def test_one_and_a_half_hour(self):
-        """ Test that one and a half hour includes minutes. """
-        self.assert_format('1 uur en 30 minuten', hours=1.5)
+        """ Test that one and a half hour doesn't include minutes. """
+        self.assert_format('een uur', hours=1.5)
 
     def test_three_and_a_half_hour(self):
         """ Test that more than three hours doesn't include minutes. """
         self.assert_format('3 uur', hours=3.5)
 
     def test_one_day(self):
-        """ Test that one day is formatted as 24 hours. """
-        self.assert_format('24 uur', days=1)
+        """ Test that one day is formatted as one day. """
+        self.assert_format('een dag', days=1)
 
     def test_one_day_and_one_hour(self):
-        """ Test that one day and a few hours includes the hours. """
-        self.assert_format('een dag en 1 uur', hours=25)
-
-    def test_one_day_and_two_hours(self):
-        """ Test that one day and a few hours includes the hours. """
-        self.assert_format('een dag en 2 uur', hours=26)
+        """ Test that one day and one hour doesn't include the hours. """
+        self.assert_format('een dag', hours=25)
 
     def test_two_days(self):
         """ Test that two days is formatted as 2 days. """

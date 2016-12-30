@@ -75,8 +75,7 @@ _ISO_DATE_RE = _YEAR_RE + "-" + _MONTH_RE + "-" + _DAY_RE
 
 
 def _parse_date_time(date_time_re, date_time_string):
-    """ Parse a date/time string using a regular expression.
-        The regular expression must contain named match groups:
+    """ Parse a date/time string using a regular expression. The regular expression must contain named match groups:
         year - the year in four digits
         monthname - the abbreviate name of the month
         day - the number of the day in the month
@@ -101,14 +100,12 @@ def _parse_date_time(date_time_re, date_time_string):
 
 
 def parse_us_date_time(date_time_string):
-    """ Parse a US format date/time string of the form
-        'Apr 5, 2013 10:04:10 AM'. """
+    """ Parse a US format date/time string of the form 'Apr 5, 2013 10:04:10 AM'. """
     return _parse_date_time(_US_DATE_TIME_RE, date_time_string)
 
 
 def parse_uk_date_time_year_last(date_time_string):
-    """ Parse a UK format date/time string of the form
-        'Mon Aug 24 2015 16:05:55 CEST'. """
+    """ Parse a UK format date/time string of the form 'Mon Aug 24 2015 16:05:55 CEST'. """
     return _parse_date_time(_UK_DATE_TIME_YEAR_LAST_RE, date_time_string)
 
 
@@ -156,33 +153,24 @@ def format_timedelta(timedelta):
     hours = timedelta.seconds // 3600
     minutes = (timedelta.seconds % 3600) // 60
 
-    if days > 1:
-        return '{days} dagen'.format(days=days)
-
-    if days > 0:
-        return 'een dag en {hours} uur'.format(hours=hours) if hours > 0 else '24 uur'
-
-    if hours > 0:
-        result = '{hours} uur'.format(hours=hours)
-        if hours < 3 and minutes > 1:
-            result += ' en {minutes} minuten'.format(minutes=minutes)
-        return result
-
-    return '{minutes} minuten'.format(minutes=minutes) if minutes > 1 else 'een minuut'
+    if days:
+        return '{days} dagen'.format(days=days) if days > 1 else 'een dag'
+    elif hours:
+        return '{hours} uur'.format(hours=hours) if hours > 1 else 'een uur'
+    else:
+        return '{minutes} minuten'.format(minutes=minutes) if minutes > 1 else 'een minuut'
 
 
 def workdays_in_period(start_date, end_date):
-    """ Return the number of work days in the period. All days between
-        start date and end date are considered, including the start date and
-        end date themselves. """
+    """ Return the number of work days in the period. All days between start date and end date are considered,
+        including the start date and end date themselves. """
     return sum(1 for ordinal in range(start_date.toordinal(), end_date.toordinal() + 1)
                if datetime.date.fromordinal(ordinal).isoweekday() <= 5)
 
 
 class memoized(object):  # pylint: disable=invalid-name,too-few-public-methods
-    """ Decorator. Caches a function's return value each time it is called.
-        If called later with the same arguments, the cached value is returned
-        (not reevaluated). """
+    """ Decorator. Caches a function's return value each time it is called. If called later with the same arguments,
+        the cached value is returned (not reevaluated). """
 
     def __init__(self, func):
         self.__func = func
