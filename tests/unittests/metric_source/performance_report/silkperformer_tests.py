@@ -401,11 +401,11 @@ class SilkPerformerMissingTest(unittest.TestCase):
         """ Test that the value of a missing report is -1. """
         self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('p1'))
 
-    def test_queries_violating_max_responsetime_with_missing_report(self):
+    def test_queries_max_responsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
         self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('p2'))
 
-    def test_queries_violating_wished_reponsetime_with_missing_report(self):
+    def test_queries_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
         self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('p3'))
 
