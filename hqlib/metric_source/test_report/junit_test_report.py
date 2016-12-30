@@ -28,6 +28,7 @@ from ... import utils
 
 class JunitTestReport(test_report.TestReport):
     """ Class representing Junit test reports. """
+
     metric_source_name = 'Junit test report'
 
     def metric_source_urls(self, *report_urls):

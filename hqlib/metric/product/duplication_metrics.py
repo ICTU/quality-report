@@ -32,8 +32,7 @@ class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
         return self._metric_source.lines(self._sonar_id())
 
 
-class JavaDuplication(Duplication):
-    # pylint: disable=too-many-ancestors
+class JavaDuplication(Duplication):  # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of duplicated lines of code in Java code. """
 
     name = 'Duplicatie van Java broncode'
@@ -41,8 +40,7 @@ class JavaDuplication(Duplication):
     low_target_value = 5
 
 
-class JsfDuplication(Duplication):
-    # pylint: disable=too-many-ancestors
+class JsfDuplication(Duplication):  # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of duplicated lines of code in JSF code. """
 
     name = 'Duplicatie van JSF broncode'

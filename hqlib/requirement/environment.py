@@ -20,23 +20,27 @@ from ..domain import Requirement
 
 class TrackJavaConsistency(Requirement):
     """ Track the consistency of Java versions in different environments. """
+
     _name = 'Track Java consistency'
     _metric_classes = (metric.JavaVersionConsistency,)
 
 
 class TrackCIJobs(Requirement):
     """ Track the status and usage of continuous integration jobs. """
+
     _name = 'Track status and usage of continuous integration jobs'
     _metric_classes = (metric.FailingCIJobs, metric.UnusedCIJobs)
 
 
 class TrackSonarVersion(Requirement):
     """ Track the SonarQube verison. """
+
     _name = 'Track Sonar version'
     _metric_classes = (metric.SonarVersion,)
 
 
 class OpenVAS(Requirement):
     """ Use OpenVAS to check for security vulnerabilities. """
+
     _name = 'Open VAS'
     _metric_classes = (metric.HighRiskOpenVASScanAlertsMetric, metric.MediumRiskOpenVASScanAlertsMetric)

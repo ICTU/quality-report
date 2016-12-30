@@ -21,13 +21,14 @@ from hqlib import metric, domain, metric_source
 
 class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
-    # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
 
     def __init__(self, line_coverage=0, branch_coverage=0):
         self.__line_coverage = line_coverage
         self.__branch_coverage = branch_coverage
+
+    # pylint: disable=unused-argument
 
     def overall_test_line_coverage(self, *args):
         """ Return the percentage line coverage. """
@@ -44,8 +45,8 @@ class FakeSonar(object):
 
 
 class FakeSubject(object):
-    # pylint: disable=unused-argument
     """ Provide for a fake subject. """
+
     def __init__(self, sonar=None, unittests=True, integration_tests=True):
         self.__unittests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
             if unittests else None
@@ -56,6 +57,8 @@ class FakeSubject(object):
     def name():
         """ Return the name of the subject. """
         return 'FakeSubject'
+
+    # pylint: disable=unused-argument
 
     @staticmethod
     def metric_source_id(*args):

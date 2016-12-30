@@ -70,6 +70,7 @@ class LastRevisionCollected(object):
 
 
 class TimeEstimator(object):
+    """ Class to estimate how much time is needed to do the remaining work. """
     def __init__(self, total_steps):
         super(TimeEstimator, self).__init__()
         self.__total_steps = total_steps
@@ -81,7 +82,8 @@ class TimeEstimator(object):
             seconds_per_step = (datetime.datetime.now() - self.__start_time).total_seconds() / steps_done
             seconds_remaining = (self.__total_steps - steps_done) * seconds_per_step
             return str(datetime.timedelta(seconds=round(seconds_remaining)))
-        return 'not enough data to estimate'
+        else:
+            return 'not enough data to estimate'
 
 
 class RevisionsToCollect(list):
@@ -132,9 +134,15 @@ class RevisionCollector(object):
         return eval(measurement).get('date') if measurement else 'unknown date'
 
 
-if __name__ == '__main__':
+def main():
+    """ Get the history. """
     arguments = parse_args()
     init_logging(arguments.log)
     last = LastRevisionCollected()
     todo = RevisionsToCollect(arguments.url, last)
     RevisionCollector(arguments.url, last).collect(todo)
+
+
+if __name__ == '__main__':
+    main()
+

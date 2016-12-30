@@ -21,9 +21,10 @@ from hqlib import metric, domain, metric_source
 
 class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
-    # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
+
+    # pylint: disable=unused-argument
 
     @staticmethod
     def dashboard_url(*args):

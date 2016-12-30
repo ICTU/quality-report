@@ -78,13 +78,16 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
         self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
+        """ Test that the value is correcrt. """
         self.assertEqual(self.expected_violations, self.__metric.value())
 
     def test_url(self):
+        """ Test that the url contains both reports. """
         self.assertEqual({'Performancerapport (1/2)': 'http://report1',
                           'Performancerapport (2/2)': 'http://report2'}, self.__metric.url())
 
     def test_report(self):
+        """ Test that the report is correct. """
         self.assertEqual('4 van de 10 {} van FakeSubject overschrijden de {}.'.
                          format(self.metric_class.unit, self.metric_class.level), self.__metric.report())
 

@@ -48,8 +48,8 @@ class JenkinsTestReportTest(unittest.TestCase):
         self.assertEqual(1, self.__jenkins.skipped_tests('job/'))
 
     def test_testreport_without_pass_count(self):
-        """ Test retrieving a Jenkins test report that has no pass count.
-            Apparently that field is not present when there are no tests. """
+        """ Test retrieving a Jenkins test report that has no pass count. Apparently that field is not present when
+            there are no tests. """
         self.__opener.contents = u'{"failCount":0, "skipCount":0, "totalCount":8}'
         self.assertEqual(0, self.__jenkins.failed_tests('job/'))
         self.assertEqual(8, self.__jenkins.passed_tests('job'))

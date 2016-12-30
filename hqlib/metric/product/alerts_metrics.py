@@ -19,6 +19,7 @@ from ...domain import LowerIsBetterMetric
 
 class AlertsMetric(LowerIsBetterMetric):
     """ Base class for metrics that measure a number of alerts with a certain risk level. """
+
     template = '{name} heeft {value} {risk_level} risico {unit}.'
     risk_level = risk_level_key = 'Subclass responsibility'
     target_value = 0

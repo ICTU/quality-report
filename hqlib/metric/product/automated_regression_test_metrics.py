@@ -43,7 +43,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
     def _missing(self):
         urls = self.__metric_source_ids()
         return self._metric_source.passed_tests(*urls) < 0 or self._metric_source.failed_tests(*urls) < 0 or \
-               self._metric_source.skipped_tests(*urls) < 0
+            self._metric_source.skipped_tests(*urls) < 0
 
     def _parameters(self):
         # pylint: disable=protected-access

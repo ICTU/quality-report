@@ -21,6 +21,7 @@ from hqlib import domain, requirement
 
 class ProductTest(unittest.TestCase):
     """ Unit tests for the Product domain class. """
+
     def setUp(self):
         self.__project = domain.Project('Organization')
         self.__product = domain.Product(self.__project, name='Product')
@@ -74,6 +75,7 @@ class ProductTest(unittest.TestCase):
 
 class ComponentTest(unittest.TestCase):
     """ Unit test for the component class. """
+
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
         self.assertEqual({requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches},
@@ -86,6 +88,7 @@ class ComponentTest(unittest.TestCase):
 
 class ApplicationTest(unittest.TestCase):
     """ Unit test for the application class. """
+
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
         self.assertEqual({requirement.CodeQuality, requirement.TrackBranches, requirement.PerformanceLoad,
