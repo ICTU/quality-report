@@ -239,7 +239,7 @@ class MetricStatusTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__metric = MetricUnderTest(self.__subject, project=domain.Project())
 
-    def assertStatus(self, expected_status):
+    def assert_status(self, expected_status):
         """ Assert that the metric has the expected status. """
         self.assertEqual(expected_status, self.__metric.status())
 
@@ -251,7 +251,7 @@ class MetricStatusTest(unittest.TestCase):
         """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
         # pylint: disable=attribute-defined-outside-init
         self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
-        self.assertStatus('missing_source')
+        self.assert_status('missing_source')
 
     def test_missing_metric_source_id_status(self):
         """ Test that the status is missing metric sources when the subject doesn't have the required metric source
@@ -264,37 +264,37 @@ class MetricStatusTest(unittest.TestCase):
     def test_missing_metric(self):
         """ Test that the metric status is missing when the value is -1. """
         self.__metric.value_to_return = -1
-        self.assertStatus('missing')
+        self.assert_status('missing')
 
     def test_yellow_when_never_measured(self):
         """ Test that the status is yellow when the metric has never been measured. """
         self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.assertStatus('yellow')
+        self.assert_status('yellow')
 
     def test_yellow_when_old(self):
         """ Test that the status is yellow when the last measurement was too long ago. """
         self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
         self.__metric.date = datetime.datetime.now() - datetime.timedelta(hours=25)
-        self.assertStatus('yellow')
+        self.assert_status('yellow')
 
     def test_red_when_never_measured(self):
         """ Test that the status is red when the metric has never been measured. """
         self.__metric.max_old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.assertStatus('red')
+        self.assert_status('red')
 
     def test_red_when_old(self):
         """ Test that the status is red when the last measurement was too long ago. """
         self.__metric.max_old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
         self.__metric.date = datetime.datetime.now() - datetime.timedelta(hours=25)
-        self.assertStatus('red')
+        self.assert_status('red')
 
     def test_perfect_status(self):
         """ Test that the status is perfect when the value equals the perfect target. """
         self.__metric.perfect_value = 0  # pylint: disable=attribute-defined-outside-init
-        self.assertStatus('perfect')
+        self.assert_status('perfect')
 
     def test_status_when_technical_debt(self):
         """ Test that the status is grey when the metric has accepted technical debt. """
         self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
         self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
-        self.assertStatus('grey')
+        self.assert_status('grey')
