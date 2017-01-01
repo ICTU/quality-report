@@ -22,7 +22,7 @@ import urllib2
 from hqlib.metric_source import JenkinsTestReport
 
 
-class FakeUrlOpener(object):
+class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake URL opener. """
     contents = u'{}'
 
