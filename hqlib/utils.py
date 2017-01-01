@@ -65,13 +65,11 @@ _TIMEZONE_RE = "(?P<tzname>[A-Z]{3,4})"
 # US format: 'Apr 5, 2013 10:04:10 AM'
 _US_DATE_TIME_RE = _MONTHNAME_RE + r"\s+" + _DAY_RE + r",\s+" + _YEAR_RE + r"\s+" + _TIME_RE + r"\s+" + _AM_PM_RE
 # UK format: 'Tue Apr 5 2013 22:10:10 CEST'
-_UK_DATE_TIME_RE = _DAYNAME_RE + r"\s+" + _MONTHNAME_RE + r"\s+" + _DAY_RE + r"\s+" + _YEAR_RE + r"\s+" + _TIME_RE + \
-                   r"\s+" + _TIMEZONE_RE
+_UK_DATE_TIME_RE = r"\s+".join([_DAYNAME_RE, _MONTHNAME_RE, _DAY_RE, _YEAR_RE, _TIME_RE, _TIMEZONE_RE])
 # UK format, year last: 'Tue Apr 5 22:10:10 CEST 2013'
-_UK_DATE_TIME_YEAR_LAST_RE = _DAYNAME_RE + r"\s+" + _MONTHNAME_RE + r"\s+" + _DAY_RE + r"\s+" + _TIME_RE + r"\s+" + \
-                             _TIMEZONE_RE + r"\s+" + _YEAR_RE
+_UK_DATE_TIME_YEAR_LAST_RE = r"\s+".join([_DAYNAME_RE, _MONTHNAME_RE, _DAY_RE, _TIME_RE, _TIMEZONE_RE, _YEAR_RE])
 # ISO date: '2013-11-05'
-_ISO_DATE_RE = _YEAR_RE + "-" + _MONTH_RE + "-" + _DAY_RE
+_ISO_DATE_RE = "-".join([_YEAR_RE, _MONTH_RE,_DAY_RE])
 
 
 def _parse_date_time(date_time_re, date_time_string):
