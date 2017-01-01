@@ -69,7 +69,7 @@ _UK_DATE_TIME_RE = r"\s+".join([_DAYNAME_RE, _MONTHNAME_RE, _DAY_RE, _YEAR_RE, _
 # UK format, year last: 'Tue Apr 5 22:10:10 CEST 2013'
 _UK_DATE_TIME_YEAR_LAST_RE = r"\s+".join([_DAYNAME_RE, _MONTHNAME_RE, _DAY_RE, _TIME_RE, _TIMEZONE_RE, _YEAR_RE])
 # ISO date: '2013-11-05'
-_ISO_DATE_RE = "-".join([_YEAR_RE, _MONTH_RE,_DAY_RE])
+_ISO_DATE_RE = "-".join([_YEAR_RE, _MONTH_RE, _DAY_RE])
 
 
 def _parse_date_time(date_time_re, date_time_string):
