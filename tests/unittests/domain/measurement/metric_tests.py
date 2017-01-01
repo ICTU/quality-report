@@ -64,10 +64,6 @@ class MetricTest(unittest.TestCase):
         self.__metric.set_id_string('id string')
         self.assertEqual('id string', self.__metric.id_string())
 
-    def test_default_status(self):
-        """ Test that the default status is green. """
-        self.assertEqual('green', self.__metric.status())
-
     def test_one_metric_source(self):
         """ Test that the correct metric source id is returned when there is one metric source instance. """
         MetricUnderTest.metric_source_classes = [metric_source.Birt]
@@ -94,52 +90,6 @@ class MetricTest(unittest.TestCase):
         # pylint: disable=protected-access
         self.assertFalse(MetricUnderTest(project=project, subject=product)._metric_source_id)
         MetricUnderTest.metric_source_classes = []
-
-    def test_missing_metric_sources_status(self):
-        """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
-        # pylint: disable=attribute-defined-outside-init
-        self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
-        self.assertEqual('missing_source', self.__metric.status())
-
-    def test_missing_metric_source_id_status(self):
-        """ Test that the status is missing metric sources when the subject doesn't have the required metric source
-            id. """
-        project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
-        metric = MetricUnderTest(self.__subject, project=project)
-        metric.metric_source_classes = [metric_source.TestReport]
-        self.assertEqual('missing_source', metric.status())
-
-    def test_missing_metric(self):
-        """ Test that the metric status is missing when the value is -1. """
-        self.__metric.value_to_return = -1
-        self.assertEqual('missing', self.__metric.status())
-
-    def test_yellow_when_never_measured(self):
-        """ Test that the status is yellow when the metric has never been measured. """
-        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.assertEqual('yellow', self.__metric.status())
-
-    def test_yellow_when_old(self):
-        """ Test that the status is yellow when the last measurement was too long ago. """
-        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.__metric.date = datetime.datetime.now() - datetime.timedelta(hours=25)
-        self.assertEqual('yellow', self.__metric.status())
-
-    def test_red_when_never_measured(self):
-        """ Test that the status is red when the metric has never been measured. """
-        self.__metric.max_old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.assertEqual('red', self.__metric.status())
-
-    def test_red_when_old(self):
-        """ Test that the status is red when the last measurement was too long ago. """
-        self.__metric.max_old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.__metric.date = datetime.datetime.now() - datetime.timedelta(hours=25)
-        self.assertEqual('red', self.__metric.status())
-
-    def test_perfect_status(self):
-        """ Test that the status is perfect when the value equals the perfect target. """
-        self.__metric.perfect_value = 0  # pylint: disable=attribute-defined-outside-init
-        self.assertEqual('perfect', self.__metric.status())
 
     def test_default_report(self):
         """ Test the default report. """
@@ -270,12 +220,6 @@ class MetricTest(unittest.TestCase):
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo. Debt. Subject.',
                          self.__metric.comment())
 
-    def test_status_when_technical_debt(self):
-        """ Test that the status is grey when the metric has accepted technical debt. """
-        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
-        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
-        self.assertEqual('grey', self.__metric.status())
-
     def test_numerical_value(self):
         """ Test that the numerical value is the value by default. """
         self.assertEqual(self.__metric.numerical_value(), self.__metric.value())
@@ -287,3 +231,71 @@ class MetricTest(unittest.TestCase):
     def test_metric_should_be_measured(self):
         """ Test that a metric should not be measured be default. """
         self.assertFalse(domain.Metric.should_be_measured(self.__project))
+
+
+class MetricStatusTest(unittest.TestCase):
+    """ Test case for the Metric domain class status method. """
+
+    def setUp(self):
+        self.__subject = FakeSubject()
+        self.__metric = MetricUnderTest(self.__subject, project=domain.Project())
+
+    def assertStatus(self, expected_status):
+        """ Assert that the metric has the expected status. """
+        self.assertEqual(expected_status, self.__metric.status())
+
+    def test_default_status(self):
+        """ Test that the default status is green. """
+        self.assertEqual('green', self.__metric.status())
+
+    def test_missing_metric_sources_status(self):
+        """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
+        # pylint: disable=attribute-defined-outside-init
+        self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
+        self.assertStatus('missing_source')
+
+    def test_missing_metric_source_id_status(self):
+        """ Test that the status is missing metric sources when the subject doesn't have the required metric source
+            id. """
+        project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
+        metric = MetricUnderTest(self.__subject, project=project)
+        metric.metric_source_classes = [metric_source.TestReport]
+        self.assertEqual('missing_source', metric.status())
+
+    def test_missing_metric(self):
+        """ Test that the metric status is missing when the value is -1. """
+        self.__metric.value_to_return = -1
+        self.assertStatus('missing')
+
+    def test_yellow_when_never_measured(self):
+        """ Test that the status is yellow when the metric has never been measured. """
+        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
+        self.assertStatus('yellow')
+
+    def test_yellow_when_old(self):
+        """ Test that the status is yellow when the last measurement was too long ago. """
+        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
+        self.__metric.date = datetime.datetime.now() - datetime.timedelta(hours=25)
+        self.assertStatus('yellow')
+
+    def test_red_when_never_measured(self):
+        """ Test that the status is red when the metric has never been measured. """
+        self.__metric.max_old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
+        self.assertStatus('red')
+
+    def test_red_when_old(self):
+        """ Test that the status is red when the last measurement was too long ago. """
+        self.__metric.max_old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
+        self.__metric.date = datetime.datetime.now() - datetime.timedelta(hours=25)
+        self.assertStatus('red')
+
+    def test_perfect_status(self):
+        """ Test that the status is perfect when the value equals the perfect target. """
+        self.__metric.perfect_value = 0  # pylint: disable=attribute-defined-outside-init
+        self.assertStatus('perfect')
+
+    def test_status_when_technical_debt(self):
+        """ Test that the status is grey when the metric has accepted technical debt. """
+        self.__metric.old_age = datetime.timedelta(days=1)  # pylint: disable=attribute-defined-outside-init
+        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
+        self.assertStatus('grey')
