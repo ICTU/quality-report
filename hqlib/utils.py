@@ -153,12 +153,11 @@ def format_timedelta(timedelta):
     hours = timedelta.seconds // 3600
     minutes = (timedelta.seconds % 3600) // 60
 
-    if days:
-        return '{days} dagen'.format(days=days) if days > 1 else 'een dag'
-    elif hours:
-        return '{hours} uur'.format(hours=hours) if hours > 1 else 'een uur'
-    else:
-        return '{minutes} minuten'.format(minutes=minutes) if minutes > 1 else 'een minuut'
+    for unit, unit_singular, unit_plural in (days, 'dag', 'dagen'), (hours, 'uur', 'uur'), \
+                                            (minutes, 'minuut', 'minuten'):
+        if unit:
+            return '{0} {1}'.format(unit, unit_plural) if unit > 1 else 'een {0}'.format(unit_singular)
+    return 'minder dan een minuut'
 
 
 def workdays_in_period(start_date, end_date):

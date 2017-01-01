@@ -105,7 +105,7 @@ class FormatTimeDeltaTest(unittest.TestCase):
 
     def test_one_second(self):
         """ Test that less than a minute is formatted as one minute. """
-        self.assert_format('een minuut', seconds=1)
+        self.assert_format('minder dan een minuut', seconds=1)
 
     def test_one_minute(self):
         """ Test that exactly one minute doesn't include seconds. """
