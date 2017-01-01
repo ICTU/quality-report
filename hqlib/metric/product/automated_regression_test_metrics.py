@@ -21,7 +21,19 @@ from ... import metric_source
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
 
-class FailingRegressionTests(LowerIsBetterMetric):
+class _RegressionTestMetric(LowerIsBetterMetric):
+    """ Base class for regression test metrics. """
+    metric_source_classes = (metric_source.TestReport,)
+
+    def value(self):
+        raise NotImplementedError  # pragma: no cover
+
+    def _metric_source_ids(self):
+        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+        return [id_ for id_ in ids if id_]
+
+
+class FailingRegressionTests(_RegressionTestMetric):
     """ Metric for measuring the number of regression tests that fail. """
 
     name = 'Hoeveelheid falende regressietesten'
@@ -31,33 +43,28 @@ class FailingRegressionTests(LowerIsBetterMetric):
     template = '{value} van de {tests} {unit} van {name} slagen niet.'
     target_value = 0
     low_target_value = 0
-    metric_source_classes = (metric_source.TestReport,)
 
     def value(self):
         if self._missing():
             return -1
         else:
-            urls = self.__metric_source_ids()
+            urls = self._metric_source_ids()
             return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
 
     def _missing(self):
-        urls = self.__metric_source_ids()
+        urls = self._metric_source_ids()
         return self._metric_source.passed_tests(*urls) < 0 or self._metric_source.failed_tests(*urls) < 0 or \
             self._metric_source.skipped_tests(*urls) < 0
 
     def _parameters(self):
         # pylint: disable=protected-access
         parameters = super(FailingRegressionTests, self)._parameters()
-        passed_tests = self._metric_source.passed_tests(*self.__metric_source_ids())
+        passed_tests = self._metric_source.passed_tests(*self._metric_source_ids())
         parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters
 
-    def __metric_source_ids(self):
-        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-        return [id_ for id_ in ids if id_]
 
-
-class RegressionTestAge(LowerIsBetterMetric):
+class RegressionTestAge(_RegressionTestMetric):
     """ Metric for measuring the number of days since the regression test last ran. """
 
     name = 'Regressietestleeftijd'
@@ -68,18 +75,13 @@ class RegressionTestAge(LowerIsBetterMetric):
     template = 'De regressietest van {name} is {value} {unit} geleden gedraaid.'
     target_value = 3
     low_target_value = 7
-    metric_source_classes = (metric_source.TestReport,)
 
     def value(self):
         return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.report_datetime(*self.__metric_source_ids())).days
+            (datetime.datetime.now() - self._metric_source.report_datetime(*self._metric_source_ids())).days
 
     def _missing(self):
-        return self._metric_source.report_datetime(*self.__metric_source_ids()) in (None, datetime.datetime.min)
-
-    def __metric_source_ids(self):
-        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-        return [id_ for id_ in ids if id_]
+        return self._metric_source.report_datetime(*self._metric_source_ids()) in (None, datetime.datetime.min)
 
 
 class _ARTCoverage(HigherIsBetterMetric):
@@ -103,6 +105,13 @@ class _ARTCoverage(HigherIsBetterMetric):
         return values
 
     def value(self):
+        if self._metric_source_id is None:
+            return -1
+        coverage = self._get_coverage_from_metric_source(self._metric_source_id)
+        return -1 if coverage is None else int(round(coverage))
+
+    def _get_coverage_from_metric_source(self, metric_source_id):
+        """ Get the actual coverage measurement from the metric source. """
         raise NotImplementedError  # pragma: nocover
 
     def _date(self):
@@ -127,11 +136,8 @@ class ARTStatementCoverage(_ARTCoverage):
     covered_item = 'statement'
     covered_items = 'statements'
 
-    def value(self):
-        if self._metric_source_id is None:
-            return -1
-        coverage = self._metric_source.statement_coverage(self._metric_source_id)
-        return -1 if coverage is None else int(round(coverage))
+    def _get_coverage_from_metric_source(self, metric_source_id):
+        return self._metric_source.statement_coverage(self._metric_source_id)
 
 
 class ARTBranchCoverage(_ARTCoverage):
@@ -143,8 +149,5 @@ class ARTBranchCoverage(_ARTCoverage):
     covered_item = 'branch'
     covered_items = 'branches'
 
-    def value(self):
-        if self._metric_source_id is None:
-            return -1
-        coverage = self._metric_source.branch_coverage(self._metric_source_id)
-        return -1 if coverage is None else int(round(coverage))
+    def _get_coverage_from_metric_source(self, metric_source_id):
+        return self._metric_source.branch_coverage(self._metric_source_id)
