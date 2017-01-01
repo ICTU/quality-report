@@ -22,7 +22,6 @@ from tests.unittests.domain.measurement.fake import FakeHistory, FakeSubject
 
 
 class MetricUnderTest(domain.Metric):
-    # pylint: disable=too-few-public-methods
     """ Override Metric to implement abstract methods that are needed for running the unit tests. """
     unit = 'foo'
 

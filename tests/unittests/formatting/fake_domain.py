@@ -19,7 +19,7 @@ limitations under the License.
 import datetime
 
 
-class Product(object):
+class Product(object):  # pylint: disable=too-few-public-methods
     """ Fake the product domain class. """
     def __init__(self, dependencies=False):
         self.__dependencies = dependencies

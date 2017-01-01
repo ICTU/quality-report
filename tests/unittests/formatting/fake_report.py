@@ -18,7 +18,7 @@ limitations under the License.
 
 import datetime
 
-import fake_domain
+from . import fake_domain
 from hqlib import metric, metric_source, requirement, domain
 
 
@@ -72,12 +72,10 @@ class Section(object):
 class Report(object):
     """ Fake a quality report. """
 
-    def __init__(self, products=None, metrics=None, teams=None, number_of_meta_metrics=5, project_metric_sources=None):
+    def __init__(self, products=None, metrics=None):
         self.__products = products or []
         self.__metrics = metrics or []
-        self.__teams = teams or []
-        self.__meta_metrics = [fake_domain.Metric('MM-{}'.format(nr)) for nr in range(1, number_of_meta_metrics)]
-        self.project_metric_sources = project_metric_sources or dict()
+        self.__meta_metrics = [fake_domain.Metric('MM-{}'.format(nr)) for nr in range(1, 5)]
 
     @staticmethod
     def domain_object_classes():
@@ -151,7 +149,8 @@ class Report(object):
         """ Return the columns and rows of the dashboard. """
         return [('ME', 1)], [(('id', 'lightsteelblue'),), ]
 
-    def project(self):
+    @staticmethod
+    def project():
         """ Return the project. """
         class FakeProject(object):  # pylint: disable=too-few-public-methods
             """ Fake a project. """
