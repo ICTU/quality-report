@@ -68,11 +68,6 @@ class LowerPercentageIsBetterMetric(PercentageMixin, directed_metric.LowerIsBett
     def _denominator(self):
         raise NotImplementedError  # pragma: no cover
 
-    def _is_perfect(self):
-        """ Return whether the metric has a perfect value. This is the case when the numerator is zero. We ignore
-            the denominator to prevent a ZeroDivisionError exception. """
-        return self._numerator() == 0 and super(LowerPercentageIsBetterMetric, self)._is_perfect()
-
 
 class HigherPercentageIsBetterMetric(PercentageMixin, directed_metric.HigherIsBetterMetric):
     """ Metric measured as a percentage with higher values being better. """
@@ -85,8 +80,3 @@ class HigherPercentageIsBetterMetric(PercentageMixin, directed_metric.HigherIsBe
 
     def _denominator(self):
         raise NotImplementedError  # pragma: no cover
-
-    def _is_perfect(self):
-        """ Return whether the metric has a perfect value. This is the case when the numerator and denominator
-            are equal. """
-        return self._numerator() == self._denominator() and super(HigherPercentageIsBetterMetric, self)._is_perfect()

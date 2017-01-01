@@ -178,7 +178,7 @@ class HigherPercentageIsBetterMetricTest(PercentageMetricTestCase):
 
     def test_perfect_status(self):
         """ Test that the status is perfect when the metric value is 100%. """
-        self.set_metric_value(100, 100)
+        self.set_metric_value(234, 234)
         self.assertEqual('perfect', self._metric.status())
 
     def test_y_axis_range(self):

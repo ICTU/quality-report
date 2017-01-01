@@ -123,34 +123,35 @@ class Metric(object):
     @utils.memoized
     def status(self):
         """ Return the status/color of the metric. """
-        if self.__missing_source_classes() or self.__missing_source_ids():
-            return 'missing_source'
-        elif self._missing():
-            return 'missing'
-        below_target = self._is_below_target()
-        if below_target and self.__is_above_technical_debt_target():
-            return 'grey'
-        if self._needs_immediate_action():
-            return 'red'
-        elif below_target:
-            return 'yellow'
-        elif self._is_perfect():
-            return 'perfect'
-        else:
-            return 'green'
+        for status_string, has_status in [('missing_source', self.__missing_source_configuration),
+                                          ('missing', self._missing),
+                                          ('grey', self.__has_accepted_technical_debt),
+                                          ('red', self._needs_immediate_action),
+                                          ('yellow', self._is_below_target),
+                                          ('perfect', self.__is_perfect)]:
+            if has_status():
+                return status_string
+        return 'green'
 
     def status_start_date(self):
         """ Return since when the metric has the current status. """
         return self.__history.status_start_date(self.stable_id(), self.status())
 
-    def __is_above_technical_debt_target(self):
-        """ Return whether a score below target is considered to be accepted technical debt. """
-        target = self.__technical_debt_target()
-        return self._is_value_better_than(target.target_value()) if target else False
+    def __has_accepted_technical_debt(self):
+        """ Return whether the metric is below target but above the accepted technical debt level. """
+        technical_debt_target = self.__technical_debt_target()
+        if technical_debt_target:
+            return self._is_below_target() and self._is_value_better_than(technical_debt_target.target_value())
+        else:
+            return False
 
     def _missing(self):
         """ Return whether the metric source is missing. """
         return self.value() == -1
+
+    def __missing_source_configuration(self):
+        """ Return whether the metric sources have been completely configured. """
+        return self.__missing_source_classes() or self.__missing_source_ids()
 
     def __missing_source_classes(self):
         """ Return the metric source classes that need to be configured for the metric to be measurable. """
@@ -169,7 +170,7 @@ class Metric(object):
         """ Return whether the actual value of the metric is below its target value. """
         return self._is_old()
 
-    def _is_perfect(self):
+    def __is_perfect(self):
         """ Return whether the actual value of the metric equals its perfect value,
             i.e. no further improvement is possible. """
         return self.value() == self.perfect_value and not self._is_old()
@@ -198,7 +199,7 @@ class Metric(object):
             return self.missing_source_id_template
         elif self._missing():
             return self.missing_template
-        elif self._is_perfect() and self.perfect_template:
+        elif self.__is_perfect() and self.perfect_template:
             return self.perfect_template
         else:
             return self.template
