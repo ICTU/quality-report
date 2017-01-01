@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Copyright 2012-2016 Ministerie van Sociale Zaken en Werkgelegenheid
+Copyright 2012-2017 Ministerie van Sociale Zaken en Werkgelegenheid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
