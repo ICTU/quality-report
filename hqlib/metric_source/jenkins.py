@@ -15,6 +15,7 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import ast
 import datetime
 import logging
 import re
@@ -158,7 +159,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return the result of the API call at the url. """
         data = self.url_open(url).read()
         try:
-            return eval(data)
+            return ast.literal_eval(data)
         except:
             logging.warning("Couldn't evaluate %s from %s", data, url)
             raise

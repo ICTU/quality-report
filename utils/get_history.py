@@ -28,6 +28,7 @@ limitations under the License.
 
 
 import argparse
+import ast
 import datetime
 import logging
 import os
@@ -131,7 +132,7 @@ class RevisionCollector(object):
     @staticmethod
     def __get_date(measurement):
         """ Get the date of the measurement from the JSON. """
-        return eval(measurement).get('date') if measurement else 'unknown date'
+        return ast.literal_eval(measurement).get('date') if measurement else 'unknown date'
 
 
 def main():

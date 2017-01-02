@@ -15,6 +15,7 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import ast
 import datetime
 import io
 import logging
@@ -91,7 +92,7 @@ class History(domain.MetricSource):
     @utils.memoized
     def __eval_history(self, recent_only=True):
         """ Load and eval measurements from the history file. """
-        return [eval(line) for line in self.__load_history(recent_only)]
+        return [ast.literal_eval(line) for line in self.__load_history(recent_only)]
 
     @utils.memoized
     def __load_history(self, recent_only=True):

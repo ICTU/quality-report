@@ -15,6 +15,7 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import ast
 import datetime
 import logging
 
@@ -50,35 +51,27 @@ class JenkinsTestReport(test_report.TestReport):
     @utils.memoized
     def __test_count(self, report_url, result_type):
         """ Return the number of tests with the specified result in the test report. """
-        url = report_url
-        if not url.endswith('/'):
-            url += '/'
-        url += 'lastCompletedBuild/testReport/api/python'
-        try:
-            contents = self._url_open(url).read()
-        except UrlOpener.url_open_exceptions:
-            return -1
-        try:
-            report_dict = eval(contents)
-        except (SyntaxError, NameError, TypeError) as reason:
-            logging.warning("Couldn't eval %s to read test count %s: %s\nData received: %s",
-                            url, result_type, reason, contents)
-            return -1
-        return int(report_dict[result_type])
+        json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/testReport/api/python'))
+        return int(json[result_type]) if json else -1
 
     def _report_datetime(self, report_url):
         """ Return the date and time of the specified report. """
-        url = report_url
-        if not url.endswith('/'):
-            url += '/'
-        url += 'lastCompletedBuild/api/python'
+        json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/api/python'))
+        return datetime.datetime.fromtimestamp(float(json["timestamp"])/1000.) if json else datetime.datetime.min
+
+    def __read_json(self, api_url):
+        """ Return the json from the url, or the default when something goes wrong. """
         try:
-            contents = self._url_open(url).read()
+            contents = self._url_open(api_url).read()
         except UrlOpener.url_open_exceptions:
-            return datetime.datetime.min
+            return None
         try:
-            report_dict = eval(contents)
+            return ast.literal_eval(contents)
         except (SyntaxError, NameError, TypeError) as reason:
-            logging.warning("Couldn't eval %s to read date and time: %s\nData received: %s", url, reason, contents)
-            return datetime.datetime.min
-        return datetime.datetime.fromtimestamp(float(report_dict["timestamp"])/1000.)
+            logging.warning("Couldn't eval %s: %s\nData received: %s", api_url, reason, contents)
+            return None
+
+    @staticmethod
+    def __join_url(*parts):
+        """ Join the different url parts with forward slashes. """
+        return '/'.join([part.strip('/') for part in parts])
