@@ -17,6 +17,8 @@ from __future__ import absolute_import
 
 from .. import metric_source, metric_info
 
+# pylint: disable=too-few-public-methods
+
 
 class SonarMetricMixin(object):
     """ Mixin class for metrics that use Sonar. """
@@ -51,7 +53,6 @@ class SonarViolationsMetricMixin(SonarMetricMixin):
 
 class BirtTestDesignMetricMixin(object):
     """ Mixin class for metrics that use the Birt test design report. """
-    # pylint: disable=too-few-public-methods
 
     metric_source_classes = (metric_source.Birt,)
 
@@ -61,7 +62,7 @@ class BirtTestDesignMetricMixin(object):
         return [self._metric_source.whats_missing_url()]
 
 
-class VersionControlSystemMetricMixin(object):  # pylint: disable=too-few-public-methods
+class VersionControlSystemMetricMixin(object):
     """ Mixin class for metrics that use a version control system. """
 
     metric_source_classes = (metric_source.VersionControlSystem,)
