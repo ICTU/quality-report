@@ -1,3 +1,8 @@
+2017-01-02  Release 1.72.2
+
+  * Bug fix: Encode passwords in Git URLs.
+  
+  
 2016-12-15  Release 1.72.1
 
   * Bug fix: The JSF code quality requirement was missing from the help menu.

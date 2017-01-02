@@ -19,6 +19,7 @@ import datetime
 import logging
 import os
 import re
+import urllib
 
 from ..abstract.version_control_system import VersionControlSystem
 from ... import utils
@@ -126,7 +127,7 @@ class Git(VersionControlSystem):
             sep = '://'
             prefix, postfix = self.url().split(sep)
             url = prefix + sep + '{username}:{password}@' + postfix
-            return url.format(username=self._username, password=self._password)
+            return url.format(username=self._username, password=urllib.pathname2url(self._password))
         else:
             return self.url()
 

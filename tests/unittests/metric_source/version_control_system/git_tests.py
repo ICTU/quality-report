@@ -59,3 +59,8 @@ class GitTests(unittest.TestCase):
     def test_normalize_path_does_not_add_trailing_slash(self):
         """ Test that the normalized path has a trailing slash. """
         self.assertEqual('http://git/master', self.__git.normalize_path('http://git/master'))
+
+    def test_encode_password(self):
+        """ Test that the password is encoded. """
+        git = GitUnderTest(url='http://git/', username='user', password='foo@bar')
+        self.assertEqual('http://user:foo%40bar@git/', git.last_command[2])
