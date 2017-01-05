@@ -31,11 +31,11 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
             kwargs['name'] = self.metric_source_name or 'Unknown metric source'
         super(MetricSource, self).__init__(*args, **kwargs)
 
-    def metric_source_urls(self, *metric_source_ids):
+    def metric_source_urls(self, *metric_source_ids):  # pylint: disable=no-self-use
         """ Return the url(s) to the metric source for the metric source id. """
         return list(metric_source_ids)  # Default implementation assumes the metric source ids as urls.
 
-    def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument
+    def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument,no-self-use
         """ Return the date and time of the last measurement. """
         return datetime.datetime.now()
 
@@ -46,7 +46,7 @@ class MissingMetricSource(MetricSource):
     def url(self):
         return
 
-    def datetime(self, *metric_source_ids):
+    def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument,no-self-use
         return datetime.datetime.min
 
     def __getattr__(self, attribute):
