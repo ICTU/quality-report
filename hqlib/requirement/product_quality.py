@@ -79,19 +79,22 @@ class JSFCodeQuality(Requirement):
 class PerformanceLoad(Requirement):
     """ Require a performance load test. """
     _name = 'Performance load'
-    _metric_classes = (metric.PerformanceLoadTestWarnings, metric.PerformanceLoadTestErrors)
+    _metric_classes = (metric.PerformanceLoadTestWarnings, metric.PerformanceLoadTestErrors,
+                       metric.PerformanceLoadTestAge)
 
 
 class PerformanceEndurance(Requirement):
     """ Require a performance endurance test. """
     _name = 'Performance endurance'
-    _metric_classes = (metric.PerformanceEnduranceTestWarnings, metric.PerformanceEnduranceTestErrors)
+    _metric_classes = (metric.PerformanceEnduranceTestWarnings, metric.PerformanceEnduranceTestErrors,
+                       metric.PerformanceEnduranceTestAge)
 
 
 class PerformanceScalability(Requirement):
     """ Require a performance scalability (stress) test. """
     _name = 'Performance scalability'
-    _metric_classes = (metric.PerformanceScalabilityTestWarnings, metric.PerformanceScalabilityTestErrors)
+    _metric_classes = (metric.PerformanceScalabilityTestWarnings, metric.PerformanceScalabilityTestErrors,
+                       metric.PerformanceScalabilityTestAge)
 
 
 class TrackBranches(Requirement):

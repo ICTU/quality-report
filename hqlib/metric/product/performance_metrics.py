@@ -15,6 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import datetime
+
 from ... import domain, metric_source
 
 
@@ -52,6 +54,54 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         parameters = super(PerformanceMetric, self)._parameters()
         parameters.update(dict(level=self.level, total=self.__total_queries()))
         return parameters
+
+
+class PerformanceTestAge(domain.LowerIsBetterMetric):
+    """ Metric for measuring the age of the performance test. """
+
+    unit = 'dagen'
+    target_value = 7
+    low_target_value = 14
+
+    def value(self):
+        return -1 if self._missing() else \
+            (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
+
+    def _missing(self):
+        return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)
+
+
+class PerformanceLoadTestAge(PerformanceTestAge):
+    """ Metric for measuring the age of the performance load test. """
+
+    name = 'Performanceloadtestleeftijd'
+    norm_template = 'De performanceloadtest is maximaal {target} {unit} geleden gedraaid. ' \
+                    'Langer dan {low_target} {unit} geleden is rood.'
+    perfect_template = 'De performanceloadtest van {name} is vandaag gedraaid.'
+    template = 'De performanceloadtest van {name} is {value} {unit} geleden gedraaid.'
+    metric_source_classes = (metric_source.PerformanceLoadTestReport,)
+
+
+class PerformanceEnduranceTestAge(PerformanceTestAge):
+    """ Metric for measuring the age of the performance endurance test. """
+
+    name = 'Performanceduurtestleeftijd'
+    norm_template = 'De performanceduurtest is maximaal {target} {unit} geleden gedraaid. ' \
+                    'Langer dan {low_target} {unit} geleden is rood.'
+    perfect_template = 'De performanceduurtest van {name} is vandaag gedraaid.'
+    template = 'De performanceduurtest van {name} is {value} {unit} geleden gedraaid.'
+    metric_source_classes = (metric_source.PerformanceEnduranceTestReport,)
+
+
+class PerformanceScalabilityTestAge(PerformanceTestAge):
+    """ Metric for measuring the age of the performance scalability test. """
+
+    name = 'Performanceschaalbaarheidstestleeftijd'
+    norm_template = 'De performanceschaalbaarheidstest is maximaal {target} {unit} geleden gedraaid. ' \
+                    'Langer dan {low_target} {unit} geleden is rood.'
+    perfect_template = 'De performanceschaalbaarheidstest van {name} is vandaag gedraaid.'
+    template = 'De performanceschaalbaarheidstest van {name} is {value} {unit} geleden gedraaid.'
+    metric_source_classes = (metric_source.PerformanceScalabilityTestReport,)
 
 
 # We have different types of performance test metrics, organized along two dimensions: test type and severity.

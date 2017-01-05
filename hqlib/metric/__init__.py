@@ -31,7 +31,7 @@ from .product.openvas_scan_metrics import HighRiskOpenVASScanAlertsMetric, Mediu
 from .product.owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
 from .product.performance_metrics import PerformanceLoadTestWarnings, PerformanceLoadTestErrors, \
     PerformanceEnduranceTestWarnings, PerformanceEnduranceTestErrors, PerformanceScalabilityTestWarnings, \
-    PerformanceScalabilityTestErrors
+    PerformanceScalabilityTestErrors, PerformanceLoadTestAge, PerformanceEnduranceTestAge, PerformanceScalabilityTestAge
 from .product.size_metrics import ProductLOC, TotalLOC
 from .product.source_code_metrics import CommentedLOC, CyclomaticComplexity, LongMethods, ManyParameters
 from .product.unit_and_integration_test_metrics import (

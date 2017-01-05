@@ -1,3 +1,8 @@
+2017-01-05  Release 1.73.0
+
+  * Add metrics for the number of days since performance tests were last run.
+  
+
 2017-01-02  Release 1.72.2
 
   * Bug fix: Encode passwords in Git URLs.

@@ -197,8 +197,7 @@ class RegressionTestAgeTest(unittest.TestCase):
         self.assertEqual(expected, self.__metric.value())
 
     def test_value_multiple_jobs(self):
-        """ Test that the value of the metric equals to minimum report age if there are multiple
-            test reports. """
+        """ Test that the value of the metric equals to minimum report age if there are multiple test reports. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         age = metric.RegressionTestAge(subject=subject, project=self.__project)
         expected = (datetime.datetime.now() - self.__jenkins.datetime('a', 'b')).days
