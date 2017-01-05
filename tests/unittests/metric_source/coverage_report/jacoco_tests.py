@@ -115,9 +115,7 @@ class JacocoTest(unittest.TestCase):
 
     def test_coverage_date_on_error(self):
         """ Test that the date is now when JaCoCo can't be reached. """
-        coverage_date = self.__jacoco.datetime('raise/index.html')
-        age = datetime.datetime.now() - coverage_date
-        self.assertTrue(age < datetime.timedelta(seconds=1))
+        self.assertEqual(datetime.datetime.min, self.__jacoco.datetime('raise/index.html'))
 
     def test_coverage_date_url(self):
         """ Test that the coverage date url is different than the coverage url for JaCoCo. """

@@ -51,17 +51,17 @@ class AnsibleConfigReport(domain.MetricSource):
             versions.add(environment.values()[0]['appserver version'])
         return len(versions)
 
-    def datetime(self, url):
+    def datetime(self, *urls):
         """ Return the date of the report. """
-        json = self.__get_json(url)
-        if not json:
-            return datetime.datetime.min
-        else:
-            mindate = datetime.datetime.now()
-        for environment in json:
-            timestamp = utils.parse_iso_datetime(environment.values()[0]['timestamp'])
-            mindate = min(timestamp, mindate)
-        return mindate
+        min_date = datetime.datetime.now()
+        for url in urls:
+            json = self.__get_json(url)
+            if not json:
+                return datetime.datetime.min
+            for environment in json:
+                timestamp = utils.parse_iso_datetime(environment.values()[0]['timestamp'])
+                min_date = min(timestamp, min_date)
+        return min_date
 
     @utils.memoized
     def __get_json(self, url):

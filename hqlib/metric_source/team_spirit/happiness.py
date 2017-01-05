@@ -50,18 +50,18 @@ class Happiness(team_spirit.TeamSpirit):
             return ''
 
     @utils.memoized
-    def datetime(self, team_id):
+    def datetime(self, *team_ids):
         """ Return the date that the team spirit of the team was last measured. """
         try:
             json = utils.eval_json(self.__url_open(self.__api_url()).read())
         except UrlOpener.url_open_exceptions:
             logging.warning("Could not open %s to read date of least spirit measurement of team %s", self.__api_url(),
-                            team_id)
+                            team_ids[0])
             return datetime.datetime.min
         try:
             return self.__parse_date(json[-1]['datum'])
         except (KeyError, IndexError) as reason:
-            logging.warning("Could not find smiley for %s in %s: %s", team_id, self.__api_url(), reason)
+            logging.warning("Could not find smiley for %s in %s: %s", team_ids[0], self.__api_url(), reason)
             return datetime.datetime.min
 
     # Utility methods

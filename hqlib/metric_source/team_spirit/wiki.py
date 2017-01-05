@@ -52,14 +52,15 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
         return re.sub(r'[^:\-()|]', '', row[-1].string)
 
     @utils.memoized
-    def datetime(self, team_id):
+    def datetime(self, *team_ids):
         """ Return the date that the team spirit of the team was last measured. """
         try:
             soup = self.soup(self.url())
         except UrlOpener.url_open_exceptions:
-            logging.warning("Could not open %s to read date of last spirit measurement of team %s", self.url(), team_id)
+            logging.warning("Could not open %s to read date of last spirit measurement of team %s", self.url(),
+                            team_ids[0])
             return datetime.datetime.min
-        columns = len(soup('tr', id=team_id)[0]('td'))
+        columns = len(soup('tr', id=team_ids[0])[0]('td'))
         date_text = soup('th')[columns - 1].string.strip()
         return self.__parse_date(date_text)
 

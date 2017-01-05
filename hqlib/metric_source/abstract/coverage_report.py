@@ -62,13 +62,13 @@ class CoverageReport(domain.MetricSource):
         raise NotImplementedError  # pragma: no cover
 
     @utils.memoized
-    def datetime(self, coverage_url, now=datetime.datetime.now):
+    def datetime(self, *coverage_urls):
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
-        coverage_date_url = self._get_coverage_date_url(coverage_url)
+        coverage_date_url = self._get_coverage_date_url(coverage_urls[0])
         try:
             soup = self.__get_soup(coverage_date_url)
         except UrlOpener.url_open_exceptions:
-            coverage_date = now()
+            coverage_date = datetime.datetime.min
         else:
             coverage_date = self._parse_coverage_date(soup)
         return coverage_date
