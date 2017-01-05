@@ -228,9 +228,16 @@ function hide_table(section) {
 
 function table_view(section) {
     var view = new google.visualization.DataView(window.metrics);
-    var rows = [];
+    var rows = table_view_rows(section);
+    if (settings.filter_color !== 'filter_color_all') {
+        rows = intersection(rows, table_view_filtered_rows());
+    }
+    view.setRows(rows);
+    return view;
+}
 
-    // Section
+function table_view_rows(section) {
+    var rows = [];
     if (section === 'all') {
         for (var index = 0; index < window.metrics.getNumberOfRows(); index++) {
             rows.push(index);
@@ -238,27 +245,25 @@ function table_view(section) {
     } else {
         rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}]);
     }
+    return rows;
+}
 
-    // Color
+function table_view_filtered_rows() {
     var filtered_color = settings.filter_color;
-    if (filtered_color !== 'filter_color_all') {
-        var colored_rows = [];
-        if (filtered_color === 'filter_color_red_and_yellow') {
-            var colors = ['yellow', 'red'];
-            for (var color_index = 0; color_index < colors.length; color_index++) {
-                var color_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
-                                                        value: colors[color_index]}]);
-                colored_rows = colored_rows.concat(color_rows);
-            }
+    var colored_rows = [];
+    if (filtered_color === 'filter_color_red_and_yellow') {
+        var colors = ['yellow', 'red'];
+        for (var color_index = 0; color_index < colors.length; color_index++) {
+            var color_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
+                                                              value: colors[color_index]}]);
+            colored_rows = colored_rows.concat(color_rows);
         }
-        if (filtered_color === 'filter_color_grey') {
-            colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
-                                                            value: 'grey'}]);
-        }
-        rows = intersection(rows, colored_rows);
     }
-    view.setRows(rows);
-    return view;
+    if (filtered_color === 'filter_color_grey') {
+        colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
+                                                        value: 'grey'}]);
+    }
+    return colored_rows;
 }
 
 function draw_section_summary_chart(section) {
