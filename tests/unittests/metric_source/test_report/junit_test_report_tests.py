@@ -77,7 +77,7 @@ class JunitTestReportTest(unittest.TestCase):
         self.assertEqual(-1, self.__junit.failed_tests())
         self.assertEqual(-1, self.__junit.passed_tests())
         self.assertEqual(-1, self.__junit.skipped_tests())
-        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime())
+        self.assertEqual(datetime.datetime.min, self.__junit.datetime())
 
     def test_incomplete_xml(self):
         """ Test that the default is returned when the xml is incomplete. """
@@ -90,21 +90,21 @@ class JunitTestReportTest(unittest.TestCase):
                                  '  <testsuite name="Art" timestamp="2016-07-07T12:26:44">' \
                                  '  </testsuite>' \
                                  '</testsuites>'
-        self.assertEqual(datetime.datetime(2016, 7, 7, 12, 26, 44), self.__junit.report_datetime('url'))
+        self.assertEqual(datetime.datetime(2016, 7, 7, 12, 26, 44), self.__junit.datetime('url'))
 
     def test_missing_report_datetime(self):
         """ Test that the minimum datetime is returned if the url can't be opened. """
-        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('raise'))
+        self.assertEqual(datetime.datetime.min, self.__junit.datetime('raise'))
 
     def test_incomplete_xml_datetime(self):
         """ Test that the minimum datetime is returned when the xml is incomplete. """
         self.__opener.contents = u'<testsuites></testsuites>'
-        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('url'))
+        self.assertEqual(datetime.datetime.min, self.__junit.datetime('url'))
 
     def test_incomplete_xml_no_timestamp(self):
         """ Test that the minimum datetime is returned when the xml is incomplete. """
         self.__opener.contents = u'<testsuites><testsuite></testsuite></testsuites>'
-        self.assertEqual(datetime.datetime.min, self.__junit.report_datetime('url'))
+        self.assertEqual(datetime.datetime.min, self.__junit.datetime('url'))
 
     def test_urls(self):
         """ Test that the urls point to the HTML versions of the reports. """

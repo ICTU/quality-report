@@ -252,7 +252,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         except self.url_open_exceptions:
             return None
 
-    def analysis_datetime(self, product):
+    def datetime(self, product):
         """ Return the date and time of the last analysis of the product. """
         url = self.__resource_api_url.format(resource=product)
         try:

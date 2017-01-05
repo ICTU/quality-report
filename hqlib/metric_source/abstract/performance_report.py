@@ -57,7 +57,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             return -1
 
     @utils.memoized
-    def date(self, product):
+    def datetime(self, product):
         """ Return the date when performance was last measured. """
         urls = self.urls(product)
         if urls:

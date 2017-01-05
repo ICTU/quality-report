@@ -29,8 +29,8 @@ class FakeSonar(object):
     def __init__(self, age=10):
         self.age = age
 
-    def analysis_datetime(self, *args):
-        """ Return a fake dashboard url. """
+    def datetime(self, *args):
+        """ Return a fake analysis date time. """
         if self.age == -1:
             return datetime.datetime.min
         else:

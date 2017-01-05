@@ -90,12 +90,12 @@ class AnsibleConfigReportTest(unittest.TestCase):
     def test_date(self):
         """ Test that the date of the report is the oldest timestamp in the json. """
         self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1),
-                         self.__config.date('http://ansible_report'))
+                         self.__config.datetime('http://ansible_report'))
 
     def test_date_on_error(self):
         """ Test that the date of the report is the minimal date on error. """
-        self.assertEqual(datetime.datetime.min, self.__config.date('raise'))
+        self.assertEqual(datetime.datetime.min, self.__config.datetime('raise'))
 
     def test_date_on_invalid_json(self):
         """ Test that the date of the report is the minimal date on invalid json. """
-        self.assertEqual(datetime.datetime.min, self.__config.date('invalid'))
+        self.assertEqual(datetime.datetime.min, self.__config.datetime('invalid'))

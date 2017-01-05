@@ -86,17 +86,17 @@ class NCoverTest(unittest.TestCase):
     def test_coverage_date(self):
         """ Test the date of the coverage report. """
         expected = datetime.datetime.fromtimestamp(1440425155042/1000.)
-        self.assertEqual(expected, self.__ncover.coverage_date('http://ncover'))
+        self.assertEqual(expected, self.__ncover.datetime('http://ncover'))
 
     def test_coverage_date_on_error(self):
         """ Test that the date is now when NCover can't be reached. """
-        coverage_date = self.__ncover.coverage_date('raise')
+        coverage_date = self.__ncover.datetime('raise')
         age = datetime.datetime.now() - coverage_date
         self.assertTrue(age < datetime.timedelta(seconds=1))
 
     def test_missing_coverage_date(self):
         """ Test that the date is now when the date is missing in the report. """
         self.__opener.html = ''
-        coverage_date = self.__ncover.coverage_date('http://ncover')
+        coverage_date = self.__ncover.datetime('http://ncover')
         age = datetime.datetime.now() - coverage_date
         self.assertTrue(age < datetime.timedelta(seconds=1))

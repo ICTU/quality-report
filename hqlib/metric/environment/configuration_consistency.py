@@ -42,5 +42,5 @@ class JavaVersionConsistency(LowerIsBetterMetric):
 
     def _date(self):
         """ Return the last measurement date. """
-        date = self._metric_source.date(self._metric_source_id)
+        date = self._metric_source.datetime(self._metric_source_id)
         return datetime.datetime.min if date is None else date

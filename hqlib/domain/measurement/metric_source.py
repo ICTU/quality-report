@@ -15,6 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import datetime
+
 from ..base import DomainObject
 
 
@@ -33,12 +35,19 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
         """ Return the url(s) to the metric source for the metric source id. """
         return list(metric_source_ids)  # Default implementation assumes the metric source ids as urls.
 
+    def datetime(self, *metric_source_ids):
+        """ Return the date and time of the last measurement. """
+        return datetime.datetime.now()
+
 
 class MissingMetricSource(MetricSource):
     """ Class that represents a missing metric source. """
 
     def url(self):
         return
+
+    def datetime(self, *metric_source_ids):
+        return datetime.datetime.min
 
     def __getattr__(self, attribute):
         return self.__default_method

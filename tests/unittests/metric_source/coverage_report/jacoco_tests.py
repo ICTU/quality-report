@@ -101,7 +101,7 @@ class JacocoTest(unittest.TestCase):
     def test_coverage_date(self):
         """ Test the date of the coverage report. """
         expected = datetime.datetime(2013, 4, 5, 10, 34, 55)
-        self.assertEqual(expected, self.__jacoco.coverage_date('http://jacoco'))
+        self.assertEqual(expected, self.__jacoco.datetime('http://jacoco'))
 
     def test_coverage_date_non_us(self):
         """ Test the date of the coverage report when it's not a US date/time. """
@@ -111,11 +111,11 @@ class JacocoTest(unittest.TestCase):
             '1f82fbab</span></td><td>4-apr-2013 16:43:39</td><td>5-apr-2013 ' \
             '10:34:55</td></tr></tbody>'
         expected = datetime.datetime(2013, 4, 5, 10, 34, 55)
-        self.assertEqual(expected, self.__jacoco.coverage_date('http://jacoco'))
+        self.assertEqual(expected, self.__jacoco.datetime('http://jacoco'))
 
     def test_coverage_date_on_error(self):
         """ Test that the date is now when JaCoCo can't be reached. """
-        coverage_date = self.__jacoco.coverage_date('raise/index.html')
+        coverage_date = self.__jacoco.datetime('raise/index.html')
         age = datetime.datetime.now() - coverage_date
         self.assertTrue(age < datetime.timedelta(seconds=1))
 

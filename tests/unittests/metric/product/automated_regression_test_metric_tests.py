@@ -137,7 +137,7 @@ class FakeJenkinsTestReport(domain.MetricSource):
         """ Return the number of passed tests for the job. """
         return self.passed
 
-    def report_datetime(self, *args):  # pylint: disable=unused-argument
+    def datetime(self, *args):  # pylint: disable=unused-argument
         """ Return the number of passed tests for the job. """
         return datetime.datetime.min if self.passed < 0 else datetime.datetime(2016, 1, 1, 12, 0, 0)
 
@@ -193,7 +193,7 @@ class RegressionTestAgeTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that value of the metric equals the report date as reported by Jenkins. """
-        expected = (datetime.datetime.now() - self.__jenkins.report_datetime('jenkins_job')).days
+        expected = (datetime.datetime.now() - self.__jenkins.datetime('jenkins_job')).days
         self.assertEqual(expected, self.__metric.value())
 
     def test_value_multiple_jobs(self):
@@ -201,7 +201,7 @@ class RegressionTestAgeTest(unittest.TestCase):
             test reports. """
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         age = metric.RegressionTestAge(subject=subject, project=self.__project)
-        expected = (datetime.datetime.now() - self.__jenkins.report_datetime('a', 'b')).days
+        expected = (datetime.datetime.now() - self.__jenkins.datetime('a', 'b')).days
         self.assertEqual(expected, age.value())
 
     def test_value_when_missing(self):
@@ -211,7 +211,7 @@ class RegressionTestAgeTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        days = (datetime.datetime.now() - self.__jenkins.report_datetime()).days
+        days = (datetime.datetime.now() - self.__jenkins.datetime()).days
         self.assertEqual('De regressietest van FakeSubject is {} dagen geleden gedraaid.'.format(days),
                          self.__metric.report())
 

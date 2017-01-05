@@ -78,10 +78,10 @@ class RegressionTestAge(_RegressionTestMetric):
 
     def value(self):
         return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.report_datetime(*self._metric_source_ids())).days
+            (datetime.datetime.now() - self._metric_source.datetime(*self._metric_source_ids())).days
 
     def _missing(self):
-        return self._metric_source.report_datetime(*self._metric_source_ids()) in (None, datetime.datetime.min)
+        return self._metric_source.datetime(*self._metric_source_ids()) in (None, datetime.datetime.min)
 
 
 class _ARTCoverage(HigherIsBetterMetric):
@@ -117,7 +117,7 @@ class _ARTCoverage(HigherIsBetterMetric):
     def _date(self):
         """ Return the date of the last coverage measurement from the coverage report. """
         return datetime.datetime.min if self._metric_source_id is None else \
-            self._metric_source.coverage_date(self._metric_source_id)
+            self._metric_source.datetime(self._metric_source_id)
 
     def _parameters(self):
         # pylint: disable=protected-access

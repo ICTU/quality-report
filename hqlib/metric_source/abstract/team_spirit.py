@@ -24,7 +24,3 @@ class TeamSpirit(domain.MetricSource):
     def team_spirit(self, team_id):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         raise NotImplementedError  # pragma: nocover
-
-    def date_of_last_team_spirit_measurement(self, team_id):
-        """ Return the date that the team spirit of the team was last measured. """
-        raise NotImplementedError  # pragma: nocover

@@ -66,4 +66,4 @@ class WikiTest(unittest.TestCase):
 
     def test_date_of_last_measurement(self):
         """ Test the date of the last measurement of the spirit of the team. """
-        self.assertEqual(datetime.datetime(2013, 1, 18), self.__wiki.date_of_last_team_spirit_measurement('team_2'))
+        self.assertEqual(datetime.datetime(2013, 1, 18), self.__wiki.datetime('team_2'))

@@ -52,7 +52,7 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
         return re.sub(r'[^:\-()|]', '', row[-1].string)
 
     @utils.memoized
-    def date_of_last_team_spirit_measurement(self, team_id):
+    def datetime(self, team_id):
         """ Return the date that the team spirit of the team was last measured. """
         try:
             soup = self.soup(self.url())

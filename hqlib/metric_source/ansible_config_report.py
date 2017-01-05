@@ -51,7 +51,7 @@ class AnsibleConfigReport(domain.MetricSource):
             versions.add(environment.values()[0]['appserver version'])
         return len(versions)
 
-    def date(self, url):
+    def datetime(self, url):
         """ Return the date of the report. """
         json = self.__get_json(url)
         if not json:

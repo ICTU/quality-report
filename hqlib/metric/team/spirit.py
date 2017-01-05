@@ -63,7 +63,7 @@ class TeamSpirit(Metric):
             self.numerical_value() < max(self.numerical_value_map.values())
 
     def _date(self):
-        return self._metric_source.date_of_last_team_spirit_measurement(self._metric_source_id)
+        return self._metric_source.datetime(self._metric_source_id)
 
     def _missing(self):
         return not self._metric_source.team_spirit(self._metric_source_id)

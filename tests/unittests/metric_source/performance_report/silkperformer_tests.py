@@ -381,7 +381,7 @@ class SilkPerformerTest(unittest.TestCase):
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
-                         self._performance_report.date(('.*[0-9][0-9].*', 'dummy')))
+                         self._performance_report.datetime(('.*[0-9][0-9].*', 'dummy')))
 
 
 class SilkPerformerMultipleReportsTest(SilkPerformerTest):
@@ -411,4 +411,4 @@ class SilkPerformerMissingTest(unittest.TestCase):
 
     def test_date_with_missing_report(self):
         """ Test that the date of a missing report is the min date. """
-        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').date('p4'))
+        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').datetime('p4'))

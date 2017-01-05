@@ -33,7 +33,7 @@ class FakeAnsibleConfigReport(domain.MetricSource):
         """ Return the number of different java versions. """
         return self.report_java_versions
 
-    def date(self, *args):
+    def datetime(self, *args):
         """ Return the date of the report. """
         return self.report_date
 

@@ -35,7 +35,7 @@ class FakeWiki(domain.MetricSource):
         """ Return a fake team spirit. """
         return ':-)'
 
-    def date_of_last_team_spirit_measurement(self, *args):  # pylint: disable=unused-argument
+    def datetime(self, *args):  # pylint: disable=unused-argument
         """ Return a fake date. """
         return self.date_of_last_measurement
 

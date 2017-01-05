@@ -156,11 +156,11 @@ class JMeterTest(unittest.TestCase):
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30),
-                         self.__performance_report.date(('01', 'lrk-pp')))
+                         self.__performance_report.datetime(('01', 'lrk-pp')))
 
     def test_date_product_not_found(self):
         """ Test the date when the product/version is not in the report. """
-        self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30), self.__performance_report.date('product'))
+        self.assertEqual(datetime.datetime(2015, 8, 28, 15, 41, 30), self.__performance_report.datetime('product'))
 
     def test_urls(self):
         """ Test the urls. """

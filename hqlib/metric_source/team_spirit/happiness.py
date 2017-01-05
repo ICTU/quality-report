@@ -50,7 +50,7 @@ class Happiness(team_spirit.TeamSpirit):
             return ''
 
     @utils.memoized
-    def date_of_last_team_spirit_measurement(self, team_id):
+    def datetime(self, team_id):
         """ Return the date that the team spirit of the team was last measured. """
         try:
             json = utils.eval_json(self.__url_open(self.__api_url()).read())

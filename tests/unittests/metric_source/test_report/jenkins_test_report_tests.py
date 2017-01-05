@@ -69,13 +69,13 @@ class JenkinsTestReportTest(unittest.TestCase):
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
         self.__opener.contents = u'{"timestamp":1467929105000}'
-        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000/1000.), self.__jenkins.report_datetime('job'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000/1000.), self.__jenkins.datetime('job'))
 
     def test_missing_report_datetime(self):
         """ Test that the minimum datetime is returned when the date and time of the test suite is missing. """
-        self.assertEqual(datetime.datetime.min, self.__jenkins.report_datetime('raise'))
+        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime('raise'))
 
     def test_invalid_date_time(self):
         """ Test that the minimum datetime is returned when the json invalid. """
         self.__opener.contents = u'{"timestamp":}'
-        self.assertEqual(datetime.datetime.min, self.__jenkins.report_datetime('job/'))
+        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime('job/'))

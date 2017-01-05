@@ -31,7 +31,7 @@ class TestReport(domain.MetricSource):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super(TestReport, self).__init__()
 
-    def report_datetime(self, *report_urls):
+    def datetime(self, *report_urls):
         """ Return the (oldest) date and time of the reports. """
         return min([self._report_datetime(report_url) for report_url in report_urls]) if report_urls else \
             datetime.datetime.min

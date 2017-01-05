@@ -346,7 +346,7 @@ class SonarTest(SonarTestCase):
 
     def test_analysis_datetime(self):
         """ Test that the analysis date and time is correct. """
-        self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.analysis_datetime('product'))
+        self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
 
 
 class SonarCoverage(SonarTestCase):
