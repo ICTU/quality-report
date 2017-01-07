@@ -1,3 +1,8 @@
+2017-01-06  Release 1.73.1
+
+  * Bug fix: Url of performance test age metrics didn't work.
+   
+   
 2017-01-05  Release 1.73.0
 
   * Add metrics for the number of days since performance tests were last run.
