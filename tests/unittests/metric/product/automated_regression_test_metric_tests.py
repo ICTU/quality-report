@@ -34,7 +34,7 @@ class FakeNCover(domain.MetricSource):
     branch_coverage = statement_coverage
 
     @staticmethod
-    def coverage_date(ncover_id):  # pylint: disable=unused-argument
+    def datetime(ncover_id):  # pylint: disable=unused-argument
         """ Return a fake date. """
         return datetime.datetime.today() - datetime.timedelta(days=4)
 
@@ -91,10 +91,6 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
         subject = FakeSubject()
         coverage_metric = self.metric_class(subject=subject, project=self.__project)
         self.assertEqual(-1, coverage_metric.value())
-
-    def test_old_age(self):
-        """ Test that the old age is set for trunk versions. """
-        self.assertEqual(datetime.timedelta(hours=3 * 24), self.__metric.old_age)
 
 
 class ARTBranchCoverageJacocoTest(ARTStatementCoverageJacocoTest):
@@ -223,3 +219,21 @@ class RegressionTestAgeTest(unittest.TestCase):
         subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
         failing_tests = metric.RegressionTestAge(subject=subject, project=self.__project)
         self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())
+
+
+class CoverageReportAgeTest(unittest.TestCase):
+    """ Unit tests for the coverage report age metric. """
+    def setUp(self):
+        self.__coverage_report = FakeJaCoCo()
+        self.__subject = FakeSubject(metric_source_ids={self.__coverage_report: 'http://jacoco'})
+        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__coverage_report})
+        self.__metric = metric.CoverageReportAge(subject=self.__subject, project=self.__project)
+
+    def test_value(self):
+        """ Test that the value is the age of the coverage report. """
+        self.assertEqual(3, self.__metric.value())
+
+    def test_missing_metric_source_id(self):
+        """ Test that the value is -1 if the metric source id hasn't been configured. """
+        age = metric.CoverageReportAge(subject=FakeSubject(), project=self.__project)
+        self.assertEqual(-1, age.value())

@@ -58,7 +58,7 @@ class ART(Requirement):
 class ARTCoverage(Requirement):
     """ Require the coverage of the automated regression test suite to be measured. """
     _name = 'Automated regression test coverage'
-    _metric_classes = (metric.ARTStatementCoverage, metric.ARTBranchCoverage)
+    _metric_classes = (metric.ARTStatementCoverage, metric.ARTBranchCoverage, metric.CoverageReportAge)
 
 
 class CodeQuality(Requirement):

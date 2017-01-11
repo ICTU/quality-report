@@ -1,3 +1,8 @@
+2017-01-11  Release 1.74.0
+
+  * Add a metric for the number of days since regression test coverage reports were last generated.
+  
+  
 2017-01-06  Release 1.73.1
 
   * Bug fix: Url of performance test age metrics didn't work.

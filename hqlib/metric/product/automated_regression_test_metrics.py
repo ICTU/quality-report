@@ -88,12 +88,9 @@ class _ARTCoverage(HigherIsBetterMetric):
     """ Metric for measuring the coverage of automated regression tests (ART) for a product. """
     unit = '%'
     norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde ' \
-                    'functionele tests en de coverage meting is niet ouder dan {old_age}. Minder dan ' \
-                    '{low_target}{unit} of meting ouder dan {max_old_age} is rood.'
-    template = '{name} ART {covered_item} coverage is {value}{unit} ({date}, {age} geleden).'
+                    'functionele tests. Minder dan {low_target}{unit} is rood.'
+    template = '{name} ART {covered_item} coverage is {value}{unit}.'
     perfect_value = 100
-    old_age = datetime.timedelta(hours=3 * 24)
-    max_old_age = datetime.timedelta(hours=5 * 24)
     metric_source_classes = [metric_source.CoverageReport]
     covered_items = covered_item = 'Subclass responsibility'
 
@@ -113,11 +110,6 @@ class _ARTCoverage(HigherIsBetterMetric):
     def _get_coverage_from_metric_source(self, metric_source_id):
         """ Get the actual coverage measurement from the metric source. """
         raise NotImplementedError  # pragma: nocover
-
-    def _date(self):
-        """ Return the date of the last coverage measurement from the coverage report. """
-        return datetime.datetime.min if self._metric_source_id is None else \
-            self._metric_source.datetime(self._metric_source_id)
 
     def _parameters(self):
         # pylint: disable=protected-access
@@ -151,3 +143,26 @@ class ARTBranchCoverage(_ARTCoverage):
 
     def _get_coverage_from_metric_source(self, metric_source_id):
         return self._metric_source.branch_coverage(self._metric_source_id)
+
+
+class CoverageReportAge(LowerIsBetterMetric):
+    """ Metric for measuring the number of days since the coverage report was last generated. """
+    name = 'Coveragerapportageleeftijd'
+    unit = 'dagen'
+    norm_template = 'De coveragerapportage is maximaal {target} {unit} geleden gemaakt. ' \
+                    'Langer dan {low_target} {unit} geleden is rood.'
+    perfect_template = 'De coveragerapportage van {name} is vandaag gemaakt.'
+    template = 'De coveragerapportage van {name} is {value} {unit} geleden gemaakt.'
+    metric_source_classes = [metric_source.CoverageReport]
+    target_value = 3
+    low_target_value = 7
+
+    def value(self):
+        return -1 if self._missing() else \
+            (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
+
+    def _missing(self):
+        if self._metric_source_id is None:
+            return True
+        else:
+            return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)
