@@ -27,14 +27,14 @@ class FakeNCover(domain.MetricSource):
     url = 'http://ncover'
 
     @staticmethod
-    def statement_coverage(ncover_id):  # pylint: disable=unused-argument
+    def statement_coverage(*args):  # pylint: disable=unused-argument
         """ Return the ART coverage. """
         return 98
 
     branch_coverage = statement_coverage
 
     @staticmethod
-    def datetime(ncover_id):  # pylint: disable=unused-argument
+    def datetime(*args):  # pylint: disable=unused-argument
         """ Return a fake date. """
         return datetime.datetime.today() - datetime.timedelta(days=4)
 
