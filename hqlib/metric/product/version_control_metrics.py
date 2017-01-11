@@ -50,7 +50,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         branches_to_include = self.__list_of_branches_to_include()
         if branches_to_include:
             branches = ', '.join(branches_to_include)
-            branch_comment = 'Alleen deze branches worden bewaakt: {}.'.format(branches)
+            branch_comment = 'Alleen deze branches worden bewaakt: {0}.'.format(branches)
             if comment:
                 comment += ' ' + branch_comment
             else:

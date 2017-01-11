@@ -97,7 +97,7 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('4 van de 10 {} van FakeSubject overschrijden de {}.'.
+        self.assertEqual('4 van de 10 {0} van FakeSubject overschrijden de {1}.'.
                          format(self.metric_class.unit, self.metric_class.level), self.__metric.report())
 
     def test_status(self):
@@ -196,7 +196,7 @@ class PerformanceLoadTestAgeTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report for the metric is correct. """
         days = (datetime.datetime.now() - self.__report.datetime()).days
-        self.assertEqual('De {} van FakeSubject is {} dagen geleden gedraaid.'.format(self.test_type, days),
+        self.assertEqual('De {0} van FakeSubject is {1} dagen geleden gedraaid.'.format(self.test_type, days),
                          self.__metric.report())
 
     def test_url(self):

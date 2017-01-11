@@ -44,7 +44,7 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s to read warning count %s: %s", url, priority, reason)
             return -1
-        return int(report_dict['numberOf{}PriorityWarnings'.format(priority.capitalize())])
+        return int(report_dict['numberOf{0}PriorityWarnings'.format(priority.capitalize())])
 
     def metric_source_urls(self, *job_names):
         """ Return the url of the job. """

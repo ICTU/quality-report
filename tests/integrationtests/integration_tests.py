@@ -49,17 +49,17 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def report(self):
         """ Read the report and return as beautiful soup. """
-        with open('{}/index.html'.format(self.report_folder)) as contents:
+        with open('{0}/index.html'.format(self.report_folder)) as contents:
             return bs4.BeautifulSoup(contents.read(), "html.parser")
 
     def test_report_exists(self):
         """ Test that the report exists. """
-        self.assertTrue(os.path.exists('{}/index.html'.format(self.report_folder)))
+        self.assertTrue(os.path.exists('{0}/index.html'.format(self.report_folder)))
 
     def test_report_title(self):
         """ Test the report title. """
         title = self.report()('head')[0]('title')[0].string
-        self.assertEqual('Kwaliteitsrapportage Integrationtest/{}'.format(self.expected_title), title)
+        self.assertEqual('Kwaliteitsrapportage Integrationtest/{0}'.format(self.expected_title), title)
 
     def test_number_of_metrics(self):
         """ Test the number of metrics in the report. """

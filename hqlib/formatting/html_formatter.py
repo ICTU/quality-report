@@ -135,7 +135,7 @@ class HTMLFormatter(base_formatter.Formatter):
             date_and_time = self.__date_and_time(history_record)
             percentages = self.__percentages(history_record, green_id, red_id, yellow_id, grey_id, missing_id)
             history_table.append(
-                '[new Date({}, {}, {}, {}, {}, {}), {}, {}, {}, {}, {}]'.format(*(date_and_time + percentages)))
+                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time + percentages)))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod

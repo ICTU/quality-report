@@ -75,7 +75,7 @@ class Report(object):
     def __init__(self, products=None, metrics=None):
         self.__products = products or []
         self.__metrics = metrics or []
-        self.__meta_metrics = [fake_domain.Metric('MM-{}'.format(nr)) for nr in range(1, 5)]
+        self.__meta_metrics = [fake_domain.Metric('MM-{0}'.format(nr)) for nr in range(1, 5)]
 
     @staticmethod
     def domain_object_classes():

@@ -49,7 +49,7 @@ class FakeJenkinsOWASPDependenciesReport(domain.MetricSource):
     @staticmethod
     def metric_source_urls(*job_names):
         """ Return the url for the job. """
-        return ['http://jenkins/{}'.format(job_name) for job_name in job_names]
+        return ['http://jenkins/{0}'.format(job_name) for job_name in job_names]
 
 
 class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
@@ -85,7 +85,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        expected_report = 'Dependencies van FakeSubject hebben {} {} prioriteit waarschuwingen.'.format(
+        expected_report = 'Dependencies van FakeSubject hebben {0} {1} prioriteit waarschuwingen.'.format(
             self.expected_warnings('jenkins_job'), self.class_under_test.risk_level)
         self.assertEqual(expected_report, self.__metric.report())
 

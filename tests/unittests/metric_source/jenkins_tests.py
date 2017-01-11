@@ -152,7 +152,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = u'{{"jobs": [{{"name": "job-a"}}], ' \
                                   u'"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
         expected_days = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job-a ({} dagen)'.format(expected_days): 'http://jenkins/job/job-a/'},
+        self.assertEqual({'job-a ({0} dagen)'.format(expected_days): 'http://jenkins/job/job-a/'},
                          self.__jenkins.unstable_arts_url('job-a', 3))
 
     def test_unstable_art_key_error(self):

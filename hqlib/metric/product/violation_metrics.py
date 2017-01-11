@@ -34,7 +34,7 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return values
 
     def value(self):
-        violations = getattr(self._metric_source, '{}_violations'.format(self.violation_type))(self._sonar_id())
+        violations = getattr(self._metric_source, '{0}_violations'.format(self.violation_type))(self._sonar_id())
         return -1 if violations is None else violations
 
     def _parameters(self):

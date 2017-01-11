@@ -80,7 +80,7 @@ class HighRiskOpenVASAlertsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        expected_report = 'FakeSubject heeft {} {} risico waarschuwingen.'.format(
+        expected_report = 'FakeSubject heeft {0} {1} risico waarschuwingen.'.format(
             self.expected_alerts('url'), self.class_under_test.risk_level)
         self.assertEqual(expected_report, self.__metric.report())
 

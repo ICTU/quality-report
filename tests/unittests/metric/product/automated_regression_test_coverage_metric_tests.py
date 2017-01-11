@@ -84,7 +84,7 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith(
-            'FakeSubject ART {} coverage is 98%'.format(self.metric_class.covered_item)))
+            'FakeSubject ART {0} coverage is 98%'.format(self.metric_class.covered_item)))
 
     def test_missing_id(self):
         """ Test that the value is -1 when the metric source id hasn't been configured. """

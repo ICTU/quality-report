@@ -186,7 +186,7 @@ class QualityReportMetricsTest(unittest.TestCase):
         quality_report = ReportFactory.report(project_kwargs or dict(), team_kwargs or dict(),
                                               product_kwargs or dict())
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
-        self.assertTrue(included, '{} should be included in the report but was not.'.format(metric_class))
+        self.assertTrue(included, '{0} should be included in the report but was not.'.format(metric_class))
 
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
@@ -264,9 +264,9 @@ class QualityReportMetricsTest(unittest.TestCase):
     def test_metric_class_units(self):
         """ Test that all metric classes have a unit. """
         for metric_class in report.QualityReport.metric_classes():
-            self.assertNotEqual('Subclass responsibility', metric_class.unit, '{} has no unit'.format(metric_class))
+            self.assertNotEqual('Subclass responsibility', metric_class.unit, '{0} has no unit'.format(metric_class))
 
     def test_metric_class_names(self):
         """ Test that all metric classes have a name. """
         for metric_class in report.QualityReport.metric_classes():
-            self.assertNotEqual('Subclass responsibility', metric_class.name, '{} has no name'.format(metric_class))
+            self.assertNotEqual('Subclass responsibility', metric_class.name, '{0} has no name'.format(metric_class))

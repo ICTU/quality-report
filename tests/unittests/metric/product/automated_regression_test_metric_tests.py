@@ -128,7 +128,7 @@ class RegressionTestAgeTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report for the metric is correct. """
         days = (datetime.datetime.now() - self.__jenkins.datetime()).days
-        self.assertEqual('De regressietest van FakeSubject is {} dagen geleden gedraaid.'.format(days),
+        self.assertEqual('De regressietest van FakeSubject is {0} dagen geleden gedraaid.'.format(days),
                          self.__metric.report())
 
     def test_url(self):

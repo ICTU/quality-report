@@ -58,7 +58,7 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test meta metrics. """
         html = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
         for number in range(1, 5):
-            self.assertTrue('MM-{}'.format(number) in html, html)
+            self.assertTrue('MM-{0}'.format(number) in html, html)
 
     def test_dashboard(self):
         """ Test that the report contains the dashboard. """
