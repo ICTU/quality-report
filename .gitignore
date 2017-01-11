@@ -6,7 +6,7 @@
 
 # Ignore generated coverage and test reports and test data:
 .coverage*
-test-reports
+unit-test-reports
 integration-test-reports
 tests/integrationtests/*/history.json
 repos
