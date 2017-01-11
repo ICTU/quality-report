@@ -57,7 +57,7 @@ class JenkinsTest(unittest.TestCase):
                                   u'"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
                                   u'"builds": [{{}}]}}'.format(to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'}, self.__jenkins.failing_jobs_url())
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'}, self.__jenkins.failing_jobs_url())
 
     def test_ignore_disable_job(self):
         """ Test that disabled failing jobs are ignored. """
@@ -89,7 +89,7 @@ class JenkinsTest(unittest.TestCase):
                                   u'"url": "http://url", "buildable":  True}}], "timestamp": "{}", ' \
                                   u'"builds": [{{}}]}}'.format(to_jenkins_timestamp(jan_first))
         expected_days_ago = (datetime.datetime.utcnow() - jan_first).days
-        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'}, self.__jenkins.failing_jobs_url())
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'}, self.__jenkins.failing_jobs_url())
 
     def test_no_unused_jobs(self):
         """ Test the number of unused jobs when there are no unused jobs. """
@@ -102,7 +102,7 @@ class JenkinsTest(unittest.TestCase):
                                   u'"url": "http://url", "buildable": True}}], ' \
                                   u'"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'}, self.__jenkins.unused_jobs_url())
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'}, self.__jenkins.unused_jobs_url())
 
     def test_unused_jobs_grace(self):
         """ Test the unused jobs with one unused job within grace time. """
@@ -120,7 +120,7 @@ class JenkinsTest(unittest.TestCase):
                                   u'"builds": [{{}}]}}'.format(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1,
                                                                                                       12, 0, 0)))
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
-        self.assertEqual({'job1 (%d dagen)' % expected_days_ago: 'http://url'}, self.__jenkins.unused_jobs_url())
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'}, self.__jenkins.unused_jobs_url())
 
     def test_nr_of_active_jobs(self):
         """ Test the number of active jobs. """

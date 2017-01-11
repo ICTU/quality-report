@@ -135,5 +135,5 @@ class Git(VersionControlSystem):
         url_parts = [part for part in self.url().split('/') if part]
         folder = url_parts[-1]
         if self.__branch_to_checkout:
-            folder += '-%s' % self.__branch_to_checkout
+            folder += '-{0!s}'.format(self.__branch_to_checkout)
         return os.path.join(os.getcwd(), 'repos', folder)

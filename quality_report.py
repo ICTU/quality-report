@@ -117,7 +117,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             except metric_source.UrlOpener.url_open_exceptions as reason:
                 logging.warning("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
                 image = cls.EMPTY_HISTORY_PNG
-            filename = os.path.join(report_dir, 'img', '%s.png' % metric.id_string())
+            filename = os.path.join(report_dir, 'img', '{0!s}.png'.format(metric.id_string()))
             filesystem.write_file(image, filename, mode='wb', encoding=None)
 
     @staticmethod
@@ -143,7 +143,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     @staticmethod
     def __format_y_axis_range(y_axis_range):
         """ Return the y axis range parameter for the Google sparkline graph. """
-        return '%d,%d' % y_axis_range if y_axis_range else 'a'
+        return '{0:d},{1:d}'.format(*y_axis_range) if y_axis_range else 'a'
 
 
 if __name__ == '__main__':

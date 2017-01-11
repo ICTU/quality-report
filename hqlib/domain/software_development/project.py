@@ -105,6 +105,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         if name in self.__short_section_names:
             logging.error('Section abbreviation must be unique: %s already used: %s',
                           name, self.__short_section_names)
-            raise ValueError('Section abbreviation %s is not unique' % name)
+            raise ValueError('Section abbreviation {0!s} is not unique'.format(name))
         else:
             self.__short_section_names.add(name)

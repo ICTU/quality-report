@@ -32,11 +32,11 @@ class FakeCard(object):
 
     def name(self):
         """Return the name of the card. """
-        return 'card %d' % self.__card_id
+        return 'card {0:d}'.format(self.__card_id)
 
     def url(self):
         """ Return the url of the card. """
-        return 'http://card/%d' % self.__card_id
+        return 'http://card/{0:d}'.format(self.__card_id)
 
     def is_over_due(self):
         """ Return whether this card is over due. """
