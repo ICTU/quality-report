@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import datetime
 
 from ... import metric_source
-from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from ...domain import LowerIsBetterMetric
 
 
 class _RegressionTestMetric(LowerIsBetterMetric):
@@ -82,87 +82,3 @@ class RegressionTestAge(_RegressionTestMetric):
 
     def _missing(self):
         return self._metric_source.datetime(*self._metric_source_ids()) in (None, datetime.datetime.min)
-
-
-class _ARTCoverage(HigherIsBetterMetric):
-    """ Metric for measuring the coverage of automated regression tests (ART) for a product. """
-    unit = '%'
-    norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde ' \
-                    'functionele tests. Minder dan {low_target}{unit} is rood.'
-    template = '{name} ART {covered_item} coverage is {value}{unit}.'
-    perfect_value = 100
-    metric_source_classes = [metric_source.CoverageReport]
-    covered_items = covered_item = 'Subclass responsibility'
-
-    @classmethod
-    def norm_template_default_values(cls):
-        values = super(_ARTCoverage, cls).norm_template_default_values()
-        values['covered_items'] = cls.covered_items
-        values['covered_item'] = cls.covered_item
-        return values
-
-    def value(self):
-        if self._metric_source_id is None:
-            return -1
-        coverage = self._get_coverage_from_metric_source(self._metric_source_id)
-        return -1 if coverage is None else int(round(coverage))
-
-    def _get_coverage_from_metric_source(self, metric_source_id):
-        """ Get the actual coverage measurement from the metric source. """
-        raise NotImplementedError  # pragma: nocover
-
-    def _parameters(self):
-        # pylint: disable=protected-access
-        parameters = super(_ARTCoverage, self)._parameters()
-        parameters['covered_items'] = self.covered_items
-        parameters['covered_item'] = self.covered_item
-        return parameters
-
-
-class ARTStatementCoverage(_ARTCoverage):
-    """ Metric for measuring the statement coverage of automated regression tests (ART) for a product. """
-
-    name = 'Automatic regression test statement coverage'
-    target_value = 80
-    low_target_value = 70
-    covered_item = 'statement'
-    covered_items = 'statements'
-
-    def _get_coverage_from_metric_source(self, metric_source_id):
-        return self._metric_source.statement_coverage(self._metric_source_id)
-
-
-class ARTBranchCoverage(_ARTCoverage):
-    """ Metric for measuring the branch coverage of automated regression tests (ART) for a product. """
-
-    name = 'Automatic regression test branch coverage'
-    target_value = 75
-    low_target_value = 60
-    covered_item = 'branch'
-    covered_items = 'branches'
-
-    def _get_coverage_from_metric_source(self, metric_source_id):
-        return self._metric_source.branch_coverage(self._metric_source_id)
-
-
-class CoverageReportAge(LowerIsBetterMetric):
-    """ Metric for measuring the number of days since the coverage report was last generated. """
-    name = 'Coveragerapportageleeftijd'
-    unit = 'dagen'
-    norm_template = 'De coveragerapportage is maximaal {target} {unit} geleden gemaakt. ' \
-                    'Langer dan {low_target} {unit} geleden is rood.'
-    perfect_template = 'De coveragerapportage van {name} is vandaag gemaakt.'
-    template = 'De coveragerapportage van {name} is {value} {unit} geleden gemaakt.'
-    metric_source_classes = [metric_source.CoverageReport]
-    target_value = 3
-    low_target_value = 7
-
-    def value(self):
-        return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
-
-    def _missing(self):
-        if self._metric_source_id is None:
-            return True
-        else:
-            return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)
