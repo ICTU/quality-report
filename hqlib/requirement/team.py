@@ -29,7 +29,7 @@ class ScrumTeam(Requirement):
 class TrackSpirit(Requirement):
     """ Track the team spirit. """
     _name = 'Track spirit'
-    _metric_classes = (metric.TeamSpirit,)
+    _metric_classes = (metric.TeamSpirit, metric.TeamSpiritAge)
 
 
 class TrackAbsence(Requirement):

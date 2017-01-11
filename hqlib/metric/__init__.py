@@ -53,7 +53,7 @@ from .project.project_management_metrics import RiskLog, ActionActivity, ActionA
 # Team metrics
 from .team.absence import TeamAbsence
 from .team.progress import TeamProgress
-from .team.spirit import TeamSpirit
+from .team.spirit import TeamSpirit, TeamSpiritAge
 
 # Document metrics
 from .document.age import DocumentAge

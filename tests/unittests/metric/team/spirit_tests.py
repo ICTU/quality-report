@@ -41,7 +41,7 @@ class FakeWiki(domain.MetricSource):
 
 
 class TeamSpiritTest(unittest.TestCase):
-    """ Unit tests for the Team Spirit metric. """
+    """ Unit tests for the team spirit metric. """
 
     def setUp(self):
         self.__wiki = FakeWiki()
@@ -69,23 +69,11 @@ class TeamSpiritTest(unittest.TestCase):
         """ Test that the metric url uses the wiki url. """
         self.assertEqual(dict(Wiki=FakeWiki().url()), self.__metric.url())
 
-    def test_too_old(self):
-        """ Test that the metric becomes red when too old. """
-        self.__wiki.date_of_last_measurement = datetime.datetime(2000, 1, 1)
-        self.assertEqual('red', self.__metric.status())
-
-    def test_old(self):
-        """ Test that the metric becomes yellow when old. """
-        self.__wiki.date_of_last_measurement = \
-            datetime.datetime.now() - metric.TeamSpirit.old_age - datetime.timedelta(hours=1)
-        self.assertEqual('yellow', self.__metric.status())
-
     def test_norm(self):
         """ Test that the norm mentions measurement age. """
         self.assertEqual(
             'De stemming wordt door het team zelf bepaald door het kiezen van een smiley. '
-            'De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood. Als de meting '
-            'ouder is dan 21 dagen dagen is de status geel, ouder dan 42 dagen dagen is rood.',
+            'De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood.',
             self.__metric.norm())
 
     def test_is_value_better_than(self):
@@ -101,3 +89,29 @@ class TeamSpiritTest(unittest.TestCase):
         self.assertFalse(spirit.is_value_better_than(':-)'))
         self.assertTrue(spirit.is_value_better_than(':-|'))
         self.assertTrue(spirit.is_value_better_than(':-('))
+
+
+class TeamSpiritAgeTests(unittest.TestCase):
+    """ Unit tests for the team spirit age metric. """
+    def setUp(self):
+        self.__wiki = FakeWiki()
+        self.__team = domain.Team(metric_source_ids={self.__wiki: 'team'})
+        self.__project = domain.Project(metric_sources={metric_source.TeamSpirit: self.__wiki})
+        self.__metric = metric.TeamSpiritAge(subject=self.__team, project=self.__project)
+
+    def test_value(self):
+        """ Test the value of the metric. """
+        self.assertEqual(0, self.__metric.value())
+
+    def test_missing_value(self):
+        """ Test that the value is -1 when the team id has not been configured. """
+        age = metric.TeamSpiritAge(subject=domain.Team(), project=self.__project)
+        self.assertEqual(-1, age.value())
+
+    def test_report(self):
+        """ Test that the report for the metric is correct. """
+        self.assertEqual('De stemming van team <no name> is 0 dagen geleden bepaald.', self.__metric.report())
+
+    def test_url(self):
+        """ Test that the url points to the Wiki. """
+        self.assertEqual({'Wiki': 'http://wiki'}, self.__metric.url())

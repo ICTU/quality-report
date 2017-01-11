@@ -1,6 +1,7 @@
 2017-01-11  Release 1.74.0
 
   * Add a metric for the number of days since regression test coverage reports were last generated.
+  * Add a metric for the number of days since the team spirit was last edited.
   
   
 2017-01-06  Release 1.73.1
