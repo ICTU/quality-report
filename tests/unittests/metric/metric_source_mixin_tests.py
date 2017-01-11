@@ -24,11 +24,11 @@ class SonarMetricMixinUnderTest(metric.metric_source_mixin.SonarMetricMixin, dom
     # pylint: disable=too-few-public-methods
     def value(self):
         """ Return a dummy value. """
-        return 0
+        return 0  # pragma: no cover
 
     def _is_value_better_than(self, target):
         """ Return a dummy value. """
-        return True
+        return True  # pragma: no cover
 
 
 class SonarMetricMixinTest(unittest.TestCase):
@@ -60,11 +60,11 @@ class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMet
     # pylint: disable=too-few-public-methods
     def value(self):
         """ Return a dummy value. """
-        return 0
+        return 0  # pragma: no cover
 
     def _is_value_better_than(self, target):
         """ Return a dummy value. """
-        return True
+        return True  # pragma: no cover
 
 
 class FakeBirt(object):
