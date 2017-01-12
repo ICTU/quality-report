@@ -161,13 +161,17 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         try:
             return ast.literal_eval(data)
         except:
-            logging.warning("Couldn't evaluate %s from %s", data, url)
+            logging.error("Couldn't evaluate %s from %s", data, url)
             raise
 
     def url_open(self, url):
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
         url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
-        return super(Jenkins, self).url_open(url)
+        try:
+            return super(Jenkins, self).url_open(url)
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.error("Couldn't open %s: %s", url, reason)
+            raise
 
     def resolve_job_name(self, job_name):
         """ If the job name is a regular expression, resolve it to a concrete job name.
