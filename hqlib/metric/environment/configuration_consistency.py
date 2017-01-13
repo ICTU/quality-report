@@ -24,23 +24,35 @@ from hqlib.domain import LowerIsBetterMetric
 class JavaVersionConsistency(LowerIsBetterMetric):
     """ Metric for measuring the number of inconsistencies in an environment. """
 
-    name = 'Java versie consistentie'
+    name = 'Javaversie-consistentie'
     unit = 'verschillende Java versies'
-    norm_template = 'Er is precies een versie van Java in gebruik. Meer dan {low_target} {unit} is rood. ' \
-        'De rapportage is maximaal {old_age} oud. Meer dan {max_old_age} oud is rood.'
+    norm_template = 'Er is precies een versie van Java in gebruik. Meer dan {low_target} {unit} is rood.'
     template = 'Er zijn {value} {unit} in gebruik.'
     perfect_value = 1
     target_value = 1
     low_target_value = 2
-    old_age = datetime.timedelta(days=3)
-    max_old_age = datetime.timedelta(days=7)
     metric_source_classes = (metric_source.AnsibleConfigReport,)
 
     def value(self):
         versions = self._metric_source.java_versions(self._metric_source_id)
         return -1 if versions is None else versions
 
-    def _date(self):
-        """ Return the last measurement date. """
-        date = self._metric_source.datetime(self._metric_source_id)
-        return datetime.datetime.min if date is None else date
+
+class JavaVersionConsistencyAge(LowerIsBetterMetric):
+    """ Metric for measuring how long ago the version check was run. """
+    name = 'Javaversie-consistentie leeftijd'
+    unit = 'dagen'
+    norm_template = 'De Javaversie-consistentierapportage is maximaal {target} {unit} geleden gemaakt. ' \
+                    'Langer dan {low_target} {unit} geleden is rood.'
+    perfect_template = 'De Javaversie-consistentierapportage van {name} is vandaag gemaakt.'
+    template = 'De Javaversie-consistentierapportage van {name} is {value} {unit} geleden gemaakt.'
+    target_value = 3
+    low_target_value = 7
+    metric_source_classes = (metric_source.AnsibleConfigReport,)
+
+    def value(self):
+        return -1 if self._missing() else \
+            (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
+
+    def _missing(self):
+        return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)

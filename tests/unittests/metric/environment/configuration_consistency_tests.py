@@ -66,17 +66,49 @@ class JavaVersionConsistencyTests(unittest.TestCase):
 
     def test_norma(self):
         """ Test that the norm is correct. """
-        self.assertEqual('Er is precies een versie van Java in gebruik. Meer dan 2 verschillende Java versies is rood. '
-                         'De rapportage is maximaal 3 dagen oud. Meer dan 7 dagen oud is rood.',
+        self.assertEqual('Er is precies een versie van Java in gebruik. Meer dan 2 verschillende Java versies is rood.',
+                         self.__metric.norm())
+
+
+class JavaVersionConsistencyAgeTests(unittest.TestCase):
+    """ Unit tests for the configuration consistency age metric. """
+
+    def setUp(self):
+        """ Create the text fixture. """
+        self.__report = FakeAnsibleConfigReport(url='http://ansible_report/')
+        self.__project = domain.Project(metric_sources={metric_source.AnsibleConfigReport: self.__report})
+        self.__metric = metric.JavaVersionConsistencyAge(subject=self.__project, project=self.__project)
+
+    def test_norm_template_default_values(self):
+        """ Test that the right values are returned to fill in the norm template. """
+        self.assertTrue(metric.JavaVersionConsistencyAge.norm_template %
+                        metric.JavaVersionConsistencyAge.norm_template_default_values())
+
+    def test_value(self):
+        """ Test that the value equals the age of the report. """
+        self.assertEqual(0, self.__metric.value())
+
+    def test_url(self):
+        """ Test that the url of the metric equals the url of Jenkins. """
+        self.assertEqual({FakeAnsibleConfigReport.metric_source_name: 'http://ansible_report/'}, self.__metric.url())
+
+    def test_report(self):
+        """ Test the metric report. """
+        self.assertEqual('De Javaversie-consistentierapportage van <no name> is vandaag gemaakt.',
+                         self.__metric.report())
+
+    def test_norma(self):
+        """ Test that the norm is correct. """
+        self.assertEqual('De Javaversie-consistentierapportage is maximaal 3 dagen geleden gemaakt. '
+                         'Langer dan 7 dagen geleden is rood.',
                          self.__metric.norm())
 
     def test_status_with_recent_report(self):
         """ Test that the metric is perfect when there are no different versions. """
-        self.__report.report_java_versions = 1
-        self.assertEqual('perfect', self.__metric.status())
+        self.__report.report_date = datetime.datetime.now() - datetime.timedelta(days=2)
+        self.assertEqual('green', self.__metric.status())
 
     def test_status_with_old_report(self):
         """ Test that the metric is red when the report is old. """
-        self.__report.report_java_versions = 1
         self.__report.report_date = datetime.datetime(2015, 1, 1)
         self.assertEqual('red', self.__metric.status())

@@ -53,6 +53,8 @@ class AnsibleConfigReport(domain.MetricSource):
 
     def datetime(self, *urls):
         """ Return the date of the report. """
+        if not urls:
+            return datetime.datetime.min
         min_date = datetime.datetime.now()
         for url in urls:
             json = self.__get_json(url)
