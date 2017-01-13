@@ -15,7 +15,6 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-import datetime
 import logging
 
 from ... import utils
@@ -34,8 +33,6 @@ class Metric(object):
                                  '{missing_source_id_classes}.'
     perfect_template = ''
     url_label_text = comment_url_label_text = ''
-    old_age = datetime.timedelta.max
-    max_old_age = datetime.timedelta.max
     metric_source_classes = []
 
     @classmethod
@@ -51,9 +48,7 @@ class Metric(object):
     @classmethod
     def norm_template_default_values(cls):
         """ Return the default values for parameters in the norm template. """
-        return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value,
-                    old_age=utils.format_timedelta(cls.old_age),
-                    max_old_age=utils.format_timedelta(cls.max_old_age))
+        return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
     def __init__(self, subject=None, project=None):
         self._subject = subject
@@ -164,16 +159,16 @@ class Metric(object):
 
     def _needs_immediate_action(self):
         """ Return whether the metric needs immediate action, i.e. its actual value is below its low target value. """
-        return self._is_too_old()
+        return False
 
     def _is_below_target(self):
         """ Return whether the actual value of the metric is below its target value. """
-        return self._is_old()
+        return False
 
     def __is_perfect(self):
         """ Return whether the actual value of the metric equals its perfect value,
             i.e. no further improvement is possible. """
-        return self.value() == self.perfect_value and not self._is_old()
+        return self.value() == self.perfect_value
 
     def value(self):
         """ Return the actual value of the metric. """
@@ -212,10 +207,6 @@ class Metric(object):
                     target=self.target(),
                     low_target=self.low_target(),
                     value=self.value(),
-                    date=utils.format_date(self._date()),
-                    old_age=utils.format_timedelta(self.__old_age()),
-                    max_old_age=utils.format_timedelta(self.__max_old_age()),
-                    age=utils.format_timedelta(self.__age()),
                     missing_source_classes=', '.join(sorted(cls.__name__ for cls in self.__missing_source_classes())),
                     missing_source_id_classes=', '.join(sorted(cls.__name__ for cls in self.__missing_source_ids())))
 
@@ -252,37 +243,6 @@ class Metric(object):
     def url_label(cls):
         """ Return the label to be used to explain the urls. """
         return cls.url_label_text
-
-    def _date(self):  # pylint: disable=no-self-use
-        """ Return the date when the metric was last measured. """
-        return None
-
-    def _is_old(self):
-        """ Return whether this metric was measured recently. """
-        return self.__age() > self.__old_age()
-
-    def _is_too_old(self):
-        """ Return whether this metric was measured too long ago. """
-        return self.__age() > self.__max_old_age()
-
-    def __age(self):
-        """ Return how long ago this metric was measured (in hours). """
-        last_measurement_date = self._date()
-        return datetime.datetime.now() - last_measurement_date if last_measurement_date else datetime.timedelta.max
-
-    def __old_age(self):
-        """ Return the age when we consider the metric to have been measured long ago. """
-        try:
-            return self._subject.metric_options(self.__class__)['old_age']
-        except (AttributeError, TypeError, KeyError):
-            return self.old_age
-
-    def __max_old_age(self):
-        """ Return the age when we consider the metric to have been measured too long ago. """
-        try:
-            return self._subject.metric_options(self.__class__)['max_old_age']
-        except (AttributeError, TypeError, KeyError):
-            return self.max_old_age
 
     @utils.memoized
     def comment(self):

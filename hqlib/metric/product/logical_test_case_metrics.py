@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import datetime
 
 from ..metric_source_mixin import BirtTestDesignMetricMixin
-from ... import metric_source
+from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
 
 
@@ -123,6 +123,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
 
     def _parameters(self):
         parameters = super(ManualLogicalTestCases, self)._parameters()
+        parameters['date'] = utils.format_date(self.__date_of_last_manual_test())
         parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()
         parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old('trunk', self.target())
         return parameters
