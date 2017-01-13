@@ -27,13 +27,10 @@ class ActivityMetric(LowerIsBetterMetric):
     unit = 'dagen'
 
     def value(self):
-        date = self._date()
-        if date is None:
-            return -1
-        return (datetime.datetime.now() - date).days
+        return -1 if self._missing() else (datetime.datetime.now() - self._metric_source.datetime()).days
 
-    def _date(self):
-        return self._metric_source.date_of_last_update()
+    def _missing(self):
+        return self._metric_source.datetime() in (None, datetime.datetime.min)
 
 
 class RiskLog(ActivityMetric):

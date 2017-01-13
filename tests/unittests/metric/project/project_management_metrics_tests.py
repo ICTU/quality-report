@@ -31,7 +31,7 @@ class FakeBoard(object):
         return 'http://trello/board'
 
     @staticmethod
-    def date_of_last_update():
+    def datetime(*args):  # pylint: disable=unused-argument
         """ Fake the date of the last update. """
         return datetime.datetime.now() - datetime.timedelta(minutes=1)
 
@@ -55,7 +55,7 @@ class UnreachableBoard(FakeBoard):
         return 'http://trello.com'
 
     @staticmethod
-    def date_of_last_update():
+    def datetime(*args):  # pylint: disable=unused-argument
         """ Fake that Trello is down. """
         return datetime.datetime.min
 
@@ -108,9 +108,8 @@ class UnreachableRiskLogTest(unittest.TestCase):
         self.assertEqual({'Trello acties': 'http://trello.com'}, self.__metric.url())
 
     def test_value(self):
-        """ Test that the value is the number of days since the last update. """
-        days = (datetime.datetime.now() - datetime.datetime(1, 1, 1)).days
-        self.assertEqual(days, self.__metric.value())
+        """ Test that the value is -1. """
+        self.assertEqual(-1, self.__metric.value())
 
 
 class ActionActivityTest(unittest.TestCase):
@@ -143,9 +142,8 @@ class UnreachableActionActivityTest(unittest.TestCase):
         self.__metric = metric.ActionActivity(project=project)
 
     def test_value(self):
-        """ Test that the board has been updated today. """
-        days = (datetime.datetime.now() - datetime.datetime(1, 1, 1)).days
-        self.assertEqual(days, self.__metric.value())
+        """ Test that the value is -1. """
+        self.assertEqual(-1, self.__metric.value())
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """

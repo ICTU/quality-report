@@ -67,7 +67,7 @@ class TrelloObject(domain.MetricSource):
         except url_opener.UrlOpener.url_open_exceptions:
             return 'http://trello.com'
 
-    def date_of_last_update(self):
+    def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument
         """ Return the date of the last action at this Trello object. """
         try:
             actions = self._json(argument='/actions', extra_parameters='&filter=all')
@@ -77,7 +77,7 @@ class TrelloObject(domain.MetricSource):
 
     def last_update_time_delta(self):
         """ Return the amount of time since the last update. """
-        return datetime.datetime.now() - self.date_of_last_update()
+        return datetime.datetime.now() - self.datetime()
 
     @staticmethod
     def date_time_from_string(date_time_timezone_string):
@@ -116,7 +116,7 @@ class TrelloCard(TrelloObject):
             return False
         else:
             max_age = datetime.timedelta(days=days)
-            return now() - self.date_of_last_update() > max_age
+            return now() - self.datetime() > max_age
 
 
 class TrelloBoard(TrelloObject):

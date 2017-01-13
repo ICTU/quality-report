@@ -9,9 +9,12 @@ RUN apk --update add \
 		bash \
 		git \
 		subversion \
+		openssh-client \
 	&& rm -rf \
 		/var/cache/apk/* \
 		/tmp/
+
+VOLUME /home/jenkins/.ssh
 
 USER jenkins
 
