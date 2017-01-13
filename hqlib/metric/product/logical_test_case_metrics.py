@@ -112,12 +112,12 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     metric_source_classes = (metric_source.Birt,)
 
     def value(self):
-        return -1 if self._missing() else (datetime.datetime.now() - self._date()).days
+        return -1 if self._missing() else (datetime.datetime.now() - self.__date_of_last_manual_test()).days
 
     def _metric_source_urls(self):
         return [self._metric_source.manual_test_execution_url()]
 
-    def _date(self):
+    def __date_of_last_manual_test(self):
         date = self._metric_source.date_of_last_manual_test()
         return datetime.datetime.min if date == -1 else date
 
@@ -128,7 +128,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
         return parameters
 
     def _get_template(self):
-        return self.never_template if self._date() == datetime.datetime.min \
+        return self.never_template if self.__date_of_last_manual_test() == datetime.datetime.min \
             else super(ManualLogicalTestCases, self)._get_template()
 
     def _missing(self):
