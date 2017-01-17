@@ -88,16 +88,12 @@ class JavaVersionConsistencyAgeTests(unittest.TestCase):
         """ Test that the value equals the age of the report. """
         self.assertEqual(0, self.__metric.value())
 
-    def test_url(self):
-        """ Test that the url of the metric equals the url of Jenkins. """
-        self.assertEqual({FakeAnsibleConfigReport.metric_source_name: 'http://ansible_report/'}, self.__metric.url())
-
     def test_report(self):
         """ Test the metric report. """
         self.assertEqual('De Javaversie-consistentierapportage van <no name> is vandaag gemaakt.',
                          self.__metric.report())
 
-    def test_norma(self):
+    def test_norm(self):
         """ Test that the norm is correct. """
         self.assertEqual('De Javaversie-consistentierapportage is maximaal 3 dagen geleden gemaakt. '
                          'Langer dan 7 dagen geleden is rood.',

@@ -236,13 +236,14 @@ class MetricStatusTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__metric = MetricUnderTest(self.__subject, project=domain.Project())
 
-    def assert_status(self, expected_status):
+    def assert_status(self, expected_status, metric=None):
         """ Assert that the metric has the expected status. """
-        self.assertEqual(expected_status, self.__metric.status())
+        metric = metric or self.__metric
+        self.assertEqual(expected_status, metric.status())
 
     def test_default_status(self):
         """ Test that the default status is green. """
-        self.assertEqual('green', self.__metric.status())
+        self.assert_status('green')
 
     def test_missing_metric_sources_status(self):
         """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
@@ -256,7 +257,7 @@ class MetricStatusTest(unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
         metric = MetricUnderTest(self.__subject, project=project)
         metric.metric_source_classes = [metric_source.TestReport]
-        self.assertEqual('missing_source', metric.status())
+        self.assert_status('missing_source', metric)
 
     def test_missing_metric(self):
         """ Test that the metric status is missing when the value is -1. """

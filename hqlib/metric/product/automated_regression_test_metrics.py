@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import datetime
 
 from ... import metric_source
-from ...domain import LowerIsBetterMetric
+from ...domain import LowerIsBetterMetric, MetricSourceAgeMetric
 
 
 class _RegressionTestMetric(LowerIsBetterMetric):
@@ -64,21 +64,17 @@ class FailingRegressionTests(_RegressionTestMetric):
         return parameters
 
 
-class RegressionTestAge(_RegressionTestMetric):
+class RegressionTestAge(MetricSourceAgeMetric):
     """ Metric for measuring the number of days since the regression test last ran. """
 
     name = 'Regressietestleeftijd'
-    unit = 'dagen'
     norm_template = 'De regressietest is maximaal {target} {unit} geleden gedraaid. ' \
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De regressietest van {name} is vandaag gedraaid.'
     template = 'De regressietest van {name} is {value} {unit} geleden gedraaid.'
-    target_value = 3
-    low_target_value = 7
+    metric_source_classes = (metric_source.TestReport,)
 
-    def value(self):
-        return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.datetime(*self._metric_source_ids())).days
+    def _get_metric_source_ids(self):
+        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+        return [id_ for id_ in ids if id_]
 
-    def _missing(self):
-        return self._metric_source.datetime(*self._metric_source_ids()) in (None, datetime.datetime.min)

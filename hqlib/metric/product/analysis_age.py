@@ -15,26 +15,19 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
-import datetime
-
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ...domain import LowerIsBetterMetric
+from ...domain import MetricSourceAgeMetric
 
 
-class SonarAnalysisAge(SonarDashboardMetricMixin, LowerIsBetterMetric):
+class SonarAnalysisAge(SonarDashboardMetricMixin, MetricSourceAgeMetric):
     """ Metric to measure the age of the latest Sonar analysis. """
 
     name = 'Leeftijd van de meest recente Sonar analyse'
-    unit = 'dagen'
     norm_template = 'De meest recente Sonar analyse is maximaal {target} {unit} oud. ' \
                     'Meer dan {low_target} {unit} is rood.'
     template = 'De meest recente Sonar analyse van {name} is {value} {unit} oud.'
     target_value = 6 * 7
     low_target_value = 9 * 7
 
-    def value(self):
-        latest_analysis_datetime = self._metric_source.datetime(self._sonar_id())
-        if latest_analysis_datetime in (None, datetime.datetime.min):
-            return -1
-        else:
-            return (datetime.datetime.now() - latest_analysis_datetime).days
+    def _get_metric_source_ids(self):
+        return [self._sonar_id()]

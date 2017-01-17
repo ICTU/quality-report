@@ -56,19 +56,11 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         return parameters
 
 
-class PerformanceTestAge(domain.LowerIsBetterMetric):
+class PerformanceTestAge(domain.MetricSourceAgeMetric):
     """ Metric for measuring the age of the performance test. """
 
-    unit = 'dagen'
     target_value = 7
     low_target_value = 14
-
-    def value(self):
-        return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
-
-    def _missing(self):
-        return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)
 
     def _metric_source_urls(self):
         return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \

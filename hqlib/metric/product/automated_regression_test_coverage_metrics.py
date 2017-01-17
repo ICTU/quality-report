@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import datetime
 
 from ... import metric_source
-from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from ...domain import HigherIsBetterMetric, MetricSourceAgeMetric
 
 
 class _ARTCoverage(HigherIsBetterMetric):
@@ -82,24 +82,11 @@ class ARTBranchCoverage(_ARTCoverage):
         return self._metric_source.branch_coverage(self._metric_source_id)
 
 
-class CoverageReportAge(LowerIsBetterMetric):
+class CoverageReportAge(MetricSourceAgeMetric):
     """ Metric for measuring the number of days since the coverage report was last generated. """
     name = 'Coveragerapportageleeftijd'
-    unit = 'dagen'
     norm_template = 'De coveragerapportage is maximaal {target} {unit} geleden gemaakt. ' \
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De coveragerapportage van {name} is vandaag gemaakt.'
     template = 'De coveragerapportage van {name} is {value} {unit} geleden gemaakt.'
     metric_source_classes = [metric_source.CoverageReport]
-    target_value = 3
-    low_target_value = 7
-
-    def value(self):
-        return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
-
-    def _missing(self):
-        if self._metric_source_id is None:
-            return True
-        else:
-            return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)

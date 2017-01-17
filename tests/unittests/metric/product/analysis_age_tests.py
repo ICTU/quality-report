@@ -25,6 +25,7 @@ class FakeSonar(object):
     # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
+    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     def __init__(self, age=10):
         self.age = age
@@ -50,7 +51,7 @@ class SonarAnalysisAgeTest(unittest.TestCase):
     def setUp(self):
         self.__sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        subject = domain.Product(project, 'PR', name='FakeSubject')
+        subject = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar_id'})
         self.__metric = metric.SonarAnalysisAge(subject=subject, project=project)
 
     def test_value(self):

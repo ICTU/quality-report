@@ -182,6 +182,7 @@ class PerformanceLoadTestAgeTest(unittest.TestCase):
 
         class MissingPerformanceReport(object):  # pylint: disable=too-few-public-methods
             """ Fake a missing performance report. """
+            needs_metric_source_id = True
 
             @staticmethod
             def datetime(*args):  # pylint: disable=unused-argument
