@@ -232,12 +232,16 @@ class Metric(object):
         """ Return a list of metric source urls to be used to create the url dict. """
         if self._metric_source:
             if self._metric_source.needs_metric_source_id:
-                ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-                return self._metric_source.metric_source_urls(*[id_ for id_ in ids if id_])
+                return self._metric_source.metric_source_urls(*self._get_metric_source_ids())
             else:
                 return [self._metric_source.url()]
         else:
             return []
+
+    def _get_metric_source_ids(self):
+        """ Allow for subclasses to override what the metric source id is. """
+        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+        return [id_ for id_ in ids if id_]
 
     @classmethod
     def url_label(cls):

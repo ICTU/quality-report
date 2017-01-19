@@ -36,7 +36,3 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
             return True
         else:
             return self._metric_source.datetime(*metric_source_ids) in (None, datetime.datetime.min)
-
-    def _get_metric_source_ids(self):
-        """ Allow for subclasses to override what the metric source id is. """
-        return [self._metric_source_id] if self._metric_source_id else []

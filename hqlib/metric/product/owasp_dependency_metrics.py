@@ -31,15 +31,8 @@ class OWASPDependencyWarnings(AlertsMetric):
 
     def _nr_alerts(self):
         """ Return the number of warnings. """
-        ids = self._report_ids()
+        ids = self._get_metric_source_ids()
         return self._metric_source.nr_warnings(ids, self.risk_level_key) if ids else -1
-
-    def _report_ids(self):
-        """ Return the Jenkins report ids (job names). """
-        if self._metric_source_id is None:
-            return []
-        else:
-            return self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
 
 
 class HighPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
