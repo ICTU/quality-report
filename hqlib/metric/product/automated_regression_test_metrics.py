@@ -19,19 +19,7 @@ from ... import metric_source
 from ...domain import LowerIsBetterMetric, MetricSourceAgeMetric
 
 
-class _RegressionTestMetric(LowerIsBetterMetric):
-    """ Base class for regression test metrics. """
-    metric_source_classes = (metric_source.TestReport,)
-
-    def value(self):
-        raise NotImplementedError  # pragma: no cover
-
-    def _metric_source_ids(self):
-        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
-        return [id_ for id_ in ids if id_]
-
-
-class FailingRegressionTests(_RegressionTestMetric):
+class FailingRegressionTests(LowerIsBetterMetric):
     """ Metric for measuring the number of regression tests that fail. """
 
     name = 'Hoeveelheid falende regressietesten'
@@ -41,6 +29,7 @@ class FailingRegressionTests(_RegressionTestMetric):
     template = '{value} van de {tests} {unit} van {name} slagen niet.'
     target_value = 0
     low_target_value = 0
+    metric_source_classes = (metric_source.TestReport,)
 
     def value(self):
         if self._missing():
@@ -60,6 +49,10 @@ class FailingRegressionTests(_RegressionTestMetric):
         passed_tests = self._metric_source.passed_tests(*self._metric_source_ids())
         parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters
+
+    def _metric_source_ids(self):
+        ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
+        return [id_ for id_ in ids if id_]
 
 
 class RegressionTestAge(MetricSourceAgeMetric):
