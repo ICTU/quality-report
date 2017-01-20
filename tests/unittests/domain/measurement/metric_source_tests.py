@@ -53,5 +53,3 @@ class MissingMetricSourceTests(unittest.TestCase):
     def test_datetime(self):
         """ Test that the datetime is the min datetime for missing metric sources. """
         self.assertEqual(datetime.datetime.min, domain.MissingMetricSource().datetime())
-
-
