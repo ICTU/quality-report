@@ -18,8 +18,9 @@ limitations under the License.
 
 import datetime
 
-from . import fake_domain
 from hqlib import metric, metric_source, requirement, domain
+
+from . import fake_domain
 
 
 class Section(object):
