@@ -109,7 +109,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     never_template = 'De {nr_manual_ltcs} {unit} van {name} zijn nog niet allemaal uitgevoerd.'
     target_value = 21
     low_target_value = 28
-    metric_source_classes = (metric_source.Birt,)
+    metric_source_class = metric_source.Birt
 
     def value(self):
         return -1 if self._missing() else (datetime.datetime.now() - self.__date_of_last_manual_test()).days
@@ -166,7 +166,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} {unit}.'
     target_value = 120
     low_target_value = 240
-    metric_source_classes = (metric_source.Jira,)
+    metric_source_class = metric_source.Jira
 
     def value(self):
         duration = self._metric_source.manual_test_cases_time()
@@ -193,7 +193,7 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
     template = 'Van {value} van de {total} {unit} is de uitvoeringstijd niet ingevuld.'
     target_value = 0
     low_target_value = 5
-    metric_source_classes = (metric_source.Jira,)
+    metric_source_class = metric_source.Jira
 
     def value(self):
         nr_ltcs = self._metric_source.nr_manual_test_cases_not_measured()

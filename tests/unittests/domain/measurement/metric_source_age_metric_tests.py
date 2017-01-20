@@ -32,7 +32,7 @@ class FakeMetricSource(domain.MetricSource):
 
 class MetricSourceAgeMetricUnderTest(domain.MetricSourceAgeMetric):
     """ Implement abstract methods. """
-    metric_source_classes = (FakeMetricSource,)
+    metric_source_class = FakeMetricSource
 
 
 class MetricSourceAgeMetricTest(unittest.TestCase):

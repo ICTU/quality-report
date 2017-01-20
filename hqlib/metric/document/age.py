@@ -32,7 +32,7 @@ class DocumentAge(LowerIsBetterMetric):
     missing_template = 'Het document "{name}" is niet aangetroffen.'
     target_value = 180
     low_target_value = 200
-    metric_source_classes = (metric_source.ArchiveSystem,)
+    metric_source_class = metric_source.ArchiveSystem
 
     def value(self):
         """ Return the number of days since the document was last changed. """

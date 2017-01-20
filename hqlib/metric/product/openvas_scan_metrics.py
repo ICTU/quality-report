@@ -25,7 +25,7 @@ class OpenVASScanAlertsMetric(AlertsMetric):
     unit = 'waarschuwingen'
     norm_template = 'De gescande omgevingen hebben geen {risk_level} risico Open VAS Scan {unit}. ' \
                     'Meer dan {low_target} is rood.'
-    metric_source_classes = (metric_source.OpenVASScanReport,)
+    metric_source_class = metric_source.OpenVASScanReport
 
 
 class HighRiskOpenVASScanAlertsMetric(OpenVASScanAlertsMetric):

@@ -26,7 +26,7 @@ class _ARTCoverage(HigherIsBetterMetric):
                     'functionele tests. Minder dan {low_target}{unit} is rood.'
     template = '{name} ART {covered_item} coverage is {value}{unit}.'
     perfect_value = 100
-    metric_source_classes = [metric_source.CoverageReport]
+    metric_source_class = metric_source.CoverageReport
     covered_items = covered_item = 'Subclass responsibility'
 
     @classmethod
@@ -87,4 +87,4 @@ class CoverageReportAge(MetricSourceAgeMetric):
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De coveragerapportage van {name} is vandaag gemaakt.'
     template = 'De coveragerapportage van {name} is {value} {unit} geleden gemaakt.'
-    metric_source_classes = [metric_source.CoverageReport]
+    metric_source_class = metric_source.CoverageReport

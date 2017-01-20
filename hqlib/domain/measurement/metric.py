@@ -26,14 +26,13 @@ class Metric(object):
     name = norm_template = target_value = low_target_value = perfect_value = template = unit = 'Subclass responsibility'
     missing_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
                        'beschikbaar zijn.'
-    missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen zijn ' \
-                              'geconfigureerd. Configureer de volgende bron(nen): {missing_source_classes}.'
+    missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat de bron {missing_source_class} ' \
+                              'niet is geconfigureerd.'
     missing_source_id_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde ' \
-                                 'bron-ids zijn geconfigureerd. Configureer ids voor de volgende bronnen: ' \
-                                 '{missing_source_id_classes}.'
+                                 'bron-ids zijn geconfigureerd. Configureer ids voor de bron {missing_source_class}.'
     perfect_template = ''
     url_label_text = comment_url_label_text = ''
-    metric_source_classes = []
+    metric_source_class = None
 
     @classmethod
     def should_be_measured(cls, requirement_subject):
@@ -53,7 +52,7 @@ class Metric(object):
     def __init__(self, subject=None, project=None):
         self._subject = subject
         self._project = project
-        self._metric_source = self._project.metric_source(self.metric_source_classes[0]) if self.metric_source_classes \
+        self._metric_source = self._project.metric_source(self.metric_source_class) if self.metric_source_class \
             else None
         if isinstance(self._metric_source, list):
             for source in self._metric_source:
@@ -146,16 +145,17 @@ class Metric(object):
 
     def __missing_source_configuration(self):
         """ Return whether the metric sources have been completely configured. """
-        return self.__missing_source_classes() or self.__missing_source_ids()
+        return self.__missing_source_class() or self.__missing_source_ids()
 
-    def __missing_source_classes(self):
-        """ Return the metric source classes that need to be configured for the metric to be measurable. """
-        return [cls for cls in self.metric_source_classes if not self._project.metric_source(cls)]
+    def __missing_source_class(self):
+        """ Return whether the metric source class that needs to be configured for the metric to be measurable is
+            available from the project. """
+        return not self._project.metric_source(self.metric_source_class) if self.metric_source_class else False
 
     def __missing_source_ids(self):
-        """ Return the metric source classes for which a metric source id needs to be configured. """
-        return [cls for cls in self.metric_source_classes if cls.needs_metric_source_id and
-                not self._subject.metric_source_id(self._project.metric_source(cls))]
+        """ Return whether the metric source ids have been configured for the metric source class. """
+        return self.metric_source_class and self.metric_source_class.needs_metric_source_id and \
+            not self._subject.metric_source_id(self._project.metric_source(self.metric_source_class))
 
     def _needs_immediate_action(self):
         """ Return whether the metric needs immediate action, i.e. its actual value is below its low target value. """
@@ -188,7 +188,7 @@ class Metric(object):
 
     def _get_template(self):
         """ Return the template for the metric report. """
-        if self.__missing_source_classes():
+        if self.__missing_source_class():
             return self.missing_source_template
         if self.__missing_source_ids():
             return self.missing_source_id_template
@@ -207,8 +207,8 @@ class Metric(object):
                     target=self.target(),
                     low_target=self.low_target(),
                     value=self.value(),
-                    missing_source_classes=', '.join(sorted(cls.__name__ for cls in self.__missing_source_classes())),
-                    missing_source_id_classes=', '.join(sorted(cls.__name__ for cls in self.__missing_source_ids())))
+                    missing_source_class=self.metric_source_class.__name__ if self.metric_source_class
+                    else '<metric has no metric source defined>')
 
     def norm(self):
         """ Return a description of the norm for the metric. """

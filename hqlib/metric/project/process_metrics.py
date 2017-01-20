@@ -29,7 +29,7 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 20
-    metric_source_classes = (metric_source.Jira,)
+    metric_source_class = metric_source.Jira
 
     def value(self):
         nr_points = self._metric_source.nr_story_points_ready()
@@ -45,7 +45,7 @@ class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3
-    metric_source_classes = (metric_source.Jira,)
+    metric_source_class = metric_source.Jira
     nr_user_stories_without_risk_assessment = 'subclass responsibility'
 
     def value(self):

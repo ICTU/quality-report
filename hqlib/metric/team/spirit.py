@@ -33,7 +33,7 @@ class TeamSpirit(Metric):
     perfect_value = ':-)'
     low_target_value = ':-('
     numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2}
-    metric_source_classes = (metric_source.TeamSpirit,)
+    metric_source_class = metric_source.TeamSpirit
 
     def value(self):
         return self._metric_source.team_spirit(self._metric_source_id) or '?'
@@ -67,7 +67,7 @@ class TeamSpiritAge(LowerIsBetterMetric):
     template = 'De stemming van team {name} is {value} {unit} geleden bepaald.'
     target_value = 21
     low_target_value = 42
-    metric_source_classes = (metric_source.TeamSpirit,)
+    metric_source_class = metric_source.TeamSpirit
 
     def value(self):
         return -1 if self._missing() else \

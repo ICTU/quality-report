@@ -22,7 +22,7 @@ from .. import metric_source, metric_info
 
 class SonarMetricMixin(object):
     """ Mixin class for metrics that use Sonar. """
-    metric_source_classes = (metric_source.Sonar,)
+    metric_source_class = metric_source.Sonar
 
     def __init__(self, *args, **kwargs):
         super(SonarMetricMixin, self).__init__(*args, **kwargs)
@@ -54,7 +54,7 @@ class SonarViolationsMetricMixin(SonarMetricMixin):
 class BirtTestDesignMetricMixin(object):
     """ Mixin class for metrics that use the Birt test design report. """
 
-    metric_source_classes = (metric_source.Birt,)
+    metric_source_class = metric_source.Birt
 
     def _metric_source_urls(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
@@ -65,7 +65,7 @@ class BirtTestDesignMetricMixin(object):
 class VersionControlSystemMetricMixin(object):
     """ Mixin class for metrics that use a version control system. """
 
-    metric_source_classes = (metric_source.VersionControlSystem,)
+    metric_source_class = metric_source.VersionControlSystem
 
     def __init__(self, *args, **kwargs):
         super(VersionControlSystemMetricMixin, self).__init__(*args, **kwargs)

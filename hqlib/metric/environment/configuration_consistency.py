@@ -29,7 +29,7 @@ class JavaVersionConsistency(LowerIsBetterMetric):
     perfect_value = 1
     target_value = 1
     low_target_value = 2
-    metric_source_classes = (metric_source.AnsibleConfigReport,)
+    metric_source_class = metric_source.AnsibleConfigReport
 
     def value(self):
         versions = self._metric_source.java_versions(self._metric_source_id)
@@ -43,4 +43,4 @@ class JavaVersionConsistencyAge(MetricSourceAgeMetric):
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De Javaversie-consistentierapportage van {name} is vandaag gemaakt.'
     template = 'De Javaversie-consistentierapportage van {name} is {value} {unit} geleden gemaakt.'
-    metric_source_classes = (metric_source.AnsibleConfigReport,)
+    metric_source_class = metric_source.AnsibleConfigReport

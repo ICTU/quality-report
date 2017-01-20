@@ -28,7 +28,7 @@ class OpenBugs(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 50
     low_target_value = 100
-    metric_source_classes = (metric_source.Jira,)
+    metric_source_class = metric_source.Jira
     nr_open_bugs = 'nr_open_bugs'
 
     def value(self):
@@ -72,7 +72,7 @@ class TechnicalDebtIssues(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 50
-    metric_source_classes = (metric_source.Jira,)
+    metric_source_class = metric_source.Jira
 
     def value(self):
         nr_issues = self._metric_source.nr_technical_debt_issues()

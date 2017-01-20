@@ -83,7 +83,7 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
         self.__subject = FakeSubject()
         self.__report = FakePerformanceReport(queries=10, queries_violating_max_responsetime=self.expected_violations,
                                               queries_violating_wished_responsetime=self.expected_violations)
-        self.__project = domain.Project(metric_sources={self.metric_class.metric_source_classes[0]: self.__report})
+        self.__project = domain.Project(metric_sources={self.metric_class.metric_source_class: self.__report})
         self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -118,7 +118,7 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
             queries = queries_violating_wished_responsetime = queries_violating_max_responsetime
 
         project = domain.Project(metric_sources={
-            self.metric_class.metric_source_classes[0]: MissingPerformanceReport()})
+            self.metric_class.metric_source_class: MissingPerformanceReport()})
         performance_metric = self.metric_class(subject=FakeSubject(), project=project)
         self.assertTrue(performance_metric.report().endswith('kon niet gemeten worden omdat niet alle benodigde '
                                                              'bronnen beschikbaar zijn.'))
@@ -169,7 +169,7 @@ class PerformanceLoadTestAgeTest(unittest.TestCase):
     def setUp(self):
         self.__subject = FakeSubject()
         self.__report = FakePerformanceReport(queries=10)
-        self.__project = domain.Project(metric_sources={self.metric_class.metric_source_classes[0]: self.__report})
+        self.__project = domain.Project(metric_sources={self.metric_class.metric_source_class: self.__report})
         self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -190,7 +190,7 @@ class PerformanceLoadTestAgeTest(unittest.TestCase):
                 return datetime.datetime.min
 
         project = domain.Project(metric_sources={
-            self.metric_class.metric_source_classes[0]: MissingPerformanceReport()})
+            self.metric_class.metric_source_class: MissingPerformanceReport()})
         performance_metric = self.metric_class(subject=FakeSubject(), project=project)
         self.assertEqual(-1, performance_metric.value())
 

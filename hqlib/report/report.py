@@ -53,7 +53,8 @@ class QualityReport(domain.DomainObject):
         """ Return a list of metric source classes that the report can use. """
         classes = set()
         for metric_class in cls.metric_classes():
-            classes.update(set(metric_class.metric_source_classes))
+            if metric_class.metric_source_class:
+                classes.add(metric_class.metric_source_class)
         return classes
 
     def __init__(self, project):

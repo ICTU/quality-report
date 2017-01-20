@@ -25,7 +25,7 @@ class ZAPScanAlertsMetric(AlertsMetric):
     unit = 'security waarschuwingen'
     norm_template = 'Het product heeft geen {risk_level} risico ZAP Scan {unit}. ' \
                     'Meer dan {low_target} is rood.'
-    metric_source_classes = (metric_source.ZAPScanReport,)
+    metric_source_class = metric_source.ZAPScanReport
 
 
 class HighRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):

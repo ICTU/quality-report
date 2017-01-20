@@ -62,30 +62,30 @@ class MetricTest(unittest.TestCase):
 
     def test_one_metric_source(self):
         """ Test that the correct metric source id is returned when there is one metric source instance. """
-        MetricUnderTest.metric_source_classes = [metric_source.Birt]
+        MetricUnderTest.metric_source_class = metric_source.Birt
         project = domain.Project(metric_sources={metric_source.Birt: 'Birt1'})
         product = domain.Product(project, metric_source_ids={'Birt1': 'birt id'})
         # pylint: disable=protected-access
         self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
-        MetricUnderTest.metric_source_classes = []
+        MetricUnderTest.metric_source_class = None
 
     def test_multiple_metric_sources(self):
         """ Test that the correct metric source id is returned when there are multiple metric source instances. """
-        MetricUnderTest.metric_source_classes = [metric_source.Birt]
+        MetricUnderTest.metric_source_class= metric_source.Birt
         project = domain.Project(metric_sources={metric_source.Birt: ['Birt1', 'Birt2']})
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
         # pylint: disable=protected-access
         self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
-        MetricUnderTest.metric_source_classes = []
+        MetricUnderTest.metric_source_class = None
 
     def test_no_matching_metric_source(self):
         """ Test that no metric source id is returned when there is no metric source instance for the product. """
-        MetricUnderTest.metric_source_classes = [metric_source.Birt]
+        MetricUnderTest.metric_source_class = metric_source.Birt
         project = domain.Project(metric_sources={metric_source.Birt: ['Birt1']})
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
         # pylint: disable=protected-access
         self.assertFalse(MetricUnderTest(project=project, subject=product)._metric_source_id)
-        MetricUnderTest.metric_source_classes = []
+        MetricUnderTest.metric_source_class = None
 
     def test_default_report(self):
         """ Test the default report. """
@@ -98,19 +98,18 @@ class MetricTest(unittest.TestCase):
     def test_missing_metric_source_report(self):
         """ Test that the metric report explains which metric source needs to be configured. """
         # pylint: disable=attribute-defined-outside-init
-        self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
-        self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
-                         'benodigde bronnen zijn geconfigureerd. Configureer de volgende bron(nen): '
-                         'VersionControlSystem.', self.__metric.report())
+        self.__metric.metric_source_class = metric_source.VersionControlSystem
+        self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat de bron '
+                         'VersionControlSystem niet is geconfigureerd.', self.__metric.report())
 
     def test_missing_metric_source_id_report(self):
         """ Test that the metric report explains which metric source ids need to be configured. """
         project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
         metric = MetricUnderTest(self.__subject, project=project)
-        metric.metric_source_classes = [metric_source.TestReport]
+        metric.metric_source_class = metric_source.TestReport
         self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
-                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de volgende bronnen: '
-                         'TestReport.', metric.report())
+                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de bron TestReport.',
+                         metric.report())
 
     def test_missing_metric_report(self):
         """ Test that the metric report is adapted when the value is missing. """
@@ -248,7 +247,7 @@ class MetricStatusTest(unittest.TestCase):
     def test_missing_metric_sources_status(self):
         """ Test that the status is missing metric sources when the project doesn't have the required metric source. """
         # pylint: disable=attribute-defined-outside-init
-        self.__metric.metric_source_classes = [metric_source.VersionControlSystem]
+        self.__metric.metric_source_class = metric_source.VersionControlSystem
         self.assert_status('missing_source')
 
     def test_missing_metric_source_id_status(self):
@@ -256,7 +255,7 @@ class MetricStatusTest(unittest.TestCase):
             id. """
         project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
         metric = MetricUnderTest(self.__subject, project=project)
-        metric.metric_source_classes = [metric_source.TestReport]
+        metric.metric_source_class = metric_source.TestReport
         self.assert_status('missing_source', metric)
 
     def test_missing_metric(self):

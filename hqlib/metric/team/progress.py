@@ -33,7 +33,7 @@ class TeamProgress(LowerIsBetterMetric):
         'punt per dag ({actual_points:.1f} punten).'
     target_factor = 1.25
     low_target_factor = 1.5
-    metric_source_classes = (metric_source.Birt,)
+    metric_source_class = metric_source.Birt
 
     @classmethod
     def norm_template_default_values(cls):

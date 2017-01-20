@@ -33,7 +33,7 @@ class TeamAbsence(LowerIsBetterMetric):
     perfect_template = 'Er zijn geen teamleden tegelijk gepland afwezig.'
     target_value = 5
     low_target_value = 10
-    metric_source_classes = (metric_source.HolidayPlanner,)
+    metric_source_class = metric_source.HolidayPlanner
 
     @classmethod
     def is_applicable(cls, team):

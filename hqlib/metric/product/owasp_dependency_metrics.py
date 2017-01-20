@@ -27,7 +27,7 @@ class OWASPDependencyWarnings(AlertsMetric):
     norm_template = 'Dependencies van het product hebben geen {risk_level} prioriteit OWASP {unit}. ' \
                     'Meer dan {low_target} is rood.'
     template = 'Dependencies van {name} hebben {value} {risk_level} prioriteit {unit}.'
-    metric_source_classes = (metric_source.OWASPDependencyReport,)
+    metric_source_class = metric_source.OWASPDependencyReport
 
     def _nr_alerts(self):
         """ Return the number of warnings. """

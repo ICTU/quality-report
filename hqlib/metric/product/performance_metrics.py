@@ -75,7 +75,7 @@ class PerformanceLoadTestAge(PerformanceTestAge):
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De performanceloadtest van {name} is vandaag gedraaid.'
     template = 'De performanceloadtest van {name} is {value} {unit} geleden gedraaid.'
-    metric_source_classes = (metric_source.PerformanceLoadTestReport,)
+    metric_source_class = metric_source.PerformanceLoadTestReport
 
 
 class PerformanceEnduranceTestAge(PerformanceTestAge):
@@ -86,7 +86,7 @@ class PerformanceEnduranceTestAge(PerformanceTestAge):
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De performanceduurtest van {name} is vandaag gedraaid.'
     template = 'De performanceduurtest van {name} is {value} {unit} geleden gedraaid.'
-    metric_source_classes = (metric_source.PerformanceEnduranceTestReport,)
+    metric_source_class = metric_source.PerformanceEnduranceTestReport
 
 
 class PerformanceScalabilityTestAge(PerformanceTestAge):
@@ -97,7 +97,7 @@ class PerformanceScalabilityTestAge(PerformanceTestAge):
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De performanceschaalbaarheidstest van {name} is vandaag gedraaid.'
     template = 'De performanceschaalbaarheidstest van {name} is {value} {unit} geleden gedraaid.'
-    metric_source_classes = (metric_source.PerformanceScalabilityTestReport,)
+    metric_source_class = metric_source.PerformanceScalabilityTestReport
 
 
 # We have different types of performance test metrics, organized along two dimensions: test type and severity.
@@ -110,7 +110,7 @@ class PerformanceScalabilityTestAge(PerformanceTestAge):
 class PerformanceLoadTestMetric(PerformanceMetric):
     """ Base class for performance load test metrics. """
     unit = 'performanceloadtestgevallen'
-    metric_source_classes = (metric_source.PerformanceLoadTestReport,)
+    metric_source_class = metric_source.PerformanceLoadTestReport
 
     def _violating_queries(self):
         """ Return the number of queries not meting the required response times. """
@@ -140,7 +140,7 @@ class PerformanceLoadTestErrors(PerformanceLoadTestMetric):
 class PerformanceEnduranceTestMetric(PerformanceMetric):
     """ Base class for performance endurance test metrics. """
     unit = 'performanceduurtestgevallen'
-    metric_source_classes = (metric_source.PerformanceEnduranceTestReport,)
+    metric_source_class = metric_source.PerformanceEnduranceTestReport
 
     def _violating_queries(self):
         """ Return the number of queries not meting the required response times. """
@@ -170,7 +170,7 @@ class PerformanceEnduranceTestErrors(PerformanceEnduranceTestMetric):
 class PerformanceScalabilityTestMetric(PerformanceMetric):
     """ Base class for performance scalability test metrics. """
     unit = 'performanceschaalbaarheidstestgevallen'
-    metric_source_classes = (metric_source.PerformanceScalabilityTestReport,)
+    metric_source_class = metric_source.PerformanceScalabilityTestReport
 
     def _violating_queries(self):
         """ Return the number of queries not meting the required response times. """

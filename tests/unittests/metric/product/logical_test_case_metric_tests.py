@@ -282,8 +282,7 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
     def test_report_without_jira(self):
         """ Test the metric report when no Jira has been configured. """
         self.assertEqual('De uitvoeringstijd van handmatige logische testgevallen van <no name> kon niet gemeten '
-                         'worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de volgende '
-                         'bron(nen): Jira.',
+                         'worden omdat de bron Jira niet is geconfigureerd.',
                          metric.DurationOfManualLogicalTestCases(domain.Project(), domain.Project()).report())
 
     def test_norm(self):
@@ -315,8 +314,7 @@ class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
     def test_report_without_jira(self):
         """ Test the metric report when no Jira has been configured. """
         self.assertEqual('De hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd van <no name> kon niet '
-                         'gemeten worden omdat niet alle benodigde bronnen zijn geconfigureerd. Configureer de '
-                         'volgende bron(nen): Jira.',
+                         'gemeten worden omdat de bron Jira niet is geconfigureerd.',
                          metric.ManualLogicalTestCasesWithoutDuration(domain.Project(), domain.Project()).report())
 
     def test_norm(self):

@@ -31,7 +31,7 @@ class SonarVersion(HigherIsBetterMetric):
     target_value = LooseVersion('4.5.7')
     perfect_value = LooseVersion('999.999.999')
     low_target_value = LooseVersion('4.5.6')
-    metric_source_classes = (metric_source.Sonar,)
+    metric_source_class = metric_source.Sonar
 
     def numerical_value(self):
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
@@ -55,7 +55,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
     target_value = LooseVersion('1.0')
     perfect_value = LooseVersion('999.999.999')
     low_target_value = LooseVersion('0.9')
-    metric_source_classes = (metric_source.Sonar,)
+    metric_source_class = metric_source.Sonar
 
     @classmethod
     def norm_template_default_values(cls):
@@ -138,7 +138,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
     target_value = LooseVersion('1.0')
     perfect_value = LooseVersion('999.999.999')
     low_target_value = LooseVersion('0.1')
-    metric_source_classes = (metric_source.Sonar,)
+    metric_source_class = metric_source.Sonar
 
     @classmethod
     def norm_template_default_values(cls):
