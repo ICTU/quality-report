@@ -23,7 +23,7 @@ from hqlib.metric_source import Git
 class GitUnderTest(Git):  # pylint: disable=too-few-public-methods
     """ Override the Git class to prevent it from running shell commands. """
 
-    def _run_shell_command(self, command, *args, **kwargs):  # pylint: disable=unused-argument
+    def _run_shell_command(self, *args, **kwargs):  # pylint: disable=unused-argument
         return ''
 
 
