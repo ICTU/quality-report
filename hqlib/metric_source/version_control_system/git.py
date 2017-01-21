@@ -39,7 +39,7 @@ class Git(VersionControlSystem):
     def _run_shell_command(self, *args, **kwargs):
         if not self.__repo_folder:
             self.__get_repo()
-        super(Git, self)._run_shell_command(*args, **kwargs)
+        return super(Git, self)._run_shell_command(*args, **kwargs)
 
     @utils.memoized
     def last_changed_date(self, path):
