@@ -39,7 +39,7 @@ class Git(VersionControlSystem):
     def _run_shell_command(self, *args, **kwargs):
         if not self.__repo_folder:
             self.__get_repo()
-        return super(Git, self)._run_shell_command(*args, **kwargs)
+        return super(Git, self)._run_shell_command(folder=self.__repo_folder, *args, **kwargs)
 
     @utils.memoized
     def last_changed_date(self, path):
@@ -61,7 +61,7 @@ class Git(VersionControlSystem):
             """ Return whether name is a valid tag name. """
             return bool(name)
 
-        tags = self._run_shell_command(['git', 'tag'], folder=self.__repo_folder)
+        tags = self._run_shell_command(['git', 'tag'])
         return [tag.strip() for tag in tags.strip().split('\n') if valid_tag_name(tag.strip())]
 
     @utils.memoized
@@ -97,33 +97,37 @@ class Git(VersionControlSystem):
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
             command.append('--no-merged')
-        branches = self._run_shell_command(command, folder=self.__repo_folder)
+        branches = self._run_shell_command(command)
         return [branch.strip() for branch in branches.strip().split('\n') if valid_branch_name(branch.strip())]
 
     def __nr_unmerged_commits(self, branch_name):
         """ Return whether the branch has unmerged commits. """
         logging.info('Checking for unmerged commits in branch %s.', branch_name)
         command = ['git', 'cherry', 'origin/master', branch_name]
-        commits = self._run_shell_command(command, folder=self.__repo_folder)
+        commits = self._run_shell_command(command)
         nr_commits = commits.count('\n')
         logging.info('Branch %s has %d unmerged commits.', branch_name, nr_commits)
         return nr_commits
 
     def __get_repo(self):
         """ Clone the repository if necessary, else pull it. """
-        self.__repo_folder = self.__determine_repo_folder_name()
-        if os.path.exists(self.__repo_folder):
+        repo_folder = self.__determine_repo_folder_name()  # Set self.__repo_folder when we're sure the repo is cloned
+        if os.path.exists(repo_folder):
+            # The repo has been cloned before, set self.__repo_folder and then update it
+            self.__repo_folder = repo_folder
             logging.info('Updating Git repo %s in %s', self.url(), self.__repo_folder)
             command = ['git', 'pull', '--prune']
-            self._run_shell_command(command, folder=self.__repo_folder)
+            self._run_shell_command(command)
         else:
+            # The repo hasn't been cloned yet. First clone it, then set self.__repo_folder.
             branch_string = self.__branch_to_checkout or 'master'
-            logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, self.__repo_folder)
-            command = ['git', 'clone', self.__full_url(), self.__repo_folder]
+            logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, repo_folder)
+            command = ['git', 'clone', self.__full_url(), repo_folder]
             if self.__branch_to_checkout:
                 command.insert(2, '--branch')
                 command.insert(3, self.__branch_to_checkout)
             self._run_shell_command(command)
+            self.__repo_folder = repo_folder
 
     def __full_url(self):
         """ Return the Git repository url with username and password. """
