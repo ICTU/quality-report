@@ -39,7 +39,8 @@ class Git(VersionControlSystem):
     def _run_shell_command(self, *args, **kwargs):
         if not self.__repo_folder:
             self.__get_repo()
-        return super(Git, self)._run_shell_command(folder=self.__repo_folder, *args, **kwargs)
+        folder = self.__repo_folder if os.path.exists(self.__repo_folder) else None
+        return super(Git, self)._run_shell_command(folder=folder, *args, **kwargs)
 
     @utils.memoized
     def last_changed_date(self, path):
@@ -111,23 +112,19 @@ class Git(VersionControlSystem):
 
     def __get_repo(self):
         """ Clone the repository if necessary, else pull it. """
-        repo_folder = self.__determine_repo_folder_name()  # Set self.__repo_folder when we're sure the repo is cloned
-        if os.path.exists(repo_folder):
-            # The repo has been cloned before, set self.__repo_folder and then update it
-            self.__repo_folder = repo_folder
+        self.__repo_folder = self.__determine_repo_folder_name()
+        if os.path.exists(self.__repo_folder):
             logging.info('Updating Git repo %s in %s', self.url(), self.__repo_folder)
             command = ['git', 'pull', '--prune']
             self._run_shell_command(command)
         else:
-            # The repo hasn't been cloned yet. First clone it, then set self.__repo_folder.
             branch_string = self.__branch_to_checkout or 'master'
-            logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, repo_folder)
-            command = ['git', 'clone', self.__full_url(), repo_folder]
+            logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, self.__repo_folder)
+            command = ['git', 'clone', self.__full_url(), self.__repo_folder]
             if self.__branch_to_checkout:
                 command.insert(2, '--branch')
                 command.insert(3, self.__branch_to_checkout)
             self._run_shell_command(command)
-            self.__repo_folder = repo_folder
 
     def __full_url(self):
         """ Return the Git repository url with username and password. """
