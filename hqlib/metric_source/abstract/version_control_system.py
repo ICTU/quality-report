@@ -75,7 +75,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
             return self._shell_command(shell_command)
         except subprocess.CalledProcessError as reason:
             # No need to include the shell command in the log, because the reason contains the shell command.
-            logging.log(log_level, 'Shell command failed: %s', reason)
+            logging.log(log_level, 'Shell command in folder %s failed: %s', folder, reason)
             if log_level > logging.WARNING:
                 raise
         finally:
