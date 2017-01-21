@@ -1,3 +1,8 @@
+ 2017-01-22  Release 1.74.1
+ 
+  * Bug fix: Don't crash when reporting on team spirit.
+   
+ 
  2017-01-21  Release 1.74.0
 
   * Add a metric for the number of days since regression test coverage reports were last generated.

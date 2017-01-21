@@ -28,7 +28,7 @@ class TeamSpirit(Metric):
     unit = ''
     norm_template = 'De stemming wordt door het team zelf bepaald door het kiezen van een smiley. ' \
         'De norm hierbij is een tevreden team, neutraal is geel, ontevreden is rood.'
-    template = 'De stemming van team {name} was {value} op {date}.'
+    template = 'De stemming van team {name} is {value}.'
     target_value = ':-)'
     perfect_value = ':-)'
     low_target_value = ':-('

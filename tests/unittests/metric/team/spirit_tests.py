@@ -57,6 +57,10 @@ class TeamSpiritTest(unittest.TestCase):
         """ Test that the smiley is translated into an integer. """
         self.assertEqual(2, self.__metric.numerical_value())
 
+    def test_report(self):
+        """ Test the metric report. """
+        self.assertEqual('De stemming van team <no name> is :-).', self.__metric.report())
+
     def test_y_axis_range(self):
         """ Test that the y axis range is 0-2. """
         self.assertEqual((0, 2), self.__metric.y_axis_range())
