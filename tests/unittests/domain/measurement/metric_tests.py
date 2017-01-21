@@ -36,7 +36,7 @@ class MetricUnderTest(domain.Metric):
 
     def _is_value_better_than(self, target):
         """ Return a dummy value. """
-        return True
+        return True  # pragma: no cover
 
 
 class MetricTest(unittest.TestCase):

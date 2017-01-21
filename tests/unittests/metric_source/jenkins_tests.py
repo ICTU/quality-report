@@ -84,8 +84,8 @@ class JenkinsTest(unittest.TestCase):
         """ Test that the failing jobs url works if there are jobs without description. """
         now = datetime.datetime.utcnow()
         jan_first = now.replace(month=1, day=1, hour=0, minute=0, second=0)
-        if now.month == now.day == 1:
-            jan_first = jan_first.replace(year=jan_first.year - 1)
+        if now.month == now.day == 1:  # pragma: no branch
+            jan_first = jan_first.replace(year=jan_first.year - 1)  # pragma: no cover
         self.__jenkins.contents = u'{{"jobs": [{{"name": "job1", "color": "red", "description": None, ' \
                                   u'"url": "http://url", "buildable":  True}}], "timestamp": "{}", ' \
                                   u'"builds": [{{}}]}}'.format(to_jenkins_timestamp(jan_first))
