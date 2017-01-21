@@ -1,13 +1,9 @@
-2017-01-21  Release 1.74.1
-
-  * Bug fix: Don't crash when an alert metric doesn't have a metric source configured.
-  * Don't clone Git repos when reading the project definition, but only when needed.
-   
-  
-2017-01-11  Release 1.74.0
+ 2017-01-21  Release 1.74.0
 
   * Add a metric for the number of days since regression test coverage reports were last generated.
   * Add a metric for the number of days since the team spirit was last edited.
+  * Bug fix: Don't crash when an alert metric doesn't have a metric source configured.
+  * Don't clone Git repos when reading the project definition, but only when needed.
   
   
 2017-01-06  Release 1.73.1
