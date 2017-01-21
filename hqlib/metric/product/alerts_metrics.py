@@ -38,7 +38,8 @@ class AlertsMetric(LowerIsBetterMetric):
 
     def _nr_alerts(self):
         """ Return the number of alerts. """
-        return self._metric_source.alerts(self.risk_level_key, *self._metric_source_urls())
+        return self._metric_source.alerts(self.risk_level_key, *self._metric_source_urls()) \
+            if self._metric_source else -1
 
     def _parameters(self):
         parameters = super(AlertsMetric, self)._parameters()
