@@ -105,7 +105,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     norm_template = 'Alle {unit} zijn minder dan {target} dagen geleden uitgevoerd. ' \
         'Langer dan {low_target} dagen geleden is rood.'
     template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} {unit} van {name} zijn ' \
-        'te lang geleden (meest recente {value} dag(en), op {date}) uitgevoerd.'
+        'te lang geleden (meest recente {value} dag(en)) uitgevoerd.'
     never_template = 'De {nr_manual_ltcs} {unit} van {name} zijn nog niet allemaal uitgevoerd.'
     target_value = 21
     low_target_value = 28

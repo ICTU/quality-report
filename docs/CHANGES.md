@@ -1,3 +1,8 @@
+ 2017-01-22  Release 1.74.2
+ 
+  * Bug fix: Don't crash when reporting on risk or action log age. 
+  
+  
  2017-01-22  Release 1.74.1
  
   * Bug fix: Don't crash when reporting on team spirit.

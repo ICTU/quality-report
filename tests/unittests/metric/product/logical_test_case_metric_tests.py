@@ -218,14 +218,14 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertTrue('5 van de 10 handmatige logische testgevallen van FakeSubject zijn te lang geleden '
-                        '(meest recente 5 dag(en), ' in self.__metric.report())
+                        '(meest recente 5 dag(en))' in self.__metric.report())
 
     def test_report_with_untested(self):
         """ Test that the report mentions the number of test cases that have never been tested. """
         self.__birt.date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=60)
         self.assertTrue(
             self.__metric.report().startswith('5 van de 10 handmatige logische testgevallen van FakeSubject zijn '
-                                              'te lang geleden (meest recente 60 dag(en), '))
+                                              'te lang geleden (meest recente 60 dag(en))'))
 
     def test_report_when_untested(self):
         """ Test that the report uses the correct template when the manual tests have not been executed at all. """

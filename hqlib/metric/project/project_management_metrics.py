@@ -39,7 +39,7 @@ class RiskLog(ActivityMetric):
     name = 'Actualiteit van de risico log'
     norm_template = 'Het risicolog wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
         'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
-    template = 'Het risicolog is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
+    template = 'Het risicolog is {value} {unit} geleden voor het laatst bijgewerkt.'
     target_value = 14
     low_target_value = 28
     metric_source_class = metric_source.TrelloRiskBoard
@@ -51,7 +51,7 @@ class ActionActivity(ActivityMetric):
     name = 'Actualiteit van de actielijst'
     norm_template = 'De actie- en besluitenlijst wordt minimaal een keer per {target} {unit} bijgewerkt. ' \
         'Meer dan {low_target} {unit} niet bijgewerkt is rood.'
-    template = 'De actie- en besluitenlijst is {value} {unit} geleden (op {date}) voor het laatst bijgewerkt.'
+    template = 'De actie- en besluitenlijst is {value} {unit} geleden voor het laatst bijgewerkt.'
     target_value = 7
     low_target_value = 14
     metric_source_class = metric_source.TrelloActionsBoard
