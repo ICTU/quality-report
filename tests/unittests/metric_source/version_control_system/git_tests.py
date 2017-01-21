@@ -57,10 +57,15 @@ class GitTests(unittest.TestCase):
         self.assertEqual('http://git/master/', self.__git.normalize_path('http://git/master/'))
 
     def test_normalize_path_does_not_add_trailing_slash(self):
-        """ Test that the normalized path has a trailing slash. """
+        """ Test that the normalized path doesn't have a trailing slash. """
         self.assertEqual('http://git/master', self.__git.normalize_path('http://git/master'))
 
     def test_encode_password(self):
         """ Test that the password is encoded. """
         git = GitUnderTest(url='http://git/', username='user', password='foo@bar')
         self.assertEqual('http://user:foo%40bar@git/', git.last_command[2])
+
+    def test_branch_folder_for_branch(self):
+        """ Test that a branch folder can be created from a trunk folder and a branch name. """
+        self.assertEqual('http://git/master/branch',
+                         self.__git.branch_folder_for_branch('http://git/master', 'branch'))

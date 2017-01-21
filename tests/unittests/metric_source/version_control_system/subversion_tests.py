@@ -98,3 +98,8 @@ class SubversionTests(unittest.TestCase):
     def test_normalize_path_adds_trunk(self):
         """ Test that the normalized path has a trunk folder at the end. """
         self.assertEqual('http://svn/trunk/', self.__svn.normalize_path('http://svn'))
+
+    def test_branch_folder_for_branch(self):
+        """ Test that a branch folder can be created from a trunk folder and a branch name. """
+        self.assertEqual('http://svn/branches/branch/',
+                         self.__svn.branch_folder_for_branch('http://svn/trunk/', 'branch'))
