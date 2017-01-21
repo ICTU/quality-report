@@ -35,7 +35,11 @@ class Git(VersionControlSystem):
         self.__chdir = kwargs.pop('chdir', os.chdir)
         super(Git, self).__init__(*args, **kwargs)
         self.__repo_folder = None
-        self.__get_repo()
+
+    def _run_shell_command(self, *args, **kwargs):
+        if not self.__repo_folder:
+            self.__get_repo()
+        super(Git, self)._run_shell_command(*args, **kwargs)
 
     @utils.memoized
     def last_changed_date(self, path):
