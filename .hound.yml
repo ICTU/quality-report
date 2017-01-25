@@ -3,4 +3,6 @@ python:
 eslint:
   enabled: true
   config_file: .eslintrc
+  ignore_file: .eslintignore
+
 
