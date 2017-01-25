@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/ICTU/quality-report.png?branch=master)](https://travis-ci.org/ICTU/quality-report)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=nl.ictu:quality_report)](https://sonarqube.com/dashboard/index/nl.ictu:quality_report)
 [![Test Coverage](https://codeclimate.com/github/ICTU/quality-report/badges/coverage.svg)](https://codeclimate.com/github/ICTU/quality-report/coverage)
+[![Coverage Status](https://coveralls.io/repos/github/ICTU/quality-report/badge.svg?branch=master)](https://coveralls.io/github/ICTU/quality-report?branch=master)
 [![Code Climate](https://codeclimate.com/github/ICTU/quality-report/badges/gpa.svg)](https://codeclimate.com/github/ICTU/quality-report)
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/97781bcab5044cbdb2ca863bc2b9c6bc/badge.svg)](https://www.quantifiedcode.com/app/project/97781bcab5044cbdb2ca863bc2b9c6bc)
 [![BCH compliance](https://bettercodehub.com/edge/badge/ICTU/quality-report)](https://bettercodehub.com)
