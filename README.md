@@ -7,6 +7,7 @@
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/97781bcab5044cbdb2ca863bc2b9c6bc/badge.svg)](https://www.quantifiedcode.com/app/project/97781bcab5044cbdb2ca863bc2b9c6bc)
 [![BCH compliance](https://bettercodehub.com/edge/badge/ICTU/quality-report)](https://bettercodehub.com)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/90b2d74043284cdda06aecc442182946)](https://www.codacy.com/app/frank_10/quality-report?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ICTU/quality-report&amp;utm_campaign=Badge_Grade)
+[![codebeat badge](https://codebeat.co/badges/cbffeefc-5efb-41c4-88e1-30a0fc7dd249)](https://codebeat.co/projects/github-com-ictu-quality-report)
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![Requirements Status](https://requires.io/github/ICTU/quality-report/requirements.svg?branch=master)](https://requires.io/github/ICTU/quality-report/requirements/?branch=master)
 [![Updates](https://pyup.io/repos/github/ictu/quality-report/shield.svg)](https://pyup.io/repos/github/ictu/quality-report/)
