@@ -11,12 +11,11 @@ script:
 - coverage xml
 - CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter
 - python-codacy-coverage -r coverage.xml
+- coveralls
 - coverage run --parallel-mode --branch tests/run_integrationtests.py discover -s tests/integrationtests -p "*_tests.py"
 - coverage combine .
 - coverage xml -o it-coverage.xml
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
-after_success:
-- coveralls
 addons:
   sonarqube: true
   code_climate:
