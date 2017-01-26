@@ -99,6 +99,11 @@ class HistoryTest(unittest.TestCase):
         FakeFile.initial_content = HISTORY
         self.assertEqual(['38'], self.__history.recent_history('OpenBugsNone'))
 
+    def test_complete_history(self):
+        """ Test the complete history. """
+        FakeFile.initial_content = HISTORY
+        self.assertEqual('3', self.__history.complete_history()[0]['OpenBugsFoo'])
+
     def test_missing_recent_history(self):
         """ Test the recent history of a non-existing metric. """
         FakeFile.initial_content = HISTORY
