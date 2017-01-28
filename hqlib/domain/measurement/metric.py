@@ -159,11 +159,11 @@ class Metric(object):
 
     def _needs_immediate_action(self):
         """ Return whether the metric needs immediate action, i.e. its actual value is below its low target value. """
-        return False
+        return not self._is_value_better_than(self.low_target())
 
     def _is_below_target(self):
         """ Return whether the actual value of the metric is below its target value. """
-        return False
+        return not self._is_value_better_than(self.target())
 
     def __is_perfect(self):
         """ Return whether the actual value of the metric equals its perfect value,
