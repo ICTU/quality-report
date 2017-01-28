@@ -26,18 +26,6 @@ class LowerIsBetterMetric(metric.Metric):
     def value(self):
         raise NotImplementedError  # pragma: no cover
 
-    def _is_below_target(self):
-        """ Return whether the metric meets or exceeds the target. """
-        # The metric is below target when the actual value is *higher*
-        # than the target value, because the target value is the maximum value
-        return not self.perfect_value <= self.value() <= self.target() or \
-            super(LowerIsBetterMetric, self)._is_below_target()
-
-    def _needs_immediate_action(self):
-        """ Return whether the metric scores so bad that immediate action is required. """
-        return not self.perfect_value <= self.value() <= self.low_target() or \
-            super(LowerIsBetterMetric, self)._needs_immediate_action()
-
     def _is_value_better_than(self, target):
         return self.perfect_value <= self.value() <= target
 
@@ -47,16 +35,6 @@ class HigherIsBetterMetric(metric.Metric):
 
     def value(self):
         raise NotImplementedError  # pragma: no cover
-
-    def _is_below_target(self):
-        """ Return whether the metric meets or exceeds the target. """
-        # The metric is below target when the actual value is *lower*
-        # than the target value, because the target value is the minimum value
-        return self.value() < self.target() or super(HigherIsBetterMetric, self)._is_below_target()
-
-    def _needs_immediate_action(self):
-        """ Return whether the metric scores so bad that immediate action is required. """
-        return self.value() < self.low_target() or super(HigherIsBetterMetric, self)._needs_immediate_action()
 
     def _is_value_better_than(self, target):
         return self.value() >= target
