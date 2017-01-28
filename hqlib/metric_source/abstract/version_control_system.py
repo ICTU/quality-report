@@ -99,7 +99,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
             element of the tuple is the version number as tuple of integers (for sorting). The second element
             of the tuple is the version number as text, including any postfix elements (e.g. 1.2.3-beta). """
         versions_in_tag = re.findall(r'[0-9]+(?:\.[0-9]+)+', tag)
-        if versions_in_tag and 'emma' not in tag.lower():
+        if versions_in_tag:
             numbers = versions_in_tag[0].split('.')
             version_integer_tuple = tuple(int(number) for number in numbers)
             version_text = re.findall(r'[0-9].*', tag)[0]
