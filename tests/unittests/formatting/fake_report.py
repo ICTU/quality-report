@@ -34,11 +34,6 @@ class Section(object):
         return self.__metrics
 
     @staticmethod
-    def has_history():
-        """ Return whether this section has history. """
-        return True
-
-    @staticmethod
     def title():
         """ Return the title of the section. """
         return 'Section title'
