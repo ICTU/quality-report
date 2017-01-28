@@ -39,16 +39,6 @@ class Section(object):
         return True
 
     @staticmethod
-    def history():
-        """ Return the history of this section. """
-        return [{'GreyMetaMetric': 0, 'GreenMetaMetric': '94',
-                 'YellowMetaMetric': 0, 'date': '2012-04-05 16:16:58',
-                 'RedMetaMetric': '1', 'metric_id': '0'},
-                {'GreenMetaMetric': '94',
-                 'date': '2012-04-05 17:16:58',
-                 'RedMetaMetric': '1', 'metric_id': '0'}]
-
-    @staticmethod
     def title():
         """ Return the title of the section. """
         return 'Section title'
@@ -153,19 +143,32 @@ class Report(object):
     @staticmethod
     def project():
         """ Return the project. """
-        class FakeProject(object):  # pylint: disable=too-few-public-methods
+        # pylint: disable=too-few-public-methods
+        class FakeProject(object):
             """ Fake a project. """
             @staticmethod
             def metric_source(metric_source_class):  # pylint: disable=unused-argument
                 """ Return the metric source instances for a metric source class. """
-                class FakeGit(object):  # pylint: disable=too-few-public-methods
+                class FakeGit(object):
                     """ Fake a Git repository. """
                     @staticmethod
                     def url():
                         """ Return the url of Git. """
                         return 'http://git/'
 
-                return [FakeGit()]
+                class FakeHistory(object):
+                    """ Fake the measurement history. """
+                    @staticmethod
+                    def complete_history():
+                        """ Return all measurements. """
+                        return [{'GreyMetaMetric': 0, 'GreenMetaMetric': '94',
+                                 'YellowMetaMetric': 0, 'date': '2012-04-05 16:16:58',
+                                 'RedMetaMetric': '1', 'metric_id': '0'},
+                                {'GreenMetaMetric': '94',
+                                 'date': '2012-04-05 17:16:58',
+                                 'RedMetaMetric': '1', 'metric_id': '0'}]
+
+                return FakeHistory() if metric_source_class == metric_source.History else [FakeGit()]
 
         return FakeProject()
 

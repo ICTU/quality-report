@@ -46,10 +46,9 @@ class Section(object):
     ORDERED_STATUSES = ('missing', 'missing_source', 'red', 'yellow', 'grey', 'green', 'perfect')
     STATUS_TO_COLOR_MAPPING = dict(missing='red', missing_source='red', perfect='green')
 
-    def __init__(self, header, metrics, history=None, product=None):
+    def __init__(self, header, metrics, product=None):
         self.__header = header
         self.__metrics = metrics
-        self.__history = history
         self.__product = product
         for index, each_metric in enumerate(self.__metrics):
             each_metric.set_id_string('{pref}-{nr}'.format(pref=self.__header.id_prefix(), nr=index + 1))
@@ -87,14 +86,6 @@ class Section(object):
         else:
             color = 'white'
         return self.STATUS_TO_COLOR_MAPPING.get(color, color)
-
-    def has_history(self):
-        """ Return whether this section has history collected. """
-        return self.id_prefix() == 'MM'
-
-    def history(self):
-        """ Return the history file contents. """
-        return self.__history.complete_history()
 
     def product(self):
         """ Return the product this section is about. """

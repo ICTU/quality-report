@@ -205,8 +205,7 @@ class QualityReport(domain.DomainObject):
                         meta_metric_class in (metric.GreenMetaMetric, metric.RedMetaMetric, metric.YellowMetaMetric,
                                               metric.GreyMetaMetric, metric.MissingMetaMetric)]
         self.__metrics.extend(meta_metrics)
-        return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics,
-                       history=self.__project.metric_source(metric_source.History))
+        return Section(SectionHeader('MM', 'Meta metrieken'), meta_metrics)
 
     def __art_metrics(self, art):
         """ Return a list of Automated Regression Test metrics for the (ART) product. """

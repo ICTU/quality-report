@@ -22,7 +22,7 @@ import re
 import pkg_resources
 
 from . import base_formatter
-from .. import utils
+from .. import utils, metric_source
 
 
 class HTMLFormatter(base_formatter.Formatter):
@@ -58,7 +58,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
-        parameters['history'] = self.__trend_data(report.get_meta_section())
+        parameters['history'] = self.__trend_data(report)
 
         metrics = []
         for metric in report.metrics():
@@ -79,7 +79,7 @@ class HTMLFormatter(base_formatter.Formatter):
     def section(self, report, section):
         """ Return a HTML formatted version of the section. """
         subtitle = self.__format_subtitle(section.subtitle())
-        extra = '<div id="meta_metrics_history_graph"></div>' if section.has_history() else ''
+        extra = '<div id="meta_metrics_history_graph"></div>' if section.id_prefix() == 'MM' else ''
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
@@ -122,16 +122,17 @@ class HTMLFormatter(base_formatter.Formatter):
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
-    def __trend_data(self, meta_metrics_section):
+    def __trend_data(self, report):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
-        stable_ids = dict((metric.id_string(), metric.stable_id()) for metric in meta_metrics_section.metrics())
+        stable_ids = dict((metric.id_string(), metric.stable_id()) for metric in report.get_meta_section().metrics())
         green_id = stable_ids.get('MM-1', '')
         red_id = stable_ids.get('MM-2', '')
         yellow_id = stable_ids.get('MM-3', '')
         grey_id = stable_ids.get('MM-4', '')
         missing_id = stable_ids.get('MM-5', '')
-        for history_record in meta_metrics_section.history():
+        history = report.project().metric_source(metric_source.History)
+        for history_record in history.complete_history():
             date_and_time = self.__date_and_time(history_record)
             percentages = self.__percentages(history_record, green_id, red_id, yellow_id, grey_id, missing_id)
             history_table.append(

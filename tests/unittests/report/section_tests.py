@@ -134,28 +134,6 @@ class SectionTest(unittest.TestCase):
         section = Section(self.__header, [])
         self.assertEqual('white', section.color())
 
-    def test_has_no_history(self):
-        """ Test that the section has no history unless its id prefix is MM (for Meta Metrics). """
-        self.assertFalse(self.__section.has_history())
-
-    def test_has_history(self):
-        """ Test that the section has history when its id prefix is MM (for Meta Metrics). """
-        section = Section(SectionHeader('MM', 'title', 'subtitle'), [])
-        self.assertTrue(section.has_history())
-
-    def test_history(self):
-        """ Test that the section returns the history from the history metric source. """
-
-        class FakeHistory(object):  # pylint: disable=too-few-public-methods
-            """ Fake the history metric source. """
-            @staticmethod
-            def complete_history():
-                """ Return a fake history. """
-                return 'History'
-
-        section = Section(None, [], history=FakeHistory())
-        self.assertEqual('History', section.history())
-
     def test_product(self):
         """ Test that the section returns the product. """
         section = Section(None, [], product='Product')
