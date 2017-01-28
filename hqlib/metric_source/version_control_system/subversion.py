@@ -73,16 +73,9 @@ class Subversion(version_control_system.VersionControlSystem):
                           list_of_branches_to_include=None):
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
             unmerged revisions. """
-        def ignore(branch_name):
-            """ Return whether the branch should be ignored. """
-            if list_of_branches_to_include and branch_name not in list_of_branches_to_include:
-                return True
-            return branch_name in list_of_branches_to_ignore or re_of_branches_to_ignore and \
-                                                                re.match(re_of_branches_to_ignore, branch_name)
-
-        list_of_branches_to_ignore = list_of_branches_to_ignore or []
-        list_of_branches_to_include = list_of_branches_to_include or []
-        branches = [branch for branch in self.branches(product_url) if not ignore(branch)]
+        branches = [branch for branch in self.branches(product_url) if not
+                    self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
+                                        list_of_branches_to_include)]
         branches = [(branch, self.__nr_unmerged_revisions(product_url, branch)) for branch in branches]
         unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) in branches if nr_revisions > 0]
         return dict(unmerged_branches)

@@ -69,17 +69,9 @@ class Git(VersionControlSystem):
                           list_of_branches_to_include=None):
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
             any unmerged commits. """
-
-        def ignore(branch_name):
-            """ Return whether the branch should be ignored. """
-            if list_of_branches_to_include and branch_name not in list_of_branches_to_include:
-                return True
-            return branch_name in list_of_branches_to_ignore or re_of_branches_to_ignore and \
-                                                                re.match(re_of_branches_to_ignore, branch_name)
-
-        list_of_branches_to_ignore = list_of_branches_to_ignore or []
-        list_of_branches_to_include = list_of_branches_to_include or []
-        unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not ignore(branch)]
+        unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not
+                             self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
+                                                 list_of_branches_to_include)]
         branches_and_commits = [(branch, self.__nr_unmerged_commits(branch)) for branch in unmerged_branches]
         return dict(branches_and_commits)
 

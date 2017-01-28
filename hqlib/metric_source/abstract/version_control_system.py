@@ -56,6 +56,18 @@ class VersionControlSystem(archive_system.ArchiveSystem):
             expression of branches to ignore are, obviously, ignored. """
         raise NotImplementedError  # pragma: no cover
 
+    @staticmethod
+    def _ignore_branch(branch_name, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
+                       list_of_branches_to_include=None):
+        """ Return whether the branch should be ignored. """
+        if list_of_branches_to_include and branch_name not in list_of_branches_to_include:
+            return True
+        if list_of_branches_to_ignore and branch_name in list_of_branches_to_ignore:
+            return True
+        if re_of_branches_to_ignore and re.match(re_of_branches_to_ignore, branch_name):
+            return True
+        return False
+
     @classmethod
     def branch_folder_for_branch(cls, trunk_url, branch):  # pylint: disable=unused-argument
         """ Return the branch folder for the specified branch. """
