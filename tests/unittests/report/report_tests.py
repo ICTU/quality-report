@@ -47,10 +47,6 @@ class QualityReportTest(unittest.TestCase):
         """ Test that the report has one section, the meta metrics, by default. """
         self.assertEqual(1, len(self.__report.sections()))
 
-    def test_sections_twice(self):
-        """ Test that the sections are cached. """
-        self.assertTrue(self.__report.sections() is self.__report.sections())
-
     def test_get_section(self):
         """ Test that a section can be retrieved by section id. """
         section = self.__report.sections()[0]
