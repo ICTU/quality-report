@@ -183,7 +183,7 @@ class MetricTest(unittest.TestCase):
 
     def test_default_comment_url_label(self):
         """ Test that the metric has no comment url label by default. """
-        self.assertFalse(self.__metric.comment_url_label())
+        self.assertFalse(self.__metric.comment_url_label_text)
 
     def test_subject_comment(self):
         """ Test that the metric uses the comment from the subject. """

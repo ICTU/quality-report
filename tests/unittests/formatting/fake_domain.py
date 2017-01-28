@@ -32,6 +32,7 @@ class Product(object):  # pylint: disable=too-few-public-methods
 
 class Metric(object):
     """ Fake a metric class. """
+    comment_url_label_text = ''
 
     def __init__(self, id_string='id_string-1', status_start_date=datetime.datetime(2012, 1, 1, 12, 0, 0)):
         self.__id_string = id_string

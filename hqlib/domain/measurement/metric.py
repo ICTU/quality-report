@@ -254,11 +254,6 @@ class Metric(object):
         comments = [comment for comment in (self.__technical_debt_comment(), self.__subject_comment()) if comment]
         return ' '.join(comments)
 
-    @classmethod
-    def comment_url_label(cls):
-        """ Return the label for the comment urls. """
-        return cls.comment_url_label_text
-
     @utils.memoized
     def __subject_comment(self):
         """ Return the comment of the subject about this metric, if any. """

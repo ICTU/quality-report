@@ -99,4 +99,4 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_comment_url_label(self):
         """ Test the label for the comment urls. """
-        self.assertEqual('Genegeerde branches', self.__metric.comment_url_label())
+        self.assertEqual('Genegeerde branches', self.__metric.comment_url_label_text)
