@@ -18,7 +18,6 @@ from __future__ import absolute_import
 import datetime
 import logging
 import os
-import re
 import urllib
 
 from ..abstract.version_control_system import VersionControlSystem
@@ -57,12 +56,7 @@ class Git(VersionControlSystem):
 
     def tags(self, path):  # pylint: disable=unused-argument
         """ Return a list of tags for the repo. """
-        def valid_tag_name(name):
-            """ Return whether name is a valid tag name. """
-            return bool(name)
-
-        tags = self._run_shell_command(['git', 'tag'])
-        return [tag.strip() for tag in tags.strip().split('\n') if valid_tag_name(tag.strip())]
+        return self.__valid_names(self._run_shell_command(['git', 'tag']))
 
     @utils.memoized
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
@@ -82,15 +76,11 @@ class Git(VersionControlSystem):
 
     def __get_branches(self, unmerged_only=False):
         """ Get the (remote) branches for the repository. """
-        def valid_branch_name(name):
-            """ Return whether name is a valid branch name. """
-            return name and ' -> ' not in name and 'origin/master' not in name
-
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
             command.append('--no-merged')
-        branches = self._run_shell_command(command)
-        return [branch.strip() for branch in branches.strip().split('\n') if valid_branch_name(branch.strip())]
+        return self.__valid_names(self._run_shell_command(command),
+                                  lambda name: name and ' -> ' not in name and 'origin/master' not in name)
 
     def __nr_unmerged_commits(self, branch_name):
         """ Return whether the branch has unmerged commits. """
@@ -133,3 +123,8 @@ class Git(VersionControlSystem):
         if self.__branch_to_checkout:
             folder += '-{0!s}'.format(self.__branch_to_checkout)
         return os.path.join(os.getcwd(), 'repos', folder)
+
+    def __valid_names(self, text, is_valid=bool):
+        """ Return the names in the text that are valid. """
+        names = [name.strip() for name in text.strip().split('\n')]
+        return [name for name in names if is_valid(name)]
