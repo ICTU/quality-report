@@ -26,10 +26,10 @@ class Metric(object):
     name = norm_template = target_value = low_target_value = perfect_value = template = unit = 'Subclass responsibility'
     missing_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
                        'beschikbaar zijn.'
-    missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat de bron {missing_source_class} ' \
+    missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat de bron {metric_source_class} ' \
                               'niet is geconfigureerd.'
     missing_source_id_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde ' \
-                                 'bron-ids zijn geconfigureerd. Configureer ids voor de bron {missing_source_class}.'
+                                 'bron-ids zijn geconfigureerd. Configureer ids voor de bron {metric_source_class}.'
     perfect_template = ''
     url_label_text = comment_url_label_text = ''
     metric_source_class = None
@@ -207,7 +207,7 @@ class Metric(object):
                     target=self.target(),
                     low_target=self.low_target(),
                     value=self.value(),
-                    missing_source_class=self.metric_source_class.__name__ if self.metric_source_class
+                    metric_source_class=self.metric_source_class.__name__ if self.metric_source_class
                     else '<metric has no metric source defined>')
 
     def norm(self):
