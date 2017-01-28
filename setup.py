@@ -26,6 +26,9 @@ from hqlib import VERSION
 setup(name='quality_report',
       version=VERSION,
       description='Holistic Software Quality Reporting',
+      long_description='''Application to generate quality reports for software development projects.
+Holistic because HQ attempts to measure as many aspects of software development as
+possible, seeing how software development can go off the rails in so many ways.''',
       author='ICTU',
       author_email='frank.niessink@ictu.nl',
       url='https://github.com/ICTU/quality-report',
@@ -46,4 +49,5 @@ setup(name='quality_report',
           'Programming Language :: Python',
           'Programming Language :: Python :: 2 :: Only',
           'Programming Language :: JavaScript',
-          'Topic :: Software Development :: Quality Assurance'])
+          'Topic :: Software Development :: Quality Assurance'],
+      keywords=['quality', 'software development', 'metrics', 'measurement'])
