@@ -94,10 +94,10 @@ class DynamicTechnicalDebtTargetTests(unittest.TestCase):
         end = now + datetime.timedelta(days=10)
         target = DynamicTechnicalDebtTarget(200, start, 100, end)
         self.assertEqual(
-            'Het doel is dat de technische schuld vermindert van %s LOC op %s naar %s LOC op %s. '
-            'De op dit moment geaccepteerde technische schuld is %s LOC.' % (200, format_date(start, year=True),
-                                                                             100, format_date(end, year=True),
-                                                                             target.target_value()),
+            'Het doel is dat de technische schuld vermindert van {0} LOC op {1} naar {2} LOC op {3}. '
+            'De op dit moment geaccepteerde technische schuld is {4} LOC.'.format(200, format_date(start, year=True),
+                                                                                  100, format_date(end, year=True),
+                                                                                  target.target_value()),
             target.explanation('LOC'))
 
     def test_custom_explanation(self):
@@ -107,8 +107,8 @@ class DynamicTechnicalDebtTargetTests(unittest.TestCase):
         end = now + datetime.timedelta(days=10)
         target = DynamicTechnicalDebtTarget(200, start, 100, end, 'Extra.')
         self.assertEqual(
-            'Het doel is dat de technische schuld vermindert van %s op %s naar %s op %s. '
-            'De op dit moment geaccepteerde technische schuld is %s. Extra.' % (200, format_date(start, year=True),
-                                                                                100, format_date(end, year=True),
-                                                                                target.target_value()),
+            'Het doel is dat de technische schuld vermindert van {0} op {1} naar {2} op {3}. '
+            'De op dit moment geaccepteerde technische schuld is {4}. Extra.'.format(200, format_date(start, year=True),
+                                                                                     100, format_date(end, year=True),
+                                                                                     target.target_value()),
             target.explanation())
