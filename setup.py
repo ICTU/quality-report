@@ -44,5 +44,6 @@ setup(name='quality_report',
           'Natural Language :: Dutch',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
+          'Programming Language :: Python :: 2 :: Only',
           'Programming Language :: JavaScript',
           'Topic :: Software Development :: Quality Assurance'])
