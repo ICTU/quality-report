@@ -175,9 +175,10 @@ class HTMLFormatter(base_formatter.Formatter):
         kwargs['status'] = metric.status()
         kwargs['metric_id'] = metric.id_string()
         kwargs['section'] = metric.id_string().split('-')[0]
-        kwargs['text'] = self.__format_metric_text(metric)
         kwargs['norm'] = metric.norm()
-        kwargs['comment'] = self.__format_metric_comment(metric)
+        kwargs['text'] = self.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
+        kwargs['comment'] = self.__format_text_with_links(metric.comment(), metric.comment_urls(),
+                                                          metric.comment_url_label_text)
         return kwargs
 
     @staticmethod
@@ -186,26 +187,14 @@ class HTMLFormatter(base_formatter.Formatter):
         return HTMLFormatter.__get_html_fragment('postfix')
 
     @classmethod
-    def __format_metric_text(cls, metric):
-        """ Return a HTML formatted version of the metric text that includes one
-            or more links to the metric source(s) if available. """
-        return cls.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
-
-    @classmethod
-    def __format_metric_comment(cls, metric):
-        """ Return a HTML formatted version of the metric comment, including links if appropriate. """
-        return cls.__format_text_with_links(metric.comment(), metric.comment_urls(), metric.comment_url_label_text)
-
-    @classmethod
-    def __format_text_with_links(cls, text, url_dict, url_label=''):
+    def __format_text_with_links(cls, text, url_dict, url_label):
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text)
         links = [cls.__format_url(anchor, href) for (anchor, href) in url_dict.items()]
         if links:
             if url_label:
                 url_label += ': '
-            sep = ', '
-            text = u'{text} [{url_label}{links}]'.format(text=text, url_label=url_label, links=sep.join(sorted(links)))
+            text = u'{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
         return text
 
     @staticmethod
