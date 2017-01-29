@@ -62,7 +62,7 @@ class History(domain.MetricSource):
         statuses = []
         for measurement in measurements:
             measurement_statuses = dict(date=measurement['date'])
-            for metric_id, measurement_data in measurement.items():
+            for measurement_data in measurement.values():
                 if isinstance(measurement_data, tuple):
                     status = measurement_data[1]
                     measurement_statuses[status] = measurement_statuses.get(status, 0) + 1
