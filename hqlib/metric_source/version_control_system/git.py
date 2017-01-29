@@ -124,7 +124,8 @@ class Git(VersionControlSystem):
             folder += '-{0!s}'.format(self.__branch_to_checkout)
         return os.path.join(os.getcwd(), 'repos', folder)
 
-    def __valid_names(self, text, is_valid=bool):
+    @staticmethod
+    def __valid_names(text, is_valid=bool):
         """ Return the names in the text that are valid. """
         names = [name.strip() for name in text.strip().split('\n')]
         return [name for name in names if is_valid(name)]
