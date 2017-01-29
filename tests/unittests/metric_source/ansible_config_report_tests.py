@@ -99,3 +99,7 @@ class AnsibleConfigReportTest(unittest.TestCase):
     def test_date_on_invalid_json(self):
         """ Test that the date of the report is the minimal date on invalid json. """
         self.assertEqual(datetime.datetime.min, self.__config.datetime('invalid'))
+
+    def test_date_without_urls(self):
+        """ Test date without urls. """
+        self.assertEqual(datetime.datetime.min, self.__config.datetime())
