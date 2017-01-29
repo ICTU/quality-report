@@ -25,13 +25,8 @@ from . import fake_domain
 
 class Section(object):
     """ Fake a report section. """
-    def __init__(self, metrics=None, product=None):
-        self.__metrics = metrics or []
+    def __init__(self, product=None):
         self.__product = product or fake_domain.Product()
-
-    def metrics(self):
-        """ Return the metrics in this section. """
-        return self.__metrics
 
     @staticmethod
     def title():
