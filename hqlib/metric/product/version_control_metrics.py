@@ -98,15 +98,16 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
 
     def __list_of_branches_to_ignore(self):
         """ Return the list of branches to ignore for the measured product. """
-        metric_options = self._subject.metric_options(self.__class__)
-        return metric_options.get('branches_to_ignore', []) if metric_options else []
+        return self.__get_metric_option('branches_to_ignore') or []
 
     def __re_of_branches_to_ignore(self):
         """ Return the regular expression of branches to ignore for the measured product. """
-        metric_options = self._subject.metric_options(self.__class__)
-        return metric_options.get('branches_to_ignore_re', '') if metric_options else ''
+        return self.__get_metric_option('branches_to_ignore_re') or ''
 
     def __list_of_branches_to_include(self):
         """ Return the list of branches to include for the measured product. """
-        metric_options = self._subject.metric_options(self.__class__)
-        return metric_options.get('branches_to_include', []) if metric_options else []
+        return self.__get_metric_option('branches_to_include') or []
+
+    def __get_metric_option(self, option):
+        """ Get the specified option from the subject. """
+        return self._subject.metric_options(self.__class__).get(option)
