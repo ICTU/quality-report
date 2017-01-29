@@ -115,6 +115,11 @@ class HistoryTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2013, 2, 27, 17, 16, 46, 567000),
                          self.__history.status_start_date('OpenBugsNone', 'green'))
 
+    def test_statuses(self):
+        """ Test that the statuses are returned correctly. """
+        FakeFile.initial_content = HISTORY
+        self.assertEqual([{'green': 1, 'date': '2013-02-28 17:16:46'}], self.__history.statuses())
+
     def test_status_start_date_no_history(self):
         """ Test the status start date without history. """
         FakeFile.initial_content = ''

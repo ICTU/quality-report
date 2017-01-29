@@ -125,16 +125,10 @@ class HTMLFormatter(base_formatter.Formatter):
     def __trend_data(self, report):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
-        stable_ids = dict((metric.id_string(), metric.stable_id()) for metric in report.get_meta_section().metrics())
-        green_id = stable_ids.get('MM-1', '')
-        red_id = stable_ids.get('MM-2', '')
-        yellow_id = stable_ids.get('MM-3', '')
-        grey_id = stable_ids.get('MM-4', '')
-        missing_id = stable_ids.get('MM-5', '')
         history = report.project().metric_source(metric_source.History)
-        for history_record in history.complete_history():
+        for history_record in history.statuses():
             date_and_time = self.__date_and_time(history_record)
-            percentages = self.__percentages(history_record, green_id, red_id, yellow_id, grey_id, missing_id)
+            percentages = self.__percentages(history_record)
             history_table.append(
                 '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time +
                                                                                               percentages)))
@@ -150,23 +144,10 @@ class HTMLFormatter(base_formatter.Formatter):
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __percentages(history_record, green_id, red_id, yellow_id, grey_id, missing_id):
-        """ Return the percentages red, yellow and green of the history record. """
-        percentage_green = history_record[green_id]
-        percentage_red = history_record[red_id]
-        try:
-            percentage_yellow = history_record[yellow_id]
-        except KeyError:
-            percentage_yellow = 100. - (float(percentage_green) + float(percentage_red))
-        try:
-            percentage_grey = history_record[grey_id]
-        except KeyError:
-            percentage_grey = 0
-        try:
-            percentage_missing = history_record[missing_id]
-        except KeyError:
-            percentage_missing = 0
-        return percentage_green, percentage_yellow, percentage_red, percentage_grey, percentage_missing
+    def __percentages(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
+        """ Return the percentages per measurement status in the history record. """
+        nr_metrics = float(sum([history_record.get(status, 0) for status in statuses]))
+        return tuple(int(round(100 * history_record.get(status, 0) / nr_metrics)) for status in statuses)
 
     def __metric_data(self, metric):
         """ Return the metric data as a dictionary, so it can be used in string templates. """

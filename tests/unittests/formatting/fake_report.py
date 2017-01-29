@@ -154,14 +154,9 @@ class Report(object):
                 class FakeHistory(object):
                     """ Fake the measurement history. """
                     @staticmethod
-                    def complete_history():
-                        """ Return all measurements. """
-                        return [{'GreyMetaMetric': 0, 'GreenMetaMetric': '94',
-                                 'YellowMetaMetric': 0, 'date': '2012-04-05 16:16:58',
-                                 'RedMetaMetric': '1', 'metric_id': '0'},
-                                {'GreenMetaMetric': '94',
-                                 'date': '2012-04-05 17:16:58',
-                                 'RedMetaMetric': '1', 'metric_id': '0'}]
+                    def statuses():
+                        """ Return the statuses. """
+                        return [{'green': 1, 'date': '2012-04-05 16:16:58', 'red': 1}]
 
                 return FakeHistory() if metric_source_class == metric_source.History else [FakeGit()]
 

@@ -56,6 +56,19 @@ class History(domain.MetricSource):
         last_status, date = self.__last_status(metric_id)
         return date if last_status == current_status else now()
 
+    def statuses(self):
+        """ Return the statuses for each measurement. """
+        measurements = self.__eval_history(recent_only=False)
+        statuses = []
+        for measurement in measurements:
+            measurement_statuses = dict(date=measurement['date'])
+            for metric_id, measurement_data in measurement.items():
+                if isinstance(measurement_data, tuple):
+                    status = measurement_data[1]
+                    measurement_statuses[status] = measurement_statuses.get(status, 0) + 1
+            statuses.append(measurement_statuses)
+        return statuses
+
     def __last_status(self, metric_id):
         """ Return the last recorded status of the metric and the date that the metric first had that status. """
         try:
