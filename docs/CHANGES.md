@@ -1,19 +1,24 @@
- 2017-01-22  Release 1.74.3
+2017-01-29  Release 1.75.0
+
+  * Add a trend graph that shows the absolute number of metrics over time.
+  
+  
+2017-01-22  Release 1.74.3
  
   * Bug fix: Don't crash when doing a git pull.
  
  
- 2017-01-22  Release 1.74.2
+2017-01-22  Release 1.74.2
  
   * Bug fix: Don't crash when reporting on risk or action log age. 
   
   
- 2017-01-22  Release 1.74.1
+2017-01-22  Release 1.74.1
  
   * Bug fix: Don't crash when reporting on team spirit.
    
  
- 2017-01-21  Release 1.74.0
+2017-01-21  Release 1.74.0
 
   * Add a metric for the number of days since regression test coverage reports were last generated.
   * Add a metric for the number of days since the team spirit was last edited.

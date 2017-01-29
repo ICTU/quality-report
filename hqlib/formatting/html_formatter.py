@@ -58,7 +58,8 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
-        parameters['history'] = self.__trend_data(report)
+        parameters['history_relative'] = self.__trend_data(report, relative=True)
+        parameters['history_absolute'] = self.__trend_data(report)
 
         metrics = []
         for metric in report.metrics():
@@ -79,7 +80,8 @@ class HTMLFormatter(base_formatter.Formatter):
     def section(self, report, section):
         """ Return a HTML formatted version of the section. """
         subtitle = self.__format_subtitle(section.subtitle())
-        extra = '<div id="meta_metrics_history_graph"></div>' if section.id_prefix() == 'MM' else ''
+        extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
+                '<div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
@@ -122,16 +124,15 @@ class HTMLFormatter(base_formatter.Formatter):
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
-    def __trend_data(self, report):
+    def __trend_data(self, report, relative=False):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
         history = report.project().metric_source(metric_source.History)
         for history_record in history.statuses():
             date_and_time = self.__date_and_time(history_record)
-            percentages = self.__percentages(history_record)
+            values = self.__relative_history(history_record) if relative else self.__absolute_history(history_record)
             history_table.append(
-                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time +
-                                                                                              percentages)))
+                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time + values)))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod
@@ -144,10 +145,15 @@ class HTMLFormatter(base_formatter.Formatter):
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __percentages(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
+    def __relative_history(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
         """ Return the percentages per measurement status in the history record. """
         nr_metrics = float(sum([history_record.get(status, 0) for status in statuses]))
         return tuple(int(round(100 * history_record.get(status, 0) / nr_metrics)) for status in statuses)
+
+    @staticmethod
+    def __absolute_history(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
+        """ Return the absolute values per measurement status in the history record. """
+        return tuple(history_record.get(status, 0) for status in statuses)
 
     def __metric_data(self, metric):
         """ Return the metric data as a dictionary, so it can be used in string templates. """

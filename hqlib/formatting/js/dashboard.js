@@ -62,7 +62,7 @@ function create_metrics_table(metrics_data) {
     color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
-function create_dashboard(metrics_data, history_data) {
+function create_dashboard(metrics_data, history_relative, history_absolute) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
     create_metrics_table(metrics_data);
@@ -76,7 +76,8 @@ function create_dashboard(metrics_data, history_data) {
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-    draw_area_chart('meta_metrics_history_graph', history_data);
+    draw_area_chart('meta_metrics_history_relative_graph', history_relative);
+    draw_area_chart('meta_metrics_history_absolute_graph', history_absolute);
 
     set_radio_indicator('filter_color', settings.filter_color);
     set_check_indicator('show_dashboard', settings.show_dashboard);
@@ -311,11 +312,11 @@ function draw_pie_chart(section) {
 function draw_area_chart(section, history) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
-    data.addColumn('number', '% groene metrieken');
-    data.addColumn('number', '% gele metrieken');
-    data.addColumn('number', '% rode metrieken');
-    data.addColumn('number', '% grijze metrieken');
-    data.addColumn('number', '% ontbrekende metrieken');
+    data.addColumn('number', 'groene metrieken');
+    data.addColumn('number', 'gele metrieken');
+    data.addColumn('number', 'rode metrieken');
+    data.addColumn('number', 'grijze metrieken');
+    data.addColumn('number', 'ontbrekende metrieken');
     data.addRows(history);
     var options = {
       width: 1200, height: 400,
