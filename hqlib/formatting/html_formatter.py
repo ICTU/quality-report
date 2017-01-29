@@ -328,29 +328,32 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         rows.append(tr_indent + '</tr>')
         return rows
 
-    @staticmethod
-    def __dashboard_rows(report, tr_indent, td_indent):
+    @classmethod
+    def __dashboard_rows(cls, report, tr_indent, td_indent):
         """ Return the rows of the dashboard. """
         dashboard_rows = report.dashboard()[1]
+        rows = list()
+        for row in dashboard_rows:
+            rows.append(tr_indent + '<tr>')
+            for column in row:
+                rows.append(cls.__dashboard_cell(report, column, td_indent))
+            rows.append(tr_indent + '</tr>')
+        return rows
+
+    @staticmethod
+    def __dashboard_cell(report, column, td_indent):
+        """ Return a cell of the dashboard. """
         td_template = td_indent + \
             '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
                                         <div class="link_section_{ID}" title="{title}"></div>
                                         <div id="section_summary_chart_{ID}"></div>
                                     </td>
 '''
-        rows = list()
-        for row in dashboard_rows:
-            rows.append(tr_indent + '<tr>')
-            for column in row:
-                try:
-                    section_id = column[0].short_name()
-                except AttributeError:
-                    section_id = column[0].upper()
-                section = report.get_section(section_id)
-                title = (section and section.title()) or '???'
-                colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
-                table_data = td_template.format(ID=section_id, title=title, bg_color=column[1],
-                                                colspan=colspan, rowspan=rowspan)
-                rows.append(table_data)
-            rows.append(tr_indent + '</tr>')
-        return rows
+        try:
+            section_id = column[0].short_name()
+        except AttributeError:
+            section_id = column[0].upper()
+        section = report.get_section(section_id)
+        title = section.title() if section else '???'
+        colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
+        return td_template.format(ID=section_id, title=title, bg_color=column[1], colspan=colspan, rowspan=rowspan)
