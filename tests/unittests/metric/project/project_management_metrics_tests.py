@@ -168,7 +168,7 @@ class ActionAgeTest(unittest.TestCase):
 
     def test_url_label(self):
         """ Test that the metric has a url label. """
-        self.assertTrue(self.__metric.url_label())
+        self.assertTrue(self.__metric.url_label_text)
 
     def test_should_be_measured(self):
         """ Test that the metric can be measured when the project has the appropriate requirement. """

@@ -243,11 +243,6 @@ class Metric(object):
         ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
         return [id_ for id_ in ids if id_]
 
-    @classmethod
-    def url_label(cls):
-        """ Return the label to be used to explain the urls. """
-        return cls.url_label_text
-
     @utils.memoized
     def comment(self):
         """ Return a comment on the metric. The comment is retrieved from either the technical debt or the subject. """

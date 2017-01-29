@@ -183,7 +183,7 @@ class HTMLFormatter(base_formatter.Formatter):
     def __format_metric_text(cls, metric):
         """ Return a HTML formatted version of the metric text that includes one
             or more links to the metric source(s) if available. """
-        return cls.__format_text_with_links(metric.report(), metric.url(), metric.url_label())
+        return cls.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
 
     @classmethod
     def __format_metric_comment(cls, metric):

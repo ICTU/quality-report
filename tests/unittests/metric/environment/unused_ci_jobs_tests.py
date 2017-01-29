@@ -62,4 +62,4 @@ class UnusedCIJobsTests(unittest.TestCase):
 
     def test_label(self):
         """ Test that the label to use in the HTML report is correct. """
-        self.assertEqual('Ongebruikte jobs', self._metric.url_label())
+        self.assertEqual('Ongebruikte jobs', self._metric.url_label_text)

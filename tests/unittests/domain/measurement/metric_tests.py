@@ -133,7 +133,7 @@ class MetricTest(unittest.TestCase):
 
     def test_default_url_label(self):
         """ Test that the metric has no default url label. """
-        self.assertFalse(self.__metric.url_label())
+        self.assertFalse(self.__metric.url_label_text)
 
     def test_recent_history(self):
         """ Test that the metric has no history by default. """

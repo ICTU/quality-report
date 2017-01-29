@@ -78,7 +78,7 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_url_label(self):
         """ Test that the label for the urls is correct. """
-        self.assertEqual('Niet gemergde branches', self.__metric.url_label())
+        self.assertEqual('Niet gemergde branches', self.__metric.url_label_text)
 
     def test_comment_ignored_branches(self):
         """ Test that the comment includes the regular expression for unmerged branches to ignore. """
