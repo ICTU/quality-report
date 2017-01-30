@@ -105,7 +105,8 @@ class History(domain.MetricSource):
     @utils.memoized
     def __eval_history(self, recent_only=True):
         """ Load and eval measurements from the history file. """
-        return [ast.literal_eval(line) for line in self.__load_history(recent_only)]
+        lines = [ast.literal_eval(line) for line in self.__load_history(recent_only)]
+        return [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
 
     @utils.memoized
     def __load_history(self, recent_only=True):

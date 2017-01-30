@@ -28,7 +28,7 @@ HISTORY = ['{"date": "2013-02-28 17:16:46", "OpenBugsNone": "38", '
 OLD_HISTORY = ['{"date": "2013-02-27 17:16:46", '
                '"OpenBugsNone": ("35", "green", "2013-02-27 17:16:46.567"), '
                '"GreenMetaMetric": "100", "RedMetaMetric": "0", '
-               '"YellowMetaMetric": "0" }\r\n']
+               '"YellowMetaMetric": "0" , "MissingMetaMetric": "0", "GreyMetaMetric": "0" }\r\n']
 
 
 class FakeFile(object):
