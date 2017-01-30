@@ -62,7 +62,7 @@ function create_metrics_table(metrics_data) {
     color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
-function create_dashboard(metrics_data, history_relative, history_absolute) {
+function create_dashboard(metrics_data, history) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
     create_metrics_table(metrics_data);
@@ -76,8 +76,8 @@ function create_dashboard(metrics_data, history_relative, history_absolute) {
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-    draw_area_chart('meta_metrics_history_relative_graph', history_absolute, "Percentage metrieken per status", 'relative');
-    draw_area_chart('meta_metrics_history_absolute_graph', history_absolute, "Aantal metrieken per status", true);
+    draw_area_chart('meta_metrics_history_relative_graph', history, "Percentage metrieken per status", 'relative');
+    draw_area_chart('meta_metrics_history_absolute_graph', history, "Aantal metrieken per status", true);
 
     set_radio_indicator('filter_color', settings.filter_color);
     set_check_indicator('show_dashboard', settings.show_dashboard);

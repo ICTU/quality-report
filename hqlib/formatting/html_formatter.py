@@ -58,8 +58,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
-        parameters['history_relative'] = self.__trend_data(report, relative=True)
-        parameters['history_absolute'] = self.__trend_data(report)
+        parameters['history'] = self.__trend_data(report)
 
         metrics = []
         for metric in report.metrics():
@@ -124,38 +123,28 @@ class HTMLFormatter(base_formatter.Formatter):
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
-    def __trend_data(self, report, relative=False):
+    def __trend_data(self, report):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
         history = report.project().metric_source(metric_source.History)
         for history_record in history.statuses():
             date_and_time = self.__date_and_time(history_record)
-            values = self.__relative_history(history_record) if relative else self.__absolute_history(history_record)
+            counts = self.__history_record_status_counts(history_record)
             history_table.append(
-                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time + values)))
+                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time + counts)))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod
     def __date_and_time(history_record):
-        """ Return the date and time of the history record. Remove leading zero
-            from date/time elements (assuming all elements are 2 digits long).
-            Turn month into zero-based value for usage within Javascript. """
+        """ Return the date and time of the history record. Remove leading zero from date/time elements (assuming all
+            elements are 2 digits long). Turn month into zero-based value for usage within Javascript. """
         year, month, day, hour, minute, second = re.split(r' 0?|:0?|-0?|\.0?', history_record['date'])[:6]
         month = str(int(month) - 1)  # Months are zero based
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __relative_history(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
-        """ Return the percentages per measurement status in the history record. """
-        nr_metrics = float(sum([history_record.get(status, 0) for status in statuses]))
-        if nr_metrics > 0:
-            return tuple(int(round(100 * history_record.get(status, 0) / nr_metrics)) for status in statuses)
-        else:
-            return tuple(0 for _ in statuses)
-
-    @staticmethod
-    def __absolute_history(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
-        """ Return the absolute values per measurement status in the history record. """
+    def __history_record_status_counts(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
+        """ Return the counts per measurement status in the history record. """
         return tuple(history_record.get(status, 0) for status in statuses)
 
     def __metric_data(self, metric):
