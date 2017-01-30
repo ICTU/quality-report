@@ -1,6 +1,7 @@
-2017-01-29  Release 1.75.0
+2017-01-30  Release 1.75.0
 
   * Add a trend graph that shows the absolute number of metrics over time.
+  * Bug fix: Don't crash when trying to measure the age of a performance test report that hasn't been configured.
   
   
 2017-01-22  Release 1.74.3
