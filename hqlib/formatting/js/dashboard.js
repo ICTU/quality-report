@@ -106,15 +106,15 @@ function create_dashboard(metrics_data, history) {
     };
 
     // Event handlers for the filter by color menu items.
-    var colors = ['filter_color_all', 'filter_color_red_and_yellow', 'filter_color_grey'];
-    for (index = 0; index < colors.length; index++) {
-        document.getElementById(colors[index]).onclick = (function() {
-            var color = colors[index];
-            return function() {
-                set_filter('filter_color', color, tables);
-            };
-        })();
-    }
+    document.getElementById('filter_color_all').onclick = function() {
+        set_filter('filter_color', 'filter_color_all', tables)
+    };
+    document.getElementById('filter_color_red_and_yellow').onclick = function() {
+        set_filter('filter_color', 'filter_color_red_and_yellow', tables)
+    };
+    document.getElementById('filter_color_grey').onclick = function() {
+        set_filter('filter_color', 'filter_color_grey', tables)
+    };
 }
 
 function read_settings_from_cookies() {
