@@ -323,7 +323,7 @@ function draw_area_chart(section, history, title, stacked) {
       width: 1200, height: 400,
       isStacked: stacked,
       hAxis: {format: 'd-M-yy'},
-      vAxis: {format: stacked === 'relative' ? 'percent' : 'none'}
+      vAxis: {format: stacked === 'relative' ? 'percent' : 'none'},
       colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
