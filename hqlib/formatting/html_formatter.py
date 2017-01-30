@@ -131,7 +131,8 @@ class HTMLFormatter(base_formatter.Formatter):
             date_and_time = self.__date_and_time(history_record)
             counts = self.__history_record_status_counts(history_record)
             history_table.append(
-                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}]'.format(*(date_and_time + counts)))
+                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}, {11}]'.format(
+                    *(date_and_time + counts)))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod
@@ -143,7 +144,8 @@ class HTMLFormatter(base_formatter.Formatter):
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __history_record_status_counts(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
+    def __history_record_status_counts(history_record,
+                                       statuses=('perfect', 'green', 'red', 'yellow', 'grey', 'missing')):
         """ Return the counts per measurement status in the history record. """
         return tuple(history_record.get(status, 0) for status in statuses)
 

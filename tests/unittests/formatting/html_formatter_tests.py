@@ -89,7 +89,7 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_history(self):
         """ Test that the report contains the history of the meta metrics. """
         html = self.__formatter.process(fake_report.Report())
-        self.assertTrue('[[new Date(2012, 3, 5, 16, 16, 58), 1, 1, 0, 0, 0]]' in html)
+        self.assertTrue('[[new Date(2012, 3, 5, 16, 16, 58), 0, 1, 1, 0, 0, 0]]' in html)
 
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """

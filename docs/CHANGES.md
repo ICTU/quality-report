@@ -1,3 +1,8 @@
+2017-01-30  Release 1.75.3
+
+  * Bug fix: Add perfect measurements to the history graphs.
+  
+  
 2017-01-30  Release 1.75.2
 
   * Bug fix: Don't show missing history in the graphs.

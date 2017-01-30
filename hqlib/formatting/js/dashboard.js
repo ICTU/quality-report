@@ -27,6 +27,7 @@ google.load('visualization', '1', {'packages': ['corechart', 'table']});
 var settings = [];
 var tables = [];
 
+var COLOR_PERFECT = '4EFF00';
 var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
@@ -312,6 +313,7 @@ function draw_pie_chart(section) {
 function draw_area_chart(section, history, title, stacked) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
+    data.addColumn('number', 'Perfect');
     data.addColumn('number', 'Goed');
     data.addColumn('number', 'Bijna goed');
     data.addColumn('number', 'Actie vereist');
@@ -324,7 +326,7 @@ function draw_area_chart(section, history, title, stacked) {
       isStacked: stacked,
       hAxis: {format: 'd-M-yy'},
       vAxis: {format: stacked === 'relative' ? 'percent' : ''},
-      colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
+      colors: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
     chart.draw(data, options);
