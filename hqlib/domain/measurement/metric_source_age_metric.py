@@ -31,6 +31,8 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
             (datetime.datetime.now() - self._metric_source.datetime(*self._get_metric_source_ids())).days
 
     def _missing(self):
+        if not self._metric_source:
+            return True
         metric_source_ids = self._get_metric_source_ids()
         if self._metric_source.needs_metric_source_id and not metric_source_ids:
             return True
