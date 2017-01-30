@@ -148,7 +148,10 @@ class HTMLFormatter(base_formatter.Formatter):
     def __relative_history(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):
         """ Return the percentages per measurement status in the history record. """
         nr_metrics = float(sum([history_record.get(status, 0) for status in statuses]))
-        return tuple(int(round(100 * history_record.get(status, 0) / nr_metrics)) for status in statuses)
+        if nr_metrics > 0:
+            return tuple(int(round(100 * history_record.get(status, 0) / nr_metrics)) for status in statuses)
+        else:
+            return tuple(0 for _ in statuses)
 
     @staticmethod
     def __absolute_history(history_record, statuses=('green', 'red', 'yellow', 'grey', 'missing')):

@@ -1,3 +1,8 @@
+2017-01-30  Release 1.75.1
+
+  * Bug fix: Don't crash with division by zero error when the history contains empty records.
+  
+  
 2017-01-30  Release 1.75.0
 
   * Add a trend graph that shows the absolute number of metrics over time.
