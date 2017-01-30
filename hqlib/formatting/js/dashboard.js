@@ -31,7 +31,7 @@ var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
 var COLOR_GREY = '#808080';
-var COLOR_MISSING = '#F8F8F8';
+var COLOR_MISSING = '#F0F0F0';
 var BG_COLOR_GREEN = '#E6F8E0';
 var BG_COLOR_YELLOW = '#F8F8C0';
 var BG_COLOR_RED = '#F8E0E0';
@@ -76,8 +76,8 @@ function create_dashboard(metrics_data, history_relative, history_absolute) {
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-    draw_area_chart('meta_metrics_history_relative_graph', history_relative);
-    draw_area_chart('meta_metrics_history_absolute_graph', history_absolute);
+    draw_area_chart('meta_metrics_history_relative_graph', history_relative, "Percentage metrieken per status");
+    draw_area_chart('meta_metrics_history_absolute_graph', history_absolute, "Aantal metrieken per status");
 
     set_radio_indicator('filter_color', settings.filter_color);
     set_check_indicator('show_dashboard', settings.show_dashboard);
@@ -309,19 +309,20 @@ function draw_pie_chart(section) {
     chart.draw(data, options);
 }
 
-function draw_area_chart(section, history) {
+function draw_area_chart(section, history, title) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
-    data.addColumn('number', 'groene metrieken');
-    data.addColumn('number', 'gele metrieken');
-    data.addColumn('number', 'rode metrieken');
-    data.addColumn('number', 'grijze metrieken');
-    data.addColumn('number', 'ontbrekende metrieken');
+    data.addColumn('number', 'Goed');
+    data.addColumn('number', 'Bijna goed');
+    data.addColumn('number', 'Actie vereist');
+    data.addColumn('number', 'Technische schuld');
+    data.addColumn('number', 'Ontbrekend');
     data.addRows(history);
     var options = {
+      title: title,
       width: 1200, height: 400,
       isStacked: true,
-      hAxis: {format:'d-M-yy'},
+      hAxis: {format: 'd-M-yy'},
       colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
