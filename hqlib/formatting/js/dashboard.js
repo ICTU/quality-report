@@ -76,8 +76,8 @@ function create_dashboard(metrics_data, history_relative, history_absolute) {
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-    draw_area_chart('meta_metrics_history_relative_graph', history_relative, "Percentage metrieken per status");
-    draw_area_chart('meta_metrics_history_absolute_graph', history_absolute, "Aantal metrieken per status");
+    draw_area_chart('meta_metrics_history_relative_graph', history_absolute, "Percentage metrieken per status", 'relative');
+    draw_area_chart('meta_metrics_history_absolute_graph', history_absolute, "Aantal metrieken per status", true);
 
     set_radio_indicator('filter_color', settings.filter_color);
     set_check_indicator('show_dashboard', settings.show_dashboard);
@@ -309,7 +309,7 @@ function draw_pie_chart(section) {
     chart.draw(data, options);
 }
 
-function draw_area_chart(section, history, title) {
+function draw_area_chart(section, history, title, stacked) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
     data.addColumn('number', 'Goed');
@@ -321,7 +321,7 @@ function draw_area_chart(section, history, title) {
     var options = {
       title: title,
       width: 1200, height: 400,
-      isStacked: true,
+      isStacked: stacked,
       hAxis: {format: 'd-M-yy'},
       colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
     };
