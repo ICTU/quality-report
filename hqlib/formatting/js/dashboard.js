@@ -318,7 +318,8 @@ function draw_area_chart(section, history, title, stacked) {
     data.addColumn('number', 'Bijna goed');
     data.addColumn('number', 'Actie vereist');
     data.addColumn('number', 'Technische schuld');
-    data.addColumn('number', 'Ontbrekend');
+    data.addColumn('number', 'Bron niet beschikbaar');
+    data.addColumn('number', 'Bron niet geconfigureerd');
     data.addRows(history);
     var options = {
       title: title,
@@ -326,7 +327,7 @@ function draw_area_chart(section, history, title, stacked) {
       isStacked: stacked,
       hAxis: {format: 'd-M-yy'},
       vAxis: {format: stacked === 'relative' ? 'percent' : ''},
-      colors: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
+      colors: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
     chart.draw(data, options);
