@@ -61,7 +61,12 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
                             team_ids[0])
             return datetime.datetime.min
         columns = len(soup('tr', id=team_ids[0])[0]('td'))
-        date_text = soup('th')[columns - 1].string.strip()
+        try:
+            date_text = soup('th')[columns - 1].string.strip()
+        except AttributeError as reason:
+            logging.error("Could not read the date of the last spirit measurement of team %s from %s: %s",
+                          team_ids[0], self.url(), reason)
+            return datetime.datetime.min
         return self.__parse_date(date_text)
 
     # Utility methods

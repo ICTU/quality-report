@@ -64,6 +64,22 @@ class WikiTest(unittest.TestCase):
         """ Test exception when team is missing. """
         self.assertEqual('', self.__wiki.team_spirit('missing'))
 
+    def test_no_column_header(self):
+        """ Test missing columns. """
+        self.__wiki.html = """<table border="1">
+                        <tr>
+                          <th align="right">Datum</th>
+                          <th>9-1-2013</th>
+                          <th></th>
+                        </tr>
+                        <tr id="team_1">
+                            <td>Smiley team 1</td>
+                            <td>:-)</td>
+                            <td>:-)</td>
+                        </tr>
+                      </table>"""
+        self.assertEqual(datetime.datetime.min, self.__wiki.datetime('team_1'))
+
     def test_date_of_last_measurement(self):
         """ Test the date of the last measurement of the spirit of the team. """
         self.assertEqual(datetime.datetime(2013, 1, 18), self.__wiki.datetime('team_2'))
