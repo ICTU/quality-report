@@ -57,7 +57,7 @@ class JunitTestReport(test_report.TestReport):
         """ Return the date and time of the report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except UrlOpener.url_open_exceptions:
+        except (UrlOpener.url_open_exceptions, xml.etree.ElementTree.ParseError):
             return datetime.datetime.min
         if test_suites:
             timestamps = [test_suite.get('timestamp') for test_suite in test_suites]
@@ -76,7 +76,7 @@ class JunitTestReport(test_report.TestReport):
         """ Return the number of tests with the specified result in the test report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except UrlOpener.url_open_exceptions:
+        except (UrlOpener.url_open_exceptions, xml.etree.ElementTree.ParseError):
             return -1
         if test_suites:
             return sum(int(test_suite.get(result_type, 0)) for test_suite in test_suites)
@@ -88,7 +88,7 @@ class JunitTestReport(test_report.TestReport):
         """ Return the number of test cases that have failures (failed assertions). """
         try:
             root = self.__element_tree(report_url)
-        except UrlOpener.url_open_exceptions:
+        except (UrlOpener.url_open_exceptions, xml.etree.ElementTree.ParseError):
             return -1
         return len(root.findall('.//testcase[failure]'))
 
@@ -101,4 +101,8 @@ class JunitTestReport(test_report.TestReport):
     def __element_tree(self, report_url):
         """ Return the report contents as ElementTree. """
         contents = self._url_open(report_url).read()
-        return xml.etree.ElementTree.fromstring(contents)
+        try:
+            return xml.etree.ElementTree.fromstring(contents)
+        except xml.etree.ElementTree.ParseError as reason:
+            logging.error("Couldn't parse report at %s: %s", report_url, reason)
+            raise

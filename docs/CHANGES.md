@@ -1,3 +1,8 @@
+2017-02-01  Release 1.75.5
+
+  * Bug fix: Don't crash when a Junit report is empty.
+  
+
 2017-01-30  Release 1.75.4
 
   * Bug fix: Add measurements with missing source to the history graph.
