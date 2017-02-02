@@ -1,3 +1,8 @@
+2017-02-02  Release 1.76.1
+
+  * Bug fix: Don't crash when Jenkins is unavailable.
+  
+
 2017-02-02  Release 1.76.0
 
   * Add metrics for measuring the version of Visual Basic, TypeScript, and Python SonarQube plugins and quality 

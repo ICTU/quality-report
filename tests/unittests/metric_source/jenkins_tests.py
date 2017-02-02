@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import io
+import urllib2
 import unittest
 
 from hqlib.metric_source import Jenkins
@@ -33,7 +34,10 @@ class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static content. """
-        return io.StringIO(self.contents)
+        if 'raise' in url:
+            raise urllib2.URLError('some reason')
+        else:
+            return io.StringIO(self.contents)
 
 
 class JenkinsTest(unittest.TestCase):
@@ -174,3 +178,7 @@ class JenkinsTest(unittest.TestCase):
             even when it partially matches another job. """
         self.__jenkins.contents = u'{"jobs": [{"name": "job50"}, {"name": "job5"}]}'
         self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
+
+    def test_nr_of_active_jobs_on_error(self):
+        """ Test that the number of active jobs is -1 when an URL error is thrown. """
+        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())

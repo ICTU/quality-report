@@ -55,7 +55,10 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def number_of_active_jobs(self):
         """ Return the total number of active Jenkins jobs. """
-        return len(self.__active_jobs())
+        try:
+            return len(self.__active_jobs())
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
 
     def failing_jobs_url(self):
         """ Return the urls for the failing Jenkins jobs. """
