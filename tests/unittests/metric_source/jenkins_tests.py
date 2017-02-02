@@ -136,12 +136,10 @@ class JenkinsTest(unittest.TestCase):
 
     def test_unstable_arts_none(self):
         """ Test the number of unstable ARTs. """
-        self.__jenkins.contents = u'{"jobs": []}'
         self.assertEqual({}, self.__jenkins.unstable_arts_url('projects', 21))
 
     def test_unstable_arts_one_just(self):
-        """ Test the number of unstable ARTs with one that just became
-            unstable. """
+        """ Test the number of unstable ARTs with one that just became unstable. """
         hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         self.__jenkins.contents = u'{{"jobs": [{{"name": "job-a"}}], ' \
                                   u'"timestamp": "{}"}}'.format(to_jenkins_timestamp(hour_ago))
@@ -168,6 +166,17 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = u'{"jobs": [{"name": "job-a"}]}'
         self.assertEqual({'job-a (? dagen)': 'http://jenkins/job/job-a/'}, self.__jenkins.unstable_arts_url('job-a', 3))
 
+    def test_nr_of_active_jobs_on_error(self):
+        """ Test that the number of active jobs is -1 when an URL error is thrown. """
+        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())
+
+
+class JenkinsResolveJobNameTest(unittest.TestCase):
+    """ Test that the Jenkins class correctly resolved job name regular expressions. """
+
+    def setUp(self):
+        self.__jenkins = JenkinsUnderTest('http://jenkins/')
+
     def test_resolve_job_name(self):
         """ Test that a job name that is a regular expression is resolved. """
         self.__jenkins.contents = u'{"jobs": [{"name": "job5"}]}'
@@ -179,6 +188,6 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = u'{"jobs": [{"name": "job50"}, {"name": "job5"}]}'
         self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
 
-    def test_nr_of_active_jobs_on_error(self):
-        """ Test that the number of active jobs is -1 when an URL error is thrown. """
-        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())
+    def test_resolve_job_name_without_re(self):
+        """ Test that the job name is returned if it is not a regular expression. """
+        self.assertEqual('job', self.__jenkins.resolve_job_name('job'))
