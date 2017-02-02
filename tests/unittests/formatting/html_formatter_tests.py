@@ -73,8 +73,7 @@ class HTMLFormatterTest(unittest.TestCase):
             status. """
         html = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
         expected_date = utils.format_date(datetime.datetime(2012, 1, 1, 12, 0, 0), year=True)
-        self.assertTrue('title="Direct actie vereist: norm niet gehaald of '
-                        'meting te oud (sinds tenminste {})'.format(expected_date) in html)
+        self.assertTrue('title="Direct actie vereist: norm niet gehaald (sinds {})'.format(expected_date) in html)
 
     def test_hover_known_start(self):
         """ Test that the hover text over the status icon explains the status and shows the start date of the
@@ -82,9 +81,8 @@ class HTMLFormatterTest(unittest.TestCase):
         expected_date = datetime.datetime(2014, 1, 1, 12, 0, 0)
         html = self.__formatter.process(
             fake_report.Report(metrics=[fake_domain.Metric(status_start_date=expected_date)]))
-        expected_formatted_date = utils.format_date(expected_date, year=True)
-        self.assertTrue('title="Direct actie vereist: norm niet gehaald of '
-                        'meting te oud (sinds {})'.format(expected_formatted_date) in html)
+        expected_date = utils.format_date(expected_date, year=True)
+        self.assertTrue('title="Direct actie vereist: norm niet gehaald (sinds {})'.format(expected_date) in html)
 
     def test_history(self):
         """ Test that the report contains the history of the meta metrics. """
