@@ -26,7 +26,6 @@ class MetricUnderTest(domain.Metric):
     unit = 'foo'
 
     def __init__(self, *args, **kwargs):
-        self.date = None
         self.value_to_return = 0
         super(MetricUnderTest, self).__init__(*args, **kwargs)
 
@@ -71,7 +70,7 @@ class MetricTest(unittest.TestCase):
 
     def test_multiple_metric_sources(self):
         """ Test that the correct metric source id is returned when there are multiple metric source instances. """
-        MetricUnderTest.metric_source_class= metric_source.Birt
+        MetricUnderTest.metric_source_class = metric_source.Birt
         project = domain.Project(metric_sources={metric_source.Birt: ['Birt1', 'Birt2']})
         product = domain.Product(project, metric_source_ids={'Birt2': 'birt id'})
         # pylint: disable=protected-access
@@ -233,7 +232,8 @@ class MetricStatusTest(unittest.TestCase):
 
     def setUp(self):
         self.__subject = FakeSubject()
-        self.__metric = MetricUnderTest(self.__subject, project=domain.Project())
+        self.__project = domain.Project()
+        self.__metric = MetricUnderTest(self.__subject, project=self.__project)
 
     def assert_status(self, expected_status, metric=None):
         """ Assert that the metric has the expected status. """

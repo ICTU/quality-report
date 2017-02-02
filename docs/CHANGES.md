@@ -1,6 +1,7 @@
 2017-02-02  Release 1.76.0
 
-  * Add metrics for measuring the version of Visual Basic and Python SonarQube plugins and quality profiles.
+  * Add metrics for measuring the version of Visual Basic, TypeScript, and Python SonarQube plugins and quality 
+    profiles.
   
 
 2017-02-01  Release 1.75.6

@@ -56,3 +56,9 @@ class Python(Requirement):
     """ Require Sonar to be ready for analyzing Python code. """
     _name = 'Python'
     _metric_classes = (metric.SonarPluginVersionPython, metric.SonarQualityProfileVersionPython)
+
+
+class TypeScript(Requirement):
+    """ Require Sonar to be ready for analyzing TypeScript code. """
+    _name = 'TypeScript'
+    _metric_classes = (metric.SonarPluginVersionTypeScript, metric.SonarQualityProfileVersionTypeScript)

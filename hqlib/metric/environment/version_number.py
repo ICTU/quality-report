@@ -145,6 +145,15 @@ class SonarQualityProfileVersionPython(SonarQualityProfileVersion):
     low_target_value = LooseVersion('1.0')
 
 
+class SonarQualityProfileVersionTypeScript(SonarQualityProfileVersion):
+    """ Measure the version number of the default Sonar quality profile for TypeScript. """
+    name = 'Sonar TypeScript quality profile versie'
+    language_key = 'typescript'
+    language_name = 'TypeScript'
+    target_value = LooseVersion('1.0')
+    low_target_value = LooseVersion('1.0')
+
+
 class SonarPluginVersion(HigherIsBetterMetric):
     """ Measure the version number of a Sonar plugin. """
     name = 'Sonar plugin versie'
@@ -270,3 +279,12 @@ class SonarPluginVersionPython(SonarPluginVersion):
     plugin_name = 'Python'
     target_value = LooseVersion('1.7')
     low_target_value = LooseVersion('1.6')
+
+
+class SonarPluginVersionTypeScript(SonarPluginVersion):
+    """ Measure the version number of the TypeScript Sonar plugin. """
+    name = 'Versie van de Sonar TypeScript plugin'
+    plugin_key = 'typescript'
+    plugin_name = 'TypeScript'
+    target_value = LooseVersion('0.98')
+    low_target_value = LooseVersion('0.97')
