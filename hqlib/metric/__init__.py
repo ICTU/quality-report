@@ -66,9 +66,9 @@ from .environment.version_number import (
     SonarVersion,
     SonarPluginVersionCheckStyle, SonarPluginVersionCSharp, SonarPluginVersionFindBugs, SonarPluginVersionJava,
     SonarPluginVersionJS, SonarPluginVersionPMD, SonarPluginVersionStyleCop,
-    SonarPluginVersionWeb,
+    SonarPluginVersionWeb, SonarPluginVersionVisualBasic, SonarPluginVersionPython,
     SonarQualityProfileVersionCSharp, SonarQualityProfileVersionJava, SonarQualityProfileVersionJS,
-    SonarQualityProfileVersionWeb)
+    SonarQualityProfileVersionWeb, SonarQualityProfileVersionVisualBasic, SonarQualityProfileVersionPython)
 
 # Meta metrics
 from .meta_metrics import GreenMetaMetric, YellowMetaMetric, RedMetaMetric, GreyMetaMetric, MissingMetaMetric

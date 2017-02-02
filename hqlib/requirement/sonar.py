@@ -44,3 +44,15 @@ class Web(Requirement):
     """ Require Sonar to be ready for analyzing Web (HTML, JSF) code. """
     _name = 'Web'
     _metric_classes = (metric.SonarPluginVersionWeb, metric.SonarQualityProfileVersionWeb)
+
+
+class VisualBasic(Requirement):
+    """ Require Sonar to be ready for analyzing Visual Basic code. """
+    _name = 'Visual Basic'
+    _metric_classes = (metric.SonarPluginVersionVisualBasic, metric.SonarQualityProfileVersionVisualBasic)
+
+
+class Python(Requirement):
+    """ Require Sonar to be ready for analyzing Python code. """
+    _name = 'Python'
+    _metric_classes = (metric.SonarPluginVersionPython, metric.SonarQualityProfileVersionPython)

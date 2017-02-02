@@ -127,6 +127,24 @@ class SonarQualityProfileVersionWeb(SonarQualityProfileVersion):
     low_target_value = LooseVersion('1.0')
 
 
+class SonarQualityProfileVersionVisualBasic(SonarQualityProfileVersion):
+    """ Measure the version number of the default Sonar quality profile for Visual Basic. """
+    name = 'Sonar Visual Basic quality profile versie'
+    language_key = 'vb'
+    language_name = 'Visual Basic'
+    target_value = LooseVersion('1.0')
+    low_target_value = LooseVersion('1.0')
+
+
+class SonarQualityProfileVersionPython(SonarQualityProfileVersion):
+    """ Measure the version number of the default Sonar quality profile for Python. """
+    name = 'Sonar Python quality profile versie'
+    language_key = 'python'
+    language_name = 'Python'
+    target_value = LooseVersion('1.0')
+    low_target_value = LooseVersion('1.0')
+
+
 class SonarPluginVersion(HigherIsBetterMetric):
     """ Measure the version number of a Sonar plugin. """
     name = 'Sonar plugin versie'
@@ -234,3 +252,21 @@ class SonarPluginVersionWeb(SonarPluginVersion):
     plugin_name = 'Web'
     target_value = LooseVersion('2.4')
     low_target_value = LooseVersion('2.3')
+
+
+class SonarPluginVersionVisualBasic(SonarPluginVersion):
+    """ Measure the version number of the Visual Basic Sonar plugin. """
+    name = 'Versie van de Sonar Visual Basic plugin'
+    plugin_key = 'vb'
+    plugin_name = 'Visual Basic'
+    target_value = LooseVersion('2.2')
+    low_target_value = LooseVersion('2.1')
+
+
+class SonarPluginVersionPython(SonarPluginVersion):
+    """ Measure the version number of the Python Sonar plugin. """
+    name = 'Versie van de Sonar Python plugin'
+    plugin_key = 'python'
+    plugin_name = 'Python'
+    target_value = LooseVersion('1.7')
+    low_target_value = LooseVersion('1.6')
