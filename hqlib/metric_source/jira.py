@@ -134,6 +134,8 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         if not query_id:
             return -1
         query_url = self.__get_query_url(query_id)
+        if not query_url:
+            return -1
         json_string = utils.eval_json(self.url_open(query_url).read())
         total = 0
         issues = json_string['issues']

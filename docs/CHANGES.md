@@ -1,3 +1,8 @@
+2017-02-04  Release 1.76.2
+
+  * Bug fix: Don't crash when Jira is unavailable.
+  
+
 2017-02-02  Release 1.76.1
 
   * Bug fix: Don't crash when Jenkins is unavailable.
