@@ -33,7 +33,10 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
 
     def days(self, team, start_date=None):
         """ Return the number of consecutive days that multiple team members are absent. """
-        absence_days = self.__absence_days(team)
+        try:
+            absence_days = self.__absence_days(team)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1, datetime.datetime.min, datetime.datetime.min, []
         longest_stretch = current_stretch = 0
         current_start = longest_start = longest_end = None
         today = start_date or datetime.date.today()
