@@ -136,12 +136,10 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
         history = report.project().metric_source(metric_source.History)
-        for history_record in history.statuses():
-            date_and_time = self.__date_and_time(history_record)
-            counts = self.__history_record_status_counts(history_record)
-            history_table.append(
-                '[new Date({0}, {1}, {2}, {3}, {4}, {5}), {6}, {7}, {8}, {9}, {10}, {11}, {12}]'.format(
-                    *(date_and_time + counts)))
+        for status_record in history.statuses():
+            date_and_time = 'new Date({0}, {1}, {2}, {3}, {4}, {5})'.format(*self.__date_and_time(status_record))
+            counts = '{0}, {1}, {2}, {3}, {4}, {5}, {6}'.format(*self.__status_record_counts(status_record))
+            history_table.append('[{0}, {1}]'.format(date_and_time, counts))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod
@@ -153,8 +151,8 @@ class HTMLFormatter(base_formatter.Formatter):
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __history_record_status_counts(history_record, statuses=('perfect', 'green', 'red', 'yellow', 'grey',
-                                                                 'missing', 'missing_source')):
+    def __status_record_counts(history_record, statuses=('perfect', 'green', 'red', 'yellow', 'grey',
+                                                         'missing', 'missing_source')):
         """ Return the counts per measurement status in the history record. """
         return tuple(history_record.get(status, 0) for status in statuses)
 
