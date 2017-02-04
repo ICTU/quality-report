@@ -1,3 +1,8 @@
+2017-02-04  Release 1.76.4
+
+  * Bug fix: Don't crash when JMeter report or Ansible report are unavailable.
+  
+
 2017-02-04  Release 1.76.3
 
   * Bug fix: Don't crash when the holiday planner is unavailable.
