@@ -20,6 +20,7 @@ import datetime
 import logging
 import re
 
+from .. import url_opener
 from ..abstract import performance_report
 from ... import utils
 
@@ -70,9 +71,13 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
     @utils.memoized
     def __report_urls(self):
         """ Return the url(s) for the performance reports in the report folder. """
-        urls = []
         base_url = self.url()
-        soup = self.soup(base_url)
+        try:
+            soup = self.soup(base_url)
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.warning("Couldn't open %s to read report urls: %s", base_url, reason)
+            return []
+        urls = []
         for list_item in soup('li'):
             filename = list_item('a')[0].string
             if filename.endswith('.html'):
