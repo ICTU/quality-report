@@ -70,7 +70,7 @@ class AnsibleConfigReport(domain.MetricSource):
         """ Get the json from the url. """
         try:
             return utils.eval_json(self.__url_open(url).read())
-        except urllib2.HTTPError as reason:
+        except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
         except ValueError as reason:
             logging.error("Couldn't parse JSON from %s: %s", url, reason)
