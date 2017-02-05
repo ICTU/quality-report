@@ -133,11 +133,11 @@ class Report(object):
     @staticmethod
     def project():
         """ Return the project. """
-        # pylint: disable=too-few-public-methods
+        # pylint: disable=too-few-public-methods,unused-argument
         class FakeProject(object):
             """ Fake a project. """
             @staticmethod
-            def metric_source(metric_source_class):  # pylint: disable=unused-argument
+            def metric_source(metric_source_class):
                 """ Return the metric source instances for a metric source class. """
                 class FakeGit(object):
                     """ Fake a Git repository. """
@@ -153,7 +153,19 @@ class Report(object):
                         """ Return the statuses. """
                         return [{'green': 1, 'date': '2012-04-05 16:16:58', 'red': 1}]
 
-                return FakeHistory() if metric_source_class == metric_source.History else [FakeGit()]
+                class FakeSonar(object):
+                    """ Fake Sonar for unit testing purposes. """
+                    @staticmethod
+                    def version(*args):
+                        """ Return the version number of the component. """
+                        return '2'
+
+                if metric_source_class == metric_source.History:
+                    return FakeHistory()
+                elif metric_source_class == metric_source.Sonar:
+                    return FakeSonar()
+                else:
+                    return [FakeGit()]
 
         return FakeProject()
 

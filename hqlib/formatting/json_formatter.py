@@ -18,22 +18,19 @@ from __future__ import absolute_import
 import logging
 
 from . import base_formatter
-from .. import metric_info
+from .. import metric_info, metric_source
 
 
 class JSONFormatter(base_formatter.Formatter):
     """ Format the report in JSON. This is used for generating a history file. """
 
-    def __init__(self, *args, **kwargs):
-        self.__sonar = kwargs.pop('sonar')
-        super(JSONFormatter, self).__init__(*args, **kwargs)
-
     def prefix(self, report):
         """ Return a JSON formatted version of the report prefix. """
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
+        sonar = report.project().metric_source(metric_source.Sonar)
         for product in report.products():
-            sonar_product_info = metric_info.SonarProductInfo(self.__sonar, product)
+            sonar_product_info = metric_info.SonarProductInfo(sonar, product)
             sonar_id = sonar_product_info.sonar_id()
             latest_version = sonar_product_info.latest_version()
             prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,

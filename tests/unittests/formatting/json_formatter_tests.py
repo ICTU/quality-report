@@ -31,7 +31,7 @@ class FakeSonar(object):  # pylint: disable=too-few-public-methods
 class JSONFormatterTest(unittest.TestCase):
     """ Unit test for the dot report formatter class. """
     def setUp(self):
-        self.__formatter = JSONFormatter(sonar=FakeSonar())
+        self.__formatter = JSONFormatter()
 
     def test_process(self):
         """ Test that the report is processed correctly. """
