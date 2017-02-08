@@ -27,17 +27,6 @@ class SonarProductInfo(object):
             return ''
         return self.__product.metric_source_id(self.__sonar) or ''
 
-    def all_sonar_ids(self):
-        """ Return all Sonar ids of the product: the Sonar id of the product itself and its unit tests
-            if applicable. """
-        sonar_ids = set()
-        for component in [self.__product, self.__product.unittests(), self.__product.jsf()]:
-            if component:
-                component_sonar_info = SonarProductInfo(self.__sonar, component)
-                if component_sonar_info.sonar_id():
-                    sonar_ids.add(component_sonar_info.sonar_id())
-        return sonar_ids
-
     def latest_version(self):
         """ Return the latest version of the product. """
         if self.sonar_id():
