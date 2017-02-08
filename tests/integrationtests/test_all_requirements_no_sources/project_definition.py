@@ -36,8 +36,6 @@ PRODUCT = Product(
                   requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
                   requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
                   requirement.PerformanceScalability, requirement.TrackBranches],
-    unittests=Product(
-        PROJECT, name='Product ABC unit tests'),
     art=Product(
         PROJECT, name='Product ABC ART', requirements=[requirement.CodeQuality, requirement.TrackBranches]),
     jsf=Product(

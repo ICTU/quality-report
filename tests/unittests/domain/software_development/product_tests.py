@@ -31,14 +31,8 @@ class ProductTest(unittest.TestCase):
         self.assertEqual('Product', self.__product.name())
 
     def test_default_unittests(self):
-        """ Test that products have no unit test component by default. """
-        self.assertFalse(self.__product.unittests())
-
-    def test_unittests(self):
-        """ Test that the unit test component can be retrieved. """
-        unittests = domain.Product(self.__project)
-        product = domain.Product(self.__project, unittests=unittests)
-        self.assertEqual(unittests, product.unittests())
+        """ Test that products have unit tests by default. """
+        self.assertTrue(self.__product.has_unittests())
 
     def test_default_integration_tests(self):
         """ Test that products have no integration test component by default. """

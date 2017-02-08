@@ -25,11 +25,12 @@ class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
     def __init__(self, project, short_name='', unittests=None, integration_tests=None, jsf=None, art=None,
-                 is_main=True, **kwargs):
+                 is_main=True, has_unittests=True, **kwargs):
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
         self.__unittests = unittests
+        self.__has_unittests = has_unittests
         self.__integration_tests = integration_tests
         self.__jsf = jsf
         self.__art = art
@@ -59,9 +60,9 @@ class Product(RequirementSubject, MeasurableObject):
         """ Return a product that represents the ART of this product. """
         return self.__copy_component(self.__art)
 
-    def unittests(self):
-        """ Return a product that represents the unit test of this product. """
-        return self.__copy_component(self.__unittests)
+    def has_unittests(self):
+        """ Return whether the product has unit tests. """
+        return self.__has_unittests
 
     def integration_tests(self):
         """ Return a product that represents the integration test of this product. """

@@ -55,9 +55,7 @@ class FakeSonar(object):
 
 class FakeSubject(object):
     """ Provide for a fake subject. """
-    def __init__(self, sonar=None, unittests=True, integration_tests=False):
-        self.__unittests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
-            if unittests else None
+    def __init__(self, sonar=None, integration_tests=False):
         self.__integration_tests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
             if integration_tests else None
 
@@ -66,9 +64,10 @@ class FakeSubject(object):
         """ Return the name of the subject. """
         return 'FakeSubject'
 
-    def unittests(self):
-        """ Return the unit tests of the subject. """
-        return self.__unittests
+    @staticmethod
+    def metric_source_id(*args):  # pylint: disable=unused-argument
+        """ Return the metric source id for Sonar. """
+        return 'some:fake:id'
 
     def integration_tests(self):
         """ Return the integration tests of the subject. """

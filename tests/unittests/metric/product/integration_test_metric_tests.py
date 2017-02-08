@@ -46,8 +46,7 @@ class FakeSonar(object):
 class FakeSubject(object):
     """ Provide for a fake subject. """
     def __init__(self, sonar=None, unittests=False, integration_tests=True):
-        self.__unittests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
-            if unittests else None
+        self.__has_unittests = unittests
         self.__integration_tests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
             if integration_tests else None
 
@@ -56,9 +55,9 @@ class FakeSubject(object):
         """ Return the name of the subject. """
         return 'FakeSubject'
 
-    def unittests(self):
-        """ Return the unit tests of the subject. """
-        return self.__unittests
+    def has_unittests(self):
+        """ Return whether the subject has unit tests. """
+        return self.__has_unittests
 
     def integration_tests(self):
         """ Return the integration tests of the subject. """

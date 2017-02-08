@@ -38,7 +38,7 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=too-few
         return parameters
 
     def _sonar_id(self):
-        unittest_sonar_info = metric_info.SonarProductInfo(self._metric_source, self._subject.unittests())
+        unittest_sonar_info = metric_info.SonarProductInfo(self._metric_source, self._subject)
         return unittest_sonar_info.sonar_id()
 
 

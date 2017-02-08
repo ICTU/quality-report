@@ -1,3 +1,8 @@
+2017-02-08  Release 1.77.0
+
+  * It's no longer necessary to specify unittests as a sub component.
+  
+
 2017-02-04  Release 1.76.4
 
   * Bug fix: Don't crash when JMeter report or Ansible report are unavailable.

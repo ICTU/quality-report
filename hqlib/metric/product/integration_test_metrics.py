@@ -28,7 +28,7 @@ class IntegrationtestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=
         """ Return whether the integration test metric is applicable to the product. This is only the case if the
             product has integration tests, but no unit tests, because if it does, the combined unit and integration
             test metrics will be used. """
-        return product.integration_tests() and not product.unittests()
+        return product.integration_tests() and not product.has_unittests()
 
     def _sonar_id(self):
         integration_test_sonar_info = metric_info.SonarProductInfo(self._metric_source,

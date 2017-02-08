@@ -26,7 +26,7 @@ class UnitAndIntegrationTestMetricMixin(SonarDashboardMetricMixin):  # pylint: d
     def is_applicable(cls, product):
         """ Return whether the combined unit and integration test metrics are applicable to the product. This is only
             the case if the product has both unit and integration tests. """
-        return product.integration_tests() and product.unittests()
+        return product.integration_tests() and product.has_unittests()
 
 
 class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIsBetterMetric):
