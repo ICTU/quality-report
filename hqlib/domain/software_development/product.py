@@ -24,13 +24,13 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, project, short_name='', integration_tests=None, jsf=None, art=None,
-                 is_main=True, has_unittests=True, **kwargs):
+    def __init__(self, project, short_name='', jsf=None, art=None, is_main=True,
+                 has_unittests=True, has_integration_tests=False, **kwargs):
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
         self.__has_unittests = has_unittests
-        self.__integration_tests = integration_tests
+        self.__has_integration_tests = has_integration_tests
         self.__jsf = jsf
         self.__art = art
         self.__is_main = is_main  # Is this product part of the main system or is it support code?
@@ -63,9 +63,9 @@ class Product(RequirementSubject, MeasurableObject):
         """ Return whether the product has unit tests. """
         return self.__has_unittests
 
-    def integration_tests(self):
-        """ Return a product that represents the integration test of this product. """
-        return self.__copy_component(self.__integration_tests)
+    def has_integration_tests(self):
+        """ Return whether the product has integration tests. """
+        return self.__has_integration_tests
 
     def jsf(self):
         """ Return a product that represents the JSF of this product. """

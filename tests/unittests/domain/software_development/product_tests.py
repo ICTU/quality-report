@@ -36,13 +36,7 @@ class ProductTest(unittest.TestCase):
 
     def test_default_integration_tests(self):
         """ Test that products have no integration test component by default. """
-        self.assertFalse(self.__product.integration_tests())
-
-    def test_integration_tests(self):
-        """ Test that the integration test component can be retrieved. """
-        integration_tests = domain.Product(self.__project)
-        product = domain.Product(self.__project, integration_tests=integration_tests)
-        self.assertEqual(integration_tests, product.integration_tests())
+        self.assertFalse(self.__product.has_integration_tests())
 
     def test_default_jsf(self):
         """ Test that products have no jsf component by default. """

@@ -47,10 +47,9 @@ class FakeSonar(object):
 class FakeSubject(object):
     """ Provide for a fake subject. """
 
-    def __init__(self, sonar=None, unittests=True, integration_tests=True):
+    def __init__(self, unittests=True, integration_tests=True):
         self.__has_unittests = unittests
-        self.__integration_tests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
-            if integration_tests else None
+        self.__has_integration_tests = integration_tests
 
     @staticmethod
     def name():
@@ -68,9 +67,9 @@ class FakeSubject(object):
         """ Return whether the subject has unit tests. """
         return self.__has_unittests
 
-    def integration_tests(self):
-        """ Return the integration tests of the subject. """
-        return self.__integration_tests
+    def has_integration_tests(self):
+        """ Return whether the subject has integration tests. """
+        return self.__has_integration_tests
 
 
 class CommonUnitAndIntegrationTestMetricTestsMixin(object):
@@ -84,7 +83,7 @@ class CommonUnitAndIntegrationTestMetricTestsMixin(object):
         """ Create the fixture for the unit tests. """
         self.__sonar = FakeSonar(line_coverage=self.expected_value, branch_coverage=self.expected_value)
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.__product = FakeSubject(self.__sonar)
+        self.__product = FakeSubject()
         self.__metric = self.class_under_test(subject=self.__product, project=project)
 
     def test_value(self):
@@ -105,7 +104,7 @@ class CommonUnitAndIntegrationTestMetricTestsMixin(object):
 
     def test_is_not_applicable(self):
         """ Test that the metric is not applicable if the product has only unit tests. """
-        product = FakeSubject(self.__sonar, integration_tests=False)
+        product = FakeSubject(integration_tests=False)
         self.assertFalse(self.class_under_test.is_applicable(product))
 
 

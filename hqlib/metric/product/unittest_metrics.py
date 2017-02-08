@@ -28,7 +28,7 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=too-few
         """ Return whether the unit test metric is applicable to the product. This is only the case if the product
             has no integration tests, because if it does, the combined unit and integration test metrics should be
             used. """
-        return not product.integration_tests()
+        return not product.has_integration_tests()
 
     def _parameters(self):
         """ Add the number of unit tests to the parameters for the report. """

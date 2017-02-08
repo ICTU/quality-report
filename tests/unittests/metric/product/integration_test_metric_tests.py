@@ -45,23 +45,26 @@ class FakeSonar(object):
 
 class FakeSubject(object):
     """ Provide for a fake subject. """
-    def __init__(self, sonar=None, unittests=False, integration_tests=True):
+    def __init__(self, unittests=False, integration_tests=True):
         self.__has_unittests = unittests
-        self.__integration_tests = domain.Product(domain.Project(), metric_source_ids={sonar: 'some:fake:id'}) \
-            if integration_tests else None
+        self.__has_integration_tests = integration_tests
 
     @staticmethod
     def name():
         """ Return the name of the subject. """
         return 'FakeSubject'
 
+    @staticmethod
+    def metric_source_id(*args):  # pylint: disable=unused-argument
+        return 'some:fake:id'
+
     def has_unittests(self):
         """ Return whether the subject has unit tests. """
         return self.__has_unittests
 
-    def integration_tests(self):
-        """ Return the integration tests of the subject. """
-        return self.__integration_tests
+    def has_integration_tests(self):
+        """ Return whether the subject has integration tests. """
+        return self.__has_integration_tests
 
 
 class CommonIntegrationtestMetricTestsMixin(object):
@@ -75,7 +78,7 @@ class CommonIntegrationtestMetricTestsMixin(object):
         """ Set up the test fixture for the unit tests. """
         self.__sonar = FakeSonar(line_coverage=self.expected_value, branch_coverage=self.expected_value)
         self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.__metric = self.class_under_test(subject=FakeSubject(self.__sonar), project=self.__project)
+        self.__metric = self.class_under_test(subject=FakeSubject(), project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric equals the line coverage reported by Sonar. """
@@ -91,12 +94,12 @@ class CommonIntegrationtestMetricTestsMixin(object):
 
     def test_is_applicable(self):
         """ Test that the metric is applicable. """
-        self.assertTrue(self.class_under_test.is_applicable(FakeSubject(self.__sonar)))
+        self.assertTrue(self.class_under_test.is_applicable(FakeSubject()))
 
     def test_is_not_applicable_with_unittests(self):
         """ Test that the metric isn't applicable when the product also has unit tests since then the combined
             unit and integration test coverage will be measured instead. """
-        product = FakeSubject(self.__sonar, unittests=True)
+        product = FakeSubject(unittests=True)
         self.assertFalse(self.class_under_test.is_applicable(product))
 
 
