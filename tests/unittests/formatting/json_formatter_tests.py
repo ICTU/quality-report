@@ -20,14 +20,6 @@ from hqlib.formatting import JSONFormatter
 from . import fake_domain, fake_report
 
 
-class FakeSonar(object):  # pylint: disable=too-few-public-methods
-    """ Fake Sonar for unit testing purposes. """
-    @staticmethod
-    def version(*args):  # pylint: disable=unused-argument
-        """ Return the version number of the component. """
-        return '2'
-
-
 class JSONFormatterTest(unittest.TestCase):
     """ Unit test for the dot report formatter class. """
     def setUp(self):
