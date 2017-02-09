@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from .product_quality import TrustedProductMaintainability, OWASPDependencies, OWASPZAP, UnitTests, ART, \
     ARTCoverage, CodeQuality, JSFCodeQuality, PerformanceLoad, PerformanceEndurance, PerformanceScalability,\
     TrackBranches
-from .sonar import Java, CSharp, JavaScript, Web
+from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScript
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, \
     TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, TrackSecurityAndPerformanceRisks
 from .environment import TrackJavaConsistency, TrackCIJobs, TrackSonarVersion, OpenVAS

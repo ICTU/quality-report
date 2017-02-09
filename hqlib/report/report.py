@@ -170,6 +170,7 @@ class QualityReport(domain.DomainObject):
                                                   requirement.TrackJavaConsistency,
                                                   requirement.TrackSonarVersion, requirement.Java,
                                                   requirement.CSharp, requirement.JavaScript, requirement.Web,
+                                                  requirement.VisualBasic, requirement.Python, requirement.TypeScript,
                                                   requirement.OpenVAS)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
