@@ -118,7 +118,7 @@ class QualityReportTest(unittest.TestCase):
     def test_report_with_missing_metrics_has_not_all_green(self):
         """ Test a report with a missing metric. """
         project = domain.Project('organization', name='project title',
-                                 added_requirements={requirement.TrackSonarVersion})
+                                 added_requirements={requirement.TrackSonarVersion, requirement.Java})
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Generate the report
         self.assertFalse(quality_report.all_green())
