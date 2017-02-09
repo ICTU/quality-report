@@ -25,7 +25,7 @@ class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
     def __init__(self, project, short_name='', jsf=None, art=None, is_main=True,
-                 has_unittests=True, has_integration_tests=False, **kwargs):
+                 has_unittests=True, has_integration_tests=False, unittests=None, integration_tests=None, **kwargs):
         super(Product, self).__init__(**kwargs)
         self.__project = project
         self.__short_name = short_name
