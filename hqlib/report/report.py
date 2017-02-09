@@ -145,7 +145,7 @@ class QualityReport(domain.DomainObject):
     def all_green(self):
         """ Return whether all metrics in the report are green. """
         if self.__metrics:
-            return all([each_metric.status() in ('green', 'perfect') for each_metric in self.__metrics])
+            return all(each_metric.status() in ('green', 'perfect') for each_metric in self.__metrics)
         else:
             return False
 
