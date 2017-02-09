@@ -1,7 +1,7 @@
-2017-02-08  Release 1.77.0
+2017-02-09  Release 1.77.0
 
   * It's no longer necessary to specify unittests and integration tests as a sub component.
-  * Return exit status 2 if not all metrics are green.
+  * Return exit status 2 if not all metrics are green and the --failure-exit-code command line option is passed.
   
 
 2017-02-04  Release 1.76.4

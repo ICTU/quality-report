@@ -25,6 +25,8 @@ def parse():
     parser = ArgumentParser(description='Generate a quality report.')
     parser.add_argument('--project', help='folder with project definition file and history')
     parser.add_argument('--report', help='folder to write the HTML report in')
+    parser.add_argument('--failure-exit-code', help='return exit code 2 when not all metrics are green',
+                        action='store_true')
     parser.add_argument('--log', default="WARNING", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                         help="log level (WARNING by default)")
     parser.add_argument('--version', action='version', version=hqlib.VERSION)
