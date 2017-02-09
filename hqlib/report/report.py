@@ -142,6 +142,13 @@ class QualityReport(domain.DomainObject):
         """ Return the products we report on. """
         return self.__products
 
+    def all_green(self):
+        """ Return whether all metrics in the report are green. """
+        if self.__metrics:
+            return all([each_metric.status() in ('green', 'perfect') for each_metric in self.__metrics])
+        else:
+            return False
+
     def __latest_product_version(self, product):
         """ Return the most recent version of the product. """
         sonar = self.__project.metric_source(metric_source.Sonar)

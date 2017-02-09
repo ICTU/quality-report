@@ -61,6 +61,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         history_filename = self.__project.metric_source(metric_source.History).filename()
         self.__format_and_write_report(quality_report, formatting.JSONFormatter, history_filename, 'a', 'ascii')
         self.__create_report(quality_report, report_folder)
+        return quality_report
 
     @classmethod
     def __create_report(cls, quality_report, report_dir):
@@ -149,4 +150,5 @@ if __name__ == '__main__':
     # pylint: disable=invalid-name
     args = commandlineargs.parse()
     log.init_logging(args.log)
-    Reporter(args.project).create_report(args.report)
+    quality_report = Reporter(args.project).create_report(args.report)
+    sys.exit(0 if quality_report.all_green() else 2)

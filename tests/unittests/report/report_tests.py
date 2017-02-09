@@ -109,6 +109,20 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([product], quality_report.products())
 
+    def test_report_with_all_metrics_green(self):
+        """ Test that the report passes the quality gate. """
+        quality_report = report.QualityReport(self.__project)
+        quality_report.sections()  # Generate the report
+        self.assertTrue(quality_report.all_green())
+
+    def test_report_with_missing_metrics_has_not_all_green(self):
+        """ Test a report with a missing metric. """
+        project = domain.Project('organization', name='project title',
+                                 added_requirements={requirement.TrackSonarVersion})
+        quality_report = report.QualityReport(project)
+        quality_report.sections()  # Generate the report
+        self.assertFalse(quality_report.all_green())
+
 
 class QualityReportMetaDataTest(unittest.TestCase):
     """ Unit tests for the meta data methods of the quality report. """
