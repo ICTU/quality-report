@@ -33,6 +33,7 @@ var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
 var COLOR_GREY = '#808080';
 var COLOR_MISSING = '#F0F0F0';
+var BG_COLOR_PERFECT = '#DBFFCC';
 var BG_COLOR_GREEN = '#E6F8E0';
 var BG_COLOR_YELLOW = '#F8F8C0';
 var BG_COLOR_RED = '#F8E0E0';
@@ -60,7 +61,7 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
     metrics.addRows(metrics_data);
-    color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
+    color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
 function create_dashboard(metrics_data, history) {
@@ -150,9 +151,9 @@ function set_filter(filter, filter_value, tables) {
     draw_tables(tables);
 }
 
-function color_metrics(color_green, color_yellow, color_red, color_grey, color_missing) {
+function color_metrics(color_perfect, color_green, color_yellow, color_red, color_grey, color_missing) {
     var numberOfColumns = window.metrics.getNumberOfColumns();
-    var statusToColor = {'perfect': color_green, 'green': color_green, 'yellow': color_yellow, 'red': color_red,
+    var statusToColor = {'perfect': color_perfect, 'green': color_green, 'yellow': color_yellow, 'red': color_red,
                          'grey': color_grey, 'missing': color_missing, 'missing_source': color_missing};
     for (var row_index = 0; row_index < window.metrics.getNumberOfRows(); row_index++) {
         var bg_color = statusToColor[window.metrics.getValue(row_index, METRICS_COLUMN_STATUS_TEXT)];
@@ -288,7 +289,8 @@ function draw_pie_chart(section) {
     data.addColumn('string', 'Status');
     data.addColumn('number', 'Number');
     data.addRows([
-      ['Groen', status_count(section, 'green') + status_count(section, 'perfect')],
+      ['Perfect', status_count(section, 'perfect')],
+      ['Groen', status_count(section, 'green')],
       ['Geel', status_count(section, 'yellow')],
       ['Rood', status_count(section, 'red')],
       ['Grijs', status_count(section, 'grey')],
@@ -296,14 +298,14 @@ function draw_pie_chart(section) {
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
-      slices: [{color: COLOR_GREEN}, {color: COLOR_YELLOW},
+      slices: [{color: COLOR_PERFECT}, {color: COLOR_GREEN}, {color: COLOR_YELLOW},
                {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}],
       pieSliceText: 'none',
       tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
       width: 80, height: 80,
       backgroundColor: bg_color,
-      chartArea: {left:7, top:7, width:66, height:66},
+      chartArea: {left: 7, top: 7, width: 66, height: 66},
       is3D: true
     };
     var chart = new google.visualization.PieChart(piechart_div);
