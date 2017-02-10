@@ -290,16 +290,17 @@ function draw_pie_chart(section) {
     data.addColumn('number', 'Number');
     data.addRows([
       ['Perfect', status_count(section, 'perfect')],
-      ['Groen', status_count(section, 'green')],
-      ['Geel', status_count(section, 'yellow')],
-      ['Rood', status_count(section, 'red')],
-      ['Grijs', status_count(section, 'grey')],
-      ['Ontbrekend', status_count(section, 'missing') + status_count(section, 'missing_source')]
+      ['Goed', status_count(section, 'green')],
+      ['Bijna goed', status_count(section, 'yellow')],
+      ['Actie vereist', status_count(section, 'red')],
+      ['Technische schuld', status_count(section, 'grey')],
+      ['Bron niet beschikbaar', status_count(section, 'missing')],
+      ['Bron niet geconfigureerd', status_count(section, 'missing_source')]
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
       slices: [{color: COLOR_PERFECT}, {color: COLOR_GREEN}, {color: COLOR_YELLOW},
-               {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}],
+               {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}, {color: COLOR_MISSING}],
       pieSliceText: 'none',
       tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
