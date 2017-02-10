@@ -1,3 +1,8 @@
+2017-02-10  Release 1.77.1
+
+  * Color the report date yellow or red, depending on the age of the report.
+  
+
 2017-02-09  Release 1.77.0
 
   * It's no longer necessary to specify unittests and integration tests as a sub component.
