@@ -38,6 +38,7 @@ class HTMLFormatter(base_formatter.Formatter):
                    u"'{norm}'",
                    u"'{comment}'"]
     columns = u'[' + u', '.join(column_list) + u']'
+    javascript_new_date = 'new Date({0}, {1}, {2}, {3}, {4}, {5})'
     kwargs_by_status = dict(
         red=dict(image='sad', alt=':-(', status_nr=0,
                  hover='Direct actie vereist: norm niet gehaald'),
@@ -68,6 +69,7 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
         parameters['history'] = self.__trend_data(report)
+        parameters['report_date'] = self.__report_date(report)
 
         metrics = []
         for metric in report.metrics():
@@ -137,7 +139,7 @@ class HTMLFormatter(base_formatter.Formatter):
         history_table = []
         history = report.project().metric_source(metric_source.History)
         for status_record in history.statuses():
-            date_and_time = 'new Date({0}, {1}, {2}, {3}, {4}, {5})'.format(*self.__date_and_time(status_record))
+            date_and_time = self.javascript_new_date.format(*self.__date_and_time(status_record))
             counts = '{0}, {1}, {2}, {3}, {4}, {5}, {6}'.format(*self.__status_record_counts(status_record))
             history_table.append('[{0}, {1}]'.format(date_and_time, counts))
         return '[' + ',\n'.join(history_table) + ']'
@@ -169,6 +171,13 @@ class HTMLFormatter(base_formatter.Formatter):
         kwargs['comment'] = self.__format_text_with_links(metric.comment(), metric.comment_urls(),
                                                           metric.comment_url_label_text)
         return kwargs
+
+    @classmethod
+    def __report_date(cls, report):
+        """ Return a Javascript version of the report date. """
+        date_time = report.date()
+        return cls.javascript_new_date.format(date_time.year, date_time.month - 1, date_time.day,
+                                              date_time.hour, date_time.minute, date_time.second)
 
     @staticmethod
     def postfix():

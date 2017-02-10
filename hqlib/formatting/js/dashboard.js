@@ -64,7 +64,7 @@ function create_metrics_table(metrics_data) {
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
-function create_dashboard(metrics_data, history) {
+function create_dashboard(metrics_data, history, report_date) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
     create_metrics_table(metrics_data);
@@ -86,6 +86,7 @@ function create_dashboard(metrics_data, history) {
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
     show_or_hide_dashboard();
     draw_tables(tables);
+    color_report_date(report_date);
 
     // Event handler for navigating between tabs
     $('#dashboard_tab_control a').click(function (event) {
@@ -164,6 +165,15 @@ function color_metrics(color_perfect, color_green, color_yellow, color_red, colo
             }
             window.metrics.setProperty(row_index, column_index, 'style', style);
         }
+    }
+}
+
+function color_report_date(report_date) {
+    var now = new Date();
+    var seconds = parseInt((now - report_date)/1000);
+    if (seconds > 60 * 60) {
+        var cls = seconds > 60 * 60 * 24 ? 'very_old' : 'old';
+        document.getElementById('report_date_time').setAttribute('class', cls);
     }
 }
 

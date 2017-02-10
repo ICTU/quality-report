@@ -22,7 +22,7 @@
         <script type="text/javascript" src="js/cookie.js"></script>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript">
-            google.setOnLoadCallback(function() {{create_dashboard({metrics}, {history})}});
+            google.setOnLoadCallback(function() {{create_dashboard({metrics}, {history}, {report_date})}});
         </script>
     </head>
     <body>
@@ -133,7 +133,7 @@
                         </li>
                     </ul>
                     <p class="navbar-text pull-right">
-                        Rapportage van {date}
+                        Rapportage van <span id="report_date_time">{date}</span>
                     </p>
                 </div>
             </div><!-- /.container -->

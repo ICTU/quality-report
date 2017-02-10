@@ -23,3 +23,11 @@ limitations under the License. */
 table.first-col-centered > tbody > tr > td:first-child {
     text-align: center;
 }
+
+p span.old {
+    color: yellow;
+}
+
+p span.very_old {
+    color: red;
+}
