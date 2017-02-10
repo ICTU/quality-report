@@ -25,9 +25,11 @@ table.first-col-centered > tbody > tr > td:first-child {
 }
 
 p span.old {
-    color: yellow;
+    color: orange;
+    font-weight: bold;
 }
 
 p span.very_old {
     color: red;
+    font-weight: bold;
 }
