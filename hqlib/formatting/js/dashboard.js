@@ -27,7 +27,7 @@ google.load('visualization', '1', {'packages': ['corechart', 'table']});
 var settings = [];
 var tables = [];
 
-var COLOR_PERFECT = '4EFF00';
+var COLOR_PERFECT = '45E600';
 var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
