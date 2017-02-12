@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarMetricMixin, SonarDashboardMetricMixin
-from ... import metric_info
 from ...domain import LowerIsBetterMetric
 
 
