@@ -151,4 +151,4 @@ if __name__ == '__main__':
     args = commandlineargs.parse()
     log.init_logging(args.log)
     quality_report = Reporter(args.project).create_report(args.report)
-    sys.exit(2 if args.failure_exit_code and not quality_report.all_green() else 0)
+    sys.exit(2 if args.failure_exit_code and quality_report.direct_action_needed() else 0)

@@ -142,12 +142,12 @@ class QualityReport(domain.DomainObject):
         """ Return the products we report on. """
         return self.__products
 
-    def all_green(self):
-        """ Return whether all metrics in the report are green. """
+    def direct_action_needed(self):
+        """ Return whether any of the metrics in the report are red so that direct action is needed. """
         if self.__metrics:
-            return all(each_metric.status() in ('green', 'perfect') for each_metric in self.__metrics)
+            return any(each_metric.status() in ('red', 'missing', 'missing_source') for each_metric in self.__metrics)
         else:
-            return False
+            return True  # No metrics, so direct action is needed to add metrics
 
     def __latest_product_version(self, product):
         """ Return the most recent version of the product. """
