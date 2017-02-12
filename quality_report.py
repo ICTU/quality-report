@@ -39,8 +39,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                         "IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00" \
                         "\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
 
-    def __init__(self, project_folder):
-        self.__project = self.__import_project(project_folder, self.PROJECT_DEFINITION_FILENAME)
+    def __init__(self, project_folder_or_filename):
+        if project_folder_or_filename.endswith('.py'):
+            project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)
+        else:
+            project_folder, project_definition_filename = project_folder_or_filename, self.PROJECT_DEFINITION_FILENAME
+        self.__project = self.__import_project(project_folder, project_definition_filename)
 
     @staticmethod
     def __import_project(project_folder, project_definition_filename):

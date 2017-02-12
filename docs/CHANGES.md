@@ -1,3 +1,9 @@
+2017-02-12  Release 177.3
+
+ * The --project argument can be a filename or a folder. This allows for having multiple project definitions in the 
+   same folder.
+   
+   
 2017-02-12  Release 1.77.2
 
   * Return exit status 2 if any metric is red or missing and the --failure-exit-code command line option is passed.

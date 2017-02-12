@@ -72,3 +72,8 @@ class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
     """ Integration tests using a report with all requirements and all sources, but no source ids defined. """
     project_folder = 'tests/integrationtests/test_no_source_ids'
     expected_title = 'all requirements and sources, but no source ids'
+
+
+class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
+    """ Integration tests using a second project definition from the same folder. """
+    project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/second_project_definition.py'
