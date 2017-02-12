@@ -1,4 +1,9 @@
-2017-02-12  Release 177.3
+2017-02-12  Release 1.77.4
+
+  * Bug fix: Don't crash when no history file is defined.
+  
+  
+2017-02-12  Release 1.77.3
 
  * The --project argument can be a filename or a folder. This allows for having multiple project definitions in the 
    same folder.
