@@ -109,14 +109,20 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([product], quality_report.products())
 
-    def test_report_with_all_metrics_green(self):
-        """ Test that the report needs to direct action when all metrics are green. """
+    def test_direct_action_needed_without_metrics(self):
+        """ Test that direct action is needed if the report doesn't contain any metrics. """
+        quality_report = report.QualityReport(self.__project)
+        self.assertFalse(quality_report.metrics())
+        self.assertTrue(quality_report.direct_action_needed())
+
+    def test_no_direct_action_needed_when_all_metrics_green(self):
+        """ Test that the report needs no direct action when all metrics are green. """
         quality_report = report.QualityReport(self.__project)
         quality_report.sections()  # Generate the report
         self.assertFalse(quality_report.direct_action_needed())
 
-    def test_direct_action_is_needed_when_metrics_are_missing(self):
-        """ Test a report with a missing metric. """
+    def test_direct_action_needed_when_metrics_are_missing(self):
+        """ Test that the report needs direct action when the report has missing metrics. """
         project = domain.Project('organization', name='project title',
                                  added_requirements={requirement.TrackSonarVersion, requirement.Java})
         quality_report = report.QualityReport(project)
