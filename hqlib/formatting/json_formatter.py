@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import logging
 
 from . import base_formatter
-from .. import metric_info, metric_source
+from .. import metric_source
 
 
 class JSONFormatter(base_formatter.Formatter):
@@ -30,9 +30,8 @@ class JSONFormatter(base_formatter.Formatter):
         # Add the product versions of trunk versions to the prefix
         sonar = report.project().metric_source(metric_source.Sonar)
         for product in report.products():
-            sonar_product_info = metric_info.SonarProductInfo(sonar, product)
-            sonar_id = sonar_product_info.sonar_id()
-            latest_version = sonar_product_info.latest_version()
+            sonar_id = product.metric_source_id(sonar) or ''
+            latest_version = sonar.version(sonar_id) if sonar_id else ''
             prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,
                                                                               version=latest_version))
         # Add the current date to the prefix

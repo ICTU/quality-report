@@ -20,5 +20,4 @@ from __future__ import absolute_import
 # sources and domain objects. They make it possible that domain objects have
 # no knowledge of metric sources and vice versa.
 
-from .sonar_product_info import SonarProductInfo
 from .version_control_system_product_info import VersionControlSystemProductInfo

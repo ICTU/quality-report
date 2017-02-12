@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ... import metric_info
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
 
@@ -36,10 +35,6 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=too-few
         parameters = super(UnittestMetricMixin, self)._parameters()
         parameters['tests'] = self._metric_source.unittests(self._sonar_id())
         return parameters
-
-    def _sonar_id(self):
-        unittest_sonar_info = metric_info.SonarProductInfo(self._metric_source, self._subject)
-        return unittest_sonar_info.sonar_id()
 
 
 class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):

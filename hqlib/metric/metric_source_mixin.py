@@ -24,17 +24,13 @@ class SonarMetricMixin(object):
     """ Mixin class for metrics that use Sonar. """
     metric_source_class = metric_source.Sonar
 
-    def __init__(self, *args, **kwargs):
-        super(SonarMetricMixin, self).__init__(*args, **kwargs)
-        self.__sonar_product_info = metric_info.SonarProductInfo(self._metric_source, self._subject)
-
     def _metric_source_urls(self):
         """ Return the url to Sonar. """
         return [self._metric_source.url()]
 
     def _sonar_id(self):
         """ Return the id of the subject in Sonar. """
-        return self.__sonar_product_info.sonar_id()
+        return self._subject.metric_source_id(self._metric_source) or '' if self._subject else ''
 
 
 class SonarDashboardMetricMixin(SonarMetricMixin):

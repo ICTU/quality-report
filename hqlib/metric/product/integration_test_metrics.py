@@ -16,7 +16,6 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
-from ... import metric_info
 from ...domain import HigherIsBetterMetric
 
 
@@ -29,10 +28,6 @@ class IntegrationtestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=
             product has integration tests, but no unit tests, because if it does, the combined unit and integration
             test metrics will be used. """
         return product.has_integration_tests() and not product.has_unittests()
-
-    def _sonar_id(self):
-        integration_test_sonar_info = metric_info.SonarProductInfo(self._metric_source, self._subject)
-        return integration_test_sonar_info.sonar_id()
 
 
 class IntegrationtestCoverage(IntegrationtestMetricMixin, HigherIsBetterMetric):

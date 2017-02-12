@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 
 from .section import Section, SectionHeader
-from .. import metric, metric_source, metric_info, domain, requirement
+from .. import metric, metric_source, domain, requirement
 
 
 class QualityReport(domain.DomainObject):
@@ -152,7 +152,8 @@ class QualityReport(domain.DomainObject):
     def __latest_product_version(self, product):
         """ Return the most recent version of the product. """
         sonar = self.__project.metric_source(metric_source.Sonar)
-        return metric_info.SonarProductInfo(sonar, product).latest_version()
+        sonar_id = product.metric_source_id(sonar) or ''
+        return sonar.version(sonar_id) if sonar_id else ''
 
     def __process_section(self):
         """ Return the process section. """

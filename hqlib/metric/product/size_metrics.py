@@ -56,7 +56,7 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     def value(self):
         total = 0
         for product in self.__main_products():
-            sonar_id = metric_info.SonarProductInfo(self._metric_source, product).sonar_id()
+            sonar_id = product.metric_source_id(self._metric_source)
             if sonar_id:
                 total += self._metric_source.ncloc(sonar_id)
         return total
