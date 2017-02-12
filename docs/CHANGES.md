@@ -1,3 +1,8 @@
+2017-02-12  Release 1.77.5
+
+  * Bug fix: Don't crash when no history file is defined.
+
+
 2017-02-12  Release 1.77.4
 
   * Bug fix: Don't crash when no history file is defined.

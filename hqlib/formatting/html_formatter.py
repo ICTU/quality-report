@@ -138,10 +138,11 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return a JSON representation of the history in the meta metrics section. """
         history_table = []
         history = report.project().metric_source(metric_source.History)
-        for status_record in history.statuses():
-            date_and_time = self.javascript_new_date.format(*self.__date_and_time(status_record))
-            counts = '{0}, {1}, {2}, {3}, {4}, {5}, {6}'.format(*self.__status_record_counts(status_record))
-            history_table.append('[{0}, {1}]'.format(date_and_time, counts))
+        if history:
+            for status_record in history.statuses():
+                date_and_time = self.javascript_new_date.format(*self.__date_and_time(status_record))
+                counts = '{0}, {1}, {2}, {3}, {4}, {5}, {6}'.format(*self.__status_record_counts(status_record))
+                history_table.append('[{0}, {1}]'.format(date_and_time, counts))
         return '[' + ',\n'.join(history_table) + ']'
 
     @staticmethod
