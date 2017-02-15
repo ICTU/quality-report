@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import io
 import unittest
 import urllib2
@@ -63,3 +64,7 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
         """ Test that the default is returned when a HTTP error occurs. """
         self.__jenkins.contents = 'raise'
         self.assertEqual(-1, self.__jenkins.nr_warnings(['job'], 'normal'))
+
+    def test_datetime(self):
+        """ Test that the age of the job is returned. """
+        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime(['job']))

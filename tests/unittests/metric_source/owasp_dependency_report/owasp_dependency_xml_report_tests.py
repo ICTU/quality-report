@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import io
 import unittest
 import urllib2
@@ -106,3 +107,16 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         """ Test that the default is returned when a HTTP error occurs. """
         self.contents = 'raise'
         self.assertEqual(-1, self.__report.nr_warnings(['url'], 'normal'))
+
+    def test_datetime(self):
+        """ Test that the date time is correctly parsed from the report. """
+        self.contents = u'''<?xml version="1.0"?>
+        <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
+            <projectInfo>
+                <name>generic</name>
+                <reportDate>2017-02-10T15:29:30.600+0000</reportDate>
+                <credits>...</credits>
+            </projectInfo>
+        </analysis>
+        '''
+        self.assertEqual(datetime.datetime(2017, 2, 10, 15, 29, 30), self.__report.datetime(['url']))

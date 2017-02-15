@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
+
 from ... import domain
 
 
@@ -24,4 +26,15 @@ class OWASPDependencyReport(domain.MetricSource):
 
     def nr_warnings(self, metric_source_id, priority):
         """ Return the number of warnings in the report with the specified priority. """
+        raise NotImplementedError  # pragma: no cover
+
+    def datetime(self, *metric_source_ids):
+        """ Return the date/time of the reports. """
+        results = []
+        for metric_source_id in metric_source_ids:
+            results.append(self._report_datetime(metric_source_id))
+        return min(results) if results else datetime.datetime.min
+
+    def _report_datetime(self, metric_source_id):
+        """ Return the date/time of one report. """
         raise NotImplementedError  # pragma: no cover

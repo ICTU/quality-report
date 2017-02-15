@@ -47,7 +47,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self.__job_url = url + 'job/{job}/'
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
-        self.__last_stable_build_url = self.__job_url + 'lastStableBuild/'
+        self._last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self.__job_api_url = self.__job_url + self.api_postfix
         self._jobs_api_url = url + self.jobs_api_postfix
         self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
@@ -137,21 +137,25 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __age_of_last_stable_build(self, job):
         """ Return the age of the last stable build of the job. """
-        return self.__age_of_build(job, self.__last_stable_build_url)
+        return self.__age_of_build(job, self._last_stable_build_url)
 
     def __age_of_build(self, job, url):
         """ Return the age of the last completed or stable build of the job. """
+        build_time = self.job_datetime(job, url)
+        return UnknownAge() if build_time == datetime.datetime.min else datetime.datetime.utcnow() - build_time
+
+    def job_datetime(self, job, url):
+        """ Return the datetime of the last completed or stable build of the job. """
         builds_url = url.format(job=job['name']) + self.api_postfix
         try:
             timestamp = self._api(builds_url)['timestamp']
         except (KeyError, urllib2.HTTPError):
-            return UnknownAge()
+            return datetime.datetime.min
         try:
-            build_time = datetime.datetime.utcfromtimestamp(float(timestamp)/1000)
+            return datetime.datetime.utcfromtimestamp(float(timestamp) / 1000)
         except ValueError:
             logging.warning("Couldn't convert timestamp %s from %s to datetime.", timestamp, builds_url)
-            return UnknownAge()
-        return datetime.datetime.utcnow() - build_time
+            return datetime.datetime.min
 
     def __has_builds(self, job):
         """ Return whether the job has builds or not. """

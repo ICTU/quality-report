@@ -1,3 +1,8 @@
+2017-02-15  Release 1.77.7
+
+  * Add metric for measuring the age of OWASP dependency checker reports.
+  
+  
 2017-02-12  Release 1.77.6
 
   * Bug fix: Don't crash when no history file is defined.

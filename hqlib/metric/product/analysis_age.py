@@ -16,6 +16,7 @@ limitations under the License.
 from __future__ import absolute_import
 
 from ..metric_source_mixin import SonarDashboardMetricMixin
+from ... import metric_source
 from ...domain import MetricSourceAgeMetric
 
 
@@ -31,3 +32,13 @@ class SonarAnalysisAge(SonarDashboardMetricMixin, MetricSourceAgeMetric):
 
     def _get_metric_source_ids(self):
         return [self._sonar_id()]
+
+
+class OWASPDependencyReportAge(MetricSourceAgeMetric):
+    """ Metric to measure the age of the OWASP dependency checker report. """
+
+    name = 'Leeftijd van het OWASP dependency rapport'
+    norm_template = 'De leeftijd van het OWASP dependency rapport is maximaal {target} {unit} oud. ' \
+                    'Meer dan {low_target} {unit} is rood.'
+    template = 'Het meest recente OWASP dependency rapport van {name} is {value} {unit} oud.'
+    metric_source_class = metric_source.OWASPDependencyReport

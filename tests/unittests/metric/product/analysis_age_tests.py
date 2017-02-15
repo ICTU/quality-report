@@ -20,12 +20,9 @@ import unittest
 from hqlib import metric, domain, metric_source
 
 
-class FakeSonar(object):
-    """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
+class FakeMetricSource(object):
+    """ Fake metric source for unit test purposes. """
     # pylint: disable=unused-argument
-
-    metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     def __init__(self, age=10):
         self.age = age
@@ -38,11 +35,22 @@ class FakeSonar(object):
             return datetime.datetime.now() - datetime.timedelta(days=self.age, hours=12)
 
     @staticmethod
-    def dashboard_url(*args):
-        """ Return a fake dashboard url. """
-        return 'http://sonar'
+    def url(*args):
+        """ Return a fake metric source url. """
+        return 'http://metric_source'
 
-    url = violations_url = dashboard_url
+    @staticmethod
+    def metric_source_urls(*args):
+        """ Return a fake metric source urls. """
+        return ['http://metric_source']
+
+
+class FakeSonar(FakeMetricSource):
+    """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
+    metric_source_name = metric_source.Sonar.metric_source_name
+    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
+
+    violations_url = dashboard_url = FakeMetricSource.url
 
 
 class SonarAnalysisAgeTest(unittest.TestCase):
@@ -55,7 +63,7 @@ class SonarAnalysisAgeTest(unittest.TestCase):
         self.__metric = metric.SonarAnalysisAge(subject=subject, project=project)
 
     def test_value(self):
-        """ Test that the value of the metric equals the date of the latest analysis. """
+        """ Test that the value of the metric equals the age of the latest analysis. """
         self.assertEqual(10, self.__metric.value())
 
     def test_value_today(self):
@@ -70,8 +78,48 @@ class SonarAnalysisAgeTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar.dashboard_url()}, self.__metric.url())
+        self.assertEqual({FakeSonar.metric_source_name: self.__sonar.dashboard_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report of the metric is correct. """
         self.assertEqual('De meest recente Sonar analyse van FakeSubject is 10 dagen oud.', self.__metric.report())
+
+
+class FakeOWASPDependencyReport(FakeMetricSource):
+    """ Provide for a fake OWASP dependency report so that the unit test don't need access to an actual report
+        instance. """
+    metric_source_name = metric_source.OWASPDependencyReport.metric_source_name
+    needs_metric_source_id = metric_source.OWASPDependencyReport.needs_metric_source_id
+
+
+class OWASPDependencyReportAgeTest(unittest.TestCase):
+    """ Unit tests for the OWASP dependency checker report age metric. """
+
+    def setUp(self):
+        self.__report = FakeOWASPDependencyReport()
+        project = domain.Project(metric_sources={metric_source.OWASPDependencyReport: self.__report})
+        subject = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__report: 'id'})
+        self.__metric = metric.OWASPDependencyReportAge(subject=subject, project=project)
+
+    def test_value(self):
+        """ Test that the value of the metric equals the age of the latest report. """
+        self.assertEqual(10, self.__metric.value())
+
+    def test_value_today(self):
+        """ Test that the value of the metric equals zero if the latest analysis was done today. """
+        self.__report.age = 0
+        self.assertEqual(0, self.__metric.value())
+
+    def test_missing_analysis(self):
+        """ Test that the value of the metric is -1 when there is no analysis. """
+        self.__report.age = -1
+        self.assertEqual(-1, self.__metric.value())
+
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual({FakeOWASPDependencyReport.metric_source_name: self.__report.url()}, self.__metric.url())
+
+    def test_report(self):
+        """ Test that the report of the metric is correct. """
+        self.assertEqual('Het meest recente OWASP dependency rapport van FakeSubject is 10 dagen oud.',
+                         self.__metric.report())

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import re
 import xml.etree.ElementTree
 
@@ -40,12 +41,9 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     def __nr_warnings(self, report_url):
         """ Return the number of warnings of each priority in the report. """
         try:
-            contents = self.__url_open(report_url).read()
+            root, namespace = self.__report_root(report_url)
         except url_opener.UrlOpener.url_open_exceptions:
             return dict(Low=-1, Medium=-1, High=-1)
-        root = xml.etree.ElementTree.fromstring(contents)
-        # ElementTree has no API to get the namespace so we extract it from the root tag:
-        namespace = root.tag.split('}')[0][1:]
         # Using XPath, find all vulnerability nodes with a severity child node:
         severity_nodes = root.findall(".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace))
         return {priority: len([node for node in severity_nodes if node.text == priority])
@@ -53,3 +51,20 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
     def metric_source_urls(self, *report_urls):
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]
+
+    def _report_datetime(self, report_url):
+        """ Return the report date and time. """
+        try:
+            root, namespace = self.__report_root(report_url)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return datetime.datetime.min
+        datetime_node = root.find(".//{{{ns}}}projectInfo/{{{ns}}}reportDate".format(ns=namespace))
+        return datetime.datetime.strptime(datetime_node.text.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+
+    def __report_root(self, report_url):
+        """ Return the root node and namespace of the OWASP dependency XML report. """
+        contents = self.__url_open(report_url).read()
+        root = xml.etree.ElementTree.fromstring(contents)
+        # ElementTree has no API to get the namespace so we extract it from the root tag:
+        namespace = root.tag.split('}')[0][1:]
+        return root, namespace

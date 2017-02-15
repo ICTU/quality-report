@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import logging
 
 from .. import url_opener
@@ -49,3 +50,8 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
     def metric_source_urls(self, *job_names):
         """ Return the url of the job. """
         return [self.__report_url.format(job=self.resolve_job_name(job_name)) for job_name in job_names]
+
+    def _report_datetime(self, job_name):
+        """ Return the date and time of one report. """
+        job_name = self.resolve_job_name(job_name)
+        return self.job_datetime(dict(name=job_name), self._last_stable_build_url)
