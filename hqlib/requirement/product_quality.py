@@ -24,7 +24,8 @@ class OWASPDependencies(Requirement):
     """ Require dependencies to be analyzed for vulnerabilities. """
     _name = 'OWASP Top 10 2013 Dependencies'
     url = 'https://www.owasp.org/'
-    _metric_classes = (metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings)
+    _metric_classes = (metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings,
+                       metric.OWASPDependencyReportAge)
 
 
 class OWASPZAP(Requirement):
