@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import unittest
 import urllib2
 
@@ -112,3 +113,7 @@ class OpenVASScanReportTest(unittest.TestCase):
     def test_multiple_urls(self):
         """ Test the number of alerts for multiple urls. """
         self.assertEqual(4, self.__report.alerts('medium', 'url1', 'url2'))
+
+    def test_datetime(self):
+        """ Test that the date/time can be parsed. """
+        self.assertEqual(datetime.datetime(2016, 8, 8, 12, 37, 4), self.__report.datetime('url'))

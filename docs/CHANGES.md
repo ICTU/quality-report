@@ -1,3 +1,8 @@
+2017-02-16  Release 1.77.8
+
+  * Add metric for measuring the age of Open VAS Scan reports.
+  
+
 2017-02-15  Release 1.77.7
 
   * Add metric for measuring the age of OWASP dependency checker reports.

@@ -42,3 +42,13 @@ class OWASPDependencyReportAge(MetricSourceAgeMetric):
                     'Meer dan {low_target} {unit} is rood.'
     template = 'Het meest recente OWASP dependency rapport van {name} is {value} {unit} oud.'
     metric_source_class = metric_source.OWASPDependencyReport
+
+
+class OpenVASScanReportAge(MetricSourceAgeMetric):
+    """ Metric to measure the age of the Open VAS Scan report. """
+
+    name = 'Leeftijd van het Open VAS Scan rapport'
+    norm_template = 'De leeftijd van het Open VAS Scan rapport is maximaal {target} {unit} oud. ' \
+                    'Meer dan {low_target} {unit} is rood.'
+    template = 'Het meest recente Open VAS Scan rapport van {name} is {value} {unit} oud.'
+    metric_source_class = metric_source.OpenVASScanReport

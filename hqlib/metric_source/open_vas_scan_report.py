@@ -15,6 +15,8 @@ limitations under the License.
 """
 from __future__ import absolute_import
 
+import datetime
+import dateutil.parser
 import bs4
 
 from . import url_opener
@@ -49,3 +51,20 @@ class OpenVASScanReport(domain.MetricSource):
         summary_table = soup('table')[0]('table')[1]  # The whole report is one big table with nested tables.
         column = dict(high=3, medium=4, low=5)[risk_level]
         return int(summary_table('tr')[-1]('td')[column].string)
+
+    def datetime(self, *report_urls):
+        """ Return the date/time of the reports. """
+        results = []
+        for report_url in report_urls:
+            results.append(self.__report_datetime(report_url))
+        return min(results) if results else datetime.datetime.min
+
+    def __report_datetime(self, report_url):
+        """ Return the date/time of the report. """
+        try:
+            soup = bs4.BeautifulSoup(self._url_open(report_url), "html.parser")
+        except url_opener.UrlOpener.url_open_exceptions:
+            return datetime.datetime.min
+        summary_table = soup('table')[0]('table')[0]  # The whole report is one big table with nested tables.
+        date_string = summary_table('tr')[1]('td')[1].string
+        return dateutil.parser.parse(date_string, ignoretz=True)
