@@ -65,8 +65,8 @@ from .environment.unused_ci_jobs import UnusedCIJobs
 from .environment.version_number import (
     SonarVersion,
     SonarPluginVersionCheckStyle, SonarPluginVersionCSharp, SonarPluginVersionFindBugs, SonarPluginVersionJava,
-    SonarPluginVersionJS, SonarPluginVersionPMD, SonarPluginVersionStyleCop,
-    SonarPluginVersionWeb, SonarPluginVersionVisualBasic, SonarPluginVersionPython, SonarPluginVersionTypeScript,
+    SonarPluginVersionJS, SonarPluginVersionPMD, SonarPluginVersionWeb, SonarPluginVersionVisualBasic,
+    SonarPluginVersionPython, SonarPluginVersionTypeScript,
     SonarQualityProfileVersionCSharp, SonarQualityProfileVersionJava, SonarQualityProfileVersionJS,
     SonarQualityProfileVersionWeb, SonarQualityProfileVersionVisualBasic, SonarQualityProfileVersionPython,
     SonarQualityProfileVersionTypeScript)

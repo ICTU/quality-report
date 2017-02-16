@@ -236,15 +236,6 @@ class SonarPluginVersionCSharp(SonarPluginVersion):
     low_target_value = LooseVersion('4.2')
 
 
-class SonarPluginVersionStyleCop(SonarPluginVersion):
-    """ Measure the version number of the StyleCop Sonar plugin. """
-    name = 'Versie van de Sonar StyleCop plugin'
-    plugin_key = 'stylecop'
-    plugin_name = 'StyleCop'
-    target_value = LooseVersion('1.1')
-    low_target_value = LooseVersion('1.0')
-
-
 class SonarPluginVersionJS(SonarPluginVersion):
     """ Measure the version number of the JavaScript Sonar plugin. """
     name = 'Versie van de Sonar JavaScript plugin'

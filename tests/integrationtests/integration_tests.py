@@ -45,7 +45,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
     expected_title = 'all requirements but no sources'
-    expected_number_of_metrics = 145
+    expected_number_of_metrics = 144
 
     def report(self):
         """ Read the report and return as beautiful soup. """

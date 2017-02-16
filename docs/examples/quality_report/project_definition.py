@@ -3,14 +3,14 @@
 import datetime
 
 from hqlib import metric_source, metric, requirement
-from hqlib.domain import Project, Application, Product, Team, Document, TechnicalDebtTarget, \
-    DynamicTechnicalDebtTarget
+from hqlib.domain import Project, Application, Team, Document, TechnicalDebtTarget, DynamicTechnicalDebtTarget
+
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
 SONAR = metric_source.Sonar('https://sonarqube.com/')
-HISTORY = metric_source.History('quality-data/quality_report/history.json')
+HISTORY = metric_source.History('docs/examples/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
@@ -25,7 +25,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY},
-                  # Override the total loc metric targets:
+                  # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
                   requirements=[requirement.TrustedProductMaintainability, requirement.Web, requirement.JavaScript,

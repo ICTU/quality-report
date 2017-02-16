@@ -1,3 +1,8 @@
+2017-02-16  Release 1.77.9
+
+  * Remove the metric for the SonarQube StyleCop plugin as the StyleCop plugin is obsolete.
+  
+  
 2017-02-16  Release 1.77.8
 
   * Add metric for measuring the age of Open VAS Scan reports.

@@ -30,8 +30,7 @@ class Java(Requirement):
 class CSharp(Requirement):
     """ Require Sonar to be ready for analyzing C# code. """
     _name = 'C#'
-    _metric_classes = (metric.SonarPluginVersionCSharp, metric.SonarPluginVersionStyleCop,
-                       metric.SonarQualityProfileVersionCSharp)
+    _metric_classes = (metric.SonarPluginVersionCSharp, metric.SonarQualityProfileVersionCSharp)
 
 
 class JavaScript(Requirement):

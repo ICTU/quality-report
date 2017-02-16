@@ -27,11 +27,13 @@ google.load('visualization', '1', {'packages': ['corechart', 'table']});
 var settings = [];
 var tables = [];
 
+var COLOR_PERFECT = '45E600';
 var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
 var COLOR_GREY = '#808080';
-var COLOR_MISSING = '#F8F8F8';
+var COLOR_MISSING = '#F0F0F0';
+var BG_COLOR_PERFECT = '#EDFFE6';
 var BG_COLOR_GREEN = '#E6F8E0';
 var BG_COLOR_YELLOW = '#F8F8C0';
 var BG_COLOR_RED = '#F8E0E0';
@@ -59,10 +61,10 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
     metrics.addRows(metrics_data);
-    color_metrics(BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
+    color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
-function create_dashboard(metrics_data, history_data) {
+function create_dashboard(metrics_data, history, report_date) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
     create_metrics_table(metrics_data);
@@ -70,19 +72,21 @@ function create_dashboard(metrics_data, history_data) {
 
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
     google.visualization.events.addListener(tables.all, 'sort', save_sort_order);
-    for (var index in sections) {
+    for (var index = 0; index < sections.length; index++) {
         var section = sections[index];
         tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-    draw_area_chart('meta_metrics_history_graph', history_data);
+    draw_area_chart('meta_metrics_history_relative_graph', history, "Percentage metrieken per status", 'relative');
+    draw_area_chart('meta_metrics_history_absolute_graph', history, "Aantal metrieken per status", true);
 
     set_radio_indicator('filter_color', settings.filter_color);
     set_check_indicator('show_dashboard', settings.show_dashboard);
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
     show_or_hide_dashboard();
     draw_tables(tables);
+    color_report_date(report_date);
 
     // Event handler for navigating between tabs
     $('#dashboard_tab_control a').click(function (event) {
@@ -105,15 +109,15 @@ function create_dashboard(metrics_data, history_data) {
     };
 
     // Event handlers for the filter by color menu items.
-    var colors = ['filter_color_all', 'filter_color_red_and_yellow', 'filter_color_grey'];
-    for (index = 0; index < colors.length; index++) {
-        document.getElementById(colors[index]).onclick = (function() {
-            var color = colors[index];
-            return function() {
-                set_filter('filter_color', color, tables);
-            };
-        })();
-    }
+    document.getElementById('filter_color_all').onclick = function() {
+        set_filter('filter_color', 'filter_color_all', tables)
+    };
+    document.getElementById('filter_color_red_and_yellow').onclick = function() {
+        set_filter('filter_color', 'filter_color_red_and_yellow', tables)
+    };
+    document.getElementById('filter_color_grey').onclick = function() {
+        set_filter('filter_color', 'filter_color_grey', tables)
+    };
 }
 
 function read_settings_from_cookies() {
@@ -148,15 +152,13 @@ function set_filter(filter, filter_value, tables) {
     draw_tables(tables);
 }
 
-function color_metrics(color_green, color_yellow, color_red, color_grey, color_missing) {
+function color_metrics(color_perfect, color_green, color_yellow, color_red, color_grey, color_missing) {
     var numberOfColumns = window.metrics.getNumberOfColumns();
-    var statusToColor = {'perfect': color_green, 'green': color_green, 'yellow': color_yellow, 'red': color_red,
+    var statusToColor = {'perfect': color_perfect, 'green': color_green, 'yellow': color_yellow, 'red': color_red,
                          'grey': color_grey, 'missing': color_missing, 'missing_source': color_missing};
-    for (var row_index = 0; row_index < window.metrics.getNumberOfRows();
-         row_index++) {
+    for (var row_index = 0; row_index < window.metrics.getNumberOfRows(); row_index++) {
         var bg_color = statusToColor[window.metrics.getValue(row_index, METRICS_COLUMN_STATUS_TEXT)];
-        for (var column_index = 0; column_index < numberOfColumns;
-             column_index++) {
+        for (var column_index = 0; column_index < numberOfColumns; column_index++) {
             var style = 'background-color: ' + bg_color;
             if (column_index === METRICS_COLUMN_TREND || column_index === METRICS_COLUMN_STATUS_ICON) {
                 style += '; text-align: center';
@@ -166,10 +168,21 @@ function color_metrics(color_green, color_yellow, color_red, color_grey, color_m
     }
 }
 
+function color_report_date(report_date) {
+    var now = new Date();
+    var seconds = parseInt((now - report_date)/1000);
+    if (seconds > 60 * 60) {
+        var cls = seconds > 60 * 60 * 24 ? 'very_old' : 'old';
+        document.getElementById('report_date_time').setAttribute('class', cls);
+    }
+}
+
 function draw_tables(tables) {
     // Draw or hide the tables in each of the sections.
     for (var section in tables) {
-        draw_table(tables[section], section);
+        if (tables.hasOwnProperty(section)) {
+            draw_table(tables[section], section);
+        }
     }
 }
 
@@ -228,9 +241,16 @@ function hide_table(section) {
 
 function table_view(section) {
     var view = new google.visualization.DataView(window.metrics);
-    var rows = [];
+    var rows = table_view_rows(section);
+    if (settings.filter_color !== 'filter_color_all') {
+        rows = intersection(rows, table_view_filtered_rows());
+    }
+    view.setRows(rows);
+    return view;
+}
 
-    // Section
+function table_view_rows(section) {
+    var rows = [];
     if (section === 'all') {
         for (var index = 0; index < window.metrics.getNumberOfRows(); index++) {
             rows.push(index);
@@ -238,27 +258,25 @@ function table_view(section) {
     } else {
         rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section}]);
     }
+    return rows;
+}
 
-    // Color
+function table_view_filtered_rows() {
     var filtered_color = settings.filter_color;
-    if (filtered_color !== 'filter_color_all') {
-        var colored_rows = [];
-        if (filtered_color === 'filter_color_red_and_yellow') {
-            var colors = ['yellow', 'red'];
-            for (var color_index = 0; color_index < colors.length; color_index++) {
-                var color_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
-                                                        value: colors[color_index]}]);
-                colored_rows = colored_rows.concat(color_rows);
-            }
+    var colored_rows = [];
+    if (filtered_color === 'filter_color_red_and_yellow') {
+        var colors = ['yellow', 'red'];
+        for (var color_index = 0; color_index < colors.length; color_index++) {
+            var color_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
+                                                              value: colors[color_index]}]);
+            colored_rows = colored_rows.concat(color_rows);
         }
-        if (filtered_color === 'filter_color_grey') {
-            colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
-                                                            value: 'grey'}]);
-        }
-        rows = intersection(rows, colored_rows);
     }
-    view.setRows(rows);
-    return view;
+    if (filtered_color === 'filter_color_grey') {
+        colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
+                                                        value: 'grey'}]);
+    }
+    return colored_rows;
 }
 
 function draw_section_summary_chart(section) {
@@ -281,42 +299,48 @@ function draw_pie_chart(section) {
     data.addColumn('string', 'Status');
     data.addColumn('number', 'Number');
     data.addRows([
-      ['Groen', status_count(section, 'green') + status_count(section, 'perfect')],
-      ['Geel', status_count(section, 'yellow')],
-      ['Rood', status_count(section, 'red')],
-      ['Grijs', status_count(section, 'grey')],
-      ['Ontbrekend', status_count(section, 'missing') + status_count(section, 'missing_source')]
+      ['Perfect', status_count(section, 'perfect')],
+      ['Goed', status_count(section, 'green')],
+      ['Bijna goed', status_count(section, 'yellow')],
+      ['Actie vereist', status_count(section, 'red')],
+      ['Technische schuld', status_count(section, 'grey')],
+      ['Bron niet beschikbaar', status_count(section, 'missing')],
+      ['Bron niet geconfigureerd', status_count(section, 'missing_source')]
     ]);
     var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
     var options = {
-      slices: [{color: COLOR_GREEN}, {color: COLOR_YELLOW},
-               {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}],
+      slices: [{color: COLOR_PERFECT}, {color: COLOR_GREEN}, {color: COLOR_YELLOW},
+               {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}, {color: COLOR_MISSING}],
       pieSliceText: 'none',
       tooltip: {textStyle: {fontSize: 14}},
       legend: 'none',
       width: 80, height: 80,
       backgroundColor: bg_color,
-      chartArea: {left:7, top:7, width:66, height:66},
+      chartArea: {left: 7, top: 7, width: 66, height: 66},
       is3D: true
     };
     var chart = new google.visualization.PieChart(piechart_div);
     chart.draw(data, options);
 }
 
-function draw_area_chart(section, history) {
+function draw_area_chart(section, history, title, stacked) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
-    data.addColumn('number', '% groene metrieken');
-    data.addColumn('number', '% gele metrieken');
-    data.addColumn('number', '% rode metrieken');
-    data.addColumn('number', '% grijze metrieken');
-    data.addColumn('number', '% ontbrekende metrieken');
+    data.addColumn('number', 'Perfect');
+    data.addColumn('number', 'Goed');
+    data.addColumn('number', 'Bijna goed');
+    data.addColumn('number', 'Actie vereist');
+    data.addColumn('number', 'Technische schuld');
+    data.addColumn('number', 'Bron niet beschikbaar');
+    data.addColumn('number', 'Bron niet geconfigureerd');
     data.addRows(history);
     var options = {
+      title: title,
       width: 1200, height: 400,
-      isStacked: true,
-      hAxis: {format:'d-M-yy'},
-      colors: [COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING]
+      isStacked: stacked,
+      hAxis: {format: 'd-M-yy'},
+      vAxis: {format: stacked === 'relative' ? 'percent' : ''},
+      colors: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
     chart.draw(data, options);
