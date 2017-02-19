@@ -65,7 +65,7 @@ class Metric(object):
                     self._metric_source_id = source_id
                     break
             else:
-                logging.warning("Couldn't find metric source for %s", self._subject)
+                logging.warning("Couldn't find metric source for %s", self.stable_id())
                 self._metric_source = None
                 self._metric_source_id = None
         else:
