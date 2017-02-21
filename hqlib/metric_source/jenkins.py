@@ -148,13 +148,13 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return the datetime of the last completed or stable build of the job. """
         builds_url = url.format(job=job['name']) + self.api_postfix
         try:
-            timestamp = self._api(builds_url)['timestamp']
-        except (KeyError, urllib2.HTTPError):
+            job = self._api(builds_url)
+        except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         try:
-            return datetime.datetime.utcfromtimestamp(float(timestamp) / 1000)
-        except ValueError:
-            logging.warning("Couldn't convert timestamp %s from %s to datetime.", timestamp, builds_url)
+            return datetime.datetime.utcfromtimestamp(float(job['timestamp']) / 1000)
+        except (KeyError, ValueError) as reason:
+            logging.warning("Couldn't get timestamp from %s: %s.", builds_url, reason)
             return datetime.datetime.min
 
     def __has_builds(self, job):

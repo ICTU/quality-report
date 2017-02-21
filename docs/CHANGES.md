@@ -1,6 +1,7 @@
 2017-02-16  Release 1.77.9
 
   * Remove the metric for the SonarQube StyleCop plugin as the StyleCop plugin is obsolete.
+  * Bug fix: Don't crash when Jenkins hostname can't be resolved.
   
   
 2017-02-16  Release 1.77.8
