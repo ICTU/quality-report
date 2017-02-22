@@ -1,3 +1,8 @@
+2017-02-22  Release 1.77.10
+
+  * Bug fix: Allow for spaces in Git paths.
+  
+  
 2017-02-21  Release 1.77.9
 
   * Remove the metric for the SonarQube StyleCop plugin as the StyleCop plugin is obsolete.

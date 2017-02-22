@@ -44,7 +44,7 @@ class Git(VersionControlSystem):
     @utils.memoized
     def last_changed_date(self, path):
         """ Return the date when the url was last changed in Git. """
-        timestamp = self._run_shell_command(['git', 'log', '--format="%ct"', '-n', '1', path])
+        timestamp = self._run_shell_command(['git', 'log', '--format="%ct"', '-n', '1', '--', path])
         if timestamp:
             return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
         else:
