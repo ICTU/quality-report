@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .. import utils
-
 
 class SectionHeader(object):
     """ Header for a section, consisting of two-letter prefix, title and an optional subtitle. """
@@ -42,9 +40,6 @@ class SectionHeader(object):
 
 class Section(object):
     """ Section within a report. """
-
-    ORDERED_STATUSES = ('missing', 'missing_source', 'red', 'yellow', 'grey', 'green', 'perfect')
-    STATUS_TO_COLOR_MAPPING = dict(missing='red', missing_source='red', perfect='green')
 
     def __init__(self, header, metrics, product=None):
         self.__header = header
@@ -74,18 +69,6 @@ class Section(object):
     def metrics(self):
         """ Return the metrics in this section. """
         return self.__metrics
-
-    @utils.memoized
-    def color(self):
-        """ Return the color of this section. """
-        metric_statuses = set(each_metric.status() for each_metric in self)
-        for status_color in self.ORDERED_STATUSES:  # pragma: no branch
-            if status_color in metric_statuses:
-                color = status_color
-                break
-        else:
-            color = 'white'
-        return self.STATUS_TO_COLOR_MAPPING.get(color, color)
 
     def product(self):
         """ Return the product this section is about. """

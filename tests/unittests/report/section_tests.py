@@ -21,17 +21,11 @@ from hqlib.report.section import Section, SectionHeader
 
 class FakeMetric(object):
     """ Fake metric to use in the tests below. """
-    def __init__(self, status=''):
-        self.__status = status
 
     @staticmethod
     def set_id_string(id_string):
         """ Ignore. """
         pass
-
-    def status(self):
-        """ Return the preset status. """
-        return self.__status
 
 
 class SectionHeaderTest(unittest.TestCase):
@@ -58,8 +52,7 @@ class SectionTest(unittest.TestCase):
 
     def setUp(self):
         self.__header = SectionHeader('TE', 'title', 'subtitle')
-        self.__metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('grey'),
-                          FakeMetric('red')]
+        self.__metrics = [FakeMetric(), FakeMetric()]
         self.__section = Section(self.__header, self.__metrics)
 
     def test_title(self):
@@ -85,54 +78,6 @@ class SectionTest(unittest.TestCase):
     def test_get_all_metrics(self):
         """ Test that the section has a list of all metrics. """
         self.assertEqual(self.__metrics, self.__section.metrics())
-
-    def test_color_red(self):
-        """ Test that the section is red when one metric is red. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('red'), FakeMetric('grey'),
-                   FakeMetric('yellow'), FakeMetric('missing')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('red', section.color())
-
-    def test_color_red_when_missing(self):
-        """ Test that the section is red when one metric is missing and the rest is green or yellow. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('missing')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('red', section.color())
-
-    def test_color_red_when_missing_source(self):
-        """ Test that the section is red when one metric source is missing and the rest is green or yellow. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('missing_source')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('red', section.color())
-
-    def test_color_yellow(self):
-        """ Test that the section is yellow when no metrics are red and at least one is yellow. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('yellow'), FakeMetric('grey')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('yellow', section.color())
-
-    def test_color_grey(self):
-        """ Test that the section is grey when no metrics are red or yellow and at least one is grey. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect'), FakeMetric('grey')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('grey', section.color())
-
-    def test_color_green(self):
-        """ Test that the section is green when no metrics are red, yellow or grey. """
-        metrics = [FakeMetric('green'), FakeMetric('perfect')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('green', section.color())
-
-    def test_color_perfect(self):
-        """ Test that the section is green when all metrics are perfect. """
-        metrics = [FakeMetric('perfect')]
-        section = Section(self.__header, metrics)
-        self.assertEqual('green', section.color())
-
-    def test_color_white(self):
-        """ Test that the section is white when it contains no metrics. """
-        section = Section(self.__header, [])
-        self.assertEqual('white', section.color())
 
     def test_product(self):
         """ Test that the section returns the product. """
