@@ -24,7 +24,7 @@ from ...domain import HigherIsBetterMetric
 
 class SonarVersion(HigherIsBetterMetric):
     """ Measure the version number of Sonar. """
-    name = 'Sonar versie'
+    name = 'Versie van Sonar'
     unit = ''
     norm_template = 'Sonar heeft minimaal versie {target}, lager dan versie {low_target} is rood.'
     template = 'Sonar is versie {value}.'
@@ -45,7 +45,7 @@ class SonarVersion(HigherIsBetterMetric):
 
 class SonarQualityProfileVersion(HigherIsBetterMetric):
     """ Measure the version number of the default Sonar quality profile for a specific language. """
-    name = 'Sonar quality profile versie'
+    name = 'Versie van het Sonar <subclass responsibility> quality profile'
     unit = ''
     language_key = 'Subclass responsibility'
     language_name = 'Subclass responsibility'
@@ -93,7 +93,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
 
 class SonarQualityProfileVersionJava(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for Java. """
-    name = 'Sonar Java quality profile versie'
+    name = 'Versie van het Sonar Java quality profile'
     language_key = 'java'
     language_name = 'Java'
     target_value = LooseVersion('1.8')
@@ -102,7 +102,7 @@ class SonarQualityProfileVersionJava(SonarQualityProfileVersion):
 
 class SonarQualityProfileVersionCSharp(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for CSharp. """
-    name = 'Sonar C# quality profile versie'
+    name = 'Versie van het Sonar C# quality profile'
     language_key = 'cs'
     language_name = 'C#'
     target_value = LooseVersion('1.1')
@@ -111,7 +111,7 @@ class SonarQualityProfileVersionCSharp(SonarQualityProfileVersion):
 
 class SonarQualityProfileVersionJS(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for JavaScript. """
-    name = 'Sonar JavaScript quality profile versie'
+    name = 'Versie van het Sonar JavaScript quality profile'
     language_key = 'js'
     language_name = 'JavaScript'
     target_value = LooseVersion('1.4')
@@ -120,7 +120,7 @@ class SonarQualityProfileVersionJS(SonarQualityProfileVersion):
 
 class SonarQualityProfileVersionWeb(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for Web. """
-    name = 'Sonar Web quality profile versie'
+    name = 'Versie van het Sonar Web quality profile'
     language_key = 'web'
     language_name = 'Web'
     target_value = LooseVersion('1.1')
@@ -129,7 +129,7 @@ class SonarQualityProfileVersionWeb(SonarQualityProfileVersion):
 
 class SonarQualityProfileVersionVisualBasic(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for Visual Basic. """
-    name = 'Sonar Visual Basic quality profile versie'
+    name = 'Versie van het Sonar Visual Basic quality profile'
     language_key = 'vb'
     language_name = 'Visual Basic'
     target_value = LooseVersion('1.0')
@@ -138,7 +138,7 @@ class SonarQualityProfileVersionVisualBasic(SonarQualityProfileVersion):
 
 class SonarQualityProfileVersionPython(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for Python. """
-    name = 'Sonar Python quality profile versie'
+    name = 'Versie van het Sonar Python quality profile'
     language_key = 'python'
     language_name = 'Python'
     target_value = LooseVersion('1.0')
@@ -147,7 +147,7 @@ class SonarQualityProfileVersionPython(SonarQualityProfileVersion):
 
 class SonarQualityProfileVersionTypeScript(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for TypeScript. """
-    name = 'Sonar TypeScript quality profile versie'
+    name = 'Versie van het Sonar TypeScript quality profile'
     language_key = 'typescript'
     language_name = 'TypeScript'
     target_value = LooseVersion('1.0')
@@ -156,7 +156,7 @@ class SonarQualityProfileVersionTypeScript(SonarQualityProfileVersion):
 
 class SonarPluginVersion(HigherIsBetterMetric):
     """ Measure the version number of a Sonar plugin. """
-    name = 'Sonar plugin versie'
+    name = 'Versie van de Sonar <subclass responsibility> plugin'
     unit = ''
     plugin_key = 'Subclass responsibility'
     plugin_name = 'Subclass responsibility'
