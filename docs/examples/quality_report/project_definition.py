@@ -42,7 +42,7 @@ PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
 
 # Products the project(s) develop(s).
 QUALITY_REPORT = Application(
-    PROJECT, 'QR', name='Example product',
+    short_name='QR', name='Example product',
     metric_source_ids={
         SONAR: 'nl.ictu:quality_report',
         JACOCO: 'quality-report-coverage-report',

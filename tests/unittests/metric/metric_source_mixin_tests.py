@@ -38,20 +38,20 @@ class SonarMetricMixinTest(unittest.TestCase):
         """ Test the url. """
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        product = domain.Product(project, metric_source_ids={sonar: 'sonar id'})
+        product = domain.Product(metric_source_ids={sonar: 'sonar id'})
         self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricMixinUnderTest(product, project).url())
 
     def test_url_without_sonar(self):
         """ Test that the metric has no url when the project has no Sonar configured. """
         project = domain.Project()
-        product = domain.Product(project)
+        product = domain.Product()
         self.assertEqual(dict(), SonarMetricMixinUnderTest(product, project).url())
 
     def test_url_without_sonar_id(self):
         """ Test that the metric has a url when the product has no Sonar id configured. """
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        product = domain.Product(project)
+        product = domain.Product()
         self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricMixinUnderTest(product, project).url())
 
 
@@ -86,7 +86,7 @@ class BirtTestDesignMixinTest(unittest.TestCase):
         """ Test the url. """
         birt = FakeBirt()
         project = domain.Project(metric_sources={metric_source.Birt: birt})
-        product = domain.Product(project, metric_source_ids={birt: 'birt id'})
+        product = domain.Product(metric_source_ids={birt: 'birt id'})
         self.assertEqual({birt.metric_source_name: birt.whats_missing_url()},
                          BirtTestDesignMetricUnderTest(product, project).url())
 
@@ -94,20 +94,20 @@ class BirtTestDesignMixinTest(unittest.TestCase):
         """ Test the url with multiple Birt instances. """
         birt1, birt2 = FakeBirt(), FakeBirt()
         project = domain.Project(metric_sources={metric_source.Birt: [birt1, birt2]})
-        product = domain.Product(project, metric_source_ids={birt1: 'birt id'})
+        product = domain.Product(metric_source_ids={birt1: 'birt id'})
         self.assertEqual({birt1.metric_source_name: birt1.whats_missing_url()},
                          BirtTestDesignMetricUnderTest(product, project).url())
 
     def test_url_without_birt(self):
         """ Test that the metric has no url when Birt hasn't been configured. """
         project = domain.Project()
-        product = domain.Product(project)
+        product = domain.Product()
         self.assertEqual(dict(), BirtTestDesignMetricUnderTest(product, project).url())
 
     def test_url_without_birt_id(self):
         """ Test that the metric has no url when the product has no Birt id. """
         birt = FakeBirt()
         project = domain.Project(metric_sources={metric_source.Birt: birt})
-        product = domain.Product(project)
+        product = domain.Product()
         self.assertEqual({birt.metric_source_name: birt.whats_missing_url()},
                          BirtTestDesignMetricUnderTest(product, project).url())

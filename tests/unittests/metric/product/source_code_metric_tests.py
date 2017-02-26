@@ -73,7 +73,7 @@ class CommentedLOCTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = metric.CommentedLOC(subject=self.__subject, project=project)
 
     def test_value(self):
@@ -90,7 +90,7 @@ class CyclomaticComplexityTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        subject = domain.Product(project, 'PR', name='FakeSubject')
+        subject = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = metric.CyclomaticComplexity(subject=subject, project=project)
 
     def test_value(self):
@@ -113,7 +113,7 @@ class LongMethodsTest(SonarViolationsUrlTestMixin, unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        subject = domain.Product(project, 'PR', name='FakeSubject')
+        subject = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = metric.LongMethods(subject=subject, project=project)
 
     def test_value(self):
@@ -134,7 +134,7 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     """ Unit tests for the many parameters metric. """
 
     def setUp(self):
-        subject = domain.Product(domain.Project(), 'PR', name='FakeSubject')
+        subject = domain.Product(short_name='PR', name='FakeSubject')
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.ManyParameters(subject=subject, project=project)
 
@@ -157,7 +157,7 @@ class NoSonarTest(SonarViolationsUrlTestMixin, unittest.TestCase):
     """ Unit tests for the no Sonar metric. """
 
     def setUp(self):
-        subject = domain.Product(domain.Project(), 'PR', name='FakeSubject')
+        subject = domain.Product(short_name='PR', name='FakeSubject')
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
         self._metric = metric.NoSonar(subject=subject, project=project)
 

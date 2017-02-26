@@ -51,7 +51,7 @@ class ProductLOCTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        subject = domain.Product(project, 'PR', name='FakeSubject')
+        subject = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = metric.ProductLOC(subject=subject, project=project)
 
     def test_value(self):
@@ -71,9 +71,9 @@ class TotalLOCTest(unittest.TestCase):
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
             metric_options={metric.TotalLOC: dict(target=1000000, low_target=2000000)})
-        product = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
-        product_without_sonar_id = domain.Product(project, 'PW', name='ProductWithoutSonarId')
-        test_product = domain.Product(project, 'TP', is_main=False, metric_source_ids={self.__sonar: 'sonar id'})
+        product = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
+        product_without_sonar_id = domain.Product(short_name='PW', name='ProductWithoutSonarId')
+        test_product = domain.Product(short_name='TP', is_main=False, metric_source_ids={self.__sonar: 'sonar id'})
         project.add_product(product)
         # Add products that should be ignored:
         project.add_product(product_without_sonar_id)
@@ -120,7 +120,7 @@ class TotalLOCTest(unittest.TestCase):
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
             metric_options={metric.TotalLOC: dict(target=100, low_target=110,
                                                   debt_target=domain.TechnicalDebtTarget(150))})
-        product = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
+        product = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
         project.add_product(product)
         total_loc = metric.TotalLOC(subject=project, project=project)
         self.assertEqual('grey', total_loc.status())

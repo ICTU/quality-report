@@ -31,20 +31,20 @@ PROJECT.add_team(TEAM)
 
 # Products the project(s) develop(s).
 PRODUCT = Product(
-    PROJECT, 'PR', name='Product ABC',
+    short_name='PR', name='Product ABC',
     requirements=[requirement.OWASPDependencies, requirement.OWASPZAP,
                   requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
                   requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
                   requirement.PerformanceScalability, requirement.TrackBranches],
     art=Product(
-        PROJECT, name='Product ABC ART', requirements=[requirement.CodeQuality, requirement.TrackBranches]),
+        name='Product ABC ART', requirements=[requirement.CodeQuality, requirement.TrackBranches]),
     jsf=Product(
-        PROJECT, name='Product ABC JSF', requirements=[requirement.JSFCodeQuality]))
+        name='Product ABC JSF', requirements=[requirement.JSFCodeQuality]))
 
 
-APPLICATION = Application(PROJECT, 'AP', name='Application FOO')
+APPLICATION = Application(short_name='AP', name='Application FOO')
 
-COMPONENT = Component(PROJECT, 'CO', name='Component FOO')
+COMPONENT = Component(short_name='CO', name='Component FOO')
 
 PROJECT.add_product(PRODUCT)
 PROJECT.add_product(APPLICATION)

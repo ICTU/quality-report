@@ -24,7 +24,7 @@ class ProductTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project('Organization')
-        self.__product = domain.Product(self.__project, name='Product')
+        self.__product = domain.Product(name='Product')
 
     def test_product_name(self):
         """ Test that the name of the product equals given name. """
@@ -44,8 +44,8 @@ class ProductTest(unittest.TestCase):
 
     def test_jsf(self):
         """ Test that the jsf component can be retrieved. """
-        jsf = domain.Product(self.__project)
-        self.assertEqual(jsf, domain.Product(self.__project, jsf=jsf).jsf())
+        jsf = domain.Product()
+        self.assertEqual(jsf, domain.Product(jsf=jsf).jsf())
 
     def test_default_art(self):
         """ Test that products have no automated regression test by default. """
@@ -53,7 +53,7 @@ class ProductTest(unittest.TestCase):
 
     def test_art(self):
         """ Test that the automated regression test can be retrieved. """
-        art = domain.Product(self.__project)
+        art = domain.Product()
         self.assertEqual(art, domain.Product(self.__project, art=art).art())
 
     def test_is_main(self):

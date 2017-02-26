@@ -41,7 +41,7 @@ class CyclicDependenciesTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = metric.CyclicDependencies(subject=self.__subject, project=project)
 
     def test_value(self):

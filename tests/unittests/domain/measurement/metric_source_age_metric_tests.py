@@ -40,7 +40,7 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
 
     def setUp(self):
         self.__metric_source = FakeMetricSource()
-        self.__subject = domain.Product('Product', metric_source_ids={self.__metric_source: 'http://url'})
+        self.__subject = domain.Product(name='Product', metric_source_ids={self.__metric_source: 'http://url'})
         self.__project = domain.Project(metric_sources={FakeMetricSource: self.__metric_source})
         self.__metric = MetricSourceAgeMetricUnderTest(self.__subject, project=self.__project)
 
@@ -65,7 +65,7 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
 
     def test_missing_metric_source_id(self):
         """ Test that the status is missing_source if the subject has no metric source id. """
-        metric = MetricSourceAgeMetricUnderTest(domain.Product('Product'), project=self.__project)
+        metric = MetricSourceAgeMetricUnderTest(domain.Product(name='Product'), project=self.__project)
         self.assertEqual('missing_source', metric.status())
 
     def test_norm_template_default_values(self):

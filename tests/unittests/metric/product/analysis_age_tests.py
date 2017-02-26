@@ -63,7 +63,7 @@ class SonarAnalysisAgeTest(unittest.TestCase):
     def setUp(self):
         self.__metric_source = self.metric_source_class_mock()
         project = domain.Project(metric_sources={self.metric_source_class: self.__metric_source})
-        subject = domain.Product(project, 'PR', name='FakeSubject', metric_source_ids={self.__metric_source: 'id'})
+        subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={self.__metric_source: 'id'})
         self.__metric = self.metric_class(subject=subject, project=project)
 
     def test_value(self):

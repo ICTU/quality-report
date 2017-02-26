@@ -45,8 +45,7 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
         self.__subversion = FakeVersionControlSystem()
         self.__project = domain.Project('Organization', name='Project name',
                                         metric_sources={metric_source.Subversion: self.__subversion})
-        self.__product = domain.Product(self.__project,
-                                        metric_source_ids={self.__subversion: 'http://svn/product/trunk/'})
+        self.__product = domain.Product(metric_source_ids={self.__subversion: 'http://svn/product/trunk/'})
         self.__subversion_product_info = metric_info.VersionControlSystemProductInfo([self.__subversion],
                                                                                      self.__product)
 
@@ -72,8 +71,8 @@ class MultipleVersionControlSystemProductInfoTests(unittest.TestCase):
         self.__vcs_repos = [self.__vcs1, self.__vcs2]
         self.__project = domain.Project('Organization', name='Project name',
                                         metric_sources={metric_source.Subversion: self.__vcs_repos})
-        self.__product1 = domain.Product(self.__project, metric_source_ids={self.__vcs1: 'trunk/'})
-        self.__product2 = domain.Product(self.__project, metric_source_ids={self.__vcs2: 'trunk/'})
+        self.__product1 = domain.Product(metric_source_ids={self.__vcs1: 'trunk/'})
+        self.__product2 = domain.Product(metric_source_ids={self.__vcs2: 'trunk/'})
 
     def test_svn_path(self):
         """ Test that the vcs path of the product equals the passed path. """

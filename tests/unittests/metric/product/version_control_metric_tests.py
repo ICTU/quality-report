@@ -52,8 +52,7 @@ class UnmergedBranchesTest(unittest.TestCase):
         self.__subversion = FakeSubversion()
         self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: self.__subversion})
         self.__subject = domain.Product(
-            self.__project, name='Product',
-            short_name='PR',
+            name='Product', short_name='PR',
             metric_source_ids={self.__subversion: 'http://svn/trunk/foo/'},
             metric_options={
                 metric.UnmergedBranches: dict(
@@ -92,7 +91,7 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_comment_urls_no_ignored_branches(self):
         """ Test the comment urls when there are no ignored branches. """
-        product = domain.Product(self.__project, short_name='Product',
+        product = domain.Product(short_name='Product',
                                  metric_source_ids={self.__subversion: 'http://svn/trunk/foo/'})
         unmerged_branches = metric.UnmergedBranches(subject=product, project=self.__project)
         self.assertEqual({}, unmerged_branches.comment_urls())

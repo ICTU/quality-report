@@ -47,7 +47,7 @@ class DuplicationTest(unittest.TestCase):
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        product = domain.Product(project, 'PR', name='FakeSubject')
+        product = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = metric.JavaDuplication(subject=product, project=project)
 
     def test_value(self):
@@ -65,7 +65,7 @@ class JsfDuplicationTest(unittest.TestCase):
     def setUp(self):
         sonar = FakeSonar()
         self.__project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        self.__jsf = domain.Product(self.__project, 'JS', metric_source_ids={sonar: 'sonar id'})
+        self.__jsf = domain.Product(short_name='JS', metric_source_ids={sonar: 'sonar id'})
         self._metric = metric.JsfDuplication(subject=self.__jsf, project=self.__project)
 
     def test_value(self):

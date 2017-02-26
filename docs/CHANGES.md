@@ -1,3 +1,8 @@
+2017-02-26  Release 1.78.0
+
+  * Remove the need to pass the project as argument to Product, Application, and Component domain classes.
+
+
 2017-02-22  Release 1.77.10
 
   * Bug fix: Allow for spaces in Git paths.

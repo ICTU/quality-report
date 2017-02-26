@@ -67,7 +67,7 @@ class ViolationsTestMixin(object):
                           critical_violations=self.__nr_violations,
                           major_violations=self.__nr_violations)
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject')
         self._metric = self.metric_class(subject=self.__subject, project=project)
 
     def test_numerical_value(self):
@@ -136,7 +136,7 @@ class FalsePositivesTest(unittest.TestCase):
     def setUp(self):
         sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        self.__subject = domain.Product(project, 'PR', name='FakeSubject')
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject')
         self.__metric = metric.FalsePositives(subject=self.__subject, project=project)
 
     def test_value(self):

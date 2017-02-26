@@ -24,10 +24,9 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, project, short_name='', jsf=None, art=None, is_main=True,
+    def __init__(self, short_name='', jsf=None, art=None, is_main=True,
                  has_unittests=True, has_integration_tests=False, **kwargs):
         super(Product, self).__init__(**kwargs)
-        self.__project = project
         self.__short_name = short_name
         self.__has_unittests = has_unittests
         self.__has_integration_tests = has_integration_tests

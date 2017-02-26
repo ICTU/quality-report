@@ -60,12 +60,12 @@ class QualityReportTest(unittest.TestCase):
         """ Test that the report has three sections when we add a product:
             one for the product itself, and one for meta metrics. """
         project = domain.Project()
-        project.add_product(domain.Product(project, 'FP', requirements=[requirement.CodeQuality]))
+        project.add_product(domain.Product(short_name='FP', requirements=[requirement.CodeQuality]))
         self.assertEqual(2, len(report.QualityReport(project).sections()))
 
     def test_get_product_section(self):
         """ Test that the section for the product can be found. """
-        product = domain.Product(self.__project, 'FP', requirements=[requirement.CodeQuality])
+        product = domain.Product(short_name='FP', requirements=[requirement.CodeQuality])
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section = quality_report.get_product_section(product)
@@ -73,7 +73,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_get_product_section_twice(self):
         """ Test that the product section is cached. """
-        product = domain.Product(self.__project, 'FP', requirements=[requirement.CodeQuality])
+        product = domain.Product(short_name='FP', requirements=[requirement.CodeQuality])
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         section1 = quality_report.get_product_section(product)
@@ -104,7 +104,7 @@ class QualityReportTest(unittest.TestCase):
 
     def test_products(self):
         """ Test that the report returns the products. """
-        product = domain.Product(self.__project, 'FP')
+        product = domain.Product(short_name='FP')
         self.__project.add_product(product)
         quality_report = report.QualityReport(self.__project)
         self.assertEqual([product], quality_report.products())
@@ -181,9 +181,9 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
         for component_name in 'unittests', 'jsf', 'art':
             component_kwargs = product_kwargs.pop(component_name, dict())
             if component_kwargs:
-                component = domain.Product(project, **component_kwargs)
+                component = domain.Product(**component_kwargs)
                 product_kwargs[component_name] = component
-        return domain.Product(project, **product_kwargs)
+        return domain.Product(**product_kwargs)
 
     @staticmethod
     def __create_team(team_kwargs):
