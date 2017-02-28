@@ -22,11 +22,15 @@ from hqlib import domain
 class DomainObjectTest(unittest.TestCase):
     """ Unit tests for the base domain object class. """
     def setUp(self):
-        self.__object = domain.DomainObject(name='Name', url='http://url')
+        self.__object = domain.DomainObject(name='Name', short_name='AC', url='http://url')
 
     def test_name(self):
         """ Test the name of the domain object. """
         self.assertEqual('Name', self.__object.name())
+
+    def test_short_name(self):
+        """ Test the measurable short name. """
+        self.assertEqual('AC', self.__object.short_name())
 
     def test_url(self):
         """ Test the url of the domain object. """

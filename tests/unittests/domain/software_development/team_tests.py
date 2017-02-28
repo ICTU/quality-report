@@ -32,9 +32,9 @@ class TeamTest(unittest.TestCase):
         """ Test that teams are equal when their id strings are. """
         self.assertEqual(self.__team, domain.Team(name='The a-team'))
 
-    def test_default_short_name(self):
-        """ Test that the default short name of the team equals the first two letters of the team name. """
-        self.assertEqual('TH', self.__team.short_name())
+    def test_no_default_short_name(self):
+        """ Test that the team has no default short name. """
+        self.assertEqual('', self.__team.short_name())
 
     def test_short_name(self):
         """ Test that the short name of the team can also be passed at initialization. """

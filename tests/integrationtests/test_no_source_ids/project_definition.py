@@ -1,7 +1,7 @@
 """ Project definition for testing a project with all requirements and sources, but no source ids. """
 
 from hqlib import metric_source, requirement
-from hqlib.domain import Project, Product, Application, Component, Team, Document, Person
+from hqlib.domain import Project, Product, Application, Component, Team, Document, Person, Environment
 
 # Sources
 HISTORY = metric_source.History('tests/integrationtests/test_no_source_ids/history.json')
@@ -18,12 +18,7 @@ PROJECT = Project(
         metric_source.VersionControlSystem: GIT,
         metric_source.Jira: JIRA,
         metric_source.Sonar: SONAR},
-    requirements=[requirement.TrustedProductMaintainability, requirement.Web, requirement.JavaScript,
-                  requirement.CSharp, requirement.Java, requirement.TrackManualLTCs,
-                  requirement.TrackBugs, requirement.TrackTechnicalDebt,
-                  requirement.TrackActions, requirement.TrackRisks, requirement.TrackSecurityAndPerformanceRisks,
-                  requirement.TrackReadyUS, requirement.TrackJavaConsistency,
-                  requirement.TrackCIJobs, requirement.TrackSonarVersion, requirement.OpenVAS])
+    added_requirements=Project.optional_requirements())
 
 # Documents.
 DOC = Document(name='Document XYZ')
@@ -31,27 +26,31 @@ PROJECT.add_document(DOC)
 
 # Teams of the project.
 TEAM = Team(
-    name='Team 123',
-    requirements=[requirement.ScrumTeam, requirement.TrackSpirit, requirement.TrackAbsence])
+    name='Team 123', short_name='TE',
+    added_requirements=Team.optional_requirements())
 TEAM.add_member(Person(name='Person 1'))
 TEAM.add_member(Person(name='Person 2'))
 PROJECT.add_team(TEAM)
 
+# Environment of the project
+
+ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements())
+PROJECT.add_environment(ENVIRONMENT)
+
 # Products the project(s) develop(s).
 PRODUCT = Product(
     short_name='PR', name='Product ABC',
-    requirements=[requirement.OWASPDependencies, requirement.OWASPZAP,
-                  requirement.UserStoriesAndLTCs, requirement.UnitTests, requirement.ART, requirement.ARTCoverage,
-                  requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
-                  requirement.PerformanceScalability, requirement.TrackBranches],
+    added_requirements=Product.optional_requirements(),
     art=Product(
-        name='Product ABC ART', requirements=[requirement.CodeQuality, requirement.TrackBranches]),
+        name='Product ABC ART', added_requirements=[requirement.CodeQuality, requirement.TrackBranches]),
     jsf=Product(
-        name='Product ABC JSF', requirements=[requirement.JSFCodeQuality]))
+        name='Product ABC JSF', added_requirements=[requirement.JSFCodeQuality]))
 
 
-APPLICATION = Application(short_name='AP', name='Application FOO')
-COMPONENT = Component(short_name='CO', name='Component FOO')
+APPLICATION = Application(short_name='AP', name='Application FOO',
+                          added_requirements=Application.optional_requirements())
+COMPONENT = Component(short_name='CO', name='Component FOO',
+                      added_requirements=Component.optional_requirements())
 
 PROJECT.add_product(PRODUCT)
 PROJECT.add_product(APPLICATION)
@@ -67,7 +66,8 @@ DASHBOARD_COLUMNS = [('Products', 1), ('Teams', 1), ('Algemeen', 2)]
 # tuples that describe a cell in the dashboard. Each cell is a tuple containing
 # the product or team and the color. Optionally the cell tuple can contain a
 # third value which is a tuple containing the column and row span for the cell.
-DASHBOARD_ROWS = [((PRODUCT, 'lightsteelblue'), (TEAM, 'lavender', (1, 3)), ('PD', 'lightgrey'), ('PE', 'lightgrey')),
+DASHBOARD_ROWS = [((PRODUCT, 'lightsteelblue'), (TEAM, 'lavender', (1, 3)), ('PD', 'lightgrey'),
+                   (ENVIRONMENT, 'lightgrey')),
                   ((APPLICATION, 'lightsteelblue'), ('PC', 'lightgrey', (1, 2)), ('MM', 'lightgrey', (1, 2))),
                   ((COMPONENT, 'lightsteelblue'),)]
 

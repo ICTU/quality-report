@@ -82,6 +82,12 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_team(team)
         self.assertEqual([team], self.__project.teams())
 
+    def test_add_environment(self):
+        """ Test that an environment can be added to the project. """
+        environment = domain.Environment()
+        self.__project.add_environment(environment)
+        self.assertEqual([environment], self.__project.environments())
+
     def test_dashboard(self):
         """ Test that a dashboard can be set. """
         self.__project.set_dashboard([1, 2], [3, 4])

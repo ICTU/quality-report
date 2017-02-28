@@ -13,43 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
 
 from .requirement import RequirementSubject
 from ..measurement.measurable import MeasurableObject
 
 
-class Team(RequirementSubject, MeasurableObject):
-    """ Class for representing a team. """
-
-    def __init__(self, *args, **kwargs):
-        super(Team, self).__init__(*args, **kwargs)
-        self.__members = set()
+class Environment(RequirementSubject, MeasurableObject):
+    """ Class representing a software development environment. """
 
     @staticmethod
     def default_requirements():
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackSpirit}
+        return {requirement.TrackSonarVersion, requirement.TrackCIJobs}
 
     @staticmethod
     def optional_requirements():
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackAbsence, requirement.ScrumTeam}
-
-    def __eq__(self, other):
-        return self.id_string() == other.id_string()
-
-    def __str__(self):
-        return self.name()
-
-    def id_string(self):
-        """ Return an id string for the team. """
-        return self.name().lower().replace(' ', '_')
-
-    def members(self):
-        """ Return the team members. """
-        return self.__members
-
-    def add_member(self, person):
-        """ Add the person as a team member. """
-        self.__members.add(person)
+        return {requirement.Java, requirement.JavaScript, requirement.CSharp, requirement.Python,
+                requirement.TypeScript, requirement.VisualBasic, requirement.Web, requirement.OpenVAS,
+                requirement.TrackJavaConsistency}

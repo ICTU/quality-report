@@ -22,6 +22,9 @@ PROJECT = Project(
 # Documents.
 PROJECT.add_document(project_definition.DOC)
 
+# Development environment
+PROJECT.add_environment(project_definition.ENVIRONMENT)
+
 # Teams of the project.
 PROJECT.add_team(project_definition.TEAM)
 

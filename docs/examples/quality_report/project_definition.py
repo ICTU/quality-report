@@ -32,7 +32,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                                 requirement.Java, requirement.TrackSonarVersion])
 
 # Teams of the project.
-QUALITY_TEAM = Team(name='Quality team')
+QUALITY_TEAM = Team(name='Quality team', short_name='QU')
 PROJECT.add_team(QUALITY_TEAM)
 
 # Documents of the project.

@@ -24,10 +24,9 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, short_name='', jsf=None, art=None, is_main=True,
+    def __init__(self, jsf=None, art=None, is_main=True,
                  has_unittests=True, has_integration_tests=False, **kwargs):
         super(Product, self).__init__(**kwargs)
-        self.__short_name = short_name
         self.__has_unittests = has_unittests
         self.__has_integration_tests = has_integration_tests
         self.__jsf = jsf
@@ -49,10 +48,6 @@ class Product(RequirementSubject, MeasurableObject):
         """ Return whether this product is part of the main system or it is to be considered support code.
             In the latter case it doesn't count towards the total number of lines of code of the whole system. """
         return self.__is_main
-
-    def short_name(self):
-        """ Return a short (two letter) abbreviation of the product name. """
-        return self.__short_name
 
     def art(self):
         """ Return a product that represents the ART of this product. """

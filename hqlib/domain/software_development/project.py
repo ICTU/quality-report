@@ -26,23 +26,22 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     """ Class representing a software development/maintenance project. """
 
     def __init__(self, organization='Unnamed organization', metric_sources=None, *args, **kwargs):
-        self.__short_section_names = {'MM', 'PC', 'PD', 'PE'}  # Two letter abbreviations used, must be unique
+        self.__short_section_names = {'MM', 'PC', 'PD'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__metric_sources = MetricSources(metric_sources or dict())
         self.__products = []
         self.__teams = []
         self.__documents = []
+        self.__environments = []
         self.__dashboard = [], []  # rows, columns
         super(Project, self).__init__(*args, **kwargs)
 
     @staticmethod
     def optional_requirements():
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.CSharp, requirement.Java, requirement.JavaScript, requirement.TrackActions,
-                requirement.TrackBugs, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
-                requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
-                requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,
-                requirement.TrackSonarVersion, requirement.TrackTechnicalDebt, requirement.Web, requirement.OpenVAS}
+        return {requirement.TrackActions, requirement.TrackBugs,  requirement.TrackManualLTCs,
+                requirement.TrackReadyUS, requirement.TrackRisks, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.TrustedProductMaintainability, requirement.TrackTechnicalDebt}
 
     def organization(self):
         """ Return the name of the organization. """
@@ -91,6 +90,14 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def documents(self):
         """ Return the documents of the project. """
         return self.__documents
+
+    def add_environment(self, environment):
+        """ Add an environment to the project. """
+        self.__environments.append(environment)
+
+    def environments(self):
+        """ Return the environments of the project """
+        return self.__environments
 
     def set_dashboard(self, dashboard_columns, dashboard_rows):
         """ Set the dashboard layout for the project. """

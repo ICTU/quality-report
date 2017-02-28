@@ -18,14 +18,19 @@ from __future__ import absolute_import
 
 class DomainObject(object):
     """ Base class for all domain objects. """
-    def __init__(self, name='<no name>', url='', *args, **kwargs):
+    def __init__(self, name='<no name>', url='', short_name='', *args, **kwargs):
         self.__name = name
+        self.__short_name = short_name
         self.__url = url
         super(DomainObject, self).__init__(*args, **kwargs)
 
     def name(self):
         """ Return the name of the domain object. """
         return self.__name
+
+    def short_name(self):
+        """ Return the short name of the domain object, to be used as metric id prefix. """
+        return self.__short_name
 
     def url(self):
         """ Return the url of the domain object. """

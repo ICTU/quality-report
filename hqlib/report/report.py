@@ -26,7 +26,8 @@ class QualityReport(domain.DomainObject):
     @staticmethod
     def domain_object_classes():
         """ Return a set of all domain object classes that the report can report on. """
-        return {domain.Project, domain.Product, domain.Component, domain.Application, domain.Document, domain.Team}
+        return {domain.Project, domain.Environment, domain.Product, domain.Component, domain.Application,
+                domain.Document, domain.Team}
 
     @classmethod
     def requirement_classes(cls):
@@ -63,6 +64,8 @@ class QualityReport(domain.DomainObject):
         self.__project = project
         self.__products = sorted(project.products(), key=lambda product: (product.name(), product.short_name()))
         self.__teams = sorted(project.teams(), key=str)
+        self.__environments = sorted(project.environments(),
+                                     key=lambda environment: (environment.name(), environment.short_name()))
         self.__sections = []
         self.__meta_section = None
         self.__metrics = []
@@ -87,7 +90,8 @@ class QualityReport(domain.DomainObject):
     def sections(self):
         """ Return the sections in the report. """
         if not self.__sections:
-            sections = [self.__process_section(), self.__overall_products_section(), self.__environment_section()]
+            sections = [self.__process_section(), self.__overall_products_section()]
+            sections.extend([self.__environment_section(environment) for environment in self.__environments])
             sections.extend([self.__product_section(product) for product in self.__products])
             sections.extend([self.__team_section(team) for team in self.__teams])
             self.__sections = [section for section in sections if section]
@@ -165,16 +169,16 @@ class QualityReport(domain.DomainObject):
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
 
-    def __environment_section(self):
+    def __environment_section(self, environment):
         """ Return the environment section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.TrackCIJobs,
+        metrics = self.__required_subject_metrics(environment, requirement.TrackCIJobs,
                                                   requirement.TrackJavaConsistency,
                                                   requirement.TrackSonarVersion, requirement.Java,
                                                   requirement.CSharp, requirement.JavaScript, requirement.Web,
                                                   requirement.VisualBasic, requirement.Python, requirement.TypeScript,
                                                   requirement.OpenVAS)
         self.__metrics.extend(metrics)
-        return Section(SectionHeader('PE', 'Kwaliteit omgevingen'), metrics) if metrics else None
+        return Section(SectionHeader(environment.short_name(), environment.name()), metrics) if metrics else None
 
     def __overall_products_section(self):
         """ Return the products overall section. """

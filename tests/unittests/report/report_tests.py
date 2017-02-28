@@ -124,7 +124,7 @@ class QualityReportTest(unittest.TestCase):
     def test_direct_action_needed_when_metrics_are_missing(self):
         """ Test that the report needs direct action when the report has missing metrics. """
         project = domain.Project('organization', name='project title',
-                                 added_requirements={requirement.TrackSonarVersion, requirement.Java})
+                                 added_requirements={requirement.TrustedProductMaintainability})
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Generate the report
         self.assertTrue(quality_report.direct_action_needed())
@@ -149,7 +149,7 @@ class QualityReportMetaDataTest(unittest.TestCase):
 
     def test_get_domain_object_classes(self):
         """ Test the set of all domain objects. """
-        self.assertEqual({domain.Project, domain.Product, domain.Component, domain.Application,
+        self.assertEqual({domain.Project, domain.Environment, domain.Product, domain.Component, domain.Application,
                           domain.Team, domain.Document}, self.__report.domain_object_classes())
 
     def test_get_included_domain_object_classes(self):
@@ -206,15 +206,12 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
-        for req in [requirement.Java, requirement.CSharp, requirement.Web, requirement.JavaScript,
-                    requirement.TrustedProductMaintainability, requirement.TrackReadyUS,
-                    requirement.TrackSonarVersion, requirement.TrackActions,
-                    requirement.TrackRisks, requirement.TrackJavaConsistency,
-                    requirement.TrackCIJobs, requirement.TrackTechnicalDebt,
-                    requirement.TrackBugs, requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
-                    requirement.OpenVAS]:
+        for req in domain.Project.default_requirements():
             for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class, project_kwargs=dict(requirements=[req]))
+                self.__assert_metric(metric_class, project_kwargs=dict(name='Project'))
+        for req in domain.Project.optional_requirements():
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, project_kwargs=dict(added_requirements=[req]))
 
     def test_team_requirements(self):
         """ Test that the team metrics are added if required. """
