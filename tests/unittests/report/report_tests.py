@@ -206,6 +206,7 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
+        self.failIf(domain.Project.default_requirements())
         for req in domain.Project.optional_requirements():
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(added_requirements=[req]))
