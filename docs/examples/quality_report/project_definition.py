@@ -3,7 +3,8 @@
 import datetime
 
 from hqlib import metric_source, metric, requirement
-from hqlib.domain import Project, Application, Team, Document, TechnicalDebtTarget, DynamicTechnicalDebtTarget
+from hqlib.domain import Project, Environment, Application, Team, Document, TechnicalDebtTarget, \
+    DynamicTechnicalDebtTarget
 
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
@@ -28,8 +29,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TrustedProductMaintainability, requirement.Web, requirement.JavaScript,
-                                requirement.Java, requirement.TrackSonarVersion])
+                  requirements=[requirement.TrustedProductMaintainability])
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', short_name='QU')
@@ -40,7 +40,11 @@ QUALITY_PLAN_URL = 'http://svn/commons/docs/quality_plan.doc'
 PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
                               metric_source_ids={GIT: QUALITY_PLAN_URL}))
 
-# Products the project(s) develop(s).
+# Development environment of the project
+ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements())
+PROJECT.add_environment(ENVIRONMENT)
+
+# Products the project develop(s).
 QUALITY_REPORT = Application(
     short_name='QR', name='Example product',
     metric_source_ids={

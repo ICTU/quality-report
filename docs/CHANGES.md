@@ -1,3 +1,8 @@
+2017-03-01  Release 1.79.0
+
+  * Introduce an environment domain class.
+  
+
 2017-02-26  Release 1.78.0
 
   * Remove the need to pass the project as argument to Product, Application, and Component domain classes.
