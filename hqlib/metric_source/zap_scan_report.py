@@ -20,7 +20,7 @@ import logging
 import bs4
 
 from . import url_opener
-from .. import domain
+from .. import domain, utils
 
 
 class ZAPScanReport(domain.MetricSource):
@@ -32,6 +32,7 @@ class ZAPScanReport(domain.MetricSource):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super(ZAPScanReport, self).__init__()
 
+    @utils.memoized
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
         assert risk_level in ('low', 'medium', 'high')
