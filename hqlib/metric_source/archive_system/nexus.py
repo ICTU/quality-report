@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import datetime
-import xml
+import xml.etree.cElementTree
 
 from .. import url_opener
 from ..abstract.archive_system import ArchiveSystem
@@ -34,7 +34,7 @@ class Nexus(ArchiveSystem):
             contents = self._url_open(url).read()
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
-        root = xml.etree.ElementTree.fromstring(contents)
+        root = xml.etree.cElementTree.fromstring(contents)
         most_recent_string = sorted(node.text for node in root.findall('.//lastModified'))[-1]
         return self.__parse_date_time(most_recent_string)
 

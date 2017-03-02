@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import re
-import xml.etree.ElementTree
+import xml.etree.cElementTree
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
@@ -52,6 +52,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     def metric_source_urls(self, *report_urls):
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]
 
+    @utils.memoized
     def _report_datetime(self, report_url):
         """ Return the report date and time. """
         try:
@@ -64,7 +65,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     def __report_root(self, report_url):
         """ Return the root node and namespace of the OWASP dependency XML report. """
         contents = self.__url_open(report_url).read()
-        root = xml.etree.ElementTree.fromstring(contents)
+        root = xml.etree.cElementTree.fromstring(contents)
         # ElementTree has no API to get the namespace so we extract it from the root tag:
         namespace = root.tag.split('}')[0][1:]
         return root, namespace

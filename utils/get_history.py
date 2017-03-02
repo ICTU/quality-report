@@ -33,7 +33,7 @@ import datetime
 import logging
 import os
 import subprocess
-import xml.etree.ElementTree
+import xml.etree.cElementTree
 
 
 def parse_args():
@@ -94,7 +94,7 @@ class RevisionsToCollect(list):
         start_revision = last_revision.get() + 1 if last_revision.get() else 0
         logging.info('svn log --xml -r %d:HEAD %s', start_revision, url)
         revisions_xml = subprocess.check_output(['svn', 'log', '--xml', '-r', '{0}:HEAD'.format(start_revision), url])
-        root = xml.etree.ElementTree.fromstring(revisions_xml)
+        root = xml.etree.cElementTree.fromstring(revisions_xml)
         super(RevisionsToCollect, self).__init__(sorted([int(log_entry.attrib['revision']) for log_entry in root]))
         logging.info('%d revisions to collect from %s', len(self), url)
 

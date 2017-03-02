@@ -1,3 +1,8 @@
+2017-03-02  Release 1.79.1
+
+  * Performance improvement.
+  
+
 2017-03-01  Release 1.79.0
 
   * Introduce an environment domain class.
