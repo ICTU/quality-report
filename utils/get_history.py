@@ -92,11 +92,24 @@ class RevisionsToCollect(list):
 
     def __init__(self, url, last_revision):
         start_revision = last_revision.get() + 1 if last_revision.get() else 0
-        logging.info('svn log --xml -r %d:HEAD %s', start_revision, url)
-        revisions_xml = subprocess.check_output(['svn', 'log', '--xml', '-r', '{0}:HEAD'.format(start_revision), url])
-        root = xml.etree.cElementTree.fromstring(revisions_xml)
-        super(RevisionsToCollect, self).__init__(sorted([int(log_entry.attrib['revision']) for log_entry in root]))
+        head_revision = self.__head_revision(url)
+        if head_revision >= start_revision:
+            logging.info('svn log --xml -r %d:HEAD %s', start_revision, url)
+            revisions_xml = subprocess.check_output(['svn', 'log', '--xml', '-r', '{0}:HEAD'.format(start_revision), url])
+            root = xml.etree.cElementTree.fromstring(revisions_xml)
+            revisions = sorted([int(log_entry.attrib['revision']) for log_entry in root])
+        else:
+            revisions = []
+        super(RevisionsToCollect, self).__init__(revisions)
         logging.info('%d revisions to collect from %s', len(self), url)
+
+    @staticmethod
+    def __head_revision(url):
+        """ Return the revision number of the HEAD. """
+        logging.info('svn info --xml -r HEAD %s', url)
+        revision_xml = subprocess.check_output(['svn', 'info', '--xml', '-r', 'HEAD', url])
+        root = xml.etree.cElementTree.fromstring(revision_xml)
+        return int(root.find('info').find('entry').attrib['revision'])
 
 
 class RevisionCollector(object):
