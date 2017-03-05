@@ -67,13 +67,12 @@ PROJECT.add_product(QUALITY_REPORT)
 
 # Columns in the dashboard is specified as a list of tuples. Each tuple
 # contains a column header and the column span.
-DASHBOARD_COLUMNS = [('Products', 1), ('Teams', 1)]
+DASHBOARD_COLUMNS = [('Products', 1), ('Environment', 1), ('Teams', 1)]
 
 # Rows in the dashboard is a list of row tuples. Each row tuple consists of
 # tuples that describe a cell in the dashboard. Each cell is a tuple containing
 # the product or team and the color. Optionally the cell tuple can contain a
 # third value which is a tuple containing the column and row span for the cell.
-DASHBOARD_ROWS = [((QUALITY_REPORT, 'lightsteelblue'),
-                   (QUALITY_TEAM, 'lavender'))]
+DASHBOARD_ROWS = [((QUALITY_REPORT, 'lightsteelblue'), (ENVIRONMENT, 'lavender'), (QUALITY_TEAM, 'lavender'))]
 
 PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)
