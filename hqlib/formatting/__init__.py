@@ -20,4 +20,4 @@ from __future__ import absolute_import
 
 from .base_formatter import Formatter
 from .html_formatter import HTMLFormatter
-from .json_formatter import JSONFormatter
+from .json_formatter import JSONFormatter, MetaMetricsHistoryFormatter

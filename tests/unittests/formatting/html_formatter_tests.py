@@ -84,11 +84,6 @@ class HTMLFormatterTest(unittest.TestCase):
         expected_date = utils.format_date(expected_date, year=True)
         self.assertTrue('title="Direct actie vereist: norm niet gehaald (sinds {})'.format(expected_date) in html)
 
-    def test_history(self):
-        """ Test that the report contains the history of the meta metrics. """
-        html = self.__formatter.process(fake_report.Report())
-        self.assertTrue('[[new Date(2012, 3, 5, 16, 16, 58), 0, 1, 1, 0, 0, 0, 0]]' in html)
-
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())

@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import JSONFormatter
+from hqlib.formatting import JSONFormatter, MetaMetricsHistoryFormatter
 from . import fake_domain, fake_report
 
 
@@ -51,3 +51,14 @@ class JSONFormatterTest(unittest.TestCase):
                 return lambda *args: 'dummy'
 
         self.assertRaises(ValueError, self.__formatter.metric, BuggyMetric())
+
+
+class MetaMetricsHistoryFormatterTest(unittest.TestCase):
+    """ Unit test for the meta metrics history to JSON formatter. """
+    def setUp(self):
+        self.__formatter = MetaMetricsHistoryFormatter()
+
+    def test_process(self):
+        """ Test that the report is processed correctly. """
+        self.assertEqual('[[[2012, 3, 5, 16, 16, 58], [0, 1, 1, 0, 0, 0, 0]]]\n',
+                         self.__formatter.process(fake_report.Report()))

@@ -1,3 +1,8 @@
+2017-03-05  Release 1.79.2
+
+  * Load meta metric history data asynchronously from a JSON file.
+  
+
 2017-03-02  Release 1.79.1
 
   * Performance improvement.

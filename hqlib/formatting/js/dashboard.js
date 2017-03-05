@@ -64,7 +64,7 @@ function create_metrics_table(metrics_data) {
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
-function create_dashboard(metrics_data, history, report_date) {
+function create_dashboard(metrics_data, report_date) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
     create_metrics_table(metrics_data);
@@ -78,8 +78,6 @@ function create_dashboard(metrics_data, history, report_date) {
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-    draw_area_chart('meta_metrics_history_relative_graph', history, "Percentage metrieken per status", 'relative');
-    draw_area_chart('meta_metrics_history_absolute_graph', history, "Aantal metrieken per status", true);
 
     set_radio_indicator('filter_color', settings.filter_color);
     set_check_indicator('show_dashboard', settings.show_dashboard);
@@ -118,6 +116,11 @@ function create_dashboard(metrics_data, history, report_date) {
     document.getElementById('filter_color_grey').onclick = function() {
         set_filter('filter_color', 'filter_color_grey', tables)
     };
+
+    // Retrieve the history for the meta metrics history charts.
+    $.getJSON("json/meta_history.json", "", function(history_json) {
+        draw_area_charts(parse_history_json(history_json));
+    });
 }
 
 function read_settings_from_cookies() {
@@ -323,7 +326,18 @@ function draw_pie_chart(section) {
     chart.draw(data, options);
 }
 
-function draw_area_chart(section, history, title, stacked) {
+function parse_history_json(history_json) {
+    var history = [];
+    $.each(history_json, function(index, value) {
+        var measurement = [];
+        measurement.push(new Date(value[0][0], value[0][1], value[0][2], value[0][3], value[0][4], value[0][5]));
+        measurement.push(value[1][0], value[1][1], value[1][2], value[1][3], value[1][4], value[1][5], value[1][6]);
+        history.push(measurement);
+    });
+    return history;
+}
+
+function draw_area_charts(history) {
     var data = new google.visualization.DataTable();
     data.addColumn('datetime', 'Datum');
     data.addColumn('number', 'Perfect');
@@ -334,6 +348,11 @@ function draw_area_chart(section, history, title, stacked) {
     data.addColumn('number', 'Bron niet beschikbaar');
     data.addColumn('number', 'Bron niet geconfigureerd');
     data.addRows(history);
+    draw_area_chart('meta_metrics_history_relative_graph', data, "Percentage metrieken per status", 'relative');
+    draw_area_chart('meta_metrics_history_absolute_graph', data, "Aantal metrieken per status", true);
+}
+
+function draw_area_chart(section, data_table, title, stacked) {
     var options = {
       title: title,
       width: 1200, height: 400,
@@ -343,7 +362,7 @@ function draw_area_chart(section, history, title, stacked) {
       colors: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
     };
     var chart = new google.visualization.AreaChart(document.getElementById(section));
-    chart.draw(data, options);
+    chart.draw(data_table, options);
 }
 
 function show_or_hide_dashboard() {

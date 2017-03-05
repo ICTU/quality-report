@@ -75,6 +75,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.create_dir(report_dir)
         cls.__create_html_file(quality_report, report_dir)
         cls.__create_resources(report_dir)
+        cls.__create_history_file(quality_report, report_dir)
         cls.__create_trend_images(quality_report, report_dir)
 
     @classmethod
@@ -91,12 +92,19 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         os.rename(tmp_filename, html_filename)
         filesystem.make_file_readable(html_filename)
 
+    @classmethod
+    def __create_history_file(cls, quality_report, report_dir):
+        """ Create the Javascript file with the history. """
+        filename = os.path.join(report_dir, 'json', 'meta_history.json')
+        cls.__format_and_write_report(quality_report, formatting.MetaMetricsHistoryFormatter, filename, 'w', 'utf-8')
+
     @staticmethod
     def __create_resources(report_dir):
         """ Create and write the resources. """
         resource_manager = pkg_resources.ResourceManager()
         formatting_module = formatting.html_formatter.__name__
-        for resource_type, encoding in (('css', 'utf-8'), ('fonts', None), ('img', None), ('js', 'utf-8')):
+        for resource_type, encoding in (('css', 'utf-8'), ('fonts', None), ('img', None), ('js', 'utf-8'),
+                                        ('json', None)):
             resource_dir = os.path.join(report_dir, resource_type)
             filesystem.create_dir(resource_dir)
             for resource in resource_manager.resource_listdir(formatting_module, resource_type):

@@ -16,12 +16,10 @@ limitations under the License.
 from __future__ import absolute_import
 
 import logging
-import re
-
 import pkg_resources
 
 from . import base_formatter
-from .. import utils, metric_source
+from .. import utils
 
 
 class HTMLFormatter(base_formatter.Formatter):
@@ -38,7 +36,6 @@ class HTMLFormatter(base_formatter.Formatter):
                    u"'{norm}'",
                    u"'{comment}'"]
     columns = u'[' + u', '.join(column_list) + u']'
-    javascript_new_date = 'new Date({0}, {1}, {2}, {3}, {4}, {5})'
     kwargs_by_status = dict(
         red=dict(image='sad', alt=':-(', status_nr=0,
                  hover='Direct actie vereist: norm niet gehaald'),
@@ -68,7 +65,6 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
-        parameters['history'] = self.__trend_data(report)
         parameters['report_date'] = self.__report_date(report)
 
         metrics = []
@@ -134,31 +130,6 @@ class HTMLFormatter(base_formatter.Formatter):
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
-    def __trend_data(self, report):
-        """ Return a JSON representation of the history in the meta metrics section. """
-        history_table = []
-        history = report.project().metric_source(metric_source.History)
-        if history:
-            for status_record in history.statuses():
-                date_and_time = self.javascript_new_date.format(*self.__date_and_time(status_record))
-                counts = '{0}, {1}, {2}, {3}, {4}, {5}, {6}'.format(*self.__status_record_counts(status_record))
-                history_table.append('[{0}, {1}]'.format(date_and_time, counts))
-        return '[' + ',\n'.join(history_table) + ']'
-
-    @staticmethod
-    def __date_and_time(history_record):
-        """ Return the date and time of the history record. Remove leading zero from date/time elements (assuming all
-            elements are 2 digits long). Turn month into zero-based value for usage within Javascript. """
-        year, month, day, hour, minute, second = re.split(r' 0?|:0?|-0?|\.0?', history_record['date'])[:6]
-        month = str(int(month) - 1)  # Months are zero based
-        return year, month, day, hour, minute, second
-
-    @staticmethod
-    def __status_record_counts(history_record, statuses=('perfect', 'green', 'red', 'yellow', 'grey',
-                                                         'missing', 'missing_source')):
-        """ Return the counts per measurement status in the history record. """
-        return tuple(history_record.get(status, 0) for status in statuses)
-
     def __metric_data(self, metric):
         """ Return the metric data as a dictionary, so it can be used in string templates. """
         status = metric.status()
@@ -177,8 +148,8 @@ class HTMLFormatter(base_formatter.Formatter):
     def __report_date(cls, report):
         """ Return a Javascript version of the report date. """
         date_time = report.date()
-        return cls.javascript_new_date.format(date_time.year, date_time.month - 1, date_time.day,
-                                              date_time.hour, date_time.minute, date_time.second)
+        return 'new Date({0}, {1}, {2}, {3}, {4}, {5})'.format(date_time.year, date_time.month - 1, date_time.day,
+                                                               date_time.hour, date_time.minute, date_time.second)
 
     @staticmethod
     def postfix():
