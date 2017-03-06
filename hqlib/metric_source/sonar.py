@@ -182,7 +182,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'squid:MethodCyclomaticComplexity',
                       'csharpsquid:S1541',
                       'csharpsquid:FunctionComplexity',
-                      'FunctionComplexity',
                       'javascript:FunctionComplexity',
                       'Web:ComplexityCheck',
                       'python:FunctionComplexity',
@@ -199,7 +198,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         # NB: There is no long methods rule for C#. How to deal with this? FIXME
         rule_names = ('squid:S138',
                       'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
-                      'AvoidLongMethodsRule',
                       'Pylint:R0915',
                       'Web:LongJavaScriptCheck',
                       'vb:S138')
@@ -215,7 +213,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'pmd:ExcessiveParameterList',
                       'csharpsquid:S107',
                       'squid:S00107',
-                      'AvoidLongParameterListsRule',
                       'javascript:ExcessiveParameterList',
                       'python:S107')
         for rule_name in rule_names:
