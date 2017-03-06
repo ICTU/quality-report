@@ -109,7 +109,7 @@ class RevisionsToCollect(list):
         logging.info('svn info --xml -r HEAD %s', url)
         revision_xml = subprocess.check_output(['svn', 'info', '--xml', '-r', 'HEAD', url])
         root = xml.etree.cElementTree.fromstring(revision_xml)
-        return int(root.find('info').find('entry').attrib['revision'])
+        return int(root.find('entry').attrib['revision'])
 
 
 class RevisionCollector(object):
