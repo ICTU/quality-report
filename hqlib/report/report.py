@@ -54,7 +54,7 @@ class QualityReport(domain.DomainObject):
         """ Return a list of metric source classes that the report can use. """
         classes = set()
         for metric_class in cls.metric_classes():
-            if metric_class.metric_source_class:
+            if metric_class.metric_source_class:  # pragma: no branch
                 classes.add(metric_class.metric_source_class)
         return classes
 
