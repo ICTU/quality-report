@@ -17,6 +17,7 @@ limitations under the License.
 import datetime
 import io
 import unittest
+import urllib2
 
 from hqlib import domain
 from hqlib.metric_source import HolidayPlanner
@@ -26,6 +27,8 @@ class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public
     """ Override the class under test return static data. """
     def url_open(self, url):  # pylint: disable=unused-argument,no-self-use
         """ Return the static data. """
+        if 'raise' in url:
+            raise urllib2.URLError(None)
         next_month = datetime.date.today() + datetime.timedelta(days=30)
         year = next_month.year
         month = next_month.month
@@ -102,3 +105,8 @@ class HolidayPlannerTests(unittest.TestCase):
         team.add_member(self.__piet)
         team.add_member(domain.Person('Alex Alexander', metric_source_ids={self.__planner: 'alale'}))
         self.assertEqual((0, None, None, []), self.__planner.days(team))
+
+    def test_url_error(self):
+        """ Test that the result is -1 when a URL error is raised. """
+        planner = HolidayPlannerUnderTest(api_url='http://raise')
+        self.assertEqual((-1, datetime.datetime.min, datetime.datetime.min, []), planner.days(domain.Team()))
