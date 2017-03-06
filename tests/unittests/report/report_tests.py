@@ -80,6 +80,14 @@ class QualityReportTest(unittest.TestCase):
         section2 = quality_report.get_product_section(product)
         self.assertTrue(section1 is section2)
 
+    def test_get_environment_section(self):
+        """ Test that the environment can be found. """
+        environment = domain.Environment(short_name='ENV')
+        self.__project.add_environment(environment)
+        quality_report = report.QualityReport(self.__project)
+        section = quality_report.get_section('ENV')
+        self.assertEqual('ENV', section.id_prefix())
+
     def test_get_meta_section(self):
         """ Test that the report has no meta section by default. """
         self.assertFalse(self.__report.get_meta_section())
