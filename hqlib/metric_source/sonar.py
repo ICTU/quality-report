@@ -85,15 +85,15 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Sonar projects
 
     @utils.memoized
-    def has_project(self, project):
+    def __has_project(self, project):
         """ Return whether Sonar has the project (analysis). """
-        found = project in self.projects()
+        found = project in self.__projects()
         if not found:
             logging.warning("Sonar has no analysis of %s", project)
         return found
 
     @utils.memoized
-    def projects(self):
+    def __projects(self):
         """ Return all projects in Sonar. """
         try:
             json = self.__get_json(self.__projects_api_url)
@@ -276,7 +276,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def __metric(self, product, metric_name, default=0):
         """ Return a specific metric value for the product. """
-        if not self.has_project(product):
+        if not self.__has_project(product):
             return -1
 
         # First try API starting with SonarQube 5.4:
@@ -306,7 +306,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @utils.memoized
     def __rule_violation(self, product, rule_name, default=0):
         """ Return a specific violation value for the product. """
-        if not self.has_project(product):
+        if not self.__has_project(product):
             return -1
         try:
             json = self.__get_json(self.__issues_api_url.format(component=product, rule=rule_name))
@@ -316,7 +316,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def __false_positives(self, product, default=0):
         """ Return the number of issues resolved as false positive. """
-        if not self.has_project(product):
+        if not self.__has_project(product):
             return -1
         try:
             json = self.__get_json(self.__false_positives_api_url.format(resource=product))
