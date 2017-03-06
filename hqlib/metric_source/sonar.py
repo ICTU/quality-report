@@ -181,9 +181,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'pmd:CyclomaticComplexity',
                       'squid:MethodCyclomaticComplexity',
                       'csharpsquid:S1541',
+                      'csharpsquid:FunctionComplexity',
                       'FunctionComplexity',
+                      'javascript:FunctionComplexity',
                       'Web:ComplexityCheck',
-                      'python:FunctionComplexity')
+                      'python:FunctionComplexity',
+                      'vb:S1541',
+                      'tslint:cyclomatic-complexity')
         for rule_name in rule_names:
             nr_complex_methods = self.__rule_violation(product, rule_name)
             if nr_complex_methods:
@@ -192,9 +196,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def long_methods(self, product):
         """ Return the number of methods in the product that have to many non-comment statements. """
-        rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
+        # NB: There is no long methods rule for C#. How to deal with this? FIXME
+        rule_names = ('squid:S138',
+                      'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
                       'AvoidLongMethodsRule',
-                      'Pylint:R0915')
+                      'Pylint:R0915',
+                      'Web:LongJavaScriptCheck',
+                      'vb:S138')
         for rule_name in rule_names:
             nr_long_methods = self.__rule_violation(product, rule_name)
             if nr_long_methods:
@@ -208,6 +216,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'csharpsquid:S107',
                       'squid:S00107',
                       'AvoidLongParameterListsRule',
+                      'javascript:ExcessiveParameterList',
                       'python:S107')
         for rule_name in rule_names:
             nr_many_parameters = self.__rule_violation(product, rule_name)
@@ -218,7 +227,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def commented_loc(self, product):
         """ Return the number of commented out lines in the source code of the product. """
         rule_names = ('csharpsquid:CommentedCode', 'csharpsquid:S125', 'squid:CommentedOutCodeLine',
-                      'javascript:CommentedCode', 'python:S125')
+                      'javascript:CommentedCode', 'python:S125', 'Web:AvoidCommentedOutCodeCheck')
         for rule_name in rule_names:
             nr_commented_loc = self.__rule_violation(product, rule_name)
             if nr_commented_loc:
