@@ -125,4 +125,4 @@ class ProjectTest(unittest.TestCase):
         """ Test that the environment class is included in the domain object classes. """
         project = domain.Project()
         project.add_environment(domain.Environment())
-        self.assertEqual(set([domain.Environment]), project.domain_object_classes())
+        self.assertEqual({domain.Environment}, project.domain_object_classes())
