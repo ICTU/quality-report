@@ -1,4 +1,4 @@
-2017-03-06  Release 1.79.2
+2017-03-07  Release 1.79.2
 
   * Load meta metric history data asynchronously from a JSON file.
   * Update rule names to try when fetching metrics from SonarQube.
