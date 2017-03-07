@@ -116,3 +116,13 @@ class ProjectTest(unittest.TestCase):
     def test_default_metric_source_classes(self):
         """ Test that the project returns a list of all metric source classes. """
         self.assertEqual([], domain.Project().metric_source_classes())
+
+    def test_default_domain_object_classes(self):
+        """ Test that the project has no domain object classes by default. """
+        self.assertEqual(set(), domain.Project().domain_object_classes())
+
+    def test_environment_in_domain_object_classes(self):
+        """ Test that the environment class is included in the domain object classes. """
+        project = domain.Project()
+        project.add_environment(domain.Environment())
+        self.assertEqual(set([domain.Environment]), project.domain_object_classes())

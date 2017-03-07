@@ -57,7 +57,8 @@ class Project(RequirementSubject, measurable.MeasurableObject):
 
     def domain_object_classes(self):
         """ Return a set of all the domain object classes used. """
-        return {domain_object.__class__ for domain_object in self.products() + self.teams() + self.documents()}
+        return {domain_object.__class__ for domain_object in self.products() + self.teams() + self.documents() +
+                self.environments()}
 
     def add_product(self, product):
         """ Add a product to the project. """
