@@ -1,3 +1,8 @@
+2017-03-07  Release 1.79.3
+
+  * Bug fix: Manifest file was incomplete.
+  
+  
 2017-03-07  Release 1.79.2
 
   * Load meta metric history data asynchronously from a JSON file.
