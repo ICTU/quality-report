@@ -40,7 +40,10 @@ class SonarVersion(HigherIsBetterMetric):
         return -1 if self._missing() else LooseVersion(self._metric_source.version_number())
 
     def _missing(self):
-        return self._metric_source.version_number() is None
+        if self._metric_source:
+            return self._metric_source.version_number() is None
+        else:
+            return True
 
 
 class SonarQualityProfileVersion(HigherIsBetterMetric):
