@@ -13,11 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 import logging
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from . import url_opener
 from .. import utils, domain
@@ -38,7 +38,7 @@ class AnsibleConfigReport(domain.MetricSource):
         if not json:
             return -1
         for environment in json:
-            versions.add(environment.values()[0]['java version'])
+            versions.add(list(environment.values())[0]['java version'])
         return len(versions)
 
     def app_server_versions(self, url):
@@ -48,7 +48,7 @@ class AnsibleConfigReport(domain.MetricSource):
         if not json:
             return -1
         for environment in json:
-            versions.add(environment.values()[0]['appserver version'])
+            versions.add(list(environment.values())[0]['appserver version'])
         return len(versions)
 
     def datetime(self, *urls):
@@ -61,11 +61,11 @@ class AnsibleConfigReport(domain.MetricSource):
             if not json:
                 return datetime.datetime.min
             for environment in json:
-                timestamp = utils.parse_iso_datetime(environment.values()[0]['timestamp'])
+                timestamp = utils.parse_iso_datetime(list(environment.values())[0]['timestamp'])
                 min_date = min(timestamp, min_date)
         return min_date
 
-    @utils.memoized
+    # @utils.memoized
     def __get_json(self, url):
         """ Get the json from the url. """
         try:

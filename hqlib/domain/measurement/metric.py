@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import logging
 
@@ -114,7 +114,7 @@ class Metric(object):
         except AttributeError:
             return None
 
-    @utils.memoized
+    # @utils.memoized
     def status(self):
         """ Return the status/color of the metric. """
         for status_string, has_status in [('missing_source', self.__missing_source_configuration),
@@ -243,13 +243,13 @@ class Metric(object):
         ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
         return [id_ for id_ in ids if id_]
 
-    @utils.memoized
+    # @utils.memoized
     def comment(self):
         """ Return a comment on the metric. The comment is retrieved from either the technical debt or the subject. """
         comments = [comment for comment in (self.__technical_debt_comment(), self.__subject_comment()) if comment]
         return ' '.join(comments)
 
-    @utils.memoized
+    # @utils.memoized
     def __subject_comment(self):
         """ Return the comment of the subject about this metric, if any. """
         try:
@@ -257,7 +257,7 @@ class Metric(object):
         except (AttributeError, TypeError, KeyError):
             return ''
 
-    @utils.memoized
+    # @utils.memoized
     def __technical_debt_comment(self):
         """ Return the comment of the accepted technical debt, if any. """
         td_target = self.__technical_debt_target()

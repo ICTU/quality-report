@@ -13,12 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 import logging
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from .. import utils, domain
 from ..metric_source import url_opener
@@ -29,7 +29,7 @@ class TrelloObject(domain.MetricSource):
 
     url_template = 'https://api.trello.com/1/{object_type}/{object_id}{argument}?key={appkey}&token={token}{parameters}'
 
-    def __init__(self, object_id, appkey, token, urlopen=urllib2.urlopen):
+    def __init__(self, object_id, appkey, token, urlopen=urllib.request.urlopen):
         self._appkey = appkey
         self._token = token
         self.__urlopen = urlopen
@@ -37,13 +37,13 @@ class TrelloObject(domain.MetricSource):
         self._parameters = dict(object_type=object_type, object_id=object_id, appkey=appkey, token=token)
         super(TrelloObject, self).__init__()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self._parameters['appkey']) and bool(self._parameters['object_id'])
 
     def __repr__(self):
         return repr(self._json())
 
-    @utils.memoized
+    # @utils.memoized
     def _json(self, argument='', extra_parameters=''):
         """ Return the JSON at url. """
         parameters = self._parameters.copy()
@@ -135,7 +135,7 @@ class TrelloBoard(TrelloObject):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    @utils.memoized
+    # @utils.memoized
     def over_due_or_inactive_cards(self, days=14):
         """ Return the (non-archived) cards on this Trello board that are over due or inactive. """
         return [card for card in self.__cards() if card.is_over_due() or card.is_inactive(days)]
@@ -152,13 +152,13 @@ class TrelloBoard(TrelloObject):
                 if card.is_inactive(days):
                     time_delta = utils.format_timedelta(card.last_update_time_delta())
                     remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
-                label = u'{card} ({remarks})'.format(card=card.name(), remarks=u' en '.join(remarks))
+                label = '{card} ({remarks})'.format(card=card.name(), remarks=' en '.join(remarks))
                 urls[label] = card.url()
         except url_opener.UrlOpener.url_open_exceptions:
             return {self.metric_source_name: 'http://trello'}
         return urls
 
-    @utils.memoized
+    # @utils.memoized
     def __cards(self):
         """ Return the (non-archived) cards on this Trello board. """
         try:

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric, MetricSourceAgeMetric
@@ -40,8 +40,10 @@ class FailingRegressionTests(LowerIsBetterMetric):
 
     def _missing(self):
         urls = self._get_metric_source_ids()
-        return self._metric_source.passed_tests(*urls) < 0 or self._metric_source.failed_tests(*urls) < 0 or \
-            self._metric_source.skipped_tests(*urls) < 0
+        passed = self._metric_source.passed_tests(*urls)
+        failed = self._metric_source.failed_tests(*urls)
+        skipped = self._metric_source.skipped_tests(*urls)
+        return None in (passed, failed, skipped) or -1 in (passed, failed, skipped)
 
     def _parameters(self):
         # pylint: disable=protected-access

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import ast
 import datetime
@@ -62,7 +62,7 @@ class History(domain.MetricSource):
         statuses = []
         for measurement in measurements:
             measurement_statuses = dict(date=measurement['date'])
-            for measurement_data in measurement.values():
+            for measurement_data in list(measurement.values()):
                 if isinstance(measurement_data, tuple):
                     status = measurement_data[1]
                     measurement_statuses[status] = measurement_statuses.get(status, 0) + 1
@@ -86,14 +86,14 @@ class History(domain.MetricSource):
         else:
             return '', datetime.datetime.min
 
-    @utils.memoized
+    # @utils.memoized
     def __historic_values(self, recent_only=True):
         """ Return only the historic values from the history file. """
         measurements = self.__eval_history(recent_only)
         value_only_measurements = []
         for measurement in measurements:
             values_only_measurement = dict()
-            for metric_id, measurement_data in measurement.items():
+            for metric_id, measurement_data in list(measurement.items()):
                 if isinstance(measurement_data, tuple):
                     value = measurement_data[0]
                 else:
@@ -102,13 +102,13 @@ class History(domain.MetricSource):
             value_only_measurements.append(values_only_measurement)
         return value_only_measurements
 
-    @utils.memoized
+    # @utils.memoized
     def __eval_history(self, recent_only=True):
         """ Load and eval measurements from the history file. """
         lines = [ast.literal_eval(line) for line in self.__load_history(recent_only)]
         return [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
 
-    @utils.memoized
+    # @utils.memoized
     def __load_history(self, recent_only=True):
         """ Load measurements from the history file. """
         try:

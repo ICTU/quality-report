@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from __future__ import absolute_import
+
 
 import datetime
 import logging
@@ -32,7 +32,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         self.__report_urls = kwargs.pop('report_urls', None)
         super(SilkPerformerPerformanceReport, self).__init__(*args, **kwargs)
 
-    @utils.memoized
+    # @utils.memoized
     def _query_rows(self, product):
         """ Return the queries for the specified product. """
         rows = []
@@ -63,7 +63,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         date_parts = [int(part) for part in date_string.split('.')]
         return datetime.datetime(*date_parts)
 
-    @utils.memoized
+    # @utils.memoized
     def urls(self, product):  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
         return self.__report_urls or [self.url()]

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 import logging
@@ -44,7 +44,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
         self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}'  # Deprecated API
 
-    @utils.memoized
+    # @utils.memoized
     def version(self, product):
         """ Return the version of the product. """
         try:
@@ -52,7 +52,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         except self.url_open_exceptions:
             return '?'
 
-    @utils.memoized
+    # @utils.memoized
     def plugin_version(self, plugin):
         """ Return the version of the plugin. """
         try:
@@ -66,7 +66,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the url to the plugin update center. """
         return self.url() + 'updatecenter/'
 
-    @utils.memoized
+    # @utils.memoized
     def default_quality_profile(self, language):
         """ Return the default quality profile for the language. """
         try:
@@ -84,7 +84,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     # Sonar projects
 
-    @utils.memoized
+    # @utils.memoized
     def __has_project(self, project):
         """ Return whether Sonar has the project (analysis). """
         found = project in self.__projects()
@@ -92,7 +92,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             logging.warning("Sonar has no analysis of %s", project)
         return found
 
-    @utils.memoized
+    # @utils.memoized
     def __projects(self):
         """ Return all projects in Sonar. """
         try:
@@ -270,7 +270,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     # Helper methods
 
-    @utils.memoized
+    # @utils.memoized
     def __metric(self, product, metric_name, default=0):
         """ Return a specific metric value for the product. """
         if not self.__has_project(product):
@@ -292,7 +292,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         logging.debug("Can't get %s value for %s from %s", metric_name, product, json)
         return default
 
-    @utils.memoized
+    # @utils.memoized
     def __all_metrics(self, product):
         """ Return all available metric values for the product. """
         try:
@@ -300,7 +300,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         except self.url_open_exceptions:
             return [{'msr': []}]
 
-    @utils.memoized
+    # @utils.memoized
     def __rule_violation(self, product, rule_name, default=0):
         """ Return a specific violation value for the product. """
         if not self.__has_project(product):
@@ -321,7 +321,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return default
         return len(json['issues'])
 
-    @utils.memoized
+    # @utils.memoized
     def __get_json(self, url):
         """ Get and evaluate the json from the url. """
         try:

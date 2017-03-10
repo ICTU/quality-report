@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 import logging
@@ -89,7 +89,7 @@ class SprintProgressReport(BirtReport):
         """ Return the end date of the current sprint of the team. """
         return self.__parse_date(self.__summary_table_cell(3, 1))
 
-    @utils.memoized
+    # @utils.memoized
     def __summary_table_cell(self, row_index, column_index):
         """ Return a specific cell from the sprint progress table in the sprint progress Birt report. """
         summary_table = self.__summary_table()
@@ -100,7 +100,7 @@ class SprintProgressReport(BirtReport):
         else:
             return ''
 
-    @utils.memoized
+    # @utils.memoized
     def __summary_table(self):
         """ Return the sprint progress table in the sprint progress Birt report. """
         url = self.url()
@@ -258,7 +258,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the number of logical test cases for the product that should be automated but have not. """
         return self.__test_design_metric(row_nr=13)
 
-    @utils.memoized
+    # @utils.memoized
     def date_of_last_manual_test(self, version='trunk'):
         """ Return the date when the product/version was last tested manually. """
         test_dates = self.__manual_test_dates(version)
@@ -270,7 +270,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         test_dates.append(datetime.datetime.now())
         return min(test_dates)
 
-    @utils.memoized
+    # @utils.memoized
     def __manual_test_dates(self, version):
         """ Return the manual test cases. """
         url = self.__manual_test_execution_url.format(ver=version)
@@ -297,7 +297,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             test_dates.append(last_test_date)
         return test_dates
 
-    @utils.memoized
+    # @utils.memoized
     def __test_design_metric(self, row_nr):
         """ Get a metric from a specific row in the test design report."""
         if not self.__test_design_report:

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 from . import url_opener
 from .. import utils, domain
@@ -45,57 +45,57 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         self.__user_stories_without_performance_risk_query_id = user_stories_without_performance_risk_query_id
         super(Jira, self).__init__(username=username, password=password)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_open_bugs(self):
         """ Return the number of open bugs. """
         return self.__query_total(self.__open_bug_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_open_security_bugs(self):
         """ Return the number of open security bugs. """
         return self.__query_total(self.__open_security_bug_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_open_static_security_analysis_bugs(self):
         """ Return the number of open static security analysis bugs. """
         return self.__query_total(self.__open_static_security_analysis_bug_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_technical_debt_issues(self):
         """ Return the number of technical debt issues. """
         return self.__query_total(self.__technical_debt_issues_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def manual_test_cases_time(self):
         """ Return the number of minutes spend on manual test cases. """
         return self.__query_sum(self.__manual_test_cases_query_id, self.__manual_test_cases_duration_field)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_manual_test_cases(self):
         """ Return the number of manual test cases. """
         return self.__query_total(self.__manual_test_cases_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_manual_test_cases_not_measured(self):
         """ Return the number of manual test cases whose duration has not been measured. """
         return self.__query_field_empty(self.__manual_test_cases_query_id, self.__manual_test_cases_duration_field)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_story_points_ready(self):
         """ Return the number of user story points ready. """
         return self.__query_sum(self.__user_stories_ready_query_id, self.__user_story_points_field)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_user_stories_without_security_risk_assessment(self):
         """ Return the number of user stories without security risk assessment. """
         return self.__query_total(self.__user_stories_without_security_risk_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def nr_user_stories_without_performance_risk_assessment(self):
         """ Return the number of user stories without performance risk assessment. """
         return self.__query_total(self.__user_stories_without_performance_risk_query_id)
 
-    @utils.memoized
+    # @utils.memoized
     def __query_total(self, query_id):
         """ Return the number of results of the specified query. """
         if not query_id:
@@ -146,7 +146,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
                 total += 1
         return total
 
-    @utils.memoized
+    # @utils.memoized
     def __get_query_url(self, query_id, search=True):
         """ Get the query url based on the query id. """
         url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)

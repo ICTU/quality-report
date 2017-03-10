@@ -23,6 +23,8 @@ from tests.unittests.domain.measurement.fake import FakeHistory, FakeSubject
 class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
     # pylint: disable=too-few-public-methods
     """ Override LowerIsBetterMetric to implement abstract methods that are needed for running the unit tests. """
+    low_target_value = target_value = 1
+
     def __init__(self, *args, **kwargs):
         self.__value = kwargs.pop('value', 0)
         super(LowerIsBetterMetricUnderTest, self).__init__(*args, **kwargs)
@@ -53,6 +55,8 @@ class LowerIsBetterMetricTest(unittest.TestCase):
 class HigherIsBetterMetricUnderTest(domain.HigherIsBetterMetric):
     # pylint: disable=too-few-public-methods
     """ Override HigherIsBetterMetric to implement abstract methods that are needed for running the unit tests. """
+    low_target_value = target_value = 100
+
     @staticmethod
     def value():
         """ Return the measured value. """

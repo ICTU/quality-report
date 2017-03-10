@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib import metric_source
 
@@ -25,12 +25,12 @@ from hqlib import metric_source
 class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependencyReport):
     # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
-    contents = u'{"jobs": []}'
+    contents = '{"jobs": []}'
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static contents or raise an exception. """
         if 'raise' in self.contents:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
             return io.StringIO(self.contents)
 
@@ -42,17 +42,17 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
 
     def test_high_priority_warnings(self):
         """ Test retrieving high priority warnings. """
-        self.__jenkins.contents = u'{"numberOfHighPriorityWarnings":2}'
+        self.__jenkins.contents = '{"numberOfHighPriorityWarnings":2}'
         self.assertEqual(2, self.__jenkins.nr_warnings(['job'], 'high'))
 
     def test_normal_priority_warnings(self):
         """ Test retrieving normal priority warnings. """
-        self.__jenkins.contents = u'{"numberOfNormalPriorityWarnings":4}'
+        self.__jenkins.contents = '{"numberOfNormalPriorityWarnings":4}'
         self.assertEqual(4, self.__jenkins.nr_warnings(['job'], 'normal'))
 
     def test_low_priority_warnings(self):
         """ Test retrieving low priority warnings. """
-        self.__jenkins.contents = u'{"numberOfLowPriorityWarnings":9}'
+        self.__jenkins.contents = '{"numberOfLowPriorityWarnings":9}'
         self.assertEqual(9, self.__jenkins.nr_warnings(['job'], 'low'))
 
     def test_url(self):

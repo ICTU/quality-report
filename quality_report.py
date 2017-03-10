@@ -22,8 +22,8 @@ import logging
 import os
 import socket
 import sys
-import urllib2
-import xmlrpclib
+import urllib.request, urllib.error, urllib.parse
+import xmlrpc.client
 
 import pkg_resources
 
@@ -111,7 +111,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                 filename = os.path.join(resource_dir, resource)
                 contents = resource_manager.resource_string(formatting_module, resource_type + '/' + resource)
                 mode = 'w' if encoding else 'wb'
-                filesystem.write_file(contents, filename, mode, encoding)
+                contents = contents.decode(encoding) if encoding else contents
+                try:
+                    filesystem.write_file(contents, filename, mode, encoding)
+                except TypeError:
+                    print(filename, mode, encoding)
+                    raise
 
     @classmethod
     def __create_trend_images(cls, quality_report, report_dir):
@@ -126,7 +131,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                   "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:{history}&" \
                   "chds={y_axis_range}".format(history=history, y_axis_range=y_axis_range)
             try:
-                image = urllib2.urlopen(url).read()
+                image = urllib.request.urlopen(url).read()
             except metric_source.UrlOpener.url_open_exceptions as reason:
                 logging.warning("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
                 image = cls.EMPTY_HISTORY_PNG
@@ -143,10 +148,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __latest_software_version():
         """ Return the latest released version of the quality report software. """
         python_package_index_url = 'https://pypi.python.org/pypi'
-        client = xmlrpclib.ServerProxy(python_package_index_url)
+        client = xmlrpc.client.ServerProxy(python_package_index_url)
         try:
             latest_version = max(client.package_releases('quality_report'))
-        except (socket.gaierror, xmlrpclib.ProtocolError) as reason:
+        except (socket.gaierror, xmlrpc.client.ProtocolError) as reason:
             logging.warning("Can't create connection to %s: %s", python_package_index_url, reason)
             return '0'
 

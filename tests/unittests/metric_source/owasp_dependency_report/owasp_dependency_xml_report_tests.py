@@ -17,14 +17,14 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib import metric_source
 
 
 class OWASPDependencyXMLReportTest(unittest.TestCase):
     """ Unit tests for the OWASP dependency XML report class. """
-    contents = u''
+    contents = ''
 
     def setUp(self):
         self.__report = metric_source.OWASPDependencyXMLReport(url_open=self.__url_open)
@@ -32,13 +32,13 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
     def __url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static contents or raise an exception. """
         if 'raise' in self.contents:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
             return io.StringIO(self.contents)
 
     def test_high_priority_warnings(self):
         """ Test retrieving high priority warnings. """
-        self.contents = u'''<?xml version="1.0"?>
+        self.contents = '''<?xml version="1.0"?>
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
@@ -55,7 +55,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
 
     def test_normal_priority_warnings(self):
         """ Test retrieving normal priority warnings. """
-        self.contents = u'''<?xml version="1.0"?>
+        self.contents = '''<?xml version="1.0"?>
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
@@ -78,7 +78,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
 
     def test_low_priority_warnings(self):
         """ Test retrieving low priority warnings. """
-        self.contents = u'''<?xml version="1.0"?>
+        self.contents = '''<?xml version="1.0"?>
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
@@ -110,7 +110,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
 
     def test_datetime(self):
         """ Test that the date time is correctly parsed from the report. """
-        self.contents = u'''<?xml version="1.0"?>
+        self.contents = '''<?xml version="1.0"?>
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <projectInfo>
                 <name>generic</name>

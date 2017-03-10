@@ -164,4 +164,4 @@ class JMeterTest(unittest.TestCase):
 
     def test_urls(self):
         """ Test the urls. """
-        self.assertEqual({u'http://report/1.html'}, self.__performance_report.urls(('01', 'lrk-pp')))
+        self.assertEqual({'http://report/1.html'}, self.__performance_report.urls(('01', 'lrk-pp')))

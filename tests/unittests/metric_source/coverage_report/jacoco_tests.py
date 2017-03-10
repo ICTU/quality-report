@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import JaCoCo
 
@@ -39,7 +39,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     def url_open(self, url):
         """ Open a url. """
         if 'raise' in url:
-            raise urllib2.HTTPError(url, None, None, None, None)
+            raise urllib.error.HTTPError(url, None, None, None, None)
         else:
             html = self.html if url.endswith('index.html') else self.date_html
             return html

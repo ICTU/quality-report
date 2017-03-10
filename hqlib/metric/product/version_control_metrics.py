@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 from ..metric_source_mixin import VersionControlSystemMetricMixin
 from ... import utils
@@ -73,7 +73,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
     def __branch_and_nr_revs_urls(self, branches_and_revisions):
         """ Return a list of branch urls. """
         urls = dict()
-        for branch, nr_revisions in branches_and_revisions.items():
+        for branch, nr_revisions in list(branches_and_revisions.items()):
             label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
             urls[label] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
         return urls
@@ -89,7 +89,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         """ Return a list of branches for the product. """
         return self._vcs_product_info.branches(self._vcs_path())
 
-    @utils.memoized
+    # @utils.memoized
     def __unmerged_branches(self):
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
         return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),

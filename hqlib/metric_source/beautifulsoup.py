@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from __future__ import absolute_import
+
 
 from bs4 import BeautifulSoup
 
@@ -25,7 +25,7 @@ from .. import utils
 class BeautifulSoupOpener(url_opener.UrlOpener):
     """ Class for opening urls with BeautifulSoup. """
 
-    @utils.memoized
+    # @utils.memoized
     def soup(self, url):
         """ Return a BeautifulSoup version of the url. """
         return BeautifulSoup(self.url_open(url), "html.parser")

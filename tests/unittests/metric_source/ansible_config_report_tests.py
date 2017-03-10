@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import AnsibleConfigReport
 
@@ -25,7 +25,7 @@ from hqlib.metric_source import AnsibleConfigReport
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake the url opener class to return a fixed json object. """
 
-    json = u"""
+    json = """
 [
   {
     "na-bd-dev.lrk.org": {
@@ -60,9 +60,9 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     def url_open(self, url):
         """ Fake opening a url, or failing in different ways. """
         if 'raise' in url:
-            raise urllib2.HTTPError(url, None, None, None, None)
+            raise urllib.error.HTTPError(url, None, None, None, None)
         else:
-            return io.StringIO(u"invalid.json" if 'invalid' in url else self.json)
+            return io.StringIO("invalid.json" if 'invalid' in url else self.json)
 
 
 class AnsibleConfigReportTest(unittest.TestCase):

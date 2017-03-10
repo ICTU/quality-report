@@ -13,12 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from ..abstract.version_control_system import VersionControlSystem
 from ... import utils
@@ -41,7 +41,7 @@ class Git(VersionControlSystem):
         folder = self.__repo_folder if os.path.exists(self.__repo_folder) else None
         return super(Git, self)._run_shell_command(folder=folder, *args, **kwargs)
 
-    @utils.memoized
+    # @utils.memoized
     def last_changed_date(self, path):
         """ Return the date when the url was last changed in Git. """
         timestamp = self._run_shell_command(['git', 'log', '--format="%ct"', '-n', '1', '--', path])
@@ -58,7 +58,7 @@ class Git(VersionControlSystem):
         """ Return a list of tags for the repo. """
         return self.__valid_names(self._run_shell_command(['git', 'tag']))
 
-    @utils.memoized
+    # @utils.memoized
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
@@ -113,7 +113,7 @@ class Git(VersionControlSystem):
             sep = '://'
             prefix, postfix = self.url().split(sep)
             url = prefix + sep + '{username}:{password}@' + postfix
-            return url.format(username=self._username, password=urllib.pathname2url(self._password))
+            return url.format(username=self._username, password=urllib.request.pathname2url(self._password))
         else:
             return self.url()
 

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 
@@ -56,7 +56,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
-    @utils.memoized
+    # @utils.memoized
     def datetime(self, *products):
         """ Return the date when performance was last measured. """
         urls = self.urls(products[0])

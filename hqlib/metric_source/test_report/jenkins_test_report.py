@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import ast
 import datetime
@@ -48,7 +48,7 @@ class JenkinsTestReport(test_report.TestReport):
         """ Return the number of skipped tests. """
         return self.__test_count(report_url, 'skipCount')
 
-    @utils.memoized
+    # @utils.memoized
     def __test_count(self, report_url, result_type):
         """ Return the number of tests with the specified result in the test report. """
         json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/testReport/api/python'))

@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 import bs4
 
@@ -686,7 +686,7 @@ class BirtUnderTest(Birt):  # pylint: disable=too-few-public-methods
     def soup(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
         if self.html == 'raise':
-            raise urllib2.URLError('Birt down')
+            raise urllib.error.URLError('Birt down')
         else:
             return bs4.BeautifulSoup(self.html, "html.parser")
 

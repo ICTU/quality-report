@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import logging
 import pkg_resources
@@ -25,17 +25,17 @@ from .. import utils
 class HTMLFormatter(base_formatter.Formatter):
     """ Format the report in HTML. """
 
-    column_list = [u"{{f: '{metric_id}', v: '{metric_number}'}}",
-                   u"'{section}'",
-                   u"'{status}'",
-                   u"""'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
-                   u"""{{v: '{status_nr}', f: '<img src="img/{image}.png" """
-                   u"""alt="{alt}" width="48" height="48" title="{hover}" """
-                   u"""border="0" />'}}""",
-                   u"'{text}'",
-                   u"'{norm}'",
-                   u"'{comment}'"]
-    columns = u'[' + u', '.join(column_list) + u']'
+    column_list = ["{{f: '{metric_id}', v: '{metric_number}'}}",
+                   "'{section}'",
+                   "'{status}'",
+                   """'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
+                   """{{v: '{status_nr}', f: '<img src="img/{image}.png" """
+                   """alt="{alt}" width="48" height="48" title="{hover}" """
+                   """border="0" />'}}""",
+                   "'{text}'",
+                   "'{norm}'",
+                   "'{comment}'"]
+    columns = '[' + ', '.join(column_list) + ']'
     kwargs_by_status = dict(
         red=dict(image='sad', alt=':-(', status_nr=0,
                  hover='Direct actie vereist: norm niet gehaald'),
@@ -80,8 +80,8 @@ class HTMLFormatter(base_formatter.Formatter):
     @staticmethod
     def __get_html_fragment(name):
         """ Read and return a HTML fragment from the html folder. """
-        fragment = pkg_resources.ResourceManager().resource_string(__name__, 'html/{name}.html'.format(name=name))
-        return unicode(fragment)
+        fragment = pkg_resources.resource_string(__name__, 'html/{name}.html'.format(name=name))
+        return fragment.decode('utf-8')
 
     def section(self, report, section):
         """ Return a HTML formatted version of the section. """
@@ -160,23 +160,23 @@ class HTMLFormatter(base_formatter.Formatter):
     def __format_text_with_links(cls, text, url_dict, url_label):
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text)
-        links = [cls.__format_url(anchor, href) for (anchor, href) in url_dict.items()]
+        links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
         if links:
             if url_label:
                 url_label += ': '
-            text = u'{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
+            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
         return text
 
     @staticmethod
     def __format_subtitle(subtitle):
         """ Return a HTML formatted subtitle. """
-        template = u' <small>{sub}</small>'
+        template = ' <small>{sub}</small>'
         return template.format(sub=subtitle) if subtitle else ''
 
     @staticmethod
     def __format_url(anchor, href):
         """ Return a HTML formatted url. """
-        template = u'<a href="{href}" target="_blank">{anchor}</a>'
+        template = '<a href="{href}" target="_blank">{anchor}</a>'
         return template.format(href=href, anchor=utils.html_escape(anchor))
 
     @staticmethod

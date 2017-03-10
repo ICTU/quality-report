@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from __future__ import absolute_import
+
 
 import datetime
 import logging
@@ -57,7 +57,7 @@ class JunitTestReport(test_report.TestReport):
         """ Return the date and time of the report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except (UrlOpener.url_open_exceptions, xml.etree.cElementTree.ParseError):
+        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
             return datetime.datetime.min
         if test_suites:
             timestamps = [test_suite.get('timestamp') for test_suite in test_suites]
@@ -71,12 +71,12 @@ class JunitTestReport(test_report.TestReport):
             logging.warning("Couldn't find test suites in: %s", report_url)
             return datetime.datetime.min
 
-    @utils.memoized
+    # @utils.memoized
     def __test_count(self, report_url, result_type):
         """ Return the number of tests with the specified result in the test report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except (UrlOpener.url_open_exceptions, xml.etree.cElementTree.ParseError):
+        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
             return -1
         if test_suites:
             return sum(int(test_suite.get(result_type, 0)) for test_suite in test_suites)
@@ -88,7 +88,7 @@ class JunitTestReport(test_report.TestReport):
         """ Return the number of test cases that have failures (failed assertions). """
         try:
             root = self.__element_tree(report_url)
-        except (UrlOpener.url_open_exceptions, xml.etree.cElementTree.ParseError):
+        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
             return -1
         return len(root.findall('.//testcase[failure]'))
 
@@ -97,7 +97,7 @@ class JunitTestReport(test_report.TestReport):
         root = self.__element_tree(report_url)
         return [root] if root.tag == 'testsuite' else root.findall('testsuite')
 
-    @utils.memoized
+    # @utils.memoized
     def __element_tree(self, report_url):
         """ Return the report contents as ElementTree. """
         contents = self._url_open(report_url).read()

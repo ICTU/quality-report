@@ -17,19 +17,19 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import JenkinsTestReport
 
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake URL opener. """
-    contents = u'{}'
+    contents = '{}'
 
     def url_open(self, url):
         """ Fake opening the url or raise an exception. """
         if 'raise' in url:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
             return io.StringIO(self.contents)
 
@@ -42,7 +42,7 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_testreport(self):
         """ Test retrieving a Jenkins test report. """
-        self.__opener.contents = u'{"failCount":2, "passCount":9, "skipCount":1}'
+        self.__opener.contents = '{"failCount":2, "passCount":9, "skipCount":1}'
         self.assertEqual(2, self.__jenkins.failed_tests('job'))
         self.assertEqual(9, self.__jenkins.passed_tests('job'))
         self.assertEqual(1, self.__jenkins.skipped_tests('job/'))
@@ -50,7 +50,7 @@ class JenkinsTestReportTest(unittest.TestCase):
     def test_testreport_without_pass_count(self):
         """ Test retrieving a Jenkins test report that has no pass count. Apparently that field is not present when
             there are no tests. """
-        self.__opener.contents = u'{"failCount":0, "skipCount":0, "totalCount":8}'
+        self.__opener.contents = '{"failCount":0, "skipCount":0, "totalCount":8}'
         self.assertEqual(0, self.__jenkins.failed_tests('job/'))
         self.assertEqual(8, self.__jenkins.passed_tests('job'))
         self.assertEqual(0, self.__jenkins.skipped_tests('job'))
@@ -63,12 +63,12 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_eval_exception(self):
         """ Test that the default is returned when the json can't be parsed. """
-        self.__opener.contents = u'{"failCount":, "passCount":9, "skipCount":1}'
+        self.__opener.contents = '{"failCount":, "passCount":9, "skipCount":1}'
         self.assertEqual(-1, self.__jenkins.failed_tests('job'))
 
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
-        self.__opener.contents = u'{"timestamp":1467929105000}'
+        self.__opener.contents = '{"timestamp":1467929105000}'
         self.assertEqual(datetime.datetime.fromtimestamp(1467929105000/1000.), self.__jenkins.datetime('job'))
 
     def test_missing_report_datetime(self):
@@ -77,5 +77,5 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_invalid_date_time(self):
         """ Test that the minimum datetime is returned when the json invalid. """
-        self.__opener.contents = u'{"timestamp":}'
+        self.__opener.contents = '{"timestamp":}'
         self.assertEqual(datetime.datetime.min, self.__jenkins.datetime('job/'))

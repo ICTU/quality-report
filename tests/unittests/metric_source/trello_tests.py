@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source.trello import TrelloCard, TrelloBoard
 
@@ -61,19 +61,19 @@ class TrelloBoardTest(unittest.TestCase):
 
     def setUp(self):
         self.__raise = False
-        self.__cards_json = u''
+        self.__cards_json = ''
         self.__trello_board = TrelloBoard('object_id', 'appkey', 'token', urlopen=self.__urlopen, card_class=FakeCard)
 
     def __urlopen(self, url):
         """ Return a fake JSON string. """
         if self.__raise:
-            raise urllib2.URLError(url)
+            raise urllib.error.URLError(url)
         if 'cards' in url:
             json = self.__cards_json
         elif 'actions' in url:
-            json = u'[{"date": "2015-1-1T10:0:0"}]'
+            json = '[{"date": "2015-1-1T10:0:0"}]'
         else:
-            json = u'{{"url": "{0}", "name": "name"}}'.format(url)
+            json = '{{"url": "{0}", "name": "name"}}'.format(url)
         return io.StringIO(json)
 
     def test_url(self):
@@ -92,8 +92,9 @@ class TrelloBoardTest(unittest.TestCase):
 
     def test_repr(self):
         """ Test that repr(board) gives the json. """
-        self.assertEqual("{u'url': u'https://api.trello.com/1/board/object_id?key=appkey&token=token', "
-                         "u'name': u'name'}", repr(self.__trello_board))
+        repr_string = repr(self.__trello_board)
+        self.assertTrue("'name': 'name'" in repr_string)
+        self.assertTrue("'url': 'https://api.trello.com/1/board/object_id?key=appkey&token=token'" in repr_string)
 
     def test_bool(self):
         """ Test that the board is true if it has an app key and an id. """
@@ -101,58 +102,58 @@ class TrelloBoardTest(unittest.TestCase):
 
     def test_one_over_due(self):
         """ Test the count with one over due card. """
-        self.__cards_json = u'[{"id": 1}]'
+        self.__cards_json = '[{"id": 1}]'
         self.assertEqual(1, self.__trello_board.nr_of_over_due_or_inactive_cards())
 
     def test_one_over_due_url(self):
         """ Test the url for one over due card. """
-        self.__cards_json = u'[{"id": 1}]'
+        self.__cards_json = '[{"id": 1}]'
         self.assertEqual({'card 1 (3 dagen te laat)': 'http://card/1'},
                          self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_one_inactive(self):
         """Test the count with one inactive card. """
-        self.__cards_json = u'[{"id": 2}]'
+        self.__cards_json = '[{"id": 2}]'
         self.assertEqual(1, self.__trello_board.nr_of_over_due_or_inactive_cards())
 
     def test_one_inactive_url(self):
         """ Test the url for one inactive card. """
-        self.__cards_json = u'[{"id": 2}]'
+        self.__cards_json = '[{"id": 2}]'
         self.assertEqual({'card 2 (4 dagen niet bijgewerkt)': 'http://card/2'},
                          self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_one_over_due_and_inactive(self):
         """ Test the count with one inactive and over due card. """
-        self.__cards_json = u'[{"id": 3}]'
+        self.__cards_json = '[{"id": 3}]'
         self.assertEqual(1,
                          self.__trello_board.nr_of_over_due_or_inactive_cards())
 
     def test_one_over_due_and_inactive_url(self):
         """ Test the url for one inactive and over due card. """
-        self.__cards_json = u'[{"id": 3}]'
+        self.__cards_json = '[{"id": 3}]'
         self.assertEqual({'card 3 (3 dagen te laat en 4 dagen niet bijgewerkt)': 'http://card/3'},
                          self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_one_inactive_and_one_over_due(self):
         """ Test the count with one inactive and one over due card. """
-        self.__cards_json = u'[{"id": 1}, {"id": 2}]'
+        self.__cards_json = '[{"id": 1}, {"id": 2}]'
         self.assertEqual(2, self.__trello_board.nr_of_over_due_or_inactive_cards())
 
     def test_one_inactive_and_one_over_due_url(self):
         """ Test the url for one inactive card and over due card. """
-        self.__cards_json = u'[{"id": 1}, {"id": 2}]'
+        self.__cards_json = '[{"id": 1}, {"id": 2}]'
         self.assertEqual({'card 1 (3 dagen te laat)': 'http://card/1',
                           'card 2 (4 dagen niet bijgewerkt)': 'http://card/2'},
                          self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_no_cards_url(self):
         """ Test the url for over due or inactive cards when there are no cards. """
-        self.__cards_json = u'{}'
+        self.__cards_json = '{}'
         self.assertEqual({}, self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_one_active_card(self):
         """ Test the url for one active card. """
-        self.__cards_json = u'[{"id": 0}]'
+        self.__cards_json = '[{"id": 0}]'
         self.assertEqual({}, self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_http_error(self):
@@ -166,7 +167,7 @@ class TrelloCardTest(unittest.TestCase):
 
     def setUp(self):
         self.__raise = False
-        self.__json = u'{}'
+        self.__json = '{}'
         self.__trello_card = TrelloCard('object_id', 'appkey', 'token', urlopen=self.__urlopen)
 
     @staticmethod
@@ -189,12 +190,12 @@ class TrelloCardTest(unittest.TestCase):
 
     def test_due_date_time(self):
         """ Test the due date time. """
-        self.__json = u'{"due": "2013-5-4T16:45:33.09Z"}'
+        self.__json = '{"due": "2013-5-4T16:45:33.09Z"}'
         self.assertEqual(datetime.datetime(2013, 5, 4, 16, 45, 33), self.__trello_card.due_date_time())
 
     def test_over_due_time_delta(self):
         """ Test the age of an over due card. """
-        self.__json = u'{"due": "2014-5-4T16:45:33.09Z"}'
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
         self.assertEqual(datetime.timedelta(hours=1), self.__trello_card.over_due_time_delta(now=self.__now))
 
     def test_no_over_due_time_delta(self):
@@ -203,20 +204,20 @@ class TrelloCardTest(unittest.TestCase):
 
     def test_is_over_due(self):
         """ Test that an over due card is over due. """
-        self.__json = u'{"due": "2014-5-4T16:45:33.09Z"}'
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
         self.assertTrue(self.__trello_card.is_over_due(now=self.__now))
 
     def test_is_not_over_due(self):
         """ Test that a card with a due date in the future is not over due. """
-        self.__json = u'{"due": "2014-5-4T16:45:33.09Z"}'
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
         self.assertFalse(self.__trello_card.is_over_due(now=self.__earlier_now))
 
     def test_not_inactive_when_future_due_date(self):
         """ Test that a card with a due date in the future is not inactive. """
-        self.__json = u'{"due": "2014-5-4T16:45:33.09Z"}'
+        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
         self.assertFalse(self.__trello_card.is_inactive(15, now=self.__earlier_now))
 
     def test_not_inactive_when_recently_updated(self):
         """ Test that a card is not inactive when it has been updated recently. """
-        self.__json = u'[{"date": "2014-5-4T16:45:33.09Z"}]'
+        self.__json = '[{"date": "2014-5-4T16:45:33.09Z"}]'
         self.assertFalse(self.__trello_card.is_inactive(15, now=self.__now))

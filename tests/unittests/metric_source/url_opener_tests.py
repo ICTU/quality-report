@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import url_opener
 
@@ -32,7 +32,7 @@ class FakeBuildOpener(object):  # pylint: disable=too-few-public-methods
     def open(cls, *args):  # pylint: disable=unused-argument
         """ Fake opening a url and returning its contents. """
         if cls.raise_exception:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
             return 'url contents'
 
@@ -59,7 +59,7 @@ class UrlOpenerTest(unittest.TestCase):
     def test_basic_auth_handler_request(self):
         """ Test that the basic auth handler can take a request. """
         opener = url_opener.UrlOpener(username='user', password='pass', url_open=FakeBuildOpener.open)
-        self.assertEqual('url contents', opener.url_open(urllib2.Request('http://bla')))
+        self.assertEqual('url contents', opener.url_open(urllib.request.Request('http://bla')))
 
     def test_opener_without_auth(self):
         """ Test that the opener can open urls without authentication. """
@@ -70,7 +70,7 @@ class UrlOpenerTest(unittest.TestCase):
         """ Test an exception during opening. """
         FakeBuildOpener.raise_exception = True
         opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
-        self.assertRaises(urllib2.HTTPError, opener.url_open, 'http://bla')
+        self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
         FakeBuildOpener.raise_exception = False
 
     def test_delete(self):

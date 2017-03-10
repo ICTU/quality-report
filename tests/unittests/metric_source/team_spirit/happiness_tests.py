@@ -14,24 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import StringIO
+import io
 import datetime
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import Happiness
 
 
 class Opener(object):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
-    json = u"""[{"datum":"2016-08-29","smiley":"4"},{"datum":"2016-09-22","smiley":"3"}]"""
+    json = """[{"datum":"2016-08-29","smiley":"4"},{"datum":"2016-09-22","smiley":"3"}]"""
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
         if 'raise' in url:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return StringIO.StringIO(self.json)
+            return io.StringIO(self.json)
 
 
 class HappinessTest(unittest.TestCase):
@@ -65,13 +65,13 @@ class HappinessTest(unittest.TestCase):
     def test_team_spirit_wrong_smiley(self):
         """ Test the spirit when the smiley isn't recognized. """
         opener = Opener()
-        opener.json = u"""[{"datum":"2016-09-22","smiley":"0"}]"""
+        opener.json = """[{"datum":"2016-09-22","smiley":"0"}]"""
         self.assertEqual('', Happiness('http://opener/', url_open=opener.url_open).team_spirit('team'))
 
     def test_date_without_data(self):
         """ Test the date when there haven't been any smileys registered. """
         opener = Opener()
-        opener.json = u"""[{}]"""
+        opener.json = """[{}]"""
         self.assertEqual(datetime.datetime.min,
                          Happiness('http://opener',
                                    url_open=opener.url_open).datetime('team'))

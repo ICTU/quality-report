@@ -24,9 +24,9 @@ from hqlib.metric_source import Sonar
 class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     """ Override the url open method to be able to return test data. """
 
-    project_json = u"""[{"k": "product"}]"""
+    project_json = """[{"k": "product"}]"""
 
-    json = violations_json = u"""
+    json = violations_json = """
 [
     {"version": "4.2",
      "lang": "java",
@@ -46,7 +46,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     }
 ]"""
 
-    no_violations_json = u"""
+    no_violations_json = """
 [
     {"version": "4.2",
      "lang": "java",
@@ -56,7 +56,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     }
 ]"""
 
-    metrics_json = u"""
+    metrics_json = """
     [
         {"version": "4.2",
          "lang": "java",
@@ -84,7 +84,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
         }
     ]"""
 
-    false_positives_json = u"""
+    false_positives_json = """
 {
   "maxResultsReached": false,
   "paging": {
@@ -299,49 +299,49 @@ class SonarTest(SonarTestCase):
 
     def test_commented_loc(self):
         """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
-        self._sonar.json = u"""{"paging": {"total": 40}}"""
+        self._sonar.json = """{"paging": {"total": 40}}"""
         self.assertEqual(40, self._sonar.commented_loc('product'))
 
     def test_commented_loc_missing(self):
         """ Test that the number of commented loc is zero when none of the rules return a result. """
-        self._sonar.json = u"""{"paging": {"total": 0}}"""
+        self._sonar.json = """{"paging": {"total": 0}}"""
         self.assertEqual(0, self._sonar.commented_loc('product'))
 
     def test_complex_methods(self):
         """ Test that the number of complex methods equals the number of complex methods returned by the
             violations page. """
-        self._sonar.json = u"""{"paging": {"total": 50}}"""
+        self._sonar.json = """{"paging": {"total": 50}}"""
         self.assertEqual(50, self._sonar.complex_methods('product'))
 
     def test_complex_methods_missing(self):
         """ Test that the number of complex methods is zero when none of the rules return a result. """
-        self._sonar.json = u"""{"paging": {"total": 0}}"""
+        self._sonar.json = """{"paging": {"total": 0}}"""
         self.assertEqual(0, self._sonar.commented_loc('product'))
 
     def test_long_methods(self):
         """ Test that the number of long methods equals the number of long methods returned by the violations page. """
-        self._sonar.json = u"""{"paging": {"total": 50}}"""
+        self._sonar.json = """{"paging": {"total": 50}}"""
         self.assertEqual(50, self._sonar.long_methods('product'))
 
     def test_many_parameters_methods(self):
         """ Test that the number of methods with many parameters equals the number of methods with many parameters
             returned by the violations page. """
-        self._sonar.json = u"""{"paging": {"total": 50}}"""
+        self._sonar.json = """{"paging": {"total": 50}}"""
         self.assertEqual(50, self._sonar.many_parameters_methods('product'))
 
     def test_many_parameters_methods_missing(self):
         """ Test that the number of methods with many parameters is zero when none of the rules return a result. """
-        self._sonar.json = u"""{"paging": {"total": 0}}"""
+        self._sonar.json = """{"paging": {"total": 0}}"""
         self.assertEqual(0, self._sonar.many_parameters_methods('product'))
 
     def test_missing_metric_value(self):
         """ Test that the default value is returned for missing values. """
-        self._sonar.metrics_json = u'[{"msr": []}]'
+        self._sonar.metrics_json = '[{"msr": []}]'
         self.assertEqual(0, self._sonar.unittests('product'))
 
     def test_missing_violation_value(self):
         """ Test that the default value is returned for missing violations. """
-        self._sonar.json = u"""{"paging": {"total": 0}}"""
+        self._sonar.json = """{"paging": {"total": 0}}"""
         self.assertEqual(0, self._sonar.long_methods('product'))
 
     def test_analysis_datetime(self):
@@ -422,12 +422,12 @@ class SonarSuppressionTest(SonarTestCase):
 
     def test_no_sonar(self):
         """ Test that by default the number of no sonar violations is zero. """
-        self._sonar.json = u"""{"paging": {"total": 0}}"""
+        self._sonar.json = """{"paging": {"total": 0}}"""
         self.assertEqual(0, self._sonar.no_sonar('product'))
 
     def test_no_sonar_found(self):
         """ Test that no sonar violations. """
-        self._sonar.json = u"""{"paging": {"total": 10}}"""
+        self._sonar.json = """{"paging": {"total": 10}}"""
         self.assertEqual(10, self._sonar.no_sonar('product'))
 
     def test_false_positives(self):
@@ -436,7 +436,7 @@ class SonarSuppressionTest(SonarTestCase):
 
     def test_no_false_positives(self):
         """ Test that the number of false positives is zero. """
-        self._sonar.false_positives_json = u"""
+        self._sonar.false_positives_json = """
         {
             "issues": []
         }"""
@@ -448,7 +448,7 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_version_number(self):
         """ Test that the version number is correct. """
-        self._sonar.json = u"""
+        self._sonar.json = """
         {
             "id": "23422",
              "version": "1.2.3",
@@ -458,7 +458,7 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_plugin_version(self):
         """ Test that the plugins can be retrieved. """
-        self._sonar.json = u"""
+        self._sonar.json = """
         [{
             "key": "pmd",
             "name": "PMD",
@@ -468,7 +468,7 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_missing_plugin(self):
         """ Test that the version number of a missing plugin is 0.0. """
-        self._sonar.json = u"""
+        self._sonar.json = """
         [{
             "key": "pmd",
             "name": "PMD",
@@ -478,7 +478,7 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_default_quality_profile(self):
         """ Test that the name of the quality profile is returned. """
-        self._sonar.json = u"""
+        self._sonar.json = """
         [{
             "key": "java-findbugs-94130",
             "name": "FindBugs",

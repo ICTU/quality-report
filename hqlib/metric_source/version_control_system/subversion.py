@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 import logging
@@ -29,7 +29,7 @@ class Subversion(version_control_system.VersionControlSystem):
 
     metric_source_name = 'Subversion'
 
-    @utils.memoized
+    # @utils.memoized
     def tags_folder_for_version(self, trunk_url, version):
         """ Return the tags folder for the specified version. """
         tags = self.tags(trunk_url)
@@ -57,7 +57,7 @@ class Subversion(version_control_system.VersionControlSystem):
             svn_path += 'trunk/'
         return svn_path
 
-    @utils.memoized
+    # @utils.memoized
     def last_changed_date(self, url):
         """ Return the date when the url was last changed in Subversion. """
         svn_info_xml = str(self._run_shell_command(['svn', 'info', '--xml', url]))
@@ -67,7 +67,7 @@ class Subversion(version_control_system.VersionControlSystem):
             return datetime.datetime.min
         return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    @utils.memoized
+    # @utils.memoized
     def unmerged_branches(self, product_url, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
@@ -103,12 +103,12 @@ class Subversion(version_control_system.VersionControlSystem):
         svn_info_xml = str(self._run_shell_command(['svn', 'info', branch_url, '--xml', '-r', revision_number]))
         return bs4.BeautifulSoup(svn_info_xml, "html.parser")('url')[0].string
 
-    @utils.memoized
+    # @utils.memoized
     def branches(self, trunk_url):
         """ Return a list of branch names for the specified trunk url. """
         return self.__svn_list(self.__branches_folder(trunk_url))
 
-    @utils.memoized
+    # @utils.memoized
     def tags(self, trunk_url):
         """ Return a list of tags for the specified trunk url. """
         return self.__svn_list(self.__tags_folder(trunk_url))

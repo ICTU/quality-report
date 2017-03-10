@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import SilkPerformerPerformanceLoadTestReport
 
@@ -346,7 +346,7 @@ class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint:
     def url_open(self, url):  # pylint: disable=no-self-use
         """ Return the static html. """
         if 'error' in url:
-            raise urllib2.URLError('reason')
+            raise urllib.error.URLError('reason')
         else:
             return HTML
 

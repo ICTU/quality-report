@@ -29,8 +29,8 @@ class TeamTest(unittest.TestCase):
         self.assertEqual('the_a-team', self.__team.id_string())
 
     def test_eq(self):
-        """ Test that teams are equal when their id strings are. """
-        self.assertEqual(self.__team, domain.Team(name='The a-team'))
+        """ Test that teams are equal when their names are. """
+        self.assertEqual(self.__team, domain.Team(name='The A-team'))
 
     def test_no_default_short_name(self):
         """ Test that the team has no default short name. """

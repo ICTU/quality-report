@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 from .requirement import RequirementSubject
 from ..measurement.measurable import MeasurableObject
@@ -35,9 +35,6 @@ class Team(RequirementSubject, MeasurableObject):
     def optional_requirements():
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackAbsence, requirement.ScrumTeam}
-
-    def __eq__(self, other):
-        return self.id_string() == other.id_string()
 
     def __str__(self):
         return self.name()

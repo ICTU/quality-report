@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import logging
 
@@ -32,7 +32,7 @@ class ZAPScanReport(domain.MetricSource):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super(ZAPScanReport, self).__init__()
 
-    @utils.memoized
+    # @utils.memoized
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
         assert risk_level in ('low', 'medium', 'high')

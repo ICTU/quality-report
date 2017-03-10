@@ -13,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
 
 
 class DomainObject(object):
@@ -35,3 +34,14 @@ class DomainObject(object):
     def url(self):
         """ Return the url of the domain object. """
         return self.__url
+
+    def __lt__(self, other):
+        """ Compare names. """
+        return self.name() < other.name()
+
+    def __eq__(self, other):
+        """ Compare names. """
+        return self.name() == other.name()
+
+    def __hash__(self):
+        return hash(self.name())

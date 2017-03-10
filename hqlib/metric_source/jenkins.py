@@ -13,13 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import ast
 import datetime
 import logging
 import re
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from . import url_opener
 from .. import utils, domain
@@ -52,7 +52,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self._jobs_api_url = url + self.jobs_api_postfix
         self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
 
-    @utils.memoized
+    # @utils.memoized
     def number_of_active_jobs(self):
         """ Return the total number of active Jenkins jobs. """
         try:
@@ -79,7 +79,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         return {'{0} ({1} dagen)'.format(job['name'], self.__age_of_last_stable_build(job).days): job['url']
                 for job in jobs}
 
-    @utils.memoized
+    # @utils.memoized
     def __failing_jobs(self):
         """ Return the active Jenkins jobs that are failing. """
 
@@ -93,7 +93,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
         return [job for job in self.__active_jobs() if self.__has_builds(job) and failing(job) and old(job)]
 
-    @utils.memoized
+    # @utils.memoized
     def __unused_jobs(self):
         """ Return the active Jenkins jobs that are unused. """
         def grace_time(job, default=180):
@@ -110,13 +110,13 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return all active Jenkins jobs. """
         return [job for job in self.__jobs() if job.get('buildable', False)]
 
-    @utils.memoized
+    # @utils.memoized
     def __jobs(self):
         """ Return all Jenkins jobs that match our job regular expression. """
         all_jobs = self._api(self._jobs_api_url)['jobs']
         return [job for job in all_jobs if self.__job_re.match(job['name'])]
 
-    @utils.memoized
+    # @utils.memoized
     def unstable_arts_url(self, projects, days):
         """ Return the urls for the ARTs that have been unstable for the specified number of days. """
         projects_re = re.compile(projects)
@@ -161,7 +161,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return whether the job has builds or not. """
         return len(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
 
-    @utils.memoized
+    # @utils.memoized
     def _api(self, url):
         """ Return the result of the API call at the url. """
         data = self.url_open(url).read()
@@ -173,7 +173,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def url_open(self, url):
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
-        url = urllib2.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
+        url = urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         try:
             return super(Jenkins, self).url_open(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:

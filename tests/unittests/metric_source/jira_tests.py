@@ -16,7 +16,7 @@ limitations under the License.
 
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import Jira
 
@@ -25,16 +25,16 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
     """ Override class to return a fixed JSON file. """
 
     nr_query_results = 5
-    view_url = u'http://view'
-    issues = u'[]'
+    view_url = 'http://view'
+    issues = '[]'
 
     def url_open(self, url):  # pylint: disable=unused-argument
         """ Return the static content. """
         if 'raise' in url:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return io.StringIO(u'{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
-                               u'"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
+            return io.StringIO('{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
+                               '"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
 
 
 class JiraTestCase(unittest.TestCase):
@@ -115,7 +115,7 @@ class JiraManualTestCasesTest(JiraTestCase):
 
     def test_manual_test_time(self):
         """ Test that the total number of minutes spend on manual test cases is correct. """
-        self.__jira.issues = u'[{"fields": {"customfield_11700": "20"}},' \
+        self.__jira.issues = '[{"fields": {"customfield_11700": "20"}},' \
                              ' {"fields": {"customfield_11700": 100}},' \
                              ' {"fields": {"customfield_11700": null}}]'
         self.assertEqual(120, self.__jira.manual_test_cases_time())
@@ -126,7 +126,7 @@ class JiraManualTestCasesTest(JiraTestCase):
 
     def test_nr_manual_tests_not_measured(self):
         """ Test that the number of manual test cases not measured is correct. """
-        self.__jira.issues = u'[{"fields": {"customfield_11700": "20"}},' \
+        self.__jira.issues = '[{"fields": {"customfield_11700": "20"}},' \
                              ' {"fields": {"customfield_11700": 100}},' \
                              ' {"fields": {"customfield_11700": null}}]'
         self.assertEqual(1, self.__jira.nr_manual_test_cases_not_measured())
@@ -148,7 +148,7 @@ class JiraReadyUserStoriesTest(JiraTestCase):
 
     def test_points_ready(self):
         """ Test that the total number points of ready user stories is correct. """
-        self.__jira.issues = u'[{"fields": {"customfield_10002": "1.0"}},' \
+        self.__jira.issues = '[{"fields": {"customfield_10002": "1.0"}},' \
                              ' {"fields": {"customfield_10002": "8.0"}},' \
                              ' {"fields": {"customfield_10002": null}}]'
         self.assertEqual(9, self.__jira.nr_story_points_ready())

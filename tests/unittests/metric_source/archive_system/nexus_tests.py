@@ -17,14 +17,14 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib.metric_source import Nexus
 
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake URL opener. """
-    contents = u'''<content>
+    contents = '''<content>
   <data>
     <content-item>
       <lastModified>2016-07-04 15:20:35.0 UTC</lastModified>
@@ -38,7 +38,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     def url_open(self, url):
         """ Return the html or raise an exception. """
         if 'raise' in url:
-            raise urllib2.HTTPError(None, None, None, None, None)
+            raise urllib.error.HTTPError(None, None, None, None, None)
         else:
             return io.StringIO(self.contents)
 

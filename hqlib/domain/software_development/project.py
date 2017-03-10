@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import logging
 
@@ -53,7 +53,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
 
     def metric_source_classes(self):
         """ Return a set of all metric source classes. """
-        return self.__metric_sources.keys()
+        return list(self.__metric_sources.keys())
 
     def domain_object_classes(self):
         """ Return a set of all the domain object classes used. """

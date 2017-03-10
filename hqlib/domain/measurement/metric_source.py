@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 
@@ -57,7 +57,7 @@ class MissingMetricSource(MetricSource):
         """ Do nothing and return nothing for any method called. """
         return
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
 
     def __getitem__(self, index):

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
+
 
 import datetime
 
@@ -42,7 +42,7 @@ class TeamSpirit(Metric):
         return self.numerical_value_map.get(self.value(), -1)
 
     def y_axis_range(self):
-        values = self.numerical_value_map.values()
+        values = list(self.numerical_value_map.values())
         return min(values), max(values)
 
     def _needs_immediate_action(self):

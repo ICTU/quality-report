@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from hqlib import domain
 from hqlib.metric_source import HolidayPlanner
@@ -28,11 +28,11 @@ class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public
     def url_open(self, url):  # pylint: disable=unused-argument,no-self-use
         """ Return the static data. """
         if 'raise' in url:
-            raise urllib2.URLError(None)
+            raise urllib.error.URLError(None)
         next_month = datetime.date.today() + datetime.timedelta(days=30)
         year = next_month.year
         month = next_month.month
-        template = u'{{"afwezig":[' \
+        template = '{{"afwezig":[' \
                         '["3544","desmi","{year}-{month:02d}-12","3"],' \
                         '["3545","desmi","{year}-{month:02d}-13","3"],' \
                         '["3546","desmi","{year}-{month:02d}-14","3"],' \
