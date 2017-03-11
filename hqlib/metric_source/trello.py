@@ -14,11 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import datetime
 import logging
 import time
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from .. import utils, domain
 from ..metric_source import url_opener
@@ -43,7 +44,6 @@ class TrelloObject(domain.MetricSource):
     def __repr__(self):
         return repr(self._json())
 
-    # @utils.memoized
     def _json(self, argument='', extra_parameters=''):
         """ Return the JSON at url. """
         parameters = self._parameters.copy()
@@ -135,7 +135,6 @@ class TrelloBoard(TrelloObject):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    # @utils.memoized
     def over_due_or_inactive_cards(self, days=14):
         """ Return the (non-archived) cards on this Trello board that are over due or inactive. """
         return [card for card in self.__cards() if card.is_over_due() or card.is_inactive(days)]
@@ -158,7 +157,6 @@ class TrelloBoard(TrelloObject):
             return {self.metric_source_name: 'http://trello'}
         return urls
 
-    # @utils.memoized
     def __cards(self):
         """ Return the (non-archived) cards on this Trello board. """
         try:

@@ -20,7 +20,6 @@ import logging
 import re
 import time
 
-from hqlib import utils
 from hqlib.metric_source import beautifulsoup
 from hqlib.metric_source.abstract import team_spirit
 from hqlib.metric_source.url_opener import UrlOpener
@@ -36,7 +35,6 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
 
     # Team spirit
 
-    # @utils.memoized
     def team_spirit(self, team_id):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
@@ -51,7 +49,6 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
             return ''
         return re.sub(r'[^:\-()|]', '', row[-1].string)
 
-    # @utils.memoized
     def datetime(self, *team_ids):
         """ Return the date that the team spirit of the team was last measured. """
         try:

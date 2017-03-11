@@ -20,7 +20,6 @@ import xml.etree.cElementTree
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
-from ... import utils
 
 
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
@@ -37,7 +36,6 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         warnings = [self.__nr_warnings(report_url)[priority.capitalize()] for report_url in report_urls]
         return -1 if -1 in warnings else sum(warnings)
 
-    # @utils.memoized
     def __nr_warnings(self, report_url):
         """ Return the number of warnings of each priority in the report. """
         try:
@@ -52,7 +50,6 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     def metric_source_urls(self, *report_urls):
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]
 
-    # @utils.memoized
     def _report_datetime(self, report_url):
         """ Return the report date and time. """
         try:

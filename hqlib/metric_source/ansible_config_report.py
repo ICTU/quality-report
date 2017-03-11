@@ -16,8 +16,8 @@ limitations under the License.
 
 
 import datetime
+import functools
 import logging
-import urllib.request, urllib.error, urllib.parse
 
 from . import url_opener
 from .. import utils, domain
@@ -65,7 +65,7 @@ class AnsibleConfigReport(domain.MetricSource):
                 min_date = min(timestamp, min_date)
         return min_date
 
-    # @utils.memoized
+    @functools.lru_cache()
     def __get_json(self, url):
         """ Get the json from the url. """
         try:

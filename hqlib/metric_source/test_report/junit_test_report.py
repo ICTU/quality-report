@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-
 import datetime
 import logging
 import re
@@ -71,7 +70,6 @@ class JunitTestReport(test_report.TestReport):
             logging.warning("Couldn't find test suites in: %s", report_url)
             return datetime.datetime.min
 
-    # @utils.memoized
     def __test_count(self, report_url, result_type):
         """ Return the number of tests with the specified result in the test report. """
         try:
@@ -97,7 +95,6 @@ class JunitTestReport(test_report.TestReport):
         root = self.__element_tree(report_url)
         return [root] if root.tag == 'testsuite' else root.findall('testsuite')
 
-    # @utils.memoized
     def __element_tree(self, report_url):
         """ Return the report contents as ElementTree. """
         contents = self._url_open(report_url).read()

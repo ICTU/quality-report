@@ -19,7 +19,7 @@ import datetime
 
 from .. import beautifulsoup
 from ..url_opener import UrlOpener
-from ... import domain, utils
+from ... import domain
 
 
 class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
@@ -56,7 +56,6 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
-    # @utils.memoized
     def datetime(self, *products):
         """ Return the date when performance was last measured. """
         urls = self.urls(products[0])

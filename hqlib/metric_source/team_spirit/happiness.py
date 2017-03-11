@@ -35,7 +35,6 @@ class Happiness(team_spirit.TeamSpirit):
 
     # Team spirit
 
-    # @utils.memoized
     def team_spirit(self, team_id):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
@@ -49,7 +48,6 @@ class Happiness(team_spirit.TeamSpirit):
             logging.warning("Could not find smiley for %s in %s: %s", team_id, self.__api_url(), reason)
             return ''
 
-    # @utils.memoized
     def datetime(self, *team_ids):
         """ Return the date that the team spirit of the team was last measured. """
         try:

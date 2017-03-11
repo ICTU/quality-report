@@ -17,10 +17,11 @@ limitations under the License.
 
 import ast
 import datetime
+import functools
 import io
 import logging
 
-from .. import utils, domain
+from .. import domain
 
 
 class History(domain.MetricSource):
@@ -86,7 +87,6 @@ class History(domain.MetricSource):
         else:
             return '', datetime.datetime.min
 
-    # @utils.memoized
     def __historic_values(self, recent_only=True):
         """ Return only the historic values from the history file. """
         measurements = self.__eval_history(recent_only)
@@ -102,13 +102,12 @@ class History(domain.MetricSource):
             value_only_measurements.append(values_only_measurement)
         return value_only_measurements
 
-    # @utils.memoized
     def __eval_history(self, recent_only=True):
         """ Load and eval measurements from the history file. """
         lines = [ast.literal_eval(line) for line in self.__load_history(recent_only)]
         return [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
 
-    # @utils.memoized
+    @functools.lru_cache()
     def __load_history(self, recent_only=True):
         """ Load measurements from the history file. """
         try:

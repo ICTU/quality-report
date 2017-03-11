@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import functools
 
 from . import directed_metric
 from ... import utils
@@ -25,7 +26,7 @@ class PercentageMixin(object):
     unit = '%'
     zero_divided_by_zero_is_zero = 'Subclass responsibility'
 
-    # @utils.memoized
+    @functools.lru_cache()
     def value(self):
         """ Return the actual value of the metric as a percentage calculated from the numerator and denominator
             of the metric. """

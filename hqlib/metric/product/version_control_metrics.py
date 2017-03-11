@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import functools
 
 from ..metric_source_mixin import VersionControlSystemMetricMixin
 from ... import utils
@@ -89,7 +90,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         """ Return a list of branches for the product. """
         return self._vcs_product_info.branches(self._vcs_path())
 
-    # @utils.memoized
+    @functools.lru_cache()
     def __unmerged_branches(self):
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
         return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),

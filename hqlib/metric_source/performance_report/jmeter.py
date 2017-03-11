@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-
 import datetime
 import logging
 import re
@@ -31,7 +30,6 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
     metric_source_name = 'Jmeter performance report'
     COLUMN_90_PERC = 10
 
-    # @utils.memoized
     def _query_rows(self, product):
         """ Return the queries for the specified product. """
         rows = []
@@ -60,7 +58,6 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
             return datetime.datetime.today()
         return self.__parse_date(date_text)
 
-    # @utils.memoized
     def urls(self, product):
         """ Return the url(s) of the performance report for the specified product. """
         urls = {0: set()}  # {test_run_number: set(of urls)}
@@ -68,7 +65,6 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
             urls.setdefault(self.__test_run_number(filename), set()).add(url)
         return urls[max(urls.keys())]  # Return the latest test run
 
-    # @utils.memoized
     def __report_urls(self):
         """ Return the url(s) for the performance reports in the report folder. """
         base_url = self.url()

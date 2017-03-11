@@ -15,13 +15,11 @@ limitations under the License.
 """
 
 
-
 import datetime
 import logging
 import re
 
 from ..abstract import performance_report
-from ... import utils
 
 
 class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
@@ -32,7 +30,6 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         self.__report_urls = kwargs.pop('report_urls', None)
         super(SilkPerformerPerformanceReport, self).__init__(*args, **kwargs)
 
-    # @utils.memoized
     def _query_rows(self, product):
         """ Return the queries for the specified product. """
         rows = []
@@ -63,7 +60,6 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         date_parts = [int(part) for part in date_string.split('.')]
         return datetime.datetime(*date_parts)
 
-    # @utils.memoized
     def urls(self, product):  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
         return self.__report_urls or [self.url()]

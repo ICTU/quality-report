@@ -21,7 +21,6 @@ import logging
 
 from ..abstract import test_report
 from ..url_opener import UrlOpener
-from ... import utils
 
 
 class JenkinsTestReport(test_report.TestReport):
@@ -48,7 +47,6 @@ class JenkinsTestReport(test_report.TestReport):
         """ Return the number of skipped tests. """
         return self.__test_count(report_url, 'skipCount')
 
-    # @utils.memoized
     def __test_count(self, report_url, result_type):
         """ Return the number of tests with the specified result in the test report. """
         json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/testReport/api/python'))

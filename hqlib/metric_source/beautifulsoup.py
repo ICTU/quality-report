@@ -14,18 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+import functools
 
 from bs4 import BeautifulSoup
 
 from . import url_opener
-from .. import utils
 
 
 class BeautifulSoupOpener(url_opener.UrlOpener):
     """ Class for opening urls with BeautifulSoup. """
 
-    # @utils.memoized
+    @functools.lru_cache()
     def soup(self, url):
         """ Return a BeautifulSoup version of the url. """
         return BeautifulSoup(self.url_open(url), "html.parser")

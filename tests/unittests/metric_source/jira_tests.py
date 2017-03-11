@@ -16,7 +16,9 @@ limitations under the License.
 
 import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from hqlib.metric_source import Jira
 

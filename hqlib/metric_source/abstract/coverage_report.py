@@ -19,7 +19,7 @@ import datetime
 import bs4
 
 from ..url_opener import UrlOpener
-from ... import utils, domain
+from ... import domain
 
 
 class CoverageReport(domain.MetricSource):
@@ -31,7 +31,6 @@ class CoverageReport(domain.MetricSource):
         self.__url_open = url_open or UrlOpener(**kwargs).url_open
         super(CoverageReport, self).__init__()
 
-    # @utils.memoized
     def statement_coverage(self, coverage_url):
         """ Return the ART statement coverage for a specific product. """
         try:
@@ -46,7 +45,6 @@ class CoverageReport(domain.MetricSource):
         """ Parse the coverage percentage from the soup. """
         raise NotImplementedError  # pragma: no cover
 
-    # @utils.memoized
     def branch_coverage(self, coverage_url):
         """ Return the ART branch coverage for a specific product. """
         try:
@@ -61,7 +59,6 @@ class CoverageReport(domain.MetricSource):
         """ Parse the coverage percentage from the soup. """
         raise NotImplementedError  # pragma: no cover
 
-    # @utils.memoized
     def datetime(self, *coverage_urls):
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
         coverage_date_url = self._get_coverage_date_url(coverage_urls[0])
@@ -82,7 +79,6 @@ class CoverageReport(domain.MetricSource):
         """ Return the url for the date when the coverage of the product was last measured. """
         return coverage_url
 
-    # @utils.memoized
     def __get_soup(self, url):
         """ Get a beautiful soup of the HTML at the url. """
         return bs4.BeautifulSoup(self.__url_open(url), "html.parser")

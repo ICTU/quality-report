@@ -89,7 +89,6 @@ class SprintProgressReport(BirtReport):
         """ Return the end date of the current sprint of the team. """
         return self.__parse_date(self.__summary_table_cell(3, 1))
 
-    # @utils.memoized
     def __summary_table_cell(self, row_index, column_index):
         """ Return a specific cell from the sprint progress table in the sprint progress Birt report. """
         summary_table = self.__summary_table()
@@ -100,7 +99,6 @@ class SprintProgressReport(BirtReport):
         else:
             return ''
 
-    # @utils.memoized
     def __summary_table(self):
         """ Return the sprint progress table in the sprint progress Birt report. """
         url = self.url()
@@ -152,7 +150,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         self.__whats_missing_url = birt_report_url + 'whats_missing.rptdesign'
         sprint_progress_url = birt_report_url + 'sprint_voortgang.rptdesign'
         self.__sprint_progress_report = SprintProgressReport(sprint_progress_url)
-        self.__test_design_report = None
 
     def __getattr__(self, attribute):  # pragma: no cover
         # Forward method calls that this class doesn't support to the sprint progress report.
@@ -258,7 +255,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the number of logical test cases for the product that should be automated but have not. """
         return self.__test_design_metric(row_nr=13)
 
-    # @utils.memoized
     def date_of_last_manual_test(self, version='trunk'):
         """ Return the date when the product/version was last tested manually. """
         test_dates = self.__manual_test_dates(version)
@@ -270,7 +266,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         test_dates.append(datetime.datetime.now())
         return min(test_dates)
 
-    # @utils.memoized
     def __manual_test_dates(self, version):
         """ Return the manual test cases. """
         url = self.__manual_test_execution_url.format(ver=version)
@@ -297,17 +292,15 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             test_dates.append(last_test_date)
         return test_dates
 
-    # @utils.memoized
     def __test_design_metric(self, row_nr):
         """ Get a metric from a specific row in the test design report."""
-        if not self.__test_design_report:
-            try:
-                self.__test_design_report = self.soup(self.__test_design_url)
-            except url_opener.UrlOpener.url_open_exceptions as reason:
-                logging.warning("Could not open %s: %s", self.__test_design_url, reason)
-                return -1
         try:
-            return int(self.__test_design_report('div', {'class': 'style_4'})[row_nr].string.replace(',', ''))
+            test_design_report = self.soup(self.__test_design_url)
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.warning("Could not open %s: %s", self.__test_design_url, reason)
+            return -1
+        try:
+            return int(test_design_report('div', {'class': 'style_4'})[row_nr].string.replace(',', ''))
         except (ValueError, IndexError) as reason:
             logging.warning("Could not obtain row %s from Birt report %s: %s", row_nr, self.__test_design_url, reason)
             return -1

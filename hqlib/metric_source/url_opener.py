@@ -14,12 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import base64
+import functools
+import http.client
 import logging
 import socket
-import urllib.request, urllib.error, urllib.parse
-import http.client
+import urllib.error
+import urllib.parse
+import urllib.request
 
 
 class UrlOpener(object):
@@ -61,6 +63,7 @@ class UrlOpener(object):
         else:
             return url_open
 
+    @functools.lru_cache()
     def url_open(self, url):
         """ Return an opened url, using the opener created earlier. """
         try:
