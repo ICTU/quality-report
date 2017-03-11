@@ -22,7 +22,7 @@ import logging
 import os
 import socket
 import sys
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
 import xmlrpc.client
 
 import pkg_resources
