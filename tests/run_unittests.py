@@ -31,4 +31,4 @@ if __name__ == '__main__':  # pragma: no branch
     logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
     # Run the unit test with the XML test runner so that the test output
     # can be processed by Sonar.
-    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='unit-test-reports'))
+    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='unit-test-reports'))
