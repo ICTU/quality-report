@@ -88,7 +88,8 @@ class HistoryTest(unittest.TestCase):
 
     def setUp(self):
         self.__history = History('fake file', file_=FakeFile, recent_history=3)
-        History._History__load_history.cache_clear()
+        History._History__load_complete_history.cache_clear()
+        History._History__historic_values.cache_clear()
         FakeFile.written_content = []
 
     def test_filename(self):

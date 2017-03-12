@@ -59,7 +59,7 @@ class History(domain.MetricSource):
 
     def statuses(self):
         """ Return the statuses for each measurement. """
-        measurements = self.__eval_history(recent_only=False)
+        measurements = self.__load_history(recent_only=False)
         statuses = []
         for measurement in measurements:
             measurement_statuses = dict(date=measurement['date'])
@@ -73,7 +73,7 @@ class History(domain.MetricSource):
     def __last_status(self, metric_id):
         """ Return the last recorded status of the metric and the date that the metric first had that status. """
         try:
-            last_measurement = self.__eval_history()[-1][metric_id]
+            last_measurement = self.__load_history()[-1][metric_id]
         except (IndexError, KeyError):
             last_measurement = None
         if isinstance(last_measurement, tuple) and len(last_measurement) >= 3:
@@ -87,29 +87,27 @@ class History(domain.MetricSource):
         else:
             return '', datetime.datetime.min
 
+    @functools.lru_cache()
     def __historic_values(self, recent_only=True):
-        """ Return only the historic values from the history file. """
-        measurements = self.__eval_history(recent_only)
+        """ Return only the historic values from the history file, so without the status and status date. """
+        measurements = self.__load_history(recent_only)
         value_only_measurements = []
         for measurement in measurements:
             values_only_measurement = dict()
             for metric_id, measurement_data in list(measurement.items()):
-                if isinstance(measurement_data, tuple):
-                    value = measurement_data[0]
-                else:
-                    value = measurement_data
+                value = measurement_data[0] if isinstance(measurement_data, tuple) else measurement_data
                 values_only_measurement[metric_id] = value
             value_only_measurements.append(values_only_measurement)
         return value_only_measurements
 
-    def __eval_history(self, recent_only=True):
-        """ Load and eval measurements from the history file. """
-        lines = [ast.literal_eval(line) for line in self.__load_history(recent_only)]
-        return [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
-
-    @functools.lru_cache()
     def __load_history(self, recent_only=True):
         """ Load measurements from the history file. """
+        lines = self.__load_complete_history()
+        return lines[-self.__recent_history:] if recent_only else lines
+
+    @functools.lru_cache()
+    def __load_complete_history(self):
+        """ Load all measurements from the history file. """
         try:
             history_file = self.__file(self.__history_filename)
         except IOError:
@@ -117,7 +115,7 @@ class History(domain.MetricSource):
             history_file = io.StringIO()  # Fake an empty file
         lines = history_file.readlines()
         history_file.close()
-        if recent_only:
-            lines = lines[-self.__recent_history:]
+        lines = [ast.literal_eval(line) for line in lines if line.strip()]
+        lines = [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
         logging.info('Read %d lines from %s', len(lines), self.__history_filename)
-        return [line.strip() for line in lines if line.strip()]
+        return lines
