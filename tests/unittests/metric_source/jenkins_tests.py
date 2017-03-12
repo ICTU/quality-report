@@ -15,8 +15,7 @@ limitations under the License.
 """
 
 import datetime
-import io
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 import unittest
 
 from hqlib.metric_source import Jenkins
@@ -32,12 +31,12 @@ class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
     contents = '{"jobs": []}'
 
-    def url_open(self, url):  # pylint: disable=unused-argument
+    def url_read(self, url):
         """ Return the static content. """
         if 'raise' in url:
             raise urllib.error.URLError('some reason')
         else:
-            return io.StringIO(self.contents)
+            return self.contents
 
 
 class JenkinsTest(unittest.TestCase):

@@ -157,7 +157,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def _api(self, url):
         """ Return the result of the API call at the url. """
-        data = self.url_open(url).read()
+        data = self.url_read(url)
         if type(data) == bytes:
             data = data.decode('utf-8')
         try:

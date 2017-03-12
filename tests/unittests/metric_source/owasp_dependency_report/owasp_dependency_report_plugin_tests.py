@@ -15,9 +15,8 @@ limitations under the License.
 """
 
 import datetime
-import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib import metric_source
 
@@ -27,12 +26,12 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
     """ Override the url_open method to return a fixed HTML fragment. """
     contents = '{"jobs": []}'
 
-    def url_open(self, url):  # pylint: disable=unused-argument
+    def url_read(self, url):  # pylint: disable=unused-argument
         """ Return the static contents or raise an exception. """
         if 'raise' in self.contents:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return io.StringIO(self.contents)
+            return self.contents
 
 
 class JenkinsOWASPDependencyReportTest(unittest.TestCase):
