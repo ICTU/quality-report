@@ -203,7 +203,6 @@ def html_escape(text):
 
 def eval_json(json_string):
     """ Return an evaluated version of the json string. """
-    logging.info('eval_json: %s - %s', type(json_string), json_string)
     if type(json_string) == bytes:
         json_string = json_string.decode('ascii')
     try:
