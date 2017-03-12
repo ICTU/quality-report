@@ -16,7 +16,6 @@ limitations under the License.
 
 import ast
 import datetime
-import functools
 import logging
 import re
 import urllib.parse
@@ -159,6 +158,8 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     def _api(self, url):
         """ Return the result of the API call at the url. """
         data = self.url_open(url).read()
+        if type(data) == bytes:
+            data = data.decode('utf-8')
         try:
             return ast.literal_eval(data)
         except Exception as reason:
