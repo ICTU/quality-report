@@ -15,12 +15,13 @@ limitations under the License.
 """
 
 
+import functools
 import logging
 
 import bs4
 
 from . import url_opener
-from .. import domain, utils
+from .. import domain
 
 
 class ZAPScanReport(domain.MetricSource):
@@ -38,15 +39,18 @@ class ZAPScanReport(domain.MetricSource):
         nr_alerts = 0
         for url in report_urls:
             try:
-                soup = bs4.BeautifulSoup(self._url_open(url), "html.parser")
+                nr_alerts += self.__parse_alerts(self.__get_soup(url), risk_level)
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
-            try:
-                nr_alerts += self.__parse_alerts(soup, risk_level)
             except IndexError as reason:
                 logging.warning("Couldn't parse alerts with %s risk level from %s: %s", risk_level, url, reason)
                 return -1
         return nr_alerts
+
+    @functools.lru_cache()
+    def __get_soup(self, url):
+        """ Return the HTML soup. """
+        return bs4.BeautifulSoup(self._url_open(url), "html.parser")
 
     @staticmethod
     def __parse_alerts(soup, risk_level):
