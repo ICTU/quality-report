@@ -15,11 +15,8 @@ limitations under the License.
 """
 
 import datetime
-import functools
 import logging
 import os
-import urllib.error
-import urllib.parse
 import urllib.request
 
 from ..abstract.version_control_system import VersionControlSystem
@@ -42,7 +39,6 @@ class Git(VersionControlSystem):
         folder = self.__repo_folder if os.path.exists(self.__repo_folder) else None
         return super(Git, self)._run_shell_command(folder=folder, *args, **kwargs)
 
-    @functools.lru_cache()
     def last_changed_date(self, path):
         """ Return the date when the url was last changed in Git. """
         timestamp = self._run_shell_command(['git', 'log', '--format="%ct"', '-n', '1', '--', path])
@@ -59,7 +55,6 @@ class Git(VersionControlSystem):
         """ Return a list of tags for the repo. """
         return self.__valid_names(self._run_shell_command(['git', 'tag']))
 
-    @functools.lru_cache()
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
