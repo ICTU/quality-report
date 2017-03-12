@@ -319,4 +319,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         except self.url_open_exceptions as reason:
             logging.warning("Can't retrieve url %s from Sonar: %s", url, reason)
             raise
+        if not json_string:
+            logging.error("Received empty json from %s", url)
         return utils.eval_json(json_string)
