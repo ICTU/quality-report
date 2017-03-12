@@ -18,8 +18,6 @@ limitations under the License.
 import functools
 import logging
 
-from ... import utils
-
 
 class Metric(object):
     """ Base class for metrics. """
