@@ -205,7 +205,7 @@ def html_escape(text):
 
 def eval_json(json_string):
     """ Return an evaluated version of the json string. """
-    return json.loads(json_string)
+    return json.loads(str(json_string))
 
 
 def version_number_to_numerical(version_number_tuple):
