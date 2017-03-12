@@ -26,6 +26,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
     contents = ''
 
     def setUp(self):
+        metric_source.OWASPDependencyXMLReport._OWASPDependencyXMLReport__report_root.cache_clear()
         self.__report = metric_source.OWASPDependencyXMLReport(url_read=self.__url_read)
 
     def __url_read(self, url):  # pylint: disable=unused-argument
@@ -118,4 +119,4 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
             </projectInfo>
         </analysis>
         '''
-        self.assertEqual(datetime.datetime(2017, 2, 10, 15, 29, 30), self.__report.datetime(['url']))
+        self.assertEqual(datetime.datetime(2017, 2, 10, 15, 29, 30), self.__report.datetime('url'))
