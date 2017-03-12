@@ -14,11 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-
-
 import datetime
 import json
+import logging
 import re
 
 
@@ -205,7 +203,11 @@ def html_escape(text):
 
 def eval_json(json_string):
     """ Return an evaluated version of the json string. """
-    return json.loads(str(json_string))
+    try:
+        return json.loads(str(json_string))
+    except ValueError as reason:
+        logging.error("Couldn't load json string '%s': %s", json_string, reason)
+        raise
 
 
 def version_number_to_numerical(version_number_tuple):
