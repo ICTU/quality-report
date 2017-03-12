@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import ast
 import datetime
+import functools
 import logging
 import re
-import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 
 from . import url_opener
 from .. import domain
