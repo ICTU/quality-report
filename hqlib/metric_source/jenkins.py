@@ -161,8 +161,8 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         data = self.url_open(url).read()
         try:
             return ast.literal_eval(data)
-        except:
-            logging.error("Couldn't evaluate %s from %s", data, url)
+        except Exception as reason:
+            logging.error("Couldn't evaluate %s from %s: %s", data, url, reason)
             raise
 
     def url_open(self, url):
