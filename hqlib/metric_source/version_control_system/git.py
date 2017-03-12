@@ -41,7 +41,7 @@ class Git(VersionControlSystem):
 
     def last_changed_date(self, path):
         """ Return the date when the url was last changed in Git. """
-        timestamp = self._run_shell_command(['git', 'log', '--format="%ct"', '-n', '1', '--', path])
+        timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', '--', path))
         if timestamp:
             return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
         else:
@@ -53,7 +53,7 @@ class Git(VersionControlSystem):
 
     def tags(self, path):  # pylint: disable=unused-argument
         """ Return a list of tags for the repo. """
-        return self.__valid_names(self._run_shell_command(['git', 'tag']))
+        return self.__valid_names(self._run_shell_command(('git', 'tag')))
 
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
@@ -75,13 +75,13 @@ class Git(VersionControlSystem):
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
             command.append('--no-merged')
-        return self.__valid_names(self._run_shell_command(command),
+        return self.__valid_names(self._run_shell_command(tuple(command)),
                                   lambda name: name and ' -> ' not in name and 'origin/master' not in name)
 
     def __nr_unmerged_commits(self, branch_name):
         """ Return whether the branch has unmerged commits. """
         logging.info('Checking for unmerged commits in branch %s.', branch_name)
-        command = ['git', 'cherry', 'origin/master', branch_name]
+        command = ('git', 'cherry', 'origin/master', branch_name)
         commits = self._run_shell_command(command)
         nr_commits = commits.count('\n')
         logging.info('Branch %s has %d unmerged commits.', branch_name, nr_commits)
@@ -92,7 +92,7 @@ class Git(VersionControlSystem):
         self.__repo_folder = self.__determine_repo_folder_name()
         if os.path.exists(self.__repo_folder):
             logging.info('Updating Git repo %s in %s', self.url(), self.__repo_folder)
-            command = ['git', 'pull', '--prune']
+            command = ('git', 'pull', '--prune')
             self._run_shell_command(command)
         else:
             branch_string = self.__branch_to_checkout or 'master'
@@ -101,7 +101,7 @@ class Git(VersionControlSystem):
             if self.__branch_to_checkout:
                 command.insert(2, '--branch')
                 command.insert(3, self.__branch_to_checkout)
-            self._run_shell_command(command)
+            self._run_shell_command(tuple(command))
 
     def __full_url(self):
         """ Return the Git repository url with username and password. """

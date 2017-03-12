@@ -79,8 +79,8 @@ class Subversion(version_control_system.VersionControlSystem):
         """ Return whether the branch has unmerged revisions. """
         branch_url = self.__branches_folder(product_url) + branch_name
         trunk_url = product_url
-        revisions = str(self._run_shell_command(['svn', 'mergeinfo', '--show-revs', 'eligible',
-                                                 branch_url, trunk_url])).strip()
+        revisions = str(self._run_shell_command(('svn', 'mergeinfo', '--show-revs', 'eligible',
+                                                 branch_url, trunk_url))).strip()
         logging.debug('Unmerged revisions from %s to %s: "%s"', branch_url, trunk_url, revisions)
         # Number of revisions is one more than the number of line breaks, if there is any output:
         nr_revisions = revisions.count('\n') + 1 if revisions else 0
@@ -96,7 +96,7 @@ class Subversion(version_control_system.VersionControlSystem):
 
     def __revision_url(self, branch_url, revision_number):
         """ Return the url for a specific revision number. """
-        svn_info_xml = str(self._run_shell_command(['svn', 'info', branch_url, '--xml', '-r', revision_number]))
+        svn_info_xml = str(self._run_shell_command(('svn', 'info', branch_url, '--xml', '-r', revision_number)))
         return bs4.BeautifulSoup(svn_info_xml, "html.parser")('url')[0].string
 
     def branches(self, trunk_url):
@@ -119,6 +119,6 @@ class Subversion(version_control_system.VersionControlSystem):
 
     def __svn_list(self, url):
         """ Return a list of sub folder names. """
-        shell_command = ['svn', 'list', '--xml', url]
+        shell_command = ('svn', 'list', '--xml', url)
         svn_info_xml = str(self._run_shell_command(shell_command))
         return [name.string for name in bs4.BeautifulSoup(svn_info_xml, "html.parser")('name')]
