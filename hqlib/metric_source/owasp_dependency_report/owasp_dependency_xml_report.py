@@ -25,8 +25,8 @@ from ..abstract import owasp_dependency_report
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     """ Class representing OWASP dependency reports in XML format. """
 
-    def __init__(self, url_open=None, **kwargs):
-        self.__url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+    def __init__(self, url_read=None, **kwargs):
+        self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super(OWASPDependencyXMLReport, self).__init__()
 
     def nr_warnings(self, report_urls, priority):
@@ -61,7 +61,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
     def __report_root(self, report_url):
         """ Return the root node and namespace of the OWASP dependency XML report. """
-        contents = self.__url_open(report_url).read()
+        contents = self.__url_read(report_url)
         root = xml.etree.cElementTree.fromstring(contents)
         # ElementTree has no API to get the namespace so we extract it from the root tag:
         namespace = root.tag.split('}')[0][1:]

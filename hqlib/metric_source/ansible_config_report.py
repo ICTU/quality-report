@@ -16,7 +16,6 @@ limitations under the License.
 
 
 import datetime
-import functools
 import logging
 
 from . import url_opener
@@ -27,8 +26,8 @@ class AnsibleConfigReport(domain.MetricSource):
     """ Class for Ansible config reports. """
     metric_source_name = 'Ansible configuratierapport'
 
-    def __init__(self, url_open=None, **kwargs):
-        self.__url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+    def __init__(self, url_read=None, **kwargs):
+        self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super(AnsibleConfigReport, self).__init__()
 
     def java_versions(self, url):
@@ -65,11 +64,10 @@ class AnsibleConfigReport(domain.MetricSource):
                 min_date = min(timestamp, min_date)
         return min_date
 
-    @functools.lru_cache()
     def __get_json(self, url):
         """ Get the json from the url. """
         try:
-            return utils.eval_json(self.__url_open(url).read())
+            return utils.eval_json(self.__url_read(url))
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
         except ValueError as reason:

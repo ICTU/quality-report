@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 import datetime
-import io
 import unittest
 
 from hqlib.metric_source import Sonar
@@ -237,7 +236,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 }
 """
 
-    def url_open(self, url):
+    def url_read(self, url):
         """ Return the static contents. """
         if 'projects/index' in url:
             json = self.project_json
@@ -247,7 +246,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
             json = self.false_positives_json
         else:
             json = self.json
-        return io.StringIO(json)
+        return json
 
 
 class SonarTestCase(unittest.TestCase):

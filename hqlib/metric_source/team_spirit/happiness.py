@@ -29,8 +29,8 @@ class Happiness(team_spirit.TeamSpirit):
 
     metric_source_name = 'Happiness'
 
-    def __init__(self, url, url_open=None):
-        self.__url_open = url_open or UrlOpener().url_open
+    def __init__(self, url, url_read=None):
+        self.__url_read = url_read or UrlOpener().url_read
         super(Happiness, self).__init__(url=url)
 
     # Team spirit
@@ -38,7 +38,7 @@ class Happiness(team_spirit.TeamSpirit):
     def team_spirit(self, team_id):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
-            json = utils.eval_json(self.__url_open(self.__api_url()).read())
+            json = utils.eval_json(self.__url_read(self.__api_url()))
         except UrlOpener.url_open_exceptions:
             logging.warning("Could not open %s to read spirit of team %s", self.__api_url(), team_id)
             return ''
@@ -51,7 +51,7 @@ class Happiness(team_spirit.TeamSpirit):
     def datetime(self, *team_ids):
         """ Return the date that the team spirit of the team was last measured. """
         try:
-            json = utils.eval_json(self.__url_open(self.__api_url()).read())
+            json = utils.eval_json(self.__url_read(self.__api_url()))
         except UrlOpener.url_open_exceptions:
             logging.warning("Could not open %s to read date of least spirit measurement of team %s", self.__api_url(),
                             team_ids[0])

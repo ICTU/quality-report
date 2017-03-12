@@ -78,7 +78,7 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
     def __absence_list(self, team):
         """ Return the list of absences. """
         member_ids = [member.metric_source_id(self) for member in team.members()]
-        json = utils.eval_json(self.url_open(self.__api_url).read())
+        json = utils.eval_json(self.url_read(self.__api_url))
         absence_list = json['afwezig']
         # Filter out people not in the team, absences other than whole days, and duplicates
         return {tuple(absence[1:3]) for absence in absence_list if absence[1] in member_ids and absence[3] == '3'}

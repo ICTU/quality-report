@@ -15,9 +15,8 @@ limitations under the License.
 """
 
 import datetime
-import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib.metric_source import AnsibleConfigReport
 
@@ -57,19 +56,19 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
   }
 ]"""
 
-    def url_open(self, url):
-        """ Fake opening a url, or failing in different ways. """
+    def url_read(self, url):
+        """ Fake reading a url, or failing in different ways. """
         if 'raise' in url:
             raise urllib.error.HTTPError(url, None, None, None, None)
         else:
-            return io.StringIO("invalid.json" if 'invalid' in url else self.json)
+            return "invalid.json" if 'invalid' in url else self.json
 
 
 class AnsibleConfigReportTest(unittest.TestCase):
     """ Unit tests for the Ansible config report class. """
 
     def setUp(self):
-        self.__config = AnsibleConfigReport(url_open=FakeUrlOpener().url_open)
+        self.__config = AnsibleConfigReport(url_read=FakeUrlOpener().url_read)
 
     def test_java_versions(self):
         """ Test the java versions. """

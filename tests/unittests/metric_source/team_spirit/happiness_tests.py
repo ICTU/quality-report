@@ -14,10 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import io
 import datetime
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib.metric_source import Happiness
 
@@ -26,19 +25,19 @@ class Opener(object):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
     json = """[{"datum":"2016-08-29","smiley":"4"},{"datum":"2016-09-22","smiley":"3"}]"""
 
-    def url_open(self, url):  # pylint: disable=unused-argument
+    def url_read(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return io.StringIO(self.json)
+            return self.json
 
 
 class HappinessTest(unittest.TestCase):
     """ Unit tests for the Happiness class. """
 
     def setUp(self):
-        self.__happiness = Happiness('http://opener/', url_open=Opener().url_open)
+        self.__happiness = Happiness('http://opener/', url_read=Opener().url_read)
 
     def test_url(self):
         """ Test that the url is correct. """
@@ -50,7 +49,7 @@ class HappinessTest(unittest.TestCase):
 
     def test_missing_team_spirit(self):
         """ Test the spirit when an error is raised. """
-        self.assertEqual('', Happiness('raise', url_open=Opener().url_open).team_spirit('team'))
+        self.assertEqual('', Happiness('raise', url_read=Opener().url_read).team_spirit('team'))
 
     def test_date_of_last_measurement(self):
         """ Test the date of the last measurement of the spirit of the team. """
@@ -60,18 +59,17 @@ class HappinessTest(unittest.TestCase):
     def test_missing_date_of_last_measurement(self):
         """ Test the date when an error is raised. """
         self.assertEqual(datetime.datetime.min,
-                         Happiness('raise', url_open=Opener().url_open).datetime('team'))
+                         Happiness('raise', url_read=Opener().url_read).datetime('team'))
 
     def test_team_spirit_wrong_smiley(self):
         """ Test the spirit when the smiley isn't recognized. """
         opener = Opener()
         opener.json = """[{"datum":"2016-09-22","smiley":"0"}]"""
-        self.assertEqual('', Happiness('http://opener/', url_open=opener.url_open).team_spirit('team'))
+        self.assertEqual('', Happiness('http://opener/', url_read=opener.url_read).team_spirit('team'))
 
     def test_date_without_data(self):
         """ Test the date when there haven't been any smileys registered. """
         opener = Opener()
         opener.json = """[{}]"""
         self.assertEqual(datetime.datetime.min,
-                         Happiness('http://opener',
-                                   url_open=opener.url_open).datetime('team'))
+                         Happiness('http://opener', url_read=opener.url_read).datetime('team'))

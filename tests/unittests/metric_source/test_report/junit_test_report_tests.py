@@ -15,9 +15,8 @@ limitations under the License.
 """
 
 import datetime
-import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib.metric_source import JunitTestReport
 
@@ -26,19 +25,19 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake URL opener. """
     contents = ''
 
-    def url_open(self, url):
+    def url_read(self, url):
         """ Return the html or raise an exception. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return io.StringIO(self.contents)
+            return self.contents
 
 
 class JunitTestReportTest(unittest.TestCase):
     """ Unit tests for the Junit test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()
-        self.__junit = JunitTestReport(url_open=self.__opener.url_open)
+        self.__junit = JunitTestReport(url_read=self.__opener.url_read)
 
     def test_test_report(self):
         """ Test retrieving a Junit test report. """

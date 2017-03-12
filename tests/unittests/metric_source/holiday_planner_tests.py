@@ -15,9 +15,8 @@ limitations under the License.
 """
 
 import datetime
-import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib import domain
 from hqlib.metric_source import HolidayPlanner
@@ -25,7 +24,7 @@ from hqlib.metric_source import HolidayPlanner
 
 class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public-methods
     """ Override the class under test return static data. """
-    def url_open(self, url):  # pylint: disable=unused-argument,no-self-use
+    def url_read(self, url):  # pylint: disable=unused-argument,no-self-use
         """ Return the static data. """
         if 'raise' in url:
             raise urllib.error.URLError(None)
@@ -60,7 +59,7 @@ class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public
                         '["3602","erkat","{year}-{month:02d}-01","3"],' \
                         '["3603","piepo","{year}-{month:02d}-01","3"]'  \
                     ']}}'
-        return io.StringIO(template.format(year=year, month=month))
+        return template.format(year=year, month=month)
 
 
 class HolidayPlannerTests(unittest.TestCase):

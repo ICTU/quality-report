@@ -60,7 +60,7 @@ class JenkinsTestReport(test_report.TestReport):
     def __read_json(self, api_url):
         """ Return the json from the url, or the default when something goes wrong. """
         try:
-            contents = self._url_open(api_url).read()
+            contents = self._url_read(api_url)
         except UrlOpener.url_open_exceptions:
             return None
         try:

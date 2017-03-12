@@ -15,9 +15,8 @@ limitations under the License.
 """
 
 import datetime
-import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib.metric_source import JenkinsTestReport
 
@@ -26,19 +25,19 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake URL opener. """
     contents = '{}'
 
-    def url_open(self, url):
+    def url_read(self, url):
         """ Fake opening the url or raise an exception. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return io.StringIO(self.contents)
+            return self.contents
 
 
 class JenkinsTestReportTest(unittest.TestCase):
     """ Unit tests for the Jenkins test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()
-        self.__jenkins = JenkinsTestReport(url_open=self.__opener.url_open)
+        self.__jenkins = JenkinsTestReport(url_read=self.__opener.url_read)
 
     def test_testreport(self):
         """ Test retrieving a Jenkins test report. """

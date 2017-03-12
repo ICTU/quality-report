@@ -315,7 +315,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def __get_json(self, url):
         """ Get and evaluate the json from the url. """
         try:
-            json_string = self.url_open(url).read()
+            json_string = self.url_read(url)
         except self.url_open_exceptions as reason:
             logging.warning("Can't retrieve url %s from Sonar: %s", url, reason)
             raise

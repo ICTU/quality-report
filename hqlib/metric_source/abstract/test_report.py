@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-
 import datetime
 
 from .. import url_opener
@@ -27,8 +26,8 @@ class TestReport(domain.MetricSource):
     metric_source_name = 'Test report'
     needs_metric_source_id = True
 
-    def __init__(self, url_open=None, **kwargs):
-        self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+    def __init__(self, url_read=None, **kwargs):
+        self._url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super(TestReport, self).__init__()
 
     def datetime(self, *report_urls):

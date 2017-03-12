@@ -97,7 +97,7 @@ class JunitTestReport(test_report.TestReport):
 
     def __element_tree(self, report_url):
         """ Return the report contents as ElementTree. """
-        contents = self._url_open(report_url).read()
+        contents = self._url_read(report_url)
         try:
             return xml.etree.cElementTree.fromstring(contents)
         except xml.etree.cElementTree.ParseError as reason:

@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import base64
+import functools
 import http.client
 import logging
 import socket
@@ -68,6 +69,14 @@ class UrlOpener(object):
         except self.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
+
+    @functools.lru_cache()
+    def url_read(self, url):
+        """ Open and read a url, and transform the bytes to a string. """
+        data = self.url_open(url).read()
+        if type(data) == bytes:
+            data = data.decode('utf-8')
+        return data
 
     def url_delete(self, url):
         """ Delete the given url. """

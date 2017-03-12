@@ -14,11 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import io
 import unittest
 import urllib.error
-import urllib.parse
-import urllib.request
 
 from hqlib.metric_source import Jira
 
@@ -30,13 +27,13 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
     view_url = 'http://view'
     issues = '[]'
 
-    def url_open(self, url):  # pylint: disable=unused-argument
+    def url_read(self, url):  # pylint: disable=unused-argument
         """ Return the static content. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return io.StringIO('{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, '
-                               '"issues": {2}}}'.format(self.view_url, self.nr_query_results, self.issues))
+            return '{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, "issues": {2}}}'.format(
+                self.view_url, self.nr_query_results, self.issues)
 
 
 class JiraTestCase(unittest.TestCase):
