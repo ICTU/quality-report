@@ -57,7 +57,7 @@ class Subversion(version_control_system.VersionControlSystem):
 
     def last_changed_date(self, url):
         """ Return the date when the url was last changed in Subversion. """
-        svn_info_xml = str(self._run_shell_command(['svn', 'info', '--xml', url]))
+        svn_info_xml = str(self._run_shell_command(('svn', 'info', '--xml', url)))
         try:
             date = bs4.BeautifulSoup(svn_info_xml, "html.parser")('date')[0].string
         except IndexError:
