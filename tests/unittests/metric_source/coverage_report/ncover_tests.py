@@ -55,6 +55,7 @@ class NCoverTest(unittest.TestCase):
 
     def setUp(self):
         self.__opener = FakeUrlOpener()
+        NCover._CoverageReport__get_soup.cache_clear()
         self.__ncover = NCover(url_open=self.__opener.url_open)
 
     def test_statement_coverage(self):

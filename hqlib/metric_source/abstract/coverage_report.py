@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+import functools
 import bs4
 
 from ..url_opener import UrlOpener
@@ -79,6 +80,7 @@ class CoverageReport(domain.MetricSource):
         """ Return the url for the date when the coverage of the product was last measured. """
         return coverage_url
 
+    @functools.lru_cache()
     def __get_soup(self, url):
         """ Get a beautiful soup of the HTML at the url. """
         return bs4.BeautifulSoup(self.__url_open(url), "html.parser")

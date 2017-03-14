@@ -49,6 +49,7 @@ class JacocoTest(unittest.TestCase):
     """ Unit tests for the Jacoco class. """
 
     def setUp(self):
+        JaCoCo._CoverageReport__get_soup.cache_clear()
         self.__opener = FakeUrlOpener()
         self.__jacoco = JaCoCo(url_open=self.__opener.url_open)
 
