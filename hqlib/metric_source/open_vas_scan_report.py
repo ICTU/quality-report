@@ -54,10 +54,7 @@ class OpenVASScanReport(domain.MetricSource):
 
     def datetime(self, *report_urls):
         """ Return the date/time of the reports. """
-        results = []
-        for report_url in report_urls:
-            results.append(self.__report_datetime(report_url))
-        return min(results) if results else datetime.datetime.min
+        return min([self.__report_datetime(report_url) for report_url in report_urls], default=datetime.datetime.min)
 
     def __report_datetime(self, report_url):
         """ Return the date/time of the report. """
