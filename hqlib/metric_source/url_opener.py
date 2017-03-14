@@ -22,6 +22,7 @@ import socket
 import urllib.error
 import urllib.request
 
+URLS = set()
 
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
@@ -73,6 +74,11 @@ class UrlOpener(object):
     @functools.lru_cache(maxsize=1024)
     def url_read(self, url):
         """ Open and read a url, and transform the bytes to a string. """
+        global URLS
+        pre = len(URLS)
+        URLS.add(url)
+        if pre < len(URLS):
+            logging.info("Opening url nr %d: %s", len(URLS), url)
         data = self.url_open(url).read()
         if type(data) == bytes:
             data = data.decode('utf-8')
