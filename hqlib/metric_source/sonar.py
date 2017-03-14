@@ -314,7 +314,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return default
         return len(json['issues'])
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=4096)
     def __get_json(self, url):
         """ Get and evaluate the json from the url. """
         try:
