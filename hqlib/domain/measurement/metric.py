@@ -113,7 +113,7 @@ class Metric(object):
         except AttributeError:
             return None
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=8*1024)
     def status(self):
         """ Return the status/color of the metric. """
         for status_string, has_status in [('missing_source', self.__missing_source_configuration),
