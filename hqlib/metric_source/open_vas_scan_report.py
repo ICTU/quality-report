@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+import bs4
 import datetime
 import dateutil.parser
-import bs4
+import functools
 
 from . import url_opener
 from .. import domain
@@ -38,7 +38,7 @@ class OpenVASScanReport(domain.MetricSource):
         nr_alerts = 0
         for url in report_urls:
             try:
-                soup = bs4.BeautifulSoup(self._url_open(url), "html.parser")
+                soup = self.__get_soup(url)
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
             else:
@@ -62,9 +62,14 @@ class OpenVASScanReport(domain.MetricSource):
     def __report_datetime(self, report_url):
         """ Return the date/time of the report. """
         try:
-            soup = bs4.BeautifulSoup(self._url_open(report_url), "html.parser")
+            soup = self.__get_soup(report_url)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         summary_table = soup('table')[0]('table')[0]  # The whole report is one big table with nested tables.
         date_string = summary_table('tr')[1]('td')[1].string
         return dateutil.parser.parse(date_string, ignoretz=True)
+
+    @functools.lru_cache()
+    def __get_soup(self, url):
+        """ Get the soup from the url. """
+        return bs4.BeautifulSoup(self._url_open(url), "html.parser")
