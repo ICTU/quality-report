@@ -36,7 +36,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the report urls for the specified product. """
         raise NotImplementedError  # pragma: no cover
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def queries(self, product):
         """ Return the number of performance queries. """
         try:
@@ -44,7 +44,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def queries_violating_max_responsetime(self, product):
         """ Return the number of performance queries that violate the maximum response time. """
         try:
@@ -52,7 +52,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def queries_violating_wished_responsetime(self, product):
         """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
         try:
@@ -60,7 +60,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def datetime(self, *products):
         """ Return the date when performance was last measured. """
         urls = self.urls(products[0])

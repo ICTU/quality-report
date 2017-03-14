@@ -60,7 +60,7 @@ class CoverageReport(domain.MetricSource):
         """ Parse the coverage percentage from the soup. """
         raise NotImplementedError  # pragma: no cover
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def datetime(self, *coverage_urls):
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
         coverage_date_url = self._get_coverage_date_url(coverage_urls[0])
@@ -81,7 +81,7 @@ class CoverageReport(domain.MetricSource):
         """ Return the url for the date when the coverage of the product was last measured. """
         return coverage_url
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url):
         """ Get a beautiful soup of the HTML at the url. """
         return bs4.BeautifulSoup(self.__url_open(url), "html.parser")

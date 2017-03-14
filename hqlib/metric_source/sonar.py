@@ -265,7 +265,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     # Helper methods
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=4096)
     def __metric(self, product, metric_name, default=0):
         """ Return a specific metric value for the product. """
         if not self.__has_project(product):

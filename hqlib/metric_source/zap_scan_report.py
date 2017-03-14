@@ -47,7 +47,7 @@ class ZAPScanReport(domain.MetricSource):
                 return -1
         return nr_alerts
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url):
         """ Return the HTML soup. """
         return bs4.BeautifulSoup(self._url_open(url), "html.parser")

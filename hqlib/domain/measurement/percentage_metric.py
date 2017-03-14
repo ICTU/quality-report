@@ -26,7 +26,7 @@ class PercentageMixin(object):
     unit = '%'
     zero_divided_by_zero_is_zero = 'Subclass responsibility'
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def value(self):
         """ Return the actual value of the metric as a percentage calculated from the numerator and denominator
             of the metric. """

@@ -60,7 +60,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         datetime_node = root.find(".//{{{ns}}}projectInfo/{{{ns}}}reportDate".format(ns=namespace))
         return datetime.datetime.strptime(datetime_node.text.split('.')[0], "%Y-%m-%dT%H:%M:%S")
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __report_root(self, report_url):
         """ Return the root node and namespace of the OWASP dependency XML report. """
         contents = self.__url_read(report_url)

@@ -66,7 +66,7 @@ class OpenVASScanReport(domain.MetricSource):
         date_string = summary_table('tr')[1]('td')[1].string
         return dateutil.parser.parse(date_string, ignoretz=True)
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url):
         """ Get the soup from the url. """
         return bs4.BeautifulSoup(self._url_open(url), "html.parser")

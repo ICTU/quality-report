@@ -24,7 +24,7 @@ class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
         specifies the metric statuses (colors) that the meta metric is measuring. """
     metric_statuses = []  # Subclass responsibility
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def _numerator(self):
         """ Return the numerator (the number above the divider) for the meta metric. """
         return len([metric for metric in self._subject if metric.status() in self.metric_statuses])

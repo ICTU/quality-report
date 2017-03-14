@@ -87,7 +87,7 @@ class History(domain.MetricSource):
         else:
             return '', datetime.datetime.min
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __historic_values(self, recent_only=True):
         """ Return only the historic values from the history file, so without the status and status date. """
         measurements = self.__load_history(recent_only)
@@ -105,7 +105,7 @@ class History(domain.MetricSource):
         lines = self.__load_complete_history()
         return lines[-self.__recent_history:] if recent_only else lines
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __load_complete_history(self):
         """ Load all measurements from the history file. """
         try:

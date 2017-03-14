@@ -70,7 +70,7 @@ class UrlOpener(object):
             logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
 
-    @functools.lru_cache(maxsize=2048)
+    @functools.lru_cache(maxsize=4096)
     def url_read(self, url):
         """ Open and read a url, and transform the bytes to a string. """
         data = self.url_open(url).read()

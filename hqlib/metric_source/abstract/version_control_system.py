@@ -79,7 +79,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return the tags folder for the specified version. """
         return ''  # pragma: no cover
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def _run_shell_command(self, shell_command, folder=None, log_level=logging.WARNING):
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         original_working_dir = os.getcwd()

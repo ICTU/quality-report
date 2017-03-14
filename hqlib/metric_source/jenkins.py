@@ -156,7 +156,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return whether the job has builds or not. """
         return len(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def _api(self, url):
         """ Return the result of the API call at the url. """
         data = self.url_read(url)
