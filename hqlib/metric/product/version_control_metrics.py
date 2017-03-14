@@ -90,7 +90,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         """ Return a list of branches for the product. """
         return self._vcs_product_info.branches(self._vcs_path())
 
-    @functools.lru_cache()
+    @functools.lru_cache(maxsize=1024)
     def __unmerged_branches(self):
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
         return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),
