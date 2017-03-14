@@ -43,6 +43,7 @@ class JenkinsTest(unittest.TestCase):
     """ Unit tests for the Jenkins class. """
 
     def setUp(self):
+        JenkinsUnderTest._api.cache_clear()
         self.__jenkins = JenkinsUnderTest('http://jenkins/', 'username', 'password')
 
     def test_url(self):

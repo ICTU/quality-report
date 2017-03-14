@@ -16,6 +16,7 @@ limitations under the License.
 
 import ast
 import datetime
+import functools
 import logging
 import re
 import urllib.parse
@@ -155,6 +156,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return whether the job has builds or not. """
         return len(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
 
+    @functools.lru_cache()
     def _api(self, url):
         """ Return the result of the API call at the url. """
         data = self.url_read(url)

@@ -37,6 +37,7 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
 class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     """ Unit tests for the Jenkins OWASP dependency report class. """
     def setUp(self):
+        JenkinsOWASPDependencyReportUnderTest._api.cache_clear()
         self.__jenkins = JenkinsOWASPDependencyReportUnderTest('http://jenkins/', 'username', 'password')
 
     def test_high_priority_warnings(self):
