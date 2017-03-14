@@ -356,6 +356,7 @@ class SilkPerformerTest(unittest.TestCase):
     expected_queries = 17
 
     def setUp(self):
+        SilkPerformerUnderTest.queries.cache_clear()
         self._performance_report = SilkPerformerUnderTest('http://report/')
 
     def test_url(self):

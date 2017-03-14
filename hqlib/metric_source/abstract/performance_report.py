@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+import functools
 
 from .. import beautifulsoup
 from ..url_opener import UrlOpener
@@ -35,6 +36,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the report urls for the specified product. """
         raise NotImplementedError  # pragma: no cover
 
+    @functools.lru_cache()
     def queries(self, product):
         """ Return the number of performance queries. """
         try:
@@ -42,6 +44,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
+    @functools.lru_cache()
     def queries_violating_max_responsetime(self, product):
         """ Return the number of performance queries that violate the maximum response time. """
         try:
@@ -49,6 +52,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
+    @functools.lru_cache()
     def queries_violating_wished_responsetime(self, product):
         """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
         try:
@@ -56,6 +60,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         except UrlOpener.url_open_exceptions:
             return -1
 
+    @functools.lru_cache()
     def datetime(self, *products):
         """ Return the date when performance was last measured. """
         urls = self.urls(products[0])
