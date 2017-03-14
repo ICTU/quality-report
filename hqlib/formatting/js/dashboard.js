@@ -116,6 +116,12 @@ function create_dashboard(metrics_data, report_date) {
     document.getElementById('filter_color_grey').onclick = function() {
         set_filter('filter_color', 'filter_color_grey', tables)
     };
+    document.getElementById('filter_color_missing_source').onclick = function() {
+        set_filter('filter_color', 'filter_color_missing_source', tables)
+    };
+    document.getElementById('filter_color_missing').onclick = function() {
+        set_filter('filter_color', 'filter_color_missing', tables)
+    };
 
     // Retrieve the history for the meta metrics history charts.
     $.getJSON("json/meta_history.json", "", function(history_json) {
@@ -278,6 +284,14 @@ function table_view_filtered_rows() {
     if (filtered_color === 'filter_color_grey') {
         colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
                                                         value: 'grey'}]);
+    }
+    if (filtered_color === 'filter_color_missing_source') {
+        colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
+                                                        value: 'missing_source'}]);
+    }
+    if (filtered_color === 'filter_color_missing') {
+        colored_rows = window.metrics.getFilteredRows([{column: METRICS_COLUMN_STATUS_TEXT,
+                                                        value: 'missing'}]);
     }
     return colored_rows;
 }
