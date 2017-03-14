@@ -37,6 +37,9 @@ class JenkinsTestReportTest(unittest.TestCase):
     """ Unit tests for the Jenkins test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()
+        for method in (JenkinsTestReport.datetime, JenkinsTestReport.failed_tests, JenkinsTestReport.skipped_tests,
+                       JenkinsTestReport.passed_tests):
+            method.cache_clear()
         self.__jenkins = JenkinsTestReport(url_read=self.__opener.url_read)
 
     def test_testreport(self):

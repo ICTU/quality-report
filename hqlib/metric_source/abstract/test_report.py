@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+import functools
 
 from .. import url_opener
 from ... import domain
@@ -30,19 +31,23 @@ class TestReport(domain.MetricSource):
         self._url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super(TestReport, self).__init__()
 
+    @functools.lru_cache()
     def datetime(self, *report_urls):
         """ Return the (oldest) date and time of the reports. """
         return min([self._report_datetime(report_url) for report_url in report_urls]) if report_urls else \
             datetime.datetime.min
 
+    @functools.lru_cache()
     def passed_tests(self, *report_urls):
         """ Return the number of passed tests. """
         return sum([self._passed_tests(report_url) for report_url in report_urls]) if report_urls else -1
 
+    @functools.lru_cache()
     def failed_tests(self, *report_urls):
         """ Return the number of failed tests. """
         return sum([self._failed_tests(report_url) for report_url in report_urls]) if report_urls else -1
 
+    @functools.lru_cache()
     def skipped_tests(self, *report_urls):
         """ Return the number of skipped tests. """
         return sum([self._skipped_tests(report_url) for report_url in report_urls]) if report_urls else -1

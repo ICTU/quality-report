@@ -37,6 +37,9 @@ class JunitTestReportTest(unittest.TestCase):
     """ Unit tests for the Junit test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()
+        for method in (JunitTestReport.datetime, JunitTestReport.failed_tests, JunitTestReport.skipped_tests,
+                       JunitTestReport.passed_tests):
+            method.cache_clear()
         self.__junit = JunitTestReport(url_read=self.__opener.url_read)
 
     def test_test_report(self):
