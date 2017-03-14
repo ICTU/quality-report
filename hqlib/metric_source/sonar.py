@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+import functools
 import logging
 
 from . import url_opener
@@ -312,6 +313,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return default
         return len(json['issues'])
 
+    @functools.lru_cache()
     def __get_json(self, url):
         """ Get and evaluate the json from the url. """
         try:

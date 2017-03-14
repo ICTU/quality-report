@@ -252,6 +252,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 class SonarTestCase(unittest.TestCase):
     """ Base class for Sonar unit tests. """
     def setUp(self):
+        SonarUnderTest._Sonar__get_json.cache_clear()
         self._sonar = SonarUnderTest('http://sonar/')
 
 
