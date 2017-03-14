@@ -60,6 +60,7 @@ class CoverageReport(domain.MetricSource):
         """ Parse the coverage percentage from the soup. """
         raise NotImplementedError  # pragma: no cover
 
+    @functools.lru_cache()
     def datetime(self, *coverage_urls):
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
         coverage_date_url = self._get_coverage_date_url(coverage_urls[0])

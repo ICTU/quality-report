@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import functools
 
 from ..domain import HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
 
@@ -23,6 +24,7 @@ class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
         specifies the metric statuses (colors) that the meta metric is measuring. """
     metric_statuses = []  # Subclass responsibility
 
+    @functools.lru_cache()
     def _numerator(self):
         """ Return the numerator (the number above the divider) for the meta metric. """
         return len([metric for metric in self._subject if metric.status() in self.metric_statuses])
