@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+import functools
 
 from . import directed_metric
 
@@ -30,6 +31,7 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
         return -1 if self._missing() else \
             (datetime.datetime.now() - self._metric_source.datetime(*self._get_metric_source_ids())).days
 
+    @functools.lru_cache(maxsize=1024)
     def _missing(self):
         if not self._metric_source:
             return True
