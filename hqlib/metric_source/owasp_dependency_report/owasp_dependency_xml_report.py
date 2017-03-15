@@ -30,6 +30,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super(OWASPDependencyXMLReport, self).__init__()
 
+    @functools.lru_cache(maxsize=1024)
     def nr_warnings(self, report_urls, priority):
         assert priority in ('low', 'normal', 'high')
         if priority == 'normal':

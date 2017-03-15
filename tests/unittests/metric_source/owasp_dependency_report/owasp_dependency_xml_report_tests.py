@@ -27,6 +27,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
 
     def setUp(self):
         metric_source.OWASPDependencyXMLReport._OWASPDependencyXMLReport__report_root.cache_clear()
+        metric_source.OWASPDependencyXMLReport.nr_warnings.cache_clear()
         self.__report = metric_source.OWASPDependencyXMLReport(url_read=self.__url_read)
 
     def __url_read(self, url):  # pylint: disable=unused-argument
@@ -51,7 +52,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
             </dependencies>
         </analysis>
         '''
-        self.assertEqual(1, self.__report.nr_warnings(['url'], 'high'))
+        self.assertEqual(1, self.__report.nr_warnings(('url',), 'high'))
 
     def test_normal_priority_warnings(self):
         """ Test retrieving normal priority warnings. """
@@ -74,7 +75,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
             </dependencies>
         </analysis>
         '''
-        self.assertEqual(2, self.__report.nr_warnings(['url'], 'normal'))
+        self.assertEqual(2, self.__report.nr_warnings(('url',), 'normal'))
 
     def test_low_priority_warnings(self):
         """ Test retrieving low priority warnings. """
@@ -97,7 +98,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
             </dependencies>
         </analysis>
         '''
-        self.assertEqual(4, self.__report.nr_warnings(['url', 'url'], 'low'))
+        self.assertEqual(4, self.__report.nr_warnings(('url', 'url'), 'low'))
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """
@@ -106,7 +107,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """
         self.contents = 'raise'
-        self.assertEqual(-1, self.__report.nr_warnings(['url'], 'normal'))
+        self.assertEqual(-1, self.__report.nr_warnings(('url',), 'normal'))
 
     def test_datetime(self):
         """ Test that the date time is correctly parsed from the report. """
