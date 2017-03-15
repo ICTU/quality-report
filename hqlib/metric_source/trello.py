@@ -34,6 +34,7 @@ class TrelloObject(domain.MetricSource):
         self.__urlopen = urlopen
         object_type = self.__class__.__name__[len('Trello'):].lower()
         self._parameters = dict(object_type=object_type, object_id=object_id, appkey=appkey, token=token)
+        self.__json = dict()
         super(TrelloObject, self).__init__()
 
     def __bool__(self):
@@ -46,13 +47,19 @@ class TrelloObject(domain.MetricSource):
         """ Return the JSON at url. """
         parameters = self._parameters.copy()
         parameters.update(dict(argument=argument, parameters=extra_parameters))
-        url = self.url_template.format(**parameters)
+        return self.__get_json(self.url_template.format(**parameters))
+
+    def __get_json(self, url):
+        """ Return and evaluate the JSON at the url. """
+        if url in self.__json:
+            return self.__json[url]
         try:
-            json_string = self.__urlopen(url).read()
+             json_string = self.__urlopen(url).read()
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise
-        return utils.eval_json(json_string)
+        json = self.__json[url] = utils.eval_json(json_string)
+        return json
 
     def name(self):
         """ Return the name of this Trello object. """
