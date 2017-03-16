@@ -33,6 +33,7 @@ class ZAPScanReport(domain.MetricSource):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super(ZAPScanReport, self).__init__()
 
+    @functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
         assert risk_level in ('low', 'medium', 'high')

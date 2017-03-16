@@ -64,6 +64,7 @@ class ZAPScanReportTest(unittest.TestCase):
 
     def setUp(self):
         self.__opener = FakeUrlOpener()
+        ZAPScanReport.alerts.cache_clear()
         ZAPScanReport._ZAPScanReport__get_soup.cache_clear()
         self.__report = ZAPScanReport(url_open=self.__opener.url_open)
 
