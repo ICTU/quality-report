@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-import ast
+from ast import literal_eval
 import datetime
 import functools
 import io
@@ -113,9 +113,8 @@ class History(domain.MetricSource):
         except IOError:
             logging.warning('Could not open %s', self.__history_filename)
             history_file = io.StringIO()  # Fake an empty file
-        lines = history_file.readlines()
+        lines = [literal_eval(line) for line in history_file if line.strip()]
         history_file.close()
-        lines = [ast.literal_eval(line) for line in lines if line.strip()]
         lines = [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
         logging.info('Read %d lines from %s', len(lines), self.__history_filename)
         return lines

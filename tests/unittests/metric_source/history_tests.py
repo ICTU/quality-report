@@ -39,10 +39,9 @@ class FakeFile(object):
     def __init__(self, *args, **kwargs):  # pylint: disable=unused-argument
         pass
 
-    @classmethod
-    def readlines(cls):
-        """ Return the fake contents of the file. """
-        return cls.initial_content
+    def __iter__(self):
+        """ Return an iterator for the fake contents of the file. """
+        return self.initial_content.__iter__()
 
     @staticmethod
     def close():
