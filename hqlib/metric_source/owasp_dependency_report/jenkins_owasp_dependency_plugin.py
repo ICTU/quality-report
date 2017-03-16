@@ -29,13 +29,7 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         self.__report_url = self._last_successful_build_url + 'dependency-check-jenkins-pluginResult/'
         self.__report_api_url = self.__report_url + self.api_postfix
 
-    def nr_warnings(self, job_names, priority):
-        """ Return the number of warnings in the jobs with the specified priority. """
-        assert priority in ('low', 'normal', 'high')
-        warnings = [self.__nr_warnings(job_name, priority) for job_name in job_names]
-        return -1 if -1 in warnings else sum(warnings)
-
-    def __nr_warnings(self, job_name, priority):
+    def _nr_warnings(self, job_name, priority):
         """ Return the number of warnings of the specified type in the job. """
         job_name = self.resolve_job_name(job_name)
         url = self.__report_api_url.format(job=job_name)

@@ -30,24 +30,17 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super(OWASPDependencyXMLReport, self).__init__()
 
-    @functools.lru_cache(maxsize=1024)
-    def nr_warnings(self, report_urls, priority):
-        assert priority in ('low', 'normal', 'high')
+    def _nr_warnings(self, report_url, priority):
+        """ Return the number of warnings for the specified priority in the report. """
         if priority == 'normal':
             priority = 'medium'
-        warnings = [self.__nr_warnings(report_url)[priority.capitalize()] for report_url in report_urls]
-        return -1 if -1 in warnings else sum(warnings)
-
-    def __nr_warnings(self, report_url):
-        """ Return the number of warnings of each priority in the report. """
         try:
             root, namespace = self.__report_root(report_url)
         except url_opener.UrlOpener.url_open_exceptions:
-            return dict(Low=-1, Medium=-1, High=-1)
+            return -1
         # Using XPath, find all vulnerability nodes with a severity child node:
         severity_nodes = root.findall(".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace))
-        return {priority: len([node for node in severity_nodes if node.text == priority])
-                for priority in ('Low', 'Medium', 'High')}
+        return len([node for node in severity_nodes if node.text == priority.capitalize()])
 
     def metric_source_urls(self, *report_urls):
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]

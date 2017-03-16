@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import datetime
+import functools
 
 from ... import domain
 
@@ -24,10 +25,18 @@ class OWASPDependencyReport(domain.MetricSource):
     metric_source_name = 'OWASP dependency rapport'
     needs_metric_source_id = True
 
-    def nr_warnings(self, metric_source_id, priority):
-        """ Return the number of warnings in the report with the specified priority. """
+    @functools.lru_cache(maxsize=1024)
+    def nr_warnings(self, metric_source_ids, priority):
+        """ Return the number of warnings in the reports with the specified priority. """
+        assert priority in ('low', 'normal', 'high')
+        warnings = [self._nr_warnings(metric_source_id, priority) for metric_source_id in metric_source_ids]
+        return -1 if -1 in warnings else sum(warnings)
+
+    def _nr_warnings(self, metric_source_id, priority):
+        """ Return the  number of warnings in the report with the specified priority. """
         raise NotImplementedError  # pragma: no cover
 
+    @functools.lru_cache(maxsize=1024)
     def datetime(self, *metric_source_ids):
         """ Return the date/time of the reports. """
         results = []

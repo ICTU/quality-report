@@ -38,22 +38,23 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     """ Unit tests for the Jenkins OWASP dependency report class. """
     def setUp(self):
         JenkinsOWASPDependencyReportUnderTest._api.cache_clear()
+        JenkinsOWASPDependencyReportUnderTest.nr_warnings.cache_clear()
         self.__jenkins = JenkinsOWASPDependencyReportUnderTest('http://jenkins/', 'username', 'password')
 
     def test_high_priority_warnings(self):
         """ Test retrieving high priority warnings. """
         self.__jenkins.contents = '{"numberOfHighPriorityWarnings":2}'
-        self.assertEqual(2, self.__jenkins.nr_warnings(['job'], 'high'))
+        self.assertEqual(2, self.__jenkins.nr_warnings(('job',), 'high'))
 
     def test_normal_priority_warnings(self):
         """ Test retrieving normal priority warnings. """
         self.__jenkins.contents = '{"numberOfNormalPriorityWarnings":4}'
-        self.assertEqual(4, self.__jenkins.nr_warnings(['job'], 'normal'))
+        self.assertEqual(4, self.__jenkins.nr_warnings(('job',), 'normal'))
 
     def test_low_priority_warnings(self):
         """ Test retrieving low priority warnings. """
         self.__jenkins.contents = '{"numberOfLowPriorityWarnings":9}'
-        self.assertEqual(9, self.__jenkins.nr_warnings(['job'], 'low'))
+        self.assertEqual(9, self.__jenkins.nr_warnings(('job',), 'low'))
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """
@@ -63,8 +64,8 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """
         self.__jenkins.contents = 'raise'
-        self.assertEqual(-1, self.__jenkins.nr_warnings(['job'], 'normal'))
+        self.assertEqual(-1, self.__jenkins.nr_warnings(('job',), 'normal'))
 
     def test_datetime(self):
         """ Test that the age of the job is returned. """
-        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime(['job']))
+        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime(('job',)))
