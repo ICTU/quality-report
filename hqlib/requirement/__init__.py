@@ -24,6 +24,6 @@ from .product_quality import TrustedProductMaintainability, OWASPDependencies, O
 from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScript
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, \
     TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, TrackSecurityAndPerformanceRisks
-from .environment import TrackJavaConsistency, TrackCIJobs, TrackSonarVersion, OpenVAS
+from .environment import TrackCIJobs, TrackSonarVersion, OpenVAS
 from .team import ScrumTeam, TrackSpirit, TrackAbsence
 from .document import TrackDocumentAge

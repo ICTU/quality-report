@@ -59,7 +59,6 @@ from .team.spirit import TeamSpirit, TeamSpiritAge
 from .document.age import DocumentAge
 
 # Environment metrics
-from .environment.configuration_consistency import JavaVersionConsistency, JavaVersionConsistencyAge
 from .environment.failing_ci_jobs import FailingCIJobs
 from .environment.unused_ci_jobs import UnusedCIJobs
 from .environment.version_number import (

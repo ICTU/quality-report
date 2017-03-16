@@ -37,7 +37,7 @@ class QualityReport(domain.DomainObject):
                 requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
                 requirement.TrackRisks, requirement.TrackBugs, requirement.TrackTechnicalDebt,
                 requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
-                requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackJavaConsistency,
+                requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS, requirement.Java,
@@ -172,7 +172,6 @@ class QualityReport(domain.DomainObject):
     def __environment_section(self, environment):
         """ Return the environment section. """
         metrics = self.__required_subject_metrics(environment, requirement.TrackCIJobs,
-                                                  requirement.TrackJavaConsistency,
                                                   requirement.TrackSonarVersion, requirement.Java,
                                                   requirement.CSharp, requirement.JavaScript, requirement.Web,
                                                   requirement.VisualBasic, requirement.Python, requirement.TypeScript,

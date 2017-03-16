@@ -1,3 +1,9 @@
+2017-03-16  Release 1.80.0
+
+  * Remove metric and metric source for measuring consistency of Java versions across environments as it's no longer 
+    used.
+
+
 2017-03-07  Release 1.79.3
 
   * Bug fix: Manifest file was incomplete.

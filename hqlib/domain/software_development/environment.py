@@ -30,5 +30,4 @@ class Environment(RequirementSubject, MeasurableObject):
     def optional_requirements():
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.Java, requirement.JavaScript, requirement.CSharp, requirement.Python,
-                requirement.TypeScript, requirement.VisualBasic, requirement.Web, requirement.OpenVAS,
-                requirement.TrackJavaConsistency}
+                requirement.TypeScript, requirement.VisualBasic, requirement.Web, requirement.OpenVAS}

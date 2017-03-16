@@ -18,13 +18,6 @@ from .. import metric
 from ..domain import Requirement
 
 
-class TrackJavaConsistency(Requirement):
-    """ Track the consistency of Java versions in different environments. """
-
-    _name = 'Track Java consistency'
-    _metric_classes = (metric.JavaVersionConsistency, metric.JavaVersionConsistencyAge)
-
-
 class TrackCIJobs(Requirement):
     """ Track the status and usage of continuous integration jobs. """
 
