@@ -43,7 +43,7 @@ class WikiUnderTest(Wiki):  # pylint: disable=too-few-public-methods
 
     def soup(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
-        return bs4.BeautifulSoup(self.html, "html.parser")
+        return bs4.BeautifulSoup(self.html, "lxml")
 
 
 class WikiTest(unittest.TestCase):

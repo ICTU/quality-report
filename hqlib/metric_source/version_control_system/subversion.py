@@ -59,7 +59,7 @@ class Subversion(version_control_system.VersionControlSystem):
         """ Return the date when the url was last changed in Subversion. """
         svn_info_xml = str(self._run_shell_command(('svn', 'info', '--xml', url)))
         try:
-            date = bs4.BeautifulSoup(svn_info_xml, "html.parser")('date')[0].string
+            date = bs4.BeautifulSoup(svn_info_xml, "lxml")('date')[0].string
         except IndexError:
             return datetime.datetime.min
         return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -97,7 +97,7 @@ class Subversion(version_control_system.VersionControlSystem):
     def __revision_url(self, branch_url, revision_number):
         """ Return the url for a specific revision number. """
         svn_info_xml = str(self._run_shell_command(('svn', 'info', branch_url, '--xml', '-r', revision_number)))
-        return bs4.BeautifulSoup(svn_info_xml, "html.parser")('url')[0].string
+        return bs4.BeautifulSoup(svn_info_xml, "lxml")('url')[0].string
 
     def branches(self, trunk_url):
         """ Return a list of branch names for the specified trunk url. """
@@ -121,4 +121,4 @@ class Subversion(version_control_system.VersionControlSystem):
         """ Return a list of sub folder names. """
         shell_command = ('svn', 'list', '--xml', url)
         svn_info_xml = str(self._run_shell_command(shell_command))
-        return [name.string for name in bs4.BeautifulSoup(svn_info_xml, "html.parser")('name')]
+        return [name.string for name in bs4.BeautifulSoup(svn_info_xml, "lxml")('name')]

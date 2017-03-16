@@ -688,7 +688,7 @@ class BirtUnderTest(Birt):  # pylint: disable=too-few-public-methods
         if self.html == 'raise':
             raise urllib.error.URLError('Birt down')
         else:
-            return bs4.BeautifulSoup(self.html, "html.parser")
+            return bs4.BeautifulSoup(self.html, "lxml")
 
 
 class BirtTest(unittest.TestCase):
@@ -836,7 +836,7 @@ class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disabl
 
     def soup(self, url):  # pylint: disable=unused-argument
         """ Return the static html. """
-        return bs4.BeautifulSoup(self.html, "html.parser")
+        return bs4.BeautifulSoup(self.html, "lxml")
 
 
 class BirtSprintProgressReportTest(unittest.TestCase):

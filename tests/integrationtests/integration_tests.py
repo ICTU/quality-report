@@ -50,7 +50,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     def report(self):
         """ Read the report and return as beautiful soup. """
         with open('{0}/index.html'.format(self.report_folder)) as contents:
-            return bs4.BeautifulSoup(contents.read(), "html.parser")
+            return bs4.BeautifulSoup(contents.read(), "lxml")
 
     def test_report_exists(self):
         """ Test that the report exists. """

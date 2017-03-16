@@ -69,4 +69,4 @@ class OpenVASScanReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url):
         """ Get the soup from the url. """
-        return bs4.BeautifulSoup(self._url_open(url), "html.parser")
+        return bs4.BeautifulSoup(self._url_open(url), "lxml")

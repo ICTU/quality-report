@@ -27,4 +27,4 @@ class BeautifulSoupOpener(url_opener.UrlOpener):
     @functools.lru_cache(maxsize=1024)
     def soup(self, url):
         """ Return a BeautifulSoup version of the url. """
-        return BeautifulSoup(self.url_open(url), "html.parser")
+        return BeautifulSoup(self.url_open(url), "lxml")

@@ -123,7 +123,7 @@ class JMeterUnderTest(JMeterPerformanceLoadTestReport):
         return HTML
 
     def soup(self, url):
-        return bs4.BeautifulSoup('<li><a>1.html</a></li>', "html.parser") if url == self.url() \
+        return bs4.BeautifulSoup('<li><a>1.html</a></li>', "lxml") if url == self.url() \
             else super(JMeterUnderTest, self).soup(url)
 
 

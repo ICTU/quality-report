@@ -84,4 +84,4 @@ class CoverageReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url):
         """ Get a beautiful soup of the HTML at the url. """
-        return bs4.BeautifulSoup(self.__url_open(url), "html.parser")
+        return bs4.BeautifulSoup(self.__url_open(url), "lxml")
