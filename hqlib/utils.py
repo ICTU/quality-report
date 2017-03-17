@@ -163,37 +163,6 @@ def workdays_in_period(start_date, end_date):
                if datetime.date.fromordinal(ordinal).isoweekday() <= 5)
 
 
-class memoized(object):  # pylint: disable=invalid-name,too-few-public-methods
-    """ Decorator. Caches a function's return value each time it is called. If called later with the same arguments,
-        the cached value is returned (not reevaluated). """
-
-    def __init__(self, func):
-        self.__func = func
-        self.__instance = None
-        self.__cache = {}
-
-    def __get__(self, instance, cls=None):
-        self.__instance = instance
-        return self
-
-    def __call__(self, *args, **kwargs):
-        key = (id(self.__instance),) + args + tuple([kwargs[key] for key in sorted(kwargs)])
-        try:
-            return self.__cache[key]
-        except KeyError:
-            value = self.__func(self.__instance, *args, **kwargs)
-            self.__cache[key] = value
-            return value
-        except TypeError:
-            # Not cacheable -- for instance, passing a list as an argument.
-            # Better to not cache than to blow up entirely.
-            return self.__func(self.__instance, *args, **kwargs)
-
-    def __repr__(self):
-        """ Return the function's docstring. """
-        return self.__func.__doc__
-
-
 def html_escape(text):
     """ Return the text with all HTML characters escaped. """
     for character, html_code in [('&', '&amp;'), ('"', '&quot;'), ("'", '&#39;'), (">", '&gt;'), ("<", '&lt;')]:
