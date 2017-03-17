@@ -243,6 +243,10 @@ class EvalJSONTest(unittest.TestCase):
         """ Test that a float number is evaluated. """
         self.assertEqual(dict(bla=1.5), utils.eval_json('{"bla": 1.5}'))
 
+    def test_decode_bytes(self):
+        """ Test that bytes are first decoded. """
+        self.assertEqual(dict(bla=1), utils.eval_json(b'{"bla": 1}'))
+
 
 class ParseUSDateTimeTest(unittest.TestCase):
     """ Unit tests for the parse US date time method. """
