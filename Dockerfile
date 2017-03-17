@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-python2
+FROM python:3.5-alpine
 
 MAINTAINER Frank Niessink <frank.niessink@ictu.nl>
 
