@@ -85,6 +85,10 @@ class SonarVersionTest(unittest.TestCase):
         """ Test that the numerical value is a weighted sum of the first three version number parts. """
         self.assertEqual(50401, self.__metric.numerical_value())
 
+    def test_missing(self):
+        """ Test that the value is -1 without a metric source. """
+        self.assertEqual(-1, metric.SonarVersion(project=domain.Project()).value())
+
 
 class SonarQualityProfileVersionTest(unittest.TestCase):
     """ Unit tests for the Sonar quality profile version metric. """
