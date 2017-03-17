@@ -49,10 +49,18 @@ class FakeFile(object):
         pass
 
 
-class EmptyHistoryTest(unittest.TestCase):
+class HistoryTestCase(unittest.TestCase):
+    """ Base class for History file test cases. """
+    def setUp(self):
+        History._History__load_complete_history.cache_clear()
+        History._History__historic_values.cache_clear()
+
+
+class EmptyHistoryTest(HistoryTestCase):
     """ Unit tests for the History class with a non-existing history file. """
 
     def setUp(self):
+        super().setUp()
         self.__history = History('non-existing file', file_=FakeFile)
 
     def test_no_recent_history(self):
@@ -71,10 +79,11 @@ class FailingFile(FakeFile):
         raise IOError
 
 
-class FailingFileTest(unittest.TestCase):
+class FailingFileTest(HistoryTestCase):
     """ Unit tests for the History class with a non-existing history file. """
 
     def setUp(self):
+        super().setUp()
         self.__history = History('failing file', file_=FailingFile)
 
     def test_no_recent_history(self):
@@ -82,13 +91,12 @@ class FailingFileTest(unittest.TestCase):
         self.assertEqual([], self.__history.recent_history('metric id'))
 
 
-class HistoryTest(unittest.TestCase):
+class HistoryTest(HistoryTestCase):
     """ Unit tests for the History class with an existing history file. """
 
     def setUp(self):
+        super().setUp()
         self.__history = History('fake file', file_=FakeFile, recent_history=3)
-        History._History__load_complete_history.cache_clear()
-        History._History__historic_values.cache_clear()
         FakeFile.written_content = []
 
     def test_filename(self):
