@@ -54,7 +54,7 @@ class TrelloObject(domain.MetricSource):
         if url in self.__json:
             return self.__json[url]
         try:
-             json_string = self.__urlopen(url).read()
+            json_string = self.__urlopen(url).read()
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise
