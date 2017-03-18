@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import bs4
 import datetime
-import dateutil.parser
 import functools
+
+import bs4
+import dateutil.parser
 
 from . import url_opener
 from .. import domain
