@@ -74,7 +74,7 @@ class UrlOpener(object):
     def url_read(self, url):
         """ Open and read a url, and transform the bytes to a string. """
         data = self.url_open(url).read()
-        if type(data) == bytes:
+        if isinstance(data, bytes):
             data = data.decode('utf-8')
         return data
 
