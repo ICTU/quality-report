@@ -14,10 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import functools
 
 from ..metric_source_mixin import VersionControlSystemMetricMixin
-from ... import utils
 from ...domain import LowerIsBetterMetric
 
 
