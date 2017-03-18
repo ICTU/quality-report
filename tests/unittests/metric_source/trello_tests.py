@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import io
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 
 from hqlib.metric_source.trello import TrelloCard, TrelloBoard
 

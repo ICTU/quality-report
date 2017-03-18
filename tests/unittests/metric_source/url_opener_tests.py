@@ -15,7 +15,8 @@ limitations under the License.
 """
 
 import unittest
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
 
 from hqlib.metric_source import url_opener
 
