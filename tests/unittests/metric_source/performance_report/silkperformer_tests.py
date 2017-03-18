@@ -384,6 +384,15 @@ class SilkPerformerTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
                          self._performance_report.datetime(('.*[0-9][0-9].*', 'dummy')))
 
+    def test_date_without_urls(self):
+        """ Test that the min date is passed if there are no report urls to consult. """
+        class SilkPerformerWithoutUrls(SilkPerformerUnderTest):
+            def urls(self, product):  # pylint: disable=unused-argument
+                return []
+
+        self.assertEqual(datetime.datetime.min,
+                         SilkPerformerWithoutUrls('http://report').datetime(('.*[0-9][0-9].*', 'dummy')))
+
 
 class SilkPerformerMultipleReportsTest(SilkPerformerTest):
     """ Unit tests for the Silk Performer performance report metric source with multiple reports. """
