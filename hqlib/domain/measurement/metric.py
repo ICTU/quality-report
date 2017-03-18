@@ -53,7 +53,6 @@ class Metric(object):
         self._project = project
         self._metric_source = self._project.metric_source(self.metric_source_class) if self.metric_source_class \
             else None
-        logging.info('Metric source for %s is %s', self, self._metric_source)
         if isinstance(self._metric_source, list):
             for source in self._metric_source:
                 try:
@@ -61,6 +60,7 @@ class Metric(object):
                 except AttributeError:
                     continue
                 if source_id:
+                    logging.info("Metric source for %s is %s with id %s", self, source, source_id)
                     self._metric_source = source
                     self._metric_source_id = source_id
                     break
