@@ -34,11 +34,11 @@ class GitTests(unittest.TestCase):
 
     def test_is_equal(self):
         """ Test that the branch is taken into account for equality. """
-        self.failIfEqual(GitUnderTest(url=self.__git.url(), branch='branch'), self.__git)
+        self.assertNotEqual(GitUnderTest(url=self.__git.url(), branch='branch'), self.__git)
 
     def test_hash(self):
         """ Test that the branch is taken into account for the hash. """
-        self.failIfEqual(hash(GitUnderTest(url=self.__git.url(), branch='branch')), hash(self.__git))
+        self.assertNotEqual(hash(GitUnderTest(url=self.__git.url(), branch='branch')), hash(self.__git))
 
     def test_last_changed_date(self):
         """ Test that there is no last changed date for a missing repo. """
