@@ -36,6 +36,9 @@ class Git(VersionControlSystem):
     def __hash__(self):
         return hash(self.name() + self.short_name() + self.url() + self.__branch_to_checkout)
 
+    def __eq__(self, other):
+        return super().__eq__(other) and self.branch() == other.branch()
+
     def _run_shell_command(self, *args, **kwargs):
         if not self.__repo_folder:
             self.__get_repo()
@@ -49,6 +52,10 @@ class Git(VersionControlSystem):
             return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
         else:
             return datetime.datetime.min
+
+    def branch(self):
+        """ Return the checked out branch. """
+        return self.__branch_to_checkout
 
     def branches(self, path):  # pylint: disable=unused-argument
         """ Return a list of branch names for the master branch. """
