@@ -53,6 +53,7 @@ class Metric(object):
         self._project = project
         self._metric_source = self._project.metric_source(self.metric_source_class) if self.metric_source_class \
             else None
+        logging.info('Metric source for %s is %s', self, self._metric_source)
         if isinstance(self._metric_source, list):
             for source in self._metric_source:
                 try:
