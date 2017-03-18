@@ -387,6 +387,7 @@ class SilkPerformerTest(unittest.TestCase):
     def test_date_without_urls(self):
         """ Test that the min date is passed if there are no report urls to consult. """
         class SilkPerformerWithoutUrls(SilkPerformerUnderTest):
+            """ Simulate missing urls. """
             def urls(self, product):  # pylint: disable=unused-argument
                 return []
 
