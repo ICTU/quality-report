@@ -92,3 +92,8 @@ class RequirementSubjectTest(unittest.TestCase):
     def test_optional_requirements(self):
         """ Test that the default optional requirements are empty. """
         self.assertEqual({self.__added}, self.__subject.optional_requirements())
+
+    def test_add_requirements_not_optional(self):
+        """ Test that an exception is thrown when a requirement is added that is not an optional requirement. """
+        self.assertRaises(ValueError, RequirementSubjectUnderTest, default_requirements={}, optional_requirements={},
+                          added_requirements=[self.__added])

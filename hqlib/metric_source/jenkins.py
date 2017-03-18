@@ -186,6 +186,5 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             jobs_re = re.compile(job_name)
             all_jobs = self._api(self._jobs_api_url)['jobs']
             jobs = [job for job in all_jobs if jobs_re.match(job['name'])]
-            assert len(jobs) == 1
             job_name = jobs[0]['name']
         return job_name

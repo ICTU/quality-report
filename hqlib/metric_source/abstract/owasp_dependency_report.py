@@ -28,7 +28,6 @@ class OWASPDependencyReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def nr_warnings(self, metric_source_ids, priority):
         """ Return the number of warnings in the reports with the specified priority. """
-        assert priority in ('low', 'normal', 'high')
         warnings = [self._nr_warnings(metric_source_id, priority) for metric_source_id in metric_source_ids]
         return -1 if -1 in warnings else sum(warnings)
 

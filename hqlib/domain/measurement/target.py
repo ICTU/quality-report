@@ -48,7 +48,8 @@ class TechnicalDebtTarget(object):
 class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
     """ Keep track of a dynamically changing accepted technical debt for a certain metric. """
     def __init__(self, initial_target_value, initial_datetime, end_target_value, end_datetime, explanation=''):
-        assert end_datetime > initial_datetime
+        if end_datetime < initial_datetime:
+            raise ValueError("Initial datetime should be before end datetime")
         self.__period_length = (end_datetime - initial_datetime).total_seconds()
         self.__initial_target_value = initial_target_value
         self.__initial_datetime = initial_datetime

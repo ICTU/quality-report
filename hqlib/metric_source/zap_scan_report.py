@@ -36,7 +36,6 @@ class ZAPScanReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
-        assert risk_level in ('low', 'medium', 'high')
         nr_alerts = 0
         for url in report_urls:
             try:

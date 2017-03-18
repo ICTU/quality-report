@@ -87,6 +87,11 @@ class DynamicTechnicalDebtTargetTests(unittest.TestCase):
                                             200, now + datetime.timedelta(days=10))
         self.assertEqual(150, target.target_value())
 
+    def test_wrong_order(self):
+        """ Test that a value error is thrown when the dates are in the wrong order. """
+        self.assertRaises(ValueError, DynamicTechnicalDebtTarget,
+                          100, datetime.datetime(2000, 1, 1), 200, datetime.datetime(1999, 1, 1))
+
     def test_default_explanation(self):
         """ Test that the default explanation shows the period. """
         now = datetime.datetime.now()

@@ -35,7 +35,6 @@ class OpenVASScanReport(domain.MetricSource):
 
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
-        assert risk_level in ('low', 'medium', 'high')
         nr_alerts = 0
         for url in report_urls:
             try:
