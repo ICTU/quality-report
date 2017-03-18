@@ -41,7 +41,7 @@ class DomainObject(object):
 
     def __eq__(self, other):
         """ Compare names. """
-        return self.name() == other.name()
+        return self.name() == other.name() and self.short_name() == other.short_name() and self.url() == other.url()
 
     def __hash__(self):
-        return hash(self.name())
+        return hash(self.name() + self.short_name() + self.url())

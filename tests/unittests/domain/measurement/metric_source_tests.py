@@ -48,7 +48,7 @@ class MissingMetricSourceTests(unittest.TestCase):
 
     def test_url(self):
         """ Test that the missing metric source has no url. """
-        self.assertEqual(None, domain.MissingMetricSource().url())
+        self.assertEqual('', domain.MissingMetricSource().url())
 
     def test_datetime(self):
         """ Test that the datetime is the min datetime for missing metric sources. """

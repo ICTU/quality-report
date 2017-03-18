@@ -28,10 +28,13 @@ class Git(VersionControlSystem):
     metric_source_name = 'Git'
 
     def __init__(self, *args, **kwargs):
-        self.__branch_to_checkout = kwargs.pop('branch', None)
+        self.__branch_to_checkout = kwargs.pop('branch', '')
         self.__chdir = kwargs.pop('chdir', os.chdir)
         super(Git, self).__init__(*args, **kwargs)
         self.__repo_folder = None
+
+    def __hash__(self):
+        return hash(self.name() + self.short_name() + self.url() + self.__branch_to_checkout)
 
     def _run_shell_command(self, *args, **kwargs):
         if not self.__repo_folder:

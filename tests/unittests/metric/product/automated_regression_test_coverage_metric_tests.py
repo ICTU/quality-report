@@ -24,7 +24,6 @@ class FakeNCover(domain.MetricSource):
     """ Fake NCover. """
     metric_source_name = metric_source.NCover.metric_source_name
     needs_metric_source_id = metric_source.CoverageReport.needs_metric_source_id
-    url = 'http://ncover'
 
     @staticmethod
     def statement_coverage(*args):  # pylint: disable=unused-argument
@@ -38,11 +37,14 @@ class FakeNCover(domain.MetricSource):
         """ Return a fake date. """
         return datetime.datetime.today() - datetime.timedelta(days=4)
 
+    def url(self):
+        """ Return a fake url. """
+        return 'http://url'
+
 
 class FakeJaCoCo(FakeNCover):
     """ Fake JaCoCo. """
     metric_source_name = metric_source.JaCoCo.metric_source_name
-    url = 'http://jacoco'
 
 
 class FakeSubject(object):

@@ -60,7 +60,6 @@ class Metric(object):
                 except AttributeError:
                     continue
                 if source_id:
-                    logging.info("Metric source for %s is %s with id %s", self, source, source_id)
                     self._metric_source = source
                     self._metric_source_id = source_id
                     break

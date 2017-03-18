@@ -44,7 +44,7 @@ class MissingMetricSource(MetricSource):
     """ Class that represents a missing metric source. """
 
     def url(self):
-        return
+        return ''
 
     def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument,no-self-use
         return datetime.datetime.min
