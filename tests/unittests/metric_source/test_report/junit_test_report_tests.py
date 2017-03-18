@@ -86,6 +86,11 @@ class JunitTestReportTest(unittest.TestCase):
         self.__opener.contents = '<testsuites></testsuites>'
         self.assertEqual(-1, self.__junit.failed_tests('url'))
 
+    def test_faulty_xml(self):
+        """ Test incorrect XML. """
+        self.__opener.contents = '<testsuites><bla>'
+        self.assertEqual(-1, self.__junit.failed_tests('url'))
+
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
         self.__opener.contents = '<testsuites>' \
