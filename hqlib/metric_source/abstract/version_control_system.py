@@ -86,7 +86,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         if folder:
             os.chdir(folder)
         try:
-            return self._shell_command(shell_command, universal_newlines=True )
+            return self._shell_command(shell_command, universal_newlines=True)
         except subprocess.CalledProcessError as reason:
             # No need to include the shell command in the log, because the reason contains the shell command.
             logging.log(log_level, 'Shell command in folder %s failed: %s', folder, reason)
