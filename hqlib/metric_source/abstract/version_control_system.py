@@ -79,16 +79,14 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return the tags folder for the specified version. """
         return ''  # pragma: no cover
 
-    #@functools.lru_cache(maxsize=1024)
+    @functools.lru_cache(maxsize=1024)
     def _run_shell_command(self, shell_command, folder=None, log_level=logging.WARNING):
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         original_working_dir = os.getcwd()
         if folder:
             os.chdir(folder)
-        logging.info('Invoking shell command: %s in folder: %s', shell_command, folder)
         try:
             result = self._shell_command(shell_command, universal_newlines=True)
-            logging.info('Invoking shell command: %s with result: %s', shell_command, result)
             return result
         except subprocess.CalledProcessError as reason:
             # No need to include the shell command in the log, because the reason contains the shell command.
