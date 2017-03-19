@@ -44,4 +44,4 @@ class DomainObject(object):
         return self.name() == other.name() and self.short_name() == other.short_name() and self.url() == other.url()
 
     def __hash__(self):
-        return hash(self.name() + self.short_name() + self.url())
+        return hash(id(self))

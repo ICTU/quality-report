@@ -1,3 +1,8 @@
+2017-03-19  Release 1.80.1
+
+  * Bug fix: Don't crash when using Subversion.
+
+
 2017-03-19  Release 1.80.0
 
   * Upgrade to Python 3 (tested with Python 3.4 and 3.5).
