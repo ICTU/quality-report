@@ -100,18 +100,18 @@ class Git(VersionControlSystem):
     def __get_repo(self):
         """ Clone the repository if necessary, else pull it. """
         self.__repo_folder = self.__determine_repo_folder_name()
+        command = ['git']
         if os.path.exists(self.__repo_folder):
             logging.info('Updating Git repo %s in %s', self.url(), self.__repo_folder)
-            command = ('git', 'pull', '--prune')
-            self._run_shell_command(command)
+            command.extend(['pull', '--prune'])
         else:
             branch_string = self.__branch_to_checkout or 'master'
             logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, self.__repo_folder)
-            command = ['git', 'clone', self.__full_url(), self.__repo_folder]
+            command.extend(['clone', self.__full_url(), self.__repo_folder])
             if self.__branch_to_checkout:
                 command.insert(2, '--branch')
                 command.insert(3, self.__branch_to_checkout)
-            self._run_shell_command(tuple(command))
+        self._run_shell_command(tuple(command))
 
     def __full_url(self):
         """ Return the Git repository url with username and password. """
