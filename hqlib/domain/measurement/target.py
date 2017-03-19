@@ -53,20 +53,19 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
         self.__period_length = (end_datetime - initial_datetime).total_seconds()
         self.__initial_target_value = initial_target_value
         self.__initial_datetime = initial_datetime
-        self.__end_target_value = end_target_value
         self.__end_datetime = end_datetime
-        super(DynamicTechnicalDebtTarget, self).__init__(end_target_value, explanation)
+        super().__init__(end_target_value, explanation)
 
     def target_value(self):
         now = datetime.datetime.now()
         if now < self.__initial_datetime:
             return self.__initial_target_value
         elif now > self.__end_datetime:
-            return self.__end_target_value
+            return super().target_value()
         else:
             period_passed = (now - self.__initial_datetime).total_seconds()
             fraction = period_passed / self.__period_length
-            delta = self.__end_target_value - self.__initial_target_value
+            delta = super().target_value() - self.__initial_target_value
             return int(round(fraction * delta + self.__initial_target_value))
 
     def explanation(self, unit=''):
@@ -76,6 +75,6 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
             'naar {new_val}{unit} op {new_date}.'.format(unit=self._space_unit(unit),
                                                          old_val=self.__initial_target_value,
                                                          old_date=start_date,
-                                                         new_val=self.__end_target_value,
+                                                         new_val=super().target_value(),
                                                          new_date=end_date)
-        return explanation + ' ' + super(DynamicTechnicalDebtTarget, self).explanation(unit)
+        return explanation + ' ' + super().explanation(unit)
