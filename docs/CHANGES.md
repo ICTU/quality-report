@@ -1,3 +1,8 @@
+2017-03-19  Release 1.80.2
+
+  * Bug fix: Don't assume ASCII when decoding JSON.
+  
+
 2017-03-19  Release 1.80.1
 
   * Bug fix: Don't crash when using Subversion.
