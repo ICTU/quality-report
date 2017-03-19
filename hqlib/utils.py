@@ -173,7 +173,11 @@ def html_escape(text):
 def eval_json(json_string):
     """ Return an evaluated version of the json string. """
     if isinstance(json_string, bytes):
-        json_string = json_string.decode('ascii')
+        try:
+            json_string = json_string.decode('utf-8')
+        except UnicodeDecodeError as reason:
+            logging.error("Couldn't decode %s using utf-8: %s", json_string, reason)
+            raise
     try:
         return json.loads(json_string)
     except ValueError as reason:
