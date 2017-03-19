@@ -31,7 +31,7 @@ OLD_HISTORY = ['{"date": "2013-02-27 17:16:46", '
                '"YellowMetaMetric": "0" , "MissingMetaMetric": "0", "GreyMetaMetric": "0" }\r\n']
 
 
-class FakeFile(object):
+class FakeFile(object):  # pylint: disable=too-few-public-methods
     """ Fake a file object. """
     written_content = []
     initial_content = []
@@ -72,7 +72,7 @@ class EmptyHistoryTest(HistoryTestCase):
         self.assertEqual([], self.__history.complete_history())
 
 
-class FailingFile(FakeFile):
+class FailingFile(FakeFile):  # pylint: disable=too-few-public-methods
     """ Fake a file that raises an IO exception. """
     def __init__(self, *args, **kwargs):
         super(FailingFile, self).__init__(*args, **kwargs)
