@@ -1,4 +1,4 @@
-2017-03-16  Release 1.80.0
+2017-03-19  Release 1.80.0
 
   * Upgrade to Python 3 (tested with Python 3.4 and 3.5).
   * Remove metric and metric source for measuring consistency of Java versions across environments as it's no longer 
