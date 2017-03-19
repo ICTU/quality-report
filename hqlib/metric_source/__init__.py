@@ -23,7 +23,6 @@ from .abstract.performance_report import PerformanceLoadTestReport, PerformanceE
 from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport
 from .abstract.version_control_system import VersionControlSystem
-from .ansible_config_report import AnsibleConfigReport
 from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
