@@ -172,7 +172,7 @@ def html_escape(text):
 
 def eval_json(json_string):
     """ Return an evaluated version of the json string. """
-    if type(json_string) == bytes:
+    if isinstance(json_string, bytes):
         json_string = json_string.decode('ascii')
     try:
         return json.loads(json_string)
