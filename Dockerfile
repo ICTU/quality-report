@@ -4,15 +4,10 @@ MAINTAINER Frank Niessink <frank.niessink@ictu.nl>
 
 RUN addgroup jenkins && adduser -s /bin/bash -D -G jenkins jenkins
 
-RUN pip install quality_report
-RUN apk --update add \
-		bash \
-		git \
-		subversion \
-		openssh-client \
-	&& rm -rf \
-		/var/cache/apk/* \
-		/tmp/
+RUN apk --update add gcc musl-dev libxml2-dev libxslt-dev bash git subversion openssh-client \
+    && pip install quality_report \
+    && apk del gcc musl-dev libxml2-dev libxslt-dev \
+    && rm -rf /var/cache/apk/* /tmp/
 
 VOLUME /home/jenkins/.ssh
 
