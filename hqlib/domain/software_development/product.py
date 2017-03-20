@@ -76,11 +76,13 @@ class Component(Product):
     @staticmethod
     def default_requirements():
         from ... import requirement
-        return {requirement.CodeQuality, requirement.TrackBranches, requirement.UnitTests}
+        return {requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches}
 
     @staticmethod
     def optional_requirements():
-        return super(Component, Component).optional_requirements() - Component.default_requirements()
+        from ... import requirement
+        return super(Component, Component).optional_requirements() - Component.default_requirements() - \
+            {requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability}
 
 
 class Application(Product):
