@@ -57,7 +57,7 @@ class UserStoriesWithoutSecurityRiskAssessment(UserStoriesWithoutAssessmentMetri
     """ Metric for measuring the number of user stories without security risk assessment. """
 
     name = 'Hoeveelheid user stories zonder security risk beoordeling'
-    unit = 'user stories zonder security risk beoordeling'
+    unit = 'ready user stories zonder security risk beoordeling'
     nr_user_stories_without_risk_assessment = 'nr_user_stories_without_security_risk_assessment'
 
     def _metric_source_urls(self):
@@ -68,7 +68,7 @@ class UserStoriesWithoutPerformanceRiskAssessment(UserStoriesWithoutAssessmentMe
     """ Metric for measuring the number of user stories without performance risk assessment. """
 
     name = 'Hoeveelheid user stories zonder performance risk beoordeling'
-    unit = 'user stories zonder performance risk beoordeling'
+    unit = 'ready user stories zonder performance risk beoordeling'
     nr_user_stories_without_risk_assessment = 'nr_user_stories_without_performance_risk_assessment'
 
     def _metric_source_urls(self):
