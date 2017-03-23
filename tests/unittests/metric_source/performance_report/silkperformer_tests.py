@@ -24,13 +24,13 @@ from hqlib.metric_source import SilkPerformerPerformanceLoadTestReport
 HTML = r"""
 <html>
     <head>
-    <title>CS Performancetest Summary [2016.04.19.02.44.48]</title>
+    <title>ABC Performancetest Summary [2016.04.19.02.44.48]</title>
     </head>
     <body>
 
 <table width="100%"><tr>
 <td>
-    <h1>CS Performancetest Summary [2016.04.19.02.44.48]</h1>
+    <h1>ABC Performancetest Summary [2016.04.19.02.44.48]</h1>
     </td>
 <td align="right">
 Reporting engine
@@ -54,23 +54,15 @@ Reporting engine
 
 <h3>Components</h3>
 <table class="config">
-    <tr><td class="name">CS frontend servers (st)</td><td>web160.cs.isd.local/web161.cs.isd.local</td></tr>
-    <tr><td class="name">CS backend servers (st)</td><td>web165.cs.isd.local/web166.cs.isd.local</td></tr>
-    <tr><td class="name">CS database servers (st)</td><td>sql170.cs.isd.local</td></tr>
-    <tr><td class="name">CS application appversion</td><td>7.2.0.46</td--></tr>
-    <tr><td class="name">CS database appversion</td><td>6.1.3-40302</td></tr>
-    <tr><td class="name">Performancetest scripts SVN tag</td><td>3.6</td></tr>
+    <tr><td class="name">ABC frontend servers (st)</td><td>host60.abc.com/host61.abc.com</td></tr>
+    <tr><td class="name">ABC backend servers (st)</td><td>host65.abc.com/host66.abc.com</td></tr>
+    <tr><td class="name">ABC database servers (st)</td><td>host70.abc.com</td></tr>
+    <tr><td class="name">ABC application appversion</td><td>8.1.1.57</td--></tr>
+    <tr><td class="name">ABC database appversion</td><td>6.1.4-4002</td></tr>
+    <tr><td class="name">Performancetest scripts SVN tag</td><td>3.2</td></tr>
 </table>
 
 </td><td>
-
-<h3>Legend</h3>
-<table class="config">
-    <tr><td/><td class="header">functiongroup</td><td class="header">usecase</td></tr>
-    <tr><td class="name">Ingeschrevenen</td><td>Werknemers</td><td>Inschrijven van persoon met bsn</td></tr>
-    <tr><td class="name">Houder</td><td>Houders</td><td>Koppelen van persoon als werknemer</td></tr>
-    <tr><td class="name">Beheerder</td><td>GGD Beheerders</td><td>Beheer van houders en personen</td></tr>
-</table>
 
 <h3></h3>
 <table class="config">
@@ -112,7 +104,7 @@ Reporting engine
     <th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
     </tr>
     <tr valign="top" class="">
-    <td>1</td><td class="name">Ingeschrevenen_01_Openen</td>
+    <td>1</td><td class="name">01</td>
     <td>78</td>
     <td class="green">0.048</td>
     <td class="green">0.089</td>
@@ -123,7 +115,7 @@ Reporting engine
     <td>0.102</td><td>0.198</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>2</td><td class="name">Ingeschrevenen_02_Inloggen</td>
+    <td>2</td><td class="name">02</td>
     <td>77</td>
     <td class="green">0.180</td>
     <td class="green">0.330</td>
@@ -134,7 +126,7 @@ Reporting engine
     <td>0.410</td><td>0.444</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>3</td><td class="name">Ingeschrevenen_03_WerkelijkInloggen</td>
+    <td>3</td><td class="name">03</td>
     <td>76</td>
     <td class="green">0.253</td>
     <td class="green">0.376</td>
@@ -145,7 +137,7 @@ Reporting engine
     <td>0.605</td><td>0.476</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>4</td><td class="name">Ingeschrevenen_04_Inschrijven</td>
+    <td>4</td><td class="name">04</td>
     <td>76</td>
     <td class="green">0.046</td>
     <td class="green">0.078</td>
@@ -156,7 +148,7 @@ Reporting engine
     <td>0.100</td><td>0.102</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>5</td><td class="name">Ingeschrevenen_05_Uitschrijven</td>
+    <td>5</td><td class="name">05</td>
     <td>75</td>
     <td class="green">0.104</td>
     <td class="green">0.187</td>
@@ -174,7 +166,7 @@ Reporting engine
     <th>v7.2.0.46</br>2016.04.19.02.44.48</th><th>Delta %</th>
     </tr>
     <tr valign="top" class="">
-    <td>6</td><td class="name">Beheerder_03_ZoekenHouder</td>
+    <td>6</td><td class="name">03</td>
     <td>31</td>
     <td class="green">0.282</td>
     <td class="green">0.510</td>
@@ -185,7 +177,7 @@ Reporting engine
     <td>0.696</td><td>0.636</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>7</td><td class="name">Beheerder_04_PersoonInschrijven</td>
+    <td>7</td><td class="name">04</td>
     <td>31</td>
     <td class="green">0.123</td>
     <td class="green">0.176</td>
@@ -196,7 +188,7 @@ Reporting engine
     <td>0.252</td><td>0.237</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>8</td><td class="name">Beheerder_05_Zoekenpersoon</td>
+    <td>8</td><td class="name">05</td>
     <td>30</td>
     <td class="green">0.040</td>
     <td class="green">0.064</td>
@@ -207,7 +199,7 @@ Reporting engine
     <td>0.091</td><td>0.081</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>9</td><td class="name">Beheerder_06_Uitschrijven</td>
+    <td>9</td><td class="name">06</td>
     <td>30</td>
     <td class="green">0.056</td>
     <td class="green">0.086</td>
@@ -225,7 +217,7 @@ Reporting engine
     </tr>
 
     <tr valign="top" class="">
-    <td>10</td><td class="name">Houder_01_Openen</td>
+    <td>10</td><td class="name">01</td>
     <td>83</td>
     <td class="green">0.049</td>
     <td class="green">0.085</td>
@@ -236,7 +228,7 @@ Reporting engine
     <td>0.094</td><td>0.107</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>11</td><td class="name">Houder_02_Inloggen</td>
+    <td>11</td><td class="name">02</td>
     <td>83</td>
     <td class="green">0.300</td>
     <td class="green">0.537</td>
@@ -247,7 +239,7 @@ Reporting engine
     <td>0.655</td><td>0.630</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>12</td><td class="name">Houder_03_WerkelijkInloggen</td>
+    <td>12</td><td class="name">03</td>
     <td>82</td>
     <td class="green">0.200</td>
     <td class="green">0.368</td>
@@ -258,7 +250,7 @@ Reporting engine
     <td>0.537</td><td>0.458</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>13</td><td class="name">Houder_04_Koppelen</td>
+    <td>13</td><td class="name">04</td>
     <td>82</td>
     <td class="green">0.044</td>
     <td class="green">0.109</td>
@@ -269,7 +261,7 @@ Reporting engine
     <td>0.206</td><td>0.208</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>14</td><td class="name">Houder_05_OngedaanMaken</td>
+    <td>14</td><td class="name">05</td>
     <td>81</td>
     <td class="green">0.043</td>
     <td class="green">0.113</td>
@@ -280,7 +272,7 @@ Reporting engine
     <td>0.204</td><td>0.265</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>15</td><td class="name">Houder_06_KoppelingenBekijken</td>
+    <td>15</td><td class="name">06</td>
     <td>79</td>
     <td class="green">0.291</td>
     <td class="green">0.481</td>
@@ -291,7 +283,7 @@ Reporting engine
     <td>0.710</td><td>0.636</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>16</td><td class="name">Houder_07_OpenenKoppeling</td>
+    <td>16</td><td class="name">07</td>
     <td>79</td>
     <td class="green">0.027</td>
     <td class="green">0.109</td>
@@ -302,7 +294,7 @@ Reporting engine
     <td>0.301</td><td>0.058</td><td class=""></td>
     </tr>
     <tr valign="top" class="">
-    <td>17</td><td class="name">Houder_99_Uitloggen</td>
+    <td>17</td><td class="name">09</td>
     <td>78</td>
     <td class="green">0.095</td>
     <td class="green">0.175</td>
@@ -314,28 +306,6 @@ Reporting engine
     </tr>
 </table>
 
-<hr align="left" width="100%" size="1"/>
-
-<h2>General</h2>
-<div id="container_counters" style="min-width: 10px; height: 400px; margin: 0 auto"></div>
-
-<h2>CPU</h2>
-<div id="container_cpu_allservers" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
-<h2>Memory</h2>
-<div id="container_dotnetclr_bytesinallheaps_allservers" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-<div id="container_dotnetclr_timeingc_allservers" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
-<h2>ASP.NET</h2>
-<div id="container_aspnet_requestsexecuting_allservers" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-<div id="container_aspnet_requestsqueued_allservers" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
-<h2>Database</h2>
-<div id="container_sqlserver_sqlservermetrics_allservers" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
-<hr align="left" width="100%" size="1">
-
-<h3>end of report</h3>
 </body></html>
 """
 
