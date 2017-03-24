@@ -8,7 +8,7 @@
 .coverage.*
 unit-test-reports
 integration-test-reports
-tests/integrationtests/*/history.json
+tests/integrationtests/*/*history.json
 repos
 
 # Ignore build folders
