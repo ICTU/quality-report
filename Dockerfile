@@ -1,4 +1,4 @@
-FROM python:3.5-alpine
+FROM python:3.6-alpine
 
 MAINTAINER Frank Niessink <frank.niessink@ictu.nl>
 
