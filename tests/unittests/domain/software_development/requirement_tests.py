@@ -85,10 +85,6 @@ class RequirementSubjectTest(unittest.TestCase):
         expected = (self.__subject.default_requirements() | {self.__added}) - {self.__removed}
         self.assertEqual(expected, self.__subject.requirements())
 
-    def test_required_metric_classes(self):
-        """ Test that the required metric classes are returned based on the requirements. """
-        self.assertEqual({'FakeMetricClass 1', 'FakeMetricClass 2'}, self.__subject.required_metric_classes())
-
     def test_optional_requirements(self):
         """ Test that the default optional requirements are empty. """
         self.assertEqual({self.__added}, self.__subject.optional_requirements())

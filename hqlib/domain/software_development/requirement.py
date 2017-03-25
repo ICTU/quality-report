@@ -31,7 +31,7 @@ class Requirement(DomainObject):
         return cls._metric_classes
 
     @classmethod
-    def name(cls):
+    def name(cls) -> str:
         """ Return the name of the requirement. """
         return cls._name
 
@@ -62,13 +62,9 @@ class RequirementSubject(DomainObject):
         """ Return the actual requirements of the subject. """
         return self.__requirements
 
-    def required_metric_classes(self):
-        """ Return the metrics that need to be measured as a consequence of the requirements. """
-        classes = set()
-        for requirement in self.__requirements:
-            classes.update(set(requirement.metric_classes()))
-        return classes
-
     def should_be_measured_by(self, metric_class) -> bool:
         """ Return whether this subject should be measured by the metric. """
-        return metric_class in self.required_metric_classes()
+        for requirement in self.__requirements:
+            if metric_class in requirement.metric_classes():
+                return True
+        return False
