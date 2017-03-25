@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 
+from typing import Set
+
 from ..base import DomainObject
 
 
@@ -47,12 +49,12 @@ class RequirementSubject(DomainObject):
         super().__init__(*args, **kwargs)
 
     @staticmethod
-    def default_requirements():
+    def default_requirements() -> Set[Requirement]:
         """ Return the default requirements of the subject. """
         return set()
 
     @staticmethod
-    def optional_requirements():
+    def optional_requirements() -> Set[Requirement]:
         """ Return the optional requirements of the subject. """
         return set()
 
