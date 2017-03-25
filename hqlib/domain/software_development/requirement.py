@@ -39,7 +39,7 @@ class Requirement(DomainObject):
 class RequirementSubject(DomainObject):
     """ Measurable objects that have requirements. """
     def __init__(self, *args, **kwargs):
-        self.__requirements = kwargs.pop('requirements', set())
+        self.__requirements = set(kwargs.pop('requirements', []))
         if not self.__requirements:
             added_requirements = set(kwargs.pop('added_requirements', []))
             if not added_requirements.issubset(self.optional_requirements()):
@@ -58,7 +58,7 @@ class RequirementSubject(DomainObject):
         """ Return the optional requirements of the subject. """
         return set()
 
-    def requirements(self):
+    def requirements(self) -> Set[Requirement]:
         """ Return the actual requirements of the subject. """
         return self.__requirements
 
