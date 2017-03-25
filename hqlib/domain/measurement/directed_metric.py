@@ -26,7 +26,7 @@ class LowerIsBetterMetric(metric.Metric):
     def value(self):
         raise NotImplementedError  # pragma: no cover
 
-    def _is_value_better_than(self, target):
+    def _is_value_better_than(self, target) -> bool:
         return self.perfect_value <= self.value() <= target
 
 
@@ -36,5 +36,5 @@ class HigherIsBetterMetric(metric.Metric):
     def value(self):
         raise NotImplementedError  # pragma: no cover
 
-    def _is_value_better_than(self, target):
+    def _is_value_better_than(self, target) -> bool:
         return self.value() >= target

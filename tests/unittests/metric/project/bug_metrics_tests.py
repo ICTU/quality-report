@@ -81,10 +81,6 @@ class OpenBugsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_open_bugs_url()}, self.__metric.url())
 
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.OpenBugs.should_be_measured(self.__project))
-
 
 class OpenSecurityBugsTest(unittest.TestCase):
     """ Unit tests for the number of open security bugs metric. """
@@ -101,10 +97,6 @@ class OpenSecurityBugsTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_open_security_bugs_url()}, self.__metric.url())
-
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.OpenSecurityBugs.should_be_measured(self.__project))
 
 
 class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
@@ -123,10 +115,6 @@ class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_open_static_security_analysis_bugs_url()}, self.__metric.url())
 
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.OpenStaticSecurityAnalysisBugs.should_be_measured(self.__project))
-
 
 class TechnicalDebtIssuesTest(unittest.TestCase):
     """ Unit tests for the number of technical debt issues metric. """
@@ -143,7 +131,3 @@ class TechnicalDebtIssuesTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.nr_technical_debt_issues_url()}, self.__metric.url())
-
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.TechnicalDebtIssues.should_be_measured(self.__project))

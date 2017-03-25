@@ -15,8 +15,6 @@ limitations under the License.
 """
 
 
-
-
 # Package for domain objects.
 
 from .base import DomainObject
@@ -26,13 +24,12 @@ from .measurement.directed_metric import HigherIsBetterMetric, LowerIsBetterMetr
 from .measurement.percentage_metric import HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
 from .measurement.metric_source_age_metric import MetricSourceAgeMetric
 from .measurement.metric_source import MetricSource, MissingMetricSource
-
 from .measurement.target import TechnicalDebtTarget, DynamicTechnicalDebtTarget
 
 from .software_development.product import Product, Component, Application
 from .software_development.team import Team
 from .software_development.person import Person
 from .software_development.project import Project
-from .software_development.requirement import Requirement
+from .software_development.requirement import Requirement, RequirementSubject
 from .software_development.document import Document
 from .software_development.environment import Environment

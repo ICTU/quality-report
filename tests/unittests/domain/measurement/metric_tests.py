@@ -222,10 +222,6 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric gets the start date of the status from the history. """
         self.assertEqual(datetime.datetime(2013, 1, 1, 10, 0, 0), self.__metric.status_start_date())
 
-    def test_metric_should_be_measured(self):
-        """ Test that a metric should not be measured be default. """
-        self.assertFalse(domain.Metric.should_be_measured(self.__project))
-
 
 class MetricStatusTest(unittest.TestCase):
     """ Test case for the Metric domain class status method. """

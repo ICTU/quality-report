@@ -57,7 +57,7 @@ class RequirementSubject(DomainObject):
         return set()
 
     def requirements(self):
-        """ Return the requirements of the subject. """
+        """ Return the actual requirements of the subject. """
         return self.__requirements
 
     def required_metric_classes(self):
@@ -66,3 +66,7 @@ class RequirementSubject(DomainObject):
         for requirement in self.__requirements:
             classes.update(set(requirement.metric_classes()))
         return classes
+
+    def should_be_measured_by(self, metric_class) -> bool:
+        """ Return whether this subject should be measured by the metric. """
+        return metric_class in self.required_metric_classes()

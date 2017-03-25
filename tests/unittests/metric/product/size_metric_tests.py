@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from hqlib import metric, domain, metric_source, requirement
+from hqlib import metric, domain, metric_source
 
 
 class FakeSonar(object):
@@ -96,15 +96,6 @@ class TotalLOCTest(unittest.TestCase):
     def test_recent_history(self):
         """ Test that the recent history subtracts the minimum value of each value so that more data can be plotted. """
         self.assertEqual([0, 100], self.__metric.recent_history())
-
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured if the project requires it. """
-        project = domain.Project(requirements=[requirement.TrustedProductMaintainability])
-        self.assertTrue(metric.TotalLOC.should_be_measured(project))
-
-    def test_should_not_be_measured(self):
-        """ Test that the metric should not be measured by default. """
-        self.assertFalse(metric.TotalLOC.should_be_measured(domain.Project()))
 
     def test_override_target(self):
         """ Test that the target can be overridden via the project. """

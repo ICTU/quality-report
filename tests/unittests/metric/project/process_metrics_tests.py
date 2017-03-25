@@ -30,7 +30,7 @@ class FakeJira(object):
         return 7
 
     nr_user_stories_without_performance_risk_assessment = nr_user_stories_without_security_risk_assessment = \
-            nr_story_points_ready
+        nr_story_points_ready
 
     @staticmethod
     def user_stories_ready_url():
@@ -57,10 +57,6 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.user_stories_ready_url()}, self.__metric.url())
 
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.ReadyUserStoryPoints.should_be_measured(self.__project))
-
 
 class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
     """ Unit tests for the number of user stories without security risk assessment metric. """
@@ -78,10 +74,6 @@ class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.user_stories_without_security_risk_assessment_url()}, self.__metric.url())
 
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.UserStoriesWithoutSecurityRiskAssessment.should_be_measured(self.__project))
-
 
 class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
     """ Unit tests for the number of user stories without performance risk assessment metric. """
@@ -98,7 +90,3 @@ class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({'Jira': FakeJira.user_stories_without_performance_risk_assessment_url()}, self.__metric.url())
-
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.UserStoriesWithoutPerformanceRiskAssessment.should_be_measured(self.__project))

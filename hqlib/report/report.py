@@ -233,7 +233,7 @@ class QualityReport(domain.DomainObject):
         metrics = []
         for req in requirements:
             for metric_class in req.metric_classes():
-                if metric_class.should_be_measured(subject) and metric_class.is_applicable(subject):
+                if subject.should_be_measured_by(metric_class) and metric_class.is_applicable(subject):
                     self.__requirements.add(req)
                     metrics.append(metric_class(subject, project=self.__project))
         return metrics

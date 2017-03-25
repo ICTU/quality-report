@@ -51,7 +51,7 @@ class RequirementTest(unittest.TestCase):
         self.assertEqual(['FakeMetricClass 1'], self.__requirement.metric_classes())
 
 
-class RequirementSubjectUnderTest(domain.software_development.requirement.RequirementSubject):
+class RequirementSubjectUnderTest(domain.RequirementSubject):
     # pylint: disable=too-few-public-methods
     """ Override requirement subject to give it default requirement. """
     def __init__(self, default_requirements, optional_requirements, *args, **kwargs):
@@ -97,3 +97,11 @@ class RequirementSubjectTest(unittest.TestCase):
         """ Test that an exception is thrown when a requirement is added that is not an optional requirement. """
         self.assertRaises(ValueError, RequirementSubjectUnderTest, default_requirements={}, optional_requirements={},
                           added_requirements=[self.__added])
+
+    def test_should_be_measured_by(self):
+        """ Test that the subject should be measured by a metric if it is required by the subject. """
+        self.assertTrue(self.__subject.should_be_measured_by('FakeMetricClass 1'))
+
+    def test_should_not_be_measured_by(self):
+        """ Test that the subject should not be measured by a metric if it is not required by the subject. """
+        self.assertFalse(self.__subject.should_be_measured_by('FakeMetricClass 3'))

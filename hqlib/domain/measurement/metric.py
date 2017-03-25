@@ -34,11 +34,6 @@ class Metric(object):
     metric_source_class = None
 
     @classmethod
-    def should_be_measured(cls, requirement_subject):
-        """ Return whether this metric should be measured for the specified subject. """
-        return cls in requirement_subject.required_metric_classes()
-
-    @classmethod
     def is_applicable(cls, subject):  # pylint: disable=unused-argument
         """ Return whether this metric applies to the specified subject. """
         return True

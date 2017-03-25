@@ -91,10 +91,6 @@ class RiskLogTest(unittest.TestCase):
         """ Test that the value is -1 when the metric source hasn't been configured. """
         self.assertEqual(-1, metric.RiskLog(project=domain.Project(requirements=[requirement.TrackRisks])).value())
 
-    def test_should_be_measured(self):
-        """ Test that the risk log should be measured if the project has the appropriate requirement. """
-        self.assertTrue(metric.RiskLog.should_be_measured(self.__project))
-
 
 class UnreachableRiskLogTest(unittest.TestCase):
     """ Unit tests for the risk log metric when Trello is unreachable. """
@@ -127,10 +123,6 @@ class ActionActivityTest(unittest.TestCase):
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
         self.assertEqual({FakeBoard.metric_source_name: FakeBoard().url()}, self.__metric.url())
-
-    def test_should_be_measured(self):
-        """ Test that the metric should be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.ActionActivity.should_be_measured(self.__project))
 
 
 class UnreachableActionActivityTest(unittest.TestCase):
@@ -169,10 +161,6 @@ class ActionAgeTest(unittest.TestCase):
     def test_url_label(self):
         """ Test that the metric has a url label. """
         self.assertTrue(self.__metric.url_label_text)
-
-    def test_should_be_measured(self):
-        """ Test that the metric can be measured when the project has the appropriate requirement. """
-        self.assertTrue(metric.ActionAge.should_be_measured(self.__project))
 
 
 class UnreachableActionAgeTest(unittest.TestCase):
