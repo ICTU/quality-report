@@ -35,7 +35,7 @@ class TrelloObject(domain.MetricSource):
         object_type = self.__class__.__name__[len('Trello'):].lower()
         self._parameters = dict(object_type=object_type, object_id=object_id, appkey=appkey, token=token)
         self.__json = dict()
-        super(TrelloObject, self).__init__()
+        super().__init__()
 
     def __bool__(self):
         return bool(self._parameters['appkey']) and bool(self._parameters['object_id'])
@@ -130,7 +130,7 @@ class TrelloBoard(TrelloObject):
 
     def __init__(self, *args, **kwargs):
         self.__card_class = kwargs.pop('card_class', TrelloCard)
-        super(TrelloBoard, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def nr_of_over_due_or_inactive_cards(self, days=14):
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the

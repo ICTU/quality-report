@@ -60,7 +60,7 @@ class QualityReport(domain.DomainObject):
 
     def __init__(self, project):
         # Use None as name to keep the history consistent of metrics that have the report as subject:
-        super(QualityReport, self).__init__(name='None')
+        super().__init__(name='None')
         self.__project = project
         self.__products = sorted(project.products(), key=lambda product: (product.name(), product.short_name()))
         self.__teams = sorted(project.teams(), key=str)

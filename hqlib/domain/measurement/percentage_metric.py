@@ -39,7 +39,7 @@ class PercentageMixin(object):
     def _parameters(self):
         """ Add numerator and denominator to the parameters. """
         # pylint: disable=protected-access
-        parameters = super(PercentageMixin, self)._parameters()
+        parameters = super()._parameters()
         parameters.update(dict(numerator=self._numerator(), denominator=self._denominator()))
         return parameters
 

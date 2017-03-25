@@ -42,7 +42,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     jobs_api_postfix = api_postfix + '?tree=jobs[name,description,color,url,buildable]'
 
     def __init__(self, url, username='', password='', job_re=''):
-        super(Jenkins, self).__init__(url=url, username=username, password=password)
+        super().__init__(url=url, username=username, password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = url + 'job/{job}/'
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
@@ -172,7 +172,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
         url = urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         try:
-            return super(Jenkins, self).url_open(url)
+            return super().url_open(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Couldn't open %s: %s", url, reason)
             raise

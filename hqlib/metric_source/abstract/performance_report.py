@@ -30,7 +30,7 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     COLUMN_90_PERC = 0  # Subclass responsibility
 
     def __init__(self, report_url, *args, **kwargs):
-        super(PerformanceReport, self).__init__(url=report_url, *args, **kwargs)
+        super().__init__(url=report_url, *args, **kwargs)
 
     def urls(self, product):
         """ Return the report urls for the specified product. """

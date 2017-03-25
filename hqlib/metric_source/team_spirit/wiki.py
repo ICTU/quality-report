@@ -31,7 +31,7 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
     metric_source_name = 'Wiki'
 
     def __init__(self, wiki_url):
-        super(Wiki, self).__init__(url=wiki_url)
+        super().__init__(url=wiki_url)
 
     # Team spirit
 

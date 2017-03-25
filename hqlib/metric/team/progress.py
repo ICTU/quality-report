@@ -43,7 +43,7 @@ class TeamProgress(LowerIsBetterMetric):
         return values
 
     def __init__(self, *args, **kwargs):
-        super(TeamProgress, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         planned_velocity = self._metric_source.planned_velocity() or 0
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
@@ -57,7 +57,7 @@ class TeamProgress(LowerIsBetterMetric):
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(TeamProgress, self)._parameters()
+        parameters = super()._parameters()
         birt = self._metric_source
         parameters['sprint_goal'] = birt.nr_points_planned()
         parameters['actual_points'] = birt.nr_points_realized()

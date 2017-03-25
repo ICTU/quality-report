@@ -28,7 +28,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
 
     def __init__(self, *args, **kwargs):
         self.__report_urls = kwargs.pop('report_urls', None)
-        super(SilkPerformerPerformanceReport, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _query_rows(self, product):
         """ Return the queries for the specified product. """

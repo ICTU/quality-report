@@ -44,7 +44,7 @@ class RequirementSubject(DomainObject):
                 raise ValueError("Added requirements should be a subset of the optional requirements")
             removed_requirements = set(kwargs.pop('removed_requirements', []))
             self.__requirements = (self.default_requirements() | added_requirements) - removed_requirements
-        super(RequirementSubject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @staticmethod
     def default_requirements():

@@ -59,7 +59,7 @@ class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMet
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(MethodQualityMetric, self)._parameters()
+        parameters = super()._parameters()
         parameters['attribute'] = self.attribute
         return parameters
 

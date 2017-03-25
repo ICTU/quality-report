@@ -29,7 +29,7 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     def __init__(self, *args, **kwargs):
         if 'name' not in kwargs:
             kwargs['name'] = self.metric_source_name or 'Unknown metric source'
-        super(MetricSource, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def metric_source_urls(self, *metric_source_ids):  # pylint: disable=no-self-use
         """ Return the url(s) to the metric source for the metric source id. """

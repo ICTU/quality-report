@@ -35,7 +35,7 @@ class UnusedCIJobs(LowerIsBetterMetric):
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(UnusedCIJobs, self)._parameters()
+        parameters = super()._parameters()
         parameters['number_of_jobs'] = self._metric_source.number_of_active_jobs()
         return parameters
 

@@ -29,7 +29,7 @@ class TestReport(domain.MetricSource):
 
     def __init__(self, url_read=None, **kwargs):
         self._url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
-        super(TestReport, self).__init__()
+        super().__init__()
 
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *report_urls):

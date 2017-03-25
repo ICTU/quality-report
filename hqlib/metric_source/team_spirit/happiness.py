@@ -31,7 +31,7 @@ class Happiness(team_spirit.TeamSpirit):
 
     def __init__(self, url, url_read=None):
         self.__url_read = url_read or UrlOpener().url_read
-        super(Happiness, self).__init__(url=url)
+        super().__init__(url=url)
 
     # Team spirit
 

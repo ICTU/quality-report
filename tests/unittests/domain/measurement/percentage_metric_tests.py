@@ -26,7 +26,7 @@ class PercentageMetricUnderTest(domain.HigherPercentageIsBetterMetric):
     def __init__(self, numerator=10, denominator=20, *args, **kwargs):
         self.__numerator = numerator
         self.__denominator = denominator
-        super(PercentageMetricUnderTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _numerator(self):
         return self.__numerator

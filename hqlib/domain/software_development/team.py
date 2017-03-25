@@ -23,7 +23,7 @@ class Team(RequirementSubject, MeasurableObject):
     """ Class for representing a team. """
 
     def __init__(self, *args, **kwargs):
-        super(Team, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__members = set()
 
     @staticmethod

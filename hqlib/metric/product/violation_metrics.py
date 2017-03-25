@@ -39,7 +39,7 @@ class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(Violations, self)._parameters()
+        parameters = super()._parameters()
         parameters['violation_type'] = self.violation_type
         return parameters
 

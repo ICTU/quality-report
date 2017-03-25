@@ -21,7 +21,7 @@ class DomainObject(object):
         self.__name = name
         self.__short_name = short_name
         self.__url = url
-        super(DomainObject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def name(self):
         """ Return the name of the domain object. """

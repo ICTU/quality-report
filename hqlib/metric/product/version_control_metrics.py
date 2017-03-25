@@ -45,7 +45,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         return self.__branch_urls(self.__list_of_branches_to_ignore())
 
     def comment(self):
-        comment = super(UnmergedBranches, self).comment()
+        comment = super().comment()
         branches_to_include = self.__list_of_branches_to_include()
         if branches_to_include:
             branches = ', '.join(branches_to_include)
@@ -64,7 +64,7 @@ class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
         return comment
 
     def _parameters(self):
-        parameters = super(UnmergedBranches, self)._parameters()
+        parameters = super()._parameters()
         branches = self.__branches()
         parameters['nr_branches'] = -1 if branches is None else len(branches)
         return parameters

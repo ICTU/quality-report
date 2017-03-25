@@ -29,7 +29,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     metric_source_name = 'SonarQube'
 
     def __init__(self, sonar_url, *args, **kwargs):
-        super(Sonar, self).__init__(url=sonar_url, *args, **kwargs)
+        super().__init__(url=sonar_url, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'

@@ -25,7 +25,7 @@ from .. import utils, domain
 class BirtReport(beautifulsoup.BeautifulSoupOpener):
     """ Class representing a specific Birt report. """
     def __init__(self, url):
-        super(BirtReport, self).__init__()
+        super().__init__()
         self.__url = url
 
     def url(self):
@@ -142,7 +142,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __init__(self, birt_url):
         birt_url += 'birt/'
-        super(Birt, self).__init__(url=birt_url)
+        super().__init__(url=birt_url)
         birt_report_url = birt_url + 'preview?__report=reports/'
         self.__test_design_url = birt_report_url + 'test_design.rptdesign'
         self.__manual_test_execution_url = birt_report_url + \

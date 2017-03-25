@@ -26,7 +26,7 @@ class Product(RequirementSubject, MeasurableObject):
 
     def __init__(self, jsf=None, art=None, is_main=True,
                  has_unittests=True, has_integration_tests=False, **kwargs):
-        super(Product, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.__has_unittests = has_unittests
         self.__has_integration_tests = has_integration_tests
         self.__jsf = jsf

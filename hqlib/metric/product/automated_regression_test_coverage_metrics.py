@@ -48,7 +48,7 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(_ARTCoverage, self)._parameters()
+        parameters = super()._parameters()
         parameters['covered_items'] = self.covered_items
         parameters['covered_item'] = self.covered_item
         return parameters

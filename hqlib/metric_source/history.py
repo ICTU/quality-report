@@ -32,7 +32,7 @@ class History(domain.MetricSource):
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_ if file_ else open
-        super(History, self).__init__(url=history_filename)
+        super().__init__(url=history_filename)
 
     def filename(self):
         """ Return the history filename """

@@ -83,7 +83,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         return [self._metric_source.quality_profiles_url()]
 
     def _parameters(self):
-        parameters = super(SonarQualityProfileVersion, self)._parameters()
+        parameters = super()._parameters()
         parameters['language'] = self.language_name
         return parameters
 
@@ -183,7 +183,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return [self._metric_source.plugins_url()]
 
     def _parameters(self):
-        parameters = super(SonarPluginVersion, self)._parameters()
+        parameters = super()._parameters()
         parameters['plugin'] = self.plugin_name
         return parameters
 

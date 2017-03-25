@@ -31,7 +31,7 @@ class ZAPScanReport(domain.MetricSource):
 
     def __init__(self, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
-        super(ZAPScanReport, self).__init__()
+        super().__init__()
 
     @functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):

@@ -75,7 +75,7 @@ class EmptyHistoryTest(HistoryTestCase):
 class FailingFile(FakeFile):  # pylint: disable=too-few-public-methods
     """ Fake a file that raises an IO exception. """
     def __init__(self, *args, **kwargs):
-        super(FailingFile, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         raise IOError
 
 

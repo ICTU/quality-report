@@ -64,7 +64,7 @@ class VersionControlSystemMetricMixin(object):
     metric_source_class = metric_source.VersionControlSystem
 
     def __init__(self, *args, **kwargs):
-        super(VersionControlSystemMetricMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__vcs = self._project.metric_source(metric_source.VersionControlSystem)
         self._vcs_product_info = metric_info.VersionControlSystemProductInfo(self.__vcs, self._subject)
 

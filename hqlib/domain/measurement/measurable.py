@@ -25,7 +25,7 @@ class MeasurableObject(DomainObject):
         self.__old_metric_source_ids = kwargs.pop('old_metric_source_ids', dict())
         self.__metric_source_options = kwargs.pop('metric_source_options', dict())
         self.__metric_options = kwargs.pop('metric_options', dict())
-        super(MeasurableObject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def target(self, metric_class):
         """ Return the target for the specified metric. """

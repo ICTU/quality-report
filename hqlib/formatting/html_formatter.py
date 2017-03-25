@@ -50,7 +50,7 @@ class HTMLFormatter(base_formatter.Formatter):
     def __init__(self, *args, **kwargs):
         self.__latest_software_version = kwargs.pop('latest_software_version', '0')
         self.__current_software_version = kwargs.pop('current_software_version', '0')
-        super(HTMLFormatter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def prefix(self, report):
         """ Return a HTML formatted version of the report prefix. """

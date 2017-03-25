@@ -31,7 +31,7 @@ class OpenVASScanReport(domain.MetricSource):
 
     def __init__(self, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
-        super(OpenVASScanReport, self).__init__()
+        super().__init__()
 
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """

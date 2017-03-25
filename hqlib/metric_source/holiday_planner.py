@@ -29,7 +29,7 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
 
     def __init__(self, *args, **kwargs):
         self.__api_url = kwargs.pop('api_url')
-        super(HolidayPlanner, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def days(self, team, start_date=None):
         """ Return the number of consecutive days that multiple team members are absent. """

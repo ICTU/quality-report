@@ -57,7 +57,7 @@ class RequirementSubjectUnderTest(domain.software_development.requirement.Requir
     def __init__(self, default_requirements, optional_requirements, *args, **kwargs):
         self.__default_requirements = default_requirements
         self.__optional_requirements = optional_requirements
-        super(RequirementSubjectUnderTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def default_requirements(self):
         """ Return the default requirements for the subject. """

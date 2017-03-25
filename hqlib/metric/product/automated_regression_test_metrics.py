@@ -47,7 +47,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(FailingRegressionTests, self)._parameters()
+        parameters = super()._parameters()
         passed_tests = self._metric_source.passed_tests(*self._get_metric_source_ids())
         parameters['tests'] = '?' if self._missing() else self.value() + passed_tests
         return parameters

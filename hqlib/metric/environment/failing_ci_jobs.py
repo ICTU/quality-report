@@ -35,7 +35,7 @@ class FailingCIJobs(LowerIsBetterMetric):
     metric_source_class = metric_source.Jenkins
 
     def _parameters(self):
-        parameters = super(FailingCIJobs, self)._parameters()
+        parameters = super()._parameters()
         parameters['number_of_jobs'] = self._metric_source.number_of_active_jobs()
         return parameters
 

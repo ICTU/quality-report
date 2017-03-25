@@ -40,7 +40,7 @@ class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
 
     def _parameters(self):
         # pylint: disable=protected-access
-        parameters = super(UserStoryMetric, self)._parameters()
+        parameters = super()._parameters()
         parameters['total'] = self._nr_user_stories()
         return parameters
 

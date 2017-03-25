@@ -30,7 +30,7 @@ class Git(VersionControlSystem):
     def __init__(self, *args, **kwargs):
         self.__branch_to_checkout = kwargs.pop('branch', '')
         self.__chdir = kwargs.pop('chdir', os.chdir)
-        super(Git, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__repo_folder = None
 
     def __hash__(self):
@@ -43,7 +43,7 @@ class Git(VersionControlSystem):
         if not self.__repo_folder:
             self.__get_repo()
         folder = self.__repo_folder if os.path.exists(self.__repo_folder) else None
-        return super(Git, self)._run_shell_command(folder=folder, *args, **kwargs)
+        return super()._run_shell_command(folder=folder, *args, **kwargs)
 
     def last_changed_date(self, path):
         """ Return the date when the url was last changed in Git. """

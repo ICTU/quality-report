@@ -27,7 +27,7 @@ class LowerIsBetterMetricUnderTest(domain.LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs):
         self.__value = kwargs.pop('value', 0)
-        super(LowerIsBetterMetricUnderTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def value(self):
         """ Return the measured value. """

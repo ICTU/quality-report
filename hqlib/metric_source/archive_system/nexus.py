@@ -27,7 +27,7 @@ class Nexus(ArchiveSystem):
 
     def __init__(self, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_read
-        super(Nexus, self).__init__()
+        super().__init__()
 
     def last_changed_date(self, url):
         try:

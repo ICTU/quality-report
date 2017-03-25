@@ -42,7 +42,7 @@ class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
         raise NotImplementedError  # pragma: no cover
 
     def _parameters(self):
-        parameters = super(LogicalTestCaseMetric, self)._parameters()
+        parameters = super()._parameters()
         parameters['total'] = self._nr_ltcs()
         return parameters
 
@@ -122,7 +122,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
         return datetime.datetime.min if date == -1 else date
 
     def _parameters(self):
-        parameters = super(ManualLogicalTestCases, self)._parameters()
+        parameters = super()._parameters()
         parameters['date'] = utils.format_date(self.__date_of_last_manual_test())
         parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()
         parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old('trunk', self.target())
@@ -130,7 +130,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
 
     def _get_template(self):
         return self.never_template if self.__date_of_last_manual_test() == datetime.datetime.min \
-            else super(ManualLogicalTestCases, self)._get_template()
+            else super()._get_template()
 
     def _missing(self):
         return self._metric_source.date_of_last_manual_test() in (-1, None)
@@ -176,7 +176,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
         return [self._metric_source.manual_test_cases_url()]
 
     def _parameters(self):
-        parameters = super(DurationOfManualLogicalTestCases, self)._parameters()
+        parameters = super()._parameters()
         if not self._missing():
             parameters['total'] = total = self._metric_source.nr_manual_test_cases()
             parameters['measured'] = total - self._metric_source.nr_manual_test_cases_not_measured()
@@ -203,6 +203,6 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
         return [self._metric_source.manual_test_cases_url()]
 
     def _parameters(self):
-        parameters = super(ManualLogicalTestCasesWithoutDuration, self)._parameters()
+        parameters = super()._parameters()
         parameters['total'] = self._metric_source.nr_manual_test_cases()
         return parameters

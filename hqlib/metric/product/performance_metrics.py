@@ -49,7 +49,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
             else []
 
     def _parameters(self):
-        parameters = super(PerformanceMetric, self)._parameters()
+        parameters = super()._parameters()
         parameters.update(dict(level=self.level, total=self.__total_queries()))
         return parameters
 

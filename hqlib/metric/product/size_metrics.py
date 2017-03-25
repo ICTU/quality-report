@@ -47,7 +47,7 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
     low_target_value = 175000
 
     def _parameters(self):
-        parameters = super(TotalLOC, self)._parameters()
+        parameters = super()._parameters()
         products = self.__main_products()
         parameters['products'] = ', '.join([product.name() for product in products])
         return parameters
@@ -62,7 +62,7 @@ class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
 
     def recent_history(self):
         """ Subtract the minimum value from all values so that we can send more data to the Google Chart API. """
-        historic_values = super(TotalLOC, self).recent_history()
+        historic_values = super().recent_history()
         minimum_value = min(historic_values) if historic_values else 0
         return [value - minimum_value for value in historic_values]
 

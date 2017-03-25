@@ -27,7 +27,7 @@ class MetricUnderTest(domain.Metric):
 
     def __init__(self, *args, **kwargs):
         self.value_to_return = 0
-        super(MetricUnderTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def value(self):
         """ Return the value of the metric. """

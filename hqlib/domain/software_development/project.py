@@ -34,7 +34,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         self.__documents = []
         self.__environments = []
         self.__dashboard = [], []  # rows, columns
-        super(Project, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @staticmethod
     def optional_requirements():

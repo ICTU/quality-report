@@ -32,7 +32,7 @@ class UnittestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=too-few
     def _parameters(self):
         """ Add the number of unit tests to the parameters for the report. """
         # pylint: disable=protected-access
-        parameters = super(UnittestMetricMixin, self)._parameters()
+        parameters = super()._parameters()
         parameters['tests'] = self._metric_source.unittests(self._sonar_id())
         return parameters
 
@@ -54,10 +54,10 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
         return -1 if value is None else value
 
     def status(self):
-        return 'red' if self.__no_tests() else super(FailingUnittests, self).status()
+        return 'red' if self.__no_tests() else super().status()
 
     def _get_template(self):
-        return self.no_tests_template if self.__no_tests() else super(FailingUnittests, self)._get_template()
+        return self.no_tests_template if self.__no_tests() else super()._get_template()
 
     def __no_tests(self):
         """ Return True if are no unit tests. """

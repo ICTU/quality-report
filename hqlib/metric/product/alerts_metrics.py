@@ -42,6 +42,6 @@ class AlertsMetric(LowerIsBetterMetric):
             if self._metric_source else -1
 
     def _parameters(self):
-        parameters = super(AlertsMetric, self)._parameters()
+        parameters = super()._parameters()
         parameters['risk_level'] = self.risk_level
         return parameters

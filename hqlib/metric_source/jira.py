@@ -43,7 +43,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         self.__technical_debt_issues_query_id = technical_debt_issues_query_id
         self.__user_stories_without_security_risk_query_id = user_stories_without_security_risk_query_id
         self.__user_stories_without_performance_risk_query_id = user_stories_without_performance_risk_query_id
-        super(Jira, self).__init__(username=username, password=password)
+        super().__init__(username=username, password=password)
 
     def nr_open_bugs(self):
         """ Return the number of open bugs. """

@@ -28,7 +28,7 @@ class FakeWiki(domain.MetricSource):
 
     def __init__(self):
         self.date_of_last_measurement = datetime.datetime.now()
-        super(FakeWiki, self).__init__(url='http://wiki')
+        super().__init__(url='http://wiki')
 
     @staticmethod
     def team_spirit(*args):  # pylint: disable=unused-argument

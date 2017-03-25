@@ -42,7 +42,7 @@ class FakeJenkinsTestReport(domain.MetricSource):
 
     def __init__(self):
         self.passed = 14
-        super(FakeJenkinsTestReport, self).__init__()
+        super().__init__()
 
     @staticmethod
     def failed_tests(*args):  # pylint: disable=unused-argument

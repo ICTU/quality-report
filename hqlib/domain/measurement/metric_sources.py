@@ -21,7 +21,7 @@ class MetricSources(dict):
     def __init__(self, keys_and_values):
         new_keys_and_values = {key: MetricSources.__ensure_list(key, value)
                                for key, value in list(keys_and_values.items())}
-        super(MetricSources, self).__init__(new_keys_and_values)
+        super().__init__(new_keys_and_values)
 
     @staticmethod
     def __ensure_list(key, value):

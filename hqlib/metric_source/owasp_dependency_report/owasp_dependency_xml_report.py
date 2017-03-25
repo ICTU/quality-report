@@ -28,7 +28,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
     def __init__(self, url_read=None, **kwargs):
         self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
-        super(OWASPDependencyXMLReport, self).__init__()
+        super().__init__()
 
     def _nr_warnings(self, report_url, priority):
         """ Return the number of warnings for the specified priority in the report. """

@@ -30,7 +30,7 @@ class CoverageReport(domain.MetricSource):
 
     def __init__(self, url_open=None, **kwargs):
         self.__url_open = url_open or UrlOpener(**kwargs).url_open
-        super(CoverageReport, self).__init__()
+        super().__init__()
 
     def statement_coverage(self, coverage_url):
         """ Return the ART statement coverage for a specific product. """
