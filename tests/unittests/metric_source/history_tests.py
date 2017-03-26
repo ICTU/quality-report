@@ -17,7 +17,10 @@ limitations under the License.
 import datetime
 import unittest
 
+from typing import Sequence
+
 from hqlib.metric_source import History
+
 
 HISTORY = ['{"date": "2013-02-28 17:16:46", "OpenBugsNone": "38", '
            '"OpenBugsFoo": ("3", "green", "2013-02-27 15:45:32"), '
@@ -33,8 +36,7 @@ OLD_HISTORY = ['{"date": "2013-02-27 17:16:46", '
 
 class FakeFile(object):  # pylint: disable=too-few-public-methods
     """ Fake a file object. """
-    written_content = []
-    initial_content = []
+    initial_content: Sequence[str] = []
 
     def __init__(self, *args, **kwargs):  # pylint: disable=unused-argument
         pass
@@ -97,7 +99,6 @@ class HistoryTest(HistoryTestCase):
     def setUp(self):
         super().setUp()
         self.__history = History('fake file', file_=FakeFile, recent_history=3)
-        FakeFile.written_content = []
 
     def test_filename(self):
         """ Test getting the filename. """
