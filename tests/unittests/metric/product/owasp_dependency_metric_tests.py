@@ -16,7 +16,10 @@ limitations under the License.
 
 import unittest
 
+from typing import Type
+
 from hqlib import metric, domain, metric_source
+from hqlib.metric.product.alerts_metrics import AlertsMetric
 
 
 class FakeSubject(object):
@@ -55,7 +58,7 @@ class FakeJenkinsOWASPDependenciesReport(domain.MetricSource):
 class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
     """ Unit tests for the high priority OWASP dependency warnings metric. """
 
-    class_under_test = metric.HighPriorityOWASPDependencyWarnings  # May be overridden in subclass
+    class_under_test: Type[AlertsMetric] = metric.HighPriorityOWASPDependencyWarnings  # May be overridden
 
     def setUp(self):
         self.__jenkins = FakeJenkinsOWASPDependenciesReport()

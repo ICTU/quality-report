@@ -16,7 +16,10 @@ limitations under the License.
 
 import unittest
 
+from typing import Type
+
 from hqlib import metric, domain, metric_source
+from hqlib.metric.product.alerts_metrics import AlertsMetric
 
 
 class FakeSubject(object):
@@ -50,7 +53,7 @@ class FakeOpenVASReport(domain.MetricSource):  # pylint: disable=too-few-public-
 class HighRiskOpenVASAlertsTest(unittest.TestCase):
     """ Unit tests for the high risk Open VAS Scan alerts metric. """
 
-    class_under_test = metric.HighRiskOpenVASScanAlertsMetric  # May be overridden in subclass
+    class_under_test: Type[AlertsMetric] = metric.HighRiskOpenVASScanAlertsMetric  # May be overridden
 
     def setUp(self):
         self.__open_vas_report = FakeOpenVASReport()
