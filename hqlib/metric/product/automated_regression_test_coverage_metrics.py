@@ -19,7 +19,7 @@ from ... import metric_source
 from ...domain import HigherIsBetterMetric, MetricSourceAgeMetric
 
 
-class _ARTCoverage(HigherIsBetterMetric):
+class ARTCoverage(HigherIsBetterMetric):
     """ Metric for measuring the coverage of automated regression tests (ART) for a product. """
     unit = '%'
     norm_template = 'Minimaal {target}{unit} van de {covered_items} wordt gedekt door geautomatiseerde ' \
@@ -31,7 +31,7 @@ class _ARTCoverage(HigherIsBetterMetric):
 
     @classmethod
     def norm_template_default_values(cls):
-        values = super(_ARTCoverage, cls).norm_template_default_values()
+        values = super(ARTCoverage, cls).norm_template_default_values()
         values['covered_items'] = cls.covered_items
         values['covered_item'] = cls.covered_item
         return values
@@ -54,7 +54,7 @@ class _ARTCoverage(HigherIsBetterMetric):
         return parameters
 
 
-class ARTStatementCoverage(_ARTCoverage):
+class ARTStatementCoverage(ARTCoverage):
     """ Metric for measuring the statement coverage of automated regression tests (ART) for a product. """
 
     name = 'Automatic regression test statement coverage'
@@ -67,7 +67,7 @@ class ARTStatementCoverage(_ARTCoverage):
         return self._metric_source.statement_coverage(self._metric_source_id)
 
 
-class ARTBranchCoverage(_ARTCoverage):
+class ARTBranchCoverage(ARTCoverage):
     """ Metric for measuring the branch coverage of automated regression tests (ART) for a product. """
 
     name = 'Automatic regression test branch coverage'

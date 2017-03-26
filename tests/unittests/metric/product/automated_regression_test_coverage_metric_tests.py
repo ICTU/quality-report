@@ -17,7 +17,10 @@ limitations under the License.
 import datetime
 import unittest
 
+from typing import Type
+
 from hqlib import metric, domain, metric_source
+from hqlib.metric.product.automated_regression_test_coverage_metrics import ARTCoverage
 
 
 class FakeNCover(domain.MetricSource):
@@ -65,9 +68,9 @@ class FakeSubject(object):
 
 class ARTStatementCoverageJacocoTest(unittest.TestCase):
     """ Unit tests for the ART coverage metric. """
-    metric_class = metric.ARTStatementCoverage
-    metric_source_class = FakeJaCoCo
-    metric_source_id = 'http://jacoco'
+    metric_class: Type[ARTCoverage] = metric.ARTStatementCoverage
+    metric_source_class: Type[FakeNCover] = FakeJaCoCo
+    metric_source_id: str = 'http://jacoco'
 
     def setUp(self):
         self.__coverage_report = self.metric_source_class()
@@ -102,7 +105,6 @@ class ARTBranchCoverageJacocoTest(ARTStatementCoverageJacocoTest):
 
 class ARTStatementCoverageNCoverTest(ARTStatementCoverageJacocoTest):
     """ Unit tests for the ART statement coverage metric. """
-    metric_class = metric.ARTStatementCoverage
     metric_source_class = FakeNCover
     metric_source_id = 'http://ncover'
 

@@ -15,8 +15,8 @@ limitations under the License.
 """
 
 
-
 # Product metrics
+
 from .product.analysis_age import SonarAnalysisAge, OWASPDependencyReportAge, OpenVASScanReportAge
 from .product.automated_regression_test_metrics import FailingRegressionTests, RegressionTestAge
 from .product.automated_regression_test_coverage_metrics import (
