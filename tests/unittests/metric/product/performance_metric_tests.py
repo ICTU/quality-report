@@ -17,7 +17,10 @@ limitations under the License.
 import datetime
 import unittest
 
+from typing import Type
+
 from hqlib import metric, metric_source, domain
+from hqlib.metric.product.performance_metrics import PerformanceTestAge, PerformanceMetric
 
 
 class FakePerformanceReport(object):
@@ -75,7 +78,7 @@ class FakeSubject(object):
 
 class PerformanceLoadTestWarningsTest(unittest.TestCase):
     """ Unit tests for the performance load test warnings metric. """
-    metric_class = metric.PerformanceLoadTestWarnings
+    metric_class: Type[PerformanceMetric] = metric.PerformanceLoadTestWarnings
     expected_violations = 4
     expected_status = 'yellow'
 
@@ -163,7 +166,7 @@ class PerformanceScalabilityTestErrorsTest(PerformanceLoadTestWarningsTest):
 
 class PerformanceLoadTestAgeTest(unittest.TestCase):
     """ Unit tests for the performance load test age metric. """
-    metric_class = metric.PerformanceLoadTestAge
+    metric_class: Type[PerformanceTestAge] = metric.PerformanceLoadTestAge
     test_type = 'performanceloadtest'
 
     def setUp(self):
