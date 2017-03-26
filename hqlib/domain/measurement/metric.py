@@ -19,6 +19,8 @@ from typing import Any, Dict
 import functools
 import logging
 
+from .metric_source import MetricSource
+
 
 class Metric(object):
     """ Base class for metrics. """
@@ -32,15 +34,19 @@ class Metric(object):
     low_target_value: Any = 'Subclass responsibility'
     perfect_value: Any = 'Subclass responsibility'
 
-    missing_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
-                       'beschikbaar zijn.'
-    missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat de bron {metric_source_class} ' \
-                              'niet is geconfigureerd.'
-    missing_source_id_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde ' \
-                                 'bron-ids zijn geconfigureerd. Configureer ids voor de bron {metric_source_class}.'
-    perfect_template = ''
-    url_label_text = comment_url_label_text = ''
-    metric_source_class = None
+    missing_template: str = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
+                            'beschikbaar zijn.'
+    missing_source_template: str = 'De {metric} van {name} kon niet gemeten worden omdat de bron ' \
+                                   '{metric_source_class} niet is geconfigureerd.'
+    missing_source_id_template: str = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde ' \
+                                      'bron-ids zijn geconfigureerd. Configureer ids voor de bron ' \
+                                      '{metric_source_class}.'
+    perfect_template: str = ''
+
+    url_label_text: str = ''
+    comment_url_label_text: str = ''
+
+    metric_source_class: MetricSource = None
 
     @classmethod
     def is_applicable(cls, subject) -> bool:  # pylint: disable=unused-argument

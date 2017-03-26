@@ -17,29 +17,29 @@ limitations under the License.
 
 class DomainObject(object):
     """ Base class for all domain objects. """
-    def __init__(self, name='<no name>', url='', short_name='', *args, **kwargs):
+    def __init__(self, name: str='<no name>', url: str='', short_name: str='', *args, **kwargs) -> None:
         self.__name = name
         self.__short_name = short_name
         self.__url = url
         super().__init__(*args, **kwargs)
 
-    def name(self):
+    def name(self) -> str:
         """ Return the name of the domain object. """
         return self.__name
 
-    def short_name(self):
+    def short_name(self) -> str:
         """ Return the short name of the domain object, to be used as metric id prefix. """
         return self.__short_name
 
-    def url(self):
+    def url(self) -> str:
         """ Return the url of the domain object. """
         return self.__url
 
-    def __lt__(self, other):
+    def __lt__(self, other: 'DomainObject') -> bool:
         """ Compare names. """
         return self.name() < other.name()
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'DomainObject') -> bool:
         """ Compare names. """
         return self.name() == other.name() and self.short_name() == other.short_name() and self.url() == other.url()
 
