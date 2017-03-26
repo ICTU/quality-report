@@ -15,10 +15,9 @@ limitations under the License.
 """
 
 
-from typing import Set, Tuple, Type
+from typing import Set, Tuple
 
 from ..base import DomainObject
-from ...domain import Metric
 
 
 class Requirement(DomainObject):
