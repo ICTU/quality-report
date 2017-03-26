@@ -15,18 +15,19 @@ limitations under the License.
 """
 
 
-from typing import Set
+from typing import Set, Tuple, Type
 
 from ..base import DomainObject
+from ...domain import Metric
 
 
 class Requirement(DomainObject):
     """ Domain object representing a requirement. """
-    _name = 'Subclass responsibility'
-    _metric_classes = tuple()  # Subclass responsibility
+    _name: str = 'Subclass responsibility'
+    _metric_classes: Tuple = tuple()  # Subclass responsibility
 
     @classmethod
-    def metric_classes(cls):
+    def metric_classes(cls) -> Tuple:
         """ Return the metrics that have to be measured to satisfy this requirement. """
         return cls._metric_classes
 

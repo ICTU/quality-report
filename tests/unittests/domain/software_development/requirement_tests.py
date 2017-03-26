@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import unittest
+from typing import Tuple, Type
 
 from hqlib import domain
 
@@ -22,19 +23,19 @@ from hqlib import domain
 class RequirementUnderTest(domain.Requirement):  # pylint: disable=too-few-public-methods
     """ Requirement for testing purposes. """
     _name = 'Be user friendly'
-    _metric_classes = ['FakeMetricClass 1']
+    _metric_classes = ('FakeMetricClass 1',)
 
 
 class AddedRequirement(domain.Requirement):  # pylint: disable=too-few-public-methods
     """ A requirement to be added to the default requirements. """
     _name = 'Whatever'
-    _metric_classes = ['FakeMetricClass 2']
+    _metric_classes = ('FakeMetricClass 2',)
 
 
 class RemovedRequirement(domain.Requirement):  # pylint: disable=too-few-public-methods
     """ A requirement to be removed from the defaul requirements. """
     _name = 'Canceled'
-    _metric_classes = []
+    _metric_classes: Tuple = tuple()
 
 
 class RequirementTest(unittest.TestCase):
@@ -48,7 +49,7 @@ class RequirementTest(unittest.TestCase):
 
     def test_metric_classes(self):
         """ Test that the metric classes can be retrieved. """
-        self.assertEqual(['FakeMetricClass 1'], self.__requirement.metric_classes())
+        self.assertEqual(('FakeMetricClass 1',), self.__requirement.metric_classes())
 
 
 class RequirementSubjectUnderTest(domain.RequirementSubject):

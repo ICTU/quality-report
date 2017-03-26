@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
+from typing import Type
 
 from hqlib import metric, domain, metric_source
 
@@ -55,10 +56,10 @@ class FakeSonar(FakeMetricSource):
 
 class SonarAnalysisAgeTest(unittest.TestCase):
     """ Unit tests for the sonar analysis age metric. """
-    metric_source_class = metric_source.Sonar
-    metric_source_class_mock = FakeSonar
-    metric_class = metric.SonarAnalysisAge
-    expected_metric_source_text = 'De meest recente Sonar analyse'
+    metric_source_class: Type[domain.MetricSource] = metric_source.Sonar
+    metric_source_class_mock: Type[FakeMetricSource] = FakeSonar
+    metric_class: Type[domain.Metric] = metric.SonarAnalysisAge
+    expected_metric_source_text: str = 'De meest recente Sonar analyse'
 
     def setUp(self):
         self.__metric_source = self.metric_source_class_mock()
@@ -113,7 +114,7 @@ class FakeOpenVASScanReport(FakeMetricSource):
     needs_metric_source_id = metric_source.OpenVASScanReport.needs_metric_source_id
 
 
-class OpenVASScanReportAgeTest(unittest.TestCase):
+class OpenVASScanReportAgeTest(SonarAnalysisAgeTest):
     """ Unit tests for the Open VAS Scan report age metric. """
     metric_source_class = metric_source.OpenVASScanReport
     metric_source_class_mock = FakeOpenVASScanReport

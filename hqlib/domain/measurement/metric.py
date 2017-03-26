@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Type
 
 import functools
 import logging
@@ -46,7 +46,7 @@ class Metric(object):
     url_label_text: str = ''
     comment_url_label_text: str = ''
 
-    metric_source_class: MetricSource = None
+    metric_source_class: Type[MetricSource] = None
 
     @classmethod
     def is_applicable(cls, subject) -> bool:  # pylint: disable=unused-argument
