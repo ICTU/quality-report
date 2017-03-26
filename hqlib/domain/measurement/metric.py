@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Any, Dict
 
 import functools
 import logging
@@ -22,7 +23,15 @@ import logging
 class Metric(object):
     """ Base class for metrics. """
 
-    name = norm_template = target_value = low_target_value = perfect_value = template = unit = 'Subclass responsibility'
+    name: str = 'Subclass responsibility'
+    template: str = 'Subclass responsibility'
+    norm_template: str = 'Subclass responsibility'
+    unit: str = 'Subclass responsibility'
+
+    target_value: Any = 'Subclass responsibility'
+    low_target_value: Any = 'Subclass responsibility'
+    perfect_value: Any = 'Subclass responsibility'
+
     missing_template = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
                        'beschikbaar zijn.'
     missing_source_template = 'De {metric} van {name} kon niet gemeten worden omdat de bron {metric_source_class} ' \
@@ -34,12 +43,12 @@ class Metric(object):
     metric_source_class = None
 
     @classmethod
-    def is_applicable(cls, subject):  # pylint: disable=unused-argument
+    def is_applicable(cls, subject) -> bool:  # pylint: disable=unused-argument
         """ Return whether this metric applies to the specified subject. """
         return True
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> Dict[str, Any]:
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
