@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-
 from .. import metric
 from ..domain import Requirement
 
@@ -23,7 +22,7 @@ from ..domain import Requirement
 class OWASPDependencies(Requirement):
     """ Require dependencies to be analyzed for vulnerabilities. """
     _name = 'OWASP Top 10 2013 Dependencies'
-    url = 'https://www.owasp.org/'
+    _url = 'https://www.owasp.org/'
     _metric_classes = (metric.HighPriorityOWASPDependencyWarnings, metric.NormalPriorityOWASPDependencyWarnings,
                        metric.OWASPDependencyReportAge)
 
@@ -31,14 +30,14 @@ class OWASPDependencies(Requirement):
 class OWASPZAP(Requirement):
     """ Require OWASP Zap to be used to scan applications for security vulnerabilities. """
     _name = 'OWASP Top 10 2013 ZAP'
-    url = 'https://www.owasp.org/'
+    _url = 'https://www.owasp.org/'
     _metric_classes = (metric.HighRiskZAPScanAlertsMetric, metric.MediumRiskZAPScanAlertsMetric)
 
 
 class TrustedProductMaintainability(Requirement):
     """ Require the total size of the source code to be tracked. """
     _name = 'Trusted Product Maintainability, version 6.1'
-    url = 'http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/'
+    _url = 'http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/'
     _metric_classes = (metric.TotalLOC,)
 
 

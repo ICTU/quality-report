@@ -23,6 +23,7 @@ from ..base import DomainObject
 class Requirement(DomainObject):
     """ Domain object representing a requirement. """
     _name: str = 'Subclass responsibility'
+    _url: str = 'Subclass responsibility'
     _metric_classes: Tuple = tuple()  # Subclass responsibility
 
     @classmethod
@@ -34,6 +35,11 @@ class Requirement(DomainObject):
     def name(cls) -> str:
         """ Return the name of the requirement. """
         return cls._name
+
+    @classmethod
+    def url(cls) -> str:
+        """ Return the url. """
+        return cls._url
 
 
 class RequirementSubject(DomainObject):
