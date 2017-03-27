@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any, Dict, Type
+from typing import Any, Dict, Type, Tuple, Union
 
 import functools
 import logging
@@ -58,7 +58,7 @@ class Metric(object):
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
-    def __init__(self, subject=None, project=None):
+    def __init__(self, subject=None, project=None) -> None:
         self._subject = subject
         self._project = project
         self._metric_source = self._project.metric_source(self.metric_source_class) if self.metric_source_class \
@@ -86,7 +86,7 @@ class Metric(object):
         from hqlib import metric_source
         self.__history = self._project.metric_source(metric_source.History)
 
-    def stable_id(self):
+    def stable_id(self) -> str:
         """ Return an id that doesn't depend on numbering/order of metrics. """
         stable_id = self.__class__.__name__
         if not isinstance(self._subject, list):
@@ -94,12 +94,12 @@ class Metric(object):
             stable_id += self._subject.name() if self._subject else str(self._subject)
         return stable_id
 
-    def set_id_string(self, id_string):
+    def set_id_string(self, id_string: str) -> None:
         """ Set the identification string. This can be set by a client since the identification of a metric may
             depend on the section the metric is reported in. E.g. A-1. """
         self.__id_string = id_string
 
-    def id_string(self):
+    def id_string(self) -> str:
         """ Return the identification string of the metric. """
         return self.__id_string
 
@@ -179,15 +179,15 @@ class Metric(object):
             i.e. no further improvement is possible. """
         return self.value() == self.perfect_value
 
-    def value(self) -> Any:
+    def value(self):
         """ Return the actual value of the metric. """
         raise NotImplementedError  # pragma: no cover
 
-    def _is_value_better_than(self, target):
+    def _is_value_better_than(self, target) -> bool:
         """ Return whether the actual value of the metric is better than the specified target value. """
         raise NotImplementedError  # pragma: no cover
 
-    def report(self, max_subject_length=200):
+    def report(self, max_subject_length: int=200) -> str:
         """ Return the actual value of the metric in the form of a short, mostly one sentence, report. """
         name = self.__subject_name()
         if len(name) > max_subject_length:
@@ -195,7 +195,7 @@ class Metric(object):
         logging.info('Reporting %s on %s', self.__class__.__name__, name)
         return self._get_template().format(**self._parameters())
 
-    def _get_template(self):
+    def _get_template(self) -> str:
         """ Return the template for the metric report. """
         if self.__missing_source_class():
             return self.missing_source_template
@@ -208,7 +208,7 @@ class Metric(object):
         else:
             return self.template
 
-    def _parameters(self):
+    def _parameters(self) -> Dict:
         """ Return the parameters for the metric report template and for the metric norm template. """
         return dict(name=self.__subject_name(),
                     metric=self.name[0].lower()+self.name[1:],
@@ -219,7 +219,7 @@ class Metric(object):
                     metric_source_class=self.metric_source_class.__name__ if self.metric_source_class
                     else '<metric has no metric source defined>')
 
-    def norm(self):
+    def norm(self) -> str:
         """ Return a description of the norm for the metric. """
         try:
             return self.norm_template.format(**self._parameters())
@@ -227,7 +227,7 @@ class Metric(object):
             logging.error('Key missing in parameters of %s: %s', self.__class__.__name__, self._parameters())
             raise
 
-    def url(self):
+    def url(self) -> Dict[str, str]:
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
         label = self._metric_source.metric_source_name if self._metric_source else 'Unknown metric source'
         urls = [url for url in self._metric_source_urls() if url]  # Weed out urls that are empty or None
@@ -252,12 +252,12 @@ class Metric(object):
         ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
         return [id_ for id_ in ids if id_]
 
-    def comment(self):
+    def comment(self) -> str:
         """ Return a comment on the metric. The comment is retrieved from either the technical debt or the subject. """
         comments = [comment for comment in (self.__technical_debt_comment(), self.__subject_comment()) if comment]
         return ' '.join(comments)
 
-    def __subject_comment(self):
+    def __subject_comment(self) -> str:
         """ Return the comment of the subject about this metric, if any. """
         try:
             return self._subject.metric_options(self.__class__)['comment']
@@ -269,7 +269,7 @@ class Metric(object):
         td_target = self.__technical_debt_target()
         return td_target.explanation(self.unit) if td_target else ''
 
-    def comment_urls(self):  # pylint: disable=no-self-use
+    def comment_urls(self) -> Dict[str, str]:  # pylint: disable=no-self-use
         """ Return the source for the comment on the metric. """
         return dict()
 
@@ -278,7 +278,7 @@ class Metric(object):
         history = self.__history.recent_history(self.stable_id(), self.id_string()) or []
         return [int(round(float(value))) for value in history]
 
-    def y_axis_range(self):
+    def y_axis_range(self) -> Tuple[int, int]:
         """ Return a two-tuple (min, max) for use in graphs. """
         history = self.recent_history()
         if not history:
@@ -286,13 +286,13 @@ class Metric(object):
         minimum, maximum = min(history), max(history)
         return (minimum - 1, maximum + 1) if minimum == maximum else (minimum, maximum)
 
-    def numerical_value(self):
+    def numerical_value(self) -> Union[float, int]:
         """ Return a numerical version of the metric value for use in graphs. By default this simply returns the
             regular value, assuming it is already numerical. Metrics that don't have a numerical value by default
             can override this method to convert the non-numerical value into a numerical value. """
         return self.value()
 
-    def __subject_name(self):
+    def __subject_name(self) -> str:
         """ Return the subject name, or a string representation if the subject has no name. """
         try:
             return self._subject.name()
