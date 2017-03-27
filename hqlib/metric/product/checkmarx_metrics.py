@@ -25,7 +25,7 @@ class CheckmarxAlertsMetric(AlertsMetric):
     unit = 'security waarschuwingen'
     norm_template = 'Het product heeft geen {risk_level} risico Checkmarx {unit}. ' \
                     'Meer dan {low_target} is rood.'
-    metric_source_class = metric_source.CheckmarxReport
+    metric_source_class = metric_source.Checkmarx
 
 
 class HighRiskCheckmarxAlertsMetric(CheckmarxAlertsMetric):

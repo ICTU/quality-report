@@ -48,3 +48,4 @@ from .url_opener import UrlOpener
 from .version_control_system.git import Git
 from .version_control_system.subversion import Subversion
 from .zap_scan_report import ZAPScanReport
+from .checkmarx import Checkmarx
