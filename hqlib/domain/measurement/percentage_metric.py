@@ -24,7 +24,7 @@ class PercentageMixin(object):
     """ Mixin class for metrics that are calculated as the percentage of a numerator and a denominator. """
 
     unit = '%'
-    zero_divided_by_zero_is_zero = 'Subclass responsibility'
+    zero_divided_by_zero_is_zero = False
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
@@ -74,7 +74,6 @@ class HigherPercentageIsBetterMetric(PercentageMixin, directed_metric.HigherIsBe
     """ Metric measured as a percentage with higher values being better. """
 
     perfect_value = 100
-    zero_divided_by_zero_is_zero = False
 
     def _numerator(self):
         raise NotImplementedError  # pragma: no cover

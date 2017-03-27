@@ -16,13 +16,15 @@ limitations under the License.
 
 import functools
 
+from typing import Tuple
+
 from ..domain import HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
 
 
 class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
     """ Mixin class for meta metrics. Assumes that meta metrics are percentage metrics and that the subclass
         specifies the metric statuses (colors) that the meta metric is measuring. """
-    metric_statuses = []  # Subclass responsibility
+    metric_statuses: Tuple = tuple()  # Subclass responsibility
 
     @functools.lru_cache(maxsize=1024)
     def _numerator(self):

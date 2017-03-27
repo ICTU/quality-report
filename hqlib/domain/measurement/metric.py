@@ -179,7 +179,7 @@ class Metric(object):
             i.e. no further improvement is possible. """
         return self.value() == self.perfect_value
 
-    def value(self):
+    def value(self) -> Any:
         """ Return the actual value of the metric. """
         raise NotImplementedError  # pragma: no cover
 
