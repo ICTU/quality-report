@@ -57,7 +57,7 @@ class Checkmarx(domain.MetricSource):
         return int(json[risk_level])
 
     def __fetch_report(self, project_name):
-        api_url = format("%s/Cxwebinterface/odata/v1/Projects?$expand=LastScan($expand=Results)&"
+        api_url = format("%s/Cxwebinterface/odata/v1/Projects?$expand=LastScan&"
                          "$filter=LastScan/Results/any(r: r/Severity eq CxDataRepository.Severity'High' or "
                          "r/Severity eq CxDataRepository.Severity'Medium') and Name eq '%s'", self.checkmarx_url, project_name)
         top_level_url = format("%s/Cxwebinterface")
