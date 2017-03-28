@@ -15,12 +15,14 @@ limitations under the License.
 """
 
 
+from typing import Dict, Optional
+
 from ..base import DomainObject
 
 
 class MeasurableObject(DomainObject):
     """ An object that has measurable characteristics. Base class for products, teams, etc. """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.__metric_source_ids = kwargs.pop('metric_source_ids', dict())
         self.__old_metric_source_ids = kwargs.pop('old_metric_source_ids', dict())
         self.__metric_source_options = kwargs.pop('metric_source_options', dict())
@@ -39,7 +41,7 @@ class MeasurableObject(DomainObject):
         """ Return whether a score below target is considered to be accepted technical debt. """
         return self.__metric_options.get(metric_class, dict()).get('debt_target')
 
-    def metric_source_id(self, metric_source):
+    def metric_source_id(self, metric_source) -> Optional[str]:
         """ Return the id of this object in the metric source. """
         if isinstance(metric_source, list):
             for source in metric_source:
@@ -49,7 +51,7 @@ class MeasurableObject(DomainObject):
         else:
             return self.__metric_source_ids.get(metric_source)
 
-    def old_metric_source_id(self, metric_source, version):
+    def old_metric_source_id(self, metric_source, version) -> str:
         """ Return the id of this object in the metric source for a specific version of the object. """
         old_metric_source_ids = self.__old_metric_source_ids.get(metric_source, dict())
         return old_metric_source_ids.get(version)
@@ -59,7 +61,7 @@ class MeasurableObject(DomainObject):
             to get information about this object from the metric source. """
         return self.__metric_source_options.get(metric_source)
 
-    def metric_options(self, metric_class):
+    def metric_options(self, metric_class) -> Dict:
         """ Return the options of this object for the metric class. Options can be any information that is needed
             for the metric. """
         return self.__metric_options.get(metric_class, dict())

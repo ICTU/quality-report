@@ -17,21 +17,23 @@ limitations under the License.
 
 import datetime
 
+from typing import List
+
 from ..base import DomainObject
 
 
 class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     """ Base class for metric sources. """
-    metric_source_name = ''
-    needs_metric_source_id = False
-    needs_values_as_list = False
+    metric_source_name: str = ''
+    needs_metric_source_id: bool = False
+    needs_values_as_list: bool = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         if 'name' not in kwargs:
             kwargs['name'] = self.metric_source_name or 'Unknown metric source'
         super().__init__(*args, **kwargs)
 
-    def metric_source_urls(self, *metric_source_ids):  # pylint: disable=no-self-use
+    def metric_source_urls(self, *metric_source_ids) -> List:  # pylint: disable=no-self-use
         """ Return the url(s) to the metric source for the metric source id. """
         return list(metric_source_ids)  # Default implementation assumes the metric source ids as urls.
 
@@ -43,7 +45,7 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
 class MissingMetricSource(MetricSource):
     """ Class that represents a missing metric source. """
 
-    def url(self):
+    def url(self) -> str:
         return ''
 
     def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument,no-self-use

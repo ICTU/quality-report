@@ -15,12 +15,12 @@ limitations under the License.
 """
 
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 import hqlib
 
 
-def parse():
+def parse() -> Namespace:
     """ Parse the command line arguments. """
     parser = ArgumentParser(description='Generate a quality report.')
     parser.add_argument('--project', help='folder with project definition file or filename of the project definition '
