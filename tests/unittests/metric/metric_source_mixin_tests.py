@@ -19,20 +19,19 @@ import unittest
 from hqlib import metric, domain, metric_source
 
 
-class SonarMetricUnderTest(metric.metric_source_mixin.SonarMetric, domain.Metric):
-    """ Create a testable class by mixing the Sonar metric class with a metric class. """
-    # pylint: disable=too-few-public-methods
+class SonarMetricUnderTest(metric.metric_source_mixin.SonarMetric):
+    """ Implement the abstract methods for testing purposes. """
     def value(self):
         """ Return a dummy value. """
-        return 0  # pragma: no cover
+        return 0
 
     def _is_value_better_than(self, target):
         """ Return a dummy value. """
-        return True  # pragma: no cover
+        return True
 
 
-class SonarMetricMixinTest(unittest.TestCase):
-    """ Unit tests for the Sonar metric source mixin class. """
+class SonarMetricTest(unittest.TestCase):
+    """ Unit tests for the Sonar metric source class. """
 
     def test_url(self):
         """ Test the url. """
@@ -55,16 +54,15 @@ class SonarMetricMixinTest(unittest.TestCase):
         self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricUnderTest(product, project).url())
 
 
-class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMetricMixin, domain.Metric):
-    """ Create a testable class by mixing the mixin class with a metric class. """
-    # pylint: disable=too-few-public-methods
+class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMetric):
+    """ Implement the abstract methods for testing purposes. """
     def value(self):
         """ Return a dummy value. """
-        return 0  # pragma: no cover
+        return 0
 
     def _is_value_better_than(self, target):
         """ Return a dummy value. """
-        return True  # pragma: no cover
+        return True
 
 
 class FakeBirt(object):
@@ -79,8 +77,8 @@ class FakeBirt(object):
         return 'http://birt/whatsmissing/'
 
 
-class BirtTestDesignMixinTest(unittest.TestCase):
-    """ Unit tests for the Birt test design report metric source mixin class. """
+class BirtTestDesignMetricTest(unittest.TestCase):
+    """ Unit tests for the Birt test design report metric source class. """
 
     def test_url(self):
         """ Test the url. """

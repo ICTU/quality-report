@@ -17,12 +17,12 @@ limitations under the License.
 
 import datetime
 
-from ..metric_source_mixin import BirtTestDesignMetricMixin
+from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
 
 
-class LogicalTestCaseMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
+class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of logical test cases. """
     unit = 'logische testgevallen'
 

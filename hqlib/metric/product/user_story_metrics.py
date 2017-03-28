@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import BirtTestDesignMetricMixin
+from ..metric_source_mixin import BirtTestDesignMetric
 from ...domain import LowerIsBetterMetric
 
 
-class UserStoryMetric(BirtTestDesignMetricMixin, LowerIsBetterMetric):
+class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of user stories. """
     unit = 'user stories'
 

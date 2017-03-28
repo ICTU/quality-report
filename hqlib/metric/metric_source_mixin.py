@@ -56,10 +56,17 @@ class SonarViolationsMetric(SonarMetric):
         return [self._metric_source.violations_url(self._sonar_id())]
 
 
-class BirtTestDesignMetricMixin(object):
-    """ Mixin class for metrics that use the Birt test design report. """
+class BirtTestDesignMetric(domain.Metric):
+    """ Class for metrics that use the Birt test design report. """
 
     metric_source_class = metric_source.Birt
+
+    @functools.lru_cache(maxsize=1024)
+    def value(self):
+        return super().value()
+
+    def _is_value_better_than(self, target):
+        return super()._is_value_better_than(target)
 
     def _metric_source_urls(self):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
@@ -67,8 +74,8 @@ class BirtTestDesignMetricMixin(object):
         return [self._metric_source.whats_missing_url()]
 
 
-class VersionControlSystemMetricMixin(object):
-    """ Mixin class for metrics that use a version control system. """
+class VersionControlSystemMetric(domain.Metric):
+    """ Class for metrics that use a version control system. """
 
     metric_source_class = metric_source.VersionControlSystem
 
@@ -76,6 +83,13 @@ class VersionControlSystemMetricMixin(object):
         super().__init__(*args, **kwargs)
         self.__vcs = self._project.metric_source(metric_source.VersionControlSystem)
         self._vcs_product_info = metric_info.VersionControlSystemProductInfo(self.__vcs, self._subject)
+
+    @functools.lru_cache(maxsize=1024)
+    def value(self):
+        return super().value()
+
+    def _is_value_better_than(self, target):
+        return super()._is_value_better_than(target)
 
     def _vcs_path(self):
         """ Return the version control system path for the product. """

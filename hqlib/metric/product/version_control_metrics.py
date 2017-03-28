@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import VersionControlSystemMetricMixin
+from ..metric_source_mixin import VersionControlSystemMetric
 from ...domain import LowerIsBetterMetric
 
 
-class UnmergedBranches(VersionControlSystemMetricMixin, LowerIsBetterMetric):
+class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
     """ Metric for measuring the number of unmerged branches. """
 
     name = 'Hoeveelheid ongemergde branches'
