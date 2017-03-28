@@ -124,7 +124,7 @@ class Metric(object):
             return None
 
     @functools.lru_cache(maxsize=8*1024)
-    def status(self):
+    def status(self) -> str:
         """ Return the status/color of the metric. """
         for status_string, has_status in [('missing_source', self.__missing_source_configuration),
                                           ('missing', self._missing),
@@ -264,7 +264,7 @@ class Metric(object):
         except (AttributeError, TypeError, KeyError):
             return ''
 
-    def __technical_debt_comment(self):
+    def __technical_debt_comment(self) -> str:
         """ Return the comment of the accepted technical debt, if any. """
         td_target = self.__technical_debt_target()
         return td_target.explanation(self.unit) if td_target else ''

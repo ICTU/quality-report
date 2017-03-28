@@ -17,9 +17,11 @@ limitations under the License.
 
 import datetime
 
-from typing import List
+from typing import Any, Callable, List
 
 from ..base import DomainObject
+
+DateTime = datetime.datetime
 
 
 class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
@@ -28,16 +30,16 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     needs_metric_source_id: bool = False
     needs_values_as_list: bool = False
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: str, **kwargs: str) -> None:
         if 'name' not in kwargs:
             kwargs['name'] = self.metric_source_name or 'Unknown metric source'
         super().__init__(*args, **kwargs)
 
-    def metric_source_urls(self, *metric_source_ids) -> List:  # pylint: disable=no-self-use
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:  # pylint: disable=no-self-use
         """ Return the url(s) to the metric source for the metric source id. """
         return list(metric_source_ids)  # Default implementation assumes the metric source ids as urls.
 
-    def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument,no-self-use
+    def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument,no-self-use
         """ Return the date and time of the last measurement. """
         return datetime.datetime.now()
 
@@ -48,19 +50,19 @@ class MissingMetricSource(MetricSource):
     def url(self) -> str:
         return ''
 
-    def datetime(self, *metric_source_ids):  # pylint: disable=unused-argument,no-self-use
+    def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument,no-self-use
         return datetime.datetime.min
 
-    def __getattr__(self, attribute):
+    def __getattr__(self, attribute: str) -> Callable[..., None]:
         return self.__default_method
 
     @staticmethod
-    def __default_method(*args, **kwargs):  # pylint: disable=unused-argument
+    def __default_method(*args: Any, **kwargs: Any) -> None:  # pylint: disable=unused-argument
         """ Do nothing and return nothing for any method called. """
         return
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return False
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> None:
         raise StopIteration

@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 
+import functools
+
 from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
@@ -56,10 +58,10 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     def status(self):
         return 'red' if self.__no_tests() else super().status()
 
-    def _get_template(self):
+    def _get_template(self) -> str:
         return self.no_tests_template if self.__no_tests() else super()._get_template()
 
-    def __no_tests(self):
+    def __no_tests(self) -> bool:
         """ Return True if are no unit tests. """
         return self._metric_source.unittests(self._sonar_id()) == 0
 

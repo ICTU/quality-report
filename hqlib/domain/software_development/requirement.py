@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Set, Tuple
+from typing import Set, Tuple, Type
 
 from ..base import DomainObject
 
@@ -44,7 +44,7 @@ class Requirement(DomainObject):
 
 class RequirementSubject(DomainObject):
     """ Measurable objects that have requirements. """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.__requirements = set(kwargs.pop('requirements', []))
         if not self.__requirements:
             added_requirements = set(kwargs.pop('added_requirements', []))
@@ -55,16 +55,16 @@ class RequirementSubject(DomainObject):
         super().__init__(*args, **kwargs)
 
     @staticmethod
-    def default_requirements() -> Set[Requirement]:
+    def default_requirements() -> Set[Type[Requirement]]:
         """ Return the default requirements of the subject. """
         return set()
 
     @staticmethod
-    def optional_requirements() -> Set[Requirement]:
+    def optional_requirements() -> Set[Type[Requirement]]:
         """ Return the optional requirements of the subject. """
         return set()
 
-    def requirements(self) -> Set[Requirement]:
+    def requirements(self) -> Set[Type[Requirement]]:
         """ Return the actual requirements of the subject. """
         return self.__requirements
 

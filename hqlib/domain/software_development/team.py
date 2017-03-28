@@ -14,39 +14,41 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Set, Type
 
-from .requirement import RequirementSubject
+from .requirement import Requirement, RequirementSubject
 from ..measurement.measurable import MeasurableObject
+from .person import Person
 
 
 class Team(RequirementSubject, MeasurableObject):
     """ Class for representing a team. """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.__members = set()
+        self.__members: Set[Person] = set()
 
     @staticmethod
-    def default_requirements():
+    def default_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackSpirit}
 
     @staticmethod
-    def optional_requirements():
+    def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackAbsence, requirement.ScrumTeam}
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name()
 
-    def id_string(self):
+    def id_string(self) -> str:
         """ Return an id string for the team. """
         return self.name().lower().replace(' ', '_')
 
-    def members(self):
+    def members(self) -> Set[Person]:
         """ Return the team members. """
         return self.__members
 
-    def add_member(self, person):
+    def add_member(self, person: Person) -> None:
         """ Add the person as a team member. """
         self.__members.add(person)

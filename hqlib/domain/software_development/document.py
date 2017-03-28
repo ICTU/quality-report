@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Set, Type
 
-from .requirement import RequirementSubject
+from .requirement import Requirement, RequirementSubject
 from ..measurement.measurable import MeasurableObject
 
 
@@ -23,14 +24,14 @@ class Document(RequirementSubject, MeasurableObject):
     """ Class representing a document. """
 
     @staticmethod
-    def default_requirements():
+    def default_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackDocumentAge}
 
-    def __str__(self):
+    def __str__(self) -> str:
         """ Return the id string of the document. """
         return self.id_string()
 
-    def id_string(self):
+    def id_string(self) -> str:
         """ Return an id string for the document. """
         return self.name().lower().replace(' ', '_')
