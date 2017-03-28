@@ -20,7 +20,7 @@ from hqlib import domain, metric, metric_source
 from tests.unittests.domain.measurement.fake import FakeHistory, FakeSubject
 
 
-class MetaMetricUnderTest(metric.meta_metrics.MetaMetricMixin, domain.HigherPercentageIsBetterMetric):
+class MetaMetricUnderTest(metric.meta_metrics.MetaMetric, domain.HigherPercentageIsBetterMetric):
     # pylint: disable=too-few-public-methods
     """ Use MetaMetricMixin to create a concrete meta metric that can be tested. """
     pass

@@ -18,13 +18,20 @@ import functools
 
 from typing import Tuple
 
-from ..domain import HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
+from ..domain import PercentageMetric, HigherPercentageIsBetterMetric, LowerPercentageIsBetterMetric
 
 
-class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
-    """ Mixin class for meta metrics. Assumes that meta metrics are percentage metrics and that the subclass
+class MetaMetric(PercentageMetric):  # pylint: disable=too-few-public-methods
+    """ Base class for meta metrics. Assumes that meta metrics are percentage metrics and that the subclass
         specifies the metric statuses (colors) that the meta metric is measuring. """
     metric_statuses: Tuple = tuple()  # Subclass responsibility
+
+    @functools.lru_cache(maxsize=1024)
+    def value(self):
+        return super().value()
+
+    def _is_value_better_than(self, target):
+        return super()._is_value_better_than(target)
 
     @functools.lru_cache(maxsize=1024)
     def _numerator(self):
@@ -36,7 +43,7 @@ class MetaMetricMixin(object):  # pylint: disable=too-few-public-methods
         return len(self._subject)
 
 
-class GreenMetaMetric(MetaMetricMixin, HigherPercentageIsBetterMetric):
+class GreenMetaMetric(MetaMetric, HigherPercentageIsBetterMetric):
     """ Metric for measuring the percentage of metrics that scores green. """
 
     metric_statuses = ('green', 'perfect')
@@ -47,7 +54,7 @@ class GreenMetaMetric(MetaMetricMixin, HigherPercentageIsBetterMetric):
     low_target_value = 80
 
 
-class RedMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
+class RedMetaMetric(MetaMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of metrics that scores red. """
 
     metric_statuses = ('red',)
@@ -58,7 +65,7 @@ class RedMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
     low_target_value = 5
 
 
-class YellowMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
+class YellowMetaMetric(MetaMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of metrics that scores yellow. """
 
     metric_statuses = ('yellow',)
@@ -69,7 +76,7 @@ class YellowMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
     low_target_value = 10
 
 
-class GreyMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
+class GreyMetaMetric(MetaMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of metrics that scores grey. """
 
     metric_statuses = ('grey',)
@@ -80,7 +87,7 @@ class GreyMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
     low_target_value = 5
 
 
-class MissingMetaMetric(MetaMetricMixin, LowerPercentageIsBetterMetric):
+class MissingMetaMetric(MetaMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of metrics that can't be measured. """
 
     metric_statuses = ('missing', 'missing_source')
