@@ -12,6 +12,7 @@ tests/integrationtests/*/*history.json
 repos
 
 # Ignore build folders
+mypy_report
 dist
 quality_report.egg-info/
 
