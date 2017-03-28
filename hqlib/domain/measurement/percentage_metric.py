@@ -17,11 +17,12 @@ limitations under the License.
 import functools
 
 from . import directed_metric
+from . import metric
 from ... import utils
 
 
-class PercentageMixin(object):
-    """ Mixin class for metrics that are calculated as the percentage of a numerator and a denominator. """
+class PercentageMetric(metric.Metric):
+    """ Base class for metrics that are calculated as the percentage of a numerator and a denominator. """
 
     unit = '%'
     zero_divided_by_zero_is_zero = False
@@ -35,6 +36,10 @@ class PercentageMixin(object):
             return -1
         else:
             return utils.percentage(numerator, denominator, self.zero_divided_by_zero_is_zero)
+
+    def _is_value_better_than(self, target) -> bool:
+        """ Return whether the actual value of the metric is better than the specified target value. """
+        return super()._is_value_better_than(target)
 
     def _parameters(self):
         """ Add numerator and denominator to the parameters. """
@@ -51,14 +56,13 @@ class PercentageMixin(object):
         """ Return the denominator (the number below the divider) for the metric. """
         raise NotImplementedError  # pragma: no cover
 
-    @staticmethod
-    def y_axis_range():
+    def y_axis_range(self):
         """ Return the y-axis range. This is always 0-100, since this class represents a metric measured as
             percentage. """
         return 0, 100
 
 
-class LowerPercentageIsBetterMetric(PercentageMixin, directed_metric.LowerIsBetterMetric):
+class LowerPercentageIsBetterMetric(PercentageMetric, directed_metric.LowerIsBetterMetric):
     """ Metric measured as a percentage with lower values being better. """
 
     zero_divided_by_zero_is_zero = True
@@ -70,7 +74,7 @@ class LowerPercentageIsBetterMetric(PercentageMixin, directed_metric.LowerIsBett
         raise NotImplementedError  # pragma: no cover
 
 
-class HigherPercentageIsBetterMetric(PercentageMixin, directed_metric.HigherIsBetterMetric):
+class HigherPercentageIsBetterMetric(PercentageMetric, directed_metric.HigherIsBetterMetric):
     """ Metric measured as a percentage with higher values being better. """
 
     perfect_value = 100

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import functools
 
 from . import metric
 
@@ -23,8 +24,9 @@ class LowerIsBetterMetric(metric.Metric):
 
     perfect_value = 0
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
-        raise NotImplementedError  # pragma: no cover
+        return super().value()
 
     def _is_value_better_than(self, target) -> bool:
         return self.perfect_value <= self.value() <= target
@@ -33,8 +35,9 @@ class LowerIsBetterMetric(metric.Metric):
 class HigherIsBetterMetric(metric.Metric):
     """ Metric for which a higher value means the metric is scoring better. """
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
-        raise NotImplementedError  # pragma: no cover
+        return super().value()
 
     def _is_value_better_than(self, target) -> bool:
         return self.value() >= target
