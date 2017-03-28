@@ -15,14 +15,23 @@ limitations under the License.
 """
 
 
-from .. import metric_source, metric_info
+import functools
+
+from .. import metric_source, metric_info, domain
 
 # pylint: disable=too-few-public-methods
 
 
-class SonarMetricMixin(object):
-    """ Mixin class for metrics that use Sonar. """
+class SonarMetric(domain.Metric):
+    """ Class for metrics that use Sonar. """
     metric_source_class = metric_source.Sonar
+
+    @functools.lru_cache(maxsize=1024)
+    def value(self):
+        return super().value()
+
+    def _is_value_better_than(self, target):
+        return super()._is_value_better_than(target)
 
     def _metric_source_urls(self):
         """ Return the url to Sonar. """
@@ -33,15 +42,15 @@ class SonarMetricMixin(object):
         return self._subject.metric_source_id(self._metric_source) or '' if self._subject else ''
 
 
-class SonarDashboardMetricMixin(SonarMetricMixin):
-    """ Mixin class for metrics that use the Sonar dashboard. """
+class SonarDashboardMetric(SonarMetric):
+    """ Class for metrics that use the Sonar dashboard. """
     def _metric_source_urls(self):
         """ Return the url to the Sonar dashboard. """
         return [self._metric_source.dashboard_url(self._sonar_id())]
 
 
-class SonarViolationsMetricMixin(SonarMetricMixin):
-    """ Mixin class for metrics that use the Sonar violations. """
+class SonarViolationsMetric(SonarMetric):
+    """ Class for metrics that use the Sonar violations. """
     def _metric_source_urls(self):
         """ Return the url to the Sonar violations. """
         return [self._metric_source.violations_url(self._sonar_id())]

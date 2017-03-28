@@ -27,6 +27,7 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
     target_value = 3
     low_target_value = 7
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
         return -1 if self._missing() else \
             (datetime.datetime.now() - self._metric_source.datetime(*self._get_metric_source_ids())).days

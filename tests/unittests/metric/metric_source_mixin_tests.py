@@ -19,8 +19,8 @@ import unittest
 from hqlib import metric, domain, metric_source
 
 
-class SonarMetricMixinUnderTest(metric.metric_source_mixin.SonarMetricMixin, domain.Metric):
-    """ Create a testable class by mixing the mixin class with a metric class. """
+class SonarMetricUnderTest(metric.metric_source_mixin.SonarMetric, domain.Metric):
+    """ Create a testable class by mixing the Sonar metric class with a metric class. """
     # pylint: disable=too-few-public-methods
     def value(self):
         """ Return a dummy value. """
@@ -39,20 +39,20 @@ class SonarMetricMixinTest(unittest.TestCase):
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product(metric_source_ids={sonar: 'sonar id'})
-        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricMixinUnderTest(product, project).url())
+        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricUnderTest(product, project).url())
 
     def test_url_without_sonar(self):
         """ Test that the metric has no url when the project has no Sonar configured. """
         project = domain.Project()
         product = domain.Product()
-        self.assertEqual(dict(), SonarMetricMixinUnderTest(product, project).url())
+        self.assertEqual(dict(), SonarMetricUnderTest(product, project).url())
 
     def test_url_without_sonar_id(self):
         """ Test that the metric has a url when the product has no Sonar id configured. """
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product()
-        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricMixinUnderTest(product, project).url())
+        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricUnderTest(product, project).url())
 
 
 class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMetricMixin, domain.Metric):

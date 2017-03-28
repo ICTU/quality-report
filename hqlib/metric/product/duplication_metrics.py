@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import LowerPercentageIsBetterMetric
 
 
-class Duplication(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
+class Duplication(SonarDashboardMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of duplicated lines of code. """
 
     norm_template = 'Maximaal {target}% gedupliceerde regels code. Meer dan {low_target}% is rood.'

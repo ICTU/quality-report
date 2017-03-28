@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import LowerIsBetterMetric
 
 
-class CyclicDependencies(SonarDashboardMetricMixin, LowerIsBetterMetric):
+class CyclicDependencies(SonarDashboardMetric, LowerIsBetterMetric):
     """ Return the number of cyclic dependencies between packages. """
 
     name = 'Hoeveelheid cyclische afhankelijkheden'

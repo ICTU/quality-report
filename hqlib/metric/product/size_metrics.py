@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarMetricMixin, SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarMetric, SonarDashboardMetric
 from ...domain import LowerIsBetterMetric
 
 
-class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
+class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
     """ Metric for measuring the size (in number of lines of code) of a product. """
 
     name = 'Component omvang'
@@ -34,7 +34,7 @@ class ProductLOC(SonarDashboardMetricMixin, LowerIsBetterMetric):
         return -1 if loc is None else loc
 
 
-class TotalLOC(SonarMetricMixin, LowerIsBetterMetric):
+class TotalLOC(SonarMetric, LowerIsBetterMetric):
     """ Metric for measuring the total size (in number of lines of code) of several products. """
 
     name = 'Totale omvang'

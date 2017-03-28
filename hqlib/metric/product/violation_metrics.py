@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin, SonarMetricMixin
+from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
 
 
-class Violations(SonarDashboardMetricMixin, LowerIsBetterMetric):
+class Violations(SonarDashboardMetric, LowerIsBetterMetric):
     """ Metric for measuring the amount of violations reported by Sonar. """
     unit = 'violations'
     norm_template = 'Maximaal {target} {violation_type} {unit}. ' \
@@ -71,7 +71,7 @@ class MajorViolations(Violations):
     low_target_value = 50
 
 
-class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
+class NoSonar(SonarViolationsMetric, LowerIsBetterMetric):
     """ Metric for measuring the number of times //NOSONAR is used to suppress violations. """
     name = 'Hoeveelheid violation-onderdrukkingen met //NOSONAR'
     unit = 'violation-onderdrukkingen'
@@ -86,7 +86,7 @@ class NoSonar(SonarViolationsMetricMixin, LowerIsBetterMetric):
         return -1 if no_sonar is None else no_sonar
 
 
-class FalsePositives(SonarMetricMixin, LowerIsBetterMetric):
+class FalsePositives(SonarMetric, LowerIsBetterMetric):
     """ Metric for measuring the number of issues marked as false positive. """
     name = 'Hoeveelheid false positives'
     unit = 'false positives'

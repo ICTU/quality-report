@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin, SonarViolationsMetricMixin
+from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric
 from ...domain import LowerPercentageIsBetterMetric
 
 
-class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
+class CommentedLOC(SonarDashboardMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of lines of code that are commented out. """
 
     name = 'Hoeveelheid uitgecommentarieerde broncode'
@@ -36,7 +36,7 @@ class CommentedLOC(SonarDashboardMetricMixin, LowerPercentageIsBetterMetric):
         return self._metric_source.ncloc(self._sonar_id())
 
 
-class MethodQualityMetric(SonarViolationsMetricMixin, LowerPercentageIsBetterMetric):
+class MethodQualityMetric(SonarViolationsMetric, LowerPercentageIsBetterMetric):
     """ Base class for metrics that measure what percentage of methods doesn't violate a certain criterium. """
 
     norm_template = 'Maximaal {target}{unit} van de methoden heeft {attribute}. Meer dan {low_target}{unit} is rood.'

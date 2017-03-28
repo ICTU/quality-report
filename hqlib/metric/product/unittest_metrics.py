@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
 
-class UnittestMetricMixin(SonarDashboardMetricMixin):  # pylint: disable=too-few-public-methods
+class UnittestMetricMixin(SonarDashboardMetric):  # pylint: disable=too-few-public-methods
     """ Mixin class for Sonar metrics about unit tests. """
 
     @classmethod

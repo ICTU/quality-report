@@ -15,12 +15,12 @@ limitations under the License.
 """
 
 
-from ..metric_source_mixin import SonarDashboardMetricMixin
+from ..metric_source_mixin import SonarDashboardMetric
 from ... import metric_source
 from ...domain import MetricSourceAgeMetric
 
 
-class SonarAnalysisAge(SonarDashboardMetricMixin, MetricSourceAgeMetric):
+class SonarAnalysisAge(SonarDashboardMetric, MetricSourceAgeMetric):
     """ Metric to measure the age of the latest Sonar analysis. """
 
     name = 'Leeftijd van de meest recente Sonar analyse'
