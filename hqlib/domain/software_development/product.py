@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import copy
+from typing import Optional
 
 from .requirement import RequirementSubject
 from ..measurement.measurable import MeasurableObject
@@ -24,8 +25,8 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, jsf=None, art=None, is_main=True,
-                 has_unittests=True, has_integration_tests=False, **kwargs):
+    def __init__(self, jsf: 'Product'=None, art: 'Product'=None, is_main: bool=True,
+                 has_unittests: bool=True, has_integration_tests: bool=False, **kwargs) -> None:
         super().__init__(**kwargs)
         self.__has_unittests = has_unittests
         self.__has_integration_tests = has_integration_tests
@@ -44,29 +45,29 @@ class Product(RequirementSubject, MeasurableObject):
     def __eq__(self, other):
         return self.name() == other.name()
 
-    def is_main(self):
+    def is_main(self) -> bool:
         """ Return whether this product is part of the main system or it is to be considered support code.
             In the latter case it doesn't count towards the total number of lines of code of the whole system. """
         return self.__is_main
 
-    def art(self):
+    def art(self) -> Optional['Product']:
         """ Return a product that represents the ART of this product. """
         return self.__copy_component(self.__art)
 
-    def has_unittests(self):
+    def has_unittests(self) -> bool:
         """ Return whether the product has unit tests. """
         return self.__has_unittests
 
-    def has_integration_tests(self):
+    def has_integration_tests(self) -> bool:
         """ Return whether the product has integration tests. """
         return self.__has_integration_tests
 
-    def jsf(self):
+    def jsf(self) -> Optional['Product']:
         """ Return a product that represents the JSF of this product. """
         return self.__copy_component(self.__jsf)
 
     @staticmethod
-    def __copy_component(component):
+    def __copy_component(component) -> Optional['Product']:
         """ Return a product that represents a component of this product. """
         return copy.copy(component) if component else None
 
