@@ -28,7 +28,9 @@ class Checkmarx(domain.MetricSource):
     """ Class representing the Checkmarx API. """
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
-    checkmarx_url, checkmarx_username, checkmarx_password = ''
+    checkmarx_url = ''
+    checkmarx_username = ''
+    checkmarx_password = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
         #self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
