@@ -70,9 +70,10 @@ class Checkmarx(domain.MetricSource):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
 
         try:
-            context = ssl._create_unverified_context()
-            ssl._create_default_https_context = context
-            json_string = self._url_open(api_url).read()
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            json_string = self._url_open(api_url, context=ctx).read()
         except Exception as reason:
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
