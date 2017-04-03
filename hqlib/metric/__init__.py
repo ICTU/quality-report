@@ -43,6 +43,7 @@ from .product.user_story_metrics import (
 from .product.version_control_metrics import UnmergedBranches
 from .product.violation_metrics import BlockerViolations, CriticalViolations, MajorViolations, NoSonar, FalsePositives
 from .product.zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAPScanAlertsMetric
+from .product.checkmarx_metrics import HighRiskCheckmarxAlertsMetric, MediumRiskCheckmarxAlertsMetric
 
 # Project metrics
 from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues
