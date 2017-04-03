@@ -32,7 +32,7 @@ class Checkmarx(domain.MetricSource):
     checkmarx_url = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
-        self._url_open = url_open or url_opener.UrlOpener(url, username, password).url_read
+        self._url_open = url_open or url_opener.UrlOpener(url, username, password).url_open
         self.checkmarx_url = url
         super().__init__()
 
