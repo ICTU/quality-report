@@ -41,9 +41,6 @@ class Checkmarx(domain.MetricSource):
         for project_name in report_urls:
             try:
                 json = self.__fetch_report(project_name)
-                logging.warning("%s", self.checkmarx_url)
-                logging.warning("%s", str(json["value"][0]["LastScan"]["Id"]))
-                logging.warning("%s", str(json["value"][0]["LastScan"]["ProjectId"]))
                 nr_alerts += self.__parse_alerts(json, risk_level)
                 logging.warning("%s - %s - %s", self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
                 report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
@@ -61,7 +58,7 @@ class Checkmarx(domain.MetricSource):
     def __parse_alerts(json, risk_level):
         """ Parse the JSON to get the nr of alerts for the risk_level """
 
-        return json["value"][0]["LastScan"][risk_level]
+        return json["value"][0]["LastScan"][risk_level.title()]
 
     def __fetch_report(self, project_name):
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
