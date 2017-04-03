@@ -20,7 +20,7 @@ import logging
 import utils
 import urllib
 
-#from . import url_opener
+from . import url_opener
 from .. import domain
 
 
@@ -29,14 +29,10 @@ class Checkmarx(domain.MetricSource):
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
     checkmarx_url = ''
-    checkmarx_username = ''
-    checkmarx_password = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
-        #self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+        self._url_open = url_open or url_opener.UrlOpener(url, username, password).url_read
         self.checkmarx_url = url
-        self.checkmarx_username = username
-        self.checkmarx_password = password
         super().__init__()
 
     @functools.lru_cache(maxsize=1024)
@@ -66,22 +62,14 @@ class Checkmarx(domain.MetricSource):
                   "r/Severity eq CxDataRepository.Severity'Medium') and Name eq '{}'".format(self.checkmarx_url, project_name)
 
         top_level_url = "{}/Cxwebinterface".format(self.checkmarx_url)
-        logging.warning("api_url: %s - top_level_url: %s", api_url, top_level_url)
-        json = self.__get_json(top_level_url, api_url, self.checkmarx_username, self.checkmarx_password)
-        logging.warning("Checkmarx fetch - %s", json)
+        json = self.__get_json(top_level_url, api_url)
         return json
 
-    def __get_json(self, top_level_url, api_url, username, password):
+    def __get_json(self, top_level_url, api_url):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
-        logging.warning("__get_json: %s %s %s %s", top_level_url, api_url, username, password)
 
         try:
-            password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None, top_level_url, username, password)
-            handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib.request.build_opener(handler)
-            logging.warning("opener.open")
-            json_string = opener.open(api_url).read()
+            json_string = self._url_open(api_url).read()
         except Exception as reason:
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
