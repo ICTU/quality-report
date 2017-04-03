@@ -19,6 +19,7 @@ import functools
 import logging
 import utils
 import urllib
+import ssl
 
 from . import url_opener
 from .. import domain
@@ -69,7 +70,8 @@ class Checkmarx(domain.MetricSource):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
 
         try:
-            json_string = self._url_open(api_url).read()
+            context = ssl._create_unverified_context()
+            json_string = self._url_open(api_url, context=context).read()
         except Exception as reason:
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
