@@ -17,11 +17,10 @@ limitations under the License.
 
 import functools
 import logging
-import utils
 import urllib
 
 from . import url_opener
-from .. import domain
+from .. import utils, domain
 
 
 class Checkmarx(domain.MetricSource):
