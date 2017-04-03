@@ -71,7 +71,8 @@ class Checkmarx(domain.MetricSource):
 
         try:
             context = ssl._create_unverified_context()
-            json_string = self._url_open(api_url, context=context).read()
+            ssl._create_default_https_context = context
+            json_string = self._url_open(api_url).read()
         except Exception as reason:
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
