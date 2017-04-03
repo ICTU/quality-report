@@ -40,7 +40,7 @@ class QualityReport(domain.DomainObject):
                 requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.OpenVAS, requirement.Java,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.CHECKMARX, requirement.OpenVAS, requirement.Java,
                 requirement.CSharp, requirement.JavaScript, requirement.Web,
                 requirement.TrustedProductMaintainability, requirement.TrackBranches)
 
