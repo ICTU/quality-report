@@ -52,9 +52,9 @@ class Checkmarx(domain.MetricSource):
     @staticmethod
     def __parse_alerts(json, risk_level):
         """ Parse the JSON to get the nr of alerts for the risk_level """
-        logging.warning("%s - %s", risk_level, json["value"][0]["LastScan"]["Id"], json["value"][0]["LastScan"]["ProjectId"])
+        logging.warning("%s - %s", risk_level, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
         super.url = "https://checkmarx.isd.org/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
-            .format(json["value"][0]["LastScan"]["Id"], json["value"][0]["LastScan"]["ProjectId"])
+            .format(str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
         return json["value"][0]["LastScan"][risk_level]
 
     def __fetch_report(self, project_name):
