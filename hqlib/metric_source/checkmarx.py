@@ -41,6 +41,9 @@ class Checkmarx(domain.MetricSource):
         for project_name in report_urls:
             try:
                 json = self.__fetch_report(project_name)
+                logging.warning("%s", self.checkmarx_url)
+                logging.warning("%s", str(json["value"][0]["LastScan"]["Id"]))
+                logging.warning("%s", str(json["value"][0]["LastScan"]["ProjectId"]))
                 nr_alerts += self.__parse_alerts(json, risk_level)
                 logging.warning("%s - %s - %s", self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
                 report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
@@ -66,11 +69,10 @@ class Checkmarx(domain.MetricSource):
                   "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
             .format(self.checkmarx_url, project_name)
 
-        top_level_url = "{}/Cxwebinterface".format(self.checkmarx_url)
-        json = self.__get_json(top_level_url, api_url)
+        json = self.__get_json(api_url)
         return json
 
-    def __get_json(self, top_level_url, api_url):
+    def __get_json(self, api_url):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
 
         try:
