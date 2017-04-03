@@ -19,7 +19,6 @@ import functools
 import logging
 import utils
 import urllib
-import ssl
 
 from . import url_opener
 from .. import domain
@@ -32,7 +31,7 @@ class Checkmarx(domain.MetricSource):
     checkmarx_url = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
-        self._url_open = url_open or url_opener.UrlOpener(url, username, password).url_open
+        self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
         super().__init__()
 
@@ -81,7 +80,7 @@ class Checkmarx(domain.MetricSource):
                 # Handle target environment that doesn't support HTTPS verification
                 ssl._create_default_https_context = _create_unverified_https_context
 
-            json_string = self._url_open(api_url).read()
+            json_string = self._url_open.url_read(api_url)
         except Exception as reason:
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
