@@ -43,8 +43,10 @@ class Checkmarx(domain.MetricSource):
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
         nr_alerts = 0
+        logging.warning("report_urls %s", report_urls)
         for project_name in report_urls:
             try:
+                logging.warning("project_name %s", project_name)
                 nr_alerts += self.__parse_alerts(self.__fetch_report(project_name), risk_level)
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
