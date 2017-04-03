@@ -41,6 +41,7 @@ class Checkmarx(domain.MetricSource):
         for project_name in report_urls:
             try:
                 json = self.__fetch_report(project_name)
+                logging.warning("%s", json)
                 nr_alerts += self.__parse_alerts(json, risk_level)
                 report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
                     .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
