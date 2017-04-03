@@ -45,6 +45,7 @@ class Checkmarx(domain.MetricSource):
         nr_alerts = 0
         for project_name in report_urls:
             try:
+                logging.warning("Checkmarx project_name - %s", project_name)
                 nr_alerts += self.__parse_alerts(self.__fetch_report(project_name), risk_level)
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
@@ -60,6 +61,7 @@ class Checkmarx(domain.MetricSource):
         return int(json[risk_level])
 
     def __fetch_report(self, project_name):
+        logging.warning("Checkmarx __fetch_report")
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&" \
                   "$filter=LastScan/Results/any(r: r/Severity eq CxDataRepository.Severity'High' or " \
                   "r/Severity eq CxDataRepository.Severity'Medium') and Name eq '{}'".format(self.checkmarx_url, project_name)
