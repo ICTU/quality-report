@@ -49,8 +49,8 @@ class Checkmarx(domain.MetricSource):
                 nr_alerts += self.__parse_alerts(self.__fetch_report(project_name), risk_level)
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
-            except:
-                logging.warning("Couldn't parse alerts with %s risk level from %s - %s", risk_level, self.checkmarx_url, project_name)
+            except Exception as reason:
+                logging.warning("Couldn't parse alerts with %s risk level from %s - %s", risk_level, self.checkmarx_url, reason)
                 return -1
         return nr_alerts
 
@@ -66,27 +66,26 @@ class Checkmarx(domain.MetricSource):
                   "r/Severity eq CxDataRepository.Severity'Medium') and Name eq '{}'".format(self.checkmarx_url, project_name)
 
         top_level_url = "{}/Cxwebinterface".format(self.checkmarx_url)
+        logging.warning("api_url: %s - top_level_url: %s", api_url, top_level_url)
         json = self.__get_json(top_level_url, api_url, self.checkmarx_username, self.checkmarx_password)
         logging.warning("Checkmarx fetch - %s", json)
         return json
 
     def __get_json(self, top_level_url, api_url, username, password):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
-
-        if api_url in self.__json:
-            return self.__json[api_url]
+        logging.warning("__get_json: %s %s %s %s", top_level_url, api_url, username, password)
 
         try:
             password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             password_mgr.add_password(None, top_level_url, username, password)
             handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
             opener = urllib.request.build_opener(handler)
+            logging.warning("opener.open")
             json_string = opener.open(api_url).read()
-        except: #url_opener.UrlOpener.url_open_exceptions as reason:
-            #logging.warning("Couldn't open %s: %s", api_url, reason)
-            logging.warning("Couldn't open %s", api_url)
+        except Exception as reason:
+            logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
 
-        json = self.__json[api_url] = utils.eval_json(json_string)
+        json = utils.eval_json(json_string)
         return json
 
