@@ -61,12 +61,11 @@ class Checkmarx(domain.MetricSource):
 
     def __fetch_report(self, project_name):
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&" \
-                  "$filter=LastScan/Results/any(r: r/Severity eq CxDataRepository.Severity'High' or "" \
-                  ""r/Severity eq CxDataRepository.Severity'Medium') and Name eq '{}'".format(self.checkmarx_url, project_name)
+                  "$filter=LastScan/Results/any(r: r/Severity eq CxDataRepository.Severity'High' or " \
+                  "r/Severity eq CxDataRepository.Severity'Medium') and Name eq '{}'".format(self.checkmarx_url, project_name)
 
         logging.warning("Checkmarx fetch - %s", api_url)
         top_level_url = format("%s/Cxwebinterface")
-        logging.warning("Checkmarx top_level_url - %s", top_level_url)
         json = self.__get_json(top_level_url, api_url, self.checkmarx_username, self.checkmarx_password)
         return json
 
