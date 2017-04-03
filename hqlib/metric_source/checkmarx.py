@@ -28,11 +28,17 @@ class Checkmarx(domain.MetricSource):
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
     checkmarx_url = ''
+    report_url = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
+        self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
+
+    def url(self):
+        """ Return the url of the report. """
+        return self.report_url
 
     @functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
@@ -42,11 +48,8 @@ class Checkmarx(domain.MetricSource):
             try:
                 json = self.__fetch_report(project_name)
                 nr_alerts += self.__parse_alerts(json, risk_level)
-                logging.warning("%s - %s - %s", self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
-                report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
+                self.report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
                     .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
-                logging.warning("%s", report_url)
-                self.url = report_url
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
             except Exception as reason:
