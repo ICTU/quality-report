@@ -20,7 +20,7 @@ import logging
 import utils
 import urllib
 
-from . import url_opener
+#from . import url_opener
 from .. import domain
 
 
@@ -31,7 +31,7 @@ class Checkmarx(domain.MetricSource):
     checkmarx_url, checkmarx_username, checkmarx_password = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
-        self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+        #self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         self.checkmarx_url = url
         self.checkmarx_username = username
         self.checkmarx_password = password
@@ -44,10 +44,10 @@ class Checkmarx(domain.MetricSource):
         for project_name in report_urls:
             try:
                 nr_alerts += self.__parse_alerts(self.__fetch_report(project_name), risk_level)
-            except url_opener.UrlOpener.url_open_exceptions:
-                return -1
-            except IndexError as reason:
-                logging.warning("Couldn't parse alerts with %s risk level from %s - %s: %s", risk_level, self.checkmarx_url, project_name, reason)
+            #except url_opener.UrlOpener.url_open_exceptions:
+            #    return -1
+            except:
+                logging.warning("Couldn't parse alerts with %s risk level from %s - %s", risk_level, self.checkmarx_url, project_name)
                 return -1
         return nr_alerts
 
@@ -77,8 +77,9 @@ class Checkmarx(domain.MetricSource):
             handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
             opener = urllib.request.build_opener(handler)
             json_string = opener.open(api_url).read()
-        except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.warning("Couldn't open %s: %s", api_url, reason)
+        except: #url_opener.UrlOpener.url_open_exceptions as reason:
+            #logging.warning("Couldn't open %s: %s", api_url, reason)
+            logging.warning("Couldn't open %s", api_url)
             raise
 
         json = self.__json[api_url] = utils.eval_json(json_string)
