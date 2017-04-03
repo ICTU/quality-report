@@ -65,7 +65,7 @@ class Checkmarx(domain.MetricSource):
                   "r/Severity eq CxDataRepository.Severity'Medium') and Name eq '{}'".format(self.checkmarx_url, project_name)
 
         logging.warning("Checkmarx fetch - %s", api_url)
-        top_level_url = format("%s/Cxwebinterface")
+        top_level_url = "{}/Cxwebinterface".format(self.checkmarx_url)
         json = self.__get_json(top_level_url, api_url, self.checkmarx_username, self.checkmarx_password)
         return json
 
