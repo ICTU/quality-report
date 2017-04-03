@@ -40,8 +40,12 @@ class Checkmarx(domain.MetricSource):
         nr_alerts = 0
         for project_name in report_urls:
             try:
-                logging.warning("Checkmarx project_name - %s", project_name)
-                nr_alerts += self.__parse_alerts(self.__fetch_report(project_name), risk_level)
+                json = self.__fetch_report(project_name)
+                nr_alerts += self.__parse_alerts(json, risk_level)
+                report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
+                    .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
+                logging.warning("%s", report_url)
+                self.url = report_url
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
             except Exception as reason:
@@ -52,9 +56,7 @@ class Checkmarx(domain.MetricSource):
     @staticmethod
     def __parse_alerts(json, risk_level):
         """ Parse the JSON to get the nr of alerts for the risk_level """
-        logging.warning("%s - %s", str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
-        super.url = "https://checkmarx.isd.org/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
-            .format(str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
+
         return json["value"][0]["LastScan"][risk_level]
 
     def __fetch_report(self, project_name):
