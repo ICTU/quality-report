@@ -27,6 +27,13 @@ class OWASPDependencies(Requirement):
                        metric.OWASPDependencyReportAge)
 
 
+class CHECKMARX(Requirement):
+    """ Require dependencies to be analyzed for vulnerabilities. """
+    _name = 'Checkmarx SCA'
+    url = 'https://www.checkmarx.com/'
+    _metric_classes = (metric.HighRiskCheckmarxAlertsMetric, metric.MediumRiskCheckmarxAlertsMetric)
+
+
 class OWASPZAP(Requirement):
     """ Require OWASP Zap to be used to scan applications for security vulnerabilities. """
     _name = 'OWASP Top 10 2013 ZAP'
