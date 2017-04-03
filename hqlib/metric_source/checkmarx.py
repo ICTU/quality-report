@@ -52,9 +52,8 @@ class Checkmarx(domain.MetricSource):
     @staticmethod
     def __parse_alerts(json, risk_level):
         """ Parse the JSON to get the nr of alerts for the risk_level """
-        logging.warning("Parse: %s - %s", json, risk_level)
-        logging.warning("Parse2: %s", json["High"])
-        return int(json[risk_level])
+        logging.warning("Parse2: %s", json["value"][0]["LastScan"]["High"])
+        return json["value"][0]["LastScan"]["High"]
 
     def __fetch_report(self, project_name):
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
