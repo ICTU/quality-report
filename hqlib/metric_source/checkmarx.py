@@ -38,6 +38,7 @@ class Checkmarx(domain.MetricSource):
 
     def url(self):
         """ Return the url of the report. """
+        logging.warning("report_url: %s", self.report_url)
         return self.report_url
 
     @functools.lru_cache(maxsize=1024)
