@@ -15,19 +15,19 @@ limitations under the License.
 """
 
 
-from typing import Set, Tuple, Type
+from typing import Set, Type, Sequence
 
-from ..base import DomainObject
+from hqlib import domain
 
 
-class Requirement(DomainObject):
+class Requirement(domain.DomainObject):
     """ Domain object representing a requirement. """
     _name: str = 'Subclass responsibility'
     _url: str = 'Subclass responsibility'
-    _metric_classes: Tuple = tuple()  # Subclass responsibility
+    _metric_classes: Sequence[Type[domain.Metric]] = []  # Subclass responsibility
 
     @classmethod
-    def metric_classes(cls) -> Tuple:
+    def metric_classes(cls) -> Sequence[Type[domain.Metric]]:
         """ Return the metrics that have to be measured to satisfy this requirement. """
         return cls._metric_classes
 
@@ -42,10 +42,10 @@ class Requirement(DomainObject):
         return cls._url
 
 
-class RequirementSubject(DomainObject):
+class RequirementSubject(domain.DomainObject):
     """ Measurable objects that have requirements. """
     def __init__(self, *args, **kwargs) -> None:
-        self.__requirements = set(kwargs.pop('requirements', []))
+        self.__requirements: Set[Type[Requirement]] = set(kwargs.pop('requirements', []))
         if not self.__requirements:
             added_requirements = set(kwargs.pop('added_requirements', []))
             if not added_requirements.issubset(self.optional_requirements()):
@@ -68,7 +68,7 @@ class RequirementSubject(DomainObject):
         """ Return the actual requirements of the subject. """
         return self.__requirements
 
-    def should_be_measured_by(self, metric_class) -> bool:
+    def should_be_measured_by(self, metric_class: Type[domain.Metric]) -> bool:
         """ Return whether this subject should be measured by the metric. """
         for requirement in self.__requirements:
             if metric_class in requirement.metric_classes():
