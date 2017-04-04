@@ -34,7 +34,7 @@ class Checkmarx(domain.MetricSource):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
         self.report_url = "{}/CxWebClient/".format(url)
-        super().__init__(url = self.report_url)
+        super().__init__()
 
     def url(self):
         """ Return the url of the report. """
