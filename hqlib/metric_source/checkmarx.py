@@ -43,8 +43,12 @@ class Checkmarx(domain.MetricSource):
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
         nr_alerts = 0
+        logging.debug("test")
         for project_name in report_urls:
+            logging.debug("test1")
             try:
+                logging.debug("test2")
+                logging.debug("project_name: %s", project_name)
                 json = self.__fetch_report(project_name)
                 logging.debug("json: %s", json)
                 nr_alerts += self.__parse_alerts(json, risk_level)
