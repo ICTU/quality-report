@@ -1,7 +1,8 @@
-2017-04-04  Release 1.80.3
+2017-04-05  Release 1.80.3
 
   * Bug fix: HTML report would be invald when metric comments contain new lines.
-
+  * Bug fix: Use correct language codes when querying SonarQube for Python and TypeScript quality profiles.
+  
 
 2017-03-19  Release 1.80.2
 
