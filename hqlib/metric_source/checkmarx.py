@@ -39,7 +39,7 @@ class Checkmarx(domain.MetricSource):
     def metric_source_urls(self, *report_urls):
         for project_name in report_urls:
             logging.warning("project_name %s", project_name)
-        return [self.report_url]
+            return self.report_url
 
     #@functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
