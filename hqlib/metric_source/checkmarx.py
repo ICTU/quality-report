@@ -36,7 +36,7 @@ class Checkmarx(domain.MetricSource):
         self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self, *report_urls):
         return [self.report_url]
 
     #@functools.lru_cache(maxsize=1024)
