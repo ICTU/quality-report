@@ -139,7 +139,7 @@ class SonarQualityProfileVersionVisualBasic(SonarQualityProfileVersion):
 class SonarQualityProfileVersionPython(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for Python. """
     name = 'Versie van het Sonar Python quality profile'
-    language_key = 'python'
+    language_key = 'py'
     language_name = 'Python'
     target_value = LooseVersion('1.0')
     low_target_value = LooseVersion('1.0')
@@ -148,7 +148,7 @@ class SonarQualityProfileVersionPython(SonarQualityProfileVersion):
 class SonarQualityProfileVersionTypeScript(SonarQualityProfileVersion):
     """ Measure the version number of the default Sonar quality profile for TypeScript. """
     name = 'Versie van het Sonar TypeScript quality profile'
-    language_key = 'typescript'
+    language_key = 'ts'
     language_name = 'TypeScript'
     target_value = LooseVersion('1.0')
     low_target_value = LooseVersion('1.0')

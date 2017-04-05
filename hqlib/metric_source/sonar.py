@@ -44,7 +44,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__false_positives_url = sonar_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
         self.__version_number_url = sonar_url + 'api/server/index'  # Deprecated API
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
-        self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}'  # Deprecated API
+        self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}&format=json'  # Deprecated API
 
     def version(self, product):
         """ Return the version of the product. """
