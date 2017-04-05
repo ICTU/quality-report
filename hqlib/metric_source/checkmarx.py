@@ -33,11 +33,11 @@ class Checkmarx(domain.MetricSource):
     def __init__(self, url, username, password, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
-        self.report_url = "{}/CxWebClient/".format(url)
+        #self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
-    def metric_source_urls(self, *report_urls):
-        return [self.report_url for report_url in report_urls]
+    #def metric_source_urls(self, *report_urls):
+    #    return [self.report_url for report_url in report_urls]
 
     @functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
