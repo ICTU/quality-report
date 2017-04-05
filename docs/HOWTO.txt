@@ -59,7 +59,7 @@ How to add a new project to the quality system.
    build step of the job:
 
    # Activate the virtual python environment
-   . /home/nfsusers/jenkins/quality-report-pyenv/bin/activate
+   . /home/jenkins/quality-report-pyenv/bin/activate
    PROJECT=quality-data/new_project
    # Create the quality report
    quality_report.py --project $PROJECT/project_definition.py --report . --log INFO

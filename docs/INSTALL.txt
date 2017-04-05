@@ -16,13 +16,13 @@ limitations under the License.
 Prerequisites for running the quality system.
 ===
 
-1. Python 2.7 - http://python.org
+1. Python 3.6 - http://python.org
 2. Virtual env and pip for Python.
 
 Installing the software
 ===
 
-$HQ_VIRTUAL_ENV=/home/nfsusers/jenkins/hq-pyenv  # For example
+$HQ_VIRTUAL_ENV=/home/jenkins/hq-pyenv  # For example
 
 # Delete previous version
 if [ -d $HQ_VIRTUAL_ENV ]; then
