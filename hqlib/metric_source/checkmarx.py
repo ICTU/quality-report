@@ -71,6 +71,7 @@ class Checkmarx(domain.MetricSource):
                   "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
             .format(self.checkmarx_url, project_name)
 
+        logging.debug("api_url: %s", api_url)
         json = self.__get_json(api_url)
         return json
 
