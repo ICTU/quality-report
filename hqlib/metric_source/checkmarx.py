@@ -33,29 +33,22 @@ class Checkmarx(domain.MetricSource):
     def __init__(self, url, username, password, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
-        #self.report_url = "{}/CxWebClient/".format(url)
+        self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
-    #def metric_source_urls(self, *report_urls):
-    #    return [self.report_url for report_url in report_urls]
+    def metric_source_urls(self, *report_urls):
+        return self.report_url#[self.report_url for report_url in report_urls]
 
-    @functools.lru_cache(maxsize=1024)
+    #@functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
         """ Return the number of alerts of the specified risk level. """
         nr_alerts = 0
-        logging.debug("test")
         for project_name in report_urls:
-            logging.debug("test1")
             try:
-                logging.debug("test2")
-                logging.debug("project_name: %s", project_name)
                 json = self.__fetch_report(project_name)
-                logging.debug("json: %s", json)
                 nr_alerts += self.__parse_alerts(json, risk_level)
-                logging.debug("nr_alerts: %s", nr_alerts)
                 self.report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
                     .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
-                logging.debug("report_url: %s", self.report_url)
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
             except Exception as reason:
@@ -70,7 +63,6 @@ class Checkmarx(domain.MetricSource):
         return json["value"][0]["LastScan"][risk_level.title()]
 
     def __fetch_report(self, project_name):
-        logging.debug("__fetch_report: %s", project_name)
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
                   "&$filter=LastScan/Results/any(r:%20r%2fSeverity%20eq%20CxDataRepository.Severity%27High%27" \
                   "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
