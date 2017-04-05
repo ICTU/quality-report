@@ -36,10 +36,8 @@ class Checkmarx(domain.MetricSource):
         self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
-    def url(self):
-        """ Return the url of the report. """
-        logging.warning("report_url: %s", self.report_url)
-        return self.report_url
+    def metric_source_urls(self, *report_urls):
+        return [self.report_url for report_url in report_urls]
 
     @functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
