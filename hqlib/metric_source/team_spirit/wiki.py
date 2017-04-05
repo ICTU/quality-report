@@ -64,7 +64,12 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
             logging.error("Could not read the date of the last spirit measurement of team %s from %s: %s",
                           team_ids[0], self.url(), reason)
             return datetime.datetime.min
-        return self.__parse_date(date_text)
+        try:
+            return self.__parse_date(date_text)
+        except ValueError as reason:
+            logging.error("Could not parse the date of the last spirit measurement of team %s from %s: %s",
+                          team_ids[0], self.url(), reason)
+            return datetime.datetime.min
 
     # Utility methods
 

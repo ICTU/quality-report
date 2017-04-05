@@ -83,3 +83,17 @@ class WikiTest(unittest.TestCase):
     def test_date_of_last_measurement(self):
         """ Test the date of the last measurement of the spirit of the team. """
         self.assertEqual(datetime.datetime(2013, 1, 18), self.__wiki.datetime('team_2'))
+
+    def test_invalid_date(self):
+        """ Test that an invalid date is taken care of. """
+        self.__wiki.html = """<table border="1">
+                                <tr>
+                                  <th align="right">Datum</th>
+                                  <th>9-1--2013</th>
+                                </tr>
+                                <tr id="team_1">
+                                    <td>Smiley team 1</td>
+                                    <td>:-)</td>
+                                </tr>
+                              </table>"""
+        self.assertEqual(datetime.datetime.min, self.__wiki.datetime('team_1'))
