@@ -159,7 +159,7 @@ class HTMLFormatter(base_formatter.Formatter):
     @classmethod
     def __format_text_with_links(cls, text, url_dict, url_label):
         """ Format a text paragraph with optional urls and label for the urls. """
-        text = utils.html_escape(text)
+        text = utils.html_escape(text).replace('\n', ' ')
         links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
         if links:
             if url_label:

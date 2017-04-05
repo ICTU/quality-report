@@ -1,3 +1,8 @@
+2017-04-04  Release 1.80.3
+
+  * Bug fix: HTML report would be invald when metric comments contain new lines.
+
+
 2017-03-19  Release 1.80.2
 
   * Bug fix: Don't assume ASCII when decoding JSON.
