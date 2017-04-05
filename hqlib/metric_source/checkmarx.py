@@ -37,7 +37,7 @@ class Checkmarx(domain.MetricSource):
         super().__init__()
 
     def metric_source_urls(self, *report_urls):
-        return [self.report_url]
+        return ["test"]
 
     #@functools.lru_cache(maxsize=1024)
     def alerts(self, risk_level, *report_urls):
