@@ -65,15 +65,7 @@ function create_metrics_table() {
 
 function fill_metrics_table(metrics_data) {
     console.log(metrics_data)
-    window.metrics.addRows(metrics_data)
-}
-
-function create_dashboard(metrics_data_old, report_date) {
-    /*jshint loopfunc: true */
-    read_settings_from_cookies();
-
-    create_metrics_table();
-
+    window.metrics.addRows(metrics_data);
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
@@ -128,6 +120,13 @@ function create_dashboard(metrics_data_old, report_date) {
     document.getElementById('filter_color_missing').onclick = function() {
         set_filter('filter_color', 'filter_color_missing', tables)
     };
+}
+
+function create_dashboard(metrics_data_old, report_date) {
+    /*jshint loopfunc: true */
+    read_settings_from_cookies();
+
+    create_metrics_table();
 
     // Retrieve the metrics for the metrics table.
     $.getJSON("json/metrics.json", "", function(metrics_data) {
