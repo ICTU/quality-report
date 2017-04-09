@@ -101,7 +101,7 @@ class MetricsFormatter(base_formatter.Formatter):
     """ Format the metrics as a JavaScript array. """
 
     sep = ', '
-    column_list = ['''{{f: "{metric_id}", v: "{metric_number}"}}''',
+    column_list = ['''{{"f": "{metric_id}", "v": "{metric_number}"}}''',
                    '''"{section}"''',
                    '''"{status}"''',
                    '''"<img src='img/{metric_id}.png' border='0' width='100' height='25' />"''',

@@ -73,12 +73,12 @@ class MetricsFormatterTest(unittest.TestCase):
     def test_process(self):
         """ Test that the report is processed correctly. """
         self.maxDiff = None
-        self.assertEqual('[[{f: "id_string-1", v: "id_string-01"}, "id_string", "red", '
+        self.assertEqual('[[{"f": "id_string-1", "v": "id_string-01"}, "id_string", "red", '
                          '"<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' height=\'25\' />", '
                          '{v: "0", f: "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' height=\'48\' '
                          'title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' border=\'0\' />"}, '
                          '"report [<a href=\'http://url\' target=\'_blank\'>anchor</a>]", "norm", ""], '
-                         '[{f: "id_string-1", v: "id_string-01"}, "id_string", "red", '
+                         '[{"f": "id_string-1", "v": "id_string-01"}, "id_string", "red", '
                          '"<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' height=\'25\' />", '
                          '{v: "0", f: "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' height=\'48\' '
                          'title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' border=\'0\' />"}, '
