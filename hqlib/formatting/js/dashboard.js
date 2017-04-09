@@ -64,7 +64,7 @@ function create_metrics_table() {
 }
 
 function fill_metrics_table(metrics_data) {
-    console.log(metrics_data)
+    console.log(metrics_data);
     window.metrics.addRows(metrics_data);
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 

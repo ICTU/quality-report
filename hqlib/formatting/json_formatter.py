@@ -101,16 +101,16 @@ class MetricsFormatter(base_formatter.Formatter):
     """ Format the metrics as a JavaScript array. """
 
     sep = ', '
-    column_list = ["{{f: '{metric_id}', v: '{metric_number}'}}",
-                   "'{section}'",
-                   "'{status}'",
-                   """'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
-                   """{{v: '{status_nr}', f: '<img src="img/{image}.png" """
-                   """alt="{alt}" width="48" height="48" title="{hover}" """
-                   """border="0" />'}}""",
-                   "'{text}'",
-                   "'{norm}'",
-                   "'{comment}'"]
+    column_list = ['''{{f: "{metric_id}", v: "{metric_number}"}}''',
+                   '''"{section}"''',
+                   '''"{status}"''',
+                   '''"<img src='img/{metric_id}.png' border='0' width='100' height='25' />"''',
+                   '''{{v: "{status_nr}", f: "<img src='img/{image}.png' '''
+                   '''alt='{alt}' width='48' height='48' title='{hover}' '''
+                   '''border='0' />"}}''',
+                   '''"{text}"''',
+                   '''"{norm}"''',
+                   '''"{comment}"''']
     columns = '[' + ', '.join(column_list) + ']'
     kwargs_by_status = dict(
         red=dict(image='sad', alt=':-(', status_nr=0,
@@ -164,5 +164,5 @@ class MetricsFormatter(base_formatter.Formatter):
     @staticmethod
     def __format_url(anchor, href):
         """ Return a HTML formatted url. """
-        template = '<a href="{href}" target="_blank">{anchor}</a>'
+        template = "<a href='{href}' target='_blank'>{anchor}</a>"
         return template.format(href=href, anchor=utils.html_escape(anchor))
