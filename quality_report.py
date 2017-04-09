@@ -75,6 +75,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.create_dir(report_dir)
         cls.__create_html_file(quality_report, report_dir)
         cls.__create_resources(report_dir)
+        cls.__create_metrics_file(quality_report, report_dir)
         cls.__create_history_file(quality_report, report_dir)
         cls.__create_trend_images(quality_report, report_dir)
 
@@ -91,6 +92,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)
         filesystem.make_file_readable(html_filename)
+
+    @classmethod
+    def __create_metrics_file(cls, quality_report, report_dir):
+        """ Create the Javascript file with the metrics. """
+        filename = os.path.join(report_dir, 'json', 'metrics.json')
+        cls.__format_and_write_report(quality_report, formatting.MetricsFormatter, filename, 'w', 'utf-8')
 
     @classmethod
     def __create_history_file(cls, quality_report, report_dir):

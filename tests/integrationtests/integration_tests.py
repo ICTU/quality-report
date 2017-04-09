@@ -56,6 +56,10 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         """ Test that the report exists. """
         self.assertTrue(os.path.exists('{0}/index.html'.format(self.report_folder)))
 
+    def test_metrics_exist(self):
+        """ Test that the JSON file with the metrics exists. """
+        self.assertTrue(os.path.exists('{0}/json/metrics.json'.format(self.report_folder)))
+
     def test_history_exists(self):
         """ Test that the JSON file with the history dates and status counts exists. """
         self.assertTrue(os.path.exists('{0}/json/meta_history.json'.format(self.report_folder)))

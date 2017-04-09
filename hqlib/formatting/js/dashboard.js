@@ -49,7 +49,7 @@ var METRICS_COLUMN_MEASUREMENT = 5;
 var METRICS_COLUMN_NORM = 6;
 var METRICS_COLUMN_COMMENT = 7;
 
-function create_metrics_table(metrics_data) {
+function create_metrics_table() {
     var metrics = new google.visualization.DataTable();
     window.metrics = metrics;
     metrics.addColumn('string', 'ID');
@@ -60,14 +60,19 @@ function create_metrics_table(metrics_data) {
     metrics.addColumn('string', 'Meting');
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
-    metrics.addRows(metrics_data);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
-function create_dashboard(metrics_data, report_date) {
+function fill_metrics_table(metrics_data) {
+    window.metrics.addRows(metrics_data)
+}
+
+function create_dashboard(metrics_data_old, report_date) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
-    create_metrics_table(metrics_data);
+
+    create_metrics_table();
+
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
@@ -122,6 +127,11 @@ function create_dashboard(metrics_data, report_date) {
     document.getElementById('filter_color_missing').onclick = function() {
         set_filter('filter_color', 'filter_color_missing', tables)
     };
+
+    // Retrieve the metrics for the metrics table.
+    $.getJSON("json/metrics.json", "", function(metrics_data) {
+       fill_metrics_table(metrics_data);
+    });
 
     // Retrieve the history for the meta metrics history charts.
     $.getJSON("json/meta_history.json", "", function(history_json) {

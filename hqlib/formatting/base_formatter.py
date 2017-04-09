@@ -22,12 +22,13 @@ class Formatter(object):
     """ Abstract base class. """
 
     sep = ''
+    body_sep = ''
 
     def process(self, report):
         """ Return a formatted version of the report. """
         self.__log_report(report)
         parts = [self.prefix(report), self.body(report), self.postfix()]
-        result = self.sep.join([part for part in parts if part])
+        result = self.body_sep.join([part for part in parts if part])
         self.__log_report(report, done=True)
         return result
 

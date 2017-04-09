@@ -19,7 +19,7 @@ import logging
 import re
 
 from . import base_formatter
-from .. import metric_source
+from .. import metric_source, utils
 
 
 class JSONFormatter(base_formatter.Formatter):
@@ -95,3 +95,74 @@ class MetaMetricsHistoryFormatter(base_formatter.Formatter):
                                                          'missing', 'missing_source')):
         """ Return the counts per measurement status in the history record. """
         return tuple(history_record.get(status, 0) for status in statuses)
+
+
+class MetricsFormatter(base_formatter.Formatter):
+    """ Format the metrics as a JavaScript array. """
+
+    sep = ', '
+    column_list = ["{{f: '{metric_id}', v: '{metric_number}'}}",
+                   "'{section}'",
+                   "'{status}'",
+                   """'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
+                   """{{v: '{status_nr}', f: '<img src="img/{image}.png" """
+                   """alt="{alt}" width="48" height="48" title="{hover}" """
+                   """border="0" />'}}""",
+                   "'{text}'",
+                   "'{norm}'",
+                   "'{comment}'"]
+    columns = '[' + ', '.join(column_list) + ']'
+    kwargs_by_status = dict(
+        red=dict(image='sad', alt=':-(', status_nr=0,
+                 hover='Direct actie vereist: norm niet gehaald'),
+        yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
+        green=dict(image='smile', alt=':-)', status_nr=2, hover='Goed: norm gehaald'),
+        perfect=dict(image='biggrin', alt=':-D', status_nr=3, hover='Perfect: score kan niet beter'),
+        grey=dict(image='ashamed', alt=':-o', status_nr=4, hover='Technische schuld: lossen we later op'),
+        missing=dict(image='missing', alt='x', status_nr=5, hover='Ontbrekend: metriek kan niet gemeten worden'),
+        missing_source=dict(image='missing_source', alt='%', status_nr=6,
+                            hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
+
+    def prefix(self, report):
+        return '['
+
+    @staticmethod
+    def postfix():
+        return ']\n'
+
+    def metric(self, metric):
+        data = self.__metric_data(metric)
+        metric_number = int(data['metric_id'].split('-')[1])
+        data['metric_number'] = '{sec}-{num:02d}'.format(sec=data['section'], num=metric_number)
+        return self.columns.format(**data)
+
+    def __metric_data(self, metric):
+        """ Return the metric data as a dictionary, so it can be used in string templates. """
+        status = metric.status()
+        kwargs = self.kwargs_by_status[status].copy()
+        kwargs['hover'] += ' (sinds {date})'.format(date=utils.format_date(metric.status_start_date(), year=True))
+        kwargs['status'] = status
+        kwargs['metric_id'] = metric.id_string()
+        kwargs['section'] = metric.id_string().split('-')[0]
+        kwargs['norm'] = metric.norm()
+        kwargs['text'] = self.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
+        kwargs['comment'] = self.__format_text_with_links(metric.comment(), metric.comment_urls(),
+                                                          metric.comment_url_label_text)
+        return kwargs
+
+    @classmethod
+    def __format_text_with_links(cls, text, url_dict, url_label):
+        """ Format a text paragraph with optional urls and label for the urls. """
+        text = utils.html_escape(text).replace('\n', ' ')
+        links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
+        if links:
+            if url_label:
+                url_label += ': '
+            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
+        return text
+
+    @staticmethod
+    def __format_url(anchor, href):
+        """ Return a HTML formatted url. """
+        template = '<a href="{href}" target="_blank">{anchor}</a>'
+        return template.format(href=href, anchor=utils.html_escape(anchor))
