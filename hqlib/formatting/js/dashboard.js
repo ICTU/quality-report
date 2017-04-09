@@ -60,12 +60,12 @@ function create_metrics_table() {
     metrics.addColumn('string', 'Meting');
     metrics.addColumn('string', 'Norm');
     metrics.addColumn('string', 'Toelichting');
-    color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 }
 
 function fill_metrics_table(metrics_data) {
-    console.log(metrics_data);
     window.metrics.addRows(metrics_data);
+    color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
+
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
