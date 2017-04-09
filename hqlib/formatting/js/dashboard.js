@@ -83,12 +83,6 @@ function fill_metrics_table(metrics_data) {
     show_or_hide_dashboard();
     draw_tables(tables);
 
-    // Event handler for navigating between tabs
-    $('#dashboard_tab_control a').click(function (event) {
-          event.preventDefault();
-          $(this).tab('show');
-    });
-
     // Event handler for the (Toon) "Dashboard" menu item
     document.getElementById('show_dashboard').onclick = function() {
         switch_toggle('show_dashboard', function() {
