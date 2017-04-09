@@ -105,7 +105,7 @@ class MetricsFormatter(base_formatter.Formatter):
                    '''"{section}"''',
                    '''"{status}"''',
                    '''"<img src='img/{metric_id}.png' border='0' width='100' height='25' />"''',
-                   '''{{v: "{status_nr}", f: "<img src='img/{image}.png' '''
+                   '''{{"v": "{status_nr}", "f": "<img src='img/{image}.png' '''
                    '''alt='{alt}' width='48' height='48' title='{hover}' '''
                    '''border='0' />"}}''',
                    '''"{text}"''',
