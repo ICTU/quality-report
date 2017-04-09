@@ -14,9 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import unittest
 
 from hqlib.formatting import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter
+from hqlib import utils
 from . import fake_domain, fake_report
 
 
@@ -72,7 +74,6 @@ class MetricsFormatterTest(unittest.TestCase):
 
     def test_process(self):
         """ Test that the report is processed correctly. """
-        self.maxDiff = None
         self.assertEqual('[[{"f": "id_string-1", "v": "id_string-01"}, "id_string", "red", '
                          '"<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' height=\'25\' />", '
                          '{"v": "0", "f": "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' height=\'48\' '
@@ -84,3 +85,10 @@ class MetricsFormatterTest(unittest.TestCase):
                          'title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' border=\'0\' />"}, '
                          '"report [<a href=\'http://url\' target=\'_blank\'>anchor</a>]", "norm", ""]]\n',
                          self.__formatter.process(fake_report.Report()))
+
+    def test_hover_unknown_start(self):
+        """ Test that the hover text over the status icon explains the status and shows the start date of the
+            status. """
+        json = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
+        expected_date = utils.format_date(datetime.datetime(2012, 1, 1, 12, 0, 0), year=True)
+        self.assertTrue("title='Direct actie vereist: norm niet gehaald (sinds {})".format(expected_date) in json)

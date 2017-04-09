@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 import os
-import re
 import shutil
 import sys
 import tempfile
@@ -45,7 +45,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
     expected_title = 'all requirements but no sources'
-    expected_number_of_metrics = 180
+    expected_number_of_metrics = 185
 
     def report(self):
         """ Read the report and return as beautiful soup. """
@@ -71,9 +71,9 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def test_number_of_metrics(self):
         """ Test the number of metrics in the report. """
-        metrics_js = self.report()('script')[-1].string
-        match = re.search(r'\(\d+ van de (\d+)\)', metrics_js)
-        self.assertEqual(self.expected_number_of_metrics, int(match.group(1)))
+        with open('{0}/json/metrics.json'.format(self.report_folder)) as metrics_json:
+            metrics = json.load(metrics_json)
+        self.assertEqual(self.expected_number_of_metrics, len(metrics))
 
 
 class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):

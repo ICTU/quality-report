@@ -42,24 +42,6 @@ class HTMLFormatterTest(unittest.TestCase):
         html = self.__formatter.process(fake_report.Report())
         self.assertEqual(1, html.count('<h1>Section title'))
 
-    def test_one_metric(self):
-        """ Test that the report contains one metric. """
-        metric = fake_domain.Metric()
-        html = self.__formatter.process(fake_report.Report(metrics=[metric]))
-        self.assertTrue(metric.id_string() in html)
-
-    def test_url(self):
-        """ Test that the report contains the metric url. """
-        metric = fake_domain.Metric()
-        html = self.__formatter.process(fake_report.Report(metrics=[metric]))
-        self.assertTrue('<a href="http://url" target="_blank">anchor</a>' in html)
-
-    def test_meta_metrics(self):
-        """ Test meta metrics. """
-        html = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
-        for number in range(1, 5):
-            self.assertTrue('MM-{0}'.format(number) in html, html)
-
     def test_dashboard(self):
         """ Test that the report contains the dashboard. """
         html = self.__formatter.process(fake_report.Report())
@@ -67,22 +49,6 @@ class HTMLFormatterTest(unittest.TestCase):
                                         <div class="link_section_ID" title="Section title"></div>
                                         <div id="section_summary_chart_ID"></div>
                                     </td>""" in html)
-
-    def test_hover_unknown_start(self):
-        """ Test that the hover text over the status icon explains the status and shows the start date of the
-            status. """
-        html = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
-        expected_date = utils.format_date(datetime.datetime(2012, 1, 1, 12, 0, 0), year=True)
-        self.assertTrue('title="Direct actie vereist: norm niet gehaald (sinds {})'.format(expected_date) in html)
-
-    def test_hover_known_start(self):
-        """ Test that the hover text over the status icon explains the status and shows the start date of the
-            status. """
-        expected_date = datetime.datetime(2014, 1, 1, 12, 0, 0)
-        html = self.__formatter.process(
-            fake_report.Report(metrics=[fake_domain.Metric(status_start_date=expected_date)]))
-        expected_date = utils.format_date(expected_date, year=True)
-        self.assertTrue('title="Direct actie vereist: norm niet gehaald (sinds {})'.format(expected_date) in html)
 
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """

@@ -121,7 +121,7 @@ function fill_metrics_table(metrics_data) {
     };
 }
 
-function create_dashboard(metrics_data_old, report_date) {
+function create_dashboard(report_date) {
     /*jshint loopfunc: true */
     read_settings_from_cookies();
 

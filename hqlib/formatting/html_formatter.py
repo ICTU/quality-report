@@ -19,33 +19,10 @@ import logging
 import pkg_resources
 
 from . import base_formatter
-from .. import utils
 
 
 class HTMLFormatter(base_formatter.Formatter):
     """ Format the report in HTML. """
-
-    column_list = ["{{f: '{metric_id}', v: '{metric_number}'}}",
-                   "'{section}'",
-                   "'{status}'",
-                   """'<img src="img/{metric_id}.png" border="0" width="100" height="25" />'""",
-                   """{{v: '{status_nr}', f: '<img src="img/{image}.png" """
-                   """alt="{alt}" width="48" height="48" title="{hover}" """
-                   """border="0" />'}}""",
-                   "'{text}'",
-                   "'{norm}'",
-                   "'{comment}'"]
-    columns = '[' + ', '.join(column_list) + ']'
-    kwargs_by_status = dict(
-        red=dict(image='sad', alt=':-(', status_nr=0,
-                 hover='Direct actie vereist: norm niet gehaald'),
-        yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
-        green=dict(image='smile', alt=':-)', status_nr=2, hover='Goed: norm gehaald'),
-        perfect=dict(image='biggrin', alt=':-D', status_nr=3, hover='Perfect: score kan niet beter'),
-        grey=dict(image='ashamed', alt=':-o', status_nr=4, hover='Technische schuld: lossen we later op'),
-        missing=dict(image='missing', alt='x', status_nr=5, hover='Ontbrekend: metriek kan niet gemeten worden'),
-        missing_source=dict(image='missing_source', alt='%', status_nr=6,
-                            hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
     def __init__(self, *args, **kwargs):
         self.__latest_software_version = kwargs.pop('latest_software_version', '0')
@@ -67,13 +44,6 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['requirements'] = self.__requirements(report)
         parameters['report_date'] = self.__report_date(report)
 
-        metrics = []
-        for metric in report.metrics():
-            data = self.__metric_data(metric)
-            metric_number = int(data['metric_id'].split('-')[1])
-            data['metric_number'] = '{sec}-{num:02d}'.format(sec=data['section'], num=metric_number)
-            metrics.append(self.columns.format(**data))
-        parameters['metrics'] = '[' + ',\n'.join(metrics) + ']'
         prefix = self.__get_html_fragment('prefix')
         return prefix.format(**parameters)
 
@@ -130,20 +100,6 @@ class HTMLFormatter(base_formatter.Formatter):
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
 
-    def __metric_data(self, metric):
-        """ Return the metric data as a dictionary, so it can be used in string templates. """
-        status = metric.status()
-        kwargs = self.kwargs_by_status[status].copy()
-        kwargs['hover'] += ' (sinds {date})'.format(date=utils.format_date(metric.status_start_date(), year=True))
-        kwargs['status'] = status
-        kwargs['metric_id'] = metric.id_string()
-        kwargs['section'] = metric.id_string().split('-')[0]
-        kwargs['norm'] = metric.norm()
-        kwargs['text'] = self.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
-        kwargs['comment'] = self.__format_text_with_links(metric.comment(), metric.comment_urls(),
-                                                          metric.comment_url_label_text)
-        return kwargs
-
     @classmethod
     def __report_date(cls, report):
         """ Return a Javascript version of the report date. """
@@ -156,28 +112,11 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return a HTML formatted version of the report postfix. """
         return HTMLFormatter.__get_html_fragment('postfix')
 
-    @classmethod
-    def __format_text_with_links(cls, text, url_dict, url_label):
-        """ Format a text paragraph with optional urls and label for the urls. """
-        text = utils.html_escape(text).replace('\n', ' ')
-        links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
-        if links:
-            if url_label:
-                url_label += ': '
-            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return text
-
     @staticmethod
     def __format_subtitle(subtitle):
         """ Return a HTML formatted subtitle. """
         template = ' <small>{sub}</small>'
         return template.format(sub=subtitle) if subtitle else ''
-
-    @staticmethod
-    def __format_url(anchor, href):
-        """ Return a HTML formatted url. """
-        template = '<a href="{href}" target="_blank">{anchor}</a>'
-        return template.format(href=href, anchor=utils.html_escape(anchor))
 
     @staticmethod
     def __metric_classes(report):

@@ -113,8 +113,7 @@ class MetricsFormatter(base_formatter.Formatter):
                    '''"{comment}"''']
     columns = '[' + ', '.join(column_list) + ']'
     kwargs_by_status = dict(
-        red=dict(image='sad', alt=':-(', status_nr=0,
-                 hover='Direct actie vereist: norm niet gehaald'),
+        red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
         yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
         green=dict(image='smile', alt=':-)', status_nr=2, hover='Goed: norm gehaald'),
         perfect=dict(image='biggrin', alt=':-D', status_nr=3, hover='Perfect: score kan niet beter'),
