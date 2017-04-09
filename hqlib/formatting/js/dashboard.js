@@ -82,7 +82,6 @@ function fill_metrics_table(metrics_data) {
     set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
     show_or_hide_dashboard();
     draw_tables(tables);
-    color_report_date(report_date);
 
     // Event handler for navigating between tabs
     $('#dashboard_tab_control a').click(function (event) {
@@ -127,6 +126,8 @@ function create_dashboard(metrics_data_old, report_date) {
     read_settings_from_cookies();
 
     create_metrics_table();
+
+    color_report_date(report_date);
 
     // Retrieve the metrics for the metrics table.
     $.getJSON("json/metrics.json", "", function(metrics_data) {
