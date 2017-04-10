@@ -46,7 +46,7 @@ class QualityReport(domain.DomainObject):
                 requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.CHECKMARX, requirement.OpenVAS,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
                 requirement.Java, requirement.CSharp, requirement.JavaScript, requirement.Web,
                 requirement.TrustedProductMaintainability, requirement.TrackBranches)
 
@@ -200,7 +200,7 @@ class QualityReport(domain.DomainObject):
                                                   requirement.CodeQuality, requirement.PerformanceLoad,
                                                   requirement.PerformanceEndurance, requirement.PerformanceScalability,
                                                   requirement.OWASPDependencies, requirement.OWASPZAP,
-                                                  requirement.CHECKMARX)
+                                                  requirement.Checkmarx)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))

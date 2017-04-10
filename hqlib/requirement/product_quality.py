@@ -27,10 +27,10 @@ class OWASPDependencies(Requirement):
                        metric.OWASPDependencyReportAge)
 
 
-class CHECKMARX(Requirement):
-    """ Require dependencies to be analyzed for vulnerabilities. """
+class Checkmarx(Requirement):
+    """ Require applications to be statically analyzed for security vulnerabilities. """
     _name = 'Checkmarx SCA'
-    url = 'https://www.checkmarx.com/'
+    _url = 'https://www.checkmarx.com/'
     _metric_classes = (metric.HighRiskCheckmarxAlertsMetric, metric.MediumRiskCheckmarxAlertsMetric)
 
 
