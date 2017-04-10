@@ -100,5 +100,4 @@ class Checkmarx(domain.MetricSource):
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
 
-        json = utils.eval_json(json_string)
-        return json
+        return utils.eval_json(json_string)
