@@ -72,7 +72,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     def test_number_of_metrics(self):
         """ Test the number of metrics in the report. """
         with open('{0}/json/metrics.json'.format(self.report_folder)) as metrics_json:
-            metrics = json.load(metrics_json)
+            metrics = json.load(metrics_json)["metrics"]
         self.assertEqual(self.expected_number_of_metrics, len(metrics))
 
 
