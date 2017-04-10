@@ -37,8 +37,8 @@ class Product(RequirementSubject, MeasurableObject):
     def optional_requirements():
         from ... import requirement
         return {requirement.ARTCoverage, requirement.ART, requirement.CodeQuality, requirement.JSFCodeQuality,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.CHECKMARX, requirement.PerformanceLoad,
-                requirement.PerformanceEndurance, requirement.PerformanceScalability,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.CHECKMARX,
+                requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
                 requirement.TrackBranches, requirement.UnitTests, requirement.UserStoriesAndLTCs}
 
     def __eq__(self, other):

@@ -17,7 +17,6 @@ limitations under the License.
 
 import functools
 import logging
-import urllib
 
 from . import url_opener
 from .. import utils, domain
@@ -40,10 +39,12 @@ class Checkmarx(domain.MetricSource):
         for project_name in report_urls:
             try:
                 json = self.__fetch_report(project_name)
-                checkmarx_report_urls.append("{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
-                    .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"])))
+                checkmarx_report_urls.append("{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}".format(
+                    self.checkmarx_url,
+                    str(json["value"][0]["LastScan"]["Id"]),
+                    str(json["value"][0]["LastScan"]["ProjectId"])))
             except Exception as reason:
-                logging.warning("checkmarx_report_urls %s - %s", self.checkmarx_url, reason, project_name)
+                logging.warning("checkmarx_report_urls %s - %s - %s", self.checkmarx_url, reason, project_name)
 
         return checkmarx_report_urls
 
@@ -55,7 +56,11 @@ class Checkmarx(domain.MetricSource):
                 json = self.__fetch_report(project_name)
                 nr_alerts += self.__parse_alerts(json, priority)
             except Exception as reason:
-                logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s", priority, self.checkmarx_url, reason, project_name)
+                logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s",
+                                priority,
+                                self.checkmarx_url,
+                                reason,
+                                project_name)
                 return -1
         return nr_alerts
 
@@ -97,4 +102,3 @@ class Checkmarx(domain.MetricSource):
 
         json = utils.eval_json(json_string)
         return json
-
