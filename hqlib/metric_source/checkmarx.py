@@ -28,18 +28,25 @@ class Checkmarx(domain.MetricSource):
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
     checkmarx_url = ''
-    report_url = ''
 
     def __init__(self, url, username, password, url_open=None, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
-        self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
     def metric_source_urls(self, *report_urls):
-        return [self.report_url]
+        checkmarx_report_urls = []
 
-    #@functools.lru_cache(maxsize=1024)
+        for project_name in report_urls:
+            try:
+                json = self.__fetch_report(project_name)
+                checkmarx_report_urls.append("{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
+                    .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"])))
+            except Exception as reason:
+                logging.warning("checkmarx_report_urls %s - %s", self.checkmarx_url, reason, project_name)
+
+        return checkmarx_report_urls
+
     def nr_warnings(self, metric_source_ids, priority):
         """ Return the number of warnings in the reports with the specified priority. """
         nr_alerts = 0
@@ -47,10 +54,6 @@ class Checkmarx(domain.MetricSource):
             try:
                 json = self.__fetch_report(project_name)
                 nr_alerts += self.__parse_alerts(json, priority)
-                self.report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
-                    .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
-            #except url_opener.UrlOpener.url_open_exceptions:
-            #    return -1
             except Exception as reason:
                 logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s", priority, self.checkmarx_url, reason, project_name)
                 return -1
@@ -62,6 +65,7 @@ class Checkmarx(domain.MetricSource):
 
         return json["value"][0]["LastScan"][risk_level.title()]
 
+    @functools.lru_cache(maxsize=1024)
     def __fetch_report(self, project_name):
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
                   "&$filter=LastScan/Results/any(r:%20r%2fSeverity%20eq%20CxDataRepository.Severity%27High%27" \
