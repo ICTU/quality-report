@@ -43,8 +43,16 @@ class Checkmarx(domain.MetricSource):
                     self.checkmarx_url,
                     str(json["value"][0]["LastScan"]["Id"]),
                     str(json["value"][0]["LastScan"]["ProjectId"])))
+            except KeyError as reason:
+                logging.warning("Couldn't load values from json: %s - %s -%s",
+                                self.checkmarx_url,
+                                project_name,
+                                reason)
             except Exception as reason:
-                logging.warning("checkmarx_report_urls %s - %s - %s", self.checkmarx_url, reason, project_name)
+                logging.warning("checkmarx_report_urls %s - %s - %s",
+                                self.checkmarx_url,
+                                reason,
+                                project_name)
 
         return checkmarx_report_urls
 
