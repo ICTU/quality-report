@@ -28,10 +28,10 @@ class Checkmarx(domain.MetricSource):
     needs_metric_source_id = True
     checkmarx_url = ''
 
-    def __init__(self, url, username, password, url_open=None, **kwargs):
+    def __init__(self, url, username, password, url_open=None, *args, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
     def metric_source_urls(self, *report_urls):
         checkmarx_report_urls = []
@@ -76,8 +76,7 @@ class Checkmarx(domain.MetricSource):
                   "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
             .format(self.checkmarx_url, project_name)
 
-        json = self.__get_json(api_url)
-        return json
+        return self.__get_json(api_url)
 
     def __get_json(self, api_url):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
@@ -95,7 +94,7 @@ class Checkmarx(domain.MetricSource):
                 ssl._create_default_https_context = _create_unverified_https_context
 
             json_string = self._url_open.url_read(api_url)
-        except Exception as reason:
+        except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", api_url, reason)
             raise
 
