@@ -44,15 +44,9 @@ class Checkmarx(domain.MetricSource):
                     str(json["value"][0]["LastScan"]["Id"]),
                     str(json["value"][0]["LastScan"]["ProjectId"])))
             except KeyError as reason:
-                logging.warning("Couldn't load values from json: %s - %s -%s",
-                                self.checkmarx_url,
-                                project_name,
-                                reason)
+                logging.warning("Couldn't load values from json: %s - %s", project_name, reason)
             except Exception as reason:
-                logging.warning("checkmarx_report_urls %s - %s - %s",
-                                self.checkmarx_url,
-                                reason,
-                                project_name)
+                logging.warning("checkmarx_report_urls %s - %s", reason, project_name)
 
         return checkmarx_report_urls
 
@@ -65,10 +59,7 @@ class Checkmarx(domain.MetricSource):
                 nr_alerts += self.__parse_alerts(json, priority)
             except Exception as reason:
                 logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s",
-                                priority,
-                                self.checkmarx_url,
-                                reason,
-                                project_name)
+                                priority, self.checkmarx_url, reason, project_name)
                 return -1
         return nr_alerts
 
