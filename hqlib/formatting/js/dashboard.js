@@ -63,7 +63,7 @@ function create_metrics_table() {
 }
 
 function fill_metrics_table(metrics_data) {
-    window.metrics.addRows(metrics_data);
+    window.metrics.addRows(metrics_data["metrics"]);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);

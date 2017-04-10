@@ -123,11 +123,11 @@ class MetricsFormatter(base_formatter.Formatter):
                             hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
     def prefix(self, report):
-        return '['
+        return '{"metrics": ['
 
     @staticmethod
     def postfix():
-        return ']\n'
+        return ']}\n'
 
     def metric(self, metric):
         data = self.__metric_data(metric)
