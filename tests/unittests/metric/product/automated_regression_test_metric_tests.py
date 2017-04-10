@@ -42,6 +42,7 @@ class FakeJenkinsTestReport(domain.MetricSource):
 
     def __init__(self):
         self.passed = 14
+        self._datetime = datetime.datetime.now() - datetime.timedelta(hours=36)
         super().__init__()
 
     @staticmethod
@@ -57,6 +58,10 @@ class FakeJenkinsTestReport(domain.MetricSource):
     def passed_tests(self, *args):  # pylint: disable=unused-argument
         """ Return the number of passed tests for the job. """
         return self.passed
+
+    def datetime(self, *args):
+        """ Return a fake date. """
+        return self._datetime
 
 
 class FailingRegressionTestsTest(unittest.TestCase):
@@ -122,7 +127,7 @@ class RegressionTestAgeTest(unittest.TestCase):
 
     def test_value_when_missing(self):
         """ Test that the value is negative when the test report is missing. """
-        self.__jenkins.passed = -1
+        self.__jenkins._datetime = datetime.datetime.min
         self.assertTrue(self.__metric.value() < 0)
 
     def test_report(self):
