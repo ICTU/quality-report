@@ -40,7 +40,7 @@ class Checkmarx(domain.MetricSource):
     #    return [self.report_url]
 
     #@functools.lru_cache(maxsize=1024)
-    def nr_warnings(self, metric_source_ids, priority):
+    def nr_warnings(metric_source_ids, priority):
         return 0
         """ Return the number of warnings in the reports with the specified priority. """
         nr_alerts = 0
