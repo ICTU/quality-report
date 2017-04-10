@@ -38,7 +38,7 @@ class FakeNCover(domain.MetricSource):
     @staticmethod
     def datetime(*args):  # pylint: disable=unused-argument
         """ Return a fake date. """
-        return datetime.datetime.today() - datetime.timedelta(days=4)
+        return datetime.datetime.today() - datetime.timedelta(hours=95)
 
     def url(self):
         """ Return a fake url. """
