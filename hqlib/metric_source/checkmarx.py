@@ -36,23 +36,23 @@ class Checkmarx(domain.MetricSource):
         self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
-    #def metric_source_urls(self, *report_urls):
-    #   return ["test" for report_url in report_urls]
+    def metric_source_urls(self, *report_urls):
+        return [self.report_url]
 
     #@functools.lru_cache(maxsize=1024)
-    def alerts(self, risk_level, *report_urls):
-        """ Return the number of alerts of the specified risk level. """
+    def nr_warnings(self, metric_source_ids, priority):
+        """ Return the number of warnings in the reports with the specified priority. """
         nr_alerts = 0
-        for project_name in report_urls:
+        for project_name in metric_source_ids:
             try:
                 json = self.__fetch_report(project_name)
-                nr_alerts += self.__parse_alerts(json, risk_level)
+                nr_alerts += self.__parse_alerts(json, priority)
                 self.report_url = "{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}"\
                     .format(self.checkmarx_url, str(json["value"][0]["LastScan"]["Id"]), str(json["value"][0]["LastScan"]["ProjectId"]))
             #except url_opener.UrlOpener.url_open_exceptions:
             #    return -1
             except Exception as reason:
-                logging.warning("Couldn't parse alerts with %s risk level from %s - %s", risk_level, self.checkmarx_url, reason)
+                logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s", priority, self.checkmarx_url, reason, project_name)
                 return -1
         return nr_alerts
 
@@ -68,7 +68,6 @@ class Checkmarx(domain.MetricSource):
                   "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
             .format(self.checkmarx_url, project_name)
 
-        logging.debug("api_url: %s", api_url)
         json = self.__get_json(api_url)
         return json
 
