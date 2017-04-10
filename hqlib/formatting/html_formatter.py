@@ -42,7 +42,6 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
         parameters['requirements'] = self.__requirements(report)
-        parameters['report_date'] = self.__report_date(report)
 
         prefix = self.__get_html_fragment('prefix')
         return prefix.format(**parameters)
@@ -99,13 +98,6 @@ class HTMLFormatter(base_formatter.Formatter):
                 add_menu_items(sections[title])
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
-
-    @classmethod
-    def __report_date(cls, report):
-        """ Return a Javascript version of the report date. """
-        date_time = report.date()
-        return 'new Date({0}, {1}, {2}, {3}, {4}, {5})'.format(date_time.year, date_time.month - 1, date_time.day,
-                                                               date_time.hour, date_time.minute, date_time.second)
 
     @staticmethod
     def postfix():

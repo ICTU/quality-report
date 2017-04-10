@@ -123,7 +123,7 @@ class MetricsFormatter(base_formatter.Formatter):
                             hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
     def prefix(self, report):
-        return '{"metrics": ['
+        return '{{"report_date": {report_date}, "metrics": ['.format(report_date=self.__report_date(report))
 
     @staticmethod
     def postfix():
@@ -165,3 +165,10 @@ class MetricsFormatter(base_formatter.Formatter):
         """ Return a HTML formatted url. """
         template = "<a href='{href}' target='_blank'>{anchor}</a>"
         return template.format(href=href, anchor=utils.html_escape(anchor))
+
+    @classmethod
+    def __report_date(cls, report):
+        """ Return a Javascript version of the report date. """
+        date_time = report.date()
+        return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month - 1, date_time.day,
+                                                       date_time.hour, date_time.minute, date_time.second)

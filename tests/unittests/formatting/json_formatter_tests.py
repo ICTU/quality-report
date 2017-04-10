@@ -74,7 +74,8 @@ class MetricsFormatterTest(unittest.TestCase):
 
     def test_process(self):
         """ Test that the report is processed correctly. """
-        self.assertEqual('{"metrics": [[{"f": "id_string-1", "v": "id_string-01"}, "id_string", "red", '
+        self.assertEqual('{"report_date": [2012, 0, 1, 12, 0, 0], "metrics": '
+                         '[[{"f": "id_string-1", "v": "id_string-01"}, "id_string", "red", '
                          '"<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' height=\'25\' />", '
                          '{"v": "0", "f": "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' height=\'48\' '
                          'title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' border=\'0\' />"}, '
