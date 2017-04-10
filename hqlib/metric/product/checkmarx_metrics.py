@@ -30,7 +30,6 @@ class CheckmarxAlertsMetric(AlertsMetric):
     def _nr_alerts(self):
         """ Return the number of warnings. """
         ids = self._get_metric_source_ids()
-        print("xtest: %s", len(ids))
         return self._metric_source.nr_warnings(tuple(ids), self.risk_level_key) if ids else -1
 
 
