@@ -76,13 +76,40 @@ function fill_metrics_table(metrics_data) {
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
         draw_section_summary_chart(section);
     }
-
-    set_radio_indicator('filter_color', settings.filter_color);
-    set_check_indicator('show_dashboard', settings.show_dashboard);
-    set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
     show_or_hide_dashboard();
     draw_tables(tables);
+}
 
+function create_dashboard(report_date) {
+    /*jshint loopfunc: true */
+    read_settings_from_cookies();
+
+    create_metrics_table();
+    create_event_handlers();
+    set_indicators();
+
+    color_report_date(report_date);
+
+    // Retrieve the metrics for the metrics table.
+    $.getJSON("json/metrics.json", "", function(metrics_data) {
+       fill_metrics_table(metrics_data);
+    });
+
+    // Retrieve the history for the meta metrics history charts.
+    $.getJSON("json/meta_history.json", "", function(history_json) {
+        draw_area_charts(parse_history_json(history_json));
+    });
+}
+
+function read_settings_from_cookies() {
+    settings.filter_color = read_cookie('filter_color', 'filter_color_all');
+    settings.show_dashboard = read_cookie('show_dashboard', 'true') === 'true';
+    settings.show_multiple_tables = read_cookie('show_multiple_tables', 'true') === 'true';
+    settings.table_sort_column = parseInt(read_cookie('table_sort_column', '0'), 10);
+    settings.table_sort_ascending = read_cookie('table_sort_ascending', 'true') === 'true';
+}
+
+function create_event_handlers() {
     // Event handler for the (Toon) "Dashboard" menu item
     document.getElementById('show_dashboard').onclick = function() {
         switch_toggle('show_dashboard', function() {
@@ -115,31 +142,10 @@ function fill_metrics_table(metrics_data) {
     };
 }
 
-function create_dashboard(report_date) {
-    /*jshint loopfunc: true */
-    read_settings_from_cookies();
-
-    create_metrics_table();
-
-    color_report_date(report_date);
-
-    // Retrieve the metrics for the metrics table.
-    $.getJSON("json/metrics.json", "", function(metrics_data) {
-       fill_metrics_table(metrics_data);
-    });
-
-    // Retrieve the history for the meta metrics history charts.
-    $.getJSON("json/meta_history.json", "", function(history_json) {
-        draw_area_charts(parse_history_json(history_json));
-    });
-}
-
-function read_settings_from_cookies() {
-    settings.filter_color = read_cookie('filter_color', 'filter_color_all');
-    settings.show_dashboard = read_cookie('show_dashboard', 'true') === 'true';
-    settings.show_multiple_tables = read_cookie('show_multiple_tables', 'true') === 'true';
-    settings.table_sort_column = parseInt(read_cookie('table_sort_column', '0'), 10);
-    settings.table_sort_ascending = read_cookie('table_sort_ascending', 'true') === 'true';
+function set_indicators() {
+    set_radio_indicator('filter_color', settings.filter_color);
+    set_check_indicator('show_dashboard', settings.show_dashboard);
+    set_check_indicator('show_multiple_tables', settings.show_multiple_tables);
 }
 
 function save_sort_order(event) {
