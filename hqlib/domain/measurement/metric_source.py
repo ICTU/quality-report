@@ -37,7 +37,7 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:  # pylint: disable=no-self-use
         """ Return the url(s) to the metric source for the metric source id. """
-        return list(metric_source_ids)  # Default implementation assumes the metric source ids as urls.
+        return list(metric_source_ids)  # Default implementation assumes the metric source ids are urls.
 
     def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument,no-self-use
         """ Return the date and time of the last measurement. """
