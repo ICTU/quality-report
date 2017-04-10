@@ -65,7 +65,7 @@ function create_metrics_table() {
 function fill_metrics_table(metrics_data) {
     window.metrics.addRows(metrics_data["metrics"]);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
-    color_report_date(metrics_data["report_date"]);
+    color_report_date(new Date(...metrics_data["report_date"]));
 
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
@@ -81,7 +81,7 @@ function fill_metrics_table(metrics_data) {
     draw_tables(tables);
 }
 
-function create_dashboard(report_date) {
+function create_dashboard() {
     read_settings_from_cookies();
 
     create_metrics_table();
