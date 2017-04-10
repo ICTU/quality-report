@@ -36,11 +36,12 @@ class Checkmarx(domain.MetricSource):
         self.report_url = "{}/CxWebClient/".format(url)
         super().__init__()
 
-    def metric_source_urls(self, *report_urls):
-        return [self.report_url]
+    #def metric_source_urls(self, *report_urls):
+    #    return [self.report_url]
 
     #@functools.lru_cache(maxsize=1024)
     def nr_warnings(self, metric_source_ids, priority):
+        return 0
         """ Return the number of warnings in the reports with the specified priority. """
         nr_alerts = 0
         for project_name in metric_source_ids:
