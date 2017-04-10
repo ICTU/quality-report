@@ -27,6 +27,12 @@ class CheckmarxAlertsMetric(AlertsMetric):
                     'Meer dan {low_target} is rood.'
     metric_source_class = metric_source.Checkmarx
 
+    def _nr_alerts(self):
+        """ Return the number of warnings. """
+        ids = self._get_metric_source_ids()
+        print("xtest: %s", len(ids))
+        return self._metric_source.nr_warnings(tuple(ids), self.risk_level_key) if ids else -1
+
 
 class HighRiskCheckmarxAlertsMetric(CheckmarxAlertsMetric):
     """ Metric for measuring the number of high risk Checkmarx alerts. """
