@@ -1,6 +1,11 @@
+2017-04-12  Release 1.81.0
+
+  * New metric and metric source for reporting on number of Checkmarx warnings.
+  
+
 2017-04-05  Release 1.80.3
 
-  * Bug fix: HTML report would be invald when metric comments contain new lines.
+  * Bug fix: HTML report would be invalid when metric comments contain new lines.
   * Bug fix: Use correct language codes when querying SonarQube for Python and TypeScript quality profiles.
   * Bug fix: Don't crash when users enter invalid dates in the Wiki.
   
