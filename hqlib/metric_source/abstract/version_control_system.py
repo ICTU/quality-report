@@ -21,6 +21,8 @@ import os
 import re
 import subprocess
 
+from typing import Tuple, List
+
 from . import archive_system
 
 
@@ -31,21 +33,21 @@ class VersionControlSystem(archive_system.ArchiveSystem):
     needs_values_as_list = True
     needs_metric_source_id = True
 
-    def __init__(self, username=None, password=None, url=None, run_shell_command=subprocess.check_output):
+    def __init__(self, username: str='', password: str='', url=None, run_shell_command=subprocess.check_output) -> None:
         self._username = username
         self._password = password
         self._shell_command = run_shell_command
         super().__init__(url=url)
 
-    def last_changed_date(self, url):
+    def last_changed_date(self, url: str):
         """ Return the date when the url was last changed. """
         raise NotImplementedError  # pragma: no cover
 
-    def branches(self, path):  # pylint: disable=unused-argument
+    def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
-    def tags(self, path):  # pylint: disable=unused-argument
+    def tags(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of tag names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
@@ -59,7 +61,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
 
     @staticmethod
     def _ignore_branch(branch_name, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
-                       list_of_branches_to_include=None):
+                       list_of_branches_to_include=None) -> bool:
         """ Return whether the branch should be ignored. """
         if list_of_branches_to_include and branch_name not in list_of_branches_to_include:
             return True
@@ -70,17 +72,16 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         return False
 
     @classmethod
-    def branch_folder_for_branch(cls, trunk_url, branch):  # pylint: disable=unused-argument
+    def branch_folder_for_branch(cls, trunk_url: str, branch: str) -> str:  # pylint: disable=unused-argument
         """ Return the branch folder for the specified branch. """
         raise NotImplementedError  # pragma: no cover
 
-    @classmethod
-    def tags_folder_for_version(cls, trunk_url, version):  # pylint: disable=unused-argument
+    def tags_folder_for_version(self, trunk_url: str, version: str) -> str:  # pylint: disable=unused-argument
         """ Return the tags folder for the specified version. """
         return ''  # pragma: no cover
 
     @functools.lru_cache(maxsize=1024)
-    def _run_shell_command(self, shell_command, folder=None, log_level=logging.WARNING):
+    def _run_shell_command(self, shell_command, folder: str='', log_level=logging.WARNING) -> str:
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         original_working_dir = os.getcwd()
         if folder:
@@ -92,11 +93,13 @@ class VersionControlSystem(archive_system.ArchiveSystem):
             logging.log(log_level, 'Shell command in folder %s failed: %s', folder, reason)
             if log_level > logging.WARNING:
                 raise
+            else:
+                return ''
         finally:
             os.chdir(original_working_dir)
 
     @staticmethod
-    def _parse_version(tag):
+    def _parse_version(tag: str) -> Tuple[Tuple[int, ...], str]:
         """ Parse and return the version number from the tag. Returns the version as a two-tuple. The first
             element of the tuple is the version number as tuple of integers (for sorting). The second element
             of the tuple is the version number as text, including any postfix elements (e.g. 1.2.3-beta). """
@@ -104,7 +107,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         if versions_in_tag:
             numbers = versions_in_tag[0].split('.')
             version_integer_tuple = tuple(int(number) for number in numbers)
-            version_text = re.findall(r'[0-9].*', tag)[0]
+            version_text: str = re.findall(r'[0-9].*', tag)[0]
         else:
             version_integer_tuple = (0, 0, 0)
             version_text = ''

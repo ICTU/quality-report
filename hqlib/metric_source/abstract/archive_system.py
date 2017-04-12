@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from datetime import datetime
 
 from ... import domain
 
@@ -23,11 +24,11 @@ class ArchiveSystem(domain.MetricSource):
     metric_source_name = 'Archive system'
     needs_metric_source_id = True
 
-    def last_changed_date(self, url):
+    def last_changed_date(self, url: str) -> datetime:
         """ Return the date when the url was last changed. """
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
-    def normalize_path(path):
+    def normalize_path(path: str) -> str:
         """ Return a normalized version of the path. """
         return path

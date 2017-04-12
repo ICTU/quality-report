@@ -18,6 +18,7 @@ import datetime
 import logging
 import os
 import urllib.request
+from typing import List
 
 from ..abstract.version_control_system import VersionControlSystem
 
@@ -28,7 +29,7 @@ class Git(VersionControlSystem):
     metric_source_name = 'Git'
 
     def __init__(self, *args, **kwargs):
-        self.__branch_to_checkout = kwargs.pop('branch', '')
+        self.__branch_to_checkout: str = kwargs.pop('branch', '')
         self.__chdir = kwargs.pop('chdir', os.chdir)
         super().__init__(*args, **kwargs)
         self.__repo_folder = None
@@ -113,7 +114,7 @@ class Git(VersionControlSystem):
                 command.insert(3, self.__branch_to_checkout)
         self._run_shell_command(tuple(command))
 
-    def __full_url(self):
+    def __full_url(self) -> str:
         """ Return the Git repository url with username and password. """
         if self._username and self._password:
             sep = '://'
@@ -123,7 +124,7 @@ class Git(VersionControlSystem):
         else:
             return self.url()
 
-    def __determine_repo_folder_name(self):
+    def __determine_repo_folder_name(self) -> str:
         url_parts = [part for part in self.url().split('/') if part]
         folder = url_parts[-1]
         if self.__branch_to_checkout:
@@ -131,7 +132,7 @@ class Git(VersionControlSystem):
         return os.path.join(os.getcwd(), 'repos', folder)
 
     @staticmethod
-    def __valid_names(text, is_valid=bool):
+    def __valid_names(text: str, is_valid=bool) -> List[str]:
         """ Return the names in the text that are valid. """
         names = [name.strip() for name in text.strip().split('\n')]
         return [name for name in names if is_valid(name)]

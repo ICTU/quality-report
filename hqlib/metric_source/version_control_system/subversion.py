@@ -15,8 +15,9 @@ limitations under the License.
 """
 
 
-import datetime
+from datetime import datetime
 import logging
+from typing import List
 
 import bs4
 
@@ -28,7 +29,7 @@ class Subversion(version_control_system.VersionControlSystem):
 
     metric_source_name = 'Subversion'
 
-    def tags_folder_for_version(self, trunk_url, version):
+    def tags_folder_for_version(self, trunk_url: str, version: str) -> str:
         """ Return the tags folder for the specified version. """
         tags = self.tags(trunk_url)
         # Mapping from version numbers to tags:
@@ -42,12 +43,12 @@ class Subversion(version_control_system.VersionControlSystem):
             return ''
 
     @classmethod
-    def branch_folder_for_branch(cls, trunk_url, branch):
+    def branch_folder_for_branch(cls, trunk_url: str, branch: str) -> str:
         """ Return the branch folder for the specified branch. """
         return cls.__branches_folder(trunk_url) + branch + '/' + trunk_url.split('/trunk/')[1]
 
     @staticmethod
-    def normalize_path(svn_path):
+    def normalize_path(svn_path: str) -> str:
         """ Return a normalized version of the path. """
         if not svn_path.endswith('/'):
             svn_path += '/'
@@ -55,14 +56,14 @@ class Subversion(version_control_system.VersionControlSystem):
             svn_path += 'trunk/'
         return svn_path
 
-    def last_changed_date(self, url):
+    def last_changed_date(self, url: str) -> datetime:
         """ Return the date when the url was last changed in Subversion. """
         svn_info_xml = str(self._run_shell_command(('svn', 'info', '--xml', url)))
         try:
             date = bs4.BeautifulSoup(svn_info_xml, "lxml")('date')[0].string
         except IndexError:
-            return datetime.datetime.min
-        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+            return datetime.min
+        return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     def unmerged_branches(self, product_url, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
@@ -94,30 +95,30 @@ class Subversion(version_control_system.VersionControlSystem):
                     nr_revisions -= 1
         return nr_revisions
 
-    def __revision_url(self, branch_url, revision_number):
+    def __revision_url(self, branch_url: str, revision_number: str) -> str:
         """ Return the url for a specific revision number. """
         svn_info_xml = str(self._run_shell_command(('svn', 'info', branch_url, '--xml', '-r', revision_number)))
         return bs4.BeautifulSoup(svn_info_xml, "lxml")('url')[0].string
 
-    def branches(self, trunk_url):
+    def branches(self, trunk_url: str) -> List[str]:
         """ Return a list of branch names for the specified trunk url. """
         return self.__svn_list(self.__branches_folder(trunk_url))
 
-    def tags(self, trunk_url):
+    def tags(self, trunk_url: str) -> List[str]:
         """ Return a list of tags for the specified trunk url. """
         return self.__svn_list(self.__tags_folder(trunk_url))
 
     @staticmethod
-    def __tags_folder(trunk_url):
+    def __tags_folder(trunk_url: str) -> str:
         """ Return the tags folder for the trunk url. """
         return trunk_url.split('/trunk/')[0] + '/tags/'
 
     @staticmethod
-    def __branches_folder(trunk_url):
+    def __branches_folder(trunk_url: str) -> str:
         """ Return the branches folder for the trunk url. """
         return trunk_url.split('/trunk/')[0] + '/branches/'
 
-    def __svn_list(self, url):
+    def __svn_list(self, url: str) -> List[str]:
         """ Return a list of sub folder names. """
         shell_command = ('svn', 'list', '--xml', url)
         svn_info_xml = str(self._run_shell_command(shell_command))
