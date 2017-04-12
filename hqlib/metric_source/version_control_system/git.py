@@ -89,7 +89,7 @@ class Git(VersionControlSystem):
         return self.__valid_names(self._run_shell_command(tuple(command)),
                                   lambda name: name and ' -> ' not in name and 'origin/master' not in name)
 
-    def __nr_unmerged_commits(self, branch_name):
+    def __nr_unmerged_commits(self, branch_name: str) -> int:
         """ Return whether the branch has unmerged commits. """
         logging.info('Checking for unmerged commits in branch %s.', branch_name)
         command = ('git', 'cherry', 'origin/master', branch_name)
@@ -98,7 +98,7 @@ class Git(VersionControlSystem):
         logging.info('Branch %s has %d unmerged commits.', branch_name, nr_commits)
         return nr_commits
 
-    def __get_repo(self):
+    def __get_repo(self) -> None:
         """ Clone the repository if necessary, else pull it. """
         self.__repo_folder = self.__determine_repo_folder_name()
         command = ['git']
