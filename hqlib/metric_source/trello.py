@@ -156,7 +156,7 @@ class TrelloBoard(TrelloObject):
                 if card.is_inactive(days):
                     time_delta = utils.format_timedelta(card.last_update_time_delta())
                     remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
-                label = 'kaart {card} ({remarks})'.format(card=index, remarks=' en '.join(remarks))
+                label = '{card} ({remarks})'.format(card=card.idShort(), remarks=' en '.join(remarks))
                 urls[label] = card.url()
         except url_opener.UrlOpener.url_open_exceptions:
             return {self.metric_source_name: 'http://trello'}
