@@ -73,7 +73,7 @@ class TrelloBoardTest(unittest.TestCase):
         elif 'actions' in url:
             json = '[{"date": "2015-1-1T10:0:0"}]'
         else:
-            json = '{{"url": "{0}", "name": "name"}}'.format(url)
+            json = '{{"shortUrl": "{0}", "name": "name"}}'.format(url)
         return io.StringIO(json)
 
     def test_url(self):
@@ -94,7 +94,7 @@ class TrelloBoardTest(unittest.TestCase):
         """ Test that repr(board) gives the json. """
         repr_string = repr(self.__trello_board)
         self.assertTrue("'name': 'name'" in repr_string)
-        self.assertTrue("'url': 'https://api.trello.com/1/board/object_id?key=appkey&token=token'" in repr_string)
+        self.assertTrue("'shortUrl': 'https://api.trello.com/1/board/object_id?key=appkey&token=token'" in repr_string)
 
     def test_bool(self):
         """ Test that the board is true if it has an app key and an id. """

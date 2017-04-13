@@ -67,16 +67,12 @@ class TrelloObject(domain.MetricSource):
 
     def id(self):
         """ Return the id of this Trello object. """
-        try:
-            return self._json()['shortId']
-        except KeyError:
-            logging.error(self._json())
-            raise
+        return self._json()['idShort']
 
     def url(self):
         """ Return the url of this Trello object. """
         try:
-            return self._json()['url']
+            return self._json()['shortUrl']
         except url_opener.UrlOpener.url_open_exceptions:
             return 'http://trello.com'
 
