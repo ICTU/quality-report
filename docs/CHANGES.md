@@ -1,4 +1,4 @@
-2017-04-12  Release 1.81.0
+2017-04-13  Release 1.81.0
 
   * New metric and metric source for reporting on number of Checkmarx warnings.
   
