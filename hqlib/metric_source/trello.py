@@ -148,7 +148,7 @@ class TrelloBoard(TrelloObject):
         """ Return the urls for the (non-archived) cards on this Trello board that are over due or inactive. """
         urls = dict()
         try:
-            for index, card in enumerate(self.over_due_or_inactive_cards(days)):
+            for card in self.over_due_or_inactive_cards(days):
                 remarks = []
                 if card.is_over_due():
                     time_delta = utils.format_timedelta(card.over_due_time_delta())
