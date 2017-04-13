@@ -57,22 +57,44 @@ class ActionActivity(ActivityMetric):
     metric_source_class = metric_source.TrelloActionsBoard
 
 
-class ActionAge(LowerIsBetterMetric):
-    """ Metric for measuring the age of individual actions. """
+class OverDueActions(LowerIsBetterMetric):
+    """ Metric for measuring the number of over due actions. """
 
     name = 'Tijdigheid van de acties'
     unit = 'acties'
-    norm_template = 'Geen van de acties en besluiten in de actie- en besluitenlijst is te laat of te lang ' \
-        '(14 dagen) niet bijgewerkt. Meer dan {low_target} {unit} te laat of te lang niet bijgewerkt is rood.'
-    template = '{value} {unit} uit de actie- en besluitenlijst zijn te laat of te lang (14 dagen) niet bijgewerkt.'
-    url_label_text = 'Niet bijgewerkte of te late acties'
+    norm_template = 'Geen van de acties en besluiten in de actie- en besluitenlijst is te laat. ' \
+                    'Meer dan {low_target} {unit} te laat is rood.'
+    template = '{value} {unit} uit de actie- en besluitenlijst zijn te laat.'
+    url_label_text = 'Te late acties'
     target_value = 0
     low_target_value = 3
     metric_source_class = metric_source.TrelloActionsBoard
 
     def value(self):
-        nr_cards = self._metric_source.nr_of_over_due_or_inactive_cards()
+        nr_cards = self._metric_source.nr_of_over_due_cards()
         return -1 if nr_cards is None else nr_cards
 
     def url(self):
-        return self._metric_source.over_due_or_inactive_cards_url() or {}
+        return self._metric_source.over_due_cards_url() or {}
+
+
+class StaleActions(LowerIsBetterMetric):
+    """ Metric for measuring the staleness of actions . """
+
+    name = 'Actualiteit van de acties'
+    unit = 'acties'
+    norm_template = 'Geen van de acties en besluiten in de actie- en besluitenlijst is te lang ' \
+        '(14 dagen) niet bijgewerkt. Meer dan {low_target} {unit} te lang niet bijgewerkt is rood.'
+    template = '{value} {unit} uit de actie- en besluitenlijst zijn te lang (14 dagen) niet bijgewerkt.'
+    url_label_text = 'Niet bijgewerkte acties'
+    target_value = 0
+    low_target_value = 3
+    metric_source_class = metric_source.TrelloActionsBoard
+
+    def value(self):
+        nr_cards = self._metric_source.nr_of_inactive_cards()
+        return -1 if nr_cards is None else nr_cards
+
+    def url(self):
+        return self._metric_source.inactive_cards_url() or {}
+

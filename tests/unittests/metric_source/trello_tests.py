@@ -103,28 +103,31 @@ class TrelloBoardTest(unittest.TestCase):
     def test_one_over_due(self):
         """ Test the count with one over due card. """
         self.__cards_json = '[{"id": 1}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_or_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards())
+        self.assertEqual(0, self.__trello_board.nr_of_inactive_cards())
 
     def test_one_inactive(self):
         """Test the count with one inactive card. """
         self.__cards_json = '[{"id": 2}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_or_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards())
+        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards())
 
     def test_one_over_due_and_inactive(self):
-        """ Test the count with one inactive and over due card. """
+        """ Test the count with one over due card. """
         self.__cards_json = '[{"id": 3}]'
-        self.assertEqual(1,
-                         self.__trello_board.nr_of_over_due_or_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards())
 
     def test_one_inactive_and_one_over_due(self):
         """ Test the count with one inactive and one over due card. """
         self.__cards_json = '[{"id": 1}, {"id": 2}]'
-        self.assertEqual(2, self.__trello_board.nr_of_over_due_or_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards())
 
     def test_http_error(self):
         """ Test dealing with http errors when retrieving the JSON. """
         self.__raise = True
-        self.assertEqual(0, self.__trello_board.nr_of_over_due_or_inactive_cards())
+        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards())
 
 
 class TrelloCardTest(unittest.TestCase):

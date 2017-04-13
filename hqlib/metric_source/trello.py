@@ -136,14 +136,6 @@ class TrelloBoard(TrelloObject):
         self.__card_class = kwargs.pop('card_class', TrelloCard)
         super().__init__(*args, **kwargs)
 
-    def nr_of_over_due_or_inactive_cards(self, days=14):
-        """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
-            specified number of days or are over due. """
-        try:
-            return len(self.over_due_or_inactive_cards(days))
-        except url_opener.UrlOpener.url_open_exceptions:
-            return -1
-
     def nr_of_over_due_cards(self):
         """ Return the number of (non-archived) cards on this Trello board that are over due. """
         try:
@@ -151,17 +143,13 @@ class TrelloBoard(TrelloObject):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def nr_inactive_cards(self, days=14):
+    def nr_of_inactive_cards(self, days=14):
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
             specified number of days. """
         try:
             return len(self.inactive_cards(days))
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
-
-    def over_due_or_inactive_cards(self, days=14):
-        """ Return the (non-archived) cards on this Trello board that are over due or inactive. """
-        return [card for card in self.__cards() if card.is_over_due() or card.is_inactive(days)]
 
     def over_due_cards(self):
         """ Return the (non-archived) cards on this Trello board that are over due. """
@@ -170,24 +158,6 @@ class TrelloBoard(TrelloObject):
     def inactive_cards(self, days=14):
         """ Return the (non-archived) cards on this Trello board that are inactive. """
         return [card for card in self.__cards() if card.is_inactive(days)]
-
-    def over_due_or_inactive_cards_url(self, days=14):
-        """ Return the urls for the (non-archived) cards on this Trello board that are over due or inactive. """
-        urls = dict()
-        try:
-            for card in self.over_due_or_inactive_cards(days):
-                remarks = []
-                if card.is_over_due():
-                    time_delta = utils.format_timedelta(card.over_due_time_delta())
-                    remarks.append('{time_delta} te laat'.format(time_delta=time_delta))
-                if card.is_inactive(days):
-                    time_delta = utils.format_timedelta(card.last_update_time_delta())
-                    remarks.append('{time_delta} niet bijgewerkt'.format(time_delta=time_delta))
-                label = '{card} ({remarks})'.format(card=card.id(), remarks=' en '.join(remarks))
-                urls[label] = card.url()
-        except url_opener.UrlOpener.url_open_exceptions:
-            return {self.metric_source_name: 'http://trello'}
-        return urls
 
     def over_due_cards_url(self):
         """ Return the urls for the (non-archived) cards on this Trello board that are over due. """

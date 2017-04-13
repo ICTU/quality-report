@@ -50,7 +50,7 @@ class TrackTechnicalDebt(Requirement):
 class TrackActions(Requirement):
     """ Require actions to be tracked. """
     _name = 'Track actions'
-    _metric_classes = (metric.ActionActivity, metric.ActionAge)
+    _metric_classes = (metric.ActionActivity, metric.OverDueActions, metric.StaleActions)
 
 
 class TrackRisks(Requirement):

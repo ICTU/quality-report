@@ -36,14 +36,24 @@ class FakeBoard(object):
         return datetime.datetime.now() - datetime.timedelta(minutes=1)
 
     @staticmethod
-    def over_due_or_inactive_cards_url():
+    def over_due_cards_url():
         """ Fake the url. """
         return {'Some card': 'http://trello/some_card', 'Some other card': 'http://trello/other_card'}
 
     @staticmethod
-    def nr_of_over_due_or_inactive_cards():
+    def inactive_cards_url():
+        """ Fake the url. """
+        return {'One card': 'http://trello/some_card', 'Two card': 'http://trello/other_card'}
+
+    @staticmethod
+    def nr_of_over_due_cards():
         """ Fake the number. """
         return 5
+
+    @staticmethod
+    def nr_of_inactive_cards():
+        """ Fake the number. """
+        return 4
 
 
 class UnreachableBoard(FakeBoard):
@@ -60,12 +70,22 @@ class UnreachableBoard(FakeBoard):
         return datetime.datetime.min
 
     @staticmethod
-    def over_due_or_inactive_cards_url():
+    def over_due_cards_url():
         """ Fake the url. """
         return {UnreachableBoard.metric_source_name: 'http://trello.com'}
 
     @staticmethod
-    def nr_of_over_due_or_inactive_cards():
+    def inactive_cards_url():
+        """ Fake the url. """
+        return {UnreachableBoard.metric_source_name: 'http://trello.com'}
+
+    @staticmethod
+    def nr_of_over_due_cards():
+        """ Fake that Trello is down. """
+        return -1
+
+    @staticmethod
+    def nr_of_inactive_cards():
         """ Fake that Trello is down. """
         return -1
 
@@ -142,34 +162,72 @@ class UnreachableActionActivityTest(unittest.TestCase):
         self.assertEqual({UnreachableBoard.metric_source_name: 'http://trello.com'}, self.__metric.url())
 
 
-class ActionAgeTest(unittest.TestCase):
-    """ Unit tests for the action age metric. """
+class OldActionsTest(unittest.TestCase):
+    """ Unit tests for the old actions metric. """
 
     def setUp(self):
         self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
                                         requirements=[requirement.TrackActions])
-        self.__metric = metric.ActionAge(project=self.__project)
+        self.__metric = metric.StaleActions(project=self.__project)
 
     def test_value(self):
         """ Test that the metric value equals the number of over due or inactive cards. """
-        self.assertEqual(FakeBoard().nr_of_over_due_or_inactive_cards(), self.__metric.value())
+        self.assertEqual(FakeBoard().nr_of_inactive_cards(), self.__metric.value())
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(FakeBoard().over_due_or_inactive_cards_url(), self.__metric.url())
+        self.assertEqual(FakeBoard().inactive_cards_url(), self.__metric.url())
 
     def test_url_label(self):
         """ Test that the metric has a url label. """
         self.assertTrue(self.__metric.url_label_text)
 
 
-class UnreachableActionAgeTest(unittest.TestCase):
-    """ Unit tests for the action age metric when Trello is unreachable. """
+class UnreachableOldActionsTest(unittest.TestCase):
+    """ Unit tests for the old actions metric when Trello is unreachable. """
 
     def setUp(self):
         project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
                                  requirements=[requirement.TrackActions])
-        self.__metric = metric.ActionAge(project=project)
+        self.__metric = metric.StaleActions(project=project)
+
+    def test_value(self):
+        """ Test that the value indicates a problem. """
+        self.assertEqual(-1, self.__metric.value())
+
+    def test_url(self):
+        """ Test that url of the metric is equal to the url of the board. """
+        self.assertEqual({UnreachableBoard.metric_source_name: 'http://trello.com'}, self.__metric.url())
+
+
+class OverDueActionsTest(unittest.TestCase):
+    """ Unit tests for the over due actions metric. """
+
+    def setUp(self):
+        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
+                                        requirements=[requirement.TrackActions])
+        self.__metric = metric.OverDueActions(project=self.__project)
+
+    def test_value(self):
+        """ Test that the metric value equals the number of over due or inactive cards. """
+        self.assertEqual(FakeBoard().nr_of_over_due_cards(), self.__metric.value())
+
+    def test_url(self):
+        """ Test that url of the metric is equal to the url of the board. """
+        self.assertEqual(FakeBoard().over_due_cards_url(), self.__metric.url())
+
+    def test_url_label(self):
+        """ Test that the metric has a url label. """
+        self.assertTrue(self.__metric.url_label_text)
+
+
+class UnreachableOverDueActionsTest(unittest.TestCase):
+    """ Unit tests for the over due actions metric when Trello is unreachable. """
+
+    def setUp(self):
+        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
+                                 requirements=[requirement.TrackActions])
+        self.__metric = metric.OverDueActions(project=project)
 
     def test_value(self):
         """ Test that the value indicates a problem. """
