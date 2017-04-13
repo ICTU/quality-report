@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import datetime
+import functools
 import logging
 import time
 import urllib.request
@@ -43,6 +44,7 @@ class TrelloObject(domain.MetricSource):
     def __repr__(self):
         return repr(self._json())
 
+    @functools.lru_cache(maxsize=1024)
     def _json(self, argument='', extra_parameters=''):
         """ Return the JSON at url. """
         parameters = self._parameters.copy()
