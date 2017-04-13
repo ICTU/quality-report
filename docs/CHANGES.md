@@ -1,3 +1,8 @@
+2017-04-13  Release 1.81.1
+
+  * Bug fix: Don't link to individual Trello cards to prevent leaking information.
+  
+
 2017-04-13  Release 1.81.0
 
   * New metric and metric source for reporting on number of Checkmarx warnings.

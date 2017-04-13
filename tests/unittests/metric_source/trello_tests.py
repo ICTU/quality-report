@@ -105,22 +105,10 @@ class TrelloBoardTest(unittest.TestCase):
         self.__cards_json = '[{"id": 1}]'
         self.assertEqual(1, self.__trello_board.nr_of_over_due_or_inactive_cards())
 
-    def test_one_over_due_url(self):
-        """ Test the url for one over due card. """
-        self.__cards_json = '[{"id": 1}]'
-        self.assertEqual({'card 1 (3 dagen te laat)': 'http://card/1'},
-                         self.__trello_board.over_due_or_inactive_cards_url())
-
     def test_one_inactive(self):
         """Test the count with one inactive card. """
         self.__cards_json = '[{"id": 2}]'
         self.assertEqual(1, self.__trello_board.nr_of_over_due_or_inactive_cards())
-
-    def test_one_inactive_url(self):
-        """ Test the url for one inactive card. """
-        self.__cards_json = '[{"id": 2}]'
-        self.assertEqual({'card 2 (4 dagen niet bijgewerkt)': 'http://card/2'},
-                         self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_one_over_due_and_inactive(self):
         """ Test the count with one inactive and over due card. """
@@ -128,33 +116,10 @@ class TrelloBoardTest(unittest.TestCase):
         self.assertEqual(1,
                          self.__trello_board.nr_of_over_due_or_inactive_cards())
 
-    def test_one_over_due_and_inactive_url(self):
-        """ Test the url for one inactive and over due card. """
-        self.__cards_json = '[{"id": 3}]'
-        self.assertEqual({'card 3 (3 dagen te laat en 4 dagen niet bijgewerkt)': 'http://card/3'},
-                         self.__trello_board.over_due_or_inactive_cards_url())
-
     def test_one_inactive_and_one_over_due(self):
         """ Test the count with one inactive and one over due card. """
         self.__cards_json = '[{"id": 1}, {"id": 2}]'
         self.assertEqual(2, self.__trello_board.nr_of_over_due_or_inactive_cards())
-
-    def test_one_inactive_and_one_over_due_url(self):
-        """ Test the url for one inactive card and over due card. """
-        self.__cards_json = '[{"id": 1}, {"id": 2}]'
-        self.assertEqual({'card 1 (3 dagen te laat)': 'http://card/1',
-                          'card 2 (4 dagen niet bijgewerkt)': 'http://card/2'},
-                         self.__trello_board.over_due_or_inactive_cards_url())
-
-    def test_no_cards_url(self):
-        """ Test the url for over due or inactive cards when there are no cards. """
-        self.__cards_json = '{}'
-        self.assertEqual({}, self.__trello_board.over_due_or_inactive_cards_url())
-
-    def test_one_active_card(self):
-        """ Test the url for one active card. """
-        self.__cards_json = '[{"id": 0}]'
-        self.assertEqual({}, self.__trello_board.over_due_or_inactive_cards_url())
 
     def test_http_error(self):
         """ Test dealing with http errors when retrieving the JSON. """

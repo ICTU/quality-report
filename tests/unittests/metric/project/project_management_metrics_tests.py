@@ -155,8 +155,8 @@ class ActionAgeTest(unittest.TestCase):
         self.assertEqual(FakeBoard().nr_of_over_due_or_inactive_cards(), self.__metric.value())
 
     def test_url(self):
-        """ Test that url of the metric is equal to the url for the over due or inactive cards. """
-        self.assertEqual(FakeBoard().over_due_or_inactive_cards_url(), self.__metric.url())
+        """ Test that url of the metric is equal to the url of the board. """
+        self.assertEqual({FakeBoard().metric_source_name: FakeBoard().url()}, self.__metric.url())
 
     def test_url_label(self):
         """ Test that the metric has a url label. """
