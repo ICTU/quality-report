@@ -85,6 +85,23 @@ class UnmergedBranchesTest(unittest.TestCase):
                          'Branches die voldoen aan de reguliere expressie feature.* zijn genegeerd.',
                          self.__metric.comment())
 
+    def test_comment_with_re_only(self):
+        """ Test that comment for regular expression. """
+        subject = domain.Product(
+            metric_options={
+                metric.UnmergedBranches: dict(branches_to_ignore_re='feature.*')})
+        unmerged_branches = metric.UnmergedBranches(subject=subject, project=self.__project)
+        self.assertEqual("Branches die voldoen aan de reguliere expressie feature.* zijn genegeerd.",
+                         unmerged_branches.comment())
+
+    def test_combined_comment(self):
+        """ Test that the metric comment is combined with the branch comment. """
+        subject = domain.Product(
+            metric_options={
+                metric.UnmergedBranches: dict(comment="Comment.", branches_to_include=['branch'])})
+        unmerged_branches = metric.UnmergedBranches(subject=subject, project=self.__project)
+        self.assertEqual("Comment. Alleen deze branches worden bewaakt: branch.", unmerged_branches.comment())
+
     def test_comment_urls(self):
         """ Test that the comment urls include a link to ignored branches. """
         self.assertEqual({'ignored branch': 'http://branch/'}, self.__metric.comment_urls())
