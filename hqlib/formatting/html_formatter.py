@@ -17,6 +17,7 @@ limitations under the License.
 
 import logging
 import pkg_resources
+from typing import List, Dict, Any
 
 from . import base_formatter
 
@@ -24,12 +25,12 @@ from . import base_formatter
 class HTMLFormatter(base_formatter.Formatter):
     """ Format the report in HTML. """
 
-    def __init__(self, *args, **kwargs):
-        self.__latest_software_version = kwargs.pop('latest_software_version', '0')
-        self.__current_software_version = kwargs.pop('current_software_version', '0')
-        super().__init__(*args, **kwargs)
+    def __init__(self, latest_software_version: str='0', current_software_version: str='0') -> None:
+        self.__latest_software_version = latest_software_version
+        self.__current_software_version = current_software_version
+        super().__init__()
 
-    def prefix(self, report):
+    def prefix(self, report) -> str:
         """ Return a HTML formatted version of the report prefix. """
         parameters = dict(
             title=report.title(),
@@ -47,12 +48,12 @@ class HTMLFormatter(base_formatter.Formatter):
         return prefix.format(**parameters)
 
     @staticmethod
-    def __get_html_fragment(name):
+    def __get_html_fragment(name: str) -> str:
         """ Read and return a HTML fragment from the html folder. """
         fragment = pkg_resources.resource_string(__name__, 'html/{name}.html'.format(name=name))
         return fragment.decode('utf-8')
 
-    def section(self, report, section):
+    def section(self, report, section) -> str:
         """ Return a HTML formatted version of the section. """
         subtitle = self.__format_subtitle(section.subtitle())
         extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
@@ -60,30 +61,30 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
-    def metric(self, metric):
+    def metric(self, metric) -> str:
         """ Return a HTML formatted version of the metric. """
         return ''  # pragma: no cover
 
     @staticmethod
-    def __section_navigation_menu(report):
+    def __section_navigation_menu(report) -> str:
         """ Return the menu for jumping to specific sections. """
         menu_items = []
 
         menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
                              '</li>'
 
-        def add_menu_item(section, title):
+        def add_menu_item(section, title: str) -> None:
             """ Add a menu item that links to the specified section. """
             menu_items.append(menu_item_template.format(section_id=section.id_prefix(), menu_label=title))
 
-        def add_menu_items(sections):
+        def add_menu_items(sections) -> None:
             """ Add a header with menu items that link to the specified sections. """
             for each_section in sections:
                 add_menu_item(each_section, each_section.title() + ' ' + each_section.subtitle())
 
         # First, group related sections
-        sections = {}
-        titles = []
+        sections: Dict[str, Any] = {}
+        titles: List[str] = []
         for section in report.sections():
             title = section.title()
             sections.setdefault(title, []).append(section)
@@ -100,18 +101,18 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(menu_items)
 
     @staticmethod
-    def postfix():
+    def postfix() -> str:
         """ Return a HTML formatted version of the report postfix. """
         return HTMLFormatter.__get_html_fragment('postfix')
 
     @staticmethod
-    def __format_subtitle(subtitle):
+    def __format_subtitle(subtitle: str) -> str:
         """ Return a HTML formatted subtitle. """
         template = ' <small>{sub}</small>'
         return template.format(sub=subtitle) if subtitle else ''
 
     @staticmethod
-    def __metric_classes(report):
+    def __metric_classes(report) -> str:
         """ Return a HTML table of the metrics the software can measure. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{norm}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -132,7 +133,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __metric_sources(report):
+    def __metric_sources(report) -> str:
         """ Return a HTML table of the metric sources the software can collect data from. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{ins}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -152,7 +153,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __requirements(report):
+    def __requirements(report) -> str:
         """ Return a HTML table of the requirements. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{metrics}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -169,7 +170,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __domain_object_classes(report):
+    def __domain_object_classes(report) -> str:
         """ Return a HTML table of the domain objects. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{default_requirements}</td>' \
               '<td>{optional_requirements}</td></tr>'
@@ -188,7 +189,7 @@ class HTMLFormatter(base_formatter.Formatter):
         result.append('</table>')
         return '\n'.join(result)
 
-    def __new_release_text(self):
+    def __new_release_text(self) -> str:
         """ Return a line of text if there is a new version of the software available. """
         latest = self.__latest_software_version
         current = self.__current_software_version
@@ -198,7 +199,7 @@ class HTMLFormatter(base_formatter.Formatter):
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     """ Return a HTML formatted dashboard for the quality report. """
     @classmethod
-    def format(cls, report):
+    def format(cls, report) -> str:
         """ Return a HTML formatted dashboard. """
         table_indent = ' ' * 24
         thead_indent = tbody_indent = table_indent + ' ' * 4
@@ -217,7 +218,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         return '\n'.join(dashboard)
 
     @staticmethod
-    def __dashboard_headers(report, tr_indent, td_indent):
+    def __dashboard_headers(report, tr_indent: str, td_indent: str) -> List[str]:
         """ Return the headers of the dashboard. """
         dashboard_headers = report.dashboard()[0]
         th_template = td_indent + '<th colspan="{span}" style="text-align: center;">{sec}</th>'
@@ -230,7 +231,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         return rows
 
     @classmethod
-    def __dashboard_rows(cls, report, tr_indent, td_indent):
+    def __dashboard_rows(cls, report, tr_indent: str, td_indent: str) -> List[str]:
         """ Return the rows of the dashboard. """
         dashboard_rows = report.dashboard()[1]
         rows = list()
@@ -242,7 +243,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         return rows
 
     @staticmethod
-    def __dashboard_cell(report, column, td_indent):
+    def __dashboard_cell(report, column, td_indent: str) -> str:
         """ Return a cell of the dashboard. """
         td_template = td_indent + \
             '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">

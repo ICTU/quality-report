@@ -32,41 +32,36 @@ class Formatter(object):
         self.__log_report(report, done=True)
         return result
 
-    def prefix(self, report):  # pylint: disable=W0613
+    def prefix(self, report) -> str:  # pylint: disable=W0613
         """ Override to return a prefix for the report. """
         raise NotImplementedError  # pragma: no cover
 
-    def body(self, report):
+    def body(self, report) -> str:
         """ Return a formatted version of the body of the report. """
         sections = []
-        for section in self.sections(report):
+        for section in report.sections():
             self.__log_section(section)
             sections.append(self.section(report, section))
         return self.sep.join(sections)
 
-    @staticmethod
-    def sections(report):
-        """ Return the report sections to include in the report. """
-        return report.sections()
-
-    def section(self, report, section):  # pylint: disable=W0613
+    def section(self, report, section) -> str:  # pylint: disable=W0613
         """ Return a formatted version of the section. """
         metrics = []
         for metric in section:
             metrics.append(self.metric(metric))
         return self.sep.join(metrics)
 
-    def metric(self, metric):  # pylint: disable=W0613
+    def metric(self, metric) -> str:  # pylint: disable=W0613
         """ Return a formatted version of the metric. """
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
-    def postfix():
+    def postfix() -> str:
         """ Override to return a postfix for the report. """
         return ''
 
     @classmethod
-    def __log_report(cls, report, done=False):
+    def __log_report(cls, report, done: bool=False) -> None:
         """ Report progress on formatting the report. """
         done_string = 'done ' if done else ''
         logging.info('%s %sformatting report "%s"', cls.__name__, done_string, report)
