@@ -69,7 +69,7 @@ class MetaMetricsHistoryFormatter(base_formatter.Formatter):
         return ']\n'
 
     def metric(self, metric):
-        return ''
+        return ''  # pragma: no cover
 
     def body(self, report):
         """ Return a JSON array of dates and status counts. """
