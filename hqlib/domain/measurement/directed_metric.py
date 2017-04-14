@@ -26,7 +26,7 @@ class LowerIsBetterMetric(metric.Metric):
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
-        return super().value()
+        return super().value()  # pragma: no cover
 
     def _is_value_better_than(self, target) -> bool:
         return self.perfect_value <= self.value() <= target
@@ -37,7 +37,7 @@ class HigherIsBetterMetric(metric.Metric):
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
-        return super().value()
+        return super().value()  # pragma: no cover
 
     def _is_value_better_than(self, target) -> bool:
         return self.value() >= target
