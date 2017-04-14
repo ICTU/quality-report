@@ -85,6 +85,12 @@ class TrelloBoardTest(unittest.TestCase):
         self.assertEqual({'1 (3 dagen te laat)': 'http://trello.com/api/card/1'},
                          self.__trello_board.over_due_cards_url())
 
+    def test_inactive_cards_url(self):
+        """ Test the urls for the inactive cards. """
+        self.__cards_json = '[{"id": 2}]'
+        self.assertEqual({'2 (4 dagen niet bijgewerkt)': 'http://trello.com/api/card/2'},
+                         self.__trello_board.inactive_cards_url())
+
     def test_name(self):
         """ Test the name of the Trello board. """
         self.assertEqual('name', self.__trello_board.name())
