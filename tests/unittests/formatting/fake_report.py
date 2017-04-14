@@ -121,10 +121,6 @@ class Report(object):
         """ Return a list of report sections. """
         return [self.get_product_section('whatever:1.0')]
 
-    def metrics(self):
-        """ Return the metrics in the report. """
-        return self.__metrics + self.__meta_metrics
-
     @staticmethod
     def dashboard():
         """ Return the columns and rows of the dashboard. """

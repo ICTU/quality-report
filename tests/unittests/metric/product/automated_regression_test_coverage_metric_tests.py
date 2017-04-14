@@ -40,10 +40,6 @@ class FakeNCover(domain.MetricSource):
         """ Return a fake date. """
         return datetime.datetime.today() - datetime.timedelta(hours=95)
 
-    def url(self):
-        """ Return a fake url. """
-        return 'http://url'
-
 
 class FakeJaCoCo(FakeNCover):
     """ Fake JaCoCo. """

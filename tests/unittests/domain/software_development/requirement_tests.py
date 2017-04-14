@@ -24,6 +24,7 @@ class RequirementUnderTest(domain.Requirement):  # pylint: disable=too-few-publi
     """ Requirement for testing purposes. """
     _name = 'Be user friendly'
     _metric_classes = ('FakeMetricClass 1',)
+    _url = 'http://url'
 
 
 class AddedRequirement(domain.Requirement):  # pylint: disable=too-few-public-methods
@@ -50,6 +51,10 @@ class RequirementTest(unittest.TestCase):
     def test_metric_classes(self):
         """ Test that the metric classes can be retrieved. """
         self.assertEqual(('FakeMetricClass 1',), self.__requirement.metric_classes())
+
+    def test_url(self):
+        """ Test the url. """
+        self.assertEqual('http://url', self.__requirement.url())
 
 
 class RequirementSubjectUnderTest(domain.RequirementSubject):

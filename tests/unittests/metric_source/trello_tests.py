@@ -30,13 +30,13 @@ class FakeCard(object):
         self.__over_due = card_id in (1, 3)
         self.__inactive = card_id in (2, 3)
 
-    def name(self):
-        """Return the name of the card. """
-        return 'card {0:d}'.format(self.__card_id)
+    def id(self):
+        """ Return the card id. """
+        return self.__card_id
 
     def url(self):
-        """ Return the url of the card. """
-        return 'http://card/{0:d}'.format(self.__card_id)
+        """ Return the card url. """
+        return 'http://trello.com/api/card/{0}'.format(self.id())
 
     def is_over_due(self):
         """ Return whether this card is over due. """
@@ -47,8 +47,7 @@ class FakeCard(object):
         return datetime.timedelta(days=3 if self.__over_due else 0)
 
     def is_inactive(self, days):  # pylint: disable=unused-argument
-        """ Return whether this card has been inactive for the specified
-            number of days. """
+        """ Return whether this card has been inactive for the specified number of days. """
         return self.__inactive
 
     def last_update_time_delta(self):
@@ -79,6 +78,12 @@ class TrelloBoardTest(unittest.TestCase):
     def test_url(self):
         """ Test the url of the Trello board. """
         self.assertEqual('https://api.trello.com/1/board/object_id?key=appkey&token=token', self.__trello_board.url())
+
+    def test_over_due_cards_url(self):
+        """ Test the urls for the over due cards. """
+        self.__cards_json = '[{"id": 1}]'
+        self.assertEqual({'1 (3 dagen te laat)': 'http://trello.com/api/card/1'},
+                         self.__trello_board.over_due_cards_url())
 
     def test_name(self):
         """ Test the name of the Trello board. """

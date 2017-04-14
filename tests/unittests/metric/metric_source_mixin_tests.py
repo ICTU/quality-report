@@ -16,18 +16,8 @@ limitations under the License.
 
 import unittest
 
-from hqlib import metric, domain, metric_source
-
-
-class SonarMetricUnderTest(metric.metric_source_mixin.SonarMetric):
-    """ Implement the abstract methods for testing purposes. """
-    def value(self):
-        """ Return a dummy value. """
-        return 0
-
-    def _is_value_better_than(self, target):
-        """ Return a dummy value. """
-        return True
+from hqlib import domain, metric_source
+from hqlib.metric.metric_source_mixin import SonarMetric, BirtTestDesignMetric
 
 
 class SonarMetricTest(unittest.TestCase):
@@ -38,31 +28,20 @@ class SonarMetricTest(unittest.TestCase):
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product(metric_source_ids={sonar: 'sonar id'})
-        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricUnderTest(product, project).url())
+        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetric(product, project).url())
 
     def test_url_without_sonar(self):
         """ Test that the metric has no url when the project has no Sonar configured. """
         project = domain.Project()
         product = domain.Product()
-        self.assertEqual(dict(), SonarMetricUnderTest(product, project).url())
+        self.assertEqual(dict(), SonarMetric(product, project).url())
 
     def test_url_without_sonar_id(self):
         """ Test that the metric has a url when the product has no Sonar id configured. """
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product()
-        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetricUnderTest(product, project).url())
-
-
-class BirtTestDesignMetricUnderTest(metric.metric_source_mixin.BirtTestDesignMetric):
-    """ Implement the abstract methods for testing purposes. """
-    def value(self):
-        """ Return a dummy value. """
-        return 0
-
-    def _is_value_better_than(self, target):
-        """ Return a dummy value. """
-        return True
+        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetric(product, project).url())
 
 
 class FakeBirt(object):
@@ -86,7 +65,7 @@ class BirtTestDesignMetricTest(unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.Birt: birt})
         product = domain.Product(metric_source_ids={birt: 'birt id'})
         self.assertEqual({birt.metric_source_name: birt.whats_missing_url()},
-                         BirtTestDesignMetricUnderTest(product, project).url())
+                         BirtTestDesignMetric(product, project).url())
 
     def test_url_with_multiple_birts(self):
         """ Test the url with multiple Birt instances. """
@@ -94,13 +73,13 @@ class BirtTestDesignMetricTest(unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.Birt: [birt1, birt2]})
         product = domain.Product(metric_source_ids={birt1: 'birt id'})
         self.assertEqual({birt1.metric_source_name: birt1.whats_missing_url()},
-                         BirtTestDesignMetricUnderTest(product, project).url())
+                         BirtTestDesignMetric(product, project).url())
 
     def test_url_without_birt(self):
         """ Test that the metric has no url when Birt hasn't been configured. """
         project = domain.Project()
         product = domain.Product()
-        self.assertEqual(dict(), BirtTestDesignMetricUnderTest(product, project).url())
+        self.assertEqual(dict(), BirtTestDesignMetric(product, project).url())
 
     def test_url_without_birt_id(self):
         """ Test that the metric has no url when the product has no Birt id. """
@@ -108,4 +87,4 @@ class BirtTestDesignMetricTest(unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.Birt: birt})
         product = domain.Product()
         self.assertEqual({birt.metric_source_name: birt.whats_missing_url()},
-                         BirtTestDesignMetricUnderTest(product, project).url())
+                         BirtTestDesignMetric(product, project).url())
