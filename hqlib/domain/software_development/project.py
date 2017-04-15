@@ -14,18 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import logging
-from typing import List, Tuple, Set, Type
 
-from .requirement import RequirementSubject, Requirement
-from ..measurement import metric_source, measurable
-from ..measurement.metric_sources import MetricSources
-from ..measurement.metric_source import MetricSource
-from .product import Product
-from .team import Team
+from typing import cast, List, Tuple, Set, Type, Optional
+
 from .document import Document
 from .environment import Environment
+from .product import Product
+from .requirement import RequirementSubject, Requirement
+from .team import Team
+from ..measurement import metric_source, measurable
+from ..measurement.metric_source import MetricSource
+from ..measurement.metric_sources import MetricSources
+from ..base import DomainObject
 
 
 class Project(RequirementSubject, measurable.MeasurableObject):
@@ -57,52 +58,51 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the metric source instance for the metric source class. """
         return self.__metric_sources.get(metric_source_class, metric_source.MissingMetricSource())
 
-    def metric_source_classes(self):
+    def metric_source_classes(self) -> List[Type[MetricSource]]:
         """ Return a set of all metric source classes. """
         return list(self.__metric_sources.keys())
 
-    def domain_object_classes(self):
+    def domain_object_classes(self) -> Set[Type[DomainObject]]:
         """ Return a set of all the domain object classes used. """
-        return {domain_object.__class__ for domain_object in self.products() + self.teams() + self.documents() +
-                self.environments()}
+        domain_objects = self.products() + self.teams() + self.documents() + self.environments()
+        return {cast(Type[DomainObject], domain_object.__class__) for domain_object in domain_objects}
 
-    def add_product(self, product):
+    def add_product(self, product: Product) -> None:
         """ Add a product to the project. """
         self.__check_short_section_name(product.short_name())
         self.__products.append(product)
-        return product
 
     def products(self) -> List[Product]:
         """ Return the products of the project. """
         return self.__products
 
-    def get_product(self, name):
+    def get_product(self, name: str) -> Optional[Product]:
         """ Find a product by name. """
         matches = [product for product in self.__products if product.name() == name]
         return matches[0] if matches else None
 
-    def add_team(self, team):
+    def add_team(self, team: Team) -> None:
         """ Add a team to the project. """
         self.__check_short_section_name(team.short_name())
         self.__teams.append(team)
 
-    def teams(self):
+    def teams(self) -> List[Team]:
         """ Return the teams that work on the project. """
         return self.__teams
 
-    def add_document(self, document):
+    def add_document(self, document: Document) -> None:
         """ Add a document to the project. """
         self.__documents.append(document)
 
-    def documents(self):
+    def documents(self) -> List[Document]:
         """ Return the documents of the project. """
         return self.__documents
 
-    def add_environment(self, environment):
+    def add_environment(self, environment: Environment) -> None:
         """ Add an environment to the project. """
         self.__environments.append(environment)
 
-    def environments(self):
+    def environments(self) -> List[Environment]:
         """ Return the environments of the project """
         return self.__environments
 
@@ -114,7 +114,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the dashboard layout for the project. """
         return self.__dashboard
 
-    def __check_short_section_name(self, name):
+    def __check_short_section_name(self, name: str) -> None:
         """ Raise an exception when the short section name is already in use. """
         if name in self.__short_section_names:
             logging.error('Section abbreviation must be unique: %s already used: %s',

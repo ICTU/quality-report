@@ -142,7 +142,7 @@ class QualityReport(domain.DomainObject):
 
     def included_domain_object_classes(self) -> Set[Type[domain.DomainObject]]:
         """ Return the domain object classes actually configured in the project. """
-        return {self.__project.__class__} | self.__project.domain_object_classes()
+        return  self.__project.domain_object_classes() | {cast(Type[domain.DomainObject], self.__project.__class__)}
 
     def teams(self) -> Sequence[domain.Team]:
         """ Return the teams we report on. """
