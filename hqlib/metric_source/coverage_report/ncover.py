@@ -39,11 +39,7 @@ class NCover(coverage_report.CoverageReport):
         for script in scripts:
             if 'ncover.execution.stats = ' in script.string:
                 json = script.string.strip()[len('ncover.execution.stats = '):-1]
-                coverage_percentage = utils.eval_json(json)[coverage_type]['coveragePercent']
-                if coverage_percentage is None:
-                    continue
-                else:
-                    return coverage_percentage * 100
+                return utils.eval_json(json)[coverage_type]['coveragePercent'] * 100
         return -1
 
     def _parse_coverage_date(self, soup):
