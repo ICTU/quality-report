@@ -30,11 +30,11 @@ class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
         else:
             return nr_user_stories - nr_user_stories_ok
 
-    def _nr_user_stories_ok(self):
+    def _nr_user_stories_ok(self) -> int:
         """ Return the number of user stories whose quality is good. """
         raise NotImplementedError  # pragma: no cover
 
-    def _nr_user_stories(self):
+    def _nr_user_stories(self) -> int:
         """ Return the total number of user stories. """
         return self._metric_source.nr_user_stories()
 
@@ -54,7 +54,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
     target_value = 0
     low_target_value = 5
 
-    def _nr_user_stories_ok(self):
+    def _nr_user_stories_ok(self) -> int:
         return self._metric_source.reviewed_user_stories()
 
 
@@ -67,10 +67,10 @@ class UserStoriesNotApproved(UserStoryMetric):
     target_value = 0
     low_target_value = 3
 
-    def _nr_user_stories_ok(self):
+    def _nr_user_stories_ok(self) -> int:
         return self._metric_source.approved_user_stories()
 
-    def _nr_user_stories(self):
+    def _nr_user_stories(self) -> int:
         """ Override the total number of user stories. """
         return self._metric_source.reviewed_user_stories()
 
@@ -86,5 +86,5 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     target_value = 3
     low_target_value = 5
 
-    def _nr_user_stories_ok(self):
+    def _nr_user_stories_ok(self) -> int:
         return self._metric_source.nr_user_stories_with_sufficient_ltcs()

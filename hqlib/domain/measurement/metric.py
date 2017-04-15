@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any, Dict, Type, Tuple, Union
+from typing import Any, Dict, List, Type, Tuple, Union
 
 import functools
 import logging
@@ -237,7 +237,7 @@ class Metric(object):
             return {'{label} ({index}/{count})'.format(label=label, index=index, count=len(urls)): url
                     for index, url in enumerate(urls, start=1)}
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         """ Return a list of metric source urls to be used to create the url dict. """
         if self._metric_source:
             if self._metric_source.needs_metric_source_id:

@@ -18,9 +18,13 @@ limitations under the License.
 import datetime
 import functools
 import logging
+from typing import List, Dict, Optional, Union
 
 from . import url_opener
 from .. import utils, domain
+
+
+DateTime = datetime.datetime
 
 
 class Sonar(domain.MetricSource, url_opener.UrlOpener):
@@ -28,7 +32,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     metric_source_name = 'SonarQube'
 
-    def __init__(self, sonar_url, *args, **kwargs):
+    def __init__(self, sonar_url: str, *args, **kwargs) -> None:
         super().__init__(url=sonar_url, *args, **kwargs)
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
@@ -46,14 +50,14 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
         self.__quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}&format=json'  # Deprecated API
 
-    def version(self, product):
+    def version(self, product: str) -> str:
         """ Return the version of the product. """
         try:
             return self.__get_json(self.__resource_api_url.format(resource=product))[0]['version']
         except self.url_open_exceptions:
             return '?'
 
-    def plugin_version(self, plugin):
+    def plugin_version(self, plugin: str) -> str:
         try:
             plugins = self.__get_json(self.__plugin_api_url)
         except self.url_open_exceptions:
@@ -61,11 +65,11 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
         return mapping.get(plugin, '0.0')
 
-    def plugins_url(self):
+    def plugins_url(self) -> str:
         """ Return the url to the plugin update center. """
         return self.url() + 'updatecenter/'
 
-    def default_quality_profile(self, language):
+    def default_quality_profile(self, language: str) -> str:
         """ Return the default quality profile for the language. """
         try:
             profiles = self.__get_json(self.__quality_profiles_api_url.format(language=language))
@@ -76,20 +80,20 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return profile['name']
         return ''
 
-    def quality_profiles_url(self):
+    def quality_profiles_url(self) -> str:
         """ Return the quality profiles url. """
         return self.url() + 'profiles/'
 
     # Sonar projects
 
-    def __has_project(self, project):
+    def __has_project(self, project: str) -> bool:
         """ Return whether Sonar has the project (analysis). """
         found = project in self.__projects()
         if not found:
             logging.warning("Sonar has no analysis of %s", project)
         return found
 
-    def __projects(self):
+    def __projects(self) -> List[str]:
         """ Return all projects in Sonar. """
         try:
             json = self.__get_json(self.__projects_api_url)
@@ -99,79 +103,79 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     # Metrics
 
-    def ncloc(self, product):
+    def ncloc(self, product: str) -> int:
         """ Non-comment lines of code. """
         return int(self.__metric(product, 'ncloc'))
 
-    def lines(self, product):
+    def lines(self, product: str) -> int:
         """ Bruto lines of code, including comments, whitespace, javadoc. """
         return int(self.__metric(product, 'lines'))
 
-    def major_violations(self, product):
+    def major_violations(self, product: str) -> int:
         """ Return the number of major violations for the product. """
         return int(self.__metric(product, 'major_violations'))
 
-    def critical_violations(self, product):
+    def critical_violations(self, product: str) -> int:
         """ Return the number of critical violations for the product. """
         return int(self.__metric(product, 'critical_violations'))
 
-    def blocker_violations(self, product):
+    def blocker_violations(self, product: str) -> int:
         """ Return the number of blocker violations for the product. """
         return int(self.__metric(product, 'blocker_violations'))
 
-    def duplicated_lines(self, product):
+    def duplicated_lines(self, product: str) -> int:
         """ Return the number of duplicated lines for the product. """
         return int(self.__metric(product, 'duplicated_lines'))
 
-    def unittest_line_coverage(self, product):
+    def unittest_line_coverage(self, product: str) -> float:
         """ Return the line coverage of the unit tests for the product. """
-        return self.__metric(product, 'line_coverage')
+        return float(self.__metric(product, 'line_coverage'))
 
-    def unittest_branch_coverage(self, product):
+    def unittest_branch_coverage(self, product: str) -> float:
         """ Return the branch coverage of the unit tests for the product. """
-        return self.__metric(product, 'branch_coverage')
+        return float(self.__metric(product, 'branch_coverage'))
 
-    def unittests(self, product):
+    def unittests(self, product: str) -> int:
         """ Return the number of unit tests for the product. """
         return int(self.__metric(product, 'tests'))
 
-    def failing_unittests(self, product):
+    def failing_unittests(self, product: str) -> int:
         """ Return the number of failing unit tests for the product. """
         failures = int(self.__metric(product, 'test_failures'))
         errors = int(self.__metric(product, 'test_errors'))
         return failures + errors if failures >= 0 and errors >= 0 else -1
 
-    def integration_test_line_coverage(self, product):
+    def integration_test_line_coverage(self, product: str) -> float:
         """ Return the line coverage of the integration tests for the product. """
-        return self.__metric(product, 'it_line_coverage')
+        return float(self.__metric(product, 'it_line_coverage'))
 
-    def integration_test_branch_coverage(self, product):
+    def integration_test_branch_coverage(self, product: str) -> float:
         """ Return the branch coverage of the integration tests for the product. """
-        return self.__metric(product, 'it_branch_coverage')
+        return float(self.__metric(product, 'it_branch_coverage'))
 
-    def overall_test_line_coverage(self, product):
+    def overall_test_line_coverage(self, product: str) -> float:
         """ Return the overall line coverage of the tests for the product. """
-        return self.__metric(product, 'overall_line_coverage')
+        return float(self.__metric(product, 'overall_line_coverage'))
 
-    def overall_test_branch_coverage(self, product):
+    def overall_test_branch_coverage(self, product: str) -> float:
         """ Return the overall branch coverage of the tests for the product. """
-        return self.__metric(product, 'overall_branch_coverage')
+        return float(self.__metric(product, 'overall_branch_coverage'))
 
-    def package_cycles(self, product):
+    def package_cycles(self, product: str) -> int:
         """ Return the number of cycles in the package dependencies for the product. """
         return int(self.__metric(product, 'package_cycles'))
 
-    def methods(self, product):
+    def methods(self, product: str) -> int:
         """ Return the number of methods/functions in the product. """
         return int(self.__metric(product, 'functions'))
 
-    def dashboard_url(self, product):
+    def dashboard_url(self, product: str) -> str:
         """ Return the url for the Sonar dashboard for the product. """
         return self.__base_dashboard_url + product
 
     # Violations
 
-    def complex_methods(self, product):
+    def complex_methods(self, product: str) -> int:
         """ Return the number of methods that violate the Cyclomatic complexity threshold. """
         rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
                       'pmd:CyclomaticComplexity',
@@ -189,7 +193,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return nr_complex_methods
         return 0
 
-    def long_methods(self, product):
+    def long_methods(self, product: str) -> int:
         """ Return the number of methods in the product that have to many non-comment statements. """
         # NB: There is no long methods rule for C#. How to deal with this? FIXME
         rule_names = ('squid:S138',
@@ -203,7 +207,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return nr_long_methods
         return 0
 
-    def many_parameters_methods(self, product):
+    def many_parameters_methods(self, product: str) -> int:
         """ Return the number of methods in the product that have too many parameters. """
         rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck',
                       'pmd:ExcessiveParameterList',
@@ -217,7 +221,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return nr_many_parameters
         return 0
 
-    def commented_loc(self, product):
+    def commented_loc(self, product: str) -> int:
         """ Return the number of commented out lines in the source code of the product. """
         rule_names = ('csharpsquid:CommentedCode', 'csharpsquid:S125', 'squid:CommentedOutCodeLine',
                       'javascript:CommentedCode', 'python:S125', 'Web:AvoidCommentedOutCodeCheck')
@@ -227,34 +231,34 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return nr_commented_loc
         return 0
 
-    def no_sonar(self, product):
+    def no_sonar(self, product: str) -> int:
         """ Return the number of NOSONAR usages in the source code of the product. """
         return self.__rule_violation(product, 'squid:NoSonar')
 
-    def violations_url(self, product):
+    def violations_url(self, product: str) -> str:
         """ Return the url for the violations of the product. """
         return self.__base_violations_url + product
 
     # Issues
 
-    def false_positives(self, product):
+    def false_positives(self, product: str) -> int:
         """ Return the number of false positives listed for the product. """
         return self.__false_positives(product)
 
-    def false_positives_url(self, product):
+    def false_positives_url(self, product: str) -> str:
         """ Return the url to the list of false positives. """
         return self.__false_positives_url.format(resource=product)
 
     # Meta data
 
-    def version_number(self):
+    def version_number(self) -> Optional[str]:
         """ Return the version number of Sonar. """
         try:
             return self.__get_json(self.__version_number_url)['version']
         except self.url_open_exceptions:
             return None
 
-    def datetime(self, *products):
+    def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
         url = self.__resource_api_url.format(resource=products[0])
         try:
@@ -267,7 +271,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Helper methods
 
     @functools.lru_cache(maxsize=4096)
-    def __metric(self, product, metric_name, default=0):
+    def __metric(self, product: str, metric_name: str, default=0) -> Union[float, int]:
         """ Return a specific metric value for the product. """
         if not self.__has_project(product):
             return -1
@@ -278,7 +282,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             for measure in json['component']['measures']:
                 if measure['metric'] == metric_name:
                     return float(measure['value'])
-        except self.url_open_exceptions + (TypeError, KeyError):
+        except self.url_open_exceptions:
+            pass
+        except (TypeError, KeyError):
             pass
         # Then try older API:
         json = self.__all_metrics(product)
@@ -288,14 +294,14 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         logging.debug("Can't get %s value for %s from %s", metric_name, product, json)
         return default
 
-    def __all_metrics(self, product):
+    def __all_metrics(self, product: str) -> Union[Dict, List[Dict]]:
         """ Return all available metric values for the product. """
         try:
             return self.__get_json(self.__metrics_api_url.format(resource=product, metrics='true'))
         except self.url_open_exceptions:
             return [{'msr': []}]
 
-    def __rule_violation(self, product, rule_name, default=0):
+    def __rule_violation(self, product: str, rule_name: str, default=0) -> int:
         """ Return a specific violation value for the product. """
         if not self.__has_project(product):
             return -1
@@ -305,7 +311,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return default
         return int(json['paging']['total'])
 
-    def __false_positives(self, product, default=0):
+    def __false_positives(self, product: str, default=0) -> int:
         """ Return the number of issues resolved as false positive. """
         if not self.__has_project(product):
             return -1
@@ -316,7 +322,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return len(json['issues'])
 
     @functools.lru_cache(maxsize=4096)
-    def __get_json(self, url):
+    def __get_json(self, url: str) -> Union[Dict, List[Dict]]:
         """ Get and evaluate the json from the url. """
         try:
             json_string = self.url_read(url)
