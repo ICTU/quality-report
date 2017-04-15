@@ -4,3 +4,7 @@ exclude_paths:
   - hqlib/formatting/css/*.min.css*
   - hqlib/formatting/js/*.min.js
   - hqlib/formatting/js/compatibility.js
+engines:
+ pylint:
+   enabled: true
+   python_version: 3
