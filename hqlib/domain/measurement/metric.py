@@ -208,7 +208,7 @@ class Metric(object):
         else:
             return self.template
 
-    def _parameters(self) -> Dict:
+    def _parameters(self) -> Dict[str, str]:
         """ Return the parameters for the metric report template and for the metric norm template. """
         return dict(name=self.__subject_name(),
                     metric=self.name[0].lower()+self.name[1:],

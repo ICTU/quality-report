@@ -16,38 +16,44 @@ limitations under the License.
 
 
 import logging
+from typing import List, Tuple, Set, Type
 
-from .requirement import RequirementSubject
+from .requirement import RequirementSubject, Requirement
 from ..measurement import metric_source, measurable
 from ..measurement.metric_sources import MetricSources
+from ..measurement.metric_source import MetricSource
+from .product import Product
+from .team import Team
+from .document import Document
+from .environment import Environment
 
 
 class Project(RequirementSubject, measurable.MeasurableObject):
     """ Class representing a software development/maintenance project. """
 
-    def __init__(self, organization='Unnamed organization', metric_sources=None, *args, **kwargs):
+    def __init__(self, organization: str='Unnamed organization', metric_sources=None, *args, **kwargs) -> None:
         self.__short_section_names = {'MM', 'PC', 'PD'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__metric_sources = MetricSources(metric_sources or dict())
-        self.__products = []
-        self.__teams = []
-        self.__documents = []
-        self.__environments = []
-        self.__dashboard = [], []  # rows, columns
+        self.__products: List[Product] = []
+        self.__teams: List[Team] = []
+        self.__documents: List[Document] = []
+        self.__environments: List[Environment] = []
+        self.__dashboard: Tuple[List, List] = ([], [])  # rows, columns
         super().__init__(*args, **kwargs)
 
     @staticmethod
-    def optional_requirements():
+    def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackActions, requirement.TrackBugs,  requirement.TrackManualLTCs,
                 requirement.TrackReadyUS, requirement.TrackRisks, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrustedProductMaintainability, requirement.TrackTechnicalDebt}
 
-    def organization(self):
+    def organization(self) -> str:
         """ Return the name of the organization. """
         return self.__organization
 
-    def metric_source(self, metric_source_class):
+    def metric_source(self, metric_source_class: Type[MetricSource]) -> MetricSource:
         """ Return the metric source instance for the metric source class. """
         return self.__metric_sources.get(metric_source_class, metric_source.MissingMetricSource())
 
@@ -66,7 +72,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         self.__products.append(product)
         return product
 
-    def products(self):
+    def products(self) -> List[Product]:
         """ Return the products of the project. """
         return self.__products
 

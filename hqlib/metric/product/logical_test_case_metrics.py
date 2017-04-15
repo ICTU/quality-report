@@ -16,10 +16,14 @@ limitations under the License.
 
 
 import datetime
+from typing import Dict, List
 
 from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
+
+
+DateTime = datetime.datetime
 
 
 class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
@@ -33,17 +37,17 @@ class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
         else:
             return nr_ltcs - nr_ltcs_ok
 
-    def _nr_ltcs_ok(self):
+    def _nr_ltcs_ok(self) -> int:
         """ Return the number of logical test cases whose quality is good. """
         raise NotImplementedError  # pragma: no cover
 
-    def _nr_ltcs(self):
+    def _nr_ltcs(self) -> int:
         """ Return the total number of logical test cases. """
         raise NotImplementedError  # pragma: no cover
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         parameters = super()._parameters()
-        parameters['total'] = self._nr_ltcs()
+        parameters['total'] = str(self._nr_ltcs())
         return parameters
 
 
@@ -56,10 +60,10 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     target_value = 0
     low_target_value = 15
 
-    def _nr_ltcs_ok(self):
+    def _nr_ltcs_ok(self) -> int:
         return self._metric_source.reviewed_ltcs()
 
-    def _nr_ltcs(self):
+    def _nr_ltcs(self) -> int:
         return self._metric_source.nr_ltcs()
 
 
@@ -72,10 +76,10 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     target_value = 0
     low_target_value = 10
 
-    def _nr_ltcs_ok(self):
+    def _nr_ltcs_ok(self) -> int:
         return self._metric_source.approved_ltcs()
 
-    def _nr_ltcs(self):
+    def _nr_ltcs(self) -> int:
         return self._metric_source.reviewed_ltcs()
 
 
@@ -90,10 +94,10 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     target_value = 9
     low_target_value = 15
 
-    def _nr_ltcs_ok(self):
+    def _nr_ltcs_ok(self) -> int:
         return self._metric_source.nr_automated_ltcs()
 
-    def _nr_ltcs(self):
+    def _nr_ltcs(self) -> int:
         return self._metric_source.nr_ltcs_to_be_automated()
 
 
@@ -117,22 +121,22 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     def _metric_source_urls(self):
         return [self._metric_source.manual_test_execution_url()]
 
-    def __date_of_last_manual_test(self):
+    def __date_of_last_manual_test(self) -> DateTime:
         date = self._metric_source.date_of_last_manual_test()
         return datetime.datetime.min if date == -1 else date
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         parameters = super()._parameters()
         parameters['date'] = utils.format_date(self.__date_of_last_manual_test())
         parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()
         parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old('trunk', self.target())
         return parameters
 
-    def _get_template(self):
+    def _get_template(self) -> str:
         return self.never_template if self.__date_of_last_manual_test() == datetime.datetime.min \
             else super()._get_template()
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return self._metric_source.date_of_last_manual_test() in (-1, None)
 
 
@@ -145,14 +149,14 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     target_value = 10
     low_target_value = 50
 
-    def _nr_ltcs_ok(self):
+    def _nr_ltcs_ok(self) -> int:
         nr_ltcs, nr_manual_ltcs = self._nr_ltcs(), self._metric_source.nr_manual_ltcs()
         if -1 in (nr_ltcs, nr_manual_ltcs) or None in (nr_ltcs, nr_manual_ltcs):
             return -1
         else:
             return nr_ltcs - nr_manual_ltcs
 
-    def _nr_ltcs(self):
+    def _nr_ltcs(self) -> int:
         return self._metric_source.nr_ltcs()
 
 
@@ -172,10 +176,10 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
         duration = self._metric_source.manual_test_cases_time()
         return -1 if duration is None else duration
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.manual_test_cases_url()]
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         parameters = super()._parameters()
         if not self._missing():
             parameters['total'] = total = self._metric_source.nr_manual_test_cases()
@@ -199,10 +203,10 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
         nr_ltcs = self._metric_source.nr_manual_test_cases_not_measured()
         return -1 if nr_ltcs is None else nr_ltcs
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.manual_test_cases_url()]
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         parameters = super()._parameters()
-        parameters['total'] = self._metric_source.nr_manual_test_cases()
+        parameters['total'] = str(self._metric_source.nr_manual_test_cases())
         return parameters

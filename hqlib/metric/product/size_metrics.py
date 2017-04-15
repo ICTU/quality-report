@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict, List
 
 from ..metric_source_mixin import SonarMetric, SonarDashboardMetric
-from ...domain import LowerIsBetterMetric
+from ...domain import LowerIsBetterMetric, Product
 
 
 class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
@@ -46,7 +47,7 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
     # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/
     low_target_value = 175000
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         parameters = super()._parameters()
         products = self.__main_products()
         parameters['products'] = ', '.join([product.name() for product in products])
@@ -66,6 +67,6 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
         minimum_value = min(historic_values) if historic_values else 0
         return [value - minimum_value for value in historic_values]
 
-    def __main_products(self):
+    def __main_products(self) -> List[Product]:
         """ Return the main products. """
         return [product for product in self._project.products() if product.is_main()]

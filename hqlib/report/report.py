@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import datetime
-from typing import Set, Type, Sequence, Optional, List
+from typing import cast, Set, Type, Sequence, Optional, List
 
 from .section import Section, SectionHeader
 from .. import metric, metric_source, domain, requirement
@@ -161,7 +161,7 @@ class QualityReport(domain.DomainObject):
 
     def __latest_product_version(self, product: domain.Product) -> str:
         """ Return the most recent version of the product. """
-        sonar = self.__project.metric_source(metric_source.Sonar)
+        sonar = cast(metric_source.Sonar, self.__project.metric_source(metric_source.Sonar))
         sonar_id = product.metric_source_id(sonar) or ''
         return sonar.version(sonar_id) if sonar_id else ''
 

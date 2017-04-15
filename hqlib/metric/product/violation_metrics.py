@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 
+from typing import Dict, List
+
 from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
 
@@ -37,7 +39,7 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
         violations = getattr(self._metric_source, '{0}_violations'.format(self.violation_type))(self._sonar_id())
         return -1 if violations is None else violations
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['violation_type'] = self.violation_type
@@ -100,6 +102,6 @@ class FalsePositives(SonarMetric, LowerIsBetterMetric):
         false_positives = self._metric_source.false_positives(self._sonar_id())
         return -1 if false_positives is None else false_positives
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         """ Return the url to the Sonar violations. """
         return [self._metric_source.false_positives_url(self._sonar_id())]
