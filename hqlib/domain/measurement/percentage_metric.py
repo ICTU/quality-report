@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import functools
+from typing import Dict, Tuple
 
 from . import directed_metric
 from . import metric
@@ -41,11 +42,11 @@ class PercentageMetric(metric.Metric):
         """ Return whether the actual value of the metric is better than the specified target value. """
         return super()._is_value_better_than(target)
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         """ Add numerator and denominator to the parameters. """
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters.update(dict(numerator=self._numerator(), denominator=self._denominator()))
+        parameters.update(dict(numerator=str(self._numerator()), denominator=str(self._denominator())))
         return parameters
 
     @functools.lru_cache(maxsize=1024)
@@ -57,7 +58,7 @@ class PercentageMetric(metric.Metric):
         """ Return the denominator (the number below the divider) for the metric. """
         raise NotImplementedError  # pragma: no cover
 
-    def y_axis_range(self):
+    def y_axis_range(self) -> Tuple[int, int]:
         """ Return the y-axis range. This is always 0-100, since this class represents a metric measured as
             percentage. """
         return 0, 100

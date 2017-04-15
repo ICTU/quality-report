@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict
 
 from ... import domain, metric_source
 
@@ -39,7 +40,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         """ Return the number of queries not meting the required response times. """
         raise NotImplementedError  # pragma: no cover
 
-    def __total_queries(self):
+    def __total_queries(self) -> int:
         """ Return the total number of queries. """
         return self._metric_source.queries(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else -1
@@ -48,9 +49,9 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else []
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         parameters = super()._parameters()
-        parameters.update(dict(level=self.level, total=self.__total_queries()))
+        parameters.update(dict(level=self.level, total=str(self.__total_queries())))
         return parameters
 
 

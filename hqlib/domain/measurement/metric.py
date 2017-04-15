@@ -54,7 +54,7 @@ class Metric(object):
         return True
 
     @classmethod
-    def norm_template_default_values(cls) -> Dict[str, Any]:
+    def norm_template_default_values(cls) -> Dict[str, str]:
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 

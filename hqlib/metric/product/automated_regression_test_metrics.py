@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric, MetricSourceAgeMetric
@@ -45,7 +46,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
         skipped = self._metric_source.skipped_tests(*urls)
         return None in (passed, failed, skipped) or passed < 0 or failed < 0 or skipped < 0
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         passed_tests = self._metric_source.passed_tests(*self._get_metric_source_ids())

@@ -16,9 +16,9 @@ limitations under the License.
 
 
 import copy
-from typing import Optional
+from typing import Optional, Set, Type
 
-from .requirement import RequirementSubject
+from .requirement import RequirementSubject, Requirement
 from ..measurement.measurable import MeasurableObject
 
 
@@ -35,7 +35,7 @@ class Product(RequirementSubject, MeasurableObject):
         self.__is_main = is_main  # Is this product part of the main system or is it support code?
 
     @staticmethod
-    def optional_requirements():
+    def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement
         return {requirement.ARTCoverage, requirement.ART, requirement.CodeQuality, requirement.JSFCodeQuality,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
@@ -75,7 +75,7 @@ class Product(RequirementSubject, MeasurableObject):
 class Component(Product):
     """ Class representing a software component. """
     @staticmethod
-    def default_requirements():
+    def default_requirements() -> Set[Type[Requirement]]:
         from ... import requirement
         return {requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches}
 
@@ -89,7 +89,7 @@ class Component(Product):
 class Application(Product):
     """ Class representing a software application. """
     @staticmethod
-    def default_requirements():
+    def default_requirements() -> Set[Type[Requirement]]:
         from ... import requirement
         return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.OWASPDependencies,

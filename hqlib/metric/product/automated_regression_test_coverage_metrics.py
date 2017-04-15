@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict
 
 from ... import metric_source
 from ...domain import HigherIsBetterMetric, MetricSourceAgeMetric
@@ -46,7 +47,7 @@ class ARTCoverage(HigherIsBetterMetric):
         """ Get the actual coverage measurement from the metric source. """
         raise NotImplementedError  # pragma: nocover
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['covered_items'] = self.covered_items

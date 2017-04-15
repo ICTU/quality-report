@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .requirement import RequirementSubject
+from typing import Set, Type
+
+from .requirement import RequirementSubject, Requirement
 from ..measurement.measurable import MeasurableObject
 
 
@@ -22,12 +24,12 @@ class Environment(RequirementSubject, MeasurableObject):
     """ Class representing a software development environment. """
 
     @staticmethod
-    def default_requirements():
+    def default_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackSonarVersion, requirement.TrackCIJobs}
 
     @staticmethod
-    def optional_requirements():
+    def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.Java, requirement.JavaScript, requirement.CSharp, requirement.Python,
                 requirement.TypeScript, requirement.VisualBasic, requirement.Web, requirement.OpenVAS}

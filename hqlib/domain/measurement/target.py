@@ -20,9 +20,12 @@ import datetime
 from ...utils import format_date
 
 
+DateTime = datetime.datetime
+
+
 class TechnicalDebtTarget(object):
     """ Keep track of the current accepted technical debt for a certain metric. """
-    def __init__(self, target_value, explanation=''):
+    def __init__(self, target_value, explanation: str='') -> None:
         self.__target_value = target_value
         self.__explanation = explanation
 
@@ -31,7 +34,7 @@ class TechnicalDebtTarget(object):
             accepted. """
         return self.__target_value
 
-    def explanation(self, unit=''):
+    def explanation(self, unit: str='') -> str:
         """ Return the explanation for the technical debt. """
         explanation = 'De op dit moment geaccepteerde technische schuld is {val}{unit}.'.format(
             val=self.target_value(), unit=self._space_unit(unit))
@@ -40,14 +43,15 @@ class TechnicalDebtTarget(object):
         return explanation
 
     @staticmethod
-    def _space_unit(unit):
+    def _space_unit(unit: str) -> str:
         """ Add a space before the unit if necessary. """
         return ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit
 
 
 class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
     """ Keep track of a dynamically changing accepted technical debt for a certain metric. """
-    def __init__(self, initial_target_value, initial_datetime, end_target_value, end_datetime, explanation=''):
+    def __init__(self, initial_target_value, initial_datetime: DateTime, end_target_value, end_datetime: DateTime,
+                 explanation: str='') -> None:
         if end_datetime < initial_datetime:
             raise ValueError("Initial datetime should be before end datetime")
         self.__period_length = (end_datetime - initial_datetime).total_seconds()
@@ -68,7 +72,7 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
             delta = super().target_value() - self.__initial_target_value
             return int(round(fraction * delta + self.__initial_target_value))
 
-    def explanation(self, unit=''):
+    def explanation(self, unit: str='') -> str:
         start_date = format_date(self.__initial_datetime, year=True)
         end_date = format_date(self.__end_datetime, year=True)
         explanation = 'Het doel is dat de technische schuld vermindert van {old_val}{unit} op {old_date} ' \

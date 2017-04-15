@@ -25,7 +25,7 @@ from .. import metric_source, utils
 class JSONFormatter(base_formatter.Formatter):
     """ Format the report in JSON. This is used for generating a history file. """
 
-    def prefix(self, report):
+    def prefix(self, report) -> str:
         """ Return a JSON formatted version of the report prefix. """
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
@@ -39,7 +39,7 @@ class JSONFormatter(base_formatter.Formatter):
         prefix_elements.append('"date": "{date}"'.format(date=report.date().strftime('%Y-%m-%d %H:%M:%S')))
         return '{' + ', '.join(prefix_elements) + ', '
 
-    def metric(self, metric):
+    def metric(self, metric) -> str:
         """ Return a JSON formatted version of the metric. """
         # Write numerical values without decimals.
         logging.info('Formatting metric %s.', metric.stable_id())
@@ -53,7 +53,7 @@ class JSONFormatter(base_formatter.Formatter):
             raise
 
     @staticmethod
-    def postfix():
+    def postfix() -> str:
         """ Return a JSON formatted version of the report postfix. """
         return '}\n'
 
@@ -61,17 +61,17 @@ class JSONFormatter(base_formatter.Formatter):
 class MetaMetricsHistoryFormatter(base_formatter.Formatter):
     """ Format the history of the meta metrics as a Javascript array. """
 
-    def prefix(self, report):
+    def prefix(self, report) -> str:
         return '['
 
     @staticmethod
-    def postfix():
+    def postfix() -> str:
         return ']\n'
 
-    def metric(self, metric):
+    def metric(self, metric) -> str:
         return ''  # pragma: no cover
 
-    def body(self, report):
+    def body(self, report) -> str:
         """ Return a JSON array of dates and status counts. """
         history_table = []
         history = report.project().metric_source(metric_source.History)
@@ -122,14 +122,14 @@ class MetricsFormatter(base_formatter.Formatter):
         missing_source=dict(image='missing_source', alt='%', status_nr=6,
                             hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
-    def prefix(self, report):
+    def prefix(self, report) -> str:
         return '{{"report_date": {report_date}, "metrics": ['.format(report_date=self.__report_date(report))
 
     @staticmethod
-    def postfix():
+    def postfix() -> str:
         return ']}\n'
 
-    def metric(self, metric):
+    def metric(self, metric) -> str:
         data = self.__metric_data(metric)
         metric_number = int(data['metric_id'].split('-')[1])
         data['metric_number'] = '{sec}-{num:02d}'.format(sec=data['section'], num=metric_number)
@@ -150,7 +150,7 @@ class MetricsFormatter(base_formatter.Formatter):
         return kwargs
 
     @classmethod
-    def __format_text_with_links(cls, text, url_dict, url_label):
+    def __format_text_with_links(cls, text: str, url_dict, url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text).replace('\n', ' ')
         links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
@@ -161,7 +161,7 @@ class MetricsFormatter(base_formatter.Formatter):
         return text
 
     @staticmethod
-    def __format_url(anchor, href):
+    def __format_url(anchor: str, href: str) -> str:
         """ Return a HTML formatted url. """
         template = "<a href='{href}' target='_blank'>{anchor}</a>"
         return template.format(href=href, anchor=utils.html_escape(anchor))
