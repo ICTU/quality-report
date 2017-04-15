@@ -14,21 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# Run the unit tests.
+# Run the mypy static type checker.
 
-import io
-import logging
-import os
-import sys
-import unittest
+from mypy import api
 
-import xmlrunner
 
 if __name__ == '__main__':  # pragma: no branch
-    sys.path.insert(0, os.path.abspath('.'))
-    # Make sure log messages are not shown on stdout/stderr. We can't simply
-    # increase the log level since some unit tests expect logging to happen.
-    logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
-    # Run the unit test with the XML test runner so that the test output
-    # can be processed by Sonar.
-    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/unit-test-reports'))
+    result = api.run(['hqlib', '--html-report', 'build/mypy_report'])
+
+    if result[0]:
+        print('\nType checking report:\n')
+        print(result[0])  # stdout
+
+    if result[1]:
+        print('\nError report:\n')
+        print(result[1])  # stderr
+
+    print('\nExit status:', result[2])
