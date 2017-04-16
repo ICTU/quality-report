@@ -54,7 +54,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the name of the organization. """
         return self.__organization
 
-    def metric_source(self, metric_source_class: Type[MetricSource]) -> MetricSource:
+    def metric_source(self, metric_source_class):
         """ Return the metric source instance for the metric source class. """
         return self.__metric_sources.get(metric_source_class, metric_source.MissingMetricSource())
 

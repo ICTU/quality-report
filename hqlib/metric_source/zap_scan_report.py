@@ -29,12 +29,12 @@ class ZAPScanReport(domain.MetricSource):
     metric_source_name = 'ZAP Scan rapport'
     needs_metric_source_id = True
 
-    def __init__(self, url_open=None, **kwargs):
+    def __init__(self, url_open=None, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super().__init__()
 
     @functools.lru_cache(maxsize=1024)
-    def alerts(self, risk_level, *report_urls):
+    def alerts(self, risk_level: str, *report_urls: str) -> int:
         """ Return the number of alerts of the specified risk level. """
         nr_alerts = 0
         for url in report_urls:
@@ -48,12 +48,12 @@ class ZAPScanReport(domain.MetricSource):
         return nr_alerts
 
     @functools.lru_cache(maxsize=1024)
-    def __get_soup(self, url):
+    def __get_soup(self, url: str):
         """ Return the HTML soup. """
         return bs4.BeautifulSoup(self._url_open(url), "lxml")
 
     @staticmethod
-    def __parse_alerts(soup, risk_level):
+    def __parse_alerts(soup, risk_level: str) -> int:
         """ Get the number of alerts from the HTML soup. """
         summary_table = soup('table')[0]
         # Find the row where the first td contains the specified risk level and get the number of alerts form

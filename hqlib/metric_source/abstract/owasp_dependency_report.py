@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import functools
+from typing import Iterable
 
 from ... import domain
 
@@ -26,12 +27,12 @@ class OWASPDependencyReport(domain.MetricSource):
     needs_metric_source_id = True
 
     @functools.lru_cache(maxsize=1024)
-    def nr_warnings(self, metric_source_ids, priority):
+    def nr_warnings(self, metric_source_ids: Iterable[str], priority: str) -> int:
         """ Return the number of warnings in the reports with the specified priority. """
         warnings = [self._nr_warnings(metric_source_id, priority) for metric_source_id in metric_source_ids]
         return -1 if -1 in warnings else sum(warnings)
 
-    def _nr_warnings(self, metric_source_id, priority):
+    def _nr_warnings(self, metric_source_id: str, priority: str) -> int:
         """ Return the  number of warnings in the report with the specified priority. """
         raise NotImplementedError  # pragma: no cover
 

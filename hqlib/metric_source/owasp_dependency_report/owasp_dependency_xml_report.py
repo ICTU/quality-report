@@ -18,19 +18,23 @@ import datetime
 import functools
 import re
 import xml.etree.cElementTree
+from typing import List, Tuple, Any
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
 
 
+DateTime = datetime.datetime
+
+
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     """ Class representing OWASP dependency reports in XML format. """
 
-    def __init__(self, url_read=None, **kwargs):
+    def __init__(self, url_read=None, **kwargs) -> None:
         self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super().__init__()
 
-    def _nr_warnings(self, report_url, priority):
+    def _nr_warnings(self, report_url: str, priority: str) -> int:
         """ Return the number of warnings for the specified priority in the report. """
         if priority == 'normal':
             priority = 'medium'
@@ -42,10 +46,10 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         severity_nodes = root.findall(".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace))
         return len([node for node in severity_nodes if node.text == priority.capitalize()])
 
-    def metric_source_urls(self, *report_urls):
+    def metric_source_urls(self, *report_urls: str) -> List[str]:
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]
 
-    def _report_datetime(self, report_url):
+    def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the report date and time. """
         try:
             root, namespace = self.__report_root(report_url)
@@ -55,7 +59,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         return datetime.datetime.strptime(datetime_node.text.split('.')[0], "%Y-%m-%dT%H:%M:%S")
 
     @functools.lru_cache(maxsize=1024)
-    def __report_root(self, report_url):
+    def __report_root(self, report_url: str) -> Tuple[Any, str]:
         """ Return the root node and namespace of the OWASP dependency XML report. """
         contents = self.__url_read(report_url)
         root = xml.etree.cElementTree.fromstring(contents)

@@ -29,7 +29,7 @@ class OWASPDependencyWarnings(AlertsMetric):
     template = 'Dependencies van {name} hebben {value} {risk_level} prioriteit {unit}.'
     metric_source_class = metric_source.OWASPDependencyReport
 
-    def _nr_alerts(self):
+    def _nr_alerts(self) -> int:
         """ Return the number of warnings. """
         ids = self._get_metric_source_ids()
         return self._metric_source.nr_warnings(tuple(ids), self.risk_level_key) if ids else -1

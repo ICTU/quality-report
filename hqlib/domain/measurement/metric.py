@@ -16,10 +16,15 @@ limitations under the License.
 
 from typing import Any, Dict, List, Type, Tuple, Union
 
+import datetime
 import functools
 import logging
 
 from .metric_source import MetricSource
+from .measurable import MeasurableObject
+
+
+DateTime = datetime.datetime
 
 
 class Metric(object):
@@ -49,7 +54,7 @@ class Metric(object):
     metric_source_class: Type[MetricSource] = None
 
     @classmethod
-    def is_applicable(cls, subject) -> bool:  # pylint: disable=unused-argument
+    def is_applicable(cls, subject: MeasurableObject) -> bool:  # pylint: disable=unused-argument
         """ Return whether this metric applies to the specified subject. """
         return True
 
@@ -136,7 +141,7 @@ class Metric(object):
                 return status_string
         return 'green'
 
-    def status_start_date(self):
+    def status_start_date(self) -> DateTime:
         """ Return since when the metric has the current status. """
         return self.__history.status_start_date(self.stable_id(), self.status())
 
@@ -148,33 +153,33 @@ class Metric(object):
         else:
             return False
 
-    def _missing(self):
+    def _missing(self) -> bool:
         """ Return whether the metric source is missing. """
         return self.value() == -1
 
-    def __missing_source_configuration(self):
+    def __missing_source_configuration(self) -> bool:
         """ Return whether the metric sources have been completely configured. """
         return self.__missing_source_class() or self.__missing_source_ids()
 
-    def __missing_source_class(self):
+    def __missing_source_class(self) -> bool:
         """ Return whether the metric source class that needs to be configured for the metric to be measurable is
             available from the project. """
         return not self._project.metric_source(self.metric_source_class) if self.metric_source_class else False
 
-    def __missing_source_ids(self):
+    def __missing_source_ids(self) -> bool:
         """ Return whether the metric source ids have been configured for the metric source class. """
-        return self.metric_source_class and self.metric_source_class.needs_metric_source_id and \
+        return bool(self.metric_source_class) and self.metric_source_class.needs_metric_source_id and \
             not self._subject.metric_source_id(self._project.metric_source(self.metric_source_class))
 
-    def _needs_immediate_action(self):
+    def _needs_immediate_action(self) -> bool:
         """ Return whether the metric needs immediate action, i.e. its actual value is below its low target value. """
         return not self._is_value_better_than(self.low_target())
 
-    def _is_below_target(self):
+    def _is_below_target(self) -> bool:
         """ Return whether the actual value of the metric is below its target value. """
         return not self._is_value_better_than(self.target())
 
-    def __is_perfect(self):
+    def __is_perfect(self) -> bool:
         """ Return whether the actual value of the metric equals its perfect value,
             i.e. no further improvement is possible. """
         return self.value() == self.perfect_value
@@ -247,7 +252,7 @@ class Metric(object):
         else:
             return []
 
-    def _get_metric_source_ids(self):
+    def _get_metric_source_ids(self) -> List[str]:
         """ Allow for subclasses to override what the metric source id is. """
         ids = self._metric_source_id if isinstance(self._metric_source_id, list) else [self._metric_source_id]
         return [id_ for id_ in ids if id_]
@@ -273,7 +278,7 @@ class Metric(object):
         """ Return the source for the comment on the metric. """
         return dict()
 
-    def recent_history(self):
+    def recent_history(self) -> List[int]:
         """ Return a list of recent values of the metric, to be used in e.g. a spark line graph. """
         history = self.__history.recent_history(self.stable_id(), self.id_string()) or []
         return [int(round(float(value))) for value in history]
