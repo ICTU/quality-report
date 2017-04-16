@@ -49,12 +49,11 @@ class PercentageMetric(metric.Metric):
         parameters.update(dict(numerator=str(self._numerator()), denominator=str(self._denominator())))
         return parameters
 
-    @functools.lru_cache(maxsize=1024)
-    def _numerator(self):
+    def _numerator(self) -> int:
         """ Return the numerator (the number above the divider) for the metric. """
         raise NotImplementedError  # pragma: no cover
 
-    def _denominator(self):
+    def _denominator(self) -> int:
         """ Return the denominator (the number below the divider) for the metric. """
         raise NotImplementedError  # pragma: no cover
 
@@ -70,10 +69,10 @@ class LowerPercentageIsBetterMetric(PercentageMetric, directed_metric.LowerIsBet
     zero_divided_by_zero_is_zero = True
 
     @functools.lru_cache(maxsize=1024)
-    def _numerator(self):
+    def _numerator(self) -> int:
         raise NotImplementedError  # pragma: no cover
 
-    def _denominator(self):
+    def _denominator(self) -> int:
         raise NotImplementedError  # pragma: no cover
 
 
@@ -83,8 +82,8 @@ class HigherPercentageIsBetterMetric(PercentageMetric, directed_metric.HigherIsB
     perfect_value = 100
 
     @functools.lru_cache(maxsize=1024)
-    def _numerator(self):
+    def _numerator(self) -> int:
         raise NotImplementedError  # pragma: no cover
 
-    def _denominator(self):
+    def _denominator(self) -> int:
         raise NotImplementedError  # pragma: no cover

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict
 
 from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric
 from ...domain import LowerPercentageIsBetterMetric
@@ -46,7 +47,7 @@ class MethodQualityMetric(SonarViolationsMetric, LowerPercentageIsBetterMetric):
     low_target_value = 5
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> Dict[str, str]:
         values = super(MethodQualityMetric, cls).norm_template_default_values()
         values['attribute'] = cls.attribute
         return values
@@ -57,7 +58,7 @@ class MethodQualityMetric(SonarViolationsMetric, LowerPercentageIsBetterMetric):
     def _denominator(self):
         return self._metric_source.methods(self._sonar_id())
 
-    def _parameters(self):
+    def _parameters(self) -> Dict[str, str]:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['attribute'] = self.attribute

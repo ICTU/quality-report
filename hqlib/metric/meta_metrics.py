@@ -34,11 +34,11 @@ class MetaMetric(PercentageMetric):  # pylint: disable=too-few-public-methods
         return super()._is_value_better_than(target)
 
     @functools.lru_cache(maxsize=1024)
-    def _numerator(self):
+    def _numerator(self) -> int:
         """ Return the numerator (the number above the divider) for the meta metric. """
         return len([metric for metric in self._subject if metric.status() in self.metric_statuses])
 
-    def _denominator(self):
+    def _denominator(self) -> int:
         """ Return the denominator (the number below the divider) for the meta metric. """
         return len(self._subject)
 
