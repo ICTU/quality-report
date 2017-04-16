@@ -20,18 +20,16 @@ import functools
 import logging
 import re
 import urllib.parse
+from typing import Dict, List, Optional
 
 from . import url_opener
 from .. import domain
 
 
-class UnknownAge(object):  # pylint: disable=too-few-public-methods
-    """ Fake age that is larger than any concrete age. """
-
-    def __gt__(self, other):  # pylint: disable=unused-argument
-        return True
-
-    days = '?'
+TimeDelta = datetime.timedelta
+DateTime = datetime.datetime
+Job = Dict[str, str]
+Jobs = List[Job]
 
 
 class Jenkins(domain.MetricSource, url_opener.UrlOpener):
@@ -41,7 +39,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     api_postfix = 'api/python'
     jobs_api_postfix = api_postfix + '?tree=jobs[name,description,color,url,buildable]'
 
-    def __init__(self, url, username='', password='', job_re=''):
+    def __init__(self, url: str, username: str='', password: str='', job_re: str='') -> None:
         super().__init__(url=url, username=username, password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = url + 'job/{job}/'
@@ -52,48 +50,52 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self._jobs_api_url = url + self.jobs_api_postfix
         self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
 
-    def number_of_active_jobs(self):
+    def number_of_active_jobs(self) -> int:
         """ Return the total number of active Jenkins jobs. """
         try:
             return len(self.__active_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def failing_jobs_url(self):
+    def failing_jobs_url(self) -> Optional[Dict[str, str]]:
         """ Return the urls for the failing Jenkins jobs. """
         try:
             return self.__job_urls(self.__failing_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return None
 
-    def unused_jobs_url(self):
+    def unused_jobs_url(self) -> Optional[Dict[str, str]]:
         """ Return the urls for the unused Jenkins jobs. """
         try:
             return self.__job_urls(self.__unused_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return None
 
-    def __job_urls(self, jobs):
+    def __job_urls(self, jobs: Jobs) -> Dict[str, str]:
         """ Return the urls for the Jenkins jobs. """
-        return {'{0} ({1} dagen)'.format(job['name'], self.__age_of_last_stable_build(job).days): job['url']
-                for job in jobs}
+        def days(job: Job) -> str:
+            """ Return the age of the last stable build. """
+            age = self.__age_of_last_stable_build(job)
+            return '?' if age == datetime.timedelta.max else str(age.days)
 
-    def __failing_jobs(self):
+        return {'{0} ({1} dagen)'.format(job['name'], days(job)): job['url'] for job in jobs}
+
+    def __failing_jobs(self) -> Jobs:
         """ Return the active Jenkins jobs that are failing. """
 
-        def failing(job):
+        def failing(job: Job) -> bool:
             """ Return whether the job is failing. """
             return not job['color'].startswith('blue') if job.get('buildable', False) else False
 
-        def old(job):
+        def old(job: Job) -> bool:
             """ Return whether the build age of the job is considered to be long ago. """
             return self.__age_of_last_stable_build(job) > datetime.timedelta(days=1)
 
         return [job for job in self.__active_jobs() if self.__has_builds(job) and failing(job) and old(job)]
 
-    def __unused_jobs(self):
+    def __unused_jobs(self) -> Jobs:
         """ Return the active Jenkins jobs that are unused. """
-        def grace_time(job, default=180):
+        def grace_time(job: Job, default: int=180) -> TimeDelta:
             """ Return the grace time for the job. """
             # Don't consider projects to be old until their last successful build was longer ago than the grace time.
             description = job['description'] or ''
@@ -103,16 +105,16 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
         return [job for job in self.__active_jobs() if self.__age_of_last_completed_build(job) > grace_time(job)]
 
-    def __active_jobs(self):
+    def __active_jobs(self) -> Jobs:
         """ Return all active Jenkins jobs. """
         return [job for job in self.__jobs() if job.get('buildable', False)]
 
-    def __jobs(self):
+    def __jobs(self) -> Jobs:
         """ Return all Jenkins jobs that match our job regular expression. """
         all_jobs = self._api(self._jobs_api_url)['jobs']
         return [job for job in all_jobs if self.__job_re.match(job['name'])]
 
-    def unstable_arts_url(self, projects, days):
+    def unstable_arts_url(self, projects, days: int) -> Dict[str, str]:
         """ Return the urls for the ARTs that have been unstable for the specified number of days. """
         projects_re = re.compile(projects)
         all_jobs = self._api(self._jobs_api_url)['jobs']
@@ -122,24 +124,26 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         for art in arts:
             age = self.__age_of_last_stable_build(art)
             if age > max_age:
-                art_description = art['name'] + ' ({days} dagen)'.format(days=age.days)
+                days_str = '?' if age == datetime.timedelta.max else str(age.days)
+                art_description = art['name'] + ' ({days} dagen)'.format(days=days_str)
                 unstable[art_description] = self.__job_url.format(job=art['name'])
         return unstable
 
-    def __age_of_last_completed_build(self, job):
+    def __age_of_last_completed_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last completed build of the job. """
         return self.__age_of_build(job, self.__last_completed_build_url)
 
-    def __age_of_last_stable_build(self, job):
+    def __age_of_last_stable_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last stable build of the job. """
         return self.__age_of_build(job, self._last_stable_build_url)
 
-    def __age_of_build(self, job, url):
+    def __age_of_build(self, job: Job, url: str) -> TimeDelta:
         """ Return the age of the last completed or stable build of the job. """
         build_time = self.job_datetime(job, url)
-        return UnknownAge() if build_time == datetime.datetime.min else datetime.datetime.utcnow() - build_time
+        return datetime.timedelta.max if build_time == datetime.datetime.min else \
+            datetime.datetime.utcnow() - build_time
 
-    def job_datetime(self, job, url):
+    def job_datetime(self, job: Job, url: str) -> DateTime:
         """ Return the datetime of the last completed or stable build of the job. """
         builds_url = url.format(job=job['name']) + self.api_postfix
         try:
@@ -152,12 +156,12 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             logging.warning("Couldn't get timestamp from %s: %s.", builds_url, reason)
             return datetime.datetime.min
 
-    def __has_builds(self, job):
+    def __has_builds(self, job: Job) -> bool:
         """ Return whether the job has builds or not. """
-        return len(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
+        return bool(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
 
     @functools.lru_cache(maxsize=1024)
-    def _api(self, url):
+    def _api(self, url: str) -> Dict:
         """ Return the result of the API call at the url. """
         data = self.url_read(url)
         if isinstance(data, bytes):
@@ -168,7 +172,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             logging.error("Couldn't evaluate %s from %s: %s", data, url, reason)
             raise
 
-    def url_open(self, url):
+    def url_open(self, url: str) -> bytes:
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
         url = urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         try:
@@ -177,7 +181,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             logging.error("Couldn't open %s: %s", url, reason)
             raise
 
-    def resolve_job_name(self, job_name):
+    def resolve_job_name(self, job_name: str) -> str:
         """ If the job name is a regular expression, resolve it to a concrete job name.
             Assumes there is exactly one result. """
         if job_name and ('\\' in job_name or '.*' in job_name or '[' in job_name):

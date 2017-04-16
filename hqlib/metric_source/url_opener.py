@@ -62,7 +62,7 @@ class UrlOpener(object):
         else:
             return url_open
 
-    def url_open(self, url):
+    def url_open(self, url: str) -> bytes:
         """ Return an opened url, using the opener created earlier. """
         try:
             return self.__opener(url)
