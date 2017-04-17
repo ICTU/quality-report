@@ -167,7 +167,7 @@ def format_timedelta(timedelta: TimeDelta) -> str:
     return 'minder dan een minuut'
 
 
-def workdays_in_period(start_date: DateTime, end_date: DateTime) -> int:
+def workdays_in_period(start_date: datetime.date, end_date: datetime.date) -> int:
     """ Return the number of work days in the period. All days between start date and end date are considered,
         including the start date and end date themselves. """
     return sum(1 for ordinal in range(start_date.toordinal(), end_date.toordinal() + 1)
@@ -196,7 +196,7 @@ def eval_json(json_string: str) -> Any:
         raise
 
 
-def version_number_to_numerical(version_number_tuple: Tuple[int]) -> int:
+def version_number_to_numerical(version_number_tuple: Tuple[int, ...]) -> int:
     """ Transform the first three parts (major, minor, patch) of the version number into a numerical value.
         We assume each part is not larger than 100, so that 10000 * major + 100 * minor + patch results in a number
         for which holds that numerical_value(a.b.c.) > numerical_value(d.e.f) iff a.b.c > d.e.f. """

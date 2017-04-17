@@ -18,10 +18,14 @@ limitations under the License.
 import datetime
 import logging
 import re
+from typing import List, Dict, Set, Iterable, Tuple
 
 from .. import url_opener
 from ..abstract import performance_report
 from ... import utils
+
+
+DateTime = datetime.datetime
 
 
 class JMeterPerformanceReport(performance_report.PerformanceReport):
@@ -30,7 +34,7 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
     metric_source_name = 'Jmeter performance report'
     COLUMN_90_PERC = 10
 
-    def _query_rows(self, product):
+    def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         rows = []
         product_query_re = re.compile(product[0])
@@ -49,7 +53,7 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
                 rows.append(row)
         return rows
 
-    def _date_from_soup(self, soup):
+    def _date_from_soup(self, soup) -> DateTime:
         """ Return the date when performance was last measured. """
         try:
             date_text = soup('h2')[0].string.split(' End: ')[1]
@@ -58,14 +62,14 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
             return datetime.datetime.today()
         return self.__parse_date(date_text)
 
-    def urls(self, product):
+    def urls(self, product: str) -> Iterable[str]:
         """ Return the url(s) of the performance report for the specified product. """
-        urls = {0: set()}  # {test_run_number: set(of urls)}
+        urls: Dict[int, Set[str]] = {0: set()}  # {test_run_number: set(of urls)}
         for filename, url in self.__report_urls():
             urls.setdefault(self.__test_run_number(filename), set()).add(url)
         return urls[max(urls.keys())]  # Return the latest test run
 
-    def __report_urls(self):
+    def __report_urls(self) -> List[Tuple[str, str]]:
         """ Return the url(s) for the performance reports in the report folder. """
         base_url = self.url()
         try:
@@ -81,12 +85,12 @@ class JMeterPerformanceReport(performance_report.PerformanceReport):
         return urls
 
     @staticmethod
-    def __test_run_number(filename):
+    def __test_run_number(filename: str) -> int:
         """ Return the test run number as contained in the filename. """
         return int(re.search('[0-9]+', filename).group(0))
 
     @staticmethod
-    def __parse_date(date_text):
+    def __parse_date(date_text: str) -> DateTime:
         """ Return a parsed version of the date text. """
         return utils.parse_uk_date_time_year_last(date_text)
 

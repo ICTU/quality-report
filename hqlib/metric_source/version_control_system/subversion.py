@@ -17,7 +17,7 @@ limitations under the License.
 
 from datetime import datetime
 import logging
-from typing import List
+from typing import List, Dict
 
 import bs4
 
@@ -65,18 +65,19 @@ class Subversion(version_control_system.VersionControlSystem):
             return datetime.min
         return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    def unmerged_branches(self, product_url, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
-                          list_of_branches_to_include=None):
+    def unmerged_branches(self, product_url: str, list_of_branches_to_ignore: List[str]=None,
+                          re_of_branches_to_ignore: str='',
+                          list_of_branches_to_include: List[str]=None) -> Dict[str, int]:
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
             unmerged revisions. """
         branches = [branch for branch in self.branches(product_url) if not
                     self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
                                         list_of_branches_to_include)]
-        branches = [(branch, self.__nr_unmerged_revisions(product_url, branch)) for branch in branches]
-        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) in branches if nr_revisions > 0]
+        branches_and_revs = [(branch, self.__nr_unmerged_revisions(product_url, branch)) for branch in branches]
+        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) in branches_and_revs if nr_revisions > 0]
         return dict(unmerged_branches)
 
-    def __nr_unmerged_revisions(self, product_url, branch_name):
+    def __nr_unmerged_revisions(self, product_url: str, branch_name: str) -> int:
         """ Return whether the branch has unmerged revisions. """
         branch_url = self.__branches_folder(product_url) + branch_name
         trunk_url = product_url
@@ -89,8 +90,8 @@ class Subversion(version_control_system.VersionControlSystem):
         # before creating the branch. Check for that and ignore those revisions if that's the case.
         if 1 <= nr_revisions <= 3:
             # Create a list of revision numbers and remove the initial 'r'
-            revisions = [revision[1:].strip() for revision in revisions.split('\n')]
-            for revision in revisions:
+            revision_numbers = [revision[1:].strip() for revision in revisions.split('\n')]
+            for revision in revision_numbers:
                 if '/tags/' in self.__revision_url(branch_url, revision):
                     nr_revisions -= 1
         return nr_revisions

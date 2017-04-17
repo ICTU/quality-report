@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 
-from typing import Dict, List
+from typing import List
 
 from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class Violations(SonarDashboardMetric, LowerIsBetterMetric):
@@ -39,7 +40,7 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
         violations = getattr(self._metric_source, '{0}_violations'.format(self.violation_type))(self._sonar_id())
         return -1 if violations is None else violations
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['violation_type'] = self.violation_type

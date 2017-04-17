@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import List
 
 from ..metric_source_mixin import SonarDashboardMetric
 from ... import metric_source
@@ -30,7 +31,7 @@ class SonarAnalysisAge(SonarDashboardMetric, MetricSourceAgeMetric):
     target_value = 6 * 7
     low_target_value = 9 * 7
 
-    def _get_metric_source_ids(self):
+    def _get_metric_source_ids(self) -> List[str]:
         return [self._sonar_id()]
 
 

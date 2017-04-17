@@ -16,12 +16,12 @@ limitations under the License.
 
 
 import datetime
-from typing import Dict, List
+from typing import List
 
 from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
-
+from hqlib.typing import MetricParameters
 
 DateTime = datetime.datetime
 
@@ -45,7 +45,7 @@ class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
         """ Return the total number of logical test cases. """
         raise NotImplementedError  # pragma: no cover
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['total'] = str(self._nr_ltcs())
         return parameters
@@ -125,7 +125,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
         date = self._metric_source.date_of_last_manual_test()
         return datetime.datetime.min if date == -1 else date
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['date'] = utils.format_date(self.__date_of_last_manual_test())
         parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()
@@ -179,7 +179,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.manual_test_cases_url()]
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         if not self._missing():
             parameters['total'] = total = self._metric_source.nr_manual_test_cases()
@@ -206,7 +206,7 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
     def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.manual_test_cases_url()]
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['total'] = str(self._metric_source.nr_manual_test_cases())
         return parameters

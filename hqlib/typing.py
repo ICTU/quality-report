@@ -14,13 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from ... import domain
+from typing import Dict, Union
 
-
-class TeamSpirit(domain.MetricSource):
-    """ Abstract class representing a team spirit indicator. """
-    metric_source_name = 'Team spirit'
-
-    def team_spirit(self, team_id: str) -> str:
-        """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
-        raise NotImplementedError  # pragma: nocover
+MetricParameters = Dict[str, Union[str, int, float]]

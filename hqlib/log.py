@@ -14,16 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+from typing import Set
 import logging
 
 
-class SuppressRepeatMessages(object):  # pylint: disable=too-few-public-methods
+class SuppressRepeatMessages(logging.Filter):  # pylint: disable=too-few-public-methods
     """ Filter to suppress logging of repeated messages. """
-    def __init__(self):
-        self.__messages_seen = set()
+    def __init__(self) -> None:
+        self.__messages_seen: Set[str] = set()
+        super().__init__()
 
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         """ Decide whether the record should be logged. """
         message = record.getMessage()
         is_new_message = message not in self.__messages_seen
@@ -32,7 +33,7 @@ class SuppressRepeatMessages(object):  # pylint: disable=too-few-public-methods
         return is_new_message
 
 
-def init_logging(log_level):
+def init_logging(log_level: str):
     """ Initialize logging for the application. """
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',
                         level=getattr(logging, log_level.upper(), None))

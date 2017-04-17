@@ -14,9 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict
 
 from hqlib import metric_source
 from hqlib.domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class UnusedCIJobs(LowerIsBetterMetric):
@@ -33,10 +35,10 @@ class UnusedCIJobs(LowerIsBetterMetric):
     low_target_value = 2
     metric_source_class = metric_source.Jenkins
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters['number_of_jobs'] = self._metric_source.number_of_active_jobs()
+        parameters['number_of_jobs'] = str(self._metric_source.number_of_active_jobs())
         return parameters
 
     def value(self):
@@ -44,7 +46,7 @@ class UnusedCIJobs(LowerIsBetterMetric):
         url = self._metric_source.unused_jobs_url()
         return -1 if url is None else len(url)
 
-    def url(self):
+    def url(self) -> Dict[str, str]:
         """ Return the urls for the unused jobs. """
         url = self._metric_source.unused_jobs_url()
         return dict() if url is None else url

@@ -17,9 +17,11 @@ limitations under the License.
 
 import re
 from distutils.version import LooseVersion
+from typing import List, Union
 
 from ... import metric_source, utils
 from ...domain import HigherIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class SonarVersion(HigherIsBetterMetric):
@@ -33,13 +35,13 @@ class SonarVersion(HigherIsBetterMetric):
     low_target_value = LooseVersion('4.5.6')
     metric_source_class = metric_source.Sonar
 
-    def numerical_value(self):
+    def numerical_value(self) -> Union[float, int]:
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
         return -1 if self._missing() else LooseVersion(self._metric_source.version_number())
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return self._metric_source.version_number() is None if self._metric_source else True
 
 
@@ -58,16 +60,16 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
     metric_source_class = metric_source.Sonar
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> MetricParameters:
         default_values = super(SonarQualityProfileVersion, cls).norm_template_default_values()
         default_values['language'] = cls.language_name
         return default_values
 
-    def numerical_value(self):
+    def numerical_value(self) -> Union[float, int]:
         if self._missing():
             return -1
         else:
-            numerical_parts = [part for part in self.value().version if isinstance(part, int) and part < 999]
+            numerical_parts = tuple([part for part in self.value().version if isinstance(part, int) and part < 999])
             return utils.version_number_to_numerical(numerical_parts)
 
     def value(self):
@@ -79,15 +81,15 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
             profile_version = match.group()[1:] if match else '0.0'
             return LooseVersion(profile_version)
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.quality_profiles_url()]
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['language'] = self.language_name
         return parameters
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return self._metric_source.default_quality_profile(self.language_key) in ('', None)
 
 
@@ -168,26 +170,26 @@ class SonarPluginVersion(HigherIsBetterMetric):
     metric_source_class = metric_source.Sonar
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> MetricParameters:
         default_values = super(SonarPluginVersion, cls).norm_template_default_values()
         default_values['plugin'] = cls.plugin_name
         return default_values
 
-    def numerical_value(self):
+    def numerical_value(self) -> int:
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
         return LooseVersion('0.0' if self._missing() else self._metric_source.plugin_version(self.plugin_key))
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.plugins_url()]
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['plugin'] = self.plugin_name
         return parameters
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return self._metric_source.plugin_version(self.plugin_key) in ('0.0', None)
 
 

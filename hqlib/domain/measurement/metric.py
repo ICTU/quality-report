@@ -22,7 +22,7 @@ import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
-
+from hqlib.typing import MetricParameters
 
 DateTime = datetime.datetime
 
@@ -59,7 +59,7 @@ class Metric(object):
         return True
 
     @classmethod
-    def norm_template_default_values(cls) -> Dict[str, str]:
+    def norm_template_default_values(cls) -> MetricParameters:
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
@@ -213,7 +213,7 @@ class Metric(object):
         else:
             return self.template
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         """ Return the parameters for the metric report template and for the metric norm template. """
         return dict(name=self.__subject_name(),
                     metric=self.name[0].lower()+self.name[1:],

@@ -16,9 +16,13 @@ limitations under the License.
 
 
 import datetime
+from typing import List
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
+
+
+DateTime = datetime.datetime
 
 
 class DocumentAge(LowerIsBetterMetric):
@@ -38,17 +42,17 @@ class DocumentAge(LowerIsBetterMetric):
         """ Return the number of days since the document was last changed. """
         return -1 if self._missing() else (datetime.datetime.now() - self.__changed_date()).days
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         """ Return the url to the document. """
         return [self._subject.url()]
 
-    def __changed_date(self):
+    def __changed_date(self) -> DateTime:
         """ Return the date that the document was last changed. """
         if self._metric_source and self._metric_source_id:
             return self._metric_source.last_changed_date(self._metric_source.normalize_path(self._metric_source_id))
         else:
             return datetime.datetime.min
 
-    def _missing(self):
+    def _missing(self) -> bool:
         """ Return whether the age of the document could be established. """
         return self.__changed_date() in (None, datetime.datetime.min)

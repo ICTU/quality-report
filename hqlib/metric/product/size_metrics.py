@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict, List
+from typing import List
 
 from ..metric_source_mixin import SonarMetric, SonarDashboardMetric
 from ...domain import LowerIsBetterMetric, Product
+from hqlib.typing import MetricParameters
 
 
 class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
@@ -47,7 +48,7 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
     # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/
     low_target_value = 175000
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         products = self.__main_products()
         parameters['products'] = ', '.join([product.name() for product in products])

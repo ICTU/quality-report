@@ -18,19 +18,23 @@ limitations under the License.
 import datetime
 import logging
 import re
+from typing import List, Iterable
 
 from ..abstract import performance_report
+
+
+DateTime = datetime.datetime
 
 
 class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
     """ The Silk Performer performance report is a variant of a JMeter report. """
     COLUMN_90_PERC = 5
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.__report_urls = kwargs.pop('report_urls', None)
         super().__init__(*args, **kwargs)
 
-    def _query_rows(self, product):
+    def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         rows = []
         product_query_re = re.compile(product[0])
@@ -49,7 +53,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
                 rows.append(row)
         return rows
 
-    def _date_from_soup(self, soup):
+    def _date_from_soup(self, soup) -> DateTime:
         """ Return the date when performance was last measured. """
         try:
             table = soup('table', attrs={'class': ['config']})[0]
@@ -57,10 +61,10 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport):
         except IndexError:
             logging.warning("Can't get date from performance report")
             return datetime.datetime.today()
-        date_parts = [int(part) for part in date_string.split('.')]
-        return datetime.datetime(*date_parts)
+        year, month, day, hour, minute, second = [int(part) for part in date_string.split('.')][:6]
+        return datetime.datetime(year, month, day, hour, minute, second)
 
-    def urls(self, product):  # pylint: disable=unused-argument
+    def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
         return self.__report_urls or [self.url()]
 
