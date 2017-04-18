@@ -145,7 +145,7 @@ class Metric(object):
         """ Return since when the metric has the current status. """
         return self.__history.status_start_date(self.stable_id(), self.status())
 
-    def __has_accepted_technical_debt(self):
+    def __has_accepted_technical_debt(self) -> bool:
         """ Return whether the metric is below target but above the accepted technical debt level. """
         technical_debt_target = self.__technical_debt_target()
         if technical_debt_target:
