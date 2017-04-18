@@ -94,7 +94,3 @@ class MetricsFormatterTest(unittest.TestCase):
         json = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
         expected_date = utils.format_date(datetime.datetime(2012, 1, 1, 12, 0, 0), year=True)
         self.assertTrue("title='Direct actie vereist: norm niet gehaald (sinds {})".format(expected_date) in json)
-
-    def test_escape_backspace(self):
-        """ Test tht backspaces are escaped. """
-        pass
