@@ -17,6 +17,7 @@ limitations under the License.
 
 import functools
 import logging
+import urllib
 
 from . import url_opener
 from .. import utils, domain
@@ -74,7 +75,7 @@ class Checkmarx(domain.MetricSource):
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
                   "&$filter=LastScan/Results/any(r:%20r%2fSeverity%20eq%20CxDataRepository.Severity%27High%27" \
                   "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
-            .format(self.checkmarx_url, project_name)
+            .format(self.checkmarx_url, urllib.urlencode(project_name))
 
         return self.__get_json(api_url)
 
