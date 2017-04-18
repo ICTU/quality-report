@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 
+import json
 import logging
 import re
 
@@ -158,7 +159,7 @@ class MetricsFormatter(base_formatter.Formatter):
             if url_label:
                 url_label += ': '
             text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return text.replace(r"\\", r"\\\\")
+        return json.dumps(text)[1:-1]  # Strip quotation marks
 
     @staticmethod
     def __format_url(anchor: str, href: str) -> str:
