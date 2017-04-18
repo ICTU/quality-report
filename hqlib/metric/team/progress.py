@@ -40,8 +40,8 @@ class TeamProgress(LowerIsBetterMetric):
     @classmethod
     def norm_template_default_values(cls) -> MetricParameters:
         values = super(TeamProgress, cls).norm_template_default_values()
-        values['target_factor'] = str(cls.target_factor)
-        values['low_target_factor'] = str(cls.low_target_factor)
+        values['target_factor'] = cls.target_factor
+        values['low_target_factor'] = cls.low_target_factor
         return values
 
     def __init__(self, *args, **kwargs) -> None:
