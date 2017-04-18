@@ -1,3 +1,8 @@
+2017-04-18  Release 1.81.4
+
+  * Bug fix: Escape backslashes in branch names when generating the metrics JSON file.
+  
+  
 2017-04-18  Release 1.81.3
 
   * Bug fix: Don't crash when measuring team progress.

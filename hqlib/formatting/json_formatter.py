@@ -158,7 +158,7 @@ class MetricsFormatter(base_formatter.Formatter):
             if url_label:
                 url_label += ': '
             text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return text
+        return text.replace(r"\\", r"\\\\")
 
     @staticmethod
     def __format_url(anchor: str, href: str) -> str:

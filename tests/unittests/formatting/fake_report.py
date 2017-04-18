@@ -102,8 +102,7 @@ class Report(object):
         """ Return a fake section. """
         return self.get_meta_section()
 
-    def get_product_section(self, product_label):
-        # pylint: disable=unused-argument
+    def get_product_section(self, product_label):  # pylint: disable=unused-argument
         """ Return a fake section. """
         return Section(product=self.__products[0]) if self.__products else Section()
 
