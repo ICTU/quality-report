@@ -193,7 +193,7 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
+        self.assertEqual({self.__birt.metric_source_name: self.__birt.manual_test_execution_url()}, self.__metric.url())
 
 
 class ManualLogicalTestCasesTest(unittest.TestCase):

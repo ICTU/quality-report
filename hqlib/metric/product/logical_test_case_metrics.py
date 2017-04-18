@@ -159,6 +159,9 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     def _nr_ltcs(self) -> int:
         return self._metric_source.nr_ltcs()
 
+    def _metric_source_urls(self):
+        return [self._metric_source.manual_test_execution_url()]
+
 
 class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     """ Metric for measuring how long it takes to execute the manual logical test cases. """

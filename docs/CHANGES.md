@@ -1,3 +1,10 @@
+2017-04-18  Release 1.81.2
+
+  * Bug fix: Link to the manual tests Birt report for the number of manual test cases instead of to the what's missing 
+    report.
+  * Bug fix: Quote project names before passing them to Checkmarx.
+  
+  
 2017-04-14  Release 1.81.1
 
   * Bug fix: Don't use card titles of Trello cards to prevent leaking information.
