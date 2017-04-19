@@ -16,7 +16,7 @@ limitations under the License.
 
 import logging
 
-from typing import cast, List, Tuple, Set, Type, Optional
+from typing import cast, List, Set, Type, Optional
 
 from .document import Document
 from .environment import Environment
@@ -27,6 +27,7 @@ from ..measurement import metric_source, measurable
 from ..measurement.metric_source import MetricSource
 from ..measurement.metric_sources import MetricSources
 from ..base import DomainObject
+from ...typing import Dashboard, DashboardColumns, DashboardRows
 
 
 class Project(RequirementSubject, measurable.MeasurableObject):
@@ -40,7 +41,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         self.__teams: List[Team] = []
         self.__documents: List[Document] = []
         self.__environments: List[Environment] = []
-        self.__dashboard: Tuple[List, List] = ([], [])  # rows, columns
+        self.__dashboard: Dashboard = ([], [])  # rows, columns
         super().__init__(*args, **kwargs)
 
     @staticmethod
@@ -106,11 +107,11 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the environments of the project """
         return self.__environments
 
-    def set_dashboard(self, dashboard_columns, dashboard_rows):
+    def set_dashboard(self, dashboard_columns: DashboardColumns, dashboard_rows: DashboardRows):
         """ Set the dashboard layout for the project. """
         self.__dashboard = (dashboard_columns, dashboard_rows)
 
-    def dashboard(self):
+    def dashboard(self) -> Dashboard:
         """ Return the dashboard layout for the project. """
         return self.__dashboard
 

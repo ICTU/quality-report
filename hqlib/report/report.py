@@ -19,11 +19,7 @@ from typing import cast, Set, Type, Sequence, Optional, List
 
 from .section import Section, SectionHeader
 from .. import metric, metric_source, domain, requirement
-
-
-# Types
-
-DateTime = datetime.datetime
+from ..typing import Dashboard, DateTime
 
 
 class QualityReport(domain.DomainObject):
@@ -120,7 +116,7 @@ class QualityReport(domain.DomainObject):
         """ Return the section with the meta metrics. """
         return self.__meta_section
 
-    def dashboard(self):
+    def dashboard(self) -> Dashboard:
         """ Return the dashboard layout. """
         return self.__project.dashboard()
 

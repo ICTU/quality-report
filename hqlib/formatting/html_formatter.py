@@ -17,9 +17,11 @@ limitations under the License.
 
 import logging
 import pkg_resources
-from typing import List, Dict, Any
+from typing import List, Dict, Iterable, Optional, Tuple, Union
 
 from . import base_formatter
+from ..report import QualityReport, Section
+from ..domain import Metric, DomainObject
 
 
 class HTMLFormatter(base_formatter.Formatter):
@@ -30,7 +32,7 @@ class HTMLFormatter(base_formatter.Formatter):
         self.__current_software_version = current_software_version
         super().__init__()
 
-    def prefix(self, report) -> str:
+    def prefix(self, report: QualityReport) -> str:
         """ Return a HTML formatted version of the report prefix. """
         parameters = dict(
             title=report.title(),
@@ -53,7 +55,7 @@ class HTMLFormatter(base_formatter.Formatter):
         fragment = pkg_resources.resource_string(__name__, 'html/{name}.html'.format(name=name))
         return fragment.decode('utf-8')
 
-    def section(self, report, section) -> str:
+    def section(self, report: QualityReport, section: Section) -> str:
         """ Return a HTML formatted version of the section. """
         subtitle = self.__format_subtitle(section.subtitle())
         extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
@@ -61,29 +63,29 @@ class HTMLFormatter(base_formatter.Formatter):
         parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
         return self.__get_html_fragment('section').format(**parameters)
 
-    def metric(self, metric) -> str:
+    def metric(self, metric: Metric) -> str:
         """ Return a HTML formatted version of the metric. """
         return ''  # pragma: no cover
 
     @staticmethod
-    def __section_navigation_menu(report) -> str:
+    def __section_navigation_menu(report: QualityReport) -> str:
         """ Return the menu for jumping to specific sections. """
         menu_items = []
 
         menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
                              '</li>'
 
-        def add_menu_item(section, title: str) -> None:
+        def add_menu_item(section: Section, title: str) -> None:
             """ Add a menu item that links to the specified section. """
             menu_items.append(menu_item_template.format(section_id=section.id_prefix(), menu_label=title))
 
-        def add_menu_items(sections) -> None:
+        def add_menu_items(sections: Iterable[Section]) -> None:
             """ Add a header with menu items that link to the specified sections. """
             for each_section in sections:
                 add_menu_item(each_section, each_section.title() + ' ' + each_section.subtitle())
 
         # First, group related sections
-        sections: Dict[str, Any] = {}
+        sections: Dict[str, List[Section]] = {}
         titles: List[str] = []
         for section in report.sections():
             title = section.title()
@@ -112,7 +114,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return template.format(sub=subtitle) if subtitle else ''
 
     @staticmethod
-    def __metric_classes(report) -> str:
+    def __metric_classes(report: QualityReport) -> str:
         """ Return a HTML table of the metrics the software can measure. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{norm}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -133,7 +135,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __metric_sources(report) -> str:
+    def __metric_sources(report: QualityReport) -> str:
         """ Return a HTML table of the metric sources the software can collect data from. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{ins}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -153,7 +155,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __requirements(report) -> str:
+    def __requirements(report: QualityReport) -> str:
         """ Return a HTML table of the requirements. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{metrics}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -170,7 +172,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __domain_object_classes(report) -> str:
+    def __domain_object_classes(report: QualityReport) -> str:
         """ Return a HTML table of the domain objects. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{default_requirements}</td>' \
               '<td>{optional_requirements}</td></tr>'
@@ -199,7 +201,7 @@ class HTMLFormatter(base_formatter.Formatter):
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     """ Return a HTML formatted dashboard for the quality report. """
     @classmethod
-    def format(cls, report) -> str:
+    def format(cls, report: QualityReport) -> str:
         """ Return a HTML formatted dashboard. """
         table_indent = ' ' * 24
         thead_indent = tbody_indent = table_indent + ' ' * 4
@@ -218,7 +220,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         return '\n'.join(dashboard)
 
     @staticmethod
-    def __dashboard_headers(report, tr_indent: str, td_indent: str) -> List[str]:
+    def __dashboard_headers(report: QualityReport, tr_indent: str, td_indent: str) -> List[str]:
         """ Return the headers of the dashboard. """
         dashboard_headers = report.dashboard()[0]
         th_template = td_indent + '<th colspan="{span}" style="text-align: center;">{sec}</th>'
@@ -231,7 +233,7 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         return rows
 
     @classmethod
-    def __dashboard_rows(cls, report, tr_indent: str, td_indent: str) -> List[str]:
+    def __dashboard_rows(cls, report: QualityReport, tr_indent: str, td_indent: str) -> List[str]:
         """ Return the rows of the dashboard. """
         dashboard_rows = report.dashboard()[1]
         rows = list()
@@ -243,7 +245,8 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
         return rows
 
     @staticmethod
-    def __dashboard_cell(report, column, td_indent: str) -> str:
+    def __dashboard_cell(report: QualityReport, column: Tuple[Union[DomainObject, str], str, Optional[Tuple[int, int]]],
+                         td_indent: str) -> str:
         """ Return a cell of the dashboard. """
         td_template = td_indent + \
             '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
@@ -251,10 +254,8 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
                                         <div id="section_summary_chart_{ID}"></div>
                                     </td>
 '''
-        try:
-            section_id = column[0].short_name()
-        except AttributeError:
-            section_id = column[0].upper()
+
+        section_id = column[0].short_name() if isinstance(column[0], DomainObject) else column[0].upper()
         section = report.get_section(section_id)
         title = section.title() if section else '???'
         colspan, rowspan = column[2] if len(column) == 3 else (1, 1)

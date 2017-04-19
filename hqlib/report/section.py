@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Sequence
+from typing import Sequence, Iterable
 from ..domain import Metric, Product
 
 
@@ -42,7 +42,7 @@ class SectionHeader(object):
 
 # Section implements __getitem__ but not the complete Container protocol
 
-class Section(object):
+class Section(Iterable):
     """ Section within a report. """
 
     def __init__(self, header: SectionHeader, metrics: Sequence[Metric], product: Product=None) -> None:
@@ -55,8 +55,8 @@ class Section(object):
     def __str__(self) -> str:
         return self.title()
 
-    def __getitem__(self, index: int) -> Metric:
-        return self.__metrics[index]
+    def __iter__(self):
+        return iter(self.__metrics)
 
     def title(self) -> str:
         """ Return the title of this section. """

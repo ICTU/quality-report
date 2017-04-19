@@ -15,3 +15,4 @@ limitations under the License.
 """
 
 from .report import QualityReport
+from .section import Section
