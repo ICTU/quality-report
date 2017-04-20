@@ -26,3 +26,4 @@ DashboardRows = Sequence[Sequence[Tuple[Union[DomainObject, str], str, Optional[
 Dashboard = Tuple[DashboardColumns, DashboardRows]
 
 DateTime = datetime.datetime
+TimeDelta = datetime.timedelta
