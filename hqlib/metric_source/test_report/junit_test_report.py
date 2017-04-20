@@ -18,8 +18,9 @@ limitations under the License.
 import datetime
 import logging
 import re
-import xml.etree.cElementTree, xml.etree.ElementTree
-from typing import List, Dict, Sequence
+import xml.etree.cElementTree
+from xml.etree.ElementTree import Element
+from typing import List, Sequence
 
 from ..abstract import test_report
 from ..url_opener import UrlOpener
@@ -58,7 +59,7 @@ class JunitTestReport(test_report.TestReport):
         """ Return the date and time of the report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except UrlOpener.url_open_exceptions: # + (xml.etree.cElementTree.ParseError,):
+        except UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         except xml.etree.cElementTree.ParseError:
             return datetime.datetime.min
@@ -78,7 +79,9 @@ class JunitTestReport(test_report.TestReport):
         """ Return the number of tests with the specified result in the test report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
+        except UrlOpener.url_open_exceptions:
+            return -1
+        except xml.etree.cElementTree.ParseError:
             return -1
         if test_suites:
             return sum(int(test_suite.get(result_type, 0)) for test_suite in test_suites)
@@ -90,16 +93,18 @@ class JunitTestReport(test_report.TestReport):
         """ Return the number of test cases that have failures (failed assertions). """
         try:
             root = self.__element_tree(report_url)
-        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
+        except UrlOpener.url_open_exceptions:
+            return -1
+        except xml.etree.cElementTree.ParseError:
             return -1
         return len(root.findall('.//testcase[failure]'))
 
-    def __test_suites(self, report_url: str) -> Sequence[Dict[str, str]]:
+    def __test_suites(self, report_url: str) -> Sequence[Element]:
         """ Return the test suites in the report. """
         root = self.__element_tree(report_url)
         return [root] if root.tag == 'testsuite' else root.findall('testsuite')
 
-    def __element_tree(self, report_url: str) -> xml.etree.ElementTree:
+    def __element_tree(self, report_url: str) -> Element:
         """ Return the report contents as ElementTree. """
         contents = self._url_read(report_url)
         try:
