@@ -22,9 +22,7 @@ import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
-from hqlib.typing import MetricParameters
-
-DateTime = datetime.datetime
+from hqlib.typing import MetricParameters, DateTime
 
 
 class Metric(object):

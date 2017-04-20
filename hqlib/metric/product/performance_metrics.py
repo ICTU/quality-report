@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import List
+
 from ... import domain, metric_source
 from hqlib.typing import MetricParameters
 
@@ -27,7 +29,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
     template = '{value} van de {total} {unit} van {name} overschrijden de {level}.'
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> MetricParameters:
         values = super(PerformanceMetric, cls).norm_template_default_values()
         values['level'] = cls.level
         return values
@@ -35,7 +37,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
     def value(self):
         return self._violating_queries() if self._metric_source and self._metric_source_id else -1
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
         raise NotImplementedError  # pragma: no cover
 
@@ -44,7 +46,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         return self._metric_source.queries(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else -1
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else []
 
@@ -60,7 +62,7 @@ class PerformanceTestAge(domain.MetricSourceAgeMetric):
     target_value = 7
     low_target_value = 14
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else []
 
@@ -110,7 +112,7 @@ class PerformanceLoadTestMetric(PerformanceMetric):
     unit = 'performanceloadtestgevallen'
     metric_source_class = metric_source.PerformanceLoadTestReport
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
         raise NotImplementedError  # pragma: no cover
 
@@ -121,7 +123,7 @@ class PerformanceLoadTestWarnings(PerformanceLoadTestMetric):
     level = 'gewenste responsetijd'
     low_target_value = 5
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         return self._metric_source.queries_violating_wished_responsetime(self._metric_source_id)
 
 
@@ -131,7 +133,7 @@ class PerformanceLoadTestErrors(PerformanceLoadTestMetric):
     level = 'maximale responstijd'
     low_target_value = 0
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
 
 
@@ -140,7 +142,7 @@ class PerformanceEnduranceTestMetric(PerformanceMetric):
     unit = 'performanceduurtestgevallen'
     metric_source_class = metric_source.PerformanceEnduranceTestReport
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
         raise NotImplementedError  # pragma: no cover
 
@@ -151,7 +153,7 @@ class PerformanceEnduranceTestWarnings(PerformanceEnduranceTestMetric):
     level = 'gewenste responsetijd'
     low_target_value = 5
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         return self._metric_source.queries_violating_wished_responsetime(self._metric_source_id)
 
 
@@ -161,7 +163,7 @@ class PerformanceEnduranceTestErrors(PerformanceEnduranceTestMetric):
     level = 'maximale responstijd'
     low_target_value = 0
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
 
 
@@ -170,7 +172,7 @@ class PerformanceScalabilityTestMetric(PerformanceMetric):
     unit = 'performanceschaalbaarheidstestgevallen'
     metric_source_class = metric_source.PerformanceScalabilityTestReport
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
         raise NotImplementedError  # pragma: no cover
 
@@ -181,7 +183,7 @@ class PerformanceScalabilityTestWarnings(PerformanceScalabilityTestMetric):
     level = 'gewenste responsetijd'
     low_target_value = 5
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         return self._metric_source.queries_violating_wished_responsetime(self._metric_source_id)
 
 
@@ -191,5 +193,5 @@ class PerformanceScalabilityTestErrors(PerformanceScalabilityTestMetric):
     level = 'maximale responstijd'
     low_target_value = 0
 
-    def _violating_queries(self):
+    def _violating_queries(self) -> int:
         return self._metric_source.queries_violating_max_responsetime(self._metric_source_id)
