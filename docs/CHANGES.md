@@ -1,3 +1,8 @@
+2017-04-20  Release 1.81.5
+
+  * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.
+  
+  
 2017-04-18  Release 1.81.4
 
   * Bug fix: Escape backslashes in branch names when generating the metrics JSON file.
