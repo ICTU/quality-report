@@ -27,3 +27,5 @@ Dashboard = Tuple[DashboardColumns, DashboardRows]
 
 DateTime = datetime.datetime
 TimeDelta = datetime.timedelta
+
+HistoryRecord = Dict[str, Union[Tuple[str, str, str], str]]

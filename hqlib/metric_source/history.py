@@ -14,31 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-from ast import literal_eval
 import datetime
 import functools
 import io
 import logging
+from ast import literal_eval
+from typing import Callable, TextIO, List, Dict, Union, Tuple, cast
 
 from .. import domain
+from ..typing import DateTime, HistoryRecord
 
 
 class History(domain.MetricSource):
     """ Class representing the history file. """
     metric_source_name = 'Measurement history file'
 
-    def __init__(self, history_filename, recent_history=250, file_=None):
+    def __init__(self, history_filename: str, recent_history: int=250, file_: Callable[[str], TextIO]=None) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_ if file_ else open
         super().__init__(url=history_filename)
 
-    def filename(self):
+    def filename(self) -> str:
         """ Return the history filename """
         return self.__history_filename
 
-    def recent_history(self, *metric_ids):
+    def recent_history(self, *metric_ids: str) -> List:
         """ Retrieve the recent history for the metric_ids. """
         values = []
         for measurement in self.__historic_values():
@@ -48,29 +49,32 @@ class History(domain.MetricSource):
                     break  # inner loop
         return values
 
-    def complete_history(self):
+    def complete_history(self) -> List:
         """ Return the complete history. """
         return self.__historic_values(recent_only=False)
 
-    def status_start_date(self, metric_id, current_status, now=datetime.datetime.now):
+    def status_start_date(self, metric_id: str, current_status: str, now: Callable[[], DateTime]=datetime.datetime.now) -> DateTime:
         """ Return the start date of the current status of the metric. """
         last_status, date = self.__last_status(metric_id)
         return date if last_status == current_status else now()
 
-    def statuses(self):
+    def statuses(self) -> List[Dict[str, Union[str, int]]]:
         """ Return the statuses for each measurement. """
         measurements = self.__load_history(recent_only=False)
         statuses = []
         for measurement in measurements:
-            measurement_statuses = dict(date=measurement['date'])
+            measurement_statuses: Dict[str, int] = dict()
             for measurement_data in list(measurement.values()):
                 if isinstance(measurement_data, tuple):
                     status = measurement_data[1]
                     measurement_statuses[status] = measurement_statuses.get(status, 0) + 1
-            statuses.append(measurement_statuses)
+            measurement_statuses_with_date: Dict[str, Union[str, int]] = dict()
+            measurement_statuses_with_date.update(measurement_statuses)
+            measurement_statuses_with_date['date'] = cast(str, measurement['date'])
+            statuses.append(measurement_statuses_with_date)
         return statuses
 
-    def __last_status(self, metric_id):
+    def __last_status(self, metric_id: str) -> Tuple[str, DateTime]:
         """ Return the last recorded status of the metric and the date that the metric first had that status. """
         try:
             last_measurement = self.__load_history()[-1][metric_id]
@@ -88,25 +92,25 @@ class History(domain.MetricSource):
             return '', datetime.datetime.min
 
     @functools.lru_cache(maxsize=1024)
-    def __historic_values(self, recent_only=True):
+    def __historic_values(self, recent_only: bool=True) -> List[Dict[str, int]]:
         """ Return only the historic values from the history file, so without the status and status date. """
         measurements = self.__load_history(recent_only)
         value_only_measurements = []
         for measurement in measurements:
-            values_only_measurement = dict()
+            values_only_measurement: Dict[str, int] = dict()
             for metric_id, measurement_data in list(measurement.items()):
                 value = measurement_data[0] if isinstance(measurement_data, tuple) else measurement_data
-                values_only_measurement[metric_id] = value
+                values_only_measurement[metric_id] = cast(int, value)
             value_only_measurements.append(values_only_measurement)
         return value_only_measurements
 
-    def __load_history(self, recent_only=True):
+    def __load_history(self, recent_only: bool=True) -> List[HistoryRecord]:
         """ Load measurements from the history file. """
         lines = self.__load_complete_history()
         return lines[-self.__recent_history:] if recent_only else lines
 
     @functools.lru_cache(maxsize=1024)
-    def __load_complete_history(self):
+    def __load_complete_history(self) -> List[HistoryRecord]:
         """ Load all measurements from the history file. """
         try:
             history_file = self.__file(self.__history_filename)
