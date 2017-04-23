@@ -14,15 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any, Dict, List, Type, Tuple, Union
+from typing import Any, Dict, List, Type, Tuple, Union, TYPE_CHECKING
 
-import datetime
 import functools
 import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
 from hqlib.typing import MetricParameters, DateTime
+if TYPE_CHECKING:
+    from ..software_development.project import Project
 
 
 class Metric(object):
@@ -61,7 +62,7 @@ class Metric(object):
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
-    def __init__(self, subject=None, project=None) -> None:
+    def __init__(self, subject=None, project: 'Project'=None) -> None:
         self._subject = subject
         self._project = project
         self._metric_source = self._project.metric_source(self.metric_source_class) if self.metric_source_class \

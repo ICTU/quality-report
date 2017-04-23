@@ -15,9 +15,12 @@ limitations under the License.
 """
 
 
-from typing import Dict, Optional
+from typing import Dict, Type, Optional, TYPE_CHECKING
 
 from ..base import DomainObject
+from hqlib.typing import Target
+if TYPE_CHECKING:
+    from .metric import Metric
 
 
 class MeasurableObject(DomainObject):
@@ -29,15 +32,15 @@ class MeasurableObject(DomainObject):
         self.__metric_options = kwargs.pop('metric_options', dict())
         super().__init__(*args, **kwargs)
 
-    def target(self, metric_class):
+    def target(self, metric_class: Type['Metric']) -> Target:
         """ Return the target for the specified metric. """
         return self.__metric_options.get(metric_class, dict()).get('target')
 
-    def low_target(self, metric_class):
+    def low_target(self, metric_class: Type['Metric']) -> Target:
         """ Return the low target for the specified metric. """
         return self.__metric_options.get(metric_class, dict()).get('low_target')
 
-    def technical_debt_target(self, metric_class):
+    def technical_debt_target(self, metric_class: Type['Metric']):
         """ Return whether a score below target is considered to be accepted technical debt. """
         return self.__metric_options.get(metric_class, dict()).get('debt_target')
 
@@ -61,7 +64,7 @@ class MeasurableObject(DomainObject):
             to get information about this object from the metric source. """
         return self.__metric_source_options.get(metric_source)
 
-    def metric_options(self, metric_class) -> Dict:
+    def metric_options(self, metric_class: Type['Metric']) -> Dict:
         """ Return the options of this object for the metric class. Options can be any information that is needed
             for the metric. """
         return self.__metric_options.get(metric_class, dict())

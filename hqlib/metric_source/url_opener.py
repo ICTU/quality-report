@@ -21,6 +21,7 @@ import logging
 import socket
 import urllib.error
 import urllib.request
+from typing import cast
 
 
 class UrlOpener(object):
@@ -28,26 +29,26 @@ class UrlOpener(object):
 
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, http.client.BadStatusLine)
 
-    def __init__(self, uri=None, username=None, password=None,
-                 build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen):
+    def __init__(self, uri: str=None, username: str=None, password: str=None,
+                 build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen) -> None:
         self.__username = username
         self.__password = password
         self.__opener = self.__create_url_opener(uri, build_opener, url_open)
 
-    def username(self):
+    def username(self) -> str:
         """ Return the username, if any. """
         return self.__username
 
-    def password(self):
+    def password(self) -> str:
         """ Return the password, if any. """
         return self.__password
 
-    def __create_url_opener(self, uri, build_opener, url_open):
+    def __create_url_opener(self, uri: str, build_opener, url_open):
         """ Return a url opener method. If credentials are supplied, create an opener with authentication handler. """
         if uri and self.__username and self.__password:
             password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             password_manager.add_password(realm=None, uri=uri, user=self.__username, passwd=self.__password)
-            auth_handler = urllib.request.HTTPBasicAuthHandler(password_manager)
+            auth_handler = urllib.request.HTTPBasicAuthHandler(cast(urllib.request.HTTPPasswordMgr, password_manager))
             return build_opener(auth_handler).open
         elif self.__username and self.__password:
             credentials = base64.encodebytes(bytes(':'.join([self.__username, self.__password]), 'utf-8'))

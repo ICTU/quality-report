@@ -29,3 +29,5 @@ DateTime = datetime.datetime
 TimeDelta = datetime.timedelta
 
 HistoryRecord = Dict[str, Union[Tuple[str, str, str], str]]
+
+Target = int
