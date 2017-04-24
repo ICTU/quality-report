@@ -17,6 +17,7 @@ limitations under the License.
 import functools
 
 from . import metric
+from hqlib.typing import MetricValue
 
 
 class LowerIsBetterMetric(metric.Metric):
@@ -28,7 +29,7 @@ class LowerIsBetterMetric(metric.Metric):
     def value(self):
         return super().value()  # pragma: no cover
 
-    def _is_value_better_than(self, target) -> bool:
+    def _is_value_better_than(self, target: MetricValue) -> bool:
         return self.perfect_value <= self.value() <= target
 
 
@@ -39,5 +40,5 @@ class HigherIsBetterMetric(metric.Metric):
     def value(self):
         return super().value()  # pragma: no cover
 
-    def _is_value_better_than(self, target) -> bool:
+    def _is_value_better_than(self, target: MetricValue) -> bool:
         return self.value() >= target

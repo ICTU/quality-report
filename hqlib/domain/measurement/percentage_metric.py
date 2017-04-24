@@ -20,7 +20,7 @@ from typing import Tuple
 from . import directed_metric
 from . import metric
 from ... import utils
-from hqlib.typing import MetricParameters
+from hqlib.typing import MetricParameters, MetricValue
 
 
 class PercentageMetric(metric.Metric):
@@ -39,7 +39,7 @@ class PercentageMetric(metric.Metric):
         else:
             return utils.percentage(numerator, denominator, self.zero_divided_by_zero_is_zero)
 
-    def _is_value_better_than(self, target) -> bool:
+    def _is_value_better_than(self, target: MetricValue) -> bool:
         """ Return whether the actual value of the metric is better than the specified target value. """
         return super()._is_value_better_than(target)
 
