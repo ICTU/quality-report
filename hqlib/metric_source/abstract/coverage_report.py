@@ -22,9 +22,7 @@ from typing import Callable
 
 from ..url_opener import UrlOpener
 from ... import domain
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class CoverageReport(domain.MetricSource):
