@@ -17,10 +17,11 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import Optional, Callable
+from typing import Optional, Callable, List
 
 from . import beautifulsoup, url_opener
 from .. import utils, domain
+from hqlib.typing import DateTime
 
 
 class BirtReport(beautifulsoup.BeautifulSoupOpener):
@@ -234,47 +235,47 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the number of logical test cases for the product that have to be automated. """
         return self.__test_design_metric(row_nr=10)
 
-    def nr_manual_ltcs(self, version='trunk'):
+    def nr_manual_ltcs(self, version: str='trunk') -> int:
         """ Return the number of logical test cases for the product that are executed manually. """
-        test_dates = self.__manual_test_dates(version)
-        if test_dates == -1:
+        try:
+            test_dates = self.__manual_test_dates(version)
+        except url_opener.UrlOpener.url_open_exceptions:
             return -1
-        else:
-            return len(test_dates)
+        return len(test_dates)
 
-    def nr_manual_ltcs_too_old(self, version, target):
+    def nr_manual_ltcs_too_old(self, version: str, target: int) -> int:
         """ Return the number of manual logical test cases that have not been executed for target amount of days. """
-        test_dates = self.__manual_test_dates(version)
-        if test_dates == -1:
+        try:
+            test_dates = self.__manual_test_dates(version)
+        except url_opener.UrlOpener.url_open_exceptions:
             return -1
-        else:
-            now = datetime.datetime.now()
-            too_old = [date for date in test_dates if (now - date).days > target]
-            return len(too_old)
+        now = datetime.datetime.now()
+        too_old = [date for date in test_dates if (now - date).days > target]
+        return len(too_old)
 
-    def __nr_missing_automated_ltcs(self):
+    def __nr_missing_automated_ltcs(self) -> int:
         """ Return the number of logical test cases for the product that should be automated but have not. """
         return self.__test_design_metric(row_nr=13)
 
-    def date_of_last_manual_test(self, version='trunk'):
+    def date_of_last_manual_test(self, version: str='trunk') -> DateTime:
         """ Return the date when the product/version was last tested manually. """
-        test_dates = self.__manual_test_dates(version)
-        if test_dates == -1:
-            return -1
-        else:
-            test_dates = test_dates[:]
+        try:
+            test_dates = self.__manual_test_dates(version)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return datetime.datetime.min
+        test_dates = test_dates[:]
         # Add today's date so that we report today if there are no manual test cases at all.
         test_dates.append(datetime.datetime.now())
         return min(test_dates)
 
-    def __manual_test_dates(self, version):
+    def __manual_test_dates(self, version: str) -> List[DateTime]:
         """ Return the manual test cases. """
         url = self.__manual_test_execution_url.format(ver=version)
         try:
             soup = self.soup(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Could not open manual test dates report at %s: %s", url, reason)
-            return -1
+            raise
         inner_table = soup('table', {'id': '__bookmark_1'})[0]
         rows = inner_table('tr')[1:]  # Skip header row
         test_dates = []
@@ -293,7 +294,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
             test_dates.append(last_test_date)
         return test_dates
 
-    def __test_design_metric(self, row_nr):
+    def __test_design_metric(self, row_nr: int) -> int:
         """ Get a metric from a specific row in the test design report."""
         try:
             test_design_report = self.soup(self.__test_design_url)

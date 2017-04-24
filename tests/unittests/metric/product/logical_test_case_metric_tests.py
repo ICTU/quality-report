@@ -211,8 +211,8 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_value_when_untested(self):
         """ Test that the value is the age of the version when the release has not been tested. """
-        self.__birt.date_of_last_manual_tests = datetime.datetime.min
-        expected_value = (datetime.datetime.now() - datetime.datetime.min).days
+        self.__birt.date_of_last_manual_tests = datetime.datetime(2000, 1, 1)
+        expected_value = (datetime.datetime.now() - datetime.datetime(2000, 1, 1)).days
         self.assertEqual(expected_value, self.__metric.value())
 
     def test_report(self):

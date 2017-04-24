@@ -827,7 +827,7 @@ class BirtTest(unittest.TestCase):
     def test_date_of_last_manual_test_on_error(self):
         """ Test that the date of the last manual test execution is the min date when Birt is unavailable. """
         self.__birt.html = 'raise'
-        self.assertEqual(-1, self.__birt.date_of_last_manual_test())
+        self.assertEqual(datetime.datetime.min, self.__birt.date_of_last_manual_test())
 
 
 class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disable=too-few-public-methods

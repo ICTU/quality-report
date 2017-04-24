@@ -116,28 +116,25 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     metric_source_class = metric_source.Birt
 
     def value(self):
-        return -1 if self._missing() else (datetime.datetime.now() - self.__date_of_last_manual_test()).days
+        return -1 if self._missing() else \
+            (datetime.datetime.now() - self._metric_source.date_of_last_manual_test()).days
 
     def _metric_source_urls(self):
         return [self._metric_source.manual_test_execution_url()]
 
-    def __date_of_last_manual_test(self) -> DateTime:
-        date = self._metric_source.date_of_last_manual_test()
-        return datetime.datetime.min if date == -1 else date
-
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
-        parameters['date'] = utils.format_date(self.__date_of_last_manual_test())
+        parameters['date'] = utils.format_date(self._metric_source.date_of_last_manual_test())
         parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()
         parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old('trunk', self.target())
         return parameters
 
     def _get_template(self) -> str:
-        return self.never_template if self.__date_of_last_manual_test() == datetime.datetime.min \
+        return self.never_template if self._metric_source.date_of_last_manual_test() == datetime.datetime.min \
             else super()._get_template()
 
     def _missing(self) -> bool:
-        return self._metric_source.date_of_last_manual_test() in (-1, None)
+        return self._metric_source.date_of_last_manual_test() == datetime.datetime.min
 
 
 class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
