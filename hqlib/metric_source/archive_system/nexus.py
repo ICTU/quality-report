@@ -16,20 +16,22 @@ limitations under the License.
 
 import datetime
 import xml.etree.cElementTree
+from typing import Callable, TextIO
 
 from .. import url_opener
 from ..abstract.archive_system import ArchiveSystem
+from hqlib.typing import DateTime
 
 
 class Nexus(ArchiveSystem):
     """ Class representing a Nexus archive system. """
     metric_source_name = 'Nexus'
 
-    def __init__(self, url_open=None, **kwargs):
+    def __init__(self, url_open: Callable[[str], TextIO]=None, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_read
         super().__init__()
 
-    def last_changed_date(self, url):
+    def last_changed_date(self, url: str) -> DateTime:
         try:
             contents = self._url_open(url).read()
         except url_opener.UrlOpener.url_open_exceptions:
@@ -39,7 +41,7 @@ class Nexus(ArchiveSystem):
         return self.__parse_date_time(most_recent_string)
 
     @staticmethod
-    def __parse_date_time(date_time_string):
+    def __parse_date_time(date_time_string: str) -> DateTime:
         """ Parse the date time string and return a datetime instance. """
         date, time = date_time_string.split(' ')[:2]  # Ignore timezone
         year, month, day = date.split('-')
