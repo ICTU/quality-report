@@ -15,12 +15,14 @@ limitations under the License.
 """
 
 import datetime
+from distutils.version import LooseVersion
 from typing import Dict, Union, Tuple, Sequence, Optional
 
 from .domain.base import DomainObject
 
 
-MetricParameters = Dict[str, Union[str, int, float]]
+MetricValue = Union[int, float, str, LooseVersion]
+MetricParameters = Dict[str, MetricValue]
 DashboardColumns = Sequence[Tuple[str, int]]
 DashboardRows = Sequence[Sequence[Tuple[Union[DomainObject, str], str, Optional[Tuple[int, int]]]]]
 Dashboard = Tuple[DashboardColumns, DashboardRows]
@@ -29,5 +31,3 @@ DateTime = datetime.datetime
 TimeDelta = datetime.timedelta
 
 HistoryRecord = Dict[str, Union[Tuple[str, str, str], str]]
-
-Target = int

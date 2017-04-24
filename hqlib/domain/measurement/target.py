@@ -18,16 +18,16 @@ limitations under the License.
 import datetime
 
 from ...utils import format_date
-from hqlib.typing import DateTime, Target
+from hqlib.typing import DateTime, MetricValue
 
 
 class TechnicalDebtTarget(object):
     """ Keep track of the current accepted technical debt for a certain metric. """
-    def __init__(self, target_value: Target, explanation: str='') -> None:
+    def __init__(self, target_value: MetricValue, explanation: str= '') -> None:
         self.__target_value = target_value
         self.__explanation = explanation
 
-    def target_value(self) -> Target:
+    def target_value(self) -> MetricValue:
         """ Return the current technical debt target. This is the level of technical debt that is currently
             accepted. """
         return self.__target_value
@@ -48,26 +48,31 @@ class TechnicalDebtTarget(object):
 
 class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
     """ Keep track of a dynamically changing accepted technical debt for a certain metric. """
-    def __init__(self, initial_target_value: Target, initial_datetime: DateTime, end_target_value: Target,
+    def __init__(self, initial_target_value: MetricValue, initial_datetime: DateTime, end_target_value: MetricValue,
                  end_datetime: DateTime, explanation: str='') -> None:
         if end_datetime < initial_datetime:
             raise ValueError("Initial datetime should be before end datetime")
+        if not isinstance(initial_target_value, (int, float)) or not isinstance(end_target_value, (int, float)):
+            raise ValueError("Dynamical technical debt is only supported for integer or float values")
         self.__period_length = (end_datetime - initial_datetime).total_seconds()
         self.__initial_target_value = initial_target_value
         self.__initial_datetime = initial_datetime
         self.__end_datetime = end_datetime
         super().__init__(end_target_value, explanation)
 
-    def target_value(self) -> Target:
+    def target_value(self) -> MetricValue:
         now = datetime.datetime.now()
+        end_target_value = super().target_value()
         if now < self.__initial_datetime:
             return self.__initial_target_value
         elif now > self.__end_datetime:
-            return super().target_value()
+            return end_target_value
         else:
+            assert (isinstance(self.__initial_target_value, (int, float)))
+            assert (isinstance(end_target_value, (int, float)))
             period_passed = (now - self.__initial_datetime).total_seconds()
             fraction = period_passed / self.__period_length
-            delta = super().target_value() - self.__initial_target_value
+            delta = end_target_value - self.__initial_target_value
             return int(round(fraction * delta + self.__initial_target_value))
 
     def explanation(self, unit: str='') -> str:

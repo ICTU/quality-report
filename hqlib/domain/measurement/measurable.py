@@ -18,7 +18,7 @@ limitations under the License.
 from typing import Dict, Type, Optional, TYPE_CHECKING
 
 from ..base import DomainObject
-from hqlib.typing import Target
+from hqlib.typing import MetricValue
 if TYPE_CHECKING:
     from .metric import Metric
 
@@ -32,11 +32,11 @@ class MeasurableObject(DomainObject):
         self.__metric_options = kwargs.pop('metric_options', dict())
         super().__init__(*args, **kwargs)
 
-    def target(self, metric_class: Type['Metric']) -> Target:
+    def target(self, metric_class: Type['Metric']) -> MetricValue:
         """ Return the target for the specified metric. """
         return self.__metric_options.get(metric_class, dict()).get('target')
 
-    def low_target(self, metric_class: Type['Metric']) -> Target:
+    def low_target(self, metric_class: Type['Metric']) -> MetricValue:
         """ Return the low target for the specified metric. """
         return self.__metric_options.get(metric_class, dict()).get('low_target')
 

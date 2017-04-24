@@ -21,7 +21,7 @@ import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
-from hqlib.typing import MetricParameters, DateTime
+from hqlib.typing import MetricParameters, MetricValue, DateTime
 if TYPE_CHECKING:
     from ..software_development.project import Project
 
@@ -34,9 +34,9 @@ class Metric(object):
     norm_template: str = 'Subclass responsibility'
     unit: str = 'Subclass responsibility'
 
-    target_value: Any = 'Subclass responsibility'
-    low_target_value: Any = 'Subclass responsibility'
-    perfect_value: Any = 'Subclass responsibility'
+    target_value: MetricValue = 'Subclass responsibility'
+    low_target_value: MetricValue = 'Subclass responsibility'
+    perfect_value: MetricValue = 'Subclass responsibility'
 
     missing_template: str = 'De {metric} van {name} kon niet gemeten worden omdat niet alle benodigde bronnen ' \
                             'beschikbaar zijn.'
