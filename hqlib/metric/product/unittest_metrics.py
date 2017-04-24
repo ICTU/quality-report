@@ -14,11 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-import functools
-
 from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class UnittestMetricMixin(SonarDashboardMetric):  # pylint: disable=too-few-public-methods
@@ -31,7 +29,7 @@ class UnittestMetricMixin(SonarDashboardMetric):  # pylint: disable=too-few-publ
             used. """
         return not product.has_integration_tests()
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         """ Add the number of unit tests to the parameters for the report. """
         # pylint: disable=protected-access
         parameters = super()._parameters()

@@ -17,6 +17,7 @@ limitations under the License.
 
 from ..metric_source_mixin import BirtTestDesignMetric
 from ...domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
@@ -38,7 +39,7 @@ class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
         """ Return the total number of user stories. """
         return self._metric_source.nr_user_stories()
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['total'] = self._nr_user_stories()
