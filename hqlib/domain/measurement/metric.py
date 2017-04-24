@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Any, Dict, List, Type, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Type, Tuple, Union, TYPE_CHECKING
 
 import functools
 import logging
@@ -107,13 +107,13 @@ class Metric(object):
         """ Return the identification string of the metric. """
         return self.__id_string
 
-    def target(self):
+    def target(self) -> MetricValue:
         """ Return the target value for the metric. If the actual value of the
             metric is below the target value, the metric is not green. """
         subject_target = self._subject.target(self.__class__) if hasattr(self._subject, 'target') else None
         return self.target_value if subject_target is None else subject_target
 
-    def low_target(self):
+    def low_target(self) -> MetricValue:
         """ Return the low target value for the metric. If the actual value is below the low target value, the metric
             needs immediate action and its status/color is red. """
         subject_low_target = self._subject.low_target(self.__class__) if hasattr(self._subject, 'low_target') else None
@@ -183,11 +183,11 @@ class Metric(object):
             i.e. no further improvement is possible. """
         return self.value() == self.perfect_value
 
-    def value(self):
+    def value(self) -> MetricValue:
         """ Return the actual value of the metric. """
         raise NotImplementedError  # pragma: no cover
 
-    def _is_value_better_than(self, target) -> bool:
+    def _is_value_better_than(self, target: MetricValue) -> bool:
         """ Return whether the actual value of the metric is better than the specified target value. """
         raise NotImplementedError  # pragma: no cover
 
@@ -294,7 +294,11 @@ class Metric(object):
         """ Return a numerical version of the metric value for use in graphs. By default this simply returns the
             regular value, assuming it is already numerical. Metrics that don't have a numerical value by default
             can override this method to convert the non-numerical value into a numerical value. """
-        return self.value()
+        value = self.value()
+        if isinstance(value, (int, float)):
+            return value
+        else:
+            raise NotImplementedError  # pragma: no cover
 
     def __subject_name(self) -> str:
         """ Return the subject name, or a string representation if the subject has no name. """
