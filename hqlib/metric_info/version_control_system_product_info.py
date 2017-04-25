@@ -17,6 +17,7 @@ limitations under the License.
 
 import datetime
 import logging
+from typing import List
 
 from .. import domain
 
@@ -59,7 +60,7 @@ class VersionControlSystemProductInfo(object):
         return self.__vcs.unmerged_branches(path, list_of_branches_to_ignore, re_of_branches_to_ignore,
                                             list_of_branches_to_include)
 
-    def branches(self, path):
+    def branches(self, path: str) -> List[str]:
         """ Return a list of branches. """
         return self.__vcs.branches(path)
 

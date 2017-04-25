@@ -16,9 +16,14 @@ limitations under the License.
 
 
 import datetime
+from typing import Optional
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
+
+
+DateTime = datetime.datetime
 
 
 class TeamAbsence(LowerIsBetterMetric):
@@ -40,7 +45,7 @@ class TeamAbsence(LowerIsBetterMetric):
         return len(team.members()) > 1
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> MetricParameters:
         values = super(TeamAbsence, cls).norm_template_default_values()
         values['team'] = '(Lijst van teamleden)'
         values['start_date'] = 'vandaag'
@@ -49,11 +54,11 @@ class TeamAbsence(LowerIsBetterMetric):
     def value(self):
         return self._metric_source.days(self._subject, start_date=self.__start_date())[0] if self._metric_source else -1
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['team'] = ', '.join(sorted([member.name() for member in self._subject.members()]))
-        parameters['start_date'] = self.__start_date() or 'vandaag'
+        parameters['start_date'] = str(self.__start_date() or 'vandaag')
         if self._metric_source:
             length, start, end, members = self._metric_source.days(self._subject)
             if length:
@@ -62,7 +67,7 @@ class TeamAbsence(LowerIsBetterMetric):
                 parameters['absentees'] = ', '.join(sorted([member.name() for member in members]))
         return parameters
 
-    def __start_date(self):
+    def __start_date(self) -> Optional[DateTime]:
         """ Return the date from which to start monitoring. """
         start_date = self._subject.metric_options(self.__class__).get('start_date')
         return start_date if start_date and start_date > datetime.date.today() else None

@@ -73,7 +73,7 @@ class SectionTest(unittest.TestCase):
 
     def test_get_metric(self):
         """ Test that the section is a list of metrics. """
-        self.assertEqual(self.__metrics[0], self.__section[0])
+        self.assertEqual(self.__metrics, list(self.__section))
 
     def test_get_all_metrics(self):
         """ Test that the section has a list of all metrics. """

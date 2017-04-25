@@ -14,7 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict
+
 from ...domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class AlertsMetric(LowerIsBetterMetric):
@@ -25,7 +28,7 @@ class AlertsMetric(LowerIsBetterMetric):
     target_value = 0
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> MetricParameters:
         values = super(AlertsMetric, cls).norm_template_default_values()
         values['risk_level'] = cls.risk_level
         return values
@@ -33,15 +36,15 @@ class AlertsMetric(LowerIsBetterMetric):
     def value(self):
         return -1 if self._missing() else self._nr_alerts()
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return self._nr_alerts() < 0
 
-    def _nr_alerts(self):
+    def _nr_alerts(self) -> int:
         """ Return the number of alerts. """
         return self._metric_source.alerts(self.risk_level_key, *self._metric_source_urls()) \
             if self._metric_source else -1
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['risk_level'] = self.risk_level
         return parameters

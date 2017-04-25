@@ -18,11 +18,13 @@ limitations under the License.
 import datetime
 import logging
 import re
-import xml.etree.cElementTree
+import xml.etree.cElementTree, xml.etree.ElementTree
+from typing import List, Dict, Sequence
 
 from ..abstract import test_report
 from ..url_opener import UrlOpener
 from ... import utils
+from ...typing import DateTime
 
 
 class JunitTestReport(test_report.TestReport):
@@ -30,33 +32,35 @@ class JunitTestReport(test_report.TestReport):
 
     metric_source_name = 'Junit test report'
 
-    def metric_source_urls(self, *report_urls):
+    def metric_source_urls(self, *report_urls: str) -> List[str]:
         return [re.sub(r'junit/junit\.xml$', 'html/htmlReport.html', report_url) for report_url in report_urls]
 
-    def _passed_tests(self, report_url):
+    def _passed_tests(self, report_url: str) -> int:
         """ Return the number of passed tests. """
         failed = self._failed_tests(report_url)
         skipped = self._skipped_tests(report_url)
         total = self.__test_count(report_url, 'tests')
         return -1 if -1 in (failed, skipped, total) else total - (skipped + failed)
 
-    def _failed_tests(self, report_url):
+    def _failed_tests(self, report_url: str) -> int:
         """ Return the number of failed tests. """
         failed = self.__failure_count(report_url)
         errors = self.__test_count(report_url, 'errors')
         return -1 if -1 in (failed, errors) else failed + errors
 
-    def _skipped_tests(self, report_url):
+    def _skipped_tests(self, report_url: str) -> int:
         """ Return the number of skipped tests. """
         skipped = self.__test_count(report_url, 'skipped')
         disabled = self.__test_count(report_url, 'disabled')
         return -1 if -1 in (skipped, disabled) else skipped + disabled
 
-    def _report_datetime(self, report_url):
+    def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
             test_suites = self.__test_suites(report_url)
-        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
+        except UrlOpener.url_open_exceptions: # + (xml.etree.cElementTree.ParseError,):
+            return datetime.datetime.min
+        except xml.etree.cElementTree.ParseError:
             return datetime.datetime.min
         if test_suites:
             timestamps = [test_suite.get('timestamp') for test_suite in test_suites]
@@ -70,7 +74,7 @@ class JunitTestReport(test_report.TestReport):
             logging.warning("Couldn't find test suites in: %s", report_url)
             return datetime.datetime.min
 
-    def __test_count(self, report_url, result_type):
+    def __test_count(self, report_url: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """
         try:
             test_suites = self.__test_suites(report_url)
@@ -82,7 +86,7 @@ class JunitTestReport(test_report.TestReport):
             logging.warning("Couldn't find test suites in: %s", report_url)
             return -1
 
-    def __failure_count(self, report_url):
+    def __failure_count(self, report_url: str) -> int:
         """ Return the number of test cases that have failures (failed assertions). """
         try:
             root = self.__element_tree(report_url)
@@ -90,12 +94,12 @@ class JunitTestReport(test_report.TestReport):
             return -1
         return len(root.findall('.//testcase[failure]'))
 
-    def __test_suites(self, report_url):
+    def __test_suites(self, report_url: str) -> Sequence[Dict[str, str]]:
         """ Return the test suites in the report. """
         root = self.__element_tree(report_url)
         return [root] if root.tag == 'testsuite' else root.findall('testsuite')
 
-    def __element_tree(self, report_url):
+    def __element_tree(self, report_url: str) -> xml.etree.ElementTree:
         """ Return the report contents as ElementTree. """
         contents = self._url_read(report_url)
         try:

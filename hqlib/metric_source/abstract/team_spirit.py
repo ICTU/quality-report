@@ -21,6 +21,6 @@ class TeamSpirit(domain.MetricSource):
     """ Abstract class representing a team spirit indicator. """
     metric_source_name = 'Team spirit'
 
-    def team_spirit(self, team_id):
+    def team_spirit(self, team_id: str) -> str:
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         raise NotImplementedError  # pragma: nocover

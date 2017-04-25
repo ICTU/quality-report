@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+from typing import Tuple
 
 from ... import metric_source
 from ...domain import Metric, LowerIsBetterMetric
@@ -38,23 +39,23 @@ class TeamSpirit(Metric):
     def value(self):
         return self._metric_source.team_spirit(self._metric_source_id) or '?'
 
-    def numerical_value(self):
+    def numerical_value(self) -> int:
         return self.numerical_value_map.get(self.value(), -1)
 
-    def y_axis_range(self):
+    def y_axis_range(self) -> Tuple[int, int]:
         values = list(self.numerical_value_map.values())
         return min(values), max(values)
 
-    def _needs_immediate_action(self):
+    def _needs_immediate_action(self) -> bool:
         return self.value() == self.low_target()
 
-    def _is_value_better_than(self, target):
+    def _is_value_better_than(self, target) -> bool:
         return self.numerical_value() > self.numerical_value_map.get(target, -1)
 
-    def _is_below_target(self):
+    def _is_below_target(self) -> bool:
         return self.numerical_value() < max(self.numerical_value_map.values())
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return not self._metric_source.team_spirit(self._metric_source_id)
 
 
@@ -73,7 +74,7 @@ class TeamSpiritAge(LowerIsBetterMetric):
         return -1 if self._missing() else \
             (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
 
-    def _missing(self):
+    def _missing(self) -> bool:
         if self._metric_source_id:
             return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)
         else:

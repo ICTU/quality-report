@@ -14,5 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .report import QualityReport
-from .section import Section
+import datetime
+from typing import Dict, Union, Tuple, Sequence, Optional
+
+from .domain.base import DomainObject
+
+
+MetricParameters = Dict[str, Union[str, int, float]]
+DashboardColumns = Sequence[Tuple[str, int]]
+DashboardRows = Sequence[Sequence[Tuple[Union[DomainObject, str], str, Optional[Tuple[int, int]]]]]
+Dashboard = Tuple[DashboardColumns, DashboardRows]
+
+DateTime = datetime.datetime

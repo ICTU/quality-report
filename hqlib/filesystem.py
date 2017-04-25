@@ -33,14 +33,14 @@ class FileSystem(object):
         FileSystem.make_file_readable(filename)
 
     @staticmethod
-    def create_dir(dir_name):
+    def create_dir(dir_name: str) -> None:
         """ Create a directory and make it accessible. """
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
         os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | stat.S_IRUSR | stat.S_IWUSR)
 
     @staticmethod
-    def make_file_readable(filename):
+    def make_file_readable(filename: str) -> None:
         """ Make the file readable and writeable for the user and readable for everyone else. """
         os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
 

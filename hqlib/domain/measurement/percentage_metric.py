@@ -15,11 +15,12 @@ limitations under the License.
 """
 
 import functools
-from typing import Dict, Tuple
+from typing import Tuple
 
 from . import directed_metric
 from . import metric
 from ... import utils
+from hqlib.typing import MetricParameters
 
 
 class PercentageMetric(metric.Metric):
@@ -42,7 +43,7 @@ class PercentageMetric(metric.Metric):
         """ Return whether the actual value of the metric is better than the specified target value. """
         return super()._is_value_better_than(target)
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         """ Add numerator and denominator to the parameters. """
         # pylint: disable=protected-access
         parameters = super()._parameters()

@@ -15,17 +15,21 @@ limitations under the License.
 """
 
 
+import json
 import logging
 import re
+from typing import Dict, Any, Tuple
 
 from . import base_formatter
 from .. import metric_source, utils
+from ..report import QualityReport
+from ..domain import Metric
 
 
 class JSONFormatter(base_formatter.Formatter):
     """ Format the report in JSON. This is used for generating a history file. """
 
-    def prefix(self, report) -> str:
+    def prefix(self, report: QualityReport) -> str:
         """ Return a JSON formatted version of the report prefix. """
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
@@ -39,7 +43,7 @@ class JSONFormatter(base_formatter.Formatter):
         prefix_elements.append('"date": "{date}"'.format(date=report.date().strftime('%Y-%m-%d %H:%M:%S')))
         return '{' + ', '.join(prefix_elements) + ', '
 
-    def metric(self, metric) -> str:
+    def metric(self, metric: Metric) -> str:
         """ Return a JSON formatted version of the metric. """
         # Write numerical values without decimals.
         logging.info('Formatting metric %s.', metric.stable_id())
@@ -61,17 +65,17 @@ class JSONFormatter(base_formatter.Formatter):
 class MetaMetricsHistoryFormatter(base_formatter.Formatter):
     """ Format the history of the meta metrics as a Javascript array. """
 
-    def prefix(self, report) -> str:
+    def prefix(self, report: QualityReport) -> str:
         return '['
 
     @staticmethod
     def postfix() -> str:
         return ']\n'
 
-    def metric(self, metric) -> str:
+    def metric(self, metric: Metric) -> str:
         return ''  # pragma: no cover
 
-    def body(self, report) -> str:
+    def body(self, report: QualityReport) -> str:
         """ Return a JSON array of dates and status counts. """
         history_table = []
         history = report.project().metric_source(metric_source.History)
@@ -83,7 +87,7 @@ class MetaMetricsHistoryFormatter(base_formatter.Formatter):
         return ',\n'.join(history_table)
 
     @staticmethod
-    def __date_and_time(history_record):
+    def __date_and_time(history_record: Dict[str, str]) -> Tuple[str, str, str, str, str, str]:
         """ Return the date and time of the history record. Remove leading zero from date/time elements (assuming all
             elements are 2 digits long). Turn month into zero-based value for usage within Javascript. """
         year, month, day, hour, minute, second = re.split(r' 0?|:0?|-0?|\.0?', history_record['date'])[:6]
@@ -91,8 +95,9 @@ class MetaMetricsHistoryFormatter(base_formatter.Formatter):
         return year, month, day, hour, minute, second
 
     @staticmethod
-    def __status_record_counts(history_record, statuses=('perfect', 'green', 'red', 'yellow', 'grey',
-                                                         'missing', 'missing_source')):
+    def __status_record_counts(history_record: Dict[str, int],
+                               statuses=('perfect', 'green', 'red', 'yellow', 'grey', 'missing', 'missing_source')) -> \
+            Tuple[int, ...]:
         """ Return the counts per measurement status in the history record. """
         return tuple(history_record.get(status, 0) for status in statuses)
 
@@ -112,7 +117,7 @@ class MetricsFormatter(base_formatter.Formatter):
                    '''"{norm}"''',
                    '''"{comment}"''']
     columns = '[' + ', '.join(column_list) + ']'
-    kwargs_by_status = dict(
+    kwargs_by_status: Dict[str, Any] = dict(
         red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
         yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
         green=dict(image='smile', alt=':-)', status_nr=2, hover='Goed: norm gehaald'),
@@ -122,20 +127,20 @@ class MetricsFormatter(base_formatter.Formatter):
         missing_source=dict(image='missing_source', alt='%', status_nr=6,
                             hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
-    def prefix(self, report) -> str:
+    def prefix(self, report: QualityReport) -> str:
         return '{{"report_date": {report_date}, "metrics": ['.format(report_date=self.__report_date(report))
 
     @staticmethod
     def postfix() -> str:
         return ']}\n'
 
-    def metric(self, metric) -> str:
+    def metric(self, metric: Metric) -> str:
         data = self.__metric_data(metric)
         metric_number = int(data['metric_id'].split('-')[1])
         data['metric_number'] = '{sec}-{num:02d}'.format(sec=data['section'], num=metric_number)
         return self.columns.format(**data)
 
-    def __metric_data(self, metric):
+    def __metric_data(self, metric: Metric) -> Dict[str, Any]:
         """ Return the metric data as a dictionary, so it can be used in string templates. """
         status = metric.status()
         kwargs = self.kwargs_by_status[status].copy()
@@ -150,7 +155,7 @@ class MetricsFormatter(base_formatter.Formatter):
         return kwargs
 
     @classmethod
-    def __format_text_with_links(cls, text: str, url_dict, url_label: str) -> str:
+    def __format_text_with_links(cls, text: str, url_dict: Dict[str, str], url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text).replace('\n', ' ')
         links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
@@ -158,7 +163,7 @@ class MetricsFormatter(base_formatter.Formatter):
             if url_label:
                 url_label += ': '
             text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return text
+        return json.dumps(text)[1:-1]  # Strip quotation marks
 
     @staticmethod
     def __format_url(anchor: str, href: str) -> str:
@@ -167,7 +172,7 @@ class MetricsFormatter(base_formatter.Formatter):
         return template.format(href=href, anchor=utils.html_escape(anchor))
 
     @classmethod
-    def __report_date(cls, report):
+    def __report_date(cls, report: QualityReport) -> str:
         """ Return a Javascript version of the report date. """
         date_time = report.date()
         return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month - 1, date_time.day,

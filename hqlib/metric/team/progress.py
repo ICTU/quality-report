@@ -14,9 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import List
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class TeamProgress(LowerIsBetterMetric):
@@ -36,13 +38,13 @@ class TeamProgress(LowerIsBetterMetric):
     metric_source_class = metric_source.Birt
 
     @classmethod
-    def norm_template_default_values(cls):
+    def norm_template_default_values(cls) -> MetricParameters:
         values = super(TeamProgress, cls).norm_template_default_values()
         values['target_factor'] = cls.target_factor
         values['low_target_factor'] = cls.low_target_factor
         return values
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         planned_velocity = self._metric_source.planned_velocity() or 0
         self.target_value = planned_velocity * self.target_factor
@@ -52,10 +54,10 @@ class TeamProgress(LowerIsBetterMetric):
         velocity = self._metric_source.required_velocity()
         return -1 if velocity is None else velocity
 
-    def _metric_source_urls(self):
+    def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.sprint_progress_url()]
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         birt = self._metric_source

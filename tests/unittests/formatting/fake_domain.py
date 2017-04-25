@@ -79,7 +79,7 @@ class Metric(object):
     @staticmethod
     def comment():
         """ Return the comment for the metric. """
-        return ''
+        return 'Comment with \\backslash'
 
     @staticmethod
     def comment_urls():

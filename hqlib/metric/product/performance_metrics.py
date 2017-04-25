@@ -14,9 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict
-
 from ... import domain, metric_source
+from hqlib.typing import MetricParameters
 
 
 class PerformanceMetric(domain.LowerIsBetterMetric):
@@ -49,7 +48,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
         return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \
             else []
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters.update(dict(level=self.level, total=str(self.__total_queries())))
         return parameters

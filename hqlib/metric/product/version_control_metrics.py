@@ -14,9 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Dict, List
 
 from ..metric_source_mixin import VersionControlSystemMetric
 from ...domain import LowerIsBetterMetric
+from hqlib.typing import MetricParameters
 
 
 class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
@@ -37,14 +39,14 @@ class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
         unmerged_branches = self.__unmerged_branches()
         return -1 if unmerged_branches is None else len(unmerged_branches)
 
-    def url(self):
+    def url(self) -> Dict[str, str]:
         unmerged_branches = self.__unmerged_branches()
         return dict() if unmerged_branches is None else self.__branch_and_nr_revs_urls(unmerged_branches)
 
-    def comment_urls(self):
+    def comment_urls(self) -> Dict[str, str]:
         return self.__branch_urls(self.__list_of_branches_to_ignore())
 
-    def comment(self):
+    def comment(self) -> str:
         comment = super().comment()
         branches_to_include = self.__list_of_branches_to_include()
         if branches_to_include:
@@ -63,13 +65,13 @@ class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
                 comment = branch_comment
         return comment
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         branches = self.__branches()
-        parameters['nr_branches'] = -1 if branches is None else len(branches)
+        parameters['nr_branches'] = 'onbekend aantal' if branches is None else str(len(branches))
         return parameters
 
-    def __branch_and_nr_revs_urls(self, branches_and_revisions):
+    def __branch_and_nr_revs_urls(self, branches_and_revisions: Dict[str, int]) -> Dict[str, str]:
         """ Return a list of branch urls. """
         urls = dict()
         for branch, nr_revisions in list(branches_and_revisions.items()):
@@ -77,32 +79,32 @@ class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
             urls[label] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
         return urls
 
-    def __branch_urls(self, branches):
+    def __branch_urls(self, branches: List[str]) -> Dict[str, str]:
         """ Return a list of branch urls. """
         urls = dict()
         for branch in branches:
             urls[branch] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
         return urls
 
-    def __branches(self):
+    def __branches(self) -> List[str]:
         """ Return a list of branches for the product. """
         return self._vcs_product_info.branches(self._vcs_path())
 
-    def __unmerged_branches(self):
+    def __unmerged_branches(self) -> Dict[str, int]:
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
         return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),
                                                         self.__re_of_branches_to_ignore(),
                                                         self.__list_of_branches_to_include())
 
-    def __list_of_branches_to_ignore(self):
+    def __list_of_branches_to_ignore(self) -> List[str]:
         """ Return the list of branches to ignore for the measured product. """
         return self.__get_metric_option('branches_to_ignore') or []
 
-    def __re_of_branches_to_ignore(self):
+    def __re_of_branches_to_ignore(self) -> str:
         """ Return the regular expression of branches to ignore for the measured product. """
         return self.__get_metric_option('branches_to_ignore_re') or ''
 
-    def __list_of_branches_to_include(self):
+    def __list_of_branches_to_include(self) -> List[str]:
         """ Return the list of branches to include for the measured product. """
         return self.__get_metric_option('branches_to_include') or []
 

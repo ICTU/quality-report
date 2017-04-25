@@ -1,3 +1,25 @@
+2017-04-20  Release 1.81.5
+
+  * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.
+  
+  
+2017-04-18  Release 1.81.4
+
+  * Bug fix: Escape backslashes in branch names when generating the metrics JSON file.
+  
+  
+2017-04-18  Release 1.81.3
+
+  * Bug fix: Don't crash when measuring team progress.
+  
+
+2017-04-18  Release 1.81.2
+
+  * Bug fix: Link to the manual tests Birt report for the number of manual test cases instead of to the what's missing 
+    report.
+  * Bug fix: Quote project names before passing them to Checkmarx.
+  
+  
 2017-04-14  Release 1.81.1
 
   * Bug fix: Don't use card titles of Trello cards to prevent leaking information.

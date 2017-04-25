@@ -22,7 +22,7 @@ import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
-
+from hqlib.typing import MetricParameters
 
 DateTime = datetime.datetime
 
@@ -59,7 +59,7 @@ class Metric(object):
         return True
 
     @classmethod
-    def norm_template_default_values(cls) -> Dict[str, str]:
+    def norm_template_default_values(cls) -> MetricParameters:
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
@@ -145,7 +145,7 @@ class Metric(object):
         """ Return since when the metric has the current status. """
         return self.__history.status_start_date(self.stable_id(), self.status())
 
-    def __has_accepted_technical_debt(self):
+    def __has_accepted_technical_debt(self) -> bool:
         """ Return whether the metric is below target but above the accepted technical debt level. """
         technical_debt_target = self.__technical_debt_target()
         if technical_debt_target:
@@ -213,7 +213,7 @@ class Metric(object):
         else:
             return self.template
 
-    def _parameters(self) -> Dict[str, str]:
+    def _parameters(self) -> MetricParameters:
         """ Return the parameters for the metric report template and for the metric norm template. """
         return dict(name=self.__subject_name(),
                     metric=self.name[0].lower()+self.name[1:],
