@@ -73,8 +73,7 @@ class Checkmarx(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def __fetch_report(self, project_name):
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
-                  "&$filter=LastScan/Results/any(r:%20r%2fSeverity%20eq%20CxDataRepository.Severity%27High%27" \
-                  "%20or%20r%2fSeverity%20eq%20CxDataRepository.Severity%27Medium%27%29%20and%20Name%20eq%20%27{}%27"\
+                  "&$filter=Name%20eq%20%27{}%27"\
             .format(self.checkmarx_url, urllib.parse.quote(project_name))
 
         return self.__get_json(api_url)
