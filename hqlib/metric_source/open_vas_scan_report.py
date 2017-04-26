@@ -16,12 +16,13 @@ limitations under the License.
 
 import datetime
 import functools
-
 import bs4
 import dateutil.parser
+from typing import Callable
 
 from . import url_opener
 from .. import domain
+from hqlib.typing import DateTime
 
 
 class OpenVASScanReport(domain.MetricSource):
@@ -29,11 +30,11 @@ class OpenVASScanReport(domain.MetricSource):
     metric_source_name = 'Open VAS Scan rapport'
     needs_metric_source_id = True
 
-    def __init__(self, url_open=None, **kwargs):
+    def __init__(self, url_open: Callable[[str], str]=None, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
         super().__init__()
 
-    def alerts(self, risk_level, *report_urls):
+    def alerts(self, risk_level: str, *report_urls: str) -> int:
         """ Return the number of alerts of the specified risk level. """
         nr_alerts = 0
         for url in report_urls:
@@ -46,17 +47,17 @@ class OpenVASScanReport(domain.MetricSource):
         return nr_alerts
 
     @staticmethod
-    def __parse_alerts(soup, risk_level):
+    def __parse_alerts(soup, risk_level: str) -> int:
         """ Get the number of alerts from the HTML soup. """
         summary_table = soup('table')[0]('table')[1]  # The whole report is one big table with nested tables.
         column = dict(high=3, medium=4, low=5)[risk_level]
         return int(summary_table('tr')[-1]('td')[column].string)
 
-    def datetime(self, *report_urls):
+    def datetime(self, *report_urls: str) -> DateTime:
         """ Return the date/time of the reports. """
         return min([self.__report_datetime(report_url) for report_url in report_urls], default=datetime.datetime.min)
 
-    def __report_datetime(self, report_url):
+    def __report_datetime(self, report_url: str) -> DateTime:
         """ Return the date/time of the report. """
         try:
             soup = self.__get_soup(report_url)
@@ -67,6 +68,6 @@ class OpenVASScanReport(domain.MetricSource):
         return dateutil.parser.parse(date_string, ignoretz=True)
 
     @functools.lru_cache(maxsize=1024)
-    def __get_soup(self, url):
+    def __get_soup(self, url: str):
         """ Get the soup from the url. """
         return bs4.BeautifulSoup(self._url_open(url), "lxml")
