@@ -21,7 +21,7 @@ import logging
 import socket
 import urllib.error
 import urllib.request
-from typing import cast
+from typing import cast, Callable, IO
 
 
 class UrlOpener(object):
@@ -43,7 +43,7 @@ class UrlOpener(object):
         """ Return the password, if any. """
         return self.__password
 
-    def __create_url_opener(self, uri: str, build_opener, url_open):
+    def __create_url_opener(self, uri: str, build_opener, url_open) -> Callable[[str], IO]:
         """ Return a url opener method. If credentials are supplied, create an opener with authentication handler. """
         if uri and self.__username and self.__password:
             password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
@@ -53,17 +53,17 @@ class UrlOpener(object):
         elif self.__username and self.__password:
             credentials = base64.encodebytes(bytes(':'.join([self.__username, self.__password]), 'utf-8'))
 
-            def url_open_with_basic_auth(url):
+            def url_open_with_basic_auth(url: str):
                 """ Open the url with basic authentication. """
                 request = urllib.request.Request(url)
-                request.add_header('Authorization', b'Basic ' + credentials.replace(b'\n', b''))
+                request.add_header('Authorization', 'Basic ' + str(credentials.replace(b'\n', b'')))
                 return url_open(request)
 
             return url_open_with_basic_auth
         else:
             return url_open
 
-    def url_open(self, url: str) -> bytes:
+    def url_open(self, url: str) -> IO:
         """ Return an opened url, using the opener created earlier. """
         try:
             return self.__opener(url)
@@ -72,9 +72,7 @@ class UrlOpener(object):
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)
-    def url_read(self, url):
+    def url_read(self, url: str) -> str:
         """ Open and read a url, and transform the bytes to a string. """
         data = self.url_open(url).read()
-        if isinstance(data, bytes):
-            data = data.decode('utf-8')
-        return data
+        return data.decode('utf-8') if isinstance(data, bytes) else data

@@ -20,14 +20,12 @@ import functools
 import logging
 import re
 import urllib.parse
-from typing import Dict, List, Optional
+from typing import Dict, IO, List, Optional
 
 from . import url_opener
 from .. import domain
+from hqlib.typing import DateTime, TimeDelta
 
-
-TimeDelta = datetime.timedelta
-DateTime = datetime.datetime
 Job = Dict[str, str]
 Jobs = List[Job]
 
@@ -172,7 +170,7 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
             logging.error("Couldn't evaluate %s from %s: %s", data, url, reason)
             raise
 
-    def url_open(self, url: str) -> bytes:
+    def url_open(self, url: str) -> IO:
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
         url = urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
         try:
