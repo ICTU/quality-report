@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import List
+from typing import List, cast
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters
+from hqlib.typing import MetricParameters, MetricValue
 
 
 class TeamProgress(LowerIsBetterMetric):
@@ -50,7 +50,7 @@ class TeamProgress(LowerIsBetterMetric):
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
 
-    def value(self):
+    def value(self) -> MetricValue:
         velocity = self._metric_source.required_velocity()
         return -1 if velocity is None else velocity
 

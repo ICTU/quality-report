@@ -16,10 +16,11 @@ limitations under the License.
 
 
 import datetime
-from typing import Tuple
+from typing import Dict, Tuple
 
 from ... import metric_source
 from ...domain import Metric, LowerIsBetterMetric
+from hqlib.typing import MetricValue
 
 
 class TeamSpirit(Metric):
@@ -33,10 +34,10 @@ class TeamSpirit(Metric):
     target_value = ':-)'
     perfect_value = ':-)'
     low_target_value = ':-('
-    numerical_value_map = {':-(': 0, ':-|': 1, ':-)': 2}
+    numerical_value_map: Dict[MetricValue, int] = {':-(': 0, ':-|': 1, ':-)': 2}
     metric_source_class = metric_source.TeamSpirit
 
-    def value(self):
+    def value(self) -> MetricValue:
         return self._metric_source.team_spirit(self._metric_source_id) or '?'
 
     def numerical_value(self) -> int:
