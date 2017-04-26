@@ -16,9 +16,11 @@ limitations under the License.
 
 
 import datetime
+from typing import Dict
 
 from hqlib import metric_source
 from hqlib.domain import LowerIsBetterMetric
+from hqlib.typing import MetricValue
 
 
 class ActivityMetric(LowerIsBetterMetric):
@@ -26,10 +28,10 @@ class ActivityMetric(LowerIsBetterMetric):
 
     unit = 'dagen'
 
-    def value(self):
+    def value(self) -> MetricValue:
         return -1 if self._missing() else (datetime.datetime.now() - self._metric_source.datetime()).days
 
-    def _missing(self):
+    def _missing(self) -> bool:
         return self._metric_source.datetime() in (None, datetime.datetime.min)
 
 
@@ -70,11 +72,11 @@ class OverDueActions(LowerIsBetterMetric):
     low_target_value = 3
     metric_source_class = metric_source.TrelloActionsBoard
 
-    def value(self):
+    def value(self) -> MetricValue:
         nr_cards = self._metric_source.nr_of_over_due_cards()
         return -1 if nr_cards is None else nr_cards
 
-    def url(self):
+    def url(self) -> Dict[str, str]:
         return self._metric_source.over_due_cards_url() or {}
 
 
@@ -91,10 +93,10 @@ class StaleActions(LowerIsBetterMetric):
     low_target_value = 3
     metric_source_class = metric_source.TrelloActionsBoard
 
-    def value(self):
+    def value(self) -> MetricValue:
         nr_cards = self._metric_source.nr_of_inactive_cards()
         return -1 if nr_cards is None else nr_cards
 
-    def url(self):
+    def url(self) -> Dict[str, str]:
         return self._metric_source.inactive_cards_url() or {}
 
