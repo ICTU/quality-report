@@ -21,7 +21,7 @@ import os
 import re
 import subprocess
 
-from typing import Tuple, List
+from typing import Tuple, List, Callable, Any, Optional
 
 from . import archive_system
 
@@ -33,7 +33,8 @@ class VersionControlSystem(archive_system.ArchiveSystem):
     needs_values_as_list = True
     needs_metric_source_id = True
 
-    def __init__(self, username: str='', password: str='', url=None, run_shell_command=subprocess.check_output) -> None:
+    def __init__(self, username: str='', password: str='', url: str=None,
+                 run_shell_command=subprocess.check_output) -> None:
         self._username = username
         self._password = password
         self._shell_command = run_shell_command
@@ -81,7 +82,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         return ''  # pragma: no cover
 
     @functools.lru_cache(maxsize=1024)
-    def _run_shell_command(self, shell_command, folder: str='', log_level=logging.WARNING) -> str:
+    def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str='', log_level: int=logging.WARNING) -> str:
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         original_working_dir = os.getcwd()
         if folder:

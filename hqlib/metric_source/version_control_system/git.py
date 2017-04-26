@@ -15,12 +15,14 @@ limitations under the License.
 """
 
 import datetime
+import functools
 import logging
 import os
 import urllib.request
-from typing import List
+from typing import Callable, List, Dict, Tuple
 
 from ..abstract.version_control_system import VersionControlSystem
+from hqlib.typing import DateTime
 
 
 class Git(VersionControlSystem):
@@ -28,25 +30,27 @@ class Git(VersionControlSystem):
 
     metric_source_name = 'Git'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.__branch_to_checkout: str = kwargs.pop('branch', '')
         self.__chdir = kwargs.pop('chdir', os.chdir)
         super().__init__(*args, **kwargs)
-        self.__repo_folder = None
+        self.__repo_folder: str = None
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name() + self.short_name() + self.url() + self.__branch_to_checkout)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return super().__eq__(other) and self.branch() == other.branch()
 
-    def _run_shell_command(self, *args, **kwargs):
+    @functools.lru_cache(maxsize=1024)
+    def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str='', log_level: int=logging.WARNING) -> str:
+        """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         if not self.__repo_folder:
             self.__get_repo()
-        folder = self.__repo_folder if os.path.exists(self.__repo_folder) else None
-        return super()._run_shell_command(folder=folder, *args, **kwargs)
+        folder = self.__repo_folder if os.path.exists(self.__repo_folder) else folder
+        return super()._run_shell_command(shell_command, folder=folder, log_level=log_level)
 
-    def last_changed_date(self, path):
+    def last_changed_date(self, path: str) -> DateTime:
         """ Return the date when the url was last changed in Git. """
         timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', '--', path))
         if timestamp:
@@ -54,20 +58,20 @@ class Git(VersionControlSystem):
         else:
             return datetime.datetime.min
 
-    def branch(self):
+    def branch(self) -> str:
         """ Return the checked out branch. """
         return self.__branch_to_checkout
 
-    def branches(self, path):  # pylint: disable=unused-argument
+    def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the master branch. """
         return self.__get_branches()
 
-    def tags(self, path):  # pylint: disable=unused-argument
+    def tags(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of tags for the repo. """
         return self.__valid_names(self._run_shell_command(('git', 'tag')))
 
-    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
-                          list_of_branches_to_include=None):
+    def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str]=None, re_of_branches_to_ignore: str='',
+                          list_of_branches_to_include: List[str]=None) -> Dict[str, int]:
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
             any unmerged commits. """
         unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not
@@ -77,17 +81,17 @@ class Git(VersionControlSystem):
         return dict(branches_and_commits)
 
     @classmethod
-    def branch_folder_for_branch(cls, trunk_url, branch):
+    def branch_folder_for_branch(cls, trunk_url: str, branch: str) -> str:
         """ Return the branch folder for the specified branch. """
         return trunk_url + '/' + branch
 
-    def __get_branches(self, unmerged_only=False):
+    def __get_branches(self, unmerged_only: bool=False) -> List[str]:
         """ Get the (remote) branches for the repository. """
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
             command.append('--no-merged')
         return self.__valid_names(self._run_shell_command(tuple(command)),
-                                  lambda name: name and ' -> ' not in name and 'origin/master' not in name)
+                                  lambda name: bool(name and ' -> ' not in name and 'origin/master' not in name))
 
     def __nr_unmerged_commits(self, branch_name: str) -> int:
         """ Return whether the branch has unmerged commits. """
@@ -132,7 +136,7 @@ class Git(VersionControlSystem):
         return os.path.join(os.getcwd(), 'repos', folder)
 
     @staticmethod
-    def __valid_names(text: str, is_valid=bool) -> List[str]:
+    def __valid_names(text: str, is_valid: Callable[[str], bool]=bool) -> List[str]:
         """ Return the names in the text that are valid. """
         names = [name.strip() for name in text.strip().split('\n')]
         return [name for name in names if is_valid(name)]
