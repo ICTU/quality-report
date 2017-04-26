@@ -18,10 +18,12 @@ limitations under the License.
 import datetime
 import logging
 import time
+from typing import Callable
 
 from hqlib import utils
 from hqlib.metric_source.abstract import team_spirit
 from hqlib.metric_source.url_opener import UrlOpener
+from hqlib.typing import DateTime
 
 
 class Happiness(team_spirit.TeamSpirit):
@@ -29,13 +31,13 @@ class Happiness(team_spirit.TeamSpirit):
 
     metric_source_name = 'Happiness'
 
-    def __init__(self, url, url_read=None):
+    def __init__(self, url: str, url_read: Callable[[str], str]=None) -> None:
         self.__url_read = url_read or UrlOpener().url_read
         super().__init__(url=url)
 
     # Team spirit
 
-    def team_spirit(self, team_id):
+    def team_spirit(self, team_id: str) -> str:
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
             json = utils.eval_json(self.__url_read(self.__api_url()))
@@ -48,7 +50,7 @@ class Happiness(team_spirit.TeamSpirit):
             logging.warning("Could not find smiley for %s in %s: %s", team_id, self.__api_url(), reason)
             return ''
 
-    def datetime(self, *team_ids):
+    def datetime(self, *team_ids: str) -> DateTime:
         """ Return the date that the team spirit of the team was last measured. """
         try:
             json = utils.eval_json(self.__url_read(self.__api_url()))
@@ -64,7 +66,7 @@ class Happiness(team_spirit.TeamSpirit):
 
     # Utility methods
 
-    def __api_url(self):
+    def __api_url(self) -> str:
         """ Return the api url. """
         url = self.url()
         if not url.endswith('/'):
@@ -72,7 +74,7 @@ class Happiness(team_spirit.TeamSpirit):
         return url + 'api/'
 
     @staticmethod
-    def __parse_date(date_text):
+    def __parse_date(date_text: str) -> DateTime:
         """ Return a parsed version of the date text. """
         year, month, day = time.strptime(date_text, '%Y-%m-%d')[:3]
         return datetime.datetime(year, month, day)

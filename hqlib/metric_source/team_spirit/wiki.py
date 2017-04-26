@@ -23,6 +23,7 @@ import time
 from hqlib.metric_source import beautifulsoup
 from hqlib.metric_source.abstract import team_spirit
 from hqlib.metric_source.url_opener import UrlOpener
+from hqlib.typing import DateTime
 
 
 class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
@@ -30,12 +31,12 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
 
     metric_source_name = 'Wiki'
 
-    def __init__(self, wiki_url):
+    def __init__(self, wiki_url: str) -> None:
         super().__init__(url=wiki_url)
 
     # Team spirit
 
-    def team_spirit(self, team_id):
+    def team_spirit(self, team_id: str) -> str:
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
             soup = self.soup(self.url())
@@ -49,7 +50,7 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
             return ''
         return re.sub(r'[^:\-()|]', '', row[-1].string)
 
-    def datetime(self, *team_ids):
+    def datetime(self, *team_ids: str) -> DateTime:
         """ Return the date that the team spirit of the team was last measured. """
         try:
             soup = self.soup(self.url())
@@ -74,7 +75,7 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
     # Utility methods
 
     @staticmethod
-    def __parse_date(date_text):
+    def __parse_date(date_text: str) -> DateTime:
         """ Return a parsed version of the date text. """
         year, month, day = time.strptime(date_text, '%d-%m-%Y')[:3]
         return datetime.datetime(year, month, day)
