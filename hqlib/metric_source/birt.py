@@ -177,7 +177,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     # Metrics calculated from other metrics:
 
-    def nr_user_stories_with_sufficient_ltcs(self):
+    def nr_user_stories_with_sufficient_ltcs(self) -> int:
         """ Return the number of user stories that have a sufficient number of logical test cases."""
         nr_user_stories = self.nr_user_stories()
         if nr_user_stories == -1:
@@ -185,7 +185,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         else:
             return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs())
 
-    def nr_automated_ltcs(self):
+    def nr_automated_ltcs(self) -> int:
         """ Return the number of logical test cases that have been implemented as automated tests. """
         nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated()
         if nr_ltcs_to_be_automated == -1:
@@ -195,43 +195,43 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     # Metrics available directly in Birt:
 
-    def nr_user_stories(self):
+    def nr_user_stories(self) -> int:
         """ Return the number of user stories . """
         return self.__test_design_metric(row_nr=0)
 
-    def __nr_user_stories_with_too_few_ltcs(self):
+    def __nr_user_stories_with_too_few_ltcs(self) -> int:
         """ Return the number of user stories that have not enough logical test cases associated with them. """
         return self.__test_design_metric(row_nr=2)
 
-    def reviewed_user_stories(self):
+    def reviewed_user_stories(self) -> int:
         """ Return the number of reviewed user stories. """
         return self.__test_design_metric(row_nr=3)
 
-    def approved_user_stories(self):
+    def approved_user_stories(self) -> int:
         """ Return the number of approved user stories. """
         return self.__test_design_metric(row_nr=4)
 
-    def not_approved_user_stories(self):
+    def not_approved_user_stories(self) -> int:
         """ Return the number of not approved user stories. """
         return self.__test_design_metric(row_nr=5)
 
-    def nr_ltcs(self):
+    def nr_ltcs(self) -> int:
         """ Return the number of logical test cases. """
         return self.__test_design_metric(row_nr=6)
 
-    def reviewed_ltcs(self):
+    def reviewed_ltcs(self) -> int:
         """ Return the number of reviewed logical test cases for the product. """
         return self.__test_design_metric(row_nr=7)
 
-    def approved_ltcs(self):
+    def approved_ltcs(self) -> int:
         """ Return the number of approved logical test casess. """
         return self.__test_design_metric(row_nr=8)
 
-    def not_approved_ltcs(self):
+    def not_approved_ltcs(self) -> int:
         """ Return the number of disapproved logical test cases. """
         return self.__test_design_metric(row_nr=9)
 
-    def nr_ltcs_to_be_automated(self):
+    def nr_ltcs_to_be_automated(self) -> int:
         """ Return the number of logical test cases for the product that have to be automated. """
         return self.__test_design_metric(row_nr=10)
 
