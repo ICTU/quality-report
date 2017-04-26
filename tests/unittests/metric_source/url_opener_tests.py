@@ -57,11 +57,6 @@ class UrlOpenerTest(unittest.TestCase):
         opener = url_opener.UrlOpener(username='user', password='pass', url_open=FakeBuildOpener.open)
         self.assertEqual('url contents', opener.url_open('http://bla'))
 
-    def test_basic_auth_handler_request(self):
-        """ Test that the basic auth handler can take a request. """
-        opener = url_opener.UrlOpener(username='user', password='pass', url_open=FakeBuildOpener.open)
-        self.assertEqual('url contents', opener.url_open(urllib.request.Request('http://bla')))
-
     def test_opener_without_auth(self):
         """ Test that the opener can open urls without authentication. """
         opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
@@ -73,8 +68,3 @@ class UrlOpenerTest(unittest.TestCase):
         opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
         FakeBuildOpener.raise_exception = False
-
-    def test_delete(self):
-        """ Test that a url can be deleted. """
-        opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
-        self.assertEqual('url contents', opener.url_delete('http://bla'))

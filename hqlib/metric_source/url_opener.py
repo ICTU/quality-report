@@ -55,7 +55,7 @@ class UrlOpener(object):
 
             def url_open_with_basic_auth(url):
                 """ Open the url with basic authentication. """
-                request = url if isinstance(url, urllib.request.Request) else urllib.request.Request(url)
+                request = urllib.request.Request(url)
                 request.add_header('Authorization', b'Basic ' + credentials.replace(b'\n', b''))
                 return url_open(request)
 
@@ -78,9 +78,3 @@ class UrlOpener(object):
         if isinstance(data, bytes):
             data = data.decode('utf-8')
         return data
-
-    def url_delete(self, url):
-        """ Delete the given url. """
-        request = urllib.request.Request(url)
-        request.get_method = lambda: 'DELETE'  # pragma: no branch
-        return self.__opener(request)
