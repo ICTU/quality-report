@@ -108,4 +108,4 @@ class HolidayPlannerTests(unittest.TestCase):
     def test_url_error(self):
         """ Test that the result is -1 when a URL error is raised. """
         planner = HolidayPlannerUnderTest(api_url='http://raise')
-        self.assertEqual((-1, datetime.datetime.min, datetime.datetime.min, []), planner.days(domain.Team()))
+        self.assertEqual((-1, datetime.date.min, datetime.date.min, []), planner.days(domain.Team()))

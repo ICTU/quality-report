@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+from typing import Dict, List, Set, Tuple
 
 from . import url_opener
 from .. import domain, utils
@@ -27,16 +28,17 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
 
     metric_source_name = 'ICTU Vakantie Planner'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.__api_url = kwargs.pop('api_url')
         super().__init__(*args, **kwargs)
 
-    def days(self, team, start_date=None):
+    def days(self, team: domain.Team, start_date: datetime.date=None) -> Tuple[int, datetime.date, datetime.date,
+                                                                               List[domain.Person]]:
         """ Return the number of consecutive days that multiple team members are absent. """
         try:
             absence_days = self.__absence_days(team)
         except url_opener.UrlOpener.url_open_exceptions:
-            return -1, datetime.datetime.min, datetime.datetime.min, []
+            return -1, datetime.date.min, datetime.date.min, []
         longest_stretch = current_stretch = 0
         current_start = longest_start = longest_end = None
         today = start_date or datetime.date.today()
@@ -57,25 +59,25 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
                 current_start = None
         return longest_stretch, longest_start, longest_end, self.__absent_in_period(team, longest_start, longest_end)
 
-    def __absence_days(self, team):
+    def __absence_days(self, team: domain.Team) -> Dict[str, int]:
         """ Return the days two or more team members are absent. """
         absence_list = self.__absence_list(team)
-        days = {}
+        days: Dict[str, int] = {}
         for absence in absence_list:
             date = absence[1]
             days[date] = days.get(date, 0) + 1
         return days
 
-    def __absent_in_period(self, team, start, end):
+    def __absent_in_period(self, team: domain.Team, start: datetime.date, end: datetime.date) -> List[domain.Person]:
         """ Return the team members absent in the specified period. """
         if not start:
             return []
         absence_list = self.__absence_list(team)
-        start, end = start.isoformat(), end.isoformat()
-        absent_members = {absent_member for (absent_member, date) in absence_list if start <= date <= end}
+        start_iso, end_iso = start.isoformat(), end.isoformat()
+        absent_members = {absent_member for (absent_member, date) in absence_list if start_iso <= date <= end_iso}
         return [member for member in team.members() if member.metric_source_id(self) in absent_members]
 
-    def __absence_list(self, team):
+    def __absence_list(self, team: domain.Team) -> Set[Tuple]:
         """ Return the list of absences. """
         member_ids = [member.metric_source_id(self) for member in team.members()]
         json = utils.eval_json(self.url_read(self.__api_url))
