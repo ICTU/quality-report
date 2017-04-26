@@ -17,24 +17,24 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import List
+from typing import Dict, List, Optional
 
-from .. import domain
+from .. import domain, metric_source
+from hqlib.typing import DateTime
 
 
 class VersionControlSystemProductInfo(object):
     """ Class to represent information that the version control system has about a product. """
-    def __init__(self, version_control_system, product):
+    def __init__(self, version_control_system: List[metric_source.VersionControlSystem],
+                 product: domain.Product) -> None:
         self.__vcs = self.__find_repo(version_control_system, product)
         self.__product = product
         self.metric_source_name = self.__vcs.metric_source_name if self.__vcs else 'VCS not configured'
 
-    def vcs(self):
-        """ Return the version control system where the product lives. """
-        return self.__vcs
-
-    def vcs_path(self, version=None):
+    def vcs_path(self, version: str=None) -> str:
         """ Return the version control system path of the product. """
+        if not self.__vcs:
+            return ''
         old_vcs_path = self.__product.old_metric_source_id(self.__vcs, version)
         if old_vcs_path:
             return old_vcs_path
@@ -46,26 +46,27 @@ class VersionControlSystemProductInfo(object):
             result = self.__vcs.tags_folder_for_version(result, version)
         return result
 
-    def branch_folder_for_branch(self, path, branch):
+    def branch_folder_for_branch(self, path: str, branch: str) -> str:
         """ Return the folder for the branch. """
-        return self.__vcs.branch_folder_for_branch(path, branch)
+        return self.__vcs.branch_folder_for_branch(path, branch) if self.__vcs else ''
 
-    def last_changed_date(self, path=None):
+    def last_changed_date(self, path: str=None) -> DateTime:
         """ Return the date the path was last changed. """
-        return datetime.datetime.min if self.__vcs is None else self.__vcs.last_changed_date(path or self.vcs_path())
+        return self.__vcs.last_changed_date(path or self.vcs_path()) if self.__vcs else datetime.datetime.min
 
-    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
-                          list_of_branches_to_include=None):
+    def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str]=None, re_of_branches_to_ignore: str='',
+                          list_of_branches_to_include: List[str]=None) -> Dict[str, int]:
         """ Return a list of branches that haven't been merged with the trunk. """
         return self.__vcs.unmerged_branches(path, list_of_branches_to_ignore, re_of_branches_to_ignore,
-                                            list_of_branches_to_include)
+                                            list_of_branches_to_include) if self.__vcs else dict()
 
     def branches(self, path: str) -> List[str]:
         """ Return a list of branches. """
-        return self.__vcs.branches(path)
+        return self.__vcs.branches(path) if self.__vcs else []
 
     @staticmethod
-    def __find_repo(vcs, product):
+    def __find_repo(vcs: List[metric_source.VersionControlSystem],
+                    product: domain.Product) -> Optional[metric_source.VersionControlSystem]:
         """ Loops through all VCS instances when vcs is a list and returns the instance linked to the product.
             If vcs is not a list but a single instance, that instance is returned.
             If the product is None, None is returned. """
@@ -75,4 +76,4 @@ class VersionControlSystemProductInfo(object):
             except IndexError:
                 logging.warning('There is no VCS configured for %s',
                                 product.name() if hasattr(product, 'name') else product)
-        return domain.MissingMetricSource()
+        return None

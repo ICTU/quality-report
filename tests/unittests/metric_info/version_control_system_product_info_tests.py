@@ -49,10 +49,6 @@ class VersionControlSystemProductInfoTests(unittest.TestCase):
         self.__subversion_product_info = metric_info.VersionControlSystemProductInfo([self.__subversion],
                                                                                      self.__product)
 
-    def test_vcs(self):
-        """ Test the the vcs can be retrieved. """
-        self.assertEqual(self.__subversion, self.__subversion_product_info.vcs())
-
     def test_svn_path(self):
         """ Test that the Subversion path of the product equals the passed path. """
         self.assertEqual('http://svn/product/trunk/', self.__subversion_product_info.vcs_path())
