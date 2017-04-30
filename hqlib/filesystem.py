@@ -23,7 +23,7 @@ import stat
 class FileSystem(object):
     """ Class for methods that manipulate the file system. """
     @staticmethod
-    def write_file(contents, filename, mode, encoding):
+    def write_file(contents: str, filename: str, mode: str, encoding: str) -> None:
         """ Write the contents to the specified file. """
         if os.path.exists(filename):
             FileSystem.make_file_readable(filename)
