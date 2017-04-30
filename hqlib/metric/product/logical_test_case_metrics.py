@@ -134,7 +134,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
             else super()._get_template()
 
     def _missing(self) -> bool:
-        return self._metric_source.date_of_last_manual_test() == datetime.datetime.min
+        return self._metric_source.date_of_last_manual_test() in (None, datetime.datetime.min)
 
 
 class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
