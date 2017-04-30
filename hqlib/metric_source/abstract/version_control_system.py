@@ -47,10 +47,6 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return a list of branch names for the specified path. """
         raise NotImplementedError  # pragma: no cover
 
-    def tags(self, path: str) -> List[str]:  # pylint: disable=unused-argument
-        """ Return a list of tag names for the specified path. """
-        raise NotImplementedError  # pragma: no cover
-
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
         # pylint: disable=unused-argument
@@ -76,10 +72,6 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return the branch folder for the specified branch. """
         raise NotImplementedError  # pragma: no cover
 
-    def tags_folder_for_version(self, trunk_url: str, version: str) -> str:  # pylint: disable=unused-argument
-        """ Return the tags folder for the specified version. """
-        return ''  # pragma: no cover
-
     @functools.lru_cache(maxsize=1024)
     def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str='', log_level: int=logging.WARNING) -> str:
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
@@ -97,18 +89,3 @@ class VersionControlSystem(archive_system.ArchiveSystem):
                 return ''
         finally:
             os.chdir(original_working_dir)
-
-    @staticmethod
-    def _parse_version(tag: str) -> Tuple[Tuple[int, ...], str]:
-        """ Parse and return the version number from the tag. Returns the version as a two-tuple. The first
-            element of the tuple is the version number as tuple of integers (for sorting). The second element
-            of the tuple is the version number as text, including any postfix elements (e.g. 1.2.3-beta). """
-        versions_in_tag = re.findall(r'[0-9]+(?:\.[0-9]+)+', tag)
-        if versions_in_tag:
-            numbers = versions_in_tag[0].split('.')
-            version_integer_tuple = tuple(int(number) for number in numbers)
-            version_text: str = re.findall(r'[0-9].*', tag)[0]
-        else:
-            version_integer_tuple = (0, 0, 0)
-            version_text = ''
-        return version_integer_tuple, version_text

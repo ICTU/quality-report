@@ -45,14 +45,6 @@ class SubversionTests(unittest.TestCase):
         """ Test that there is no last changed date for a missing repo. """
         self.assertEqual(datetime.datetime.min, self.__svn.last_changed_date('path'))
 
-    def test_tags(self):
-        """ Test that there are no tags by default. """
-        self.assertFalse(self.__svn.tags('path'))
-
-    def test_no_tags_folder_for_version(self):
-        """ Test that there is no tags folder by default. """
-        self.assertEqual('', self.__svn.tags_folder_for_version('http://svn/trunk', '1.1'))
-
     def test_branches(self):
         """ Test that there are no branches by default. """
         self.assertFalse(self.__svn.branches('path'))

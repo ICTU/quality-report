@@ -44,14 +44,6 @@ class GitTests(unittest.TestCase):
         """ Test that there is no last changed date for a missing repo. """
         self.assertEqual(datetime.datetime.min, self.__git.last_changed_date('path'))
 
-    def test_tags(self):
-        """ Test that there are no tags by default. """
-        self.assertFalse(self.__git.tags('path'))
-
-    def test_no_tags_folder_for_version(self):
-        """ Test that there is no tags folder by default. """
-        self.assertEqual('', self.__git.tags_folder_for_version('http://git/master', '1.1'))
-
     def test_branches(self):
         """ Test that there are no branches by default. """
         self.assertFalse(self.__git.branches('path'))

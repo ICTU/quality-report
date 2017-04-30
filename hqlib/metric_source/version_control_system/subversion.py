@@ -29,19 +29,6 @@ class Subversion(version_control_system.VersionControlSystem):
 
     metric_source_name = 'Subversion'
 
-    def tags_folder_for_version(self, trunk_url: str, version: str) -> str:
-        """ Return the tags folder for the specified version. """
-        tags = self.tags(trunk_url)
-        # Mapping from version numbers to tags:
-        folders = {self._parse_version(tag)[1]: tag for tag in tags}
-        # Look up the tag by its version number and return the tag folder
-        tags_folder = self.__tags_folder(trunk_url)
-        if version in folders:
-            return tags_folder + folders[version] + '/' + trunk_url.split('/trunk/')[1]
-        else:
-            logging.warning('No tag folder for %s version %s in %s', trunk_url, version, tags_folder)
-            return ''
-
     @classmethod
     def branch_folder_for_branch(cls, trunk_url: str, branch: str) -> str:
         """ Return the branch folder for the specified branch. """
@@ -104,15 +91,6 @@ class Subversion(version_control_system.VersionControlSystem):
     def branches(self, trunk_url: str) -> List[str]:
         """ Return a list of branch names for the specified trunk url. """
         return self.__svn_list(self.__branches_folder(trunk_url))
-
-    def tags(self, trunk_url: str) -> List[str]:
-        """ Return a list of tags for the specified trunk url. """
-        return self.__svn_list(self.__tags_folder(trunk_url))
-
-    @staticmethod
-    def __tags_folder(trunk_url: str) -> str:
-        """ Return the tags folder for the trunk url. """
-        return trunk_url.split('/trunk/')[0] + '/tags/'
 
     @staticmethod
     def __branches_folder(trunk_url: str) -> str:

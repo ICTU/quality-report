@@ -66,10 +66,6 @@ class Git(VersionControlSystem):
         """ Return a list of branch names for the master branch. """
         return self.__get_branches()
 
-    def tags(self, path: str) -> List[str]:  # pylint: disable=unused-argument
-        """ Return a list of tags for the repo. """
-        return self.__valid_names(self._run_shell_command(('git', 'tag')))
-
     def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str]=None, re_of_branches_to_ignore: str='',
                           list_of_branches_to_include: List[str]=None) -> Dict[str, int]:
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has

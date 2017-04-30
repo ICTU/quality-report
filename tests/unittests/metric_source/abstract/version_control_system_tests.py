@@ -22,31 +22,18 @@ from hqlib.metric_source import VersionControlSystem
 class VersionControlSystemTests(unittest.TestCase):
     """ Unit tests for the version control system class. """
 
-    def assert_version(self, expected_tuple, version_string, expected_string=None):
-        """ Helper function to test the parse version method. """
-        expected_string = version_string if expected_string is None else expected_string
-        self.assertEqual((expected_tuple, expected_string), VersionControlSystem._parse_version(version_string))
+    def test_ignore_branch_not_in_includes(self):
+        """ Test that branches not in the list of branches to include are ignored. """
+        self.assertTrue(VersionControlSystem._ignore_branch('foo', list_of_branches_to_include=['bar']))
 
-    def test_parse_version_empty_tag(self):
-        """ Test empty tag. """
-        self.assert_version((0, 0, 0), '')
+    def test_ignore_branch_in_ignore_list(self):
+        """ Test that branches in the list of branches to ignore are ignored. """
+        self.assertTrue(VersionControlSystem._ignore_branch('foo', list_of_branches_to_ignore=['foo']))
 
-    def test_parse_version_single_digit(self):
-        """ Test single digit. """
-        self.assert_version((0, 0, 0), '1', expected_string='')
+    def test_ignore_branch_that_matches(self):
+        """ Test that branches that match the regular expression of branches to ignore are ignored. """
+        self.assertTrue(VersionControlSystem._ignore_branch('foobar', re_of_branches_to_ignore='foo.*'))
 
-    def test_parse_version_two_digits(self):
-        """ Test that x.y works. """
-        self.assert_version((1, 2), '1.2')
-
-    def test_parse_version_three_digits(self):
-        """ Test that x.y.z works. """
-        self.assert_version((1, 2, 3), '1.2.3')
-
-    def test_parse_version_four_digits(self):
-        """ Test that x.y.z.a works. """
-        self.assert_version((1, 2, 3, 4), '1.2.3.4')
-
-    def test_parse_version_postfix(self):
-        """ Test that x.y.z-foo works. """
-        self.assert_version((1, 2, 3), '1.2.3-foo')
+    def test_do_not_ignore_branches_by_default(self):
+        """ Test that branches are not ignored by default. """
+        self.assertFalse(VersionControlSystem._ignore_branch('foo'))
