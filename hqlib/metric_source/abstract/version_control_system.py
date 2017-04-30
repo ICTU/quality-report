@@ -21,7 +21,7 @@ import os
 import re
 import subprocess
 
-from typing import Tuple, List, Callable, Any, Optional
+from typing import Tuple, List
 
 from . import archive_system
 
@@ -30,7 +30,6 @@ class VersionControlSystem(archive_system.ArchiveSystem):
     """ Abstract base class for version control systems such as Subversion and Git. """
 
     metric_source_name = 'Version control system'
-    needs_values_as_list = True
     needs_metric_source_id = True
 
     def __init__(self, username: str='', password: str='', url: str=None,

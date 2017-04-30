@@ -25,7 +25,6 @@ from .requirement import RequirementSubject, Requirement
 from .team import Team
 from ..measurement import metric_source, measurable
 from ..measurement.metric_source import MetricSource
-from ..measurement.metric_sources import MetricSources
 from ..base import DomainObject
 from ...typing import Dashboard, DashboardColumns, DashboardRows
 
@@ -36,7 +35,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def __init__(self, organization: str='Unnamed organization', metric_sources=None, *args, **kwargs) -> None:
         self.__short_section_names = {'MM', 'PC', 'PD'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
-        self.__metric_sources = MetricSources(metric_sources or dict())
+        self.__metric_sources = metric_sources or dict()
         self.__products: List[Product] = []
         self.__teams: List[Team] = []
         self.__documents: List[Document] = []
