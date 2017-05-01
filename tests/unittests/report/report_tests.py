@@ -184,7 +184,7 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
         return quality_report
 
     @staticmethod
-    def __create_product(project, product_kwargs):
+    def __create_product(project, product_kwargs):  # pylint: disable=unused-argument
         """ Create a product according to the provided arguments. """
         for component_name in 'unittests', 'jsf', 'art':
             component_kwargs = product_kwargs.pop(component_name, dict())

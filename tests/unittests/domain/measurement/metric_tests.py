@@ -33,7 +33,7 @@ class MetricUnderTest(domain.Metric):
         """ Return the value of the metric. """
         return self.value_to_return
 
-    def _is_value_better_than(self, target):
+    def _is_value_better_than(self, target):  # pylint: disable=unused-argument
         """ Return a dummy value. """
         return True  # pragma: no cover
 

@@ -188,7 +188,7 @@ function color_metrics(color_perfect, color_green, color_yellow, color_red, colo
 
 function color_report_date(report_date) {
     var now = new Date();
-    var seconds = parseInt((now - report_date)/1000);
+    var seconds = parseInt((now - report_date)/1000, 10);
     if (seconds > 60 * 60) {
         var cls = seconds > 60 * 60 * 24 ? 'very_old' : 'old';
         document.getElementById('report_date_time').setAttribute('class', cls);

@@ -20,7 +20,7 @@ from typing import Dict, Type, Optional, TYPE_CHECKING
 from ..base import DomainObject
 from hqlib.typing import MetricValue
 if TYPE_CHECKING:
-    from .metric import Metric
+    from .metric import Metric  # pylint: disable=unused-import
 
 
 class MeasurableObject(DomainObject):
