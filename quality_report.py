@@ -21,6 +21,7 @@ limitations under the License.
 import logging
 import os
 import socket
+import ssl
 import sys
 import urllib.request
 import xmlrpc.client
@@ -154,7 +155,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         client = xmlrpc.client.ServerProxy(python_package_index_url)
         try:
             latest_version = max(client.package_releases('quality_report'))
-        except (socket.gaierror, xmlrpc.client.ProtocolError) as reason:
+        except (socket.gaierror, xmlrpc.client.ProtocolError, ssl.SSLEOFError) as reason:
             logging.warning("Can't create connection to %s: %s", python_package_index_url, reason)
             return '0'
 
