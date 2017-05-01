@@ -33,8 +33,7 @@ class SuppressRepeatMessages(logging.Filter):  # pylint: disable=too-few-public-
         return is_new_message
 
 
-def init_logging(log_level: str):
+def init_logging(log_level: str) -> None:
     """ Initialize logging for the application. """
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',
-                        level=getattr(logging, log_level.upper(), None))
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=log_level.upper())
     logging.getLogger().addFilter(SuppressRepeatMessages())
