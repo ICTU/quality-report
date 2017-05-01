@@ -14,14 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict, List
+import logging
+from typing import Dict, List, Optional
 
-from ..metric_source_mixin import VersionControlSystemMetric
-from ...domain import LowerIsBetterMetric
+from ...domain import LowerIsBetterMetric, Product
+from ...metric_source import VersionControlSystem
+from ...metric_info import VersionControlSystemProductInfo
 from hqlib.typing import MetricParameters
 
 
-class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
+class UnmergedBranches(LowerIsBetterMetric):
     """ Metric for measuring the number of unmerged branches. """
 
     name = 'Hoeveelheid ongemergde branches'
@@ -34,6 +36,13 @@ class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
     comment_url_label_text = 'Genegeerde branches'
     target_value = 0
     low_target_value = 1
+    metric_source_class = VersionControlSystem
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        vcs = self._project.metric_source(VersionControlSystem)
+        self._vcs = vcs if isinstance(vcs, list) else [vcs]
+        self._vcs_product_info = VersionControlSystemProductInfo(self._vcs, self._subject)
 
     def value(self):
         unmerged_branches = self.__unmerged_branches()
@@ -76,23 +85,24 @@ class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
         urls = dict()
         for branch, nr_revisions in list(branches_and_revisions.items()):
             label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
-            urls[label] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
+            urls[label] = self._vcs_product_info.branch_folder_for_branch(self._vcs_product_info.vcs_path(), branch)
         return urls
 
     def __branch_urls(self, branches: List[str]) -> Dict[str, str]:
         """ Return a list of branch urls. """
         urls = dict()
         for branch in branches:
-            urls[branch] = self._vcs_product_info.branch_folder_for_branch(self._vcs_path(), branch)
+            urls[branch] = self._vcs_product_info.branch_folder_for_branch(self._vcs_product_info.vcs_path(), branch)
         return urls
 
     def __branches(self) -> List[str]:
         """ Return a list of branches for the product. """
-        return self._vcs_product_info.branches(self._vcs_path())
+        return self._vcs_product_info.branches(self._vcs_product_info.vcs_path())
 
     def __unmerged_branches(self) -> Dict[str, int]:
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
-        return self._vcs_product_info.unmerged_branches(self._vcs_path(), self.__list_of_branches_to_ignore(),
+        return self._vcs_product_info.unmerged_branches(self._vcs_product_info.vcs_path(),
+                                                        self.__list_of_branches_to_ignore(),
                                                         self.__re_of_branches_to_ignore(),
                                                         self.__list_of_branches_to_include())
 
@@ -111,3 +121,15 @@ class UnmergedBranches(VersionControlSystemMetric, LowerIsBetterMetric):
     def __get_metric_option(self, option):
         """ Get the specified option from the subject. """
         return self._subject.metric_options(self.__class__).get(option)
+
+    @staticmethod
+    def __find_repo(vcs: List[VersionControlSystem], product: Product) -> Optional[VersionControlSystem]:
+        """ Loops through all VCS instances returns the instance linked to the product.
+            If the product is None, None is returned. """
+        if product:
+            try:
+                return [repo for repo in vcs if product.metric_source_id(repo)][0]
+            except IndexError:
+                logging.warning('There is no VCS configured for %s',
+                                product.name() if hasattr(product, 'name') else product)
+        return None

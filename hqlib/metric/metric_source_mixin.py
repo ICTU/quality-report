@@ -18,7 +18,7 @@ limitations under the License.
 import functools
 from typing import List
 
-from .. import metric_source, metric_info, domain
+from .. import metric_source, domain
 
 # pylint: disable=too-few-public-methods
 
@@ -73,26 +73,3 @@ class BirtTestDesignMetric(domain.Metric):
         """ Return the url for the What's Missing report instead of the Birt test design report since the
             What's Missing report allows users to click to the user stories and test cases in Jira. """
         return [self._metric_source.whats_missing_url()]
-
-
-class VersionControlSystemMetric(domain.Metric):
-    """ Class for metrics that use a version control system. """
-
-    metric_source_class = metric_source.VersionControlSystem
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        vcs = self._project.metric_source(metric_source.VersionControlSystem)
-        self._vcs = vcs if isinstance(vcs, list) else [vcs]
-        self._vcs_product_info = metric_info.VersionControlSystemProductInfo(self._vcs, self._subject)
-
-    @functools.lru_cache(maxsize=1024)
-    def value(self):
-        return super().value()
-
-    def _is_value_better_than(self, target) -> bool:
-        return super()._is_value_better_than(target)
-
-    def _vcs_path(self) -> str:
-        """ Return the version control system path for the product. """
-        return self._vcs_product_info.vcs_path()
