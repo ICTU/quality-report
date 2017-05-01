@@ -31,20 +31,12 @@ class VersionControlSystemProductInfo(object):
         self.__product = product
         self.metric_source_name = self.__vcs.metric_source_name if self.__vcs else 'VCS not configured'
 
-    def vcs_path(self, version: str=None) -> str:
+    def vcs_path(self) -> str:
         """ Return the version control system path of the product. """
         if not self.__vcs:
             return ''
-        old_vcs_path = self.__product.old_metric_source_id(self.__vcs, version)
-        if old_vcs_path:
-            return old_vcs_path
         result = self.__product.metric_source_id(self.__vcs)
-        if not result:
-            return ''
-        result = self.__vcs.normalize_path(result)
-        if version:
-            result = self.__vcs.tags_folder_for_version(result, version)
-        return result
+        return self.__vcs.normalize_path(result) if result else ''
 
     def branch_folder_for_branch(self, path: str, branch: str) -> str:
         """ Return the folder for the branch. """

@@ -83,7 +83,7 @@ class VersionControlSystemMetric(domain.Metric):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         vcs = self._project.metric_source(metric_source.VersionControlSystem)
-        self._vcs = self.__vcs if isinstance(vcs, list) else [vcs]
+        self._vcs = vcs if isinstance(vcs, list) else [vcs]
         self._vcs_product_info = metric_info.VersionControlSystemProductInfo(self._vcs, self._subject)
 
     @functools.lru_cache(maxsize=1024)
