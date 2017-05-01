@@ -14,12 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from ...domain import LowerIsBetterMetric, Product
+from ...domain import LowerIsBetterMetric
 from ...metric_source import VersionControlSystem
-from ...metric_info import VersionControlSystemProductInfo
 from hqlib.typing import MetricParameters
 
 
@@ -37,12 +35,6 @@ class UnmergedBranches(LowerIsBetterMetric):
     target_value = 0
     low_target_value = 1
     metric_source_class = VersionControlSystem
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        vcs = self._project.metric_source(VersionControlSystem)
-        self._vcs = vcs if isinstance(vcs, list) else [vcs]
-        self._vcs_product_info = VersionControlSystemProductInfo(self._vcs, self._subject)
 
     def value(self):
         unmerged_branches = self.__unmerged_branches()
@@ -85,26 +77,25 @@ class UnmergedBranches(LowerIsBetterMetric):
         urls = dict()
         for branch, nr_revisions in list(branches_and_revisions.items()):
             label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
-            urls[label] = self._vcs_product_info.branch_folder_for_branch(self._vcs_product_info.vcs_path(), branch)
+            urls[label] = self.__branch_folder_for_branch(self.__vcs_path(), branch)
         return urls
 
     def __branch_urls(self, branches: List[str]) -> Dict[str, str]:
         """ Return a list of branch urls. """
         urls = dict()
         for branch in branches:
-            urls[branch] = self._vcs_product_info.branch_folder_for_branch(self._vcs_product_info.vcs_path(), branch)
+            urls[branch] = self.__branch_folder_for_branch(self.__vcs_path(), branch)
         return urls
 
     def __branches(self) -> List[str]:
         """ Return a list of branches for the product. """
-        return self._vcs_product_info.branches(self._vcs_product_info.vcs_path())
+        return self._metric_source.branches(self.__vcs_path()) if self._metric_source else []
 
     def __unmerged_branches(self) -> Dict[str, int]:
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
-        return self._vcs_product_info.unmerged_branches(self._vcs_product_info.vcs_path(),
-                                                        self.__list_of_branches_to_ignore(),
-                                                        self.__re_of_branches_to_ignore(),
-                                                        self.__list_of_branches_to_include())
+        return self._metric_source.unmerged_branches(
+            self.__vcs_path(), self.__list_of_branches_to_ignore(), self.__re_of_branches_to_ignore(),
+            self.__list_of_branches_to_include()) if self._metric_source else dict()
 
     def __list_of_branches_to_ignore(self) -> List[str]:
         """ Return the list of branches to ignore for the measured product. """
@@ -122,14 +113,12 @@ class UnmergedBranches(LowerIsBetterMetric):
         """ Get the specified option from the subject. """
         return self._subject.metric_options(self.__class__).get(option)
 
-    @staticmethod
-    def __find_repo(vcs: List[VersionControlSystem], product: Product) -> Optional[VersionControlSystem]:
-        """ Loops through all VCS instances returns the instance linked to the product.
-            If the product is None, None is returned. """
-        if product:
-            try:
-                return [repo for repo in vcs if product.metric_source_id(repo)][0]
-            except IndexError:
-                logging.warning('There is no VCS configured for %s',
-                                product.name() if hasattr(product, 'name') else product)
-        return None
+    def __vcs_path(self) -> str:
+        """ Return the version control system path of the product. """
+        if not self._metric_source:
+            return ''
+        return self._metric_source.normalize_path(self._metric_source_id) if self._metric_source_id else ''
+
+    def __branch_folder_for_branch(self, path: str, branch: str) -> str:
+        """ Return the folder for the branch. """
+        return self._metric_source.branch_folder_for_branch(path, branch) if self._metric_source else ''
