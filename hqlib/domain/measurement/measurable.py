@@ -15,20 +15,21 @@ limitations under the License.
 """
 
 
-from typing import Dict, Type, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Type, Optional, TYPE_CHECKING, Union
 
 from ..base import DomainObject
 from hqlib.typing import MetricValue
-if TYPE_CHECKING:
-    from .metric import Metric  # pylint: disable=unused-import
+if TYPE_CHECKING:  # pylint: disable=unused-import
+    from .metric import Metric
+    from .metric_source import MetricSource
 
 
 class MeasurableObject(DomainObject):
     """ An object that has measurable characteristics. Base class for products, teams, etc. """
     def __init__(self, *args, **kwargs) -> None:
-        self.__metric_source_ids = kwargs.pop('metric_source_ids', dict())
-        self.__metric_source_options = kwargs.pop('metric_source_options', dict())
-        self.__metric_options = kwargs.pop('metric_options', dict())
+        self.__metric_source_ids: Dict['MetricSource', str] = kwargs.pop('metric_source_ids', dict())
+        self.__metric_source_options: Dict['MetricSource', Dict[str, Any]] = kwargs.pop('metric_source_options', dict())
+        self.__metric_options: Dict[Type['Metric'], Dict[str, Any]] = kwargs.pop('metric_options', dict())
         super().__init__(*args, **kwargs)
 
     def target(self, metric_class: Type['Metric']) -> MetricValue:
@@ -43,7 +44,7 @@ class MeasurableObject(DomainObject):
         """ Return whether a score below target is considered to be accepted technical debt. """
         return self.__metric_options.get(metric_class, dict()).get('debt_target')
 
-    def metric_source_id(self, metric_source) -> Optional[str]:
+    def metric_source_id(self, metric_source: Union[List['MetricSource'], 'MetricSource']) -> Optional[str]:
         """ Return the id of this object in the metric source. """
         if isinstance(metric_source, list):
             for source in metric_source:
@@ -53,12 +54,12 @@ class MeasurableObject(DomainObject):
         else:
             return self.__metric_source_ids.get(metric_source)
 
-    def metric_source_options(self, metric_source):
+    def metric_source_options(self, metric_source: 'MetricSource') -> Dict[str, Any]:
         """ Return the options of this object for the metric source. Options can be any information that is needed
             to get information about this object from the metric source. """
         return self.__metric_source_options.get(metric_source)
 
-    def metric_options(self, metric_class: Type['Metric']) -> Dict:
+    def metric_options(self, metric_class: Type['Metric']) -> Dict[str, Any]:
         """ Return the options of this object for the metric class. Options can be any information that is needed
             for the metric. """
         return self.__metric_options.get(metric_class, dict())
