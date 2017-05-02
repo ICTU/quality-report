@@ -40,15 +40,19 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
         try:
             soup = self.soup(self.url())
-        except UrlOpener.url_open_exceptions:
-            logging.warning("Could not open %s to read spirit of team %s", self.url(), team_id)
+        except UrlOpener.url_open_exceptions as reason:
+            logging.warning("Could not open %s to read spirit of team %s: %s", self.url(), team_id, reason)
             return ''
         try:
             row = soup('tr', id=team_id)[0]('td')
         except IndexError:
             logging.warning("Could not find %s in wiki %s", team_id, self.url())
             return ''
-        return re.sub(r'[^:\-()|]', '', row[-1].string)
+        try:
+            return re.sub(r'[^:\-()|]', '', row[-1].string)
+        except TypeError as reason:
+            logging.warning("Could not find a string in the last row: %s", reason)
+            return ''
 
     def datetime(self, *team_ids: str) -> DateTime:
         """ Return the date that the team spirit of the team was last measured. """
