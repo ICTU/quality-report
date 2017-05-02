@@ -49,7 +49,7 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
             logging.warning("Could not find %s in wiki %s", team_id, self.url())
             return ''
         try:
-            return re.sub(r'[^:\-()|]', '', row[-1].string)
+            return re.sub(r'[^:\-()|]', '', row[-1].contents[0])
         except TypeError as reason:
             logging.warning("Could not find a string in the last row: %s", reason)
             return ''
