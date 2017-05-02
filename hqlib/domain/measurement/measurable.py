@@ -28,7 +28,6 @@ class MeasurableObject(DomainObject):
     """ An object that has measurable characteristics. Base class for products, teams, etc. """
     def __init__(self, *args, **kwargs) -> None:
         self.__metric_source_ids: Dict['MetricSource', str] = kwargs.pop('metric_source_ids', dict())
-        self.__metric_source_options: Dict['MetricSource', Dict[str, Any]] = kwargs.pop('metric_source_options', dict())
         self.__metric_options: Dict[Type['Metric'], Dict[str, Any]] = kwargs.pop('metric_options', dict())
         super().__init__(*args, **kwargs)
 
@@ -53,11 +52,6 @@ class MeasurableObject(DomainObject):
             return None
         else:
             return self.__metric_source_ids.get(metric_source)
-
-    def metric_source_options(self, metric_source: 'MetricSource') -> Dict[str, Any]:
-        """ Return the options of this object for the metric source. Options can be any information that is needed
-            to get information about this object from the metric source. """
-        return self.__metric_source_options.get(metric_source)
 
     def metric_options(self, metric_class: Type['Metric']) -> Dict[str, Any]:
         """ Return the options of this object for the metric class. Options can be any information that is needed

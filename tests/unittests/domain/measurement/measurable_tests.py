@@ -27,7 +27,6 @@ class MeasurableObjectTests(unittest.TestCase):
                                      debt_target=TechnicalDebtTarget(100, 'explanation'))
         self.__measurable = MeasurableObject(
             metric_source_ids={self.__class__: 'id'},
-            metric_source_options={self.__class__: 'options'},
             metric_options={self.__class__: self.__metric_options})
 
     def test_no_target(self):
@@ -70,14 +69,6 @@ class MeasurableObjectTests(unittest.TestCase):
     def test_no_metric_source_id_list(self):
         """ Test the metric source id for a list of metric sources without a known class. """
         self.assertEqual(None, self.__measurable.metric_source_id([''.__class__]))
-
-    def test_no_metric_source_option(self):
-        """ Test the metric source option for an unknown class. """
-        self.assertFalse(self.__measurable.metric_source_options(''.__class__))
-
-    def test_metric_source_options(self):
-        """ Test the metric source options for a known class. """
-        self.assertEqual('options', self.__measurable.metric_source_options(self.__class__))
 
     def test_no_metric_option(self):
         """ Test the metric option for an unknown class. """
