@@ -25,10 +25,10 @@ class Duplication(SonarDashboardMetric, LowerPercentageIsBetterMetric):
     norm_template = 'Maximaal {target}% gedupliceerde regels code. Meer dan {low_target}% is rood.'
     template = '{name} heeft {value}% ({numerator} op {denominator}) duplicatie.'
 
-    def _numerator(self):
+    def _numerator(self) -> int:
         return self._metric_source.duplicated_lines(self._sonar_id())
 
-    def _denominator(self):
+    def _denominator(self) -> int:
         return self._metric_source.lines(self._sonar_id())
 
 
@@ -37,7 +37,7 @@ class JavaDuplication(Duplication):  # pylint: disable=too-many-ancestors
 
     name = 'Duplicatie van Java broncode'
     target_value = 0
-    low_target_value = 5
+    low_target_value = 4
 
 
 class JsfDuplication(Duplication):  # pylint: disable=too-many-ancestors

@@ -2,6 +2,7 @@
 
   * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.
   * Bug fix: Don't crash when the Wiki is not formatted correctly.
+  * Processed latest SIG/TUV evaluation criteria: duplication norm lowered from 5% to 4%.
   
   
 2017-04-18  Release 1.81.4

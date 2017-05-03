@@ -45,7 +45,8 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
     template = 'Het totaal aantal {unit} voor de producten {products} is {value} {unit}.'
     target_value = 160000
     # Maximum number of LOC Java to be eligible for 4 stars, see
-    # http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/
+    # https://www.sig.eu/wp-content/uploads/2016/10/
+    # SIG-TUViT_Evaluation_Criteria_Trusted_Product_Maintainability-Guidance_for_producers.pdf
     low_target_value = 175000
 
     def _parameters(self) -> MetricParameters:
