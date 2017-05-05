@@ -17,11 +17,11 @@ limitations under the License.
 
 import re
 from distutils.version import LooseVersion
-from typing import List, Union
+from typing import List
 
 from ... import metric_source, utils
 from ...domain import HigherIsBetterMetric
-from hqlib.typing import MetricParameters
+from hqlib.typing import MetricParameters, Number
 
 
 class SonarVersion(HigherIsBetterMetric):
@@ -35,7 +35,7 @@ class SonarVersion(HigherIsBetterMetric):
     low_target_value = LooseVersion('4.5.6')
     metric_source_class = metric_source.Sonar
 
-    def numerical_value(self) -> Union[float, int]:
+    def numerical_value(self) -> Number:
         return -1 if self._missing() else utils.version_number_to_numerical(self.value().version)
 
     def value(self):
@@ -65,7 +65,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         default_values['language'] = cls.language_name
         return default_values
 
-    def numerical_value(self) -> Union[float, int]:
+    def numerical_value(self) -> Number:
         if self._missing():
             return -1
         else:

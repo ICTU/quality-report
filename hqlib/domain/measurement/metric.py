@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict, List, Type, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Type, Tuple, TYPE_CHECKING
 
 import functools
 import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
-from hqlib.typing import MetricParameters, MetricValue, DateTime
+from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 if TYPE_CHECKING:  # pragma: no cover
     from ..software_development.project import Project
 
@@ -290,7 +290,7 @@ class Metric(object):
         minimum, maximum = min(history), max(history)
         return (minimum - 1, maximum + 1) if minimum == maximum else (minimum, maximum)
 
-    def numerical_value(self) -> Union[float, int]:
+    def numerical_value(self) -> Number:
         """ Return a numerical version of the metric value for use in graphs. By default this simply returns the
             regular value, assuming it is already numerical. Metrics that don't have a numerical value by default
             can override this method to convert the non-numerical value into a numerical value. """
