@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from ...domain import LowerIsBetterMetric
 from ...metric_source import VersionControlSystem
@@ -91,11 +91,11 @@ class UnmergedBranches(LowerIsBetterMetric):
         """ Return a list of branches for the product. """
         return self._metric_source.branches(self.__vcs_path()) if self._metric_source else []
 
-    def __unmerged_branches(self) -> Dict[str, int]:
+    def __unmerged_branches(self) -> Optional[Dict[str, int]]:
         """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
         return self._metric_source.unmerged_branches(
             self.__vcs_path(), self.__list_of_branches_to_ignore(), self.__re_of_branches_to_ignore(),
-            self.__list_of_branches_to_include()) if self._metric_source else dict()
+            self.__list_of_branches_to_include()) if self._metric_source else None
 
     def __list_of_branches_to_ignore(self) -> List[str]:
         """ Return the list of branches to ignore for the measured product. """

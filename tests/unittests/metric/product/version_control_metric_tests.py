@@ -71,6 +71,12 @@ class UnmergedBranchesTest(unittest.TestCase):
         self.assertEqual('1 van de 2 branches van Product hebben revisies die niet met de trunk zijn gemerged.',
                          self.__metric.report())
 
+    def test_report_without_metric_source(self):
+        """ Test the report without a metric source. """
+        self.assertEqual('De hoeveelheid ongemergde branches van <no name> kon niet gemeten worden omdat de bron '
+                         'VersionControlSystem niet is geconfigureerd.',
+                         metric.UnmergedBranches(subject=domain.Product(), project=domain.Project()).report())
+
     def test_url(self):
         """ Test that the unmerged branches are listed. """
         self.assertEqual({'branch2: 1 ongemergde revisie(s)': 'http://branch/'}, self.__metric.url())
@@ -116,3 +122,7 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_comment_url_label(self):
         """ Test the label for the comment urls. """
         self.assertEqual('Genegeerde branches', self.__metric.comment_url_label_text)
+
+    def test_missing_metric_source(self):
+        """ Test that the value is -1 when the metric source is missing. """
+        self.assertEqual(-1, metric.UnmergedBranches(subject=domain.Product(), project=domain.Project()).value())
