@@ -20,6 +20,7 @@ import logging
 
 from ..abstract import coverage_report
 from ... import utils
+from hqlib.typing import DateTime
 
 
 class JaCoCo(coverage_report.CoverageReport):
@@ -27,17 +28,17 @@ class JaCoCo(coverage_report.CoverageReport):
     metric_source_name = 'JaCoCo coverage rapport'
 
     @staticmethod
-    def _get_coverage_date_url(coverage_url):
+    def _get_coverage_date_url(coverage_url: str) -> str:
         return coverage_url[:-len('index.html')] + '.sessions.html'
 
-    def _parse_statement_coverage_percentage(self, soup):
+    def _parse_statement_coverage_percentage(self, soup) -> int:
         return self.__parse_coverage_percentage(soup, 1)
 
-    def _parse_branch_coverage_percentage(self, soup):
+    def _parse_branch_coverage_percentage(self, soup) -> int:
         return self.__parse_coverage_percentage(soup, 3)
 
     @staticmethod
-    def __parse_coverage_percentage(soup, td_index):
+    def __parse_coverage_percentage(soup, td_index: int) -> int:
         """ Return the statement or branch coverage percentage. """
         try:
             coverage_text = soup('tfoot')[0]('td')[td_index].string
@@ -48,7 +49,7 @@ class JaCoCo(coverage_report.CoverageReport):
         missed, total = (int(text) for text in coverage_text.split(' of '))
         return round(100 * (total - missed) / float(total)) if total > 0 else 0
 
-    def _parse_coverage_date(self, soup):
+    def _parse_coverage_date(self, soup) -> DateTime:
         coverage_date = datetime.datetime.min
         session_rows = soup('tbody')[0]('tr')
         for row in session_rows:
@@ -61,7 +62,7 @@ class JaCoCo(coverage_report.CoverageReport):
         return coverage_date
 
     @staticmethod
-    def __parse_non_us_date_time(date_time_string):
+    def __parse_non_us_date_time(date_time_string: str) -> DateTime:
         date_string, time_string = date_time_string.split(' ')
         day_string, month_string, year_string = date_string.split('-')
         hour_string, minute_string, second_string = time_string.split(':')

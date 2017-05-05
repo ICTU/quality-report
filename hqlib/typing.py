@@ -21,13 +21,13 @@ from typing import Dict, Union, Tuple, Sequence, Optional
 from .domain.base import DomainObject
 
 
-MetricValue = Union[int, float, str, LooseVersion]
+Number = Union[float, int]
+DateTime = datetime.datetime
+TimeDelta = datetime.timedelta
+
+MetricValue = Union[Number, str, LooseVersion]
 MetricParameters = Dict[str, MetricValue]
 DashboardColumns = Sequence[Tuple[str, int]]
 DashboardRows = Sequence[Sequence[Tuple[Union[DomainObject, str], str, Optional[Tuple[int, int]]]]]
 Dashboard = Tuple[DashboardColumns, DashboardRows]
-
-DateTime = datetime.datetime
-TimeDelta = datetime.timedelta
-
 HistoryRecord = Dict[str, Union[Tuple[str, str, str], str]]

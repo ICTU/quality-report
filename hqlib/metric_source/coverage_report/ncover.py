@@ -20,20 +20,21 @@ import re
 
 from ..abstract import coverage_report
 from ... import utils
+from hqlib.typing import DateTime
 
 
 class NCover(coverage_report.CoverageReport):
     """ Class representing a NCover coverage report. """
     metric_source_name = 'NCover coverage rapport'
 
-    def _parse_statement_coverage_percentage(self, soup):
+    def _parse_statement_coverage_percentage(self, soup) -> int:
         return self.__parse_coverage_percentage(soup, 'sequencePointCoverage')
 
-    def _parse_branch_coverage_percentage(self, soup):
+    def _parse_branch_coverage_percentage(self, soup) -> int:
         return self.__parse_coverage_percentage(soup, 'branchCoverage')
 
     @staticmethod
-    def __parse_coverage_percentage(soup, coverage_type):
+    def __parse_coverage_percentage(soup, coverage_type: str) -> int:
         """ Return the specified coverage percentage from the NCover soup. """
         scripts = soup('script', {'type': 'text/javascript'})
         for script in scripts:
@@ -43,7 +44,7 @@ class NCover(coverage_report.CoverageReport):
                 return coverage_percent * 100 if coverage_percent else -1
         return -1
 
-    def _parse_coverage_date(self, soup):
+    def _parse_coverage_date(self, soup) -> DateTime:
         scripts = soup('script', {'type': 'text/javascript'})
         for script in scripts:
             if 'ncover.createDateTime' in script.string:

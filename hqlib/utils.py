@@ -15,18 +15,13 @@ limitations under the License.
 """
 
 
-from typing import Union, Any, Tuple
+from typing import Any, Tuple
 import datetime
 import json
 import logging
 import re
 
-
-# Types
-
-DateTime = datetime.datetime
-TimeDelta = datetime.timedelta
-Number = Union[float, int]
+from hqlib.typing import DateTime, TimeDelta, Number
 
 
 # Constants

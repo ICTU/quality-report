@@ -22,9 +22,7 @@ from typing import List, Dict, Optional, Union
 
 from . import url_opener
 from .. import utils, domain
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime, Number
 
 
 class Sonar(domain.MetricSource, url_opener.UrlOpener):
@@ -271,7 +269,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Helper methods
 
     @functools.lru_cache(maxsize=4096)
-    def __metric(self, product: str, metric_name: str, default=0) -> Union[float, int]:
+    def __metric(self, product: str, metric_name: str, default=0) -> Number:
         """ Return a specific metric value for the product. """
         if not self.__has_project(product):
             return -1
