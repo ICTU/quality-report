@@ -20,8 +20,7 @@ import datetime
 from typing import Any, Callable, List
 
 from ..base import DomainObject
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods

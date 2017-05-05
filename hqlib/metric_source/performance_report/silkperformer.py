@@ -21,9 +21,7 @@ import re
 from typing import List, Iterable
 
 from ..abstract import performance_report
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class SilkPerformerPerformanceReport(performance_report.PerformanceReport):

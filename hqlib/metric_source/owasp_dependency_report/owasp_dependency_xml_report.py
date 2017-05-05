@@ -22,9 +22,7 @@ from typing import List, Tuple, Any
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):

@@ -20,9 +20,7 @@ from typing import List
 
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class DocumentAge(LowerIsBetterMetric):

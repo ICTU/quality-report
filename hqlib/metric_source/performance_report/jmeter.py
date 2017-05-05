@@ -23,9 +23,7 @@ from typing import List, Dict, Set, Iterable, Tuple
 from .. import url_opener
 from ..abstract import performance_report
 from ... import utils
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class JMeterPerformanceReport(performance_report.PerformanceReport):

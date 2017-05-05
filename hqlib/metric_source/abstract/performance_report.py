@@ -22,9 +22,7 @@ from typing import List, Iterable
 from .. import beautifulsoup
 from ..url_opener import UrlOpener
 from ... import domain
-
-
-DateTime = datetime.datetime
+from hqlib.typing import DateTime
 
 
 class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):

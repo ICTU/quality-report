@@ -23,8 +23,6 @@ from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
 from hqlib.typing import MetricParameters
 
-DateTime = datetime.datetime
-
 
 class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of logical test cases. """
