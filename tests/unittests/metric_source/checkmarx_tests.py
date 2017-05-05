@@ -54,3 +54,15 @@ class CheckmarxTest(unittest.TestCase):
     def test_multiple_urls(self):
         """ Test the number of alerts for multiple urls. """
         self.assertEqual(2, self.__report.nr_warnings(['id1', 'id2'], 'medium'))
+
+    def test_metric_source_urls_without_report(self):
+        """ Test the metric source urls without metric ids. """
+        self.assertEqual([], self.__report.metric_source_urls())
+
+    def test_metric_source_urls(self):
+        """ Test the metric source urls with one metric id. """
+        self.assertEqual([], self.__report.metric_source_urls('id'))
+
+    def test_metric_source_urls_on_error(self):
+        """ Test the metric source urls when an error occurs. """
+        self.assertEqual([], self.__report.metric_source_urls('raise'))

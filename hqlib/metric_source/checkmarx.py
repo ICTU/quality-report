@@ -18,6 +18,7 @@ limitations under the License.
 import functools
 import logging
 import urllib.parse
+import ssl
 
 from . import url_opener
 from .. import utils, domain
@@ -27,7 +28,6 @@ class Checkmarx(domain.MetricSource):
     """ Class representing the Checkmarx API. """
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
-    checkmarx_url = ''
 
     def __init__(self, url, username, password, url_open=None, *args, **kwargs):
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
@@ -46,8 +46,8 @@ class Checkmarx(domain.MetricSource):
                     str(json["value"][0]["LastScan"]["ProjectId"])))
             except KeyError as reason:
                 logging.warning("Couldn't load values from json: %s - %s", project_name, reason)
-            except Exception as reason:
-                logging.warning("checkmarx_report_urls %s - %s", reason, project_name)
+            except url_opener.UrlOpener.url_open_exceptions:
+                return []
 
         return checkmarx_report_urls
 
@@ -66,24 +66,19 @@ class Checkmarx(domain.MetricSource):
 
     @staticmethod
     def __parse_alerts(json, risk_level):
-        """ Parse the JSON to get the nr of alerts for the risk_level """
-
+        """ Parse the JSON to get the number of alerts for the risk_level """
         return json["value"][0]["LastScan"][risk_level.title()]
 
     @functools.lru_cache(maxsize=1024)
     def __fetch_report(self, project_name):
-        api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan" \
-                  "&$filter=Name%20eq%20%27{}%27"\
-            .format(self.checkmarx_url, urllib.parse.quote(project_name))
-
+        """ Create the api URL and fetch the report from it. """
+        api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27{}%27".format(
+            self.checkmarx_url, urllib.parse.quote(project_name))
         return self.__get_json(api_url)
 
     def __get_json(self, api_url):
         """ Return and evaluate the JSON at the url using Basic Authentication. """
-
         try:
-            import ssl
-
             try:
                 _create_unverified_https_context = ssl._create_unverified_context
             except AttributeError:
