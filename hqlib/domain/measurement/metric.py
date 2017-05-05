@@ -22,7 +22,7 @@ import logging
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
 from hqlib.typing import MetricParameters, MetricValue, DateTime
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..software_development.project import Project
 
 
