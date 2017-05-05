@@ -92,6 +92,11 @@ class DynamicTechnicalDebtTargetTests(unittest.TestCase):
         self.assertRaises(ValueError, DynamicTechnicalDebtTarget,
                           100, datetime.datetime(2000, 1, 1), 200, datetime.datetime(1999, 1, 1))
 
+    def test_wrong_type(self):
+        """ Test that a value error is thrown when the wrong type is used. """
+        self.assertRaises(ValueError, DynamicTechnicalDebtTarget,
+                          'foo', datetime.datetime(2000, 1, 1), 'bar', datetime.datetime(2010, 1, 1))
+
     def test_default_explanation(self):
         """ Test that the default explanation shows the period. """
         now = datetime.datetime.now()
