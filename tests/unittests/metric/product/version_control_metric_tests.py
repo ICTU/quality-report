@@ -112,6 +112,11 @@ class UnmergedBranchesTest(unittest.TestCase):
         """ Test that the comment urls include a link to ignored branches. """
         self.assertEqual({'ignored branch': 'http://branch/'}, self.__metric.comment_urls())
 
+    def test_comment_urls_without_metric_source(self):
+        """ Test the comment urls when the metric source is missing """
+        self.assertEqual(dict(),
+                         metric.UnmergedBranches(subject=domain.Product(), project=domain.Project()).comment_urls())
+
     def test_comment_urls_no_ignored_branches(self):
         """ Test the comment urls when there are no ignored branches. """
         product = domain.Product(short_name='Product',
