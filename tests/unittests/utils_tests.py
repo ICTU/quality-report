@@ -197,6 +197,14 @@ class EvalJSONTest(unittest.TestCase):
         """ Test that bytes are first decoded. """
         self.assertEqual(dict(bla=1), utils.eval_json(b'{"bla": 1}'))
 
+    def test_unicode_decode_error(self):
+        """ Test that a unicode decode error is raised when the bytes can't be decoded using utf-8. """
+        self.assertRaises(UnicodeDecodeError, utils.eval_json, b'\x80abc')
+
+    def test_value_error(self):
+        """ Test that a value error is raised when evaluating incompletw json. """
+        self.assertRaises(ValueError, utils.eval_json, '{')
+
 
 class ParseUSDateTimeTest(unittest.TestCase):
     """ Unit tests for the parse US date time method. """
