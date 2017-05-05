@@ -114,8 +114,9 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_comment_urls_without_metric_source(self):
         """ Test the comment urls when the metric source is missing """
-        self.assertEqual(dict(),
-                         metric.UnmergedBranches(subject=domain.Product(), project=domain.Project()).comment_urls())
+        subject = domain.Product(metric_options={metric.UnmergedBranches: dict(branches_to_ignore=['ignored branch'])})
+        self.assertEqual({'ignored branch': ''},
+                         metric.UnmergedBranches(subject=subject, project=domain.Project()).comment_urls())
 
     def test_comment_urls_no_ignored_branches(self):
         """ Test the comment urls when there are no ignored branches. """
