@@ -19,6 +19,7 @@ import functools
 import logging
 import urllib.parse
 import ssl
+from typing import Dict, List, Iterable
 
 from . import url_opener
 from .. import utils, domain
@@ -29,12 +30,12 @@ class Checkmarx(domain.MetricSource):
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
 
-    def __init__(self, url, username, password, url_open=None, *args, **kwargs):
+    def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener=None, *args, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         self.checkmarx_url = url
         super().__init__(*args, **kwargs)
 
-    def metric_source_urls(self, *report_urls):
+    def metric_source_urls(self, *report_urls: str) -> List[str]:
         checkmarx_report_urls = []
 
         for project_name in report_urls:
@@ -51,7 +52,7 @@ class Checkmarx(domain.MetricSource):
 
         return checkmarx_report_urls
 
-    def nr_warnings(self, metric_source_ids, priority):
+    def nr_warnings(self, metric_source_ids: Iterable[str], priority: str) -> int:
         """ Return the number of warnings in the reports with the specified priority. """
         nr_alerts = 0
         for project_name in metric_source_ids:
@@ -65,18 +66,18 @@ class Checkmarx(domain.MetricSource):
         return nr_alerts
 
     @staticmethod
-    def __parse_alerts(json, risk_level):
+    def __parse_alerts(json: Dict[str, List[Dict[str, Dict[str, int]]]], risk_level: str) -> int:
         """ Parse the JSON to get the number of alerts for the risk_level """
         return json["value"][0]["LastScan"][risk_level.title()]
 
     @functools.lru_cache(maxsize=1024)
-    def __fetch_report(self, project_name):
+    def __fetch_report(self, project_name: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
         """ Create the api URL and fetch the report from it. """
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27{}%27".format(
             self.checkmarx_url, urllib.parse.quote(project_name))
         return self.__get_json(api_url)
 
-    def __get_json(self, api_url):
+    def __get_json(self, api_url: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
         """ Return and evaluate the JSON at the url using Basic Authentication. """
         try:
             try:
