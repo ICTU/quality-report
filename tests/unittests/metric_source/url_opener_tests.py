@@ -17,6 +17,7 @@ limitations under the License.
 import unittest
 import urllib.request
 import urllib.error
+import io
 
 from hqlib.metric_source import url_opener
 
@@ -68,3 +69,8 @@ class UrlOpenerTest(unittest.TestCase):
         opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
         FakeBuildOpener.raise_exception = False
+
+    def test_url_read(self):
+        """ Test reading an url. """
+        opener = url_opener.UrlOpener(url_open=lambda url: io.StringIO('contents'))
+        self.assertEqual('contents', opener.url_read('http://bla'))
