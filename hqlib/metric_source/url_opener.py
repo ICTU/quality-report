@@ -55,7 +55,8 @@ class UrlOpener(object):
 
             def url_open_with_basic_auth(url: str):
                 """ Open the url with basic authentication. """
-                request = urllib.request.Request(url)
+                #request = urllib.request.Request(url)
+                request = url if isinstance(url, urllib.request.Request) else urllib.request.Request(url)
                 request.add_header('Authorization', 'Basic ' + str(credentials.replace(b'\n', b'')))
                 return url_open(request)
 
