@@ -106,7 +106,9 @@ class FailingRegressionTestsTest(unittest.TestCase):
 
     def test_missing_metric_source(self):
         """ Test the metric without a metric source. """
-        self.assertTrue(metric.FailingRegressionTests(subject=domain.Product(), project=self.__project)._missing())
+        failing_tests = metric.FailingRegressionTests(subject=domain.Product(), project=self.__project)
+        self.assertTrue(failing_tests._missing())
+        self.assertEqual('?', failing_tests._parameters()['tests'])
 
 
 class RegressionTestAgeTest(unittest.TestCase):
