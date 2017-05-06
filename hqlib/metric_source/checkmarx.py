@@ -18,7 +18,6 @@ limitations under the License.
 import functools
 import logging
 import urllib.parse
-import ssl
 from typing import Dict, List, Iterable
 
 from . import url_opener
@@ -80,6 +79,7 @@ class Checkmarx(domain.MetricSource):
     def __get_json(self, api_url: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
         """ Return and evaluate the JSON at the url using Basic Authentication. """
         try:
+            import ssl
             try:
                 _create_unverified_https_context = ssl._create_unverified_context
             except AttributeError:
