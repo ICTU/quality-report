@@ -104,6 +104,10 @@ class FailingRegressionTestsTest(unittest.TestCase):
         failing_tests = metric.FailingRegressionTests(subject=subject, project=self.__project)
         self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())
 
+    def test_missing_metric_source(self):
+        """ Test the metric without a metric source. """
+        self.assertTrue(metric.FailingRegressionTests(subject=domain.Product(), project=self.__project)._missing())
+
 
 class RegressionTestAgeTest(unittest.TestCase):
     """ Unit tests for the regression test age metric. """

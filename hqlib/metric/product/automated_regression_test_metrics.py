@@ -39,6 +39,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
             return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
 
     def _missing(self) -> bool:
+        if not self._metric_source:
+            return True
         urls = self._get_metric_source_ids()
         passed = self._metric_source.passed_tests(*urls)
         failed = self._metric_source.failed_tests(*urls)

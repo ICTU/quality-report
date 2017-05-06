@@ -1,3 +1,9 @@
+2017-05-06  Release 1.81.7
+
+  * Bug fix: Don't crash when the project has a test report, but a product doesn't have a metric source id for the test 
+    report.
+    
+    
 2017-05-06  Release 1.81.6
 
   * Bug fix: Don't try to use a metric source that needs a metric source id without one.
