@@ -1,3 +1,8 @@
+2017-05-06  Release 1.81.6
+
+  * Bug fix: Don't try to use a metric source that needs a metric source id without one.
+  
+
 2017-05-06  Release 1.81.5
 
   * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.

@@ -49,6 +49,7 @@ class FakeBirt(object):
     # pylint: disable=too-few-public-methods
 
     metric_source_name = metric_source.Birt.metric_source_name
+    needs_metric_source_id = metric_source.Birt.needs_metric_source_id
 
     @staticmethod
     def whats_missing_url():

@@ -24,6 +24,7 @@ class FakeSonar(object):
     # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
+    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     @staticmethod
     def dashboard_url(*args):

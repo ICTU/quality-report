@@ -112,6 +112,7 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
 
         class MissingPerformanceReport(object):  # pylint: disable=too-few-public-methods
             """ Fake a missing performance report. """
+            needs_metric_source_id = metric_source.PerformanceLoadTestReport.needs_metric_source_id
 
             @staticmethod
             def queries_violating_max_responsetime(*args):  # pylint: disable=unused-argument

@@ -24,6 +24,7 @@ class FakeSonar(object):
     # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
+    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     def __init__(self, blocker_violations=0, critical_violations=0, major_violations=0):
         self.__blocker_violations = blocker_violations

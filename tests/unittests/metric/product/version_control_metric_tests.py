@@ -22,7 +22,8 @@ from hqlib import metric, domain, metric_source
 class FakeSubversion(object):
     """ Provide for a fake Subversion metric source. """
 
-    metric_source_name = 'FakeSubversion'
+    metric_source_name = metric_source.Subversion.metric_source_name
+    needs_metric_source_id = metric_source.Subversion.needs_metric_source_id
 
     @staticmethod
     def unmerged_branches(*args):  # pylint: disable=unused-argument

@@ -23,6 +23,7 @@ class FakeJira(object):
     """ Fake Jira. """
 
     metric_source_name = metric_source.Jira.metric_source_name
+    needs_metric_source_id = metric_source.Jira.needs_metric_source_id
 
     @staticmethod
     def nr_story_points_ready():

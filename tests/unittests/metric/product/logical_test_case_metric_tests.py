@@ -24,6 +24,7 @@ class FakeBirt(object):
     """ Provide for a fake Birt object. """
     # pylint: disable=unused-argument
     metric_source_name = metric_source.Birt.metric_source_name
+    needs_metric_source_id = metric_source.Birt.needs_metric_source_id
     date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=5)
 
     def __init__(self, test_design=True):
@@ -241,6 +242,7 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 class FakeJira(object):
     """ A fake Jira for testing purposes. """
     metric_source_name = metric_source.Jira.metric_source_name
+    needs_metric_source_id = metric_source.Jira.needs_metric_source_id
 
     @staticmethod
     def manual_test_cases_time():

@@ -62,8 +62,9 @@ class MetricTest(unittest.TestCase):
     def test_one_metric_source(self):
         """ Test that the correct metric source id is returned when there is one metric source instance. """
         MetricUnderTest.metric_source_class = metric_source.Birt
-        project = domain.Project(metric_sources={metric_source.Birt: 'Birt1'})
-        product = domain.Product(metric_source_ids={'Birt1': 'birt id'})
+        metric_source_instance = metric_source.Birt(birt_url='http://birt')
+        project = domain.Project(metric_sources={metric_source.Birt: metric_source_instance})
+        product = domain.Product(metric_source_ids={metric_source_instance: 'birt id'})
         # pylint: disable=protected-access
         self.assertEqual('birt id', MetricUnderTest(project=project, subject=product)._metric_source_id)
         MetricUnderTest.metric_source_class = None

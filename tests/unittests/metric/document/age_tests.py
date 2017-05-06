@@ -22,7 +22,8 @@ from hqlib import metric, domain, metric_source
 
 class FakeSubversion(object):  # pylint: disable=too-few-public-methods
     """ Fake Subversion for unit tests. """
-    metric_source_name = 'Subversion'
+    metric_source_name = metric_source.Subversion.metric_source_name
+    needs_metric_source_id = metric_source.Subversion.needs_metric_source_id
 
     @staticmethod
     def last_changed_date(url):

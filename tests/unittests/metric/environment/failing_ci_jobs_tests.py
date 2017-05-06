@@ -22,6 +22,7 @@ from hqlib import metric, domain, metric_source
 class FakeJenkins(object):
     """ Fake Jenkins instance for testing purposes. """
     # pylint: disable=unused-argument
+    needs_metric_source_id = metric_source.Jenkins.needs_metric_source_id
 
     @classmethod
     def failing_jobs_url(cls, *args):

@@ -22,6 +22,7 @@ from hqlib import metric, domain, metric_source
 class FakeJenkins(object):
     """ Fake Jenkins instance for testing purposes. """
     # pylint: disable=unused-argument
+    needs_metric_source_id = metric_source.Jenkins.needs_metric_source_id
 
     @staticmethod
     def number_of_active_jobs(*args):

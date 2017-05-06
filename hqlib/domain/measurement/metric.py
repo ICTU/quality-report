@@ -86,6 +86,8 @@ class Metric(object):
                 self._metric_source_id = self._subject.metric_source_id(self._metric_source)
             except AttributeError:
                 self._metric_source_id = None
+            if self._metric_source and self._metric_source.needs_metric_source_id and not self._metric_source_id:
+                self._metric_source = None
         self.__id_string = self.stable_id()
         from hqlib import metric_source
         self.__history = self._project.metric_source(metric_source.History)
