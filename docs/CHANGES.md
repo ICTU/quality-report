@@ -1,4 +1,4 @@
-2017-05-02  Release 1.81.5
+2017-05-06  Release 1.81.5
 
   * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.
   * Bug fix: Don't crash when the Wiki is not formatted correctly.
