@@ -1,3 +1,8 @@
+2017-05-07  Release 1.81.8
+
+  * Bug fix: Basic authentication was not working.
+  
+
 2017-05-06  Release 1.81.7
 
   * Bug fix: Don't crash when the project has a test report, but a product doesn't have a metric source id for the test 
