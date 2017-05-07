@@ -89,7 +89,7 @@ function create_dashboard() {
     set_indicators();
 
     // Retrieve the html for the dashboard
-    $("#section_dashboard2").load("dashboard.html");
+    $("#section_dashboard").load("dashboard.html");
 
     // Retrieve the metrics for the metrics table.
     $.getJSON("json/metrics.json", "", function(metrics_data) {
