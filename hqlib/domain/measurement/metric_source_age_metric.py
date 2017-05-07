@@ -37,7 +37,4 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
         if not self._metric_source:
             return True
         metric_source_ids = self._get_metric_source_ids()
-        if self._metric_source.needs_metric_source_id and not metric_source_ids:
-            return True
-        else:
-            return self._metric_source.datetime(*metric_source_ids) in (None, datetime.datetime.min)
+        return self._metric_source.datetime(*metric_source_ids) in (None, datetime.datetime.min)
