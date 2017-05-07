@@ -40,7 +40,6 @@ class HTMLFormatter(base_formatter.Formatter):
             current_version=self.__current_software_version,
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
-        parameters['dashboard'] = DashboardFormatter.format(report)
         parameters['domain_object_classes'] = self.__domain_object_classes(report)
         parameters['metric_classes'] = self.__metric_classes(report)
         parameters['metric_sources'] = self.__metric_sources(report)
@@ -202,13 +201,8 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     """ Return a HTML formatted dashboard for the quality report. """
     @classmethod
     def process(cls, report: QualityReport) -> str:
-        """ Process the report. """
-        return cls.format(report)
-
-    @classmethod
-    def format(cls, report: QualityReport) -> str:
         """ Return a HTML formatted dashboard. """
-        table_indent = ' ' * 24
+        table_indent = ''
         thead_indent = tbody_indent = table_indent + ' ' * 4
         tr_indent = thead_indent + ' ' * 4
         td_indent = tr_indent + ' ' * 4
