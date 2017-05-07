@@ -40,14 +40,6 @@ class HTMLFormatterTest(unittest.TestCase):
         html = self.__formatter.process(fake_report.Report())
         self.assertEqual(1, html.count('<h1>Section title'))
 
-    def test_dashboard(self):
-        """ Test that the report contains the dashboard. """
-        html = self.__formatter.process(fake_report.Report())
-        self.assertTrue("""<td colspan=1 rowspan=1 align="center" bgcolor="lightsteelblue">
-                                        <div class="link_section_ID" title="Section title"></div>
-                                        <div id="section_summary_chart_ID"></div>
-                                    </td>""" in html)
-
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())

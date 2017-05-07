@@ -64,6 +64,10 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         """ Test that the JSON file with the history dates and status counts exists. """
         self.assertTrue(os.path.exists('{0}/json/meta_history.json'.format(self.report_folder)))
 
+    def test_dashboard_exists(self):
+        """ Test that the dashboard HTML file exists. """
+        self.assertTrue(os.path.exists('{0}/dashboard.html'.format(self.report_folder)))
+
     def test_report_title(self):
         """ Test the report title. """
         title = self.report()('head')[0]('title')[0].string
