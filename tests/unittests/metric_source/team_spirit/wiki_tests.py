@@ -112,4 +112,20 @@ class WikiTest(unittest.TestCase):
                             <td>:-)<br/></td>
                         </tr>
                       </table>"""
+        self.assertEqual(':-)', self.__wiki.team_spirit('team_1'))
+
+    def test_line_breaks_in_dates(self):
+        """ Test with line breaks. """
+        self.__wiki.html = """<table border="1">
+                        <tr>
+                          <th align="right">Datum</th>
+                          <th>9-1-2013</th>
+                          <th>10-1-2014<br/></th>
+                        </tr>
+                        <tr id="team_1">
+                            <td>Smiley team 1</td>
+                            <td>:-)<br/></td>
+                            <td>:-)<br/></td>
+                        </tr>
+                      </table>"""
         self.assertEqual(datetime.datetime(2014, 1, 10), self.__wiki.datetime('team_1'))
