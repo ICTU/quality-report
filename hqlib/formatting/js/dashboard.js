@@ -88,6 +88,9 @@ function create_dashboard() {
     create_event_handlers();
     set_indicators();
 
+    // Retrieve the html for the dashboard
+    $("#section_dashboard2").load("dashboard.html");
+
     // Retrieve the metrics for the metrics table.
     $.getJSON("json/metrics.json", "", function(metrics_data) {
        fill_metrics_table(metrics_data);
