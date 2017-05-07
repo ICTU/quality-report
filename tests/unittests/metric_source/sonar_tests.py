@@ -77,8 +77,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
                 {"val": 100, "key": "lines"},
                 {"val": 100, "key": "ncloc"},
                 {"val": 100, "key": "functions"},
-                {"val": 100, "key": "tests"},
-                {"val": 100, "key": "package_cycles"}
+                {"val": 100, "key": "tests"}
             ]
         }
     ]"""
@@ -289,10 +288,6 @@ class SonarTest(SonarTestCase):
         """ Test that the number of duplicated lines equals the number of duplicated lines returned by the
             dashboard. """
         self.assertEqual(100, self._sonar.duplicated_lines('product'))
-
-    def test_package_cycles(self):
-        """ Test that the number of package cycles equals the number of package cycles returned by the dashboard. """
-        self.assertEqual(100, self._sonar.package_cycles('product'))
 
     def test_methods(self):
         """ Test that the number of methods equals the number of methods returned by the dashboard. """

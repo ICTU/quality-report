@@ -159,10 +159,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the overall branch coverage of the tests for the product. """
         return float(self.__metric(product, 'overall_branch_coverage'))
 
-    def package_cycles(self, product: str) -> int:
-        """ Return the number of cycles in the package dependencies for the product. """
-        return int(self.__metric(product, 'package_cycles'))
-
     def methods(self, product: str) -> int:
         """ Return the number of methods/functions in the product. """
         return int(self.__metric(product, 'functions'))

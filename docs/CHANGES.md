@@ -1,6 +1,7 @@
 2017-05-07  Release 1.81.9
 
   * Bug fix: Ignore line breaks in Wiki table cells.
+  * Remove package cycle metric, it's not supported by SonarQube anymore.
 
 
 2017-05-07  Release 1.81.8

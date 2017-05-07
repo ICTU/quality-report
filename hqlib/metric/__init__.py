@@ -21,7 +21,6 @@ from .product.analysis_age import SonarAnalysisAge, OWASPDependencyReportAge, Op
 from .product.automated_regression_test_metrics import FailingRegressionTests, RegressionTestAge
 from .product.automated_regression_test_coverage_metrics import (
     ARTStatementCoverage, ARTBranchCoverage, CoverageReportAge)
-from .product.dependency_metrics import CyclicDependencies
 from .product.duplication_metrics import JavaDuplication, JsfDuplication
 from .product.integration_test_metrics import IntegrationtestLineCoverage, IntegrationtestBranchCoverage
 from .product.logical_test_case_metrics import (

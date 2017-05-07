@@ -72,9 +72,9 @@ class CodeQuality(Requirement):
     """ Require the source code quality of the product to be tracked. """
     _name = 'Code quality'
     _metric_classes = (metric.BlockerViolations, metric.CriticalViolations, metric.MajorViolations,
-                       metric.CyclomaticComplexity, metric.CyclicDependencies, metric.JavaDuplication,
-                       metric.ProductLOC, metric.LongMethods, metric.ManyParameters, metric.CommentedLOC,
-                       metric.NoSonar, metric.FalsePositives, metric.SonarAnalysisAge)
+                       metric.CyclomaticComplexity, metric.JavaDuplication, metric.ProductLOC, metric.LongMethods,
+                       metric.ManyParameters, metric.CommentedLOC, metric.NoSonar, metric.FalsePositives,
+                       metric.SonarAnalysisAge)
 
 
 class JSFCodeQuality(Requirement):
