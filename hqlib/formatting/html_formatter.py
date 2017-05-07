@@ -201,6 +201,11 @@ class HTMLFormatter(base_formatter.Formatter):
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     """ Return a HTML formatted dashboard for the quality report. """
     @classmethod
+    def process(cls, report: QualityReport) -> str:
+        """ Process the report. """
+        return cls.format(report)
+
+    @classmethod
     def format(cls, report: QualityReport) -> str:
         """ Return a HTML formatted dashboard. """
         table_indent = ' ' * 24
