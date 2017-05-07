@@ -35,7 +35,7 @@ class FakeSubject(object):
         return self.__metric_source_ids.get(the_metric_source)
 
 
-class FakeJenkinsTestReport(domain.MetricSource):  # pylint: disable=unused-argument
+class FakeJenkinsTestReport(domain.MetricSource):
     """ Fake a Jenkins test report instance for unit test purposes. """
     metric_source_name = metric_source.JenkinsTestReport.metric_source_name
     needs_metric_source_id = True
@@ -44,6 +44,8 @@ class FakeJenkinsTestReport(domain.MetricSource):  # pylint: disable=unused-argu
         self.passed = 14
         self._datetime = datetime.datetime.now() - datetime.timedelta(hours=36)
         super().__init__()
+
+    # pylint: disable=unused-argument
 
     @staticmethod
     def failed_tests(*args):
