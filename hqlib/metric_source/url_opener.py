@@ -51,13 +51,12 @@ class UrlOpener(object):
             auth_handler = urllib.request.HTTPBasicAuthHandler(cast(urllib.request.HTTPPasswordMgr, password_manager))
             return build_opener(auth_handler).open
         elif self.__username and self.__password:
-            credentials = base64.encodebytes(bytes(':'.join([self.__username, self.__password]), 'utf-8'))
+            credentials = base64.b64encode(bytes(':'.join([self.__username, self.__password]), 'utf-8')).decode('ascii')
 
             def url_open_with_basic_auth(url: str):
                 """ Open the url with basic authentication. """
-                #request = urllib.request.Request(url)
-                request = url if isinstance(url, urllib.request.Request) else urllib.request.Request(url)
-                request.add_header('Authorization', 'Basic ' + str(credentials.replace(b'\n', b'')))
+                request = urllib.request.Request(url)
+                request.add_header('Authorization', 'Basic ' + credentials)
                 return url_open(request)
 
             return url_open_with_basic_auth
