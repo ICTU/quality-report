@@ -37,12 +37,12 @@ class TrelloObject(domain.MetricSource):
         self._token = token
         self.__urlopen = urlopen
         object_type = self.__class__.__name__[len('Trello'):].lower()
-        self._parameters = dict(object_type=object_type, object_id=object_id, appkey=appkey, token=token)
+        self.__parameters = dict(object_type=object_type, object_id=object_id, appkey=appkey, token=token)
         self.__json: Dict[str, Any] = dict()
         super().__init__()
 
     def __bool__(self) -> bool:
-        return bool(self._parameters['appkey']) and bool(self._parameters['object_id'])
+        return bool(self.__parameters['appkey']) and bool(self.__parameters['object_id'])
 
     def __repr__(self) -> str:
         return repr(self._json())
@@ -50,7 +50,7 @@ class TrelloObject(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def _json(self, argument: str='', extra_parameters: str='') -> Any:
         """ Return the JSON at url. """
-        parameters = self._parameters.copy()
+        parameters = self.__parameters.copy()
         parameters.update(dict(argument=argument, parameters=extra_parameters))
         return self.__get_json(self.url_template.format(**parameters))
 
@@ -190,6 +190,7 @@ class TrelloBoard(TrelloObject):
             return {self.metric_source_name: 'http://trello'}
         return urls
 
+    @functools.lru_cache(maxsize=1024)
     def __cards(self) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board. """
         try:
