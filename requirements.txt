@@ -1,5 +1,5 @@
 # Required Python packages
-beautifulsoup4==4.5.3
+beautifulsoup4==4.6.0
 lxml==3.7.3
 coverage==4.3.4
 xmlrunner==1.7.7
