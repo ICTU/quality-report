@@ -17,6 +17,7 @@ limitations under the License.
 
 import logging
 import pkg_resources
+import yattag
 from typing import List, Dict, Iterable, Optional, Tuple, Union
 
 from . import base_formatter
@@ -202,60 +203,35 @@ class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return a HTML formatted dashboard. """
-        table_indent = ''
-        thead_indent = tbody_indent = table_indent + ' ' * 4
-        tr_indent = thead_indent + ' ' * 4
-        td_indent = tr_indent + ' ' * 4
-
-        dashboard = list()
-        dashboard.append(table_indent + '<table class="table table-condensed table-bordered">')
-        dashboard.append(thead_indent + '<thead>')
-        dashboard.extend(cls.__dashboard_headers(report, tr_indent, td_indent))
-        dashboard.append(thead_indent + '</thead>')
-        dashboard.append(tbody_indent + '<tbody>')
-        dashboard.extend(cls.__dashboard_rows(report, tr_indent, td_indent))
-        dashboard.append(tbody_indent + '</tbody>')
-        dashboard.append(table_indent + '</table>')
-        return '\n'.join(dashboard)
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass="table table-condensed table-bordered"):
+            with tag('thead'):
+                doc.asis(cls.__dashboard_headers(report))
+            with tag('tbody'):
+                doc.asis(cls.__dashboard_rows(report))
+        return yattag.indent(doc.getvalue())
 
     @staticmethod
-    def __dashboard_headers(report: QualityReport, tr_indent: str, td_indent: str) -> List[str]:
+    def __dashboard_headers(report: QualityReport) -> str:
         """ Return the headers of the dashboard. """
-        dashboard_headers = report.dashboard()[0]
-        th_template = td_indent + '<th colspan="{span}" style="text-align: center;">{sec}</th>'
-        rows = list()
-        rows.append(tr_indent + '<tr style="color: white; font-weight: bold; background-color: #2F95CF;">')
-        for section_type, colspan in dashboard_headers:
-            table_header = th_template.format(span=colspan, sec=section_type)
-            rows.append(table_header)
-        rows.append(tr_indent + '</tr>')
-        return rows
+        doc, tag, text, line = yattag.Doc().ttl()
+        with tag('tr', style="color: white; font-weight: bold; background-color: #2F95CF;"):
+            for section_type, colspan in report.dashboard()[0]:
+                line('th', section_type, colspan=colspan, style="text-align: center;")
+        return doc.getvalue()
 
     @classmethod
-    def __dashboard_rows(cls, report: QualityReport, tr_indent: str, td_indent: str) -> List[str]:
+    def __dashboard_rows(cls, report: QualityReport) -> str:
         """ Return the rows of the dashboard. """
-        dashboard_rows = report.dashboard()[1]
-        rows = list()
-        for row in dashboard_rows:
-            rows.append(tr_indent + '<tr>')
-            for column in row:
-                rows.append(cls.__dashboard_cell(report, column, td_indent))
-            rows.append(tr_indent + '</tr>')
-        return rows
-
-    @staticmethod
-    def __dashboard_cell(report: QualityReport, column: Tuple[Union[DomainObject, str], str, Optional[Tuple[int, int]]],
-                         td_indent: str) -> str:
-        """ Return a cell of the dashboard. """
-        td_template = td_indent + \
-            '''<td colspan={colspan} rowspan={rowspan} align="center" bgcolor="{bg_color}">
-                                        <div class="link_section_{ID}" title="{title}"></div>
-                                        <div id="section_summary_chart_{ID}"></div>
-                                    </td>
-'''
-
-        section_id = column[0].short_name() if isinstance(column[0], DomainObject) else column[0].upper()
-        section = report.get_section(section_id)
-        title = section.title() if section else '???'
-        colspan, rowspan = column[2] if len(column) == 3 else (1, 1)
-        return td_template.format(ID=section_id, title=title, bg_color=column[1], colspan=colspan, rowspan=rowspan)
+        doc, tag, text, line = yattag.Doc().ttl()
+        for row in report.dashboard()[1]:
+            with tag('tr'):
+                for cell in row:
+                    colspan, rowspan = cell[2] if len(cell) == 3 else (1, 1)
+                    with tag('td', colspan=colspan, rowspan=rowspan, align='center', bgcolor=cell[1]):
+                        section_id = cell[0].short_name() if isinstance(cell[0], DomainObject) else cell[0].upper()
+                        section = report.get_section(section_id)
+                        title = section.title() if section else '???'
+                        line('div', '', klass="link_section_{}".format(section_id), title=title)
+                        line('div', '', id="section_summary_chart_{}".format(section_id))
+        return doc.getvalue()
