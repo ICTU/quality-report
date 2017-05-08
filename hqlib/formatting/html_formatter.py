@@ -18,7 +18,7 @@ limitations under the License.
 import logging
 import pkg_resources
 import yattag
-from typing import List, Dict, Iterable, Optional, Tuple, Union
+from typing import List, Dict, Iterable
 
 from . import base_formatter
 from ..report import QualityReport, Section
@@ -41,10 +41,10 @@ class HTMLFormatter(base_formatter.Formatter):
             current_version=self.__current_software_version,
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
-        parameters['domain_object_classes'] = self.__domain_object_classes(report)
-        parameters['metric_classes'] = self.__metric_classes(report)
-        parameters['metric_sources'] = self.__metric_sources(report)
-        parameters['requirements'] = self.__requirements(report)
+        parameters['domain_object_classes'] = MetaDataFormatter.domain_object_classes(report)
+        parameters['metric_classes'] = MetaDataFormatter.metric_classes(report)
+        parameters['metric_sources'] = MetaDataFormatter.metric_sources(report)
+        parameters['requirements'] = MetaDataFormatter.requirements(report)
 
         prefix = self.__get_html_fragment('prefix')
         return prefix.format(**parameters)
@@ -113,15 +113,61 @@ class HTMLFormatter(base_formatter.Formatter):
         template = ' <small>{sub}</small>'
         return template.format(sub=subtitle) if subtitle else ''
 
+    def __new_release_text(self) -> str:
+        """ Return a line of text if there is a new version of the software available. """
+        latest = self.__latest_software_version
+        current = self.__current_software_version
+        return ' Versie {ver} is beschikbaar.'.format(ver=latest) if latest > current else ''
+
+
+class MetaDataFormatter(object):
+    """ Return report meta data formatted as HTML tables. """
     @staticmethod
-    def __metric_classes(report: QualityReport) -> str:
+    def requirements(report: QualityReport) -> str:
+        """ Return a HTML table of the requirements. """
+        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{metrics}</td></tr>'
+        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
+        result = list()
+        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
+                      '<th>Eis (<code><small>Identifier</small></code>)</th><th>Metrieken</th></tr>')
+        for requirement_class in sorted(report.requirement_classes(), key=lambda cls: cls.name()):
+            name = requirement_class.name()
+            identifier = requirement_class.__name__
+            metrics = ', '.join(sorted(metric_class.name for metric_class in requirement_class.metric_classes()))
+            icon = icon_span if requirement_class in report.included_requirement_classes() else ''
+            result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))
+        result.append('</table>')
+        return '\n'.join(result)
+
+    @staticmethod
+    def domain_object_classes(report: QualityReport) -> str:
+        """ Return a HTML table of the domain objects. """
+        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{default_requirements}</td>' \
+              '<td>{optional_requirements}</td></tr>'
+        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
+        result = list()
+        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
+                      '<th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th>'
+                      '<th>Optionele eisen</th></tr>')
+        for domain_object_class in sorted(report.domain_object_classes(), key=lambda cls: cls.__name__):
+            name = identifier = domain_object_class.__name__
+            default_requirements = ', '.join(sorted(req.name() for req in domain_object_class.default_requirements()))
+            optional_requirements = ', '.join(sorted(req.name() for req in domain_object_class.optional_requirements()))
+            icon = icon_span if domain_object_class in report.included_domain_object_classes() else ''
+            result.append(row.format(icon=icon, name=name, id=identifier, default_requirements=default_requirements,
+                                     optional_requirements=optional_requirements))
+        result.append('</table>')
+        return '\n'.join(result)
+
+    @staticmethod
+    def metric_classes(report: QualityReport) -> str:
         """ Return a HTML table of the metrics the software can measure. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{norm}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
         result = list()
         result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
                       '<th>Metriek (<code><small>Identifier</small></code>)</th><th>Norm</th></tr>')
-        for metric_class in report.metric_classes():
+        for metric_class in sorted(report.metric_classes(), key=lambda cls: cls.name):
             name = metric_class.name
             identifier = metric_class.__name__
             icon = icon_span if metric_class in report.included_metric_classes() else ''
@@ -135,7 +181,7 @@ class HTMLFormatter(base_formatter.Formatter):
         return '\n'.join(result)
 
     @staticmethod
-    def __metric_sources(report: QualityReport) -> str:
+    def metric_sources(report: QualityReport) -> str:
         """ Return a HTML table of the metric sources the software can collect data from. """
         row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{ins}</td></tr>'
         icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
@@ -143,59 +189,16 @@ class HTMLFormatter(base_formatter.Formatter):
         result = list()
         result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
                       '<th>Metriekbron (<code><small>Identifier</small></code>)</th><th>Instanties</th></tr>')
-        for metric_source_class in report.metric_source_classes():
+        for metric_source_class in sorted(report.metric_source_classes(), key=lambda cls: cls.metric_source_name):
             name = metric_source_class.metric_source_name
             identifier = metric_source_class.__name__
             icon = icon_span if metric_source_class in report.included_metric_source_classes() else ''
             instances = report.project().metric_source(metric_source_class)
-            instances = instances if isinstance(instances, list) else [instances]
+            instances = sorted(instances if isinstance(instances, list) else [instances])
             instances = '<br>'.join([anchor.format(url=instance.url()) for instance in instances if instance.url()])
             result.append(row.format(icon=icon, name=name, id=identifier, ins=instances))
         result.append('</table>')
         return '\n'.join(result)
-
-    @staticmethod
-    def __requirements(report: QualityReport) -> str:
-        """ Return a HTML table of the requirements. """
-        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{metrics}</td></tr>'
-        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
-        result = list()
-        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
-                      '<th>Eis (<code><small>Identifier</small></code>)</th><th>Metrieken</th></tr>')
-        for requirement_class in report.requirement_classes():
-            name = requirement_class.name()
-            identifier = requirement_class.__name__
-            metrics = ', '.join(metric_class.name for metric_class in requirement_class.metric_classes())
-            icon = icon_span if requirement_class in report.included_requirement_classes() else ''
-            result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))
-        result.append('</table>')
-        return '\n'.join(result)
-
-    @staticmethod
-    def __domain_object_classes(report: QualityReport) -> str:
-        """ Return a HTML table of the domain objects. """
-        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{default_requirements}</td>' \
-              '<td>{optional_requirements}</td></tr>'
-        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
-        result = list()
-        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
-                      '<th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th>'
-                      '<th>Optionele eisen</th></tr>')
-        for domain_object_class in report.domain_object_classes():
-            name = identifier = domain_object_class.__name__
-            default_requirements = ', '.join(req.name() for req in domain_object_class.default_requirements())
-            optional_requirements = ', '.join(req.name() for req in domain_object_class.optional_requirements())
-            icon = icon_span if domain_object_class in report.included_domain_object_classes() else ''
-            result.append(row.format(icon=icon, name=name, id=identifier, default_requirements=default_requirements,
-                                     optional_requirements=optional_requirements))
-        result.append('</table>')
-        return '\n'.join(result)
-
-    def __new_release_text(self) -> str:
-        """ Return a line of text if there is a new version of the software available. """
-        latest = self.__latest_software_version
-        current = self.__current_software_version
-        return ' Versie {ver} is beschikbaar.'.format(ver=latest) if latest > current else ''
 
 
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
