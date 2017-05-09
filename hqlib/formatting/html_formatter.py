@@ -122,83 +122,86 @@ class HTMLFormatter(base_formatter.Formatter):
 
 class MetaDataFormatter(object):
     """ Return report meta data formatted as HTML tables. """
-    @staticmethod
-    def requirements(report: QualityReport) -> str:
+    icon = '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>'
+    anchor = '<a href="{url}" target="_blank">{url}</a>'
+    name = '{name} (<code><small>{id}</small></code>)'
+    table_class = "table table-striped first-col-centered"
+
+    @classmethod
+    def requirements(cls, report: QualityReport) -> str:
         """ Return a HTML table of the requirements. """
-        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{metrics}</td></tr>'
-        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
-        result = list()
-        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
-                      '<th>Eis (<code><small>Identifier</small></code>)</th><th>Metrieken</th></tr>')
-        for requirement_class in sorted(report.requirement_classes(), key=lambda cls: cls.name()):
-            name = requirement_class.name()
-            identifier = requirement_class.__name__
-            metrics = ', '.join(sorted(metric_class.name for metric_class in requirement_class.metric_classes()))
-            icon = icon_span if requirement_class in report.included_requirement_classes() else ''
-            result.append(row.format(icon=icon, name=name, id=identifier, metrics=metrics))
-        result.append('</table>')
-        return '\n'.join(result)
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass=cls.table_class):
+            doc.asis(cls.__table_row('In dit rapport?', 'Eis (<code><small>Identifier</small></code>)',
+                                     'Metrieken', item_tag='th'))
+            for requirement_class in sorted(report.requirement_classes(), key=lambda cls: cls.name()):
+                icon = cls.icon if requirement_class in report.included_requirement_classes() else ''
+                name = cls.name.format(name=requirement_class.name(), id=requirement_class.__name__)
+                metrics = ', '.join(sorted(metric_class.name for metric_class in requirement_class.metric_classes()))
+                doc.asis(cls.__table_row(icon, name, metrics))
+        return yattag.indent(doc.getvalue())
 
-    @staticmethod
-    def domain_object_classes(report: QualityReport) -> str:
+    @classmethod
+    def domain_object_classes(cls, report: QualityReport) -> str:
         """ Return a HTML table of the domain objects. """
-        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{default_requirements}</td>' \
-              '<td>{optional_requirements}</td></tr>'
-        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
-        result = list()
-        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
-                      '<th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th>'
-                      '<th>Optionele eisen</th></tr>')
-        for domain_object_class in sorted(report.domain_object_classes(), key=lambda cls: cls.__name__):
-            name = identifier = domain_object_class.__name__
-            default_requirements = ', '.join(sorted(req.name() for req in domain_object_class.default_requirements()))
-            optional_requirements = ', '.join(sorted(req.name() for req in domain_object_class.optional_requirements()))
-            icon = icon_span if domain_object_class in report.included_domain_object_classes() else ''
-            result.append(row.format(icon=icon, name=name, id=identifier, default_requirements=default_requirements,
-                                     optional_requirements=optional_requirements))
-        result.append('</table>')
-        return '\n'.join(result)
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass=cls.table_class):
+            doc.asis(cls.__table_row('In dit rapport?', 'Domeinobject (<code><small>Identifier</small></code>)',
+                                     'Default eisen', 'Optionele eisen', item_tag='th'))
+            for domain_object_class in sorted(report.domain_object_classes(), key=lambda cls: cls.__name__):
+                icon = cls.icon if domain_object_class in report.included_domain_object_classes() else ''
+                name = cls.name.format(name=domain_object_class.__name__, id=domain_object_class.__name__)
+                default_requirements = ', '.join(
+                    sorted(req.name() for req in domain_object_class.default_requirements()))
+                optional_requirements = ', '.join(
+                    sorted(req.name() for req in domain_object_class.optional_requirements()))
+                doc.asis(cls.__table_row(icon, name, default_requirements, optional_requirements))
+        return yattag.indent(doc.getvalue())
 
-    @staticmethod
-    def metric_classes(report: QualityReport) -> str:
+    @classmethod
+    def metric_classes(cls, report: QualityReport) -> str:
         """ Return a HTML table of the metrics the software can measure. """
-        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{norm}</td></tr>'
-        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
-        result = list()
-        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
-                      '<th>Metriek (<code><small>Identifier</small></code>)</th><th>Norm</th></tr>')
-        for metric_class in sorted(report.metric_classes(), key=lambda cls: cls.name):
-            name = metric_class.name
-            identifier = metric_class.__name__
-            icon = icon_span if metric_class in report.included_metric_classes() else ''
-            try:
-                norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
-            except ValueError:
-                logging.error('Metric class %s had faulty norm template', metric_class.__name__)
-                raise
-            result.append(row.format(icon=icon, name=name, id=identifier, norm=norm))
-        result.append('</table>')
-        return '\n'.join(result)
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass=cls.table_class):
+            doc.asis(cls.__table_row('In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm',
+                                     item_tag='th'))
+            for metric_class in sorted(report.metric_classes(), key=lambda cls: cls.name):
+                icon = cls.icon if metric_class in report.included_metric_classes() else ''
+                name = cls.name.format(name=metric_class.name, id=metric_class.__name__)
+                try:
+                    norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
+                except ValueError:
+                    logging.error('Metric class %s had faulty norm template', metric_class.__name__)
+                    raise
+                doc.asis(cls.__table_row(icon, name, norm))
+        return yattag.indent(doc.getvalue())
+
+    @classmethod
+    def metric_sources(cls, report: QualityReport) -> str:
+        """ Return a HTML table of the metric sources the software can collect data from. """
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass=cls.table_class):
+            doc.asis(cls.__table_row(
+                'In dit rapport?', 'Metriekbron (<code><small>Identifier</small></code>)', 'Instanties', item_tag='th'))
+            for metric_source_class in sorted(report.metric_source_classes(), key=lambda cls: cls.metric_source_name):
+                icon = cls.icon if metric_source_class in report.included_metric_source_classes() else ''
+                name = cls.name.format(name=metric_source_class.metric_source_name, id=metric_source_class.__name__)
+                instances = report.project().metric_source(metric_source_class)
+                instances = sorted(instances if isinstance(instances, list) else [instances])
+                instances = '<br>'.join([cls.anchor.format(url=instance.url()) for instance in instances
+                                         if instance.url()])
+                doc.asis(cls.__table_row(icon, name, instances))
+        return yattag.indent(doc.getvalue())
 
     @staticmethod
-    def metric_sources(report: QualityReport) -> str:
-        """ Return a HTML table of the metric sources the software can collect data from. """
-        row = '  <tr><td>{icon}</td><td>{name} (<code><small>{id}</small></code>)</td><td>{ins}</td></tr>'
-        icon_span = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'
-        anchor = '<a href="{url}" target="_blank">{url}</a>'
-        result = list()
-        result.append('<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>'
-                      '<th>Metriekbron (<code><small>Identifier</small></code>)</th><th>Instanties</th></tr>')
-        for metric_source_class in sorted(report.metric_source_classes(), key=lambda cls: cls.metric_source_name):
-            name = metric_source_class.metric_source_name
-            identifier = metric_source_class.__name__
-            icon = icon_span if metric_source_class in report.included_metric_source_classes() else ''
-            instances = report.project().metric_source(metric_source_class)
-            instances = sorted(instances if isinstance(instances, list) else [instances])
-            instances = '<br>'.join([anchor.format(url=instance.url()) for instance in instances if instance.url()])
-            result.append(row.format(icon=icon, name=name, id=identifier, ins=instances))
-        result.append('</table>')
-        return '\n'.join(result)
+    def __table_row(*items, item_tag='td'):
+        """ Return a table row with the column headers. """
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('tr'):
+            for item in items:
+                with tag(item_tag):
+                    doc.asis(item)
+        return doc.getvalue()
 
 
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods

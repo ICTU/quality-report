@@ -43,54 +43,73 @@ class HTMLFormatterTest(unittest.TestCase):
     def test_metric_classes(self):
         """ Test that the report contains a list of metric classes it can report on. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Metriek (<code><small>Identifier</small></code>)</th><th>Norm</th>'
+        table_header = '<table class="table table-striped first-col-centered">\n' \
+                       '  <tr>\n' \
+                       '    <th>In dit rapport?</th>\n' \
+                       '    <th>Metriek (<code><small>Identifier</small></code>)</th>\n' \
+                       '    <th>Norm</th>\n'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_classes(self):
         """ Test that the report shows which metric classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td></td><td>Automatic regression test statement coverage ' \
-                    '(<code><small>ARTStatementCoverage</small></code>)</td>'
+        table_row = '  <tr>\n' \
+                    '    <td></td>\n' \
+                    '    <td>Automatic regression test statement coverage ' \
+                    '(<code><small>ARTStatementCoverage</small></code>)</td>\n'
         self.assertTrue(table_row in html)
 
     def test_metric_source_classes(self):
         """ Test that the report contains a list of metric source classes it can use. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Metriekbron (<code><small>Identifier</small></code>)</th><th>Instanties</th></tr>'
+        table_header = '<table class="table table-striped first-col-centered">\n' \
+                       '  <tr>\n' \
+                       '    <th>In dit rapport?</th>\n' \
+                       '    <th>Metriekbron (<code><small>Identifier</small></code>)</th>\n' \
+                       '    <th>Instanties</th>\n' \
+                       '  </tr>\n'
         self.assertTrue(table_header in html)
 
     def test_not_included_metric_source_class(self):
         """ Test that the report shows which metric source classes are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Git ' \
-                    '(<code><small>Git</small></code>)</td><td><a href="http://git/" target="_blank">http://git/</a>' \
-                    '</td></tr>'
+        table_row = '  <tr>\n' \
+                    '    <td>\n' \
+                    '      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>\n' \
+                    '    </td>\n' \
+                    '    <td>Git (<code><small>Git</small></code>)</td>\n' \
+                    '    <td>\n' \
+                    '      <a href="http://git/" target="_blank">http://git/</a>\n' \
+                    '    </td>\n' \
+                    '  </tr>\n'
         self.assertTrue(table_row in html)
 
     def test_requirements(self):
         """ Test that the report contains a list of requirements it can report on. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Eis (<code><small>Identifier</small></code>)</th><th>Metrieken</th></tr>'
+        table_header = '<table class="table table-striped first-col-centered">\n  <tr>\n' \
+                       '    <th>In dit rapport?</th>\n' \
+                       '    <th>Eis (<code><small>Identifier</small></code>)</th>\n    <th>Metrieken</th>\n  </tr>'
         self.assertTrue(table_header in html)
 
     def test_not_included_requirements(self):
         """ Test that the report shows which requirements are included in the report and which are not. """
         html = self.__formatter.process(fake_report.Report())
-        table_row = '<tr><td></td><td>Automated regression tests (<code><small>ART</small></code>)</td>'
+        table_row = '<tr>\n    <td></td>\n    <td>Automated regression tests (<code><small>ART</small></code>)</td>'
         self.assertTrue(table_row in html)
-        table_row = '<tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' \
-                    '<td>Automated regression test coverage (<code><small>ARTCoverage</small></code>)</td>'
+        table_row = '<tr>\n    <td>\n      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>\n' \
+                    '    </td>\n' \
+                    '    <td>Automated regression test coverage (<code><small>ARTCoverage</small></code>)</td>\n'
         self.assertTrue(table_row in html)
 
     def test_domain_objects(self):
         """ Test that the report contains a list of domain objects it can report on. """
         html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n  <tr><th>In dit rapport?</th>' \
-                       '<th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th>' \
-                       '<th>Optionele eisen</th></tr>'
+        table_header = '<table class="table table-striped first-col-centered">\n  <tr>\n' \
+                       '    <th>In dit rapport?</th>\n' \
+                       '    <th>Domeinobject (<code><small>Identifier</small></code>)</th>\n' \
+                       '    <th>Default eisen</th>\n' \
+                       '    <th>Optionele eisen</th>\n  </tr>'
         self.assertTrue(table_header in html)
 
 
@@ -103,33 +122,100 @@ class MetaDataFormatterTest(unittest.TestCase):
     def test_requirements(self):
         """ Test the requirements table. """
         self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr><th>In dit rapport?</th><th>Eis (<code><small>Identifier</small></code>)</th><th>Metrieken</th></tr>
-  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Automated regression test coverage (<code><small>ARTCoverage</small></code>)</td><td>Automatic regression test branch coverage, Automatic regression test statement coverage, Coveragerapportageleeftijd</td></tr>
-  <tr><td></td><td>Automated regression tests (<code><small>ART</small></code>)</td><td>Hoeveelheid falende regressietesten, Regressietestleeftijd</td></tr>
+  <tr>
+    <th>In dit rapport?</th>
+    <th>Eis (<code><small>Identifier</small></code>)</th>
+    <th>Metrieken</th>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Automated regression test coverage (<code><small>ARTCoverage</small></code>)</td>
+    <td>Automatic regression test branch coverage, Automatic regression test statement coverage, Coveragerapportageleeftijd</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>Automated regression tests (<code><small>ART</small></code>)</td>
+    <td>Hoeveelheid falende regressietesten, Regressietestleeftijd</td>
+  </tr>
 </table>''', self.__formatter.requirements(self.__report))
 
     def test_domain_object_classes(self):
         """ Test the domain object classes table. """
         self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr><th>In dit rapport?</th><th>Domeinobject (<code><small>Identifier</small></code>)</th><th>Default eisen</th><th>Optionele eisen</th></tr>
-  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Document (<code><small>Document</small></code>)</td><td>Track document age</td><td></td></tr>
-  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Product (<code><small>Product</small></code>)</td><td></td><td>Automated regression test coverage, Automated regression tests, Checkmarx SCA, Code quality, JSF code quality, OWASP Top 10 2013 Dependencies, OWASP Top 10 2013 ZAP, Performance endurance, Performance load, Performance scalability, Track branches, Unit and/or integration tests, User stories and logical test cases</td></tr>
-  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Project (<code><small>Project</small></code>)</td><td></td><td>Track actions, Track manual logical test cases, Track open bug reports, Track ready user stories, Track risks, Track technical debt, Track whether user stories have security and performance risks, Trusted Product Maintainability, version 6.1</td></tr>
-  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Team (<code><small>Team</small></code>)</td><td>Track spirit</td><td>Scrum team, Track absence</td></tr>
+  <tr>
+    <th>In dit rapport?</th>
+    <th>Domeinobject (<code><small>Identifier</small></code>)</th>
+    <th>Default eisen</th>
+    <th>Optionele eisen</th>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Document (<code><small>Document</small></code>)</td>
+    <td>Track document age</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Product (<code><small>Product</small></code>)</td>
+    <td></td>
+    <td>Automated regression test coverage, Automated regression tests, Checkmarx SCA, Code quality, JSF code quality, OWASP Top 10 2013 Dependencies, OWASP Top 10 2013 ZAP, Performance endurance, Performance load, Performance scalability, Track branches, Unit and/or integration tests, User stories and logical test cases</td>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Project (<code><small>Project</small></code>)</td>
+    <td></td>
+    <td>Track actions, Track manual logical test cases, Track open bug reports, Track ready user stories, Track risks, Track technical debt, Track whether user stories have security and performance risks, Trusted Product Maintainability, version 6.1</td>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Team (<code><small>Team</small></code>)</td>
+    <td>Track spirit</td>
+    <td>Scrum team, Track absence</td>
+  </tr>
 </table>''', self.__formatter.domain_object_classes(self.__report))
 
     def test_metric_classes(self):
         """ Test the metric classes table. """
         self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr><th>In dit rapport?</th><th>Metriek (<code><small>Identifier</small></code>)</th><th>Norm</th></tr>
-  <tr><td></td><td>Automatic regression test statement coverage (<code><small>ARTStatementCoverage</small></code>)</td><td>Minimaal 80% van de statements wordt gedekt door geautomatiseerde functionele tests. Minder dan 70% is rood.</td></tr>
+  <tr>
+    <th>In dit rapport?</th>
+    <th>Metriek (<code><small>Identifier</small></code>)</th>
+    <th>Norm</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td>Automatic regression test statement coverage (<code><small>ARTStatementCoverage</small></code>)</td>
+    <td>Minimaal 80% van de statements wordt gedekt door geautomatiseerde functionele tests. Minder dan 70% is rood.</td>
+  </tr>
 </table>''', self.__formatter.metric_classes(self.__report))
 
     def test_metric_sources(self):
         """ Test the metric sources table. """
         self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr><th>In dit rapport?</th><th>Metriekbron (<code><small>Identifier</small></code>)</th><th>Instanties</th></tr>
-  <tr><td><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td><td>Git (<code><small>Git</small></code>)</td><td><a href="http://git/" target="_blank">http://git/</a></td></tr>
+  <tr>
+    <th>In dit rapport?</th>
+    <th>Metriekbron (<code><small>Identifier</small></code>)</th>
+    <th>Instanties</th>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Git (<code><small>Git</small></code>)</td>
+    <td>
+      <a href="http://git/" target="_blank">http://git/</a>
+    </td>
+  </tr>
 </table>''', self.__formatter.metric_sources(self.__report))
 
 
