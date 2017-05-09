@@ -194,7 +194,7 @@ class MetaDataFormatter(object):
         return yattag.indent(doc.getvalue())
 
     @staticmethod
-    def __table_row(*items, item_tag='td'):
+    def __table_row(*items: str, item_tag='td') -> str:
         """ Return a table row with the column headers. """
         doc, tag, text = yattag.Doc().tagtext()
         with tag('tr'):
