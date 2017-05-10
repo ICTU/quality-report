@@ -74,45 +74,25 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        cls.__create_html_file(quality_report, report_dir)
-        cls.__create_dashboard_html_file(quality_report, report_dir)
-        cls.__create_domain_objects_html_file(quality_report, report_dir)
+        cls.__create_html_file(quality_report, report_dir, formatting.HTMLFormatter, 'index',
+                               latest_software_version=cls.__latest_software_version(),
+                               current_software_version=VERSION)
+        cls.__create_html_file(quality_report, report_dir, formatting.DashboardFormatter, 'dashboard')
+        cls.__create_html_file(quality_report, report_dir, formatting.DomainObjectsFormatter, 'domain_objects')
+        cls.__create_html_file(quality_report, report_dir, formatting.RequirementsFormatter, 'requirements')
+        cls.__create_html_file(quality_report, report_dir, formatting.MetricsFormatter, 'metrics')
+        cls.__create_html_file(quality_report, report_dir, formatting.MetricSourcesFormatter, 'metric_sources')
         cls.__create_resources(report_dir)
         cls.__create_metrics_file(quality_report, report_dir)
         cls.__create_history_file(quality_report, report_dir)
         cls.__create_trend_images(quality_report, report_dir)
 
     @classmethod
-    def __create_html_file(cls, quality_report, report_dir):
-        """ Create the html file with the report. """
+    def __create_html_file(cls, quality_report, report_dir, formatter, filename, **kwargs):
+        """ Create a HTML file for the report, using the HTML formatter specified. """
         tmp_filename = os.path.join(report_dir, 'tmp.html')
-        latest_software_version = cls.__latest_software_version()
-        cls.__format_and_write_report(quality_report, formatting.HTMLFormatter, tmp_filename, 'w', 'utf-8',
-                                      latest_software_version=latest_software_version,
-                                      current_software_version=VERSION)
-        html_filename = os.path.join(report_dir, 'index.html')
-        if os.path.exists(html_filename):
-            os.remove(html_filename)
-        os.rename(tmp_filename, html_filename)
-        filesystem.make_file_readable(html_filename)
-
-    @classmethod
-    def __create_dashboard_html_file(cls, quality_report, report_dir):
-        """ Create the Dashboard html file for the report. """
-        tmp_filename = os.path.join(report_dir, 'tmp.html')
-        cls.__format_and_write_report(quality_report, formatting.DashboardFormatter, tmp_filename, 'w', 'utf-8')
-        html_filename = os.path.join(report_dir, 'dashboard.html')
-        if os.path.exists(html_filename):
-            os.remove(html_filename)
-        os.rename(tmp_filename, html_filename)
-        filesystem.make_file_readable(html_filename)
-
-    @classmethod
-    def __create_domain_objects_html_file(cls, quality_report, report_dir):
-        """ Create the domain objects HTML file for the report. """
-        tmp_filename = os.path.join(report_dir, 'tmp.html')
-        cls.__format_and_write_report(quality_report, formatting.DomainObjectsFormatter, tmp_filename, 'w', 'utf-8')
-        html_filename = os.path.join(report_dir, 'domain_objects.html')
+        cls.__format_and_write_report(quality_report, formatter, tmp_filename, 'w', 'utf-8', **kwargs)
+        html_filename = os.path.join(report_dir, '{0}.html'.format(filename))
         if os.path.exists(html_filename):
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)

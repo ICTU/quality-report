@@ -56,25 +56,12 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         """ Assert that the specified file exists. """
         self.assertTrue(os.path.exists('{0}/{1}'.format(self.report_folder, filename)))
 
-    def test_report_exists(self):
-        """ Test that the report exists. """
-        self.assert_file_exists('index.html')
-
-    def test_metrics_exist(self):
-        """ Test that the JSON file with the metrics exists. """
-        self.assert_file_exists('json/metrics.json')
-
-    def test_history_exists(self):
-        """ Test that the JSON file with the history dates and status counts exists. """
-        self.assert_file_exists('json/meta_history.json')
-
-    def test_dashboard_exists(self):
+    def test_files_exists(self):
         """ Test that the dashboard HTML file exists. """
-        self.assert_file_exists('dashboard.html')
-
-    def test_domain_objects_file_exists(self):
-        """ Test that the dashboard HTML file exists. """
-        self.assert_file_exists('domain_objects.html')
+        for filename in 'index', 'dashboard', 'metrics', 'metric_sources', 'requirements', 'domain_objects':
+            self.assert_file_exists('{0}.html'.format(filename))
+        for filename in 'metrics', 'meta_history':
+            self.assert_file_exists('json/{0}.json'.format(filename))
 
     def test_report_title(self):
         """ Test the report title. """
