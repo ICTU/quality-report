@@ -80,7 +80,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         cls.__create_html_file(quality_report, report_dir, formatting.DashboardFormatter, 'dashboard')
         cls.__create_html_file(quality_report, report_dir, formatting.DomainObjectsFormatter, 'domain_objects')
         cls.__create_html_file(quality_report, report_dir, formatting.RequirementsFormatter, 'requirements')
-        cls.__create_html_file(quality_report, report_dir, formatting.MetricsFormatter, 'metrics')
+        cls.__create_html_file(quality_report, report_dir, formatting.MetricClassesFormatter, 'metric_classes')
         cls.__create_html_file(quality_report, report_dir, formatting.MetricSourcesFormatter, 'metric_sources')
         cls.__create_resources(report_dir)
         cls.__create_metrics_file(quality_report, report_dir)
