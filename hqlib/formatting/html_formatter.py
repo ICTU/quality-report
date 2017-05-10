@@ -41,7 +41,7 @@ class HTMLFormatter(base_formatter.Formatter):
             current_version=self.__current_software_version,
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
-        parameters['domain_object_classes'] = MetaDataFormatter.domain_object_classes(report)
+        parameters['domain_object_classes'] = DomainObjectsFormatter.process(report)
         parameters['metric_classes'] = MetaDataFormatter.metric_classes(report)
         parameters['metric_sources'] = MetaDataFormatter.metric_sources(report)
         parameters['requirements'] = MetaDataFormatter.requirements(report)
@@ -132,30 +132,13 @@ class MetaDataFormatter(object):
         """ Return a HTML table of the requirements. """
         doc, tag, text = yattag.Doc().tagtext()
         with tag('table', klass=cls.table_class):
-            doc.asis(cls.__table_row('In dit rapport?', 'Eis (<code><small>Identifier</small></code>)',
+            doc.asis(cls._table_row('In dit rapport?', 'Eis (<code><small>Identifier</small></code>)',
                                      'Metrieken', item_tag='th'))
             for requirement_class in sorted(report.requirement_classes(), key=lambda cls: cls.name()):
                 icon = cls.icon if requirement_class in report.included_requirement_classes() else ''
                 name = cls.name.format(name=requirement_class.name(), id=requirement_class.__name__)
                 metrics = ', '.join(sorted(metric_class.name for metric_class in requirement_class.metric_classes()))
-                doc.asis(cls.__table_row(icon, name, metrics))
-        return yattag.indent(doc.getvalue())
-
-    @classmethod
-    def domain_object_classes(cls, report: QualityReport) -> str:
-        """ Return a HTML table of the domain objects. """
-        doc, tag, text = yattag.Doc().tagtext()
-        with tag('table', klass=cls.table_class):
-            doc.asis(cls.__table_row('In dit rapport?', 'Domeinobject (<code><small>Identifier</small></code>)',
-                                     'Default eisen', 'Optionele eisen', item_tag='th'))
-            for domain_object_class in sorted(report.domain_object_classes(), key=lambda cls: cls.__name__):
-                icon = cls.icon if domain_object_class in report.included_domain_object_classes() else ''
-                name = cls.name.format(name=domain_object_class.__name__, id=domain_object_class.__name__)
-                default_requirements = ', '.join(
-                    sorted(req.name() for req in domain_object_class.default_requirements()))
-                optional_requirements = ', '.join(
-                    sorted(req.name() for req in domain_object_class.optional_requirements()))
-                doc.asis(cls.__table_row(icon, name, default_requirements, optional_requirements))
+                doc.asis(cls._table_row(icon, name, metrics))
         return yattag.indent(doc.getvalue())
 
     @classmethod
@@ -163,8 +146,8 @@ class MetaDataFormatter(object):
         """ Return a HTML table of the metrics the software can measure. """
         doc, tag, text = yattag.Doc().tagtext()
         with tag('table', klass=cls.table_class):
-            doc.asis(cls.__table_row('In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm',
-                                     item_tag='th'))
+            doc.asis(cls._table_row('In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm',
+                                    item_tag='th'))
             for metric_class in sorted(report.metric_classes(), key=lambda cls: cls.name):
                 icon = cls.icon if metric_class in report.included_metric_classes() else ''
                 name = cls.name.format(name=metric_class.name, id=metric_class.__name__)
@@ -173,7 +156,7 @@ class MetaDataFormatter(object):
                 except ValueError:
                     logging.error('Metric class %s had faulty norm template', metric_class.__name__)
                     raise
-                doc.asis(cls.__table_row(icon, name, norm))
+                doc.asis(cls._table_row(icon, name, norm))
         return yattag.indent(doc.getvalue())
 
     @classmethod
@@ -181,7 +164,7 @@ class MetaDataFormatter(object):
         """ Return a HTML table of the metric sources the software can collect data from. """
         doc, tag, text = yattag.Doc().tagtext()
         with tag('table', klass=cls.table_class):
-            doc.asis(cls.__table_row(
+            doc.asis(cls._table_row(
                 'In dit rapport?', 'Metriekbron (<code><small>Identifier</small></code>)', 'Instanties', item_tag='th'))
             for metric_source_class in sorted(report.metric_source_classes(), key=lambda cls: cls.metric_source_name):
                 icon = cls.icon if metric_source_class in report.included_metric_source_classes() else ''
@@ -190,11 +173,11 @@ class MetaDataFormatter(object):
                 instances = sorted(instances if isinstance(instances, list) else [instances])
                 instances = '<br>'.join([cls.anchor.format(url=instance.url()) for instance in instances
                                          if instance.url()])
-                doc.asis(cls.__table_row(icon, name, instances))
+                doc.asis(cls._table_row(icon, name, instances))
         return yattag.indent(doc.getvalue())
 
     @staticmethod
-    def __table_row(*items: str, item_tag='td') -> str:
+    def _table_row(*items: str, item_tag='td') -> str:
         """ Return a table row with the column headers. """
         doc, tag, text = yattag.Doc().tagtext()
         with tag('tr'):
@@ -202,6 +185,26 @@ class MetaDataFormatter(object):
                 with tag(item_tag):
                     doc.asis(item)
         return doc.getvalue()
+
+
+class DomainObjectsFormatter(MetaDataFormatter):
+    """ Return the domain objects in the report formatted as HTML table. """
+    @classmethod
+    def process(cls, report: QualityReport) -> str:
+        """ Return a HTML table of the domain objects. """
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass=cls.table_class):
+            doc.asis(cls._table_row('In dit rapport?', 'Domeinobject (<code><small>Identifier</small></code>)',
+                                     'Default eisen', 'Optionele eisen', item_tag='th'))
+            for domain_object_class in sorted(report.domain_object_classes(), key=lambda cls: cls.__name__):
+                icon = cls.icon if domain_object_class in report.included_domain_object_classes() else ''
+                name = cls.name.format(name=domain_object_class.__name__, id=domain_object_class.__name__)
+                default_requirements = ', '.join(
+                    sorted(req.name() for req in domain_object_class.default_requirements()))
+                optional_requirements = ', '.join(
+                    sorted(req.name() for req in domain_object_class.optional_requirements()))
+                doc.asis(cls._table_row(icon, name, default_requirements, optional_requirements))
+        return yattag.indent(doc.getvalue())
 
 
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods

@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import HTMLFormatter, DashboardFormatter, MetaDataFormatter
+from hqlib.formatting import HTMLFormatter, DashboardFormatter, MetaDataFormatter, DomainObjectsFormatter
 from . import fake_domain, fake_report
 
 
@@ -141,6 +141,47 @@ class MetaDataFormatterTest(unittest.TestCase):
   </tr>
 </table>''', self.__formatter.requirements(self.__report))
 
+    def test_metric_classes(self):
+        """ Test the metric classes table. """
+        self.assertEqual('''<table class="table table-striped first-col-centered">
+  <tr>
+    <th>In dit rapport?</th>
+    <th>Metriek (<code><small>Identifier</small></code>)</th>
+    <th>Norm</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td>Automatic regression test statement coverage (<code><small>ARTStatementCoverage</small></code>)</td>
+    <td>Minimaal 80% van de statements wordt gedekt door geautomatiseerde functionele tests. Minder dan 70% is rood.</td>
+  </tr>
+</table>''', self.__formatter.metric_classes(self.__report))
+
+    def test_metric_sources(self):
+        """ Test the metric sources table. """
+        self.assertEqual('''<table class="table table-striped first-col-centered">
+  <tr>
+    <th>In dit rapport?</th>
+    <th>Metriekbron (<code><small>Identifier</small></code>)</th>
+    <th>Instanties</th>
+  </tr>
+  <tr>
+    <td>
+      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+    </td>
+    <td>Git (<code><small>Git</small></code>)</td>
+    <td>
+      <a href="http://git/" target="_blank">http://git/</a>
+    </td>
+  </tr>
+</table>''', self.__formatter.metric_sources(self.__report))
+
+
+class DomainObjectsFormatterTest(unittest.TestCase):
+    """ Unit tests for the domain objects HTML formatter. """
+    def setUp(self):
+        self.__formatter = DomainObjectsFormatter()
+        self.__report = fake_report.Report()
+
     def test_domain_object_classes(self):
         """ Test the domain object classes table. """
         self.assertEqual('''<table class="table table-striped first-col-centered">
@@ -182,41 +223,7 @@ class MetaDataFormatterTest(unittest.TestCase):
     <td>Track spirit</td>
     <td>Scrum team, Track absence</td>
   </tr>
-</table>''', self.__formatter.domain_object_classes(self.__report))
-
-    def test_metric_classes(self):
-        """ Test the metric classes table. """
-        self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr>
-    <th>In dit rapport?</th>
-    <th>Metriek (<code><small>Identifier</small></code>)</th>
-    <th>Norm</th>
-  </tr>
-  <tr>
-    <td></td>
-    <td>Automatic regression test statement coverage (<code><small>ARTStatementCoverage</small></code>)</td>
-    <td>Minimaal 80% van de statements wordt gedekt door geautomatiseerde functionele tests. Minder dan 70% is rood.</td>
-  </tr>
-</table>''', self.__formatter.metric_classes(self.__report))
-
-    def test_metric_sources(self):
-        """ Test the metric sources table. """
-        self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr>
-    <th>In dit rapport?</th>
-    <th>Metriekbron (<code><small>Identifier</small></code>)</th>
-    <th>Instanties</th>
-  </tr>
-  <tr>
-    <td>
-      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
-    </td>
-    <td>Git (<code><small>Git</small></code>)</td>
-    <td>
-      <a href="http://git/" target="_blank">http://git/</a>
-    </td>
-  </tr>
-</table>''', self.__formatter.metric_sources(self.__report))
+</table>''', self.__formatter.process(self.__report))
 
 
 class DashboardFormatterTest(unittest.TestCase):

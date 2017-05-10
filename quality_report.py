@@ -76,6 +76,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.create_dir(report_dir)
         cls.__create_html_file(quality_report, report_dir)
         cls.__create_dashboard_html_file(quality_report, report_dir)
+        cls.__create_domain_objects_html_file(quality_report, report_dir)
         cls.__create_resources(report_dir)
         cls.__create_metrics_file(quality_report, report_dir)
         cls.__create_history_file(quality_report, report_dir)
@@ -101,6 +102,17 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         tmp_filename = os.path.join(report_dir, 'tmp.html')
         cls.__format_and_write_report(quality_report, formatting.DashboardFormatter, tmp_filename, 'w', 'utf-8')
         html_filename = os.path.join(report_dir, 'dashboard.html')
+        if os.path.exists(html_filename):
+            os.remove(html_filename)
+        os.rename(tmp_filename, html_filename)
+        filesystem.make_file_readable(html_filename)
+
+    @classmethod
+    def __create_domain_objects_html_file(cls, quality_report, report_dir):
+        """ Create the domain objects HTML file for the report. """
+        tmp_filename = os.path.join(report_dir, 'tmp.html')
+        cls.__format_and_write_report(quality_report, formatting.DomainObjectsFormatter, tmp_filename, 'w', 'utf-8')
+        html_filename = os.path.join(report_dir, 'domain_objects.html')
         if os.path.exists(html_filename):
             os.remove(html_filename)
         os.rename(tmp_filename, html_filename)

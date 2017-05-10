@@ -52,21 +52,29 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         with open('{0}/index.html'.format(self.report_folder)) as contents:
             return bs4.BeautifulSoup(contents.read(), "lxml")
 
+    def assert_file_exists(self, filename):
+        """ Assert that the specified file exists. """
+        self.assertTrue(os.path.exists('{0}/{1}'.format(self.report_folder, filename)))
+
     def test_report_exists(self):
         """ Test that the report exists. """
-        self.assertTrue(os.path.exists('{0}/index.html'.format(self.report_folder)))
+        self.assert_file_exists('index.html')
 
     def test_metrics_exist(self):
         """ Test that the JSON file with the metrics exists. """
-        self.assertTrue(os.path.exists('{0}/json/metrics.json'.format(self.report_folder)))
+        self.assert_file_exists('json/metrics.json')
 
     def test_history_exists(self):
         """ Test that the JSON file with the history dates and status counts exists. """
-        self.assertTrue(os.path.exists('{0}/json/meta_history.json'.format(self.report_folder)))
+        self.assert_file_exists('json/meta_history.json')
 
     def test_dashboard_exists(self):
         """ Test that the dashboard HTML file exists. """
-        self.assertTrue(os.path.exists('{0}/dashboard.html'.format(self.report_folder)))
+        self.assert_file_exists('dashboard.html')
+
+    def test_domain_objects_file_exists(self):
+        """ Test that the dashboard HTML file exists. """
+        self.assert_file_exists('domain_objects.html')
 
     def test_report_title(self):
         """ Test the report title. """

@@ -100,6 +100,9 @@ function create_dashboard() {
     $.getJSON("json/meta_history.json", "", function(history_json) {
         draw_area_charts(parse_history_json(history_json));
     });
+
+    // Retrieve the html for the help menu
+    $('#domain_object_classes').load("domain_objects.html");
 }
 
 function read_settings_from_cookies() {
