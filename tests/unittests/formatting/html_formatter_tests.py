@@ -102,16 +102,6 @@ class HTMLFormatterTest(unittest.TestCase):
                     '    <td>Automated regression test coverage (<code><small>ARTCoverage</small></code>)</td>\n'
         self.assertTrue(table_row in html)
 
-    def test_domain_objects(self):
-        """ Test that the report contains a list of domain objects it can report on. """
-        html = self.__formatter.process(fake_report.Report())
-        table_header = '<table class="table table-striped first-col-centered">\n  <tr>\n' \
-                       '    <th>In dit rapport?</th>\n' \
-                       '    <th>Domeinobject (<code><small>Identifier</small></code>)</th>\n' \
-                       '    <th>Default eisen</th>\n' \
-                       '    <th>Optionele eisen</th>\n  </tr>'
-        self.assertTrue(table_header in html)
-
 
 class MetaDataFormatterTest(unittest.TestCase):
     """ Unit tests for the meta data HTML formatter. """
