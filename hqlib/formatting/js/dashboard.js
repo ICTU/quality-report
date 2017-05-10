@@ -101,7 +101,10 @@ function create_dashboard() {
         draw_area_charts(parse_history_json(history_json));
     });
 
-    // Retrieve the html for the help menu
+    // Retrieve the html files for the help menu
+    $('#requirements').load("requirements.html");
+    $('#metrics').load("metrics.html");
+    $('#metric_sources').load("metric_sources.html");
     $('#domain_object_classes').load("domain_objects.html");
 }
 
