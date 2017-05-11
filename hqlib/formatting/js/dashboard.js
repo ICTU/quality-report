@@ -89,11 +89,11 @@ function create_dashboard() {
     set_indicators();
 
     // Retrieve the html for the dashboard
-    $("#section_dashboard").load("dashboard.html");
-
-    // Retrieve the metrics for the metrics table.
-    $.getJSON("json/metrics.json", "", function(metrics_data) {
-       fill_metrics_table(metrics_data);
+    $("#section_dashboard").load("dashboard.html", function() {
+        // Retrieve the metrics for the metrics table after the dashboard layout has been loaded.
+        $.getJSON("json/metrics.json", "", function(metrics_data) {
+            fill_metrics_table(metrics_data);
+        });
     });
 
     // Retrieve the history for the meta metrics history charts.
