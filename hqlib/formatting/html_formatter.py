@@ -18,7 +18,7 @@ limitations under the License.
 import logging
 import pkg_resources
 import yattag
-from typing import List, Dict, Iterable
+from typing import Any, List, Dict, Iterable, Tuple
 
 from . import base_formatter
 from ..report import QualityReport, Section
@@ -121,6 +121,27 @@ class MetaDataFormatter(object):
     anchor = '<a href="{url}" target="_blank">{url}</a>'
     name = '{name} (<code><small>{id}</small></code>)'
     table_class = "table table-striped first-col-centered"
+    column_headers: Tuple[str, ...] = ('Subclass', 'responsibility')
+
+    @classmethod
+    def process(cls, report: QualityReport) -> str:
+        """ Return a HTML table of the domain objects. """
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('table', klass=cls.table_class):
+            doc.asis(cls._table_row(*cls.column_headers, item_tag='th'))
+            for item in cls.items(report):
+                doc.asis(cls.process_item(report, item))
+        return yattag.indent(doc.getvalue())
+
+    @classmethod
+    def items(cls, report: QualityReport) -> List[Any]:
+        """ Return the items to list in the table. """
+        raise NotImplementedError
+
+    @classmethod
+    def process_item(cls, report: QualityReport, item) -> str:
+        """ Return a row in the table. """
+        raise NotImplementedError
 
     @staticmethod
     def _table_row(*items: str, item_tag='td') -> str:
@@ -135,80 +156,89 @@ class MetaDataFormatter(object):
 
 class DomainObjectsFormatter(MetaDataFormatter):
     """ Return the domain objects in the report formatted as HTML table. """
+    column_headers = 'In dit rapport?', 'Domeinobject (<code><small>Identifier</small></code>)', \
+                     'Default eisen', 'Optionele eisen'
+
     @classmethod
-    def process(cls, report: QualityReport) -> str:
-        """ Return a HTML table of the domain objects. """
+    def items(cls, report: QualityReport) -> List[Any]:
+        """ Return the items to list in the table. """
+        return sorted(report.domain_object_classes(), key=lambda klass: klass.__name__)
+
+    @classmethod
+    def process_item(cls, report: QualityReport, domain_object_class) -> str:
+        """ Return a row in the table. """
         doc, tag, text = yattag.Doc().tagtext()
-        with tag('table', klass=cls.table_class):
-            doc.asis(cls._table_row('In dit rapport?', 'Domeinobject (<code><small>Identifier</small></code>)',
-                                     'Default eisen', 'Optionele eisen', item_tag='th'))
-            for domain_object_class in sorted(report.domain_object_classes(), key=lambda cls: cls.__name__):
-                icon = cls.icon if domain_object_class in report.included_domain_object_classes() else ''
-                name = cls.name.format(name=domain_object_class.__name__, id=domain_object_class.__name__)
-                default_requirements = ', '.join(
-                    sorted(req.name() for req in domain_object_class.default_requirements()))
-                optional_requirements = ', '.join(
-                    sorted(req.name() for req in domain_object_class.optional_requirements()))
-                doc.asis(cls._table_row(icon, name, default_requirements, optional_requirements))
-        return yattag.indent(doc.getvalue())
+        icon = cls.icon if domain_object_class in report.included_domain_object_classes() else ''
+        name = cls.name.format(name=domain_object_class.__name__, id=domain_object_class.__name__)
+        default_requirements = ', '.join(
+            sorted(req.name() for req in domain_object_class.default_requirements()))
+        optional_requirements = ', '.join(
+            sorted(req.name() for req in domain_object_class.optional_requirements()))
+        doc.asis(cls._table_row(icon, name, default_requirements, optional_requirements))
+        return doc.getvalue()
 
 
 class RequirementsFormatter(MetaDataFormatter):
     """ Return the requirements in the report formatted as HTML table. """
+    column_headers = 'In dit rapport?', 'Eis (<code><small>Identifier</small></code>)', 'Metrieken'
+
     @classmethod
-    def process(cls, report: QualityReport) -> str:
+    def items(cls, report: QualityReport) -> List[Any]:
+        return sorted(report.requirement_classes(), key=lambda klass: klass.name())
+
+    @classmethod
+    def process_item(cls, report: QualityReport, item) -> str:
         """ Return a HTML table of the requirements. """
         doc, tag, text = yattag.Doc().tagtext()
-        with tag('table', klass=cls.table_class):
-            doc.asis(cls._table_row('In dit rapport?', 'Eis (<code><small>Identifier</small></code>)',
-                                     'Metrieken', item_tag='th'))
-            for requirement_class in sorted(report.requirement_classes(), key=lambda cls: cls.name()):
-                icon = cls.icon if requirement_class in report.included_requirement_classes() else ''
-                name = cls.name.format(name=requirement_class.name(), id=requirement_class.__name__)
-                metrics = ', '.join(sorted(metric_class.name for metric_class in requirement_class.metric_classes()))
-                doc.asis(cls._table_row(icon, name, metrics))
-        return yattag.indent(doc.getvalue())
+        icon = cls.icon if item in report.included_requirement_classes() else ''
+        name = cls.name.format(name=item.name(), id=item.__name__)
+        metrics = ', '.join(sorted(metric_class.name for metric_class in item.metric_classes()))
+        doc.asis(cls._table_row(icon, name, metrics))
+        return doc.getvalue()
 
 
 class MetricClassesFormatter(MetaDataFormatter):
     """ Return the metrics in the report formatted as HTML table. """
+    column_headers = 'In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm'
+
     @classmethod
-    def process(cls, report: QualityReport) -> str:
+    def items(cls, report: QualityReport) -> List[Any]:
+        return sorted(report.metric_classes(), key=lambda klass: klass.name)
+
+    @classmethod
+    def process_item(cls, report: QualityReport, item) -> str:
         """ Return a HTML table of the metrics the software can measure. """
         doc, tag, text = yattag.Doc().tagtext()
-        with tag('table', klass=cls.table_class):
-            doc.asis(cls._table_row('In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm',
-                                    item_tag='th'))
-            for metric_class in sorted(report.metric_classes(), key=lambda cls: cls.name):
-                icon = cls.icon if metric_class in report.included_metric_classes() else ''
-                name = cls.name.format(name=metric_class.name, id=metric_class.__name__)
-                try:
-                    norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
-                except ValueError:
-                    logging.error('Metric class %s had faulty norm template', metric_class.__name__)
-                    raise
-                doc.asis(cls._table_row(icon, name, norm))
-        return yattag.indent(doc.getvalue())
+        icon = cls.icon if item in report.included_metric_classes() else ''
+        name = cls.name.format(name=item.name, id=item.__name__)
+        try:
+            norm = item.norm_template.format(**item.norm_template_default_values())
+        except ValueError:
+            logging.error('Metric class %s had faulty norm template', item.__name__)
+            raise
+        doc.asis(cls._table_row(icon, name, norm))
+        return doc.getvalue()
 
 
 class MetricSourcesFormatter(MetaDataFormatter):
     """ Return the metric sources in the report formatted as HTML table. """
+    column_headers = 'In dit rapport?', 'Metriekbron (<code><small>Identifier</small></code>)', 'Instanties'
+
     @classmethod
-    def process(cls, report: QualityReport) -> str:
+    def items(cls, report: QualityReport) -> List[Any]:
+        return sorted(report.metric_source_classes(), key=lambda klass: klass.metric_source_name)
+
+    @classmethod
+    def process_item(cls, report: QualityReport, item) -> str:
         """ Return a HTML table of the metric sources the software can collect data from. """
         doc, tag, text = yattag.Doc().tagtext()
-        with tag('table', klass=cls.table_class):
-            doc.asis(cls._table_row(
-                'In dit rapport?', 'Metriekbron (<code><small>Identifier</small></code>)', 'Instanties', item_tag='th'))
-            for metric_source_class in sorted(report.metric_source_classes(), key=lambda cls: cls.metric_source_name):
-                icon = cls.icon if metric_source_class in report.included_metric_source_classes() else ''
-                name = cls.name.format(name=metric_source_class.metric_source_name, id=metric_source_class.__name__)
-                instances = report.project().metric_source(metric_source_class)
-                instances = sorted(instances if isinstance(instances, list) else [instances])
-                instances = '<br>'.join([cls.anchor.format(url=instance.url()) for instance in instances
-                                         if instance.url()])
-                doc.asis(cls._table_row(icon, name, instances))
-        return yattag.indent(doc.getvalue())
+        icon = cls.icon if item in report.included_metric_source_classes() else ''
+        name = cls.name.format(name=item.metric_source_name, id=item.__name__)
+        instances = report.project().metric_source(item)
+        instances = sorted(instances if isinstance(instances, list) else [instances])
+        instances = '<br>'.join([cls.anchor.format(url=instance.url()) for instance in instances if instance.url()])
+        doc.asis(cls._table_row(icon, name, instances))
+        return doc.getvalue()
 
 
 class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
