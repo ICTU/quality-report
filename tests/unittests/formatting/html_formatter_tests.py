@@ -27,11 +27,6 @@ class HTMLFormatterTest(unittest.TestCase):
     def setUp(self):
         self.__formatter = HTMLFormatter()
 
-    def test_title_in_prefix(self):
-        """ Test that the title is in the prefix. """
-        self.assertTrue('<title>Report title</title>' in
-                        self.__formatter.prefix(fake_report.Report([fake_domain.Product()])))
-
     def test_postfix(self):
         """ Test that the postfix closes the html tag. """
         self.assertTrue(self.__formatter.postfix().strip().endswith('</html>'))

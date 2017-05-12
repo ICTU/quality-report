@@ -30,7 +30,7 @@ class HTMLFormatter(base_formatter.Formatter):
 
     def prefix(self, report: QualityReport) -> str:
         """ Return a HTML formatted version of the report prefix. """
-        parameters = dict(title=report.title())
+        parameters = dict()
         parameters['section_menu'] = self.__section_navigation_menu(report)
         prefix = self.__get_html_fragment('prefix')
         return prefix.format(**parameters)

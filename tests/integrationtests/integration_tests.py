@@ -44,7 +44,6 @@ class IntegrationTestCase(unittest.TestCase):
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
-    expected_title = 'all requirements but no sources'
     expected_number_of_metrics = 188
 
     def report(self):
@@ -66,7 +65,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     def test_report_title(self):
         """ Test the report title. """
         title = self.report()('head')[0]('title')[0].string
-        self.assertEqual('Kwaliteitsrapportage Integrationtest/{0}'.format(self.expected_title), title)
+        self.assertEqual('Kwaliteitsrapportage ...', title)
 
     def test_number_of_metrics(self):
         """ Test the number of metrics in the report. """
@@ -78,7 +77,6 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
     """ Integration tests using a report with all requirements and all sources, but no source ids defined. """
     project_folder = 'tests/integrationtests/test_no_source_ids'
-    expected_title = 'all requirements and sources, but no source ids'
 
 
 class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):

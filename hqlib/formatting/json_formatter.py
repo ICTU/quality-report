@@ -128,8 +128,9 @@ class MetricsFormatter(base_formatter.Formatter):
                             hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
     def prefix(self, report: QualityReport) -> str:
-        return '{{"report_date": {report_date}, "hq_version": "{version}", "metrics": ['.format(
-            report_date=self.__report_date(report), version=VERSION)
+        return '{{"report_date": {report_date}, "report_title": "{report_title}", ' \
+               '"hq_version": "{version}", "metrics": ['.format(report_date=self.__report_date(report),
+                                                                report_title=report.title(), version=VERSION)
 
     @staticmethod
     def postfix() -> str:
