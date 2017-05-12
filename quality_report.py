@@ -17,18 +17,14 @@ limitations under the License.
 
 # Python script to retrieve metrics from different back-end systems, like Sonar and Jenkins.
 
-
 import logging
 import os
-import socket
-import ssl
 import sys
 import urllib.request
-import xmlrpc.client
 
 import pkg_resources
 
-from hqlib import formatting, commandlineargs, report, metric_source, log, filesystem, VERSION
+from hqlib import formatting, commandlineargs, report, metric_source, log, filesystem
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -74,9 +70,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        cls.__create_html_file(quality_report, report_dir, formatting.HTMLFormatter, 'index',
-                               latest_software_version=cls.__latest_software_version(),
-                               current_software_version=VERSION)
+        cls.__create_html_file(quality_report, report_dir, formatting.HTMLFormatter, 'index')
         cls.__create_html_file(quality_report, report_dir, formatting.DashboardFormatter, 'dashboard')
         cls.__create_html_file(quality_report, report_dir, formatting.DomainObjectsFormatter, 'domain_objects')
         cls.__create_html_file(quality_report, report_dir, formatting.RequirementsFormatter, 'requirements')
@@ -153,20 +147,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.write_file(formatted_report, filename, mode, encoding)
 
     @staticmethod
-    def __latest_software_version():
-        """ Return the latest released version of the quality report software. """
-        python_package_index_url = 'https://pypi.python.org/pypi'
-        client = xmlrpc.client.ServerProxy(python_package_index_url)
-        try:
-            latest_version = max(client.package_releases('quality_report'))
-        except (socket.gaierror, xmlrpc.client.ProtocolError, ssl.SSLEOFError) as reason:
-            logging.warning("Can't create connection to %s: %s", python_package_index_url, reason)
-            return '0'
-
-        logging.info('Latest HQ release is %s', latest_version)
-        return latest_version
-
-    @staticmethod
     def __format_y_axis_range(y_axis_range):
         """ Return the y axis range parameter for the Google sparkline graph. """
         return '{0:d},{1:d}'.format(*y_axis_range) if y_axis_range else 'a'
@@ -176,5 +156,5 @@ if __name__ == '__main__':
     # pylint: disable=invalid-name
     args = commandlineargs.parse()
     log.init_logging(args.log)
-    quality_report = Reporter(args.project).create_report(args.report)
-    sys.exit(2 if args.failure_exit_code and quality_report.direct_action_needed() else 0)
+    report = Reporter(args.project).create_report(args.report)
+    sys.exit(2 if args.failure_exit_code and report.direct_action_needed() else 0)

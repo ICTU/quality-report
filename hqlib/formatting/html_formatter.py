@@ -28,16 +28,9 @@ from ..domain import Metric, DomainObject
 class HTMLFormatter(base_formatter.Formatter):
     """ Format the report in HTML. """
 
-    def __init__(self, latest_software_version: str='0', current_software_version: str='0') -> None:
-        self.__latest_software_version = latest_software_version
-        self.__current_software_version = current_software_version
-        super().__init__()
-
     def prefix(self, report: QualityReport) -> str:
         """ Return a HTML formatted version of the report prefix. """
-        parameters = dict(
-            title=report.title(),
-            new_version_available=self.__new_release_text())
+        parameters = dict(title=report.title())
         parameters['section_menu'] = self.__section_navigation_menu(report)
         prefix = self.__get_html_fragment('prefix')
         return prefix.format(**parameters)
@@ -105,12 +98,6 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return a HTML formatted subtitle. """
         template = ' <small>{sub}</small>'
         return template.format(sub=subtitle) if subtitle else ''
-
-    def __new_release_text(self) -> str:
-        """ Return a line of text if there is a new version of the software available. """
-        latest = self.__latest_software_version
-        current = self.__current_software_version
-        return ' Versie {ver} is beschikbaar.'.format(ver=latest) if latest > current else ''
 
 
 class MetaDataFormatter(object):
