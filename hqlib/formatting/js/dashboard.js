@@ -65,7 +65,7 @@ function create_metrics_table() {
 function fill_metrics_table(metrics_data) {
     window.metrics.addRows(metrics_data["metrics"]);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
-    color_report_date(new Date(...metrics_data["report_date"]));
+    set_report_date(new Date(...metrics_data["report_date"]));
 
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
@@ -195,12 +195,16 @@ function color_metrics(color_perfect, color_green, color_yellow, color_red, colo
     }
 }
 
-function color_report_date(report_date) {
+function set_report_date(date_time) {
+    var date_string = date_time.getDate() + "-" + (date_time.getMonth() + 1) + "-" + date_time.getFullYear();
+    var time_string = date_time.getHours() + ":" + date_time.getMinutes();
+    $('#report_date_time').html(date_string + ' ' + time_string);
+
     var now = new Date();
-    var seconds = parseInt((now - report_date)/1000, 10);
+    var seconds = parseInt((now - date_time)/1000, 10);
     if (seconds > 60 * 60) {
         var cls = seconds > 60 * 60 * 24 ? 'very_old' : 'old';
-        document.getElementById('report_date_time').setAttribute('class', cls);
+        $('#report_date_time').attr('class', cls);
     }
 }
 
