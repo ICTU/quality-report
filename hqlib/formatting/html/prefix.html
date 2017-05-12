@@ -8,13 +8,13 @@
         <title class="report_title">Kwaliteitsrapportage ...</title>
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <style type="text/css">
-            body {{
+            body {
                 padding-top: 70px;
                 padding-bottom: 40px;
-            }}
+            }
         </style>
         <link href="css/quality_report.css" rel="stylesheet" />
-        <style type="text/css" media="print">.navbar {{ visibility: hidden; }}</style>
+        <style type="text/css" media="print">.navbar { visibility: hidden; }</style>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -22,7 +22,7 @@
         <script type="text/javascript" src="js/cookie.js"></script>
         <script type="text/javascript" src="js/dashboard.js"></script>
         <script type="text/javascript">
-            google.setOnLoadCallback(function() {{create_dashboard()}});
+            google.setOnLoadCallback(function() {create_dashboard()});
         </script>
     </head>
     <body>
@@ -44,12 +44,11 @@
                                data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
                                 Ga naar<span class="caret"></span>
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navigation_menu">
+                            <ul class="dropdown-menu" id="navigation_menu_items" aria-labelledby="navigation_menu">
                                 <li>
                                     <a class="link_section_dashboard" href="#section_dashboard">
                                         <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Dashboard</a>
                                 </li>
-                                {section_menu}
                             </ul>
                         </li>
                         <li class="dropdown">

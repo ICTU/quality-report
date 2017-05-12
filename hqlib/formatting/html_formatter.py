@@ -30,10 +30,7 @@ class HTMLFormatter(base_formatter.Formatter):
 
     def prefix(self, report: QualityReport) -> str:
         """ Return a HTML formatted version of the report prefix. """
-        parameters = dict()
-        parameters['section_menu'] = self.__section_navigation_menu(report)
-        prefix = self.__get_html_fragment('prefix')
-        return prefix.format(**parameters)
+        return self.__get_html_fragment('prefix')
 
     @staticmethod
     def __get_html_fragment(name: str) -> str:
@@ -54,8 +51,21 @@ class HTMLFormatter(base_formatter.Formatter):
         return ''  # pragma: no cover
 
     @staticmethod
-    def __section_navigation_menu(report: QualityReport) -> str:
-        """ Return the menu for jumping to specific sections. """
+    def postfix() -> str:
+        """ Return a HTML formatted version of the report postfix. """
+        return HTMLFormatter.__get_html_fragment('postfix')
+
+    @staticmethod
+    def __format_subtitle(subtitle: str) -> str:
+        """ Return a HTML formatted subtitle. """
+        template = ' <small>{sub}</small>'
+        return template.format(sub=subtitle) if subtitle else ''
+
+
+class SectionNavigationMenuFormatter(object):
+    """ Return the section navigation menu for the report. """
+    @classmethod
+    def process(cls, report: QualityReport) -> str:
         menu_items = []
 
         menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
@@ -87,17 +97,6 @@ class HTMLFormatter(base_formatter.Formatter):
                 add_menu_items(sections[title])
         # Finally, return the HTML as one string
         return '\n'.join(menu_items)
-
-    @staticmethod
-    def postfix() -> str:
-        """ Return a HTML formatted version of the report postfix. """
-        return HTMLFormatter.__get_html_fragment('postfix')
-
-    @staticmethod
-    def __format_subtitle(subtitle: str) -> str:
-        """ Return a HTML formatted subtitle. """
-        template = ' <small>{sub}</small>'
-        return template.format(sub=subtitle) if subtitle else ''
 
 
 class MetaDataFormatter(object):

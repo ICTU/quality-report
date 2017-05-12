@@ -17,8 +17,8 @@ limitations under the License.
 import unittest
 
 from hqlib.formatting import HTMLFormatter, DashboardFormatter, DomainObjectsFormatter, \
-    RequirementsFormatter, MetricSourcesFormatter, MetricClassesFormatter
-from . import fake_domain, fake_report
+    RequirementsFormatter, MetricSourcesFormatter, MetricClassesFormatter, SectionNavigationMenuFormatter
+from . import fake_report
 
 
 class HTMLFormatterTest(unittest.TestCase):
@@ -35,6 +35,17 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test that the report contains exactly one section. """
         html = self.__formatter.process(fake_report.Report())
         self.assertEqual(1, html.count('<h1>Section title'))
+
+
+class SectionNaviationMenuTest(unittest.TestCase):
+    """ Unit tests for the section navigation menu HTML formatter. """
+    def setUp(self):
+        self.__report = fake_report.Report()
+
+    def test_menu(self):
+        """ Test the menu items. """
+        self.assertEqual('<li><a class="link_section_id" href="#section_id">Section title</a></li>',
+                         SectionNavigationMenuFormatter.process(self.__report))
 
 
 class MetaDataFormatterTest(unittest.TestCase):

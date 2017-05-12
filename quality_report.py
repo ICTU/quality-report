@@ -70,12 +70,15 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        cls.__create_html_file(quality_report, report_dir, formatting.HTMLFormatter, 'index')
-        cls.__create_html_file(quality_report, report_dir, formatting.DashboardFormatter, 'dashboard')
-        cls.__create_html_file(quality_report, report_dir, formatting.DomainObjectsFormatter, 'domain_objects')
-        cls.__create_html_file(quality_report, report_dir, formatting.RequirementsFormatter, 'requirements')
-        cls.__create_html_file(quality_report, report_dir, formatting.MetricClassesFormatter, 'metric_classes')
-        cls.__create_html_file(quality_report, report_dir, formatting.MetricSourcesFormatter, 'metric_sources')
+        html_files = dict(index=formatting.HTMLFormatter,
+                          dashboard=formatting.DashboardFormatter,
+                          domain_objects=formatting.DomainObjectsFormatter,
+                          requirements=formatting.RequirementsFormatter,
+                          metric_classes=formatting.MetricClassesFormatter,
+                          metric_sources=formatting.MetricSourcesFormatter,
+                          section_navigation_menu=formatting.SectionNavigationMenuFormatter)
+        for filename, formatter in html_files.items():
+            cls.__create_html_file(quality_report, report_dir, formatter, filename)
         cls.__create_resources(report_dir)
         cls.__create_metrics_file(quality_report, report_dir)
         cls.__create_history_file(quality_report, report_dir)
