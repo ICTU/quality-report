@@ -37,7 +37,6 @@ class HTMLFormatter(base_formatter.Formatter):
         """ Return a HTML formatted version of the report prefix. """
         parameters = dict(
             title=report.title(),
-            current_version=self.__current_software_version,
             new_version_available=self.__new_release_text())
         parameters['section_menu'] = self.__section_navigation_menu(report)
         prefix = self.__get_html_fragment('prefix')

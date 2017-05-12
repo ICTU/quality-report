@@ -65,7 +65,6 @@ function create_metrics_table() {
 function fill_metrics_table(metrics_data) {
     window.metrics.addRows(metrics_data["metrics"]);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
-    set_report_date(new Date(...metrics_data["report_date"]));
 
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
 
@@ -93,6 +92,8 @@ function create_dashboard() {
         // Retrieve the metrics for the metrics table after the dashboard layout has been loaded.
         $.getJSON("json/metrics.json", "", function(metrics_data) {
             fill_metrics_table(metrics_data);
+            set_report_date(new Date(...metrics_data["report_date"]));
+            $("#hq_version").html(metrics_data["hq_version"]);
         });
     });
 

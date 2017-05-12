@@ -21,7 +21,7 @@ import re
 from typing import Dict, Any, Tuple
 
 from . import base_formatter
-from .. import metric_source, utils
+from .. import metric_source, utils, VERSION
 from ..report import QualityReport
 from ..domain import Metric
 
@@ -128,7 +128,8 @@ class MetricsFormatter(base_formatter.Formatter):
                             hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
 
     def prefix(self, report: QualityReport) -> str:
-        return '{{"report_date": {report_date}, "metrics": ['.format(report_date=self.__report_date(report))
+        return '{{"report_date": {report_date}, "hq_version": "{version}", "metrics": ['.format(
+            report_date=self.__report_date(report), version=VERSION)
 
     @staticmethod
     def postfix() -> str:
