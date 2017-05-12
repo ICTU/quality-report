@@ -108,7 +108,9 @@ function create_dashboard() {
     $('#metric_classes').load("metric_classes.html");
     $('#metric_sources').load("metric_sources.html");
     $('#domain_object_classes').load("domain_objects.html");
-    $('#navigation_menu_items').append("section_navigation_menu.html");
+    $.get("section_navigation_menu.html", function(menu_items) {
+        $('#navigation_menu_items').append(menu_items);
+    });
 }
 
 function read_settings_from_cookies() {
