@@ -103,7 +103,7 @@ function create_dashboard() {
         draw_area_charts(parse_history_json(history_json));
     });
 
-    // Retrieve the html files for the  menu's
+    // Retrieve the html files for the menu's
     $('#requirements').load("requirements.html");
     $('#metric_classes').load("metric_classes.html");
     $('#metric_sources').load("metric_sources.html");
