@@ -53,6 +53,13 @@ class GitTests(unittest.TestCase):
         """ Test that there are no unmerged branches by default. """
         self.assertEqual({}, self.__git.unmerged_branches('http://git/'))
 
+    def test_unmerged_branches_with_repo(self):
+        """ Test the unmerged branches with a (faked) repo. """
+        VersionControlSystem._run_shell_command.cache_clear()
+        Git._run_shell_command.cache_clear()
+        git = Git(url=self.__git.url(), run_shell_command=lambda *args, **kwargs: 'branch\n')
+        self.assertEqual(dict(branch=1), git.unmerged_branches('path'))
+
     def test_normalize_path(self):
         """ Test path that needs no changes. """
         self.assertEqual('http://git/master/', self.__git.normalize_path('http://git/master/'))
