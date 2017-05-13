@@ -87,6 +87,10 @@ function create_dashboard() {
     create_event_handlers();
     set_indicators();
 
+    // Hide sections while loading
+    $('#sections').style.display = 'none';
+    $("#section_dashboard").style.display = 'none';
+
     // Retrieve the report sections
     $.get('sections.html', function(sections) {
         $('#sections').append(sections);
@@ -97,6 +101,10 @@ function create_dashboard() {
         // Retrieve the metrics for the metrics table after the dashboard layout has been loaded.
         $.getJSON("json/metrics.json", "", function(metrics_data) {
             fill_metrics_table(metrics_data);
+            $('.jumbotron').style.display = 'none';
+            $('#sections').style.display = 'block';
+            $("#section_dashboard").style.display = 'block';
+
             set_report_date(new Date(...metrics_data["report_date"]));
             $("#hq_version").html(metrics_data["hq_version"]);
             $(".report_title").html(metrics_data["report_title"]);
