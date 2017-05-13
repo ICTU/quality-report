@@ -54,7 +54,7 @@ class HTMLFormatter(base_formatter.Formatter):
 
 class SectionsFormatter(object):
     """ Return the sections of the report. """
-    section_template = '''<section id="section_{id}" style="display:block">
+    section_template = '''<section id="section_{id}" class="section" style="display:none">
   <br>
   <div class="page-header">
     <h1>{title}{subtitle}</h1>
