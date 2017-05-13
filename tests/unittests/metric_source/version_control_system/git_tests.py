@@ -20,25 +20,19 @@ import unittest
 from hqlib.metric_source import Git
 
 
-class GitUnderTest(Git):  # pylint: disable=too-few-public-methods
-    """ Override the Git class to prevent it from running shell commands. """
-
-    def _run_shell_command(self, *args, **kwargs):  # pylint: disable=unused-argument
-        return ''
-
-
 class GitTests(unittest.TestCase):
     """ Unit tests for the Git class. """
     def setUp(self):
-        self.__git = GitUnderTest(url='http://git/')
+        self.__git = Git(url='http://git/', run_shell_command=lambda *args, **kwargs: '')
+        self.__git_branch = Git(url=self.__git.url(), branch='branch', run_shell_command=lambda *args, **kwargs: '')
 
     def test_is_equal(self):
         """ Test that the branch is taken into account for equality. """
-        self.assertNotEqual(GitUnderTest(url=self.__git.url(), branch='branch'), self.__git)
+        self.assertNotEqual(self.__git_branch, self.__git)
 
     def test_hash(self):
         """ Test that the branch is taken into account for the hash. """
-        self.assertNotEqual(hash(GitUnderTest(url=self.__git.url(), branch='branch')), hash(self.__git))
+        self.assertNotEqual(hash(self.__git_branch), hash(self.__git))
 
     def test_last_changed_date(self):
         """ Test that there is no last changed date for a missing repo. """
