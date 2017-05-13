@@ -67,12 +67,14 @@ class SectionsFormatter(object):
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return the sections of the report as HTML. """
+        result = []
         for section in report.sections():
             subtitle = cls.__format_subtitle(section.subtitle())
             extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
                     '<div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
             parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
-            return cls.section_template.format(**parameters)
+            result.append(cls.section_template.format(**parameters))
+        return '\n'.join(result)
 
     @staticmethod
     def __format_subtitle(subtitle: str) -> str:
