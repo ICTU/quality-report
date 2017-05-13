@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from hqlib.metric_source import Git
+from hqlib.metric_source import Git, VersionControlSystem
 
 
 class GitTests(unittest.TestCase):
@@ -37,6 +37,13 @@ class GitTests(unittest.TestCase):
     def test_last_changed_date(self):
         """ Test that there is no last changed date for a missing repo. """
         self.assertEqual(datetime.datetime.min, self.__git.last_changed_date('path'))
+
+    def test_last_changed_date_with_repo(self):
+        """ Test the date with a (faked) repo. """
+        VersionControlSystem._run_shell_command.cache_clear()
+        Git._run_shell_command.cache_clear()
+        git = Git(url=self.__git.url(), run_shell_command=lambda *args, **kwargs: '1490445344.0')
+        self.assertEqual(datetime.datetime(2017, 3, 25, 13, 35, 44), git.last_changed_date('path'))
 
     def test_branches(self):
         """ Test that there are no branches by default. """
