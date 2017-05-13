@@ -87,10 +87,6 @@ function create_dashboard() {
     create_event_handlers();
     set_indicators();
 
-    // Hide sections while loading
-    $('#sections').style.display = 'none';
-    $("#section_dashboard").style.display = 'none';
-
     // Retrieve the report sections
     $.get('sections.html', function(sections) {
         $('#sections').append(sections);
