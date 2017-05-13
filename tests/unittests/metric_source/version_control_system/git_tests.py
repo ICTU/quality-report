@@ -43,7 +43,7 @@ class GitTests(unittest.TestCase):
         VersionControlSystem._run_shell_command.cache_clear()
         Git._run_shell_command.cache_clear()
         git = Git(url=self.__git.url(), run_shell_command=lambda *args, **kwargs: '1490445344.0')
-        self.assertEqual(datetime.datetime(2017, 3, 25, 13, 35, 44), git.last_changed_date('path'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1490445344.0), git.last_changed_date('path'))
 
     def test_branches(self):
         """ Test that there are no branches by default. """
