@@ -42,7 +42,7 @@ class GitTests(unittest.TestCase):
         """ Test the date with a (faked) repo. """
         VersionControlSystem._run_shell_command.cache_clear()
         Git._run_shell_command.cache_clear()
-        git = Git(url=self.__git.url(), run_shell_command=lambda *args, **kwargs: '1490445344.0')
+        git = Git(url=self.__git.url(), run_shell_command=lambda *args, **kwargs: '1490445344.0', branch='branch')
         self.assertEqual(datetime.datetime.fromtimestamp(1490445344.0), git.last_changed_date('path'))
 
     def test_branches(self):
@@ -57,7 +57,8 @@ class GitTests(unittest.TestCase):
         """ Test the unmerged branches with a (faked) repo. """
         VersionControlSystem._run_shell_command.cache_clear()
         Git._run_shell_command.cache_clear()
-        git = Git(url=self.__git.url(), run_shell_command=lambda *args, **kwargs: 'branch\n')
+        git = Git(url=self.__git.url(), username='u', password='p',
+                  run_shell_command=lambda *args, **kwargs: 'branch\n')
         self.assertEqual(dict(branch=1), git.unmerged_branches('path'))
 
     def test_normalize_path(self):
