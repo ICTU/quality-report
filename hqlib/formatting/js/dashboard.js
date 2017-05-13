@@ -87,22 +87,19 @@ function create_dashboard() {
     create_event_handlers();
     set_indicators();
 
-    // Retrieve the report sections
-    $.get('sections.html', function(sections) {
-        $('#sections').append(sections);
-    });
-
     // Retrieve the html for the dashboard
-    $("#section_dashboard").load("dashboard.html", function() {
-        // Retrieve the metrics for the metrics table after the dashboard layout has been loaded.
-        $.getJSON("json/metrics.json", "", function(metrics_data) {
-            fill_metrics_table(metrics_data);
-            $('#loading').css("display", 'none');
-            $('.section').css("display", 'block');
+    $('#sections').load('sections.html', function() {
+        $("#section_dashboard").load("dashboard.html", function() {
+            // Retrieve the metrics for the metrics table after the dashboard and sections have been loaded.
+            $.getJSON("json/metrics.json", "", function(metrics_data) {
+                fill_metrics_table(metrics_data);
+                $('#loading').css("display", 'none');
+                $('.section').css("display", 'block');
 
-            set_report_date(new Date(...metrics_data["report_date"]));
-            $("#hq_version").html(metrics_data["hq_version"]);
-            $(".report_title").html(metrics_data["report_title"]);
+                set_report_date(new Date(...metrics_data["report_date"]));
+                $("#hq_version").html(metrics_data["hq_version"]);
+                $(".report_title").html(metrics_data["report_title"]);
+            });
         });
     });
 
