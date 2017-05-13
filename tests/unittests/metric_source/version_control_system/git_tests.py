@@ -24,7 +24,7 @@ class GitTests(unittest.TestCase):
     """ Unit tests for the Git class. """
     def setUp(self):
         self.__git = Git(url='http://git/', run_shell_command=lambda *args, **kwargs: '')
-        self.__git_branch = Git(url=self.__git.url(), branch='branch', run_shell_command=lambda *args, **kwargs: '')
+        self.__git_branch = Git(url=self.__git.url(), branch='branch')
 
     def test_is_equal(self):
         """ Test that the branch is taken into account for equality. """
