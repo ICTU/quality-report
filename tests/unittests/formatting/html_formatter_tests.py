@@ -17,7 +17,8 @@ limitations under the License.
 import unittest
 
 from hqlib.formatting import HTMLFormatter, DashboardFormatter, DomainObjectsFormatter, \
-    RequirementsFormatter, MetricSourcesFormatter, MetricClassesFormatter, SectionNavigationMenuFormatter
+    RequirementsFormatter, MetricSourcesFormatter, MetricClassesFormatter, SectionsFormatter,\
+    SectionNavigationMenuFormatter
 from . import fake_report
 
 
@@ -31,13 +32,26 @@ class HTMLFormatterTest(unittest.TestCase):
         """ Test that the postfix closes the html tag. """
         self.assertTrue(self.__formatter.postfix().strip().endswith('</html>'))
 
-    def test_section(self):
-        """ Test that the report contains exactly one section. """
-        html = self.__formatter.process(fake_report.Report())
-        self.assertEqual(1, html.count('<h1>Section title'))
+
+class SectionsFormatterTest(unittest.TestCase):
+    """ Unit tests for the sections HTML formatter. """
+    def setUp(self):
+        self.__report = fake_report.Report()
+
+    def test_sections(self):
+        """ Test the sections. """
+        self.assertEqual('''<section id="section_id" style="display:block">
+  <br>
+  <div class="page-header">
+    <h1>Section title <small>Section subtitle</small></h1>
+  </div>
+  <div id="table_id"></div>
+  
+</section>
+''', SectionsFormatter.process(self.__report))
 
 
-class SectionNaviationMenuTest(unittest.TestCase):
+class SectionNaviationMenuFormatterTest(unittest.TestCase):
     """ Unit tests for the section navigation menu HTML formatter. """
     def setUp(self):
         self.__report = fake_report.Report()

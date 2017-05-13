@@ -87,6 +87,11 @@ function create_dashboard() {
     create_event_handlers();
     set_indicators();
 
+    // Retrieve the report sections
+    $.get('sections.html', function(sections) {
+        $('#sections').append(sections);
+    });
+
     // Retrieve the html for the dashboard
     $("#section_dashboard").load("dashboard.html", function() {
         // Retrieve the metrics for the metrics table after the dashboard layout has been loaded.

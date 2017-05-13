@@ -76,6 +76,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
                           requirements=formatting.RequirementsFormatter,
                           metric_classes=formatting.MetricClassesFormatter,
                           metric_sources=formatting.MetricSourcesFormatter,
+                          sections=formatting.SectionsFormatter,
                           section_navigation_menu=formatting.SectionNavigationMenuFormatter)
         for filename, formatter in html_files.items():
             cls.__create_html_file(quality_report, report_dir, formatter, filename)

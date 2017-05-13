@@ -40,11 +40,7 @@ class HTMLFormatter(base_formatter.Formatter):
 
     def section(self, report: QualityReport, section: Section) -> str:
         """ Return a HTML formatted version of the section. """
-        subtitle = self.__format_subtitle(section.subtitle())
-        extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
-                '<div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
-        parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
-        return self.__get_html_fragment('section').format(**parameters)
+        return ''
 
     def metric(self, metric: Metric) -> str:
         """ Return a HTML formatted version of the metric. """
@@ -54,6 +50,29 @@ class HTMLFormatter(base_formatter.Formatter):
     def postfix() -> str:
         """ Return a HTML formatted version of the report postfix. """
         return HTMLFormatter.__get_html_fragment('postfix')
+
+
+class SectionsFormatter(object):
+    """ Return the sections of the report. """
+    section_template = '''<section id="section_{id}" style="display:block">
+  <br>
+  <div class="page-header">
+    <h1>{title}{subtitle}</h1>
+  </div>
+  <div id="table_{id}"></div>
+  {extra}
+</section>
+'''
+
+    @classmethod
+    def process(cls, report: QualityReport) -> str:
+        """ Return the sections of the report as HTML. """
+        for section in report.sections():
+            subtitle = cls.__format_subtitle(section.subtitle())
+            extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
+                    '<div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
+            parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
+            return cls.section_template.format(**parameters)
 
     @staticmethod
     def __format_subtitle(subtitle: str) -> str:
@@ -66,6 +85,7 @@ class SectionNavigationMenuFormatter(object):
     """ Return the section navigation menu for the report. """
     @classmethod
     def process(cls, report: QualityReport) -> str:
+        """ Return the section navigation menu, """
         menu_items = []
 
         menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
