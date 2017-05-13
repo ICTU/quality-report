@@ -71,7 +71,7 @@ class SectionsFormatter(object):
         for section in report.sections():
             subtitle = cls.__format_subtitle(section.subtitle())
             extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
-                    '<div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
+                    '  <div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
             parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
             result.append(cls.section_template.format(**parameters))
         return '\n'.join(result)
