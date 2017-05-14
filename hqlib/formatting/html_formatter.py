@@ -16,40 +16,11 @@ limitations under the License.
 
 
 import logging
-import pkg_resources
 import yattag
 from typing import Any, List, Dict, Iterable, Tuple
 
-from . import base_formatter
 from ..report import QualityReport, Section
-from ..domain import Metric, DomainObject
-
-
-class HTMLFormatter(base_formatter.Formatter):
-    """ Format the report in HTML. """
-
-    def prefix(self, report: QualityReport) -> str:
-        """ Return a HTML formatted version of the report prefix. """
-        return self.__get_html_fragment('prefix')
-
-    @staticmethod
-    def __get_html_fragment(name: str) -> str:
-        """ Read and return a HTML fragment from the html folder. """
-        fragment = pkg_resources.resource_string(__name__, 'html/{name}.html'.format(name=name))
-        return fragment.decode('utf-8')
-
-    def section(self, report: QualityReport, section: Section) -> str:
-        """ Return a HTML formatted version of the section. """
-        return ''
-
-    def metric(self, metric: Metric) -> str:
-        """ Return a HTML formatted version of the metric. """
-        return ''  # pragma: no cover
-
-    @staticmethod
-    def postfix() -> str:
-        """ Return a HTML formatted version of the report postfix. """
-        return HTMLFormatter.__get_html_fragment('postfix')
+from ..domain import DomainObject
 
 
 class SectionsFormatter(object):

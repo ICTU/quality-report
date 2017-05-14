@@ -16,21 +16,9 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import HTMLFormatter, DashboardFormatter, DomainObjectsFormatter, \
-    RequirementsFormatter, MetricSourcesFormatter, MetricClassesFormatter, SectionsFormatter,\
-    SectionNavigationMenuFormatter
+from hqlib.formatting import DashboardFormatter, DomainObjectsFormatter, RequirementsFormatter, \
+    MetricSourcesFormatter, MetricClassesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
 from . import fake_report
-
-
-class HTMLFormatterTest(unittest.TestCase):
-    """ Unit tests for the html report formatter. """
-
-    def setUp(self):
-        self.__formatter = HTMLFormatter()
-
-    def test_postfix(self):
-        """ Test that the postfix closes the html tag. """
-        self.assertTrue(self.__formatter.postfix().strip().endswith('</html>'))
 
 
 class SectionsFormatterTest(unittest.TestCase):
