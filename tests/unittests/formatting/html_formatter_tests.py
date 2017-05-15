@@ -28,7 +28,12 @@ class SectionsFormatterTest(unittest.TestCase):
 
     def test_sections(self):
         """ Test the sections. """
-        self.assertEqual('''<section id="section_id" class="section" style="display:none">
+        self.assertEqual('''<div id="section_dashboard"></div>
+<br>
+<section id="section_all" style="display:none">
+  <div id="table_all"></div>
+</section>
+<section id="section_id">
   <br>
   <div class="page-header">
     <h1>Section title <small>Section subtitle</small></h1>

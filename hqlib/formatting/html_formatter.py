@@ -25,7 +25,12 @@ from ..domain import DomainObject
 
 class SectionsFormatter(object):
     """ Return the sections of the report. """
-    section_template = '''<section id="section_{id}" class="section" style="display:none">
+    section_dashboard_template = '''<div id="section_dashboard"></div>
+<br>'''
+    section_all_template = '''<section id="section_all" style="display:none">
+  <div id="table_all"></div>
+</section>'''
+    section_template = '''<section id="section_{id}">
   <br>
   <div class="page-header">
     <h1>{title}{subtitle}</h1>
@@ -38,7 +43,7 @@ class SectionsFormatter(object):
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return the sections of the report as HTML. """
-        result = []
+        result = [cls.section_dashboard_template, cls.section_all_template]
         for section in report.sections():
             subtitle = cls.__format_subtitle(section.subtitle())
             extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \

@@ -94,7 +94,7 @@ function create_dashboard() {
             $.getJSON("json/metrics.json", "", function(metrics_data) {
                 fill_metrics_table(metrics_data);
                 $('#loading').css("display", 'none');
-                $('.section').css("display", 'block');
+                $('#sections').css("display", 'block');
 
                 set_report_date(new Date(...metrics_data["report_date"]));
                 $("#hq_version").html(metrics_data["hq_version"]);
