@@ -206,9 +206,7 @@ function color_metrics(color_perfect, color_green, color_yellow, color_red, colo
 }
 
 function set_report_date(date_time) {
-    var date_string = date_time.getDate() + "-" + (date_time.getMonth() + 1) + "-" + date_time.getFullYear();
-    var time_string = date_time.getHours() + ":" + date_time.getMinutes();
-    $('#report_date_time').html(date_string + ' ' + time_string);
+    $('#report_date_time').html(format_date_time(date_time));
 
     var now = new Date();
     var seconds = parseInt((now - date_time)/1000, 10);
@@ -216,6 +214,15 @@ function set_report_date(date_time) {
         var cls = seconds > 60 * 60 * 24 ? 'very_old' : 'old';
         $('#report_date_time').attr('class', cls);
     }
+}
+
+function format_date_time(date_time) {
+    // Format the Date object as a date and time string
+    var date_string = date_time.getDate() + "-" + (date_time.getMonth() + 1) + "-" + date_time.getFullYear();
+    var minutes = date_time.getMinutes();
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var time_string = date_time.getHours() + ":" + minutes;
+    return date_time + ' ' + time_string;
 }
 
 function draw_tables(tables) {
