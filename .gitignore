@@ -7,13 +7,11 @@
 # Ignore generated coverage and test reports and test data:
 .coverage
 .coverage.*
-unit-test-reports
-integration-test-reports
 tests/integrationtests/*/*history.json
 repos
 
 # Ignore build folders
-mypy_report
+build
 dist
 quality_report.egg-info/
 
