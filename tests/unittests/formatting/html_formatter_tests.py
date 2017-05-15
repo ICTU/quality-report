@@ -16,8 +16,8 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import DashboardFormatter, DomainObjectsFormatter, RequirementsFormatter, \
-    MetricSourcesFormatter, MetricClassesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
+from hqlib.formatting import DomainObjectsFormatter, RequirementsFormatter, MetricSourcesFormatter, \
+    MetricClassesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
 from . import fake_report
 
 
@@ -28,20 +28,34 @@ class SectionsFormatterTest(unittest.TestCase):
 
     def test_sections(self):
         """ Test the sections. """
-        self.assertEqual('''<div id="section_dashboard"></div>
-<br>
+        self.assertEqual('''<div id="section_dashboard">
+  <br />
+  <table class="table table-condensed table-bordered">
+    <thead>
+      <tr style="color: white; font-weight: bold; background-color: #2F95CF;">
+        <th colspan="1" style="text-align: center;">ME</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="1" rowspan="1" align="center" bgcolor="lightsteelblue">
+          <div class="link_section_ID" title="Section title"></div>
+          <div id="section_summary_chart_ID"></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 <section id="section_all" style="display:none">
   <div id="table_all"></div>
 </section>
 <section id="section_id">
-  <br>
+  <br />
   <div class="page-header">
     <h1>Section title <small>Section subtitle</small></h1>
   </div>
   <div id="table_id"></div>
-  
-</section>
-''', SectionsFormatter.process(self.__report))
+</section>''', SectionsFormatter.process(self.__report))
 
 
 class SectionNaviationMenuFormatterTest(unittest.TestCase):
@@ -158,28 +172,3 @@ class MetaDataFormatterTest(unittest.TestCase):
     </td>
   </tr>
 </table>''', MetricSourcesFormatter.process(self.__report))
-
-
-class DashboardFormatterTest(unittest.TestCase):
-    """ Unit tests for the dashboard HTML report formatter. """
-
-    def setUp(self):
-        self.__formatter = DashboardFormatter()
-
-    def test_report(self):
-        """ Test that the report is correctly formatted. """
-        self.assertEqual('''<table class="table table-condensed table-bordered">
-  <thead>
-    <tr style="color: white; font-weight: bold; background-color: #2F95CF;">
-      <th colspan="1" style="text-align: center;">ME</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="1" rowspan="1" align="center" bgcolor="lightsteelblue">
-        <div class="link_section_ID" title="Section title"></div>
-        <div id="section_summary_chart_ID"></div>
-      </td>
-    </tr>
-  </tbody>
-</table>''', self.__formatter.process(fake_report.Report()))

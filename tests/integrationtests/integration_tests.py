@@ -57,7 +57,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def test_files_exists(self):
         """ Test that the dashboard HTML file exists. """
-        for filename in ('index', 'dashboard', 'metric_classes', 'metric_sources', 'requirements', 'domain_objects',
+        for filename in ('index', 'metric_classes', 'metric_sources', 'requirements', 'domain_objects',
                          'sections', 'section_navigation_menu'):
             self.assert_file_exists('{0}.html'.format(filename))
         for filename in 'metrics', 'meta_history':

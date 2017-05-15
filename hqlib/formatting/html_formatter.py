@@ -25,38 +25,88 @@ from ..domain import DomainObject
 
 class SectionsFormatter(object):
     """ Return the sections of the report. """
-    section_dashboard_template = '''<div id="section_dashboard"></div>
-<br>'''
-    section_all_template = '''<section id="section_all" style="display:none">
-  <div id="table_all"></div>
-</section>'''
-    section_template = '''<section id="section_{id}">
-  <br>
-  <div class="page-header">
-    <h1>{title}{subtitle}</h1>
-  </div>
-  <div id="table_{id}"></div>
-  {extra}
-</section>
-'''
 
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return the sections of the report as HTML. """
-        result = [cls.section_dashboard_template, cls.section_all_template]
+        doc, tag, text, line = yattag.Doc().ttl()
+        doc.asis(cls.__dashboard_section(report))
+        doc.asis(cls.__all_metrics_section())
         for section in report.sections():
-            subtitle = cls.__format_subtitle(section.subtitle())
-            extra = '<div id="meta_metrics_history_relative_graph"></div>\n' \
-                    '  <div id="meta_metrics_history_absolute_graph"></div>' if section.id_prefix() == 'MM' else ''
-            parameters = dict(title=section.title(), id=section.id_prefix(), subtitle=subtitle, extra=extra)
-            result.append(cls.section_template.format(**parameters))
-        return '\n'.join(result)
+            doc.asis(cls.__section(section))
+        return yattag.indent(doc.getvalue())
+
+    @classmethod
+    def __dashboard_section(cls, report: QualityReport) -> str:
+        """ Return a HTML formatted dashboard. """
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('div', id="section_dashboard"):
+            doc.stag('br')
+            with tag('table', klass="table table-condensed table-bordered"):
+                with tag('thead'):
+                    doc.asis(cls.__dashboard_headers(report))
+                with tag('tbody'):
+                    doc.asis(cls.__dashboard_rows(report))
+        return doc.getvalue()
 
     @staticmethod
-    def __format_subtitle(subtitle: str) -> str:
-        """ Return a HTML formatted subtitle. """
-        template = ' <small>{sub}</small>'
-        return template.format(sub=subtitle) if subtitle else ''
+    def __dashboard_headers(report: QualityReport) -> str:
+        """ Return the headers of the dashboard. """
+        doc, tag, text, line = yattag.Doc().ttl()
+        with tag('tr', style="color: white; font-weight: bold; background-color: #2F95CF;"):
+            for section_type, colspan in report.dashboard()[0]:
+                line('th', section_type, colspan=colspan, style="text-align: center;")
+        return doc.getvalue()
+
+    @classmethod
+    def __dashboard_rows(cls, report: QualityReport) -> str:
+        """ Return the rows of the dashboard. """
+        doc, tag, text, line = yattag.Doc().ttl()
+        for row in report.dashboard()[1]:
+            with tag('tr'):
+                for cell in row:
+                    colspan, rowspan = cell[2] if len(cell) == 3 else (1, 1)
+                    with tag('td', colspan=colspan, rowspan=rowspan, align='center', bgcolor=cell[1]):
+                        section_id = cell[0].short_name() if isinstance(cell[0], DomainObject) else cell[0].upper()
+                        section = report.get_section(section_id)
+                        title = section.title() if section else '???'
+                        line('div', '', klass="link_section_{}".format(section_id), title=title)
+                        line('div', '', id="section_summary_chart_{}".format(section_id))
+        return doc.getvalue()
+
+    @classmethod
+    def __all_metrics_section(cls) -> str:
+        """ Return the section with all metrics. """
+        doc, tag, text, line = yattag.Doc().ttl()
+        with tag('section', id="section_all", style="display:none"):
+            line('div', '', id="table_all")
+        return doc.getvalue()
+
+    @classmethod
+    def __section(cls, section) -> str:
+        """ Return the section formatted as HTML. """
+        doc, tag, text, line = yattag.Doc().ttl()
+        with tag('section', id="section_{0}".format(section.id_prefix())):
+            doc.stag('br')
+            doc.asis(cls.__section_title(section))
+            line('div', '', id="table_{0}".format(section.id_prefix()))
+            if section.id_prefix() == 'MM':
+                line('div', '', id="meta_metrics_history_relative_graph")
+                line('div', '', id="meta_metrics_history_absolute_graph")
+        return doc.getvalue()
+
+    @classmethod
+    def __section_title(cls, section) -> str:
+        """ Return the section title formatted as HTML. """
+        doc, tag, text = yattag.Doc().tagtext()
+        with tag('div', klass="page-header"):
+            with tag('h1'):
+                text(section.title())
+                if section.subtitle():
+                    doc.text(' ')
+                    with tag('small'):
+                        text(section.subtitle())
+        return doc.getvalue()
 
 
 class SectionNavigationMenuFormatter(object):
@@ -220,43 +270,4 @@ class MetricSourcesFormatter(MetaDataFormatter):
         instances = sorted(instances if isinstance(instances, list) else [instances])
         instances = '<br>'.join([cls.anchor.format(url=instance.url()) for instance in instances if instance.url()])
         doc.asis(cls._table_row(icon, name, instances))
-        return doc.getvalue()
-
-
-class DashboardFormatter(object):  # pylint: disable=too-few-public-methods
-    """ Return a HTML formatted dashboard for the quality report. """
-    @classmethod
-    def process(cls, report: QualityReport) -> str:
-        """ Return a HTML formatted dashboard. """
-        doc, tag, text = yattag.Doc().tagtext()
-        with tag('table', klass="table table-condensed table-bordered"):
-            with tag('thead'):
-                doc.asis(cls.__dashboard_headers(report))
-            with tag('tbody'):
-                doc.asis(cls.__dashboard_rows(report))
-        return yattag.indent(doc.getvalue())
-
-    @staticmethod
-    def __dashboard_headers(report: QualityReport) -> str:
-        """ Return the headers of the dashboard. """
-        doc, tag, text, line = yattag.Doc().ttl()
-        with tag('tr', style="color: white; font-weight: bold; background-color: #2F95CF;"):
-            for section_type, colspan in report.dashboard()[0]:
-                line('th', section_type, colspan=colspan, style="text-align: center;")
-        return doc.getvalue()
-
-    @classmethod
-    def __dashboard_rows(cls, report: QualityReport) -> str:
-        """ Return the rows of the dashboard. """
-        doc, tag, text, line = yattag.Doc().ttl()
-        for row in report.dashboard()[1]:
-            with tag('tr'):
-                for cell in row:
-                    colspan, rowspan = cell[2] if len(cell) == 3 else (1, 1)
-                    with tag('td', colspan=colspan, rowspan=rowspan, align='center', bgcolor=cell[1]):
-                        section_id = cell[0].short_name() if isinstance(cell[0], DomainObject) else cell[0].upper()
-                        section = report.get_section(section_id)
-                        title = section.title() if section else '???'
-                        line('div', '', klass="link_section_{}".format(section_id), title=title)
-                        line('div', '', id="section_summary_chart_{}".format(section_id))
         return doc.getvalue()
