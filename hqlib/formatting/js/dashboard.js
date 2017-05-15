@@ -220,7 +220,7 @@ function format_date_time(date_time) {
     var minutes = date_time.getMinutes();
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var time_string = date_time.getHours() + ":" + minutes;
-    return date_time + ' ' + time_string;
+    return date_string + ' ' + time_string;
 }
 
 function draw_tables(tables) {
