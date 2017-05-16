@@ -90,9 +90,6 @@ class SectionsFormatter(object):
             doc.stag('br')
             doc.asis(cls.__section_title(section))
             line('div', '', id="table_{0}".format(section.id_prefix()))
-            if section.id_prefix() == 'MM':
-                line('div', '', id="meta_metrics_history_relative_graph")
-                line('div', '', id="meta_metrics_history_absolute_graph")
         return doc.getvalue()
 
     @classmethod
