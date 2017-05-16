@@ -122,7 +122,7 @@ function read_settings_from_cookies() {
 
 function create_event_handlers() {
     // Event handler for the tabs
-    document.getElementById('trend_tab').onclick = function() {
+    $'#trend_tab').click(function() {
         // Retrieve the history for the meta metrics history charts.
         $('#trend_tab').parent().addClass('active');
         $('#metrics_tab').parent().removeClass('active');
@@ -138,45 +138,45 @@ function create_event_handlers() {
                 trend_data_loaded = true;
             });
         };
-    };
-    document.getElementById('metrics_tab').onclick = function() {
+    });
+    $('#metrics_tab').click(function() {
         $('#metrics_tab').parent().addClass('active');
         $('#trend_tab').parent().removeClass('active');
         $('#loading').css("display", 'none');
         $('#sections').css("display", 'block');
         $('#trend_graphs').css("display", 'none');
-    };
+    });
 
     // Event handler for the (Toon) "Dashboard" menu item
-    document.getElementById('show_dashboard').onclick = function() {
+    $('#show_dashboard').click(function() {
         switch_toggle('show_dashboard', function() {
             show_or_hide_dashboard();
         });
-    };
+    });
 
     // Event handler for the "Tabel per product/team" menu item
-    document.getElementById('show_multiple_tables').onclick = function() {
+    $('#show_multiple_tables').click(function() {
         switch_toggle('show_multiple_tables', function() {
             draw_tables(tables);
         });
-    };
+    });
 
     // Event handlers for the filter by color menu items.
-    document.getElementById('filter_color_all').onclick = function() {
+    $('#filter_color_all').click(function() {
         set_filter('filter_color', 'filter_color_all', tables)
-    };
-    document.getElementById('filter_color_red_and_yellow').onclick = function() {
+    });
+    $('#filter_color_red_and_yellow').click(function() {
         set_filter('filter_color', 'filter_color_red_and_yellow', tables)
-    };
-    document.getElementById('filter_color_grey').onclick = function() {
+    });
+    $('#filter_color_grey').click(function() {
         set_filter('filter_color', 'filter_color_grey', tables)
-    };
-    document.getElementById('filter_color_missing_source').onclick = function() {
+    });
+    $('#filter_color_missing_source').click(function() {
         set_filter('filter_color', 'filter_color_missing_source', tables)
-    };
-    document.getElementById('filter_color_missing').onclick = function() {
+    });
+    $('#filter_color_missing').click(function() {
         set_filter('filter_color', 'filter_color_missing', tables)
-    };
+    });
 }
 
 function set_indicators() {
@@ -283,7 +283,7 @@ function show_or_hide_table(table, section) {
 }
 
 function show_table(table, section, view) {
-    document.getElementById('section_' + section).style.display = 'block';
+    $('#section_' + section).css("display", 'block');
     show_links_to(section);
     var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT];
     var sort_column = settings.table_sort_column;
@@ -303,7 +303,7 @@ function show_table(table, section, view) {
 }
 
 function hide_table(section) {
-    document.getElementById('section_' + section).style.display = 'none';
+    $('#section_' + section).css("display", 'none');
     hide_links_to(section);
 }
 
@@ -446,8 +446,8 @@ function show_or_hide_dashboard() {
     } else {
         display_style = 'none';
         hide_links_to('dashboard');
-    }
-    document.getElementById('section_dashboard').style.display = display_style;
+    };
+    $('#section_dashboard').css("display", display_style);
 }
 
 function show_links_to(section) {
