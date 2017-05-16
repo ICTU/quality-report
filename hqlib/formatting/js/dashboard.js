@@ -122,7 +122,7 @@ function read_settings_from_cookies() {
 
 function create_event_handlers() {
     // Event handler for the tabs
-    $'#trend_tab').click(function() {
+    $('#trend_tab').click(function() {
         // Retrieve the history for the meta metrics history charts.
         $('#trend_tab').parent().addClass('active');
         $('#metrics_tab').parent().removeClass('active');
