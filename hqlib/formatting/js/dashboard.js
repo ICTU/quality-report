@@ -101,11 +101,6 @@ function create_dashboard() {
         });
     });
 
-    // Retrieve the history for the meta metrics history charts.
-    $.getJSON("json/meta_history.json", "", function(history_json) {
-        draw_area_charts(parse_history_json(history_json));
-    });
-
     // Retrieve the html files for the menu's
     $('#requirements').load("requirements.html");
     $('#metric_classes').load("metric_classes.html");
@@ -125,6 +120,24 @@ function read_settings_from_cookies() {
 }
 
 function create_event_handlers() {
+    // Event handler for the tabs
+    document.getElementById('trend_tab').onclick = function() {
+        // Retrieve the history for the meta metrics history charts.
+        $('#sections').css("display", 'none');
+        $('#loading').css("display", 'block');
+        $.getJSON("json/meta_history.json", "", function(history_json) {
+            draw_area_charts(parse_history_json(history_json));
+            $('#loading').css("display", 'none');
+            $('#sections').css("display", 'none');
+            $('#trend_graphs').css("display", 'block');
+        });
+    };
+    document.getElementById('metrics_tab').onclick = function() {
+        $('#loading').css("display", 'none');
+        $('#sections').css("display", 'block');
+        $('#trend_graphs').css("display", 'none');
+    };
+
     // Event handler for the (Toon) "Dashboard" menu item
     document.getElementById('show_dashboard').onclick = function() {
         switch_toggle('show_dashboard', function() {
