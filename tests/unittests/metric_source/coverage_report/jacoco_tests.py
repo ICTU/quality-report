@@ -121,5 +121,5 @@ class JacocoTest(unittest.TestCase):
     def test_coverage_date_url(self):
         """ Test that the coverage date url is different than the coverage url for JaCoCo. """
         # pylint: disable=protected-access
-        self.assertEqual('coverage_report/.sessions.html',
-                         self.__jacoco._get_coverage_date_url('coverage_report/index.html'))
+        self.assertEqual(['coverage_report/jacoco-sessions.html', 'coverage_report/.sessions.html'],
+                         self.__jacoco._get_coverage_date_urls('coverage_report/index.html'))

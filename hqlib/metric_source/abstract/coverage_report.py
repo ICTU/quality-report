@@ -18,7 +18,7 @@ limitations under the License.
 import datetime
 import functools
 import bs4
-from typing import Callable
+from typing import Callable, List
 
 from ..url_opener import UrlOpener
 from ... import domain
@@ -65,23 +65,24 @@ class CoverageReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *coverage_urls) -> DateTime:
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
-        coverage_date_url = self._get_coverage_date_url(coverage_urls[0])
-        try:
-            soup = self.__get_soup(coverage_date_url)
-        except UrlOpener.url_open_exceptions:
-            coverage_date = datetime.datetime.min
-        else:
-            coverage_date = self._parse_coverage_date(soup)
-        return coverage_date
+        coverage_date_urls = self._get_coverage_date_urls(coverage_urls[0])
+        for coverage_date_url in coverage_date_urls:
+            try:
+                soup = self.__get_soup(coverage_date_url)
+            except UrlOpener.url_open_exceptions:
+                continue
+            else:
+                return self._parse_coverage_date(soup)
+        return datetime.datetime.min
 
     def _parse_coverage_date(self, soup) -> DateTime:
         """ Parse the coverage date from the soup. """
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
-    def _get_coverage_date_url(coverage_url: str) -> str:
+    def _get_coverage_date_urls(coverage_url: str) -> List[str]:
         """ Return the url for the date when the coverage of the product was last measured. """
-        return coverage_url
+        return [coverage_url]
 
     @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url: str):

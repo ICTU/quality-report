@@ -17,6 +17,7 @@ limitations under the License.
 
 import datetime
 import logging
+from typing import List
 
 from ..abstract import coverage_report
 from ... import utils
@@ -28,8 +29,9 @@ class JaCoCo(coverage_report.CoverageReport):
     metric_source_name = 'JaCoCo coverage rapport'
 
     @staticmethod
-    def _get_coverage_date_url(coverage_url: str) -> str:
-        return coverage_url[:-len('index.html')] + '.sessions.html'
+    def _get_coverage_date_urls(coverage_url: str) -> List[str]:
+        base_url = coverage_url[:-len('index.html')]
+        return [base_url + 'jacoco-sessions.html', base_url + '.sessions.html']
 
     def _parse_statement_coverage_percentage(self, soup) -> int:
         return self.__parse_coverage_percentage(soup, 1)

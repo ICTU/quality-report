@@ -1,3 +1,9 @@
+2017-05-16  Release 1.81.10
+
+  * Show loading message while loading data.
+  * JaCoCo sessions URL changed from .sessions.html to jacoco-session.html. Try both the old and the new one.
+  
+  
 2017-05-07  Release 1.81.9
 
   * Bug fix: Ignore line breaks in Wiki table cells.
