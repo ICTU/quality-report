@@ -26,6 +26,7 @@ google.load('visualization', '1', {'packages': ['corechart', 'table']});
 
 var settings = [];
 var tables = [];
+var trend_data_loaded = false;
 
 var COLOR_PERFECT = '45E600';
 var COLOR_GREEN = '#4CC417';
@@ -123,16 +124,24 @@ function create_event_handlers() {
     // Event handler for the tabs
     document.getElementById('trend_tab').onclick = function() {
         // Retrieve the history for the meta metrics history charts.
+        $('#trend_tab').parent().addClass('active');
+        $('#metrics_tab').parent().removeClass('active');
         $('#sections').css("display", 'none');
-        $('#loading').css("display", 'block');
-        $.getJSON("json/meta_history.json", "", function(history_json) {
-            draw_area_charts(parse_history_json(history_json));
-            $('#loading').css("display", 'none');
-            $('#sections').css("display", 'none');
+        if (trend_data_loaded) {
             $('#trend_graphs').css("display", 'block');
-        });
+        } else {
+            $('#loading').css("display", 'block');
+            $.getJSON("json/meta_history.json", "", function(history_json) {
+                draw_area_charts(parse_history_json(history_json));
+                $('#loading').css("display", 'none');
+                $('#trend_graphs').css("display", 'block');
+                trend_data_loaded = true;
+            });
+        };
     };
     document.getElementById('metrics_tab').onclick = function() {
+        $('#metrics_tab').parent().addClass('active');
+        $('#trend_tab').parent().removeClass('active');
         $('#loading').css("display", 'none');
         $('#sections').css("display", 'block');
         $('#trend_graphs').css("display", 'none');
