@@ -136,9 +136,13 @@ function create_event_handlers() {
             $("#loading_progress").css("width", "0%").attr('aria-valuenow', "0");
             $('#loading').css("display", 'block');
             $.getJSON("json/meta_history.json", "", function(history_json) {
-                $("#loading_progress").css("width", "50%").attr('aria-valuenow', "50");
+                setTimeout(function() {
+                    $("#loading_progress").css("width", "50%").attr('aria-valuenow', "50")
+                    }, 200);
                 draw_area_charts(parse_history_json(history_json));
-                $("#loading_progress").css("width", "100%").attr('aria-valuenow', "100");
+                setTimeout(function() {
+                    $("#loading_progress").css("width", "100%").attr('aria-valuenow', "100");
+                    }, 200);
                 $('#loading').css("display", 'none');
                 $('#trend_graphs').css("display", 'block');
                 trend_data_loaded = true;
