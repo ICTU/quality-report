@@ -127,6 +127,9 @@ function create_event_handlers() {
         $('#trend_tab').parent().addClass('active');
         $('#metrics_tab').parent().removeClass('active');
         $('#sections').css("display", 'none');
+        $("#navigation_menu").css("display", 'none');
+        $("#toon_menu").css("display", 'none');
+        $("#filter_menu").css("display", 'none');
         if (trend_data_loaded) {
             $('#trend_graphs').css("display", 'block');
         } else {
@@ -145,6 +148,9 @@ function create_event_handlers() {
         $('#loading').css("display", 'none');
         $('#sections').css("display", 'block');
         $('#trend_graphs').css("display", 'none');
+        $("#navigation_menu").css("display", 'block');
+        $("#toon_menu").css("display", 'block');
+        $("#filter_menu").css("display", 'block');
     });
 
     // Event handler for the (Toon) "Dashboard" menu item
