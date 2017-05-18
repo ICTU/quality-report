@@ -129,7 +129,6 @@ function create_event_handlers() {
         hide('#navigation_menu');
         hide('#sections');
         hide("#toon_menu");
-        hide("#filter_menu");
         if (trend_data_loaded) {
             show('#trend_graphs');
         } else {
@@ -151,7 +150,6 @@ function create_event_handlers() {
         show('#sections');
         hide('#trend_graphs');
         show("#toon_menu");
-        show("#filter_menu");
     });
 
     // Event handler for the (Toon) "Dashboard" menu item
