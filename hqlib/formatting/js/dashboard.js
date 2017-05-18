@@ -93,8 +93,8 @@ function create_dashboard() {
         // Retrieve the metrics for the metrics table after the sections have been loaded.
         $.getJSON("json/metrics.json", "", function(metrics_data) {
             fill_metrics_table(metrics_data);
-            $('#loading').css("display", 'none');
-            $('#sections').css("display", 'block');
+            hide('#loading');
+            show('#sections');
 
             set_report_date(new Date(...metrics_data["report_date"]));
             $("#hq_version").html(metrics_data["hq_version"]);
@@ -124,33 +124,34 @@ function create_event_handlers() {
     // Event handler for the tabs
     $('#trend_tab').click(function() {
         // Retrieve the history for the meta metrics history charts.
-        $('#trend_tab').parent().addClass('active');
-        $('#metrics_tab').css('display', 'block');
-        $("#navigation_menu").css("display", 'none');
-        $('#sections').css("display", 'none');
-        $("#toon_menu").css("display", 'none');
-        $("#filter_menu").css("display", 'none');
+        activate_parent('#trend_tab');
+        show('#metrics_tab');
+        hide('#navigation_menu');
+        hide('#sections');
+        hide("#toon_menu");
+        hide("#filter_menu");
         if (trend_data_loaded) {
-            $('#trend_graphs').css("display", 'block');
+            show('#trend_graphs');
         } else {
-            $('#loading').css("display", 'block');
+            show('#loading');
             $.getJSON("json/meta_history.json", "", function(history_json) {
                 draw_area_charts(parse_history_json(history_json));
-                $('#loading').css("display", 'none');
-                $('#trend_graphs').css("display", 'block');
+                hide('#loading');
+                show('#trend_graphs');
                 trend_data_loaded = true;
             });
         };
     });
+
     $('#metrics_tab').click(function() {
-        $('#metrics_tab').css('display', 'none');
-        $('#trend_tab').parent().removeClass('active');
-        $('#loading').css("display", 'none');
-        $("#navigation_menu").css("display", 'block');
-        $('#sections').css("display", 'block');
-        $('#trend_graphs').css("display", 'none');
-        $("#toon_menu").css("display", 'block');
-        $("#filter_menu").css("display", 'block');
+        hide('#metrics_tab');
+        deactivate_parent('#trend_tab');
+        hide('#loading');
+        show("#navigation_menu");
+        show('#sections');
+        hide('#trend_graphs');
+        show("#toon_menu");
+        show("#filter_menu");
     });
 
     // Event handler for the (Toon) "Dashboard" menu item
@@ -289,7 +290,7 @@ function show_or_hide_table(table, section) {
 }
 
 function show_table(table, section, view) {
-    $('#section_' + section).css("display", 'block');
+    show('#section_' + section);
     show_links_to(section);
     var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT];
     var sort_column = settings.table_sort_column;
@@ -309,7 +310,7 @@ function show_table(table, section, view) {
 }
 
 function hide_table(section) {
-    $('#section_' + section).css("display", 'none');
+    hide('#section_' + section);
     hide_links_to(section);
 }
 
@@ -445,15 +446,13 @@ function draw_area_chart(section, data_table, title, stacked) {
 }
 
 function show_or_hide_dashboard() {
-    var display_style;
     if (settings.show_dashboard) {
-        display_style = 'block';
+        show('#section_dashboard');
         show_links_to('dashboard');
     } else {
-        display_style = 'none';
+        hide('#section_dashboard');
         hide_links_to('dashboard');
     };
-    $('#section_dashboard').css("display", display_style);
 }
 
 function show_links_to(section) {
@@ -505,4 +504,20 @@ function intersection(array1, array2) {
         }
     }
     return intersection_array;
+}
+
+function hide(element_id) {
+    $(element_id).css('display', 'none');
+}
+
+function show(element_id) {
+    $(element_id).css('display', 'block');
+}
+
+function activate_parent(element_id) {
+    $(element_id).parent().addClass('active');
+}
+
+function deactivate_parent(element_id) {
+    $(element_id).parent().removeClass('active');
 }
