@@ -1,6 +1,7 @@
 2017-05-18  Release 1.81.11
 
   * Bug fix: Add missing requirements (VisualBasic, TypeScript, Python) to help information.
+  * Move trend graphs to a separate tab so the trend data can be loaded on demand.
   
   
 2017-05-16  Release 1.81.10
