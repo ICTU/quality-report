@@ -1,3 +1,8 @@
+2017-05-18  Release 1.81.11
+
+  * Bug fix: Add missing requirements (VisualBasic, TypeScript, Python) to help information.
+  
+  
 2017-05-16  Release 1.81.10
 
   * Show loading message while loading data.
