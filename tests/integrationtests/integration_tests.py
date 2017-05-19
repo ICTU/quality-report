@@ -60,7 +60,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         for filename in ('index', 'metric_classes', 'metric_sources', 'requirements',
                          'sections', 'section_navigation_menu'):
             self.assert_file_exists('{0}.html'.format(filename))
-        for filename in 'metrics', 'meta_history', 'domain_objects':
+        for filename in 'metrics', 'meta_history', 'meta_data':
             self.assert_file_exists('json/{0}.json'.format(filename))
 
     def test_report_title(self):
