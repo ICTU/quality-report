@@ -76,22 +76,7 @@ function create_dashboard() {
     $('#metric_classes').load("metric_classes.html");
     $('#metric_sources').load("metric_sources.html");
     $.getJSON("json/domain_objects.json", "", function(domain_objects) {
-        var table_rows = [`<tr>
-    <th>In dit rapport?</th>
-    <th>Domeinobject (<code><small>Identifier</small></code>)</th>
-    <th>Default eisen</th>
-    <th>Optionele eisen</th>
-  </tr>`];
-        $.each(domain_objects['domain_objects'], function(index, domain_object) {
-            var included = domain_object["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
-            var name = domain_object['name'] + ' (<code><small>' + domain_object['id'] + '</small></code>)';
-            var default_requirements = domain_object['default_requirements'].sort().join(', ');
-            var optional_requirements = domain_object['optional_requirements'].sort().join(', ');
-            table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + default_requirements +
-                            '</td><td>' + optional_requirements + '</td></tr>');
-        });
-        $('#domain_object_classes').append(
-            $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+        create_domain_objects_table(domain_objects['domain_objects']);
     });
     $.get("section_navigation_menu.html", function(menu_items) {
         $('#navigation_menu_items').append(menu_items);
@@ -128,6 +113,26 @@ function fill_metrics_table(metrics_data) {
     show_or_hide_dashboard();
     draw_tables(tables);
 }
+
+function create_domain_objects_table(domain_objects) {
+    var table_rows = [`<tr>
+    <th>In dit rapport?</th>
+    <th>Domeinobject (<code><small>Identifier</small></code>)</th>
+    <th>Default eisen</th>
+    <th>Optionele eisen</th>
+  </tr>`];
+    $.each(domain_objects, function(index, domain_object) {
+        var included = domain_object["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
+        var name = domain_object['name'] + ' (<code><small>' + domain_object['id'] + '</small></code>)';
+        var default_requirements = domain_object['default_requirements'].sort().join(', ');
+        var optional_requirements = domain_object['optional_requirements'].sort().join(', ');
+        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + default_requirements +
+                        '</td><td>' + optional_requirements + '</td></tr>');
+    });
+    $('#domain_object_classes').append(
+        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+}
+
 
 function read_settings_from_cookies() {
     settings.filter_color = read_cookie('filter_color', 'filter_color_all');
