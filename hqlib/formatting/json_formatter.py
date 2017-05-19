@@ -18,7 +18,7 @@ limitations under the License.
 import json
 import logging
 import re
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, List
 
 from . import base_formatter
 from .. import metric_source, utils, VERSION
@@ -179,3 +179,48 @@ class MetricsFormatter(base_formatter.Formatter):
         date_time = report.date()
         return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month - 1, date_time.day,
                                                        date_time.hour, date_time.minute, date_time.second)
+
+
+class MetaDataFormatter(object):
+    """ Return report meta data formatted as JSON. """
+    type = 'Subclass responsibility'
+
+    @classmethod
+    def process(cls, report: QualityReport) -> str:
+        """ Return a JSON representation of the domain objects. """
+        return '{{"{0}": ['.format(cls.type) + \
+               ', '.join([cls.process_item(report, item) for item in cls.items(report)]) + ']}\n'
+
+    @classmethod
+    def items(cls, report: QualityReport) -> List[Any]:
+        """ Return the items to list in the table. """
+        raise NotImplementedError
+
+    @classmethod
+    def process_item(cls, report: QualityReport, item) -> str:
+        """ Return a row in the table. """
+        raise NotImplementedError
+
+
+class DomainObjectsJSONFormatter(MetaDataFormatter):
+    """ Return the domain objects in the report formatted as JSON. """
+    type = 'domain_objects'
+
+    @classmethod
+    def items(cls, report: QualityReport) -> List[Any]:
+        """ Return the items to list in the table. """
+        return sorted(report.domain_object_classes(), key=lambda klass: klass.__name__)
+
+    @classmethod
+    def process_item(cls, report: QualityReport, domain_object_class) -> str:
+        """ Return the domain object as JSON. """
+        included = 'true' if domain_object_class in report.included_domain_object_classes() else 'false'
+        name = domain_object_class.__name__
+        id_ = domain_object_class.__name__
+        default_requirements = ', '.join(
+            sorted('"{0}"'.format(req.name()) for req in domain_object_class.default_requirements()))
+        optional_requirements = ', '.join(
+            sorted('"{0}"'.format(req.name()) for req in domain_object_class.optional_requirements()))
+        return '{{"included": {0}, "name": "{1}", "id": "{2}", "default_requirements": [{3}], ' \
+               '"optional_requirements": [{4}]}}'.format(included, name, id_, default_requirements,
+                                                         optional_requirements)

@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from hqlib.formatting import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter
+from hqlib.formatting import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter, DomainObjectsJSONFormatter
 from hqlib import utils, VERSION
 from . import fake_domain, fake_report
 
@@ -94,3 +94,29 @@ class MetricsFormatterTest(unittest.TestCase):
         json = self.__formatter.process(fake_report.Report(metrics=[fake_domain.Metric()]))
         expected_date = utils.format_date(datetime.datetime(2012, 1, 1, 12, 0, 0), year=True)
         self.assertTrue("title='Direct actie vereist: norm niet gehaald (sinds {})".format(expected_date) in json)
+
+
+class MetaDataFormatterTesT(unittest.TestCase):
+    """ Unit tests for the meta data JSON formatters. """
+    def setUp(self):
+        self.__formatter = DomainObjectsJSONFormatter()
+
+    def test_process(self):
+        """ Test that the report is processed correctly. """
+        self.maxDiff = None
+        self.assertEqual('{"domain_objects": [{"included": true, "name": "Document", "id": "Document", '
+                         '"default_requirements": ["Track document age"], "optional_requirements": []}, '
+                         '{"included": true, "name": "Product", "id": "Product", "default_requirements": [], '
+                         '"optional_requirements": ["Automated regression test coverage", '
+                         '"Automated regression tests", "Checkmarx SCA", "Code quality", "JSF code quality", '
+                         '"OWASP Top 10 2013 Dependencies", "OWASP Top 10 2013 ZAP", "Performance endurance", '
+                         '"Performance load", "Performance scalability", "Track branches", '
+                         '"Unit and/or integration tests", "User stories and logical test cases"]}, {"included": true, '
+                         '"name": "Project", "id": "Project", "default_requirements": [], '
+                         '"optional_requirements": ["Track actions", "Track manual logical test cases", '
+                         '"Track open bug reports", "Track ready user stories", "Track risks", "Track technical debt", '
+                         '"Track whether user stories have security and performance risks", '
+                         '"Trusted Product Maintainability, version 6.1"]}, {"included": true, "name": "Team", '
+                         '"id": "Team", "default_requirements": ["Track spirit"], '
+                         '"optional_requirements": ["Scrum team", "Track absence"]}]}\n',
+                         self.__formatter.process(fake_report.Report()))

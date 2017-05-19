@@ -20,4 +20,4 @@ limitations under the License.
 from .base_formatter import Formatter
 from .html_formatter import MetaDataFormatter, DomainObjectsFormatter, RequirementsFormatter, MetricClassesFormatter, \
     MetricSourcesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
-from .json_formatter import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter
+from .json_formatter import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter, DomainObjectsJSONFormatter

@@ -70,8 +70,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        html_files = dict(domain_objects=formatting.DomainObjectsFormatter,
-                          requirements=formatting.RequirementsFormatter,
+        html_files = dict(requirements=formatting.RequirementsFormatter,
                           metric_classes=formatting.MetricClassesFormatter,
                           metric_sources=formatting.MetricSourcesFormatter,
                           sections=formatting.SectionsFormatter,
@@ -79,8 +78,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         for filename, formatter in html_files.items():
             cls.__create_html_file(quality_report, report_dir, formatter, filename)
         cls.__create_resources(report_dir)
-        cls.__create_metrics_file(quality_report, report_dir)
-        cls.__create_history_file(quality_report, report_dir)
+        json_files = dict(metrics=formatting.MetricsFormatter,
+                          meta_history=formatting.MetaMetricsHistoryFormatter,
+                          domain_objects=formatting.DomainObjectsJSONFormatter)
+        for filename, formatter in json_files.items():
+            cls.__create_json_file(quality_report, report_dir, formatter, filename)
+
         cls.__create_trend_images(quality_report, report_dir)
 
     @classmethod
@@ -95,16 +98,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         filesystem.make_file_readable(html_filename)
 
     @classmethod
-    def __create_metrics_file(cls, quality_report, report_dir):
-        """ Create the Javascript file with the metrics. """
-        filename = os.path.join(report_dir, 'json', 'metrics.json')
-        cls.__format_and_write_report(quality_report, formatting.MetricsFormatter, filename, 'w', 'utf-8')
-
-    @classmethod
-    def __create_history_file(cls, quality_report, report_dir):
-        """ Create the Javascript file with the history. """
-        filename = os.path.join(report_dir, 'json', 'meta_history.json')
-        cls.__format_and_write_report(quality_report, formatting.MetaMetricsHistoryFormatter, filename, 'w', 'utf-8')
+    def __create_json_file(cls, quality_report, report_dir, formatter, filename):
+        """ Create the JSON file using the JSON formatter specified. """
+        json_filename = os.path.join(report_dir, 'json', '{0}.json'.format(filename))
+        cls.__format_and_write_report(quality_report, formatter, json_filename, 'w', 'utf-8')
 
     @staticmethod
     def __create_resources(report_dir):

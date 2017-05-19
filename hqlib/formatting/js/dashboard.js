@@ -50,6 +50,54 @@ var METRICS_COLUMN_MEASUREMENT = 5;
 var METRICS_COLUMN_NORM = 6;
 var METRICS_COLUMN_COMMENT = 7;
 
+function create_dashboard() {
+    read_settings_from_cookies();
+
+    create_metrics_table();
+    create_event_handlers();
+    set_indicators();
+
+    // Retrieve the html for the dashboard
+    $('#sections').load('sections.html', function() {
+        // Retrieve the metrics for the metrics table after the sections have been loaded.
+        $.getJSON("json/metrics.json", "", function(metrics_data) {
+            fill_metrics_table(metrics_data);
+            hide('#loading');
+            show('#sections');
+
+            set_report_date(new Date(...metrics_data["report_date"]));
+            $("#hq_version").html(metrics_data["hq_version"]);
+            $(".report_title").html(metrics_data["report_title"]);
+        });
+    });
+
+    // Retrieve the html files for the menu's
+    $('#requirements').load("requirements.html");
+    $('#metric_classes').load("metric_classes.html");
+    $('#metric_sources').load("metric_sources.html");
+    $.getJSON("json/domain_objects.json", "", function(domain_objects) {
+        var table_rows = [`<tr>
+    <th>In dit rapport?</th>
+    <th>Domeinobject (<code><small>Identifier</small></code>)</th>
+    <th>Default eisen</th>
+    <th>Optionele eisen</th>
+  </tr>`];
+        $.each(domain_objects['domain_objects'], function(index, domain_object) {
+            var included = domain_object["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
+            var name = domain_object['name'] + ' (<code><small>' + domain_object['id'] + '</small></code>)';
+            var default_requirements = domain_object['default_requirements'].sort().join(', ');
+            var optional_requirements = domain_object['optional_requirements'].sort().join(', ');
+            table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + default_requirements +
+                            '</td><td>' + optional_requirements + '</td></tr>');
+        });
+        $('#domain_object_classes').append(
+            $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+    });
+    $.get("section_navigation_menu.html", function(menu_items) {
+        $('#navigation_menu_items').append(menu_items);
+    });
+}
+
 function create_metrics_table() {
     var metrics = new google.visualization.DataTable();
     window.metrics = metrics;
@@ -79,37 +127,6 @@ function fill_metrics_table(metrics_data) {
     }
     show_or_hide_dashboard();
     draw_tables(tables);
-}
-
-function create_dashboard() {
-    read_settings_from_cookies();
-
-    create_metrics_table();
-    create_event_handlers();
-    set_indicators();
-
-    // Retrieve the html for the dashboard
-    $('#sections').load('sections.html', function() {
-        // Retrieve the metrics for the metrics table after the sections have been loaded.
-        $.getJSON("json/metrics.json", "", function(metrics_data) {
-            fill_metrics_table(metrics_data);
-            hide('#loading');
-            show('#sections');
-
-            set_report_date(new Date(...metrics_data["report_date"]));
-            $("#hq_version").html(metrics_data["hq_version"]);
-            $(".report_title").html(metrics_data["report_title"]);
-        });
-    });
-
-    // Retrieve the html files for the menu's
-    $('#requirements').load("requirements.html");
-    $('#metric_classes').load("metric_classes.html");
-    $('#metric_sources').load("metric_sources.html");
-    $('#domain_object_classes').load("domain_objects.html");
-    $.get("section_navigation_menu.html", function(menu_items) {
-        $('#navigation_menu_items').append(menu_items);
-    });
 }
 
 function read_settings_from_cookies() {

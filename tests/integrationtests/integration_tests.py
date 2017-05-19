@@ -31,14 +31,14 @@ class IntegrationTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Create the report. """
-        cls.report_folder = tempfile.mkdtemp()
+        cls.report_folder = tempfile.mkdtemp(dir='build')
         os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
                   '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
 
     @classmethod
     def tearDownClass(cls):
         """ Remove the report. """
-        shutil.rmtree(cls.report_folder)
+        #shutil.rmtree(cls.report_folder)
 
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
@@ -56,11 +56,11 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         self.assertTrue(os.path.exists('{0}/{1}'.format(self.report_folder, filename)))
 
     def test_files_exists(self):
-        """ Test that the dashboard HTML file exists. """
-        for filename in ('index', 'metric_classes', 'metric_sources', 'requirements', 'domain_objects',
+        """ Test that the generated files exists. """
+        for filename in ('index', 'metric_classes', 'metric_sources', 'requirements',
                          'sections', 'section_navigation_menu'):
             self.assert_file_exists('{0}.html'.format(filename))
-        for filename in 'metrics', 'meta_history':
+        for filename in 'metrics', 'meta_history', 'domain_objects':
             self.assert_file_exists('json/{0}.json'.format(filename))
 
     def test_report_title(self):
