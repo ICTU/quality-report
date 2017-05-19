@@ -75,8 +75,8 @@ function create_dashboard() {
     $('#requirements').load("requirements.html");
     $('#metric_classes').load("metric_classes.html");
     $('#metric_sources').load("metric_sources.html");
-    $.getJSON("json/domain_objects.json", "", function(domain_objects) {
-        create_domain_objects_table(domain_objects['domain_objects']);
+    $.getJSON("json/meta_data.json", "", function(meta_data) {
+        create_domain_objects_table(meta_data['domain_objects']);
     });
     $.get("section_navigation_menu.html", function(menu_items) {
         $('#navigation_menu_items').append(menu_items);

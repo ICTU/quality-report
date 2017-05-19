@@ -181,30 +181,14 @@ class MetricsFormatter(base_formatter.Formatter):
                                                        date_time.hour, date_time.minute, date_time.second)
 
 
-class MetaDataFormatter(object):
-    """ Return report meta data formatted as JSON. """
-    type = 'Subclass responsibility'
+class MetaDataJSONFormatter(object):
+    """ Return the domain objects in the report formatted as JSON. """
 
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return a JSON representation of the domain objects. """
-        return '{{"{0}": ['.format(cls.type) + \
+        return '{"domain_objects": [' + \
                ', '.join([cls.process_item(report, item) for item in cls.items(report)]) + ']}\n'
-
-    @classmethod
-    def items(cls, report: QualityReport) -> List[Any]:
-        """ Return the items to list in the table. """
-        raise NotImplementedError
-
-    @classmethod
-    def process_item(cls, report: QualityReport, item) -> str:
-        """ Return a row in the table. """
-        raise NotImplementedError
-
-
-class DomainObjectsJSONFormatter(MetaDataFormatter):
-    """ Return the domain objects in the report formatted as JSON. """
-    type = 'domain_objects'
 
     @classmethod
     def items(cls, report: QualityReport) -> List[Any]:

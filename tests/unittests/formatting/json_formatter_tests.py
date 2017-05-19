@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from hqlib.formatting import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter, DomainObjectsJSONFormatter
+from hqlib.formatting import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter, MetaDataJSONFormatter
 from hqlib import utils, VERSION
 from . import fake_domain, fake_report
 
@@ -99,7 +99,7 @@ class MetricsFormatterTest(unittest.TestCase):
 class MetaDataFormatterTesT(unittest.TestCase):
     """ Unit tests for the meta data JSON formatters. """
     def setUp(self):
-        self.__formatter = DomainObjectsJSONFormatter()
+        self.__formatter = MetaDataJSONFormatter()
 
     def test_process(self):
         """ Test that the report is processed correctly. """

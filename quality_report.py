@@ -80,7 +80,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         cls.__create_resources(report_dir)
         json_files = dict(metrics=formatting.MetricsFormatter,
                           meta_history=formatting.MetaMetricsHistoryFormatter,
-                          domain_objects=formatting.DomainObjectsJSONFormatter)
+                          meta_data=formatting.MetaDataJSONFormatter)
         for filename, formatter in json_files.items():
             cls.__create_json_file(quality_report, report_dir, formatter, filename)
 
