@@ -16,10 +16,13 @@ limitations under the License.
 
 # Run the mypy static type checker.
 
+import os
 from mypy import api
 
 
 if __name__ == '__main__':  # pragma: no branch
+    if not os.path.exists('build'):
+        os.mkdir('build')
     result = api.run(['hqlib', '--html-report', 'build/mypy_report'])
 
     if result[0]:
