@@ -72,8 +72,6 @@ function create_dashboard() {
     });
 
     // Retrieve the files for the menu's
-    $('#metric_classes').load("metric_classes.html");
-    $('#metric_sources').load("metric_sources.html");
     $.getJSON("json/meta_data.json", "", function(meta_data) {
         create_domain_objects_table(meta_data['domain_objects']);
         create_requirements_table(meta_data['requirements']);
