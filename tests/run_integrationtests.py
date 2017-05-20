@@ -31,6 +31,6 @@ if __name__ == '__main__':  # pragma: no branch
     logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
     # Run the unit test with the XML test runner so that the test output
     # can be processed by Sonar.
-    if not os.path.exists('build'):
+    if not os.path.exists('build'):  # pragma: no branch
         os.mkdir('build')
     unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'))
