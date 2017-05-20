@@ -77,6 +77,8 @@ function create_dashboard() {
     $.getJSON("json/meta_data.json", "", function(meta_data) {
         create_domain_objects_table(meta_data['domain_objects']);
         create_requirements_table(meta_data['requirements']);
+        create_metric_classes_table(meta_data['metrics']);
+        create_metric_sources_table(meta_data['metric_sources']);
     });
     $.get("section_navigation_menu.html", function(menu_items) {
         $('#navigation_menu_items').append(menu_items);
@@ -146,6 +148,40 @@ function create_requirements_table(requirements) {
         table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + metrics + '</td></tr>');
     });
     $('#requirements').append(
+        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+}
+
+function create_metric_classes_table(metric_classes) {
+    var table_rows = [`<tr>
+    <th>In dit rapport?</th>
+    <th>Metriek (<code><small>Identifier</small></code>)</th>
+    <th>Norm</th>
+  </tr>`];
+    $.each(metric_classes, function(index, metric_class) {
+        var included = metric_class["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
+        var name = metric_class['name'] + ' (<code><small>' + metric_class['id'] + '</small></code>)';
+        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + metric_class['norm'] + '</td></tr>');
+    });
+    $('#metric_classes').append(
+        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+}
+
+function create_metric_sources_table(metric_sources) {
+    var table_rows = [`<tr>
+    <th>In dit rapport?</th>
+    <th>Metriekbron (<code><small>Identifier</small></code>)</th>
+    <th>Instanties</th>
+  </tr>`];
+    $.each(metric_sources, function(index, metric_source) {
+        var included = metric_source["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
+        var name = metric_source['name'] + ' (<code><small>' + metric_source['id'] + '</small></code>)';
+        var urls = [];
+        $.each(metric_sources['urls'], function(index, url) {
+            urls.push('<a href="' + url + '" target="_blank">' + url + '</a>');
+        });
+        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + urls.join('<br/>') + '</td></tr>');
+    });
+    $('#metric_sources').append(
         $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
 }
 

@@ -126,5 +126,6 @@ class MetaDataFormatterTest(unittest.TestCase):
                          '["Hoeveelheid falende regressietesten", "Regressietestleeftijd"]}], "metrics": '
                          '[{"included": false, "name": "Automatic regression test statement coverage", '
                          '"id": "ARTStatementCoverage", "norm": "Minimaal 80% van de statements wordt gedekt door '
-                         'geautomatiseerde functionele tests. Minder dan 70% is rood."}]}\n',
+                         'geautomatiseerde functionele tests. Minder dan 70% is rood."}], "metric_sources": '
+                         '[{"included": true, "name": "Git", "id": "Git", "urls": ["http://git/"]}]}\n',
                          self.__formatter.process(fake_report.Report()))

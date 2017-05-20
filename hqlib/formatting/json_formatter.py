@@ -189,7 +189,7 @@ class MetaDataJSONFormatter(object):
         """ Return a JSON representation of the domain objects. """
         return '{"domain_objects": [' + cls.__format_domain_object_classes(report) + '], "requirements": [' + \
                cls.__format_requirement_classes(report) + '], "metrics": [' + cls.__format_metric_classes(report) + \
-               ']}\n'
+               '], "metric_sources": [' + cls.__format_metric_sources(report) + ']}\n'
 
     @classmethod
     def __format_domain_object_classes(cls, report: QualityReport) -> str:
@@ -248,3 +248,20 @@ class MetaDataJSONFormatter(object):
             logging.error('Metric class %s has faulty norm template', metric_class.__name__)
             raise
         return '{{"included": {0}, "name": "{1}", "id": "{2}", "norm": "{3}"}}'.format(included, name, id_, norm)
+
+    @classmethod
+    def __format_metric_sources(cls, report: QualityReport) -> str:
+        """ Return the metric sources as JSON list. """
+        metric_sources = sorted(report.metric_source_classes(), key=lambda klass: klass.metric_source_name)
+        return ', '.join([cls.__format_metric_source(report, metric_source) for metric_source in metric_sources])
+
+    @classmethod
+    def __format_metric_source(cls, report: QualityReport, metric_source) -> str:
+        """ Return the metric source as JSON. """
+        included = 'true' if metric_source in report.included_metric_source_classes() else 'false'
+        name = metric_source.metric_source_name
+        id_ = metric_source.__name__
+        instances = report.project().metric_source(metric_source)
+        instances = instances if isinstance(instances, list) else [instances]
+        urls = ', '.join(sorted(['"{0}"'.format(instance.url()) for instance in instances if instance.url()]))
+        return '{{"included": {0}, "name": "{1}", "id": "{2}", "urls": [{3}]}}'.format(included, name, id_, urls)

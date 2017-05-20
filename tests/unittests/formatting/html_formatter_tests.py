@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import MetricSourcesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
+from hqlib.formatting import SectionsFormatter, SectionNavigationMenuFormatter
 from . import fake_report
 
 
@@ -66,28 +66,3 @@ class SectionNaviationMenuFormatterTest(unittest.TestCase):
         """ Test the menu items. """
         self.assertEqual('<li><a class="link_section_id" href="#section_id">Section title</a></li>',
                          SectionNavigationMenuFormatter.process(self.__report))
-
-
-class MetaDataFormatterTest(unittest.TestCase):
-    """ Unit tests for the meta data HTML formatters. """
-    def setUp(self):
-        self.__report = fake_report.Report()
-
-    def test_metric_sources(self):
-        """ Test the metric sources table. """
-        self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr>
-    <th>In dit rapport?</th>
-    <th>Metriekbron (<code><small>Identifier</small></code>)</th>
-    <th>Instanties</th>
-  </tr>
-  <tr>
-    <td>
-      <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
-    </td>
-    <td>Git (<code><small>Git</small></code>)</td>
-    <td>
-      <a href="http://git/" target="_blank">http://git/</a>
-    </td>
-  </tr>
-</table>''', MetricSourcesFormatter.process(self.__report))
