@@ -40,7 +40,6 @@ class SectionsFormatter(object):
         """ Return a HTML formatted dashboard. """
         doc, tag, text = yattag.Doc().tagtext()
         with tag('div', id="section_dashboard"):
-            doc.stag('br')
             with tag('table', klass="table table-condensed table-bordered"):
                 with tag('thead'):
                     doc.asis(cls.__dashboard_headers(report))
@@ -86,7 +85,6 @@ class SectionsFormatter(object):
         """ Return the section formatted as HTML. """
         doc, tag, text, line = yattag.Doc().ttl()
         with tag('section', id="section_{0}".format(section.id_prefix())):
-            doc.stag('br')
             doc.asis(cls.__section_title(section))
             line('div', '', id="table_{0}".format(section.id_prefix()))
         return doc.getvalue()

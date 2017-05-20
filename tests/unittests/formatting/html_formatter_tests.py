@@ -28,7 +28,6 @@ class SectionsFormatterTest(unittest.TestCase):
     def test_sections(self):
         """ Test the sections. """
         self.assertEqual('''<div id="section_dashboard">
-  <br />
   <table class="table table-condensed table-bordered">
     <thead>
       <tr style="color: white; font-weight: bold; background-color: #2F95CF;">
@@ -49,7 +48,6 @@ class SectionsFormatterTest(unittest.TestCase):
   <div id="table_all"></div>
 </section>
 <section id="section_id">
-  <br />
   <div class="page-header">
     <h1>Section title <small>Section subtitle</small></h1>
   </div>
