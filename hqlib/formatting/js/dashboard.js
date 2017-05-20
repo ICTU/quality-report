@@ -115,71 +115,72 @@ function fill_metrics_table(metrics_data) {
 }
 
 function create_domain_objects_table(domain_objects) {
-    var table_rows = [`<tr>
-    <th>In dit rapport?</th>
-    <th>Domeinobject (<code><small>Identifier</small></code>)</th>
-    <th>Default eisen</th>
-    <th>Optionele eisen</th>
-  </tr>`];
+    var table_rows = [table_heading("In dit rapport?", "Domeinobject (<code><small>Identifier</small></code>)",
+                                    "Default eisen", "Optionele eisen")];
     $.each(domain_objects, function(index, domain_object) {
-        var included = domain_object["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
-        var name = domain_object['name'] + ' (<code><small>' + domain_object['id'] + '</small></code>)';
+        var icon = check_icon(domain_object);
+        var title = meta_data_title(domain_object);
         var default_requirements = domain_object['default_requirements'].sort().join(', ');
         var optional_requirements = domain_object['optional_requirements'].sort().join(', ');
-        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + default_requirements +
-                        '</td><td>' + optional_requirements + '</td></tr>');
+        table_rows.push(table_row(icon, title, default_requirements, optional_requirements));
     });
-    $('#domain_object_classes').append(
-        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+    create_meta_data_table('#domain_object_classes', table_rows);
 }
 
 function create_requirements_table(requirements) {
-    var table_rows = [`<tr>
-    <th>In dit rapport?</th>
-    <th>Eis (<code><small>Identifier</small></code>)</th>
-    <th>Metrieken</th>
-  </tr>`];
+    var table_rows = [table_heading("In dit rapport?", "Eis (<code><small>Identifier</small></code>)", "Metrieken")];
     $.each(requirements, function(index, requirement) {
-        var included = requirement["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
-        var name = requirement['name'] + ' (<code><small>' + requirement['id'] + '</small></code>)';
+        var icon = check_icon(requirement);
+        var title = meta_data_title(requirement);
         var metrics = requirement['metrics'].sort().join(', ');
-        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + metrics + '</td></tr>');
+        table_rows.push(table_row(icon, title, metrics));
     });
-    $('#requirements').append(
-        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+    create_meta_data_table('#requirements', table_rows);
 }
 
 function create_metric_classes_table(metric_classes) {
-    var table_rows = [`<tr>
-    <th>In dit rapport?</th>
-    <th>Metriek (<code><small>Identifier</small></code>)</th>
-    <th>Norm</th>
-  </tr>`];
+    var table_rows = [table_heading("In dit rapport?", "Metriek (<code><small>Identifier</small></code>)", "Norm")];
     $.each(metric_classes, function(index, metric_class) {
-        var included = metric_class["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
-        var name = metric_class['name'] + ' (<code><small>' + metric_class['id'] + '</small></code>)';
-        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + metric_class['norm'] + '</td></tr>');
+        var icon = check_icon(metric_class);
+        var title = meta_data_title(metric_class);
+        table_rows.push(table_row(icon, title, metric_class['norm']));
     });
-    $('#metric_classes').append(
-        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+    create_meta_data_table('#metric_classes', table_rows);
 }
 
 function create_metric_sources_table(metric_sources) {
-    var table_rows = [`<tr>
-    <th>In dit rapport?</th>
-    <th>Metriekbron (<code><small>Identifier</small></code>)</th>
-    <th>Instanties</th>
-  </tr>`];
+    var table_rows = [table_heading("In dit rapport?", "Metriekbron (<code><small>Identifier</small></code>)",
+                                    "Instanties")];
     $.each(metric_sources, function(index, metric_source) {
-        var included = metric_source["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
-        var name = metric_source['name'] + ' (<code><small>' + metric_source['id'] + '</small></code>)';
+        var icon = check_icon(metric_source);
+        var title = meta_data_title(metric_source);
         var urls = [];
         $.each(metric_sources['urls'], function(index, url) {
             urls.push('<a href="' + url + '" target="_blank">' + url + '</a>');
         });
-        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + urls.join('<br/>') + '</td></tr>');
+        table_rows.push(table_row(icon, title , urls.join('<br/>')));
     });
-    $('#metric_sources').append(
+    create_meta_data_table('#metric_sources', table_rows);
+}
+
+function check_icon(meta_data_item) {
+    return meta_data_item['included'] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
+}
+
+function meta_data_title(meta_data_item) {
+    return meta_data_item['name'] + ' (<code><small>' + meta_data_item['id'] + '</small></code>)';
+}
+
+function table_heading(...headers) {
+    return '<tr><th>' + headers.join('</th><th>') + '</th></tr>';
+}
+
+function table_row(...items) {
+    return '<tr><td>' + items.join("</td><td>") + '</td></tr>';
+}
+
+function create_meta_data_table(element_id, table_rows) {
+    $(element_id).append(
         $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
 }
 
