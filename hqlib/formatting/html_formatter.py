@@ -183,30 +183,6 @@ class MetaDataFormatter(object):
         return doc.getvalue()
 
 
-class DomainObjectsFormatter(MetaDataFormatter):
-    """ Return the domain objects in the report formatted as HTML table. """
-    column_headers = 'In dit rapport?', 'Domeinobject (<code><small>Identifier</small></code>)', \
-                     'Default eisen', 'Optionele eisen'
-
-    @classmethod
-    def items(cls, report: QualityReport) -> List[Any]:
-        """ Return the items to list in the table. """
-        return sorted(report.domain_object_classes(), key=lambda klass: klass.__name__)
-
-    @classmethod
-    def process_item(cls, report: QualityReport, domain_object_class) -> str:
-        """ Return a row in the table. """
-        doc, tag, text = yattag.Doc().tagtext()
-        icon = cls.icon if domain_object_class in report.included_domain_object_classes() else ''
-        name = cls.name.format(name=domain_object_class.__name__, id=domain_object_class.__name__)
-        default_requirements = ', '.join(
-            sorted(req.name() for req in domain_object_class.default_requirements()))
-        optional_requirements = ', '.join(
-            sorted(req.name() for req in domain_object_class.optional_requirements()))
-        doc.asis(cls._table_row(icon, name, default_requirements, optional_requirements))
-        return doc.getvalue()
-
-
 class RequirementsFormatter(MetaDataFormatter):
     """ Return the requirements in the report formatted as HTML table. """
     column_headers = 'In dit rapport?', 'Eis (<code><small>Identifier</small></code>)', 'Metrieken'
