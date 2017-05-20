@@ -183,25 +183,6 @@ class MetaDataFormatter(object):
         return doc.getvalue()
 
 
-class RequirementsFormatter(MetaDataFormatter):
-    """ Return the requirements in the report formatted as HTML table. """
-    column_headers = 'In dit rapport?', 'Eis (<code><small>Identifier</small></code>)', 'Metrieken'
-
-    @classmethod
-    def items(cls, report: QualityReport) -> List[Any]:
-        return sorted(report.requirement_classes(), key=lambda klass: klass.name())
-
-    @classmethod
-    def process_item(cls, report: QualityReport, item) -> str:
-        """ Return a HTML table of the requirements. """
-        doc, tag, text = yattag.Doc().tagtext()
-        icon = cls.icon if item in report.included_requirement_classes() else ''
-        name = cls.name.format(name=item.name(), id=item.__name__)
-        metrics = ', '.join(sorted(metric_class.name for metric_class in item.metric_classes()))
-        doc.asis(cls._table_row(icon, name, metrics))
-        return doc.getvalue()
-
-
 class MetricClassesFormatter(MetaDataFormatter):
     """ Return the metrics in the report formatted as HTML table. """
     column_headers = 'In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm'

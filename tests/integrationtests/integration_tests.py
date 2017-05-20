@@ -57,8 +57,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def test_files_exists(self):
         """ Test that the generated files exists. """
-        for filename in ('index', 'metric_classes', 'metric_sources', 'requirements',
-                         'sections', 'section_navigation_menu'):
+        for filename in ('index', 'metric_classes', 'metric_sources', 'sections', 'section_navigation_menu'):
             self.assert_file_exists('{0}.html'.format(filename))
         for filename in 'metrics', 'meta_history', 'meta_data':
             self.assert_file_exists('json/{0}.json'.format(filename))

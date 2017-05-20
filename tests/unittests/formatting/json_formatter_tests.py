@@ -96,8 +96,8 @@ class MetricsFormatterTest(unittest.TestCase):
         self.assertTrue("title='Direct actie vereist: norm niet gehaald (sinds {})".format(expected_date) in json)
 
 
-class MetaDataFormatterTesT(unittest.TestCase):
-    """ Unit tests for the meta data JSON formatters. """
+class MetaDataFormatterTest(unittest.TestCase):
+    """ Unit tests for the meta data JSON formatter. """
     def setUp(self):
         self.__formatter = MetaDataJSONFormatter()
 
@@ -118,5 +118,10 @@ class MetaDataFormatterTesT(unittest.TestCase):
                          '"Track whether user stories have security and performance risks", '
                          '"Trusted Product Maintainability, version 6.1"]}, {"included": true, "name": "Team", '
                          '"id": "Team", "default_requirements": ["Track spirit"], '
-                         '"optional_requirements": ["Scrum team", "Track absence"]}]}\n',
+                         '"optional_requirements": ["Scrum team", "Track absence"]}], '
+                         '"requirements": [{"included": true, "name": "Automated regression test coverage", '
+                         '"id": "ARTCoverage", "metrics": ["Automatic regression test branch coverage", '
+                         '"Automatic regression test statement coverage", "Coveragerapportageleeftijd"]}, '
+                         '{"included": false, "name": "Automated regression tests", "id": "ART", "metrics": '
+                         '["Hoeveelheid falende regressietesten", "Regressietestleeftijd"]}]}\n',
                          self.__formatter.process(fake_report.Report()))

@@ -187,16 +187,18 @@ class MetaDataJSONFormatter(object):
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return a JSON representation of the domain objects. """
-        return '{"domain_objects": [' + \
-               ', '.join([cls.process_item(report, item) for item in cls.items(report)]) + ']}\n'
+        return '{"domain_objects": [' + cls.__format_domain_objects(report) + '], "requirements": [' + \
+               cls.__format_requirements(report) + ']}\n'
 
     @classmethod
-    def items(cls, report: QualityReport) -> List[Any]:
-        """ Return the items to list in the table. """
-        return sorted(report.domain_object_classes(), key=lambda klass: klass.__name__)
+    def __format_domain_objects(cls, report: QualityReport) -> str:
+        """ Return the domain object classes as JSON list. """
+        domain_object_classes = sorted(report.domain_object_classes(), key=lambda klass: klass.__name__)
+        return ', '.join([cls.__format_domain_object(report, domain_object_class)
+                          for domain_object_class in domain_object_classes])
 
     @classmethod
-    def process_item(cls, report: QualityReport, domain_object_class) -> str:
+    def __format_domain_object(cls, report: QualityReport, domain_object_class) -> str:
         """ Return the domain object as JSON. """
         included = 'true' if domain_object_class in report.included_domain_object_classes() else 'false'
         name = domain_object_class.__name__
@@ -208,3 +210,18 @@ class MetaDataJSONFormatter(object):
         return '{{"included": {0}, "name": "{1}", "id": "{2}", "default_requirements": [{3}], ' \
                '"optional_requirements": [{4}]}}'.format(included, name, id_, default_requirements,
                                                          optional_requirements)
+
+    @classmethod
+    def __format_requirements(cls, report: QualityReport) -> str:
+        """ Return the requirements as JSON list. """
+        requirements = sorted(report.requirement_classes(), key=lambda klass: klass.name())
+        return ', '.join([cls.__format_requirement(report, requirement) for requirement in requirements])
+
+    @classmethod
+    def __format_requirement(cls, report: QualityReport, requirement) -> str:
+        """ Return the requirement as JSON. """
+        included = 'true' if requirement in report.included_requirement_classes() else 'false'
+        name = requirement.name()
+        id_ = requirement.__name__
+        metrics = ', '.join(sorted('"{0}"'.format(metric_class.name) for metric_class in requirement.metric_classes()))
+        return '{{"included": {0}, "name": "{1}", "id": "{2}", "metrics": [{3}]}}'.format(included, name, id_, metrics)

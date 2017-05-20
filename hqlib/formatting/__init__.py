@@ -18,6 +18,6 @@ limitations under the License.
 # Package for report formatters.
 
 from .base_formatter import Formatter
-from .html_formatter import MetaDataFormatter, RequirementsFormatter, MetricClassesFormatter, \
+from .html_formatter import MetaDataFormatter, MetricClassesFormatter, \
     MetricSourcesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
 from .json_formatter import JSONFormatter, MetricsFormatter, MetaMetricsHistoryFormatter, MetaDataJSONFormatter

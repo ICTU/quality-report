@@ -71,12 +71,12 @@ function create_dashboard() {
         });
     });
 
-    // Retrieve the html files for the menu's
-    $('#requirements').load("requirements.html");
+    // Retrieve the files for the menu's
     $('#metric_classes').load("metric_classes.html");
     $('#metric_sources').load("metric_sources.html");
     $.getJSON("json/meta_data.json", "", function(meta_data) {
         create_domain_objects_table(meta_data['domain_objects']);
+        create_requirements_table(meta_data['requirements']);
     });
     $.get("section_navigation_menu.html", function(menu_items) {
         $('#navigation_menu_items').append(menu_items);
@@ -133,6 +133,21 @@ function create_domain_objects_table(domain_objects) {
         $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
 }
 
+function create_requirements_table(requirements) {
+    var table_rows = [`<tr>
+    <th>In dit rapport?</th>
+    <th>Eis (<code><small>Identifier</small></code>)</th>
+    <th>Metrieken</th>
+  </tr>`];
+    $.each(requirements, function(index, requirement) {
+        var included = requirement["included"] ? '<span aria-hidden="true" class="glyphicon glyphicon-ok"></span>' : '';
+        var name = requirement['name'] + ' (<code><small>' + requirement['id'] + '</small></code>)';
+        var metrics = requirement['metrics'].sort().join(', ');
+        table_rows.push('<tr><td>' + included  + '</td><td>' + name + '</td><td>' + metrics + '</td></tr>');
+    });
+    $('#requirements').append(
+        $('<table/>', {'class': 'table table-striped first-col-centered', html: table_rows.join("")}));
+}
 
 function read_settings_from_cookies() {
     settings.filter_color = read_cookie('filter_color', 'filter_color_all');
