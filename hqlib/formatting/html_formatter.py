@@ -183,29 +183,6 @@ class MetaDataFormatter(object):
         return doc.getvalue()
 
 
-class MetricClassesFormatter(MetaDataFormatter):
-    """ Return the metrics in the report formatted as HTML table. """
-    column_headers = 'In dit rapport?', 'Metriek (<code><small>Identifier</small></code>)', 'Norm'
-
-    @classmethod
-    def items(cls, report: QualityReport) -> List[Any]:
-        return sorted(report.metric_classes(), key=lambda klass: klass.name)
-
-    @classmethod
-    def process_item(cls, report: QualityReport, item) -> str:
-        """ Return a HTML table of the metrics the software can measure. """
-        doc, tag, text = yattag.Doc().tagtext()
-        icon = cls.icon if item in report.included_metric_classes() else ''
-        name = cls.name.format(name=item.name, id=item.__name__)
-        try:
-            norm = item.norm_template.format(**item.norm_template_default_values())
-        except ValueError:
-            logging.error('Metric class %s had faulty norm template', item.__name__)
-            raise
-        doc.asis(cls._table_row(icon, name, norm))
-        return doc.getvalue()
-
-
 class MetricSourcesFormatter(MetaDataFormatter):
     """ Return the metric sources in the report formatted as HTML table. """
     column_headers = 'In dit rapport?', 'Metriekbron (<code><small>Identifier</small></code>)', 'Instanties'

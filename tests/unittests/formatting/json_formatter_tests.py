@@ -123,5 +123,8 @@ class MetaDataFormatterTest(unittest.TestCase):
                          '"id": "ARTCoverage", "metrics": ["Automatic regression test branch coverage", '
                          '"Automatic regression test statement coverage", "Coveragerapportageleeftijd"]}, '
                          '{"included": false, "name": "Automated regression tests", "id": "ART", "metrics": '
-                         '["Hoeveelheid falende regressietesten", "Regressietestleeftijd"]}]}\n',
+                         '["Hoeveelheid falende regressietesten", "Regressietestleeftijd"]}], "metrics": '
+                         '[{"included": false, "name": "Automatic regression test statement coverage", '
+                         '"id": "ARTStatementCoverage", "norm": "Minimaal 80% van de statements wordt gedekt door '
+                         'geautomatiseerde functionele tests. Minder dan 70% is rood."}]}\n',
                          self.__formatter.process(fake_report.Report()))

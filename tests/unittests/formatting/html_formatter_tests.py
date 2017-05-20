@@ -16,8 +16,7 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import MetricSourcesFormatter, MetricClassesFormatter, SectionsFormatter, \
-    SectionNavigationMenuFormatter
+from hqlib.formatting import MetricSourcesFormatter, SectionsFormatter, SectionNavigationMenuFormatter
 from . import fake_report
 
 
@@ -73,21 +72,6 @@ class MetaDataFormatterTest(unittest.TestCase):
     """ Unit tests for the meta data HTML formatters. """
     def setUp(self):
         self.__report = fake_report.Report()
-
-    def test_metric_classes(self):
-        """ Test the metric classes table. """
-        self.assertEqual('''<table class="table table-striped first-col-centered">
-  <tr>
-    <th>In dit rapport?</th>
-    <th>Metriek (<code><small>Identifier</small></code>)</th>
-    <th>Norm</th>
-  </tr>
-  <tr>
-    <td></td>
-    <td>Automatic regression test statement coverage (<code><small>ARTStatementCoverage</small></code>)</td>
-    <td>Minimaal 80% van de statements wordt gedekt door geautomatiseerde functionele tests. Minder dan 70% is rood.</td>
-  </tr>
-</table>''', MetricClassesFormatter.process(self.__report))
 
     def test_metric_sources(self):
         """ Test the metric sources table. """

@@ -70,8 +70,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        html_files = dict(metric_classes=formatting.MetricClassesFormatter,
-                          metric_sources=formatting.MetricSourcesFormatter,
+        html_files = dict(metric_sources=formatting.MetricSourcesFormatter,
                           sections=formatting.SectionsFormatter,
                           section_navigation_menu=formatting.SectionNavigationMenuFormatter)
         for filename, formatter in html_files.items():

@@ -187,18 +187,19 @@ class MetaDataJSONFormatter(object):
     @classmethod
     def process(cls, report: QualityReport) -> str:
         """ Return a JSON representation of the domain objects. """
-        return '{"domain_objects": [' + cls.__format_domain_objects(report) + '], "requirements": [' + \
-               cls.__format_requirements(report) + ']}\n'
+        return '{"domain_objects": [' + cls.__format_domain_object_classes(report) + '], "requirements": [' + \
+               cls.__format_requirement_classes(report) + '], "metrics": [' + cls.__format_metric_classes(report) + \
+               ']}\n'
 
     @classmethod
-    def __format_domain_objects(cls, report: QualityReport) -> str:
+    def __format_domain_object_classes(cls, report: QualityReport) -> str:
         """ Return the domain object classes as JSON list. """
         domain_object_classes = sorted(report.domain_object_classes(), key=lambda klass: klass.__name__)
-        return ', '.join([cls.__format_domain_object(report, domain_object_class)
+        return ', '.join([cls.__format_domain_object_class(report, domain_object_class)
                           for domain_object_class in domain_object_classes])
 
     @classmethod
-    def __format_domain_object(cls, report: QualityReport, domain_object_class) -> str:
+    def __format_domain_object_class(cls, report: QualityReport, domain_object_class) -> str:
         """ Return the domain object as JSON. """
         included = 'true' if domain_object_class in report.included_domain_object_classes() else 'false'
         name = domain_object_class.__name__
@@ -212,16 +213,38 @@ class MetaDataJSONFormatter(object):
                                                          optional_requirements)
 
     @classmethod
-    def __format_requirements(cls, report: QualityReport) -> str:
+    def __format_requirement_classes(cls, report: QualityReport) -> str:
         """ Return the requirements as JSON list. """
-        requirements = sorted(report.requirement_classes(), key=lambda klass: klass.name())
-        return ', '.join([cls.__format_requirement(report, requirement) for requirement in requirements])
+        requirement_classes = sorted(report.requirement_classes(), key=lambda klass: klass.name())
+        return ', '.join([cls.__format_requirement_class(report, requirement_class)
+                          for requirement_class in requirement_classes])
 
     @classmethod
-    def __format_requirement(cls, report: QualityReport, requirement) -> str:
+    def __format_requirement_class(cls, report: QualityReport, requirement_class) -> str:
         """ Return the requirement as JSON. """
-        included = 'true' if requirement in report.included_requirement_classes() else 'false'
-        name = requirement.name()
-        id_ = requirement.__name__
-        metrics = ', '.join(sorted('"{0}"'.format(metric_class.name) for metric_class in requirement.metric_classes()))
-        return '{{"included": {0}, "name": "{1}", "id": "{2}", "metrics": [{3}]}}'.format(included, name, id_, metrics)
+        included = 'true' if requirement_class in report.included_requirement_classes() else 'false'
+        name = requirement_class.name()
+        id_ = requirement_class.__name__
+        metric_classes = ', '.join(sorted('"{0}"'.format(metric_class.name)
+                                          for metric_class in requirement_class.metric_classes()))
+        return '{{"included": {0}, "name": "{1}", "id": "{2}", "metrics": [{3}]}}'.format(included, name, id_,
+                                                                                          metric_classes)
+
+    @classmethod
+    def __format_metric_classes(cls, report: QualityReport) -> str:
+        """ Return the metrics as JSON list. """
+        metric_classes = sorted(report.metric_classes(), key=lambda klass: klass.name)
+        return ', '.join([cls.__format_metric_class(report, metric_class) for metric_class in metric_classes])
+
+    @classmethod
+    def __format_metric_class(cls, report: QualityReport, metric_class) -> str:
+        """ Return the metric as JSON. """
+        included = 'true' if metric_class in report.included_metric_classes() else 'false'
+        name = metric_class.name
+        id_ = metric_class.__name__
+        try:
+            norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
+        except ValueError:
+            logging.error('Metric class %s has faulty norm template', metric_class.__name__)
+            raise
+        return '{{"included": {0}, "name": "{1}", "id": "{2}", "norm": "{3}"}}'.format(included, name, id_, norm)
