@@ -30,7 +30,6 @@ class SectionsFormatter(object):
         """ Return the sections of the report as HTML. """
         doc, tag, text, line = yattag.Doc().ttl()
         doc.asis(cls.__dashboard_section(report))
-        doc.asis(cls.__all_metrics_section())
         return yattag.indent(doc.getvalue())
 
     @classmethod
@@ -69,49 +68,3 @@ class SectionsFormatter(object):
                         line('div', '', klass="link_section_{}".format(section_id), title=title)
                         line('div', '', id="section_summary_chart_{}".format(section_id))
         return doc.getvalue()
-
-    @classmethod
-    def __all_metrics_section(cls) -> str:
-        """ Return the section with all metrics. """
-        doc, tag, text, line = yattag.Doc().ttl()
-        with tag('section', id="section_all", style="display:none"):
-            line('div', '', id="table_all")
-        return doc.getvalue()
-
-
-class SectionNavigationMenuFormatter(object):
-    """ Return the section navigation menu for the report. """
-    @classmethod
-    def process(cls, report: QualityReport) -> str:
-        """ Return the section navigation menu, """
-        menu_items = []
-
-        menu_item_template = '<li><a class="link_section_{section_id}" href="#section_{section_id}">{menu_label}</a>' \
-                             '</li>'
-
-        def add_menu_item(section: Section, title: str) -> None:
-            """ Add a menu item that links to the specified section. """
-            menu_items.append(menu_item_template.format(section_id=section.id_prefix(), menu_label=title))
-
-        def add_menu_items(sections: Iterable[Section]) -> None:
-            """ Add a header with menu items that link to the specified sections. """
-            for each_section in sections:
-                add_menu_item(each_section, each_section.title() + ' ' + each_section.subtitle())
-
-        # First, group related sections
-        sections: Dict[str, List[Section]] = {}
-        titles: List[str] = []
-        for section in report.sections():
-            title = section.title()
-            sections.setdefault(title, []).append(section)
-            if title not in titles:
-                titles.append(title)
-        # Next, create the menu items
-        for title in titles:
-            if len(sections[title]) == 1:
-                section = sections[title][0]
-                add_menu_item(section, section.title())
-            else:
-                add_menu_items(sections[title])
-        # Finally, return the HTML as one string
-        return '\n'.join(menu_items)

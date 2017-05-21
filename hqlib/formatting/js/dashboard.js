@@ -78,23 +78,24 @@ function create_dashboard() {
         create_metric_classes_table(meta_data['metrics']);
         create_metric_sources_table(meta_data['metric_sources']);
     });
-    $.get("section_navigation_menu.html", function(menu_items) {
-        $('#navigation_menu_items').append(menu_items);
-    });
 }
 
 function create_sections(sections) {
-    var html_sections = [];
+    var html_sections = ['<section id="section_all" style="display:none"><div id="table_all"></div></section>'];
+    var menu_items = [];
     $.each(sections, function(index, section) {
-        var html_section = '<section id="section_' + section["id"] + '"><div class="page-header="><h1>' +
-                           section["title"];
-        if (section["subtitle"]) {
-            html_section += ' <small>' + section["subtitle"] + '</small>';
+        var id = section["id"], title = section["title"], subtitle = section["subtitle"];
+        var html_section = '<section id="section_' + id + '"><div class="page-header="><h1>' + title;
+        if (subtitle) {
+            html_section += ' <small>' + subtitle + '</small>';
         };
-        html_section += '</h1></div><div id="table_' + section["id"] + '"></div></section>';
+        html_section += '</h1></div><div id="table_' + id + '"></div></section>';
         html_sections.push(html_section);
+        var menu_item = '<li><a class="link_section_' + id + '" href="#section_' + id + '">' + title + '</a></li>';
+        menu_items.push(menu_item);
     });
     $("#sections").append(html_sections.join(''));
+    $('#navigation_menu_items').append(menu_items.join(''));
 }
 
 function create_metrics_table() {

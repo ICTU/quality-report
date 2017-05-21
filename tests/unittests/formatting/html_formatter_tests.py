@@ -16,7 +16,7 @@ limitations under the License.
 
 import unittest
 
-from hqlib.formatting import SectionsFormatter, SectionNavigationMenuFormatter
+from hqlib.formatting import SectionsFormatter
 from . import fake_report
 
 
@@ -43,18 +43,4 @@ class SectionsFormatterTest(unittest.TestCase):
       </tr>
     </tbody>
   </table>
-</div>
-<section id="section_all" style="display:none">
-  <div id="table_all"></div>
-</section>''', SectionsFormatter.process(self.__report))
-
-
-class SectionNaviationMenuFormatterTest(unittest.TestCase):
-    """ Unit tests for the section navigation menu HTML formatter. """
-    def setUp(self):
-        self.__report = fake_report.Report()
-
-    def test_menu(self):
-        """ Test the menu items. """
-        self.assertEqual('<li><a class="link_section_id" href="#section_id">Section title</a></li>',
-                         SectionNavigationMenuFormatter.process(self.__report))
+</div>''', SectionsFormatter.process(self.__report))
