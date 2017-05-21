@@ -52,7 +52,6 @@ var METRICS_COLUMN_COMMENT = 7;
 
 function create_dashboard() {
     read_settings_from_cookies();
-
     create_metrics_table();
     create_event_handlers();
     set_indicators();
@@ -208,6 +207,8 @@ function read_settings_from_cookies() {
 }
 
 function create_event_handlers() {
+    fix_navigation_links();
+
     // Event handler for the tabs
     $('#trend_tab').click(function() {
         // Retrieve the history for the meta metrics history charts.
@@ -605,4 +606,11 @@ function activate_parent(element_id) {
 
 function deactivate_parent(element_id) {
     $(element_id).parent().removeClass('active');
+}
+
+function fix_navigation_links() {
+    // When clicking a navigation link, compensate for the fixed header.
+    var shiftWindow = function() { scrollBy(0, -50) };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
 }
