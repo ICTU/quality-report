@@ -31,8 +31,6 @@ class SectionsFormatter(object):
         doc, tag, text, line = yattag.Doc().ttl()
         doc.asis(cls.__dashboard_section(report))
         doc.asis(cls.__all_metrics_section())
-        for section in report.sections():
-            doc.asis(cls.__section(section))
         return yattag.indent(doc.getvalue())
 
     @classmethod
@@ -78,28 +76,6 @@ class SectionsFormatter(object):
         doc, tag, text, line = yattag.Doc().ttl()
         with tag('section', id="section_all", style="display:none"):
             line('div', '', id="table_all")
-        return doc.getvalue()
-
-    @classmethod
-    def __section(cls, section) -> str:
-        """ Return the section formatted as HTML. """
-        doc, tag, text, line = yattag.Doc().ttl()
-        with tag('section', id="section_{0}".format(section.id_prefix())):
-            doc.asis(cls.__section_title(section))
-            line('div', '', id="table_{0}".format(section.id_prefix()))
-        return doc.getvalue()
-
-    @classmethod
-    def __section_title(cls, section) -> str:
-        """ Return the section title formatted as HTML. """
-        doc, tag, text = yattag.Doc().tagtext()
-        with tag('div', klass="page-header"):
-            with tag('h1'):
-                text(section.title())
-                if section.subtitle():
-                    doc.text(' ')
-                    with tag('small'):
-                        text(section.subtitle())
         return doc.getvalue()
 
 

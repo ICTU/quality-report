@@ -75,17 +75,18 @@ class MetricsFormatterTest(unittest.TestCase):
     def test_process(self):
         """ Test that the report is processed correctly. """
         self.assertEqual('{{"report_date": [2012, 0, 1, 12, 0, 0], "report_title": "Report title", "hq_version": '
-                         '"{0}", "metrics": [[{{"f": "id_string-1", "v": "id_string-01"}}, "id_string", "red", '
-                         '"<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' height=\'25\' />", '
-                         '{{"v": "0", "f": "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' height=\'48\' '
-                         'title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' border=\'0\' />"}}, '
-                         '"report [label: <a href=\'http://url\' target=\'_blank\'>anchor</a>]", "norm", "Comment '
-                         'with \\\\backslash"], [{{"f": "id_string-1", "v": "id_string-01"}}, "id_string", "red", '
-                         '"<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' height=\'25\' />", '
-                         '{{"v": "0", "f": "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' height=\'48\' '
-                         'title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' border=\'0\' />"}}, '
-                         '"report [label: <a href=\'http://url\' target=\'_blank\'>anchor</a>]", "norm", "Comment '
-                         'with \\\\backslash"]]}}\n'.format(VERSION),
+                         '"{0}", "sections": [{{"id": "id", "title": "Section title", '
+                         '"subtitle": "Section subtitle"}}], "metrics": [[{{"f": "id_string-1", "v": "id_string-01"}}, '
+                         '"id_string", "red", "<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' '
+                         'height=\'25\' />", {{"v": "0", "f": "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' '
+                         'height=\'48\' title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' '
+                         'border=\'0\' />"}}, "report [label: <a href=\'http://url\' target=\'_blank\'>anchor</a>]", '
+                         '"norm", "Comment with \\\\backslash"], [{{"f": "id_string-1", "v": "id_string-01"}}, '
+                         '"id_string", "red", "<img src=\'img/id_string-1.png\' border=\'0\' width=\'100\' '
+                         'height=\'25\' />", {{"v": "0", "f": "<img src=\'img/sad.png\' alt=\':-(\' width=\'48\' '
+                         'height=\'48\' title=\'Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)\' '
+                         'border=\'0\' />"}}, "report [label: <a href=\'http://url\' target=\'_blank\'>anchor</a>]", '
+                         '"norm", "Comment with \\\\backslash"]]}}\n'.format(VERSION),
                          self.__formatter.process(fake_report.Report()))
 
     def test_hover_unknown_start(self):

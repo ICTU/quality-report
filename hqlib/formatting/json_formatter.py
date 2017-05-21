@@ -129,8 +129,9 @@ class MetricsFormatter(base_formatter.Formatter):
 
     def prefix(self, report: QualityReport) -> str:
         return '{{"report_date": {report_date}, "report_title": "{report_title}", ' \
-               '"hq_version": "{version}", "metrics": ['.format(report_date=self.__report_date(report),
-                                                                report_title=report.title(), version=VERSION)
+               '"hq_version": "{version}", "sections": [{sections}], "metrics": ['.format(
+            report_date=self.__report_date(report), report_title=report.title(), sections=self.__sections(report),
+            version=VERSION)
 
     @staticmethod
     def postfix() -> str:
@@ -179,6 +180,13 @@ class MetricsFormatter(base_formatter.Formatter):
         date_time = report.date()
         return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month - 1, date_time.day,
                                                        date_time.hour, date_time.minute, date_time.second)
+
+    @classmethod
+    def __sections(cls, report: QualityReport) -> str:
+        """ Return a JSON list of the report sections. """
+        return ', '.join(['{{"id": "{id_}", "title": "{title}", "subtitle": "{subtitle}"}}'.format(
+            id_=section.id_prefix(), title=section.title(), subtitle=section.subtitle())
+            for section in report.sections()])
 
 
 class MetaDataJSONFormatter(object):

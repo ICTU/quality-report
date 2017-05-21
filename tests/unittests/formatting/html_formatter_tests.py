@@ -46,12 +46,6 @@ class SectionsFormatterTest(unittest.TestCase):
 </div>
 <section id="section_all" style="display:none">
   <div id="table_all"></div>
-</section>
-<section id="section_id">
-  <div class="page-header">
-    <h1>Section title <small>Section subtitle</small></h1>
-  </div>
-  <div id="table_id"></div>
 </section>''', SectionsFormatter.process(self.__report))
 
 

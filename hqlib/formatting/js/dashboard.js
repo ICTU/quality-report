@@ -61,7 +61,8 @@ function create_dashboard() {
     $('#sections').load('sections.html', function() {
         // Retrieve the metrics for the metrics table after the sections have been loaded.
         $.getJSON("json/metrics.json", "", function(metrics_data) {
-            fill_metrics_table(metrics_data);
+            create_sections(metrics_data["sections"]);
+            fill_metrics_table(metrics_data["metrics"]);
             hide('#loading');
             show('#sections');
 
@@ -83,6 +84,20 @@ function create_dashboard() {
     });
 }
 
+function create_sections(sections) {
+    var html_sections = [];
+    $.each(sections, function(index, section) {
+        var html_section = '<section id="section_' + section["id"] + '"><div class="page-header="><h1>' +
+                           section["title"];
+        if (section["subtitle"]) {
+            html_section += ' <small>' + section["subtitle"] + '</small>';
+        };
+        html_section += '</h1></div><div id="table_' + section["id"] + '"></div></section>';
+        html_sections.push(html_section);
+    });
+    $("#sections").append(html_sections.join(''));
+}
+
 function create_metrics_table() {
     var metrics = new google.visualization.DataTable();
     window.metrics = metrics;
@@ -97,7 +112,7 @@ function create_metrics_table() {
 }
 
 function fill_metrics_table(metrics_data) {
-    window.metrics.addRows(metrics_data["metrics"]);
+    window.metrics.addRows(metrics_data);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
 
     var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
