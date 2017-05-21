@@ -16,9 +16,8 @@ limitations under the License.
 
 
 import yattag
-from typing import List, Dict, Iterable
 
-from ..report import QualityReport, Section
+from ..report import QualityReport
 from ..domain import DomainObject
 
 

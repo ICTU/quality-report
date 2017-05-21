@@ -18,7 +18,7 @@ limitations under the License.
 import json
 import logging
 import re
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, Tuple
 
 from . import base_formatter
 from .. import metric_source, utils, VERSION
