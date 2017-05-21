@@ -170,10 +170,10 @@ function create_metric_sources_table(metric_sources) {
         var icon = check_icon(metric_source);
         var title = meta_data_title(metric_source);
         var urls = [];
-        $.each(metric_sources['urls'], function(index, url) {
+        $.each(metric_source['urls'], function(index, url) {
             urls.push('<a href="' + url + '" target="_blank">' + url + '</a>');
         });
-        table_rows.push(table_row(icon, title , urls.join('<br/>')));
+        table_rows.push(table_row(icon, title, urls.join('<br/>')));
     });
     create_meta_data_table('#metric_sources', table_rows);
 }
