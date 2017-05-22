@@ -23,7 +23,7 @@ from typing import Dict, Any, Tuple
 from . import base_formatter
 from .. import metric_source, utils, VERSION
 from ..report import QualityReport
-from ..domain import Metric
+from ..domain import Metric, DomainObject
 
 
 class JSONFormatter(base_formatter.Formatter):
@@ -129,9 +129,9 @@ class MetricsFormatter(base_formatter.Formatter):
 
     def prefix(self, report: QualityReport) -> str:
         return '{{"report_date": {report_date}, "report_title": "{report_title}", ' \
-               '"hq_version": "{version}", "sections": [{sections}], "metrics": ['.format(
+               '"hq_version": "{version}", "sections": [{sections}], "dashboard": {dashboard}, "metrics": ['.format(
             report_date=self.__report_date(report), report_title=report.title(), sections=self.__sections(report),
-            version=VERSION)
+            dashboard=self.__dashboard(report), version=VERSION)
 
     @staticmethod
     def postfix() -> str:
@@ -187,6 +187,35 @@ class MetricsFormatter(base_formatter.Formatter):
         return ', '.join(['{{"id": "{id_}", "title": "{title}", "subtitle": "{subtitle}"}}'.format(
             id_=section.id_prefix(), title=section.title(), subtitle=section.subtitle())
             for section in report.sections()])
+
+    @classmethod
+    def __dashboard(cls, report: QualityReport) -> str:
+        """ Return a JSON representation of the report dashboard. """
+        return '{{"headers": {headers}, "rows": {rows}}}'.format(headers=cls.__dashboard_headers(report),
+                                                                         rows=cls.__dashboard_rows(report))
+
+    @classmethod
+    def __dashboard_headers(cls, report: QualityReport) -> str:
+        """ Return the headers of the dashboard. """
+        return '[' + ', '.join(['{{"header": "{0}", "colspan": {1}}}'.format(section_type, colspan)
+                                for section_type, colspan in report.dashboard()[0]]) + ']'
+
+    @classmethod
+    def __dashboard_rows(cls, report: QualityReport) -> str:
+        """ Return the rows of the dashboard. """
+        rows = []
+        for row in report.dashboard()[1]:
+            cells = []
+            for cell in row:
+                section_id = cell[0].short_name() if isinstance(cell[0], DomainObject) else cell[0].upper()
+                section = report.get_section(section_id)
+                section_title = section.title() if section else '???'
+                bgcolor = cell[1]
+                colspan, rowspan = cell[2] if len(cell) == 3 else (1, 1)
+                cells.append('{{"section_id": "{0}", "section_title": "{1}", "bgcolor": "{2}", "colspan": {3}, '
+                             '"rowspan": {4}}}'.format(section_id, section_title, bgcolor, colspan, rowspan))
+            rows.append('[' + ', '.join(cells) + ']')
+        return '[' + ', '.join(rows) + ']'
 
 
 class MetaDataJSONFormatter(object):

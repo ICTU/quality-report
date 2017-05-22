@@ -56,19 +56,17 @@ function create_dashboard() {
     create_event_handlers();
     set_indicators();
 
-    // Retrieve the html for the dashboard
-    $('#sections').load('sections.html', function() {
-        // Retrieve the metrics for the metrics table after the sections have been loaded.
-        $.getJSON("json/metrics.json", "", function(metrics_data) {
-            create_sections(metrics_data["sections"]);
-            fill_metrics_table(metrics_data["metrics"]);
-            hide('#loading');
-            show('#sections');
+    // Retrieve the metrics for the metrics table after the sections have been loaded.
+    $.getJSON("json/metrics.json", "", function(metrics_data) {
+        create_dashboard_table(metrics_data["dashboard"]);
+        create_sections(metrics_data["sections"]);
+        fill_metrics_table(metrics_data["metrics"]);
+        hide('#loading');
+        show('#sections');
 
-            set_report_date(new Date(...metrics_data["report_date"]));
-            $("#hq_version").html(metrics_data["hq_version"]);
-            $(".report_title").html(metrics_data["report_title"]);
-        });
+        set_report_date(new Date(...metrics_data["report_date"]));
+        $("#hq_version").html(metrics_data["hq_version"]);
+        $(".report_title").html(metrics_data["report_title"]);
     });
 
     // Retrieve the files for the menu's
@@ -78,6 +76,27 @@ function create_dashboard() {
         create_metric_classes_table(meta_data['metrics']);
         create_metric_sources_table(meta_data['metric_sources']);
     });
+}
+
+function create_dashboard_table(dashboard) {
+    var table = ['<div id="section_dashboard"><table class="table table-condensed table-bordered"><thead>',
+                 '<tr style="color: white; font-weight: bold; background-color: #2F95CF">'];
+    $.each(dashboard["headers"], function(index, cell) {
+        table.push('<th colspan=' + cell["colspan"] + ' style="text-align: center;">' + cell["header"] + '</th>');
+    });
+    table.push('</th></thead><tbody>');
+    $.each(dashboard["rows"], function(index, row) {
+        table.push('<tr>');
+        $.each(row, function(index, cell) {
+            table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' align="center" bgcolor="' +
+                       cell['bgcolor'] + '">');
+            table.push('<div class="link_section_' + cell['section_id'] + '" title="' + cell['section_title'] + '"></div>');
+            table.push('<div id="section_summary_chart_' + cell['section_id'] + '"></div></td>');
+        });
+        table.push('</tr>');
+    });
+    table.push('</tbody></table>');
+    $("#sections").append(table.join(''));
 }
 
 function create_sections(sections) {

@@ -38,7 +38,7 @@ class IntegrationTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ Remove the report. """
-        #shutil.rmtree(cls.report_folder)
+        shutil.rmtree(cls.report_folder)
 
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
@@ -56,9 +56,8 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
         self.assertTrue(os.path.exists('{0}/{1}'.format(self.report_folder, filename)))
 
     def test_files_exists(self):
-        """ Test that the generated files exists. """
-        for filename in ('index', 'sections'):
-            self.assert_file_exists('{0}.html'.format(filename))
+        """ Test that the copied/generated files exists. """
+        self.assert_file_exists('index.html')
         for filename in 'metrics', 'meta_history', 'meta_data':
             self.assert_file_exists('json/{0}.json'.format(filename))
 

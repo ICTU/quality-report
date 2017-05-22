@@ -70,9 +70,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
-        html_files = dict(sections=formatting.SectionsFormatter)
-        for filename, formatter in html_files.items():
-            cls.__create_html_file(quality_report, report_dir, formatter, filename)
         cls.__create_resources(report_dir)
         json_files = dict(metrics=formatting.MetricsFormatter,
                           meta_history=formatting.MetaMetricsHistoryFormatter,
@@ -81,17 +78,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
             cls.__create_json_file(quality_report, report_dir, formatter, filename)
 
         cls.__create_trend_images(quality_report, report_dir)
-
-    @classmethod
-    def __create_html_file(cls, quality_report, report_dir, formatter, filename, **kwargs):
-        """ Create a HTML file for the report, using the HTML formatter specified. """
-        tmp_filename = os.path.join(report_dir, 'tmp.html')
-        cls.__format_and_write_report(quality_report, formatter, tmp_filename, 'w', 'utf-8', **kwargs)
-        html_filename = os.path.join(report_dir, '{0}.html'.format(filename))
-        if os.path.exists(html_filename):
-            os.remove(html_filename)
-        os.rename(tmp_filename, html_filename)
-        filesystem.make_file_readable(html_filename)
 
     @classmethod
     def __create_json_file(cls, quality_report, report_dir, formatter, filename):
@@ -103,7 +89,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __create_resources(report_dir):
         """ Create and write the resources. """
         resource_manager = pkg_resources.ResourceManager()
-        formatting_module = formatting.html_formatter.__name__
+        formatting_module = formatting.json_formatter.__name__
         for resource_type, encoding in (('css', 'utf-8'), ('fonts', None), ('img', None), ('js', 'utf-8'),
                                         ('json', None), ('html', 'utf-8')):
             resource_dir = os.path.join(report_dir, resource_type) if resource_type != 'html' else report_dir
