@@ -32,5 +32,5 @@ if __name__ == '__main__':  # pragma: no branch
     # Run the unit test with the XML test runner so that the test output
     # can be processed by Sonar.
     if not os.path.exists('build'):  # pragma: no branch
-        os.mkdir('build')
+        os.mkdir('build')  # pragma: no cover
     unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/unit-test-reports'))
