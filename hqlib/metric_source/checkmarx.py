@@ -31,8 +31,7 @@ class Checkmarx(domain.MetricSource):
 
     def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener=None, *args, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
-        self.checkmarx_url = url
-        super().__init__(*args, **kwargs)
+        super().__init__(url=url, *args, **kwargs)
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:
         checkmarx_report_urls = []
@@ -41,7 +40,7 @@ class Checkmarx(domain.MetricSource):
             try:
                 json = self.__fetch_report(project_name)
                 checkmarx_report_urls.append("{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}".format(
-                    self.checkmarx_url,
+                    self.url(),
                     str(json["value"][0]["LastScan"]["Id"]),
                     str(json["value"][0]["LastScan"]["ProjectId"])))
             except KeyError as reason:
@@ -60,7 +59,7 @@ class Checkmarx(domain.MetricSource):
                 nr_alerts += self.__parse_alerts(json, priority)
             except Exception as reason:
                 logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s",
-                                priority, self.checkmarx_url, reason, project_name)
+                                priority, self.url(), reason, project_name)
                 return -1
         return nr_alerts
 
@@ -73,7 +72,7 @@ class Checkmarx(domain.MetricSource):
     def __fetch_report(self, project_name: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
         """ Create the api URL and fetch the report from it. """
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27{}%27".format(
-            self.checkmarx_url, urllib.parse.quote(project_name))
+            self.url(), urllib.parse.quote(project_name))
         return self.__get_json(api_url)
 
     def __get_json(self, api_url: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:

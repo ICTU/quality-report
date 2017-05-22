@@ -1,3 +1,8 @@
+2017-05-23  Release 1.81.12
+
+  * Bug fix: Show Checkmarx url in the metric sources help menu.
+  
+  
 2017-05-18  Release 1.81.11
 
   * Bug fix: Add missing requirements (VisualBasic, TypeScript, Python) to help information.
