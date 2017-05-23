@@ -44,10 +44,10 @@ class Formatter(object):
         sections = []
         for section in report.sections():
             self.__log_section(section)
-            sections.append(self.section(report, section))
+            sections.append(self.section(section))
         return self.sep.join(sections)
 
-    def section(self, report: QualityReport, section: Section) -> str:  # pylint: disable=W0613
+    def section(self, section: Section) -> str:  # pylint: disable=W0613
         """ Return a formatted version of the section. """
         metrics = []
         for metric in section:
