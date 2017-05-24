@@ -1,5 +1,6 @@
 exclude:
 - /docs/examples/quality_report/.*
+- /hqlib/formatting/js/*.min.js
 component_depth: 2
 languages:
 - javascript

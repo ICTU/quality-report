@@ -21,7 +21,7 @@ ratings:
   - "**.jsx"
   - "**.py"
 exclude_paths:
-- "hqlib/formatting/js/bootstrap.min.js"
+- "hqlib/formatting/js/*.min.js"
 - "hqlib/formatting/js/compatibility.js"
 - "docs/examples/"
 - "tests/unittests/"
