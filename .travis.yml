@@ -17,7 +17,7 @@ script:
 - coveralls
 - codecov
 - coverage run --parallel-mode --branch tests/run_integrationtests.py discover -s tests/integrationtests -p "*_tests.py"
-- coverage combine .
+- coverage combine build
 - coverage xml -o it-coverage.xml
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 addons:

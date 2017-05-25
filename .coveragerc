@@ -2,6 +2,7 @@
 branch = True
 omit =
     */lib/python*
+data_file = build/.coverage
 
 [report]
 # Regexes for lines to exclude from consideration
