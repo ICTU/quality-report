@@ -24,7 +24,7 @@ import urllib.request
 
 import pkg_resources
 
-from hqlib import formatting, commandlineargs, report, metric_source, log, filesystem
+from hqlib import app, formatting, commandlineargs, report, metric_source, log, filesystem
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -89,14 +89,14 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __create_resources(report_dir):
         """ Create and write the resources. """
         resource_manager = pkg_resources.ResourceManager()
-        formatting_module = formatting.json_formatter.__name__
+        resource_module = app.__name__
         for resource_type, encoding in (('css', 'utf-8'), ('fonts', None), ('img', None), ('js', 'utf-8'),
                                         ('json', None), ('html', 'utf-8')):
             resource_dir = os.path.join(report_dir, resource_type) if resource_type != 'html' else report_dir
             filesystem.create_dir(resource_dir)
-            for resource in resource_manager.resource_listdir(formatting_module, resource_type):
+            for resource in resource_manager.resource_listdir(resource_module, resource_type):
                 filename = os.path.join(resource_dir, resource)
-                contents = resource_manager.resource_string(formatting_module, resource_type + '/' + resource)
+                contents = resource_manager.resource_string(resource_module, resource_type + '/' + resource)
                 mode = 'w' if encoding else 'wb'
                 contents = contents.decode(encoding) if encoding else contents
                 filesystem.write_file(contents, filename, mode, encoding)

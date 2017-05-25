@@ -1,9 +1,9 @@
 include requirements.txt
-include hqlib/formatting/css/*.css
-include hqlib/formatting/css/*.css.map
-include hqlib/formatting/fonts/glyphicons-halflings-regular.*
-include hqlib/formatting/html/*.html
-include hqlib/formatting/img/*.png
-include hqlib/formatting/img/*.ico
-include hqlib/formatting/js/*.js
-include hqlib/formatting/json/*.json
+include hqlib/app/css/*.css
+include hqlib/app/css/*.css.map
+include hqlib/app/fonts/glyphicons-halflings-regular.*
+include hqlib/app/html/*.html
+include hqlib/app/img/*.png
+include hqlib/app/img/*.ico
+include hqlib/app/js/*.js
+include hqlib/app/json/*.json

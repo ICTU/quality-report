@@ -1,9 +1,9 @@
 ---
 exclude_paths:
   - docs/examples/**/*
-  - hqlib/formatting/css/*.min.css*
-  - hqlib/formatting/js/*.min.js
-  - hqlib/formatting/js/compatibility.js
+  - hqlib/app/css/*.min.css*
+  - hqlib/app/js/*.min.js
+  - hqlib/app/js/compatibility.js
 engines:
  pylint:
    enabled: true

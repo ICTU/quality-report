@@ -192,7 +192,7 @@ class MetricsFormatter(base_formatter.Formatter):
     def __dashboard(cls, report: QualityReport) -> str:
         """ Return a JSON representation of the report dashboard. """
         return '{{"headers": {headers}, "rows": {rows}}}'.format(headers=cls.__dashboard_headers(report),
-                                                                         rows=cls.__dashboard_rows(report))
+                                                                 rows=cls.__dashboard_rows(report))
 
     @classmethod
     def __dashboard_headers(cls, report: QualityReport) -> str:
