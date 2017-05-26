@@ -1,6 +1,7 @@
 exclude:
 - /docs/examples/quality_report/.*
 - /hqlib/app/dist/.*
+- /hqlib/app/node_modules/.*
 component_depth: 2
 languages:
 - javascript

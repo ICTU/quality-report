@@ -3,6 +3,7 @@ exclude_paths:
   - docs/examples/**/*
   - hqlib/app/css/*.min.css*
   - hqlib/app/dist/*
+  - hqlib/app/node_modules/*
   - hqlib/app/js/compatibility.js
 engines:
  pylint:

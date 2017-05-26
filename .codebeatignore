@@ -1,3 +1,4 @@
 hqlib/app/dist/*
+hqlib/app/node_modules/**
 hqlib/app/js/compatibility.js
 docs/examples/**
