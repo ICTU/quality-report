@@ -1,7 +1,5 @@
 include requirements.txt
-include hqlib/app/css/*.css
 include hqlib/app/dist/*
 include hqlib/app/html/*.html
 include hqlib/app/img/*.png
 include hqlib/app/img/*.ico
-include hqlib/app/json/*.json
