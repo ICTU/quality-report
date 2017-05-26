@@ -21,7 +21,7 @@ ratings:
   - "**.jsx"
   - "**.py"
 exclude_paths:
-- "hqlib/app/js/*.min.js"
+- "hqlib/app/dist/"
 - "hqlib/app/js/compatibility.js"
 - "docs/examples/"
 - "tests/unittests/"
