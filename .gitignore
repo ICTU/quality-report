@@ -11,7 +11,9 @@ repos
 # Ignore build folders
 build
 dist
-quality_report.egg-info/
+quality_report.egg-info
+hqlib/app/node_modules
+hqlib/app/dist
 
 # Ignore OS specific folders and files
 .DS_Store

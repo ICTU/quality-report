@@ -45,3 +45,5 @@ function read_cookie(name, default_value) {
     }
     return default_value;
 }
+
+export {write_cookie, read_cookie};

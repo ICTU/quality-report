@@ -1,0 +1,31 @@
+{
+  "name": "HQ",
+  "version": "1.81.12",
+  "description": "Holistic Software Quality Reporting",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ICTU/quality-report.git"
+  },
+  "keywords": [
+    "software-quality",
+    "software-development"
+  ],
+  "author": "ICTU",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ICTU/quality-report/issues"
+  },
+  "homepage": "https://github.com/ICTU/quality-report#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery": "^2.2.4"
+  },
+  "devDependencies": {
+    "webpack": "^2.6.1"
+  }
+}

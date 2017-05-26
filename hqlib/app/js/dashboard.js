@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+import $ from 'jquery';
+import 'bootstrap/dist/js/bootstrap';
+import {read_cookie, write_cookie} from '../js/cookie.js';
+import '../js/compatibility.js';
+
 // These functions depend on cookie.js.
 
 /*
@@ -20,8 +25,7 @@ Some event handlers are generated using closures. See
 http://stackoverflow.com/questions/3495679/passing-parameters-in-javascript-onclick-event
 */
 
-// FIXME: magic numbers for columns
-
+google.setOnLoadCallback(function() {create_dashboard()});
 google.load('visualization', '1', {'packages': ['corechart', 'table']});
 
 var settings = [];
@@ -42,6 +46,7 @@ var BG_COLOR_GREY = '#CCCCCC';
 var BG_COLOR_MISSING = '#F8F8F8';
 
 // Column indices. FIXME: lookup instead of hard coding.
+
 var METRICS_COLUMN_SECTION = 1;
 var METRICS_COLUMN_STATUS_TEXT = 2;
 var METRICS_COLUMN_TREND = 3;
