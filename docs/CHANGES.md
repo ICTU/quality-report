@@ -1,3 +1,8 @@
+2017-05-26  Release 1.81.13
+
+  * Use Webpack to bundle the web application.
+  
+
 2017-05-23  Release 1.81.12
 
   * Bug fix: Show Checkmarx url in the metric sources help menu.
