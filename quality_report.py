@@ -70,6 +70,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
+        filesystem.create_dir(os.path.join(report_dir, 'json'))
         cls.__create_resources(report_dir)
         json_files = dict(metrics=formatting.MetricsFormatter,
                           meta_history=formatting.MetaMetricsHistoryFormatter,
@@ -90,8 +91,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Create and write the resources. """
         resource_manager = pkg_resources.ResourceManager()
         resource_module = app.__name__
-        for resource_type, encoding in (('css', 'utf-8'), ('img', None),
-                                        ('dist', None), ('json', None), ('html', 'utf-8')):
+        for resource_type, encoding in (('css', 'utf-8'), ('img', None), ('dist', None), ('html', 'utf-8')):
             resource_dir = os.path.join(report_dir, resource_type) if resource_type != 'html' else report_dir
             filesystem.create_dir(resource_dir)
             for resource in resource_manager.resource_listdir(resource_module, resource_type):
