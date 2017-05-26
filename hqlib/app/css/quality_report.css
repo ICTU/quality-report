@@ -20,6 +20,15 @@ limitations under the License. */
     }
 }
 
+@media print {
+    .navbar { visibility: hidden; }
+}
+
+body {
+    padding-top: 70px;
+    padding-bottom: 40px;
+}
+
 table.first-col-centered > tbody > tr > td:first-child {
     text-align: center;
 }
