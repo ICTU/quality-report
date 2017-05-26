@@ -23,9 +23,12 @@
   "homepage": "https://github.com/ICTU/quality-report#readme",
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "file-loader": "^0.11.1",
     "jquery": "^2.2.4"
   },
   "devDependencies": {
+    "css-loader": "^0.28.3",
+    "style-loader": "^0.18.1",
     "webpack": "^2.6.1"
   }
 }

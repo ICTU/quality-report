@@ -1,8 +1,6 @@
 include requirements.txt
 include hqlib/app/css/*.css
-include hqlib/app/css/*.css.map
 include hqlib/app/dist/*
-include hqlib/app/fonts/glyphicons-halflings-regular.*
 include hqlib/app/html/*.html
 include hqlib/app/img/*.png
 include hqlib/app/img/*.ico

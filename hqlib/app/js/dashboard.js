@@ -15,6 +15,7 @@
 
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import '../js/compatibility.js';
 

@@ -38,7 +38,7 @@ class IntegrationTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ Remove the report. """
-        shutil.rmtree(cls.report_folder)
+        #shutil.rmtree(cls.report_folder)
 
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
