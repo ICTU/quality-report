@@ -34,6 +34,6 @@ if __name__ == '__main__':  # pragma: no branch
     if not os.path.exists('build'):  # pragma: no branch
         os.mkdir('build')  # pragma: no cover
     os.chdir(os.path.join('hqlib', 'app'))
-    os.system('npm run build')
+    os.system('npm install; npm run build')
     os.chdir(os.path.join('..', '..'))
     unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'))
