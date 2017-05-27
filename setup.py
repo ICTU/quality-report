@@ -19,19 +19,27 @@ limitations under the License.
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
-import distutils.command.sdist
+from distutils.core import Command
 import os
 
 from hqlib import VERSION
 
 
-class BundleAndSourceDist(distutils.command.sdist.sdist):
-    """ Override the source distribution command to first run npm. """
+class Bundle(Command):
+    """ Bundle the webapp using npm (and webpack). """
+    description = "bundle the webapp using npm and webpack"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
     def run(self):
         os.chdir(os.path.join('hqlib', 'app'))
         os.system('npm install; npm run build')
         os.chdir(os.path.join('..', '..'))
-        distutils.command.sdist.sdist.run(self)
 
 
 setup(name='quality_report',
@@ -47,7 +55,7 @@ possible, seeing how software development can go off the rails in so many ways.'
       packages=find_packages(),
       scripts=['quality_report.py'],
       include_package_data=True,
-      cmdclass={"sdist": BundleAndSourceDist},
+      cmdclass={"bundle": Bundle},
       install_requires=[str(requirement.req) for requirement in parse_requirements('requirements.txt',
                                                                                    session=PipSession())],
       test_suite='tests',

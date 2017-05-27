@@ -14,6 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-python setup.py sdist upload
+python setup.py bundle sdist upload
 docker build --no-cache -t ictu/quality-report .
 docker push ictu/quality-report

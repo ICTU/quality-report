@@ -3,3 +3,4 @@ include hqlib/app/dist/*
 include hqlib/app/html/*.html
 include hqlib/app/img/*.png
 include hqlib/app/img/*.ico
+exclude hqlib/app/js/*.js
