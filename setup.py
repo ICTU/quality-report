@@ -19,15 +19,15 @@ limitations under the License.
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
-from distutils.core import Command
+from distutils import core, dir_util
 import os
 
 from hqlib import VERSION
 
 
-class Bundle(Command):
+class Bundle(core.Command):
     """ Bundle the webapp using npm (and webpack). """
-    description = "bundle the webapp using npm and webpack"
+    description = "bundle the frontend using npm and webpack"
     user_options = []
 
     def initialize_options(self):
@@ -37,9 +37,11 @@ class Bundle(Command):
         pass
 
     def run(self):
-        os.chdir(os.path.join('hqlib', 'app'))
+        os.chdir('frontend')
         os.system('npm install; npm run build')
-        os.chdir(os.path.join('..', '..'))
+        dir_util.copy_tree('html', '../hqlib/app/html')
+        dir_util.copy_tree('img', '../hqlib/app/img')
+        os.chdir('..')
 
 
 setup(name='quality_report',

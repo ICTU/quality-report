@@ -5,7 +5,7 @@ module.exports = {
   entry: './js/dashboard.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../hqlib/app/dist'),
     publicPath: 'dist/'
   },
   plugins: [

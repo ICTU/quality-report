@@ -1,4 +1,4 @@
-hqlib/app/dist/*
-hqlib/app/node_modules/**
-hqlib/app/js/compatibility.js
+hqlib/app/**
+frontend/node_modules/**
+frontend/js/compatibility.js
 docs/examples/**

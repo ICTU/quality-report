@@ -22,8 +22,8 @@ ratings:
   - "**.py"
 exclude_paths:
 - "hqlib/app/dist/"
-- "hqlib/app/js/compatibility.js"
-- "hqlib/app/node_modules/"
+- "frontend/js/compatibility.js"
+- "frontend/node_modules/"
 - "docs/examples/"
 - "tests/unittests/"
 - "tests/integrationtests/"

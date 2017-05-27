@@ -12,8 +12,10 @@ repos
 build
 dist
 quality_report.egg-info
-hqlib/app/node_modules
+frontend/node_modules
 hqlib/app/dist
+hqlib/app/img
+hqlib/app/html
 
 # Ignore OS specific folders and files
 .DS_Store
