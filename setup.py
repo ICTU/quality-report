@@ -19,8 +19,19 @@ limitations under the License.
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
+import distutils.command.sdist
+import os
 
 from hqlib import VERSION
+
+
+class BundleAndSourceDist(distutils.command.sdist.sdist):
+    """ Override the source distribution command to first run npm. """
+    def run(self):
+        os.chdir(os.path.join('hqlib', 'app'))
+        os.system('npm install; npm run build')
+        os.chdir(os.path.join('..', '..'))
+        distutils.command.sdist.sdist.run(self)
 
 
 setup(name='quality_report',
@@ -36,6 +47,7 @@ possible, seeing how software development can go off the rails in so many ways.'
       packages=find_packages(),
       scripts=['quality_report.py'],
       include_package_data=True,
+      cmdclass={"sdist": BundleAndSourceDist},
       install_requires=[str(requirement.req) for requirement in parse_requirements('requirements.txt',
                                                                                    session=PipSession())],
       test_suite='tests',

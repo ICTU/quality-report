@@ -14,10 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cd hqlib/app
-npm install
-npm run build
-cd ../..
 python setup.py sdist upload
 docker build --no-cache -t ictu/quality-report .
 docker push ictu/quality-report
