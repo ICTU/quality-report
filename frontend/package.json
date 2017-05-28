@@ -4,7 +4,8 @@
   "description": "Holistic Software Quality Reporting",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "babel-node ./tests/*.js | faucet",
+    "cover": "babel-node node_modules/.bin/isparta cover --report text --report html ./tests/*.js",
     "build": "webpack"
   },
   "repository": {
@@ -23,12 +24,20 @@
   "homepage": "https://github.com/ICTU/quality-report#readme",
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "file-loader": "^0.11.1",
     "jquery": "^2.2.4"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.23.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.1",
     "css-loader": "^0.28.3",
+    "faucet": "0.0.1",
+    "file-loader": "^0.11.1",
+    "isparta": "^4.0.0",
+    "istanbul": "0.4.4",
     "style-loader": "^0.18.1",
+    "tape": "^4.6.3",
     "webpack": "^2.6.1"
   }
 }

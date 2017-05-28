@@ -13,6 +13,7 @@ build
 dist
 quality_report.egg-info
 frontend/node_modules
+frontend/coverage
 hqlib/app/dist
 hqlib/app/img
 hqlib/app/html

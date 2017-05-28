@@ -18,6 +18,7 @@ import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
 import {read_cookie, write_cookie} from '../js/cookie.js';
+import {intersection} from '../js/utils.js';
 import '../js/compatibility.js';
 
 // These functions depend on cookie.js.
@@ -605,18 +606,6 @@ function set_check_indicator(id_of_check_item, check) {
     var element = document.getElementById(id_of_check_item);
     var icon = check ? 'glyphicon glyphicon-ok' : '';
     element.getElementsByTagName('span')[0].setAttribute('class', icon);
-}
-
-function intersection(array1, array2) {
-    var intersection_array = [];
-    for (var index1 = 0; index1 < array1.length; index1++) {
-        for (var index2 = 0; index2 < array2.length; index2++) {
-            if (array1[index1] === array2[index2]) {
-                intersection_array[intersection_array.length] = array1[index1];
-            }
-        }
-    }
-    return intersection_array;
 }
 
 function hide(element_id) {
