@@ -21,8 +21,6 @@ import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection} from '../js/utils.js';
 import '../js/compatibility.js';
 
-// These functions depend on cookie.js.
-
 /*
 Some event handlers are generated using closures. See
 http://stackoverflow.com/questions/3495679/passing-parameters-in-javascript-onclick-event
