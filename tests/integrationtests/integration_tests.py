@@ -98,6 +98,6 @@ class MissingProjectDefinition(AllRequirementsNoSourcesTests):
 
     @classmethod
     def tearDownClass(cls):
-        """ Remove the report. """
+        """ Override to remove the generated project definition in addition to the report. """
         super(MissingProjectDefinition, cls).tearDownClass()
         os.remove(cls.project_folder)
