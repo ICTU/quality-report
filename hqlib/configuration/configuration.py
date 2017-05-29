@@ -53,7 +53,7 @@ PROJECT.add_product(MY_APPLICATION)
 
 # Columns in the dashboard is specified as a list of tuples. Each tuple
 # contains a column header and the column span.
-DASHBOARD_COLUMNS = [('Application', 1), ('Overall', 3)]
+DASHBOARD_COLUMNS = [('Application', 1), ('Meta', 1)]
 
 # Rows in the dashboard is a list of row tuples. Each row tuple consists of
 # tuples that describe a cell in the dashboard. Each cell is a tuple containing
@@ -61,7 +61,7 @@ DASHBOARD_COLUMNS = [('Application', 1), ('Overall', 3)]
 # third value which is a tuple containing the column and row span for the cell.
 C1, C2, C3 = 'lightsteelblue', 'lightgrey', 'lavender'
 DASHBOARD_ROWS = [
-    [(MY_APPLICATION, C1), ('PD', C2), ('PC', C2), ('MM', C3)]
+    [(MY_APPLICATION, C1), ('MM', C3)]
 ]
 
 PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)
