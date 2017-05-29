@@ -86,7 +86,7 @@ class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
 class MissingProjectDefinition(AllRequirementsNoSourcesTests):
     """ Integration tests without a project definition. """
     project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/missing_project_definition.py'
-    expected_number_of_metrics = 34
+    expected_number_of_metrics = 36
 
     def test_contents(self):
         """ Test that the contents of the created project definition file is correct. """
