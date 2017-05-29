@@ -19,6 +19,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection} from '../js/utils.js';
+import {parse_history_json} from '../js/history.js';
 import '../js/compatibility.js';
 
 /*
@@ -516,17 +517,6 @@ function draw_pie_chart(section) {
     };
     var chart = new google.visualization.PieChart(piechart_div);
     chart.draw(data, options);
-}
-
-function parse_history_json(history_json) {
-    var history = [];
-    $.each(history_json, function(index, value) {
-        var measurement = [];
-        measurement.push(new Date(value[0][0], value[0][1], value[0][2], value[0][3], value[0][4], value[0][5]));
-        measurement.push(value[1][0], value[1][1], value[1][2], value[1][3], value[1][4], value[1][5], value[1][6]);
-        history.push(measurement);
-    });
-    return history;
 }
 
 function draw_area_charts(history) {
