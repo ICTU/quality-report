@@ -24,7 +24,7 @@ from typing import Optional
 class FileSystem(object):
     """ Class for methods that manipulate the file system. """
     @staticmethod
-    def write_file(contents: str, filename: str, mode: str, encoding: Optional[str]) -> None:
+    def write_file(contents: str, filename: str, mode: str, encoding: str=None) -> None:
         """ Write the contents to the specified file. """
         if os.path.exists(filename):
             FileSystem.make_file_readable(filename)

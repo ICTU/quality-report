@@ -24,37 +24,19 @@ import urllib.request
 
 import pkg_resources
 
-from hqlib import app, formatting, commandlineargs, report, metric_source, log, filesystem
+from hqlib import app, formatting, commandlineargs, report, metric_source, log, filesystem, configuration
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
     """ Class for creating the quality report for a specific project. """
 
-    PROJECT_DEFINITION_FILENAME = 'project_definition.py'
     EMPTY_HISTORY_PNG = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00" \
                         b"\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 " \
                         b"IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00" \
                         b"\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
 
     def __init__(self, project_folder_or_filename):
-        if project_folder_or_filename.endswith('.py'):
-            project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)
-        else:
-            project_folder, project_definition_filename = project_folder_or_filename, self.PROJECT_DEFINITION_FILENAME
-        self.__project = self.__import_project(project_folder, project_definition_filename)
-
-    @staticmethod
-    def __import_project(project_folder, project_definition_filename):
-        """ Import the project from the project definition file in the project folder. """
-        # Add the parent folder of the project folder to the python path so the
-        # project definition can import shared resources from other folders.
-        sys.path.insert(0, os.path.abspath(os.path.join(project_folder, '..')))
-        # Add the project folder itself to the python path so that we can import the project definition itself.
-        sys.path.insert(0, project_folder)
-        # Import the project definition and get the project from it.
-        module_name = project_definition_filename[:-len('.py')]
-        project_definition_module = __import__(module_name)
-        return project_definition_module.PROJECT
+        self.__project = configuration.Configuration.project(project_folder_or_filename)
 
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """

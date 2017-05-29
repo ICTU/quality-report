@@ -81,3 +81,19 @@ class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
 class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
     """ Integration tests using a second project definition from the same folder. """
     project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/second_project_definition.py'
+
+
+class MissingProjectDefinition(AllRequirementsNoSourcesTests):
+    """ Integration tests without a project definition. """
+    project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/missing_project_definition.py'
+    expected_number_of_metrics = 34
+
+    def test_contents(self):
+        """ Test that the contents of the created project definition file is correct. """
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Remove the report. """
+        super(MissingProjectDefinition, cls).tearDownClass()
+        os.remove(cls.project_folder)
