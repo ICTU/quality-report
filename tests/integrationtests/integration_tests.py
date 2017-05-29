@@ -23,6 +23,8 @@ import unittest
 
 import bs4
 
+from hqlib import configuration
+
 
 class IntegrationTestCase(unittest.TestCase):
     """ Base class for integration test cases that examine a generated report. """
@@ -90,7 +92,9 @@ class MissingProjectDefinition(AllRequirementsNoSourcesTests):
 
     def test_contents(self):
         """ Test that the contents of the created project definition file is correct. """
-        pass
+        with open(self.project_folder) as project_definition:
+            contents = project_definition.read()
+        self.assertEqual(configuration.configuration.NEW_PROJECT_DEFINITION_CONTENTS, contents)
 
     @classmethod
     def tearDownClass(cls):
