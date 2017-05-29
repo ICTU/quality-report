@@ -93,7 +93,7 @@ class Application(Product):
         from ... import requirement
         return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.OWASPDependencies,
-                requirement.OWASPZAP}
+                requirement.OWASPZAP, requirement.Checkmarx}
 
     @staticmethod
     def optional_requirements():
