@@ -17,6 +17,7 @@ import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
+import {create_dashboard_table} from '../js/dashboard_table.js';
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection, format_date_time} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
@@ -65,7 +66,7 @@ function create_dashboard() {
 
     // Retrieve the metrics for the metrics table after the sections have been loaded.
     $.getJSON("json/metrics.json", "", function(metrics_data) {
-        create_dashboard_table(metrics_data["dashboard"]);
+        $("#sections").append(create_dashboard_table(metrics_data["dashboard"]));
         create_sections(metrics_data["sections"]);
         fill_metrics_table(metrics_data["metrics"]);
         hide('#loading');
@@ -83,27 +84,6 @@ function create_dashboard() {
         create_metric_classes_table(meta_data['metrics']);
         create_metric_sources_table(meta_data['metric_sources']);
     });
-}
-
-function create_dashboard_table(dashboard) {
-    var table = ['<div id="section_dashboard"><table class="table table-condensed table-bordered"><thead>',
-                 '<tr style="color: white; font-weight: bold; background-color: #2F95CF">'];
-    $.each(dashboard["headers"], function(index, cell) {
-        table.push('<th colspan=' + cell["colspan"] + ' style="text-align: center;">' + cell["header"] + '</th>');
-    });
-    table.push('</th></thead><tbody>');
-    $.each(dashboard["rows"], function(index, row) {
-        table.push('<tr>');
-        $.each(row, function(index, cell) {
-            table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' align="center" bgcolor="' +
-                       cell['bgcolor'] + '">');
-            table.push('<div class="link_section_' + cell['section_id'] + '" title="' + cell['section_title'] + '"></div>');
-            table.push('<div id="section_summary_chart_' + cell['section_id'] + '"></div></td>');
-        });
-        table.push('</tr>');
-    });
-    table.push('</tbody></table>');
-    $("#sections").append(table.join(''));
 }
 
 function create_sections(sections) {
