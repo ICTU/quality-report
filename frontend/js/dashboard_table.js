@@ -27,7 +27,7 @@ function create_dashboard_table(dashboard) {
             table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' align="center" bgcolor="' +
                        cell['bgcolor'] + '">');
             table.push('<div class="link_section_' + cell['section_id'] + '" title="' + cell['section_title'] + '"></div>');
-            table.push('<canvas width="150px" height="150px" id="section_summary_chart_' + cell['section_id'] + '"></canvas></td>');
+            table.push('<canvas width="150px" height="150px" style="width:150; height:150;" id="section_summary_chart_' + cell['section_id'] + '"></canvas></td>');
         });
         table.push('</tr>');
     });
