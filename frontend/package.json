@@ -24,6 +24,7 @@
   "homepage": "https://github.com/ICTU/quality-report#readme",
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "chart.js": "^2.6.0",
     "jquery": "^2.2.4"
   },
   "devDependencies": {

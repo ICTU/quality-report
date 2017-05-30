@@ -14,6 +14,7 @@
  */
 
 import $ from 'jquery';
+import Chart from 'chart.js';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
@@ -36,7 +37,7 @@ var settings = [];
 var tables = [];
 var trend_data_loaded = false;
 
-var COLOR_PERFECT = '45E600';
+var COLOR_PERFECT = '#45E600';
 var COLOR_GREEN = '#4CC417';
 var COLOR_YELLOW = '#FDFD90';
 var COLOR_RED = '#FC9090';
@@ -441,37 +442,43 @@ function status_count(section, color) {
 
 function draw_pie_chart(section) {
     var piechart_div = document.getElementById('section_summary_chart_' + section);
-    if (piechart_div === null) {
+     if (piechart_div === null) {
         // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
         return;
     }
-
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Status');
-    data.addColumn('number', 'Number');
-    data.addRows([
-      ['Perfect', status_count(section, 'perfect')],
-      ['Goed', status_count(section, 'green')],
-      ['Bijna goed', status_count(section, 'yellow')],
-      ['Actie vereist', status_count(section, 'red')],
-      ['Technische schuld', status_count(section, 'grey')],
-      ['Bron niet beschikbaar', status_count(section, 'missing')],
-      ['Bron niet geconfigureerd', status_count(section, 'missing_source')]
-    ]);
-    var bg_color = piechart_div.parentNode.getAttribute('bgcolor');
-    var options = {
-      slices: [{color: COLOR_PERFECT}, {color: COLOR_GREEN}, {color: COLOR_YELLOW},
-               {color: COLOR_RED}, {color: COLOR_GREY}, {color: COLOR_MISSING}, {color: COLOR_MISSING}],
-      pieSliceText: 'none',
-      tooltip: {textStyle: {fontSize: 14}},
-      legend: 'none',
-      width: 80, height: 80,
-      backgroundColor: bg_color,
-      chartArea: {left: 7, top: 7, width: 66, height: 66},
-      is3D: true
-    };
-    var chart = new google.visualization.PieChart(piechart_div);
-    chart.draw(data, options);
+    var piechart = new Chart(piechart_div, {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: [
+                    status_count(section, 'perfect'),
+                    status_count(section, 'green'),
+                    status_count(section, 'yellow'),
+                    status_count(section, 'red'),
+                    status_count(section, 'grey'),
+                    status_count(section, 'missing'),
+                    status_count(section, 'missing_source')
+                ],
+                backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_MISSING, COLOR_MISSING]
+            }],
+            labels: ['Perfect', 'Goed', 'Bijna goed', 'Actie vereist', 'Technische schuld', 'Bron niet beschikbaar',
+                     'Bron niet geconfigureerd'],
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            responsive: true,
+            layout: {
+                padding: {
+                    left: 25,
+                    right: 25,
+                    top: 25,
+                    bottom: 25
+                }
+            }
+        }
+    });
 }
 
 function draw_area_charts(history) {
