@@ -14,7 +14,7 @@
  */
 
 import test from 'tape';
-import {intersection} from '../js/utils.js';
+import {intersection, format_date_time} from '../js/utils.js';
 
 test('intersection of two empty arrays is an empty array', function(t) {
     t.deepEqual([], intersection([], []));
@@ -51,3 +51,12 @@ test('intersection of overlapping arrays is the overlap', function(t) {
     t.end();
 });
 
+test('format 1st of january without time', function(t) {
+    t.equal(format_date_time(new Date(2017, 0, 1)), '1-1-2017 0:00');
+    t.end();
+});
+
+test('format 31st of december with time', function(t) {
+    t.equal(format_date_time(new Date(2017, 11, 31, 23, 59, 59)), '31-12-2017 23:59');
+    t.end();
+});

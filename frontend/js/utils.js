@@ -13,6 +13,15 @@
  * limitations under the License.
  */
 
+function format_date_time(date_time) {
+    // Format the Date object as a date and time string
+    var date_string = date_time.getDate() + "-" + (date_time.getMonth() + 1) + "-" + date_time.getFullYear();
+    var minutes = date_time.getMinutes();
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var time_string = date_time.getHours() + ":" + minutes;
+    return date_string + ' ' + time_string;
+}
+
 function intersection(array1, array2) {
     var intersection_array = [];
     for (var index1 = 0; index1 < array1.length; index1++) {
@@ -25,5 +34,5 @@ function intersection(array1, array2) {
     return intersection_array;
 }
 
-export {intersection};
+export {format_date_time, intersection};
 

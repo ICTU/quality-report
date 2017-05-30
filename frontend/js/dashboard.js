@@ -18,7 +18,7 @@ import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
 import {read_cookie, write_cookie} from '../js/cookie.js';
-import {intersection} from '../js/utils.js';
+import {intersection, format_date_time} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
 import '../js/compatibility.js';
 
@@ -354,15 +354,6 @@ function set_report_date(date_time) {
         var cls = seconds > 60 * 60 * 24 ? 'very_old' : 'old';
         $('#report_date_time').attr('class', cls);
     }
-}
-
-function format_date_time(date_time) {
-    // Format the Date object as a date and time string
-    var date_string = date_time.getDate() + "-" + (date_time.getMonth() + 1) + "-" + date_time.getFullYear();
-    var minutes = date_time.getMinutes();
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var time_string = date_time.getHours() + ":" + minutes;
-    return date_string + ' ' + time_string;
 }
 
 function draw_tables(tables) {
