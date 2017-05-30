@@ -447,7 +447,7 @@ function draw_pie_chart(section) {
         return;
     }
     piechart_div.width = 150;
-    peichart_div.height = 150;
+    piechart_div.height = 150;
     var piechart = new Chart(piechart_div, {
         type: 'pie',
         data: {
