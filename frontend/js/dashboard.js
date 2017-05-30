@@ -18,6 +18,7 @@ import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
 import {create_dashboard_table} from '../js/dashboard_table.js';
+import {create_sections, create_navigation_menu_items} from '../js/sections.js';
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection, format_date_time} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
@@ -67,7 +68,8 @@ function create_dashboard() {
     // Retrieve the metrics for the metrics table after the sections have been loaded.
     $.getJSON("json/metrics.json", "", function(metrics_data) {
         $("#sections").append(create_dashboard_table(metrics_data["dashboard"]));
-        create_sections(metrics_data["sections"]);
+        $("#sections").append(create_sections(metrics_data["sections"]));
+        $('#navigation_menu_items').append(create_navigation_menu_items(metrics_data['sections']));
         fill_metrics_table(metrics_data["metrics"]);
         hide('#loading');
         show('#sections');
@@ -84,24 +86,6 @@ function create_dashboard() {
         create_metric_classes_table(meta_data['metrics']);
         create_metric_sources_table(meta_data['metric_sources']);
     });
-}
-
-function create_sections(sections) {
-    var html_sections = ['<section id="section_all" style="display:none"><div id="table_all"></div></section>'];
-    var menu_items = [];
-    $.each(sections, function(index, section) {
-        var id = section["id"], title = section["title"], subtitle = section["subtitle"];
-        var html_section = '<section id="section_' + id + '"><div class="page-header="><h1>' + title;
-        if (subtitle) {
-            html_section += ' <small>' + subtitle + '</small>';
-        };
-        html_section += '</h1></div><div id="table_' + id + '"></div></section>';
-        html_sections.push(html_section);
-        var menu_item = '<li><a class="link_section_' + id + '" href="#section_' + id + '">' + title + '</a></li>';
-        menu_items.push(menu_item);
-    });
-    $("#sections").append(html_sections.join(''));
-    $('#navigation_menu_items').append(menu_items.join(''));
 }
 
 function create_metrics_table() {
