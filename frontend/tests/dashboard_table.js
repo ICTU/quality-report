@@ -37,7 +37,8 @@ test('dashboard table with one column and one row', function(t) {
 <tr style="color: white; font-weight: bold; background-color: #2F95CF">\
 <th colspan=1 style="text-align: center;">header 1</th></th></thead><tbody><tr>\
 <td colspan=1 rowspan=1 align="center" bgcolor="red"><div class="link_section_id" title="title"></div>\
-<canvas width="150" height="150" id="section_summary_chart_id"></canvas></td></tr></tbody></table>');
+<div class="piechart_cell"><canvas class="piechart_canvas" width=150 height=150 id="section_summary_chart_id">\
+</canvas></div></td></tr></tbody></table>');
     t.end();
 });
 
