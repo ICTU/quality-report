@@ -15,6 +15,7 @@
 
 import $ from 'jquery';
 import Chart from 'chart.js';
+import '../js/chartjs-plugin-stackedline100.js';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
@@ -482,31 +483,87 @@ function draw_pie_chart(section) {
 }
 
 function draw_area_charts(history) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('datetime', 'Datum');
-    data.addColumn('number', 'Perfect');
-    data.addColumn('number', 'Goed');
-    data.addColumn('number', 'Bijna goed');
-    data.addColumn('number', 'Actie vereist');
-    data.addColumn('number', 'Technische schuld');
-    data.addColumn('number', 'Bron niet beschikbaar');
-    data.addColumn('number', 'Bron niet geconfigureerd');
-    data.addRows(history);
-    draw_area_chart('meta_metrics_history_relative_graph', data, "Percentage metrieken per status", 'relative');
-    draw_area_chart('meta_metrics_history_absolute_graph', data, "Aantal metrieken per status", true);
+    draw_area_chart(history, 'meta_metrics_history_relative_graph_canvas', "Percentage metrieken per status", true);
+    draw_area_chart(history, 'meta_metrics_history_absolute_graph_canvas', "Aantal metrieken per status", false);
 }
 
-function draw_area_chart(section, data_table, title, stacked) {
-    var options = {
-      title: title,
-      width: 1200, height: 400,
-      isStacked: stacked,
-      hAxis: {format: 'd-M-yy'},
-      vAxis: {format: stacked === 'relative' ? 'percent' : ''},
-      colors: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
+function draw_area_chart(history, element_id, title, relative) {
+    var meta_metrics_history_relative_graph_canvas = document.getElementById(element_id);
+    var datasets = [];
+    for (var index = 0; index < 8; index ++) {
+        var dataset = [];
+        history.forEach(function(item) {dataset.push(item[index])});
+        datasets.push(dataset);
     };
-    var chart = new google.visualization.AreaChart(document.getElementById(section));
-    chart.draw(data_table, options);
+    var meta_metrics_history_relative_graph = new Chart(meta_metrics_history_relative_graph_canvas, {
+        type: 'line',
+        data: {
+            labels: datasets[0],
+            datasets: [
+                {
+                    label: "Perfect",
+                    fill: true,
+                    backgroundColor: COLOR_PERFECT,
+                    data: datasets[1]
+                },
+                {
+                    label: "Goed",
+                    fill: true,
+                    backgroundColor: COLOR_GREEN,
+                    data: datasets[2]
+                },
+                {
+                    label: "Bijna goed",
+                    fill: true,
+                    backgroundColor: COLOR_YELLOW,
+                    data: datasets[3]
+                },
+                {
+                    label: "Actie vereist",
+                    fill: true,
+                    backgroundColor: COLOR_RED,
+                    data: datasets[4]
+                },
+                {
+                    label: "Technische schuld",
+                    fill: true,
+                    backgroundColor: COLOR_GREY,
+                    data: datasets[5]
+                },
+                {
+                    label: "Bron niet beschikbaar",
+                    fill: true,
+                    backgroundColor: COLOR_MISSING,
+                    data: datasets[6]
+                },
+                {
+                    label: "Bron niet geconfigureerd",
+                    fill: true,
+                    backgroundColor: COLOR_MISSING,
+                    data: datasets[7]
+                }
+            ]},
+        options: {
+            title: {
+                text: title,
+                display: true
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: 'month'
+                    }
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            },
+            plugins: {
+                stackedline100: {enable: relative}
+            }
+        }
+    });
 }
 
 function show_or_hide_dashboard() {

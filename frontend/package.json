@@ -25,6 +25,7 @@
   "dependencies": {
     "bootstrap": "^3.3.6",
     "chart.js": "^2.6.0",
+    "chartjs-plugin-stacked100": "^0.1.1",
     "jquery": "^2.2.4"
   },
   "devDependencies": {

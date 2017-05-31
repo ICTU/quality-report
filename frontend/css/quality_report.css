@@ -53,3 +53,13 @@ div.piechart_div {
     width: 150px !important;
     height: 150px !important;
 }
+
+canvas.meta_metrics_history_graph_canvas {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+div.meta_metrics_history_graph {
+    width: 100%;
+}
