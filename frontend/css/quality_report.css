@@ -49,7 +49,7 @@ canvas.piechart_canvas {
     width: 100%;
 }
 
-div.piechart_cell {
+div.piechart_div {
     width: 150px !important;
     height: 150px !important;
 }
