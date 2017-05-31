@@ -441,12 +441,12 @@ function status_count(section, color) {
 }
 
 function draw_pie_chart(section) {
-    var piechart_div = document.getElementById('section_summary_chart_' + section);
-     if (piechart_div === null) {
+    var piechart_canvas = document.getElementById('section_summary_chart_' + section);
+     if (piechart_canvas === null) {
         // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
         return;
     }
-    var piechart = new Chart(piechart_div, {
+    var piechart = new Chart(piechart_canvas, {
         type: 'pie',
         data: {
             datasets: [{

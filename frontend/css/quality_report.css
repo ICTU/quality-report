@@ -42,3 +42,14 @@ p span.very_old {
     color: red;
     font-weight: bold;
 }
+
+canvas.piechart_canvas {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+div.piechart_cell {
+    width: 150px !important;
+    height: 150px !important;
+}
