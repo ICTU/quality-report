@@ -460,7 +460,8 @@ function draw_pie_chart(section) {
                     status_count(section, 'missing'),
                     status_count(section, 'missing_source')
                 ],
-                backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_MISSING, COLOR_MISSING]
+                backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED,
+                                  COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
             }],
             labels: ['Perfect', 'Goed', 'Bijna goed', 'Actie vereist', 'Technische schuld', 'Bron niet beschikbaar',
                      'Bron niet geconfigureerd'],
