@@ -50,8 +50,8 @@ canvas.piechart_canvas {
 }
 
 div.piechart_div {
-    width: 150px !important;
-    height: 150px !important;
+    width: 200px !important;
+    height: 80px !important;
 }
 
 canvas.meta_metrics_history_graph_canvas {
