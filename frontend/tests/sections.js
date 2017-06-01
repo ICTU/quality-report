@@ -41,3 +41,11 @@ test('one navigation menu item for one section', function(t) {
     '<li><a class="link_section_id" href="#section_id">title</a></li>');
     t.end();
 });
+
+test('section without subtitle', function(t) {
+    t.deepEqual(
+        create_sections([{"id": "id", "title": "title", "subtitle": ""}]),
+        '<section id="section_all" style="display:none"><div id="table_all"></div></section><section id="section_id">\
+<div class="page-header="><h1>title</h1></div><div id="table_id"></div></section>');
+    t.end();
+})
