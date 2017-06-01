@@ -483,18 +483,18 @@ function draw_pie_chart(section) {
 }
 
 function draw_area_charts(history) {
-    draw_area_chart(history, 'meta_metrics_history_relative_graph_canvas', "Percentage metrieken per status", true);
-    draw_area_chart(history, 'meta_metrics_history_absolute_graph_canvas', "Aantal metrieken per status", false);
-}
-
-function draw_area_chart(history, element_id, title, relative) {
-    var meta_metrics_history_relative_graph_canvas = document.getElementById(element_id);
     var datasets = [];
     for (var index = 0; index < 8; index ++) {
         var dataset = [];
         history.forEach(function(item) {dataset.push(item[index])});
         datasets.push(dataset);
     };
+    draw_area_chart(datasets, 'meta_metrics_history_relative_graph_canvas', "Percentage metrieken per status", true);
+    draw_area_chart(datasets, 'meta_metrics_history_absolute_graph_canvas', "Aantal metrieken per status", false);
+}
+
+function draw_area_chart(datasets, element_id, title, relative) {
+    var meta_metrics_history_relative_graph_canvas = document.getElementById(element_id);
     var meta_metrics_history_relative_graph = new Chart(meta_metrics_history_relative_graph_canvas, {
         type: 'line',
         data: {
@@ -551,9 +551,7 @@ function draw_area_chart(history, element_id, title, relative) {
             scales: {
                 xAxes: [{
                     type: 'time',
-                    time: {
-                        unit: 'month'
-                    }
+                    time: {unit: 'month'}
                 }],
                 yAxes: [{
                     stacked: true
