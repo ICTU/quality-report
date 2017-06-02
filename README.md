@@ -22,7 +22,7 @@ Application to generate quality reports for software development projects.
 Holistic because HQ attempts to measure as many aspects of software development as
 possible, seeing how software development can go off the rails in so many ways.
 
-HQ itself is developed in Python, but can report on the quality of software 
+HQ itself is developed in Python (backend) and JavaScript (frontend), but can report on the quality of software 
 developed in any language as it doesn't measure the quality itself, but instead
 relies on other tools to feed it information. Metric sources include SonarQube, Jenkins,
 Jira, Jacoco, JMeter, OWASP dependency checker, and more.
@@ -38,6 +38,8 @@ Sociale Zaken en Werkgelegenheid.
 See docs/AUTHORS.txt for contact information.
 See docs/LICENSE.txt for license information.
 See docs/HOWTO.txt for information on how to configure quality reports.
+
+![Screenshot](docs/screenshot.png)
 
 Usage
 -----
