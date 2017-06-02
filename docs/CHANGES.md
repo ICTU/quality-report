@@ -1,6 +1,6 @@
-2017-05-29  Release 1.81.14
+2017-06-02  Release 1.81.14
 
-  * Make CheckMarx a default requirement for Application domain objects.
+  * Make Checkmarx a default requirement for Application domain objects.
   * Generate a default project definition file if no project definition file exists yet.
 
 
