@@ -554,7 +554,8 @@ function draw_area_chart(datasets, element_id, title, relative) {
         options: {
             title: {
                 text: title,
-                display: true
+                display: true,
+                fontSize: 14
             },
             scales: {
                 xAxes: [{
