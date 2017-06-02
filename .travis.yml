@@ -16,7 +16,7 @@ script:
 - npm install
 - npm run cover
 - cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
-- cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js.
+- cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 - cd ..
 - coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"
 - coverage xml
