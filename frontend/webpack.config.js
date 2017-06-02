@@ -13,10 +13,15 @@ module.exports = {
       jQuery: 'jquery',
       $: 'jquery',
       jquery: 'jquery'
-    })
+    }),
+    new webpack.optimize.UglifyJsPlugin()
   ],
   module: {
     rules: [
+      {
+        test: /\.(js|jsx)$/,
+        use: 'babel-loader'
+      },
       {
         test: /\.css$/,
         use: [ 'style-loader', 'css-loader' ]
