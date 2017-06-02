@@ -559,7 +559,7 @@ function draw_area_chart(datasets, element_id, title, relative) {
             scales: {
                 xAxes: [{
                     type: 'time',
-                    time: {unit: 'month'}
+                    time: {minUnit: 'week'}
                 }],
                 yAxes: [{
                     stacked: true
