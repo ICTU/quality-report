@@ -37,5 +37,47 @@ Sociale Zaken en Werkgelegenheid.
 
 See docs/AUTHORS.txt for contact information.
 See docs/LICENSE.txt for license information.
-See docs/INSTALL.txt for installation information.
 See docs/HOWTO.txt for information on how to configure quality reports.
+
+Usage
+-----
+
+### Using Python 3.6
+
+Install HQ from the Python Package Index (PyPI):
+
+    pip install quality_report
+
+We recommend using virtualenv:
+
+    $HQ_VIRTUAL_ENV=/home/jenkins/hq-pyenv  # For example
+
+    # Delete previous version
+    if [ -d $HQ_VIRTUAL_ENV ]; then
+        rm -rf $HQ_VIRTUAL_ENV
+    fi
+    
+    # Create the virtualenv and activate it
+    virtualenv $HQ_VIRTUAL_ENV
+    . $HQ_VIRTUAL_ENV/bin/activate
+    
+    # Install HQ
+    pip install quality_report
+    
+HQ can now be started from the command line:
+
+    $PROJECT=/path/to/project_definition_folder
+    $REPORT=/path/to/folder/to/write/report/to
+    quality_report.py --project $PROJECT --report $REPORT
+
+### Using Docker
+
+Pull the image from Docker Hub:
+
+    docker pull ictu/quality-report
+
+HQ can now be started from the command line:
+
+    $PROJECT=/path/to/project_definition_folder
+    $REPORT=/path/to/folder/to/write/report/to
+    docker run --rm -u `id -u`:`id -g` -v /etc/localtime:/etc/localtime:ro -v `pwd`:/work -w /work ictu/quality-report --project $PROJECT --report $REPORT
