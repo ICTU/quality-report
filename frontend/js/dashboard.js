@@ -504,42 +504,49 @@ function draw_area_chart(datasets, element_id, title, relative) {
                 {
                     label: "Perfect",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_PERFECT,
                     data: datasets[1]
                 },
                 {
                     label: "Goed",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_GREEN,
                     data: datasets[2]
                 },
                 {
                     label: "Bijna goed",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_YELLOW,
                     data: datasets[3]
                 },
                 {
                     label: "Actie vereist",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_RED,
                     data: datasets[4]
                 },
                 {
                     label: "Technische schuld",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_GREY,
                     data: datasets[5]
                 },
                 {
                     label: "Bron niet beschikbaar",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_MISSING,
                     data: datasets[6]
                 },
                 {
                     label: "Bron niet geconfigureerd",
                     fill: true,
+                    pointRadius: 0,
                     backgroundColor: COLOR_MISSING,
                     data: datasets[7]
                 }
