@@ -15,6 +15,7 @@ script:
 - CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter --file build/.coverage
 - python-codacy-coverage -r coverage.xml
 - cd frontend
+- npm install
 - npm run cover && cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
 - cd ..
 - coveralls
