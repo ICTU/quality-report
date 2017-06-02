@@ -3,6 +3,8 @@ dist: trusty
 language: python
 python:
 - "3.6"
+before_install:
+- nvm install node
 install:
 - pip install -r requirements.txt
 - pip install codeclimate-test-reporter
