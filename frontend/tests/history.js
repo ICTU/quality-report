@@ -18,6 +18,14 @@ import {parse_history_json} from '../js/history.js';
 
 test('parse history should create JS Dates', function(t) {
     t.deepEqual(parse_history_json([[[2016, 10, 27, 22, 5, 49], [3, 0, 2, 0, 0, 0, 135]]]),
-                [[new Date(2016, 10, 27, 22, 5, 49), 3 , 0, 2, 0, 0, 0, 135]]);
+                [[new Date(2016, 10, 27, 22, 5, 49)], [3], [0], [2], [0], [0], [0], [135]]);
+    t.end();
+});
+
+test('parse history should create datasets', function(t) {
+    t.deepEqual(parse_history_json([[[2016, 10, 27, 22, 5, 49], [3, 0, 2, 0, 0, 0, 135]],
+                                    [[2016, 10, 28, 9, 0, 0], [3, 0, 3, 1, 1, 1, 5]]]),
+                [[new Date(2016, 10, 27, 22, 5, 49), new Date(2016, 10, 28, 9, 0, 0)],
+                 [3, 3], [0, 0], [2, 3], [0, 1], [0, 1], [0, 1], [135, 5]]);
     t.end();
 });

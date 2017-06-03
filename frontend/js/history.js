@@ -15,14 +15,14 @@
 
 
 function parse_history_json(history_json) {
-    var history = [];
+    var datasets = [[], [], [], [], [], [], [], []];
     history_json.forEach(function(value) {
-        var measurement = [];
-        measurement.push(new Date(value[0][0], value[0][1], value[0][2], value[0][3], value[0][4], value[0][5]));
-        measurement.push(value[1][0], value[1][1], value[1][2], value[1][3], value[1][4], value[1][5], value[1][6]);
-        history.push(measurement);
+        datasets[0].push(new Date(value[0][0], value[0][1], value[0][2], value[0][3], value[0][4], value[0][5]));
+        for (var index = 1; index < 8; index++) {
+            datasets[index].push(value[1][index - 1]);
+        }
     });
-    return history;
+    return datasets;
 }
 
 export {parse_history_json};

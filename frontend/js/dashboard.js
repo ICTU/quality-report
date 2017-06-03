@@ -219,13 +219,7 @@ function create_event_handlers() {
         } else {
             show('#loading');
             $.getJSON("json/meta_history.json", "", function(history_json) {
-                var history = parse_history_json(history_json);
-                var datasets = [];
-                for (var index = 0; index < 8; index ++) {
-                    var dataset = [];
-                    history.forEach(function(item) {dataset.push(item[index])});
-                    datasets.push(dataset);
-                };
+                var datasets = parse_history_json(history_json);
                 trend_data_loaded = true;
                 hide('#loading');
                 show('#trend_graphs');
