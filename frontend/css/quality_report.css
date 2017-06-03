@@ -50,6 +50,8 @@ canvas.piechart_canvas {
 }
 
 div.piechart_div {
+    min-width: 100px;
+    min-height: 40px;
     max-width: 200px; /* !important; */
     max-height: 80px /*!important;*/
 }
