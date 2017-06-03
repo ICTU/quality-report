@@ -73,12 +73,16 @@ function create_dashboard() {
         $("#sections").append(create_sections(metrics_data["sections"]));
         $('#navigation_menu_items').append(create_navigation_menu_items(metrics_data['sections']));
         fill_metrics_table(metrics_data["metrics"]);
-        hide('#loading');
-        show('#sections');
-
         set_report_date(new Date(...metrics_data["report_date"]));
         $("#hq_version").html(metrics_data["hq_version"]);
         $(".report_title").html(metrics_data["report_title"]);
+        hide('#loading');
+        show('#sections');
+        var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
+        for (var index = 0; index < sections.length; index++) {
+            var section = sections[index];
+            draw_section_summary_chart(section);
+        };
     });
 
     // Retrieve the files for the menu's
@@ -115,7 +119,7 @@ function fill_metrics_table(metrics_data) {
         var section = sections[index];
         tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
-        draw_section_summary_chart(section);
+        // draw_section_summary_chart(section);
     }
     show_or_hide_dashboard();
     draw_tables(tables);
@@ -215,10 +219,17 @@ function create_event_handlers() {
         } else {
             show('#loading');
             $.getJSON("json/meta_history.json", "", function(history_json) {
-                draw_area_charts(parse_history_json(history_json));
+                var history = parse_history_json(history_json);
+                var datasets = [];
+                for (var index = 0; index < 8; index ++) {
+                    var dataset = [];
+                    history.forEach(function(item) {dataset.push(item[index])});
+                    datasets.push(dataset);
+                };
+                trend_data_loaded = true;
                 hide('#loading');
                 show('#trend_graphs');
-                trend_data_loaded = true;
+                draw_area_charts(datasets);
             });
         };
     });
@@ -483,13 +494,7 @@ function draw_pie_chart(section) {
     });
 }
 
-function draw_area_charts(history) {
-    var datasets = [];
-    for (var index = 0; index < 8; index ++) {
-        var dataset = [];
-        history.forEach(function(item) {dataset.push(item[index])});
-        datasets.push(dataset);
-    };
+function draw_area_charts(datasets) {
     draw_area_chart(datasets, 'meta_metrics_history_relative_graph_canvas', "Percentage metrieken per status", true);
     draw_area_chart(datasets, 'meta_metrics_history_absolute_graph_canvas', "Aantal metrieken per status", false);
 }
