@@ -78,9 +78,8 @@ function create_dashboard() {
         $(".report_title").html(metrics_data["report_title"]);
         hide('#loading');
         show('#sections');
-        var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
-        sections.forEach(function(section) {
-            draw_section_summary_chart(section);
+        metrics_data["sections"].forEach(function(section) {
+            draw_section_summary_chart(section["id"], section["title"]);
         });
     });
 
@@ -439,8 +438,8 @@ function table_view_filtered_rows() {
     return colored_rows;
 }
 
-function draw_section_summary_chart(section) {
-    draw_pie_chart(section);
+function draw_section_summary_chart(section_id, section_title) {
+    draw_pie_chart(section_id, section_title);
 }
 
 function status_count(section, color) {
@@ -448,8 +447,8 @@ function status_count(section, color) {
                                           {column: METRICS_COLUMN_STATUS_TEXT, value: color}]).length;
 }
 
-function draw_pie_chart(section) {
-    var piechart_canvas = document.getElementById('section_summary_chart_' + section);
+function draw_pie_chart(section_id, section_title) {
+    var piechart_canvas = document.getElementById('section_summary_chart_' + section_id);
      if (piechart_canvas === null) {
         // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
         return;
@@ -459,13 +458,13 @@ function draw_pie_chart(section) {
         data: {
             datasets: [{
                 data: [
-                    status_count(section, 'perfect'),
-                    status_count(section, 'green'),
-                    status_count(section, 'yellow'),
-                    status_count(section, 'red'),
-                    status_count(section, 'grey'),
-                    status_count(section, 'missing'),
-                    status_count(section, 'missing_source')
+                    status_count(section_id, 'perfect'),
+                    status_count(section_id, 'green'),
+                    status_count(section_id, 'yellow'),
+                    status_count(section_id, 'red'),
+                    status_count(section_id, 'grey'),
+                    status_count(section_id, 'missing'),
+                    status_count(section_id, 'missing_source')
                 ],
                 backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED,
                                   COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
@@ -474,12 +473,18 @@ function draw_pie_chart(section) {
                      'Bron niet geconfigureerd'],
         },
         options: {
+            title: {
+                display: true,
+                text: section_title,
+                fontSize: 14,
+                padding: 5
+            },
             legend: {
                 display: false
             },
             responsive: true,
             onClick: function(event, array) {
-                document.getElementById('section_' + section).scrollIntoView();
+                document.getElementById('section_' + section_id).scrollIntoView();
                 scrollBy(0, -50);
             }
         }
