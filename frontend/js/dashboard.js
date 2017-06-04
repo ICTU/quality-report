@@ -211,6 +211,8 @@ function create_event_handlers() {
         activate_parent('#trend_tab');
         show('#metrics_tab');
         hide('#navigation_menu');
+        show('#trend_navigation_menu');
+        hide('#trend_tab');
         hide('#sections');
         hide("#toon_menu");
         if (trend_data_loaded) {
@@ -232,6 +234,8 @@ function create_event_handlers() {
         deactivate_parent('#trend_tab');
         hide('#loading');
         show("#navigation_menu");
+        hide('#trend_navigation_menu');
+        show('#trend_tab');
         show('#sections');
         hide('#trend_graphs');
         show("#toon_menu");
