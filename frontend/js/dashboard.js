@@ -118,7 +118,6 @@ function fill_metrics_table(metrics_data) {
         var section = sections[index];
         tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
         google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
-        // draw_section_summary_chart(section);
     }
     show_or_hide_dashboard();
     draw_tables(tables);
