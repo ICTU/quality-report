@@ -479,13 +479,9 @@ function draw_pie_chart(section) {
                 display: false
             },
             responsive: true,
-            layout: {
-                padding: {
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0
-                }
+            onClick: function(event, array) {
+                document.getElementById('section_' + section).scrollIntoView();
+                scrollBy(0, -50);
             }
         }
     });
