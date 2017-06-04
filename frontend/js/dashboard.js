@@ -79,10 +79,9 @@ function create_dashboard() {
         hide('#loading');
         show('#sections');
         var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
-        for (var index = 0; index < sections.length; index++) {
-            var section = sections[index];
+        sections.forEach(function(section) {
             draw_section_summary_chart(section);
-        };
+        });
     });
 
     // Retrieve the files for the menu's
