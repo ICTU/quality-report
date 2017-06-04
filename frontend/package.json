@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "babel-node node_modules/tape/bin/tape ./tests/*.js | faucet",
-    "cover": "babel-node node_modules/isparta/bin/isparta cover --report lcov --report text --report html --include-all-sources node_modules/tape/bin/tape -- \"./tests/*.js\"",
+    "cover": "babel-node node_modules/.bin/babel-istanbul cover --report lcov --report text --report html --include-all-sources node_modules/tape/bin/tape \"./tests/*.js\"",
     "build": "webpack"
   },
   "repository": {
@@ -31,6 +31,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.23.1",
+    "babel-istanbul": "^0.12.2",
     "babel-loader": "^7.0.0",
     "babel-preset-env": "^1.5.1",
     "codacy-coverage": "^2.0.2",
@@ -39,7 +40,7 @@
     "faucet": "0.0.1",
     "file-loader": "^0.11.1",
     "isparta": "^4.0.0",
-    "istanbul": "0.4.4",
+    "istanbul": "^0.4.4",
     "style-loader": "^0.18.1",
     "tape": "^4.6.3",
     "webpack": "^2.6.1"
