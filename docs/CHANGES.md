@@ -1,3 +1,9 @@
+2017-06-04  Release 1.81.16
+
+  * Add animation to charts.
+  * Add navigation menu to the trends tab.
+  
+  
 2017-06-03  Release 1.81.15
 
   * Bug fix: Don't crash when there are no Checkmarx reports for a specific project.
