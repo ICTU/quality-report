@@ -477,6 +477,7 @@ function draw_pie_chart(section_id, section_title) {
                 display: true,
                 text: section_title,
                 fontSize: 14,
+                fontStyle: 'normal',
                 padding: 5
             },
             legend: {
