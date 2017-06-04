@@ -1,6 +1,6 @@
 # Required Python packages
 beautifulsoup4==4.6.0
-lxml==3.7.3
+lxml==3.8.0
 coverage==4.3.4
 xmlrunner==1.7.7
 python-dateutil==2.6.0
