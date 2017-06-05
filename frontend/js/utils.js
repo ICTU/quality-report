@@ -34,5 +34,9 @@ function intersection(array1, array2) {
     return intersection_array;
 }
 
-export {format_date_time, intersection};
+function strip_brackets(string) {
+    return string.replace(/ \(.*\)/, '');
+}
+
+export {format_date_time, intersection, strip_brackets};
 

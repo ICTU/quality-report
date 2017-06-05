@@ -22,7 +22,7 @@ import '../css/quality_report.css';
 import {create_dashboard_table} from '../js/dashboard_table.js';
 import {create_sections, create_navigation_menu_items} from '../js/sections.js';
 import {read_cookie, write_cookie} from '../js/cookie.js';
-import {intersection, format_date_time} from '../js/utils.js';
+import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
 import '../js/compatibility.js';
 
@@ -319,7 +319,6 @@ function color_metrics(color_perfect, color_green, color_yellow, color_red, colo
 
 function set_report_date(date_time) {
     $('#report_date_time').html(format_date_time(date_time));
-
     var now = new Date();
     var seconds = parseInt((now - date_time)/1000, 10);
     if (seconds > 60 * 60) {
@@ -439,7 +438,7 @@ function table_view_filtered_rows() {
 }
 
 function draw_section_summary_chart(section_id, section_title) {
-    draw_pie_chart(section_id, section_title);
+    draw_pie_chart(section_id, strip_brackets(section_title));
 }
 
 function status_count(section, color) {

@@ -14,7 +14,7 @@
  */
 
 import test from 'tape';
-import {intersection, format_date_time} from '../js/utils.js';
+import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
 
 test('intersection of two empty arrays is an empty array', function(t) {
     t.deepEqual([], intersection([], []));
@@ -58,5 +58,15 @@ test('format 1st of january without time', function(t) {
 
 test('format 31st of december with time', function(t) {
     t.equal(format_date_time(new Date(2017, 11, 31, 23, 59, 59)), '31-12-2017 23:59');
+    t.end();
+});
+
+test('stripping brackets from a string without brackets leaves the string unchanged', function(t) {
+    t.equal(strip_brackets('Foo'), 'Foo');
+    t.end();
+});
+
+test('stripping brackets from a string with brackets', function(t) {
+    t.equal(strip_brackets('Foo (bar)'), 'Foo');
     t.end();
 });
