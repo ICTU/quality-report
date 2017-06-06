@@ -1,3 +1,8 @@
+2017-06-06  Release 1.81.17
+
+  * Bug fix: Don't crash when the OpenVAS scan report is invalid or empty.
+  
+
 2017-06-06  Release 1.81.16
 
   * Add animation to charts.

@@ -17,6 +17,7 @@ limitations under the License.
 import datetime
 import functools
 import bs4
+import logging
 import dateutil.parser
 from typing import Callable
 
@@ -43,7 +44,11 @@ class OpenVASScanReport(domain.MetricSource):
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
             else:
-                nr_alerts += self.__parse_alerts(soup, risk_level)
+                try:
+                    nr_alerts += self.__parse_alerts(soup, risk_level)
+                except IndexError as reason:
+                    logging.error("Error parsing alerts from report at %s: %s", url, reason)
+                    return -1
         return nr_alerts
 
     @staticmethod

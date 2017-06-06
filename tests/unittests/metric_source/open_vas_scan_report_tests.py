@@ -117,3 +117,10 @@ class OpenVASScanReportTest(unittest.TestCase):
     def test_datetime(self):
         """ Test that the date/time can be parsed. """
         self.assertEqual(datetime.datetime(2016, 8, 8, 12, 37, 4), self.__report.datetime('url'))
+
+    def test_empty_report(self):
+        """ Test that the value us -1 when the report is invalid. """
+        opener = FakeUrlOpener()
+        opener.html = ''
+        report = OpenVASScanReport(url_open=opener.url_open)
+        self.assertEqual(-1, report.alerts('high', 'url'))
