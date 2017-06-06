@@ -42,6 +42,17 @@ test('dashboard table with one column and one row', function(t) {
     t.end();
 });
 
+test('dashboard table with empty cell', function(t) {
+    t.deepEqual(
+        create_dashboard_table(
+            {"headers": [{"header": "header", "colspan": 1}],
+             "rows": [[{"section_id": "", "section_title": "", "colspan": 1, "rowspan": 1, "bgcolor": "red"}]]}),
+            '<div id="section_dashboard"><table class="table table-condensed table-bordered dashboard"><thead>\
+<tr style="color: white; font-weight: bold; background-color: #2F95CF"><th colspan=1 style="text-align: center;">\
+header</th></th></thead><tbody><tr><td colspan=1 rowspan=1 bgcolor="red"></td></tr></tbody></table>');
+    t.end();
+});
+
 test('dashboard columns', function(t) {
     t.equals(dashboard_columns({"headers": [{"colspan": 1}, {"colspan": 2}]}), 3);
     t.end();

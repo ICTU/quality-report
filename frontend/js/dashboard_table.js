@@ -26,7 +26,10 @@ function create_dashboard_table(dashboard) {
         row.forEach(function(cell) {
             table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' bgcolor="' +
                        cell['bgcolor'] + '">');
-            table.push('<div class="piechart_div"><canvas class="piechart_canvas" id="section_summary_chart_' + cell['section_id'] + '"></canvas></div></td>');
+            if (cell["section_id"]) {
+                table.push('<div class="piechart_div"><canvas class="piechart_canvas" id="section_summary_chart_' + cell['section_id'] + '"></canvas></div>');
+            };
+            table.push('</td>');
         });
         table.push('</tr>');
     });
