@@ -489,12 +489,6 @@ function draw_pie_chart(section_id, section_title, width, height) {
             legend: {
                 display: false
             },
-            layout: {
-                padding: {
-                    left: 40,
-                    right: 40
-                }
-            },
             responsive: true,
             maintainAspectRatio: false,
             onClick: function(event, array) {
