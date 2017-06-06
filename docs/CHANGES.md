@@ -2,6 +2,7 @@
 
   * Bug fix: Don't crash when the OpenVAS scan report is invalid or empty.
   * Bug fix: Don't push a canvas in empty dashboard table cells.
+  * Remove animation from charts, it's too slow.
   
 
 2017-06-06  Release 1.81.16

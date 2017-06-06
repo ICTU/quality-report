@@ -76,13 +76,13 @@ function create_dashboard() {
         set_report_date(new Date(...metrics_data["report_date"]));
         $("#hq_version").html(metrics_data["hq_version"]);
         $(".report_title").html(metrics_data["report_title"]);
-        hide('#loading');
-        show('#sections');
         var rows = dashboard_rows(metrics_data["dashboard"]);
         var columns = dashboard_columns(metrics_data["dashboard"]);
         metrics_data["sections"].forEach(function(section) {
             draw_section_summary_chart(section["id"], section["title"], columns, rows);
         });
+        hide('#loading');
+        show('#sections');
     });
 
     // Retrieve the files for the menu's
@@ -220,11 +220,10 @@ function create_event_handlers() {
         } else {
             show('#loading');
             $.getJSON("json/meta_history.json", "", function(history_json) {
-                var datasets = parse_history_json(history_json);
+                draw_area_charts(parse_history_json(history_json));
                 trend_data_loaded = true;
                 hide('#loading');
                 show('#trend_graphs');
-                draw_area_charts(datasets);
             });
         };
     });
@@ -489,6 +488,9 @@ function draw_pie_chart(section_id, section_title, width, height) {
             legend: {
                 display: false
             },
+            animation: {
+                duration: 0
+            },
             responsive: true,
             maintainAspectRatio: false,
             onClick: function(event, array) {
@@ -575,6 +577,9 @@ function draw_area_chart(datasets, element_id, title, relative) {
                 yAxes: [{
                     stacked: true
                 }]
+            },
+            animation: {
+                duration: 0
             },
             plugins: {
                 stackedline100: {enable: relative}
