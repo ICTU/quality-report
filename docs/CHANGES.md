@@ -1,6 +1,7 @@
-2017-06-04  Release 1.81.16
+2017-06-06  Release 1.81.16
 
   * Add animation to charts.
+  * Make dashboard with pie charts responsive.
   * Add navigation menu to the trends tab.
   
   
