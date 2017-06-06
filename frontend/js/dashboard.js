@@ -482,7 +482,14 @@ function draw_pie_chart(section_id, section_title) {
             legend: {
                 display: false
             },
+            layout: {
+                padding: {
+                    left: 50,
+                    right: 50
+                }
+            },
             responsive: true,
+            maintainAspectRatio: false,
             onClick: function(event, array) {
                 document.getElementById('section_' + section_id).scrollIntoView();
                 scrollBy(0, -50);

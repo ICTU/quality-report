@@ -26,7 +26,7 @@ function create_dashboard_table(dashboard) {
         row.forEach(function(cell) {
             table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' align="center" bgcolor="' +
                        cell['bgcolor'] + '">');
-            table.push('<div class="piechart_div"><canvas class="piechart_canvas" width=200 height=80 id="section_summary_chart_' + cell['section_id'] + '"></canvas></div></td>');
+            table.push('<div class="piechart_div"><canvas class="piechart_canvas" id="section_summary_chart_' + cell['section_id'] + '"></canvas></div></td>');
         });
         table.push('</tr>');
     });

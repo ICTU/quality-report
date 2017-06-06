@@ -44,14 +44,15 @@ p span.very_old {
 }
 
 canvas.piechart_canvas {
-    display: block;
     height: 100%;
     width: 100%;
 }
 
 div.piechart_div {
-    width: 200px;
-    height: 80px;
+    position: relative;
+    margin: auto;
+    width: 20vw;
+    height: 15vh;
 }
 
 canvas.meta_metrics_history_graph_canvas {
