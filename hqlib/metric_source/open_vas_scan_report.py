@@ -60,7 +60,12 @@ class OpenVASScanReport(domain.MetricSource):
 
     def datetime(self, *report_urls: str) -> DateTime:
         """ Return the date/time of the reports. """
-        return min([self.__report_datetime(report_url) for report_url in report_urls], default=datetime.datetime.min)
+        try:
+            return min([self.__report_datetime(report_url) for report_url in report_urls],
+                       default=datetime.datetime.min)
+        except IndexError as reason:
+            logging.error("Error parsing date from report urls at %s: %s", report_urls, reason)
+            return datetime.datetime.min
 
     def __report_datetime(self, report_url: str) -> DateTime:
         """ Return the date/time of the report. """

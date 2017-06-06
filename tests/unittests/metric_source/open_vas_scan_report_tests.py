@@ -119,8 +119,15 @@ class OpenVASScanReportTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2016, 8, 8, 12, 37, 4), self.__report.datetime('url'))
 
     def test_empty_report(self):
-        """ Test that the value us -1 when the report is invalid. """
+        """ Test that the value is -1 when the report is invalid. """
         opener = FakeUrlOpener()
         opener.html = ''
         report = OpenVASScanReport(url_open=opener.url_open)
         self.assertEqual(-1, report.alerts('high', 'url'))
+
+    def test_date_time_of_empty_report(self):
+        """ Test that the date time is datetime.min when the report is invalid. """
+        opener = FakeUrlOpener()
+        opener.html = ''
+        report = OpenVASScanReport(url_open=opener.url_open)
+        self.assertEqual(datetime.datetime.min, report.datetime('url'))
