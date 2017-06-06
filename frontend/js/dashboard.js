@@ -19,7 +19,7 @@ import '../js/chartjs-plugin-stackedline100.js';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
-import {create_dashboard_table} from '../js/dashboard_table.js';
+import {create_dashboard_table, dashboard_rows, dashboard_columns} from '../js/dashboard_table.js';
 import {create_sections, create_navigation_menu_items} from '../js/sections.js';
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
@@ -78,8 +78,10 @@ function create_dashboard() {
         $(".report_title").html(metrics_data["report_title"]);
         hide('#loading');
         show('#sections');
+        var rows = dashboard_rows(metrics_data["dashboard"]);
+        var columns = dashboard_columns(metrics_data["dashboard"]);
         metrics_data["sections"].forEach(function(section) {
-            draw_section_summary_chart(section["id"], section["title"]);
+            draw_section_summary_chart(section["id"], section["title"], columns, rows);
         });
     });
 
@@ -437,8 +439,11 @@ function table_view_filtered_rows() {
     return colored_rows;
 }
 
-function draw_section_summary_chart(section_id, section_title) {
-    draw_pie_chart(section_id, strip_brackets(section_title));
+function draw_section_summary_chart(section_id, section_title, columns, rows) {
+    // Calculate the size of the canvas as percentage of the viewport, excluding margin
+    var width = Math.round((1 / columns) * 89).toString() + 'vw';
+    var height = Math.round((1 / rows) * 89).toString() + 'vh';
+    draw_pie_chart(section_id, strip_brackets(section_title), width, height);
 }
 
 function status_count(section, color) {
@@ -446,12 +451,14 @@ function status_count(section, color) {
                                           {column: METRICS_COLUMN_STATUS_TEXT, value: color}]).length;
 }
 
-function draw_pie_chart(section_id, section_title) {
+function draw_pie_chart(section_id, section_title, width, height) {
     var piechart_canvas = document.getElementById('section_summary_chart_' + section_id);
-     if (piechart_canvas === null) {
+    if (piechart_canvas === null) {
         // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
         return;
-    }
+    };
+    piechart_canvas.parentNode.style.width = width;
+    piechart_canvas.parentNode.style.height = height;
     var piechart = new Chart(piechart_canvas, {
         type: 'pie',
         data: {
@@ -484,8 +491,8 @@ function draw_pie_chart(section_id, section_title) {
             },
             layout: {
                 padding: {
-                    left: 50,
-                    right: 50
+                    left: 40,
+                    right: 40
                 }
             },
             responsive: true,

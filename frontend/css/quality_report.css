@@ -51,8 +51,6 @@ canvas.piechart_canvas {
 div.piechart_div {
     position: relative;
     margin: auto;
-    width: 20vw;
-    height: 15vh;
 }
 
 canvas.meta_metrics_history_graph_canvas {

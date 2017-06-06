@@ -14,7 +14,7 @@
  */
 
 import test from 'tape';
-import {create_dashboard_table} from '../js/dashboard_table.js';
+import {create_dashboard_table, dashboard_columns, dashboard_rows} from '../js/dashboard_table.js';
 
 test('dashboard table without rows', function(t) {
     t.deepEqual(
@@ -37,8 +37,18 @@ test('dashboard table with one column and one row', function(t) {
 <tr style="color: white; font-weight: bold; background-color: #2F95CF">\
 <th colspan=1 style="text-align: center;">header 1</th></th></thead><tbody><tr>\
 <td colspan=1 rowspan=1 align="center" bgcolor="red">\
-<div class="piechart_div"><canvas class="piechart_canvas" width=200 height=80 id="section_summary_chart_id">\
+<div class="piechart_div"><canvas class="piechart_canvas" id="section_summary_chart_id">\
 </canvas></div></td></tr></tbody></table>');
+    t.end();
+});
+
+test('dashboard columns', function(t) {
+    t.equals(dashboard_columns({"headers": [{"colspan": 1}, {"colspan": 2}]}), 3);
+    t.end();
+});
+
+test('dashboard rows', function(t) {
+    t.equals(dashboard_rows({"rows": [[], [], []]}), 4);
     t.end();
 });
 

@@ -34,4 +34,16 @@ function create_dashboard_table(dashboard) {
     return table.join('');
 }
 
-export {create_dashboard_table};
+function dashboard_columns(dashboard) {
+    var nr_columns = 0;
+    dashboard["headers"].forEach(function(cell) {
+        nr_columns += cell["colspan"];
+    });
+    return nr_columns;
+}
+
+function dashboard_rows(dashboard) {
+    return 1 + dashboard["rows"].length;
+}
+
+export {create_dashboard_table, dashboard_columns, dashboard_rows};
