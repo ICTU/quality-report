@@ -441,8 +441,8 @@ function table_view_filtered_rows() {
 
 function draw_section_summary_chart(section_id, section_title, columns, rows) {
     // Calculate the size of the canvas as percentage of the viewport, excluding margin
-    var width = Math.round((1 / columns) * 89).toString() + 'vw';
-    var height = Math.round((1 / rows) * 89).toString() + 'vh';
+    var width = Math.round(89 / columns).toString() + 'vw';
+    var height = Math.round(89 / rows).toString() + 'vh';
     draw_pie_chart(section_id, strip_brackets(section_title), width, height);
 }
 

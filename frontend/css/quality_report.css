@@ -33,6 +33,11 @@ table.first-col-centered > tbody > tr > td:first-child {
     text-align: center;
 }
 
+table.dashboard > tbody > tr > td {
+    padding: 0;
+    margin: 0;
+}
+
 p span.old {
     color: orange;
     font-weight: bold;
@@ -44,13 +49,13 @@ p span.very_old {
 }
 
 canvas.piechart_canvas {
-    height: 100%;
-    width: 100%;
+    padding: 0;
 }
 
 div.piechart_div {
     position: relative;
     margin: auto;
+    padding: 0;
 }
 
 canvas.meta_metrics_history_graph_canvas {

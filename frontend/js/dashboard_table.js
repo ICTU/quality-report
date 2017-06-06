@@ -15,7 +15,7 @@
 
 
 function create_dashboard_table(dashboard) {
-    var table = ['<div id="section_dashboard"><table class="table table-condensed table-bordered"><thead>',
+    var table = ['<div id="section_dashboard"><table class="table table-condensed table-bordered dashboard"><thead>',
                  '<tr style="color: white; font-weight: bold; background-color: #2F95CF">'];
     dashboard["headers"].forEach(function(cell) {
         table.push('<th colspan=' + cell["colspan"] + ' style="text-align: center;">' + cell["header"] + '</th>');
@@ -24,7 +24,7 @@ function create_dashboard_table(dashboard) {
     dashboard["rows"].forEach(function(row) {
         table.push('<tr>');
         row.forEach(function(cell) {
-            table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' align="center" bgcolor="' +
+            table.push('<td colspan=' + cell['colspan'] + ' rowspan=' + cell['rowspan'] + ' bgcolor="' +
                        cell['bgcolor'] + '">');
             table.push('<div class="piechart_div"><canvas class="piechart_canvas" id="section_summary_chart_' + cell['section_id'] + '"></canvas></div></td>');
         });

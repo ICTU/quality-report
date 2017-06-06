@@ -21,7 +21,7 @@ test('dashboard table without rows', function(t) {
         create_dashboard_table(
             {"headers": [{"header": "header 1", "colspan": 1}, {"header": "header 2", "colspan": 2}],
              "rows": []}),
-        '<div id="section_dashboard"><table class="table table-condensed table-bordered"><thead>\
+        '<div id="section_dashboard"><table class="table table-condensed table-bordered dashboard"><thead>\
 <tr style="color: white; font-weight: bold; background-color: #2F95CF">\
 <th colspan=1 style="text-align: center;">header 1</th><th colspan=2 style="text-align: center;">header 2</th></th>\
 </thead><tbody></tbody></table>');
@@ -33,10 +33,10 @@ test('dashboard table with one column and one row', function(t) {
         create_dashboard_table(
             {"headers": [{"header": "header 1", "colspan": 1}],
              "rows": [[{"section_id": "id", "section_title": "title", "colspan": 1, "rowspan": 1, "bgcolor": "red"}]]}),
-        '<div id="section_dashboard"><table class="table table-condensed table-bordered"><thead>\
+        '<div id="section_dashboard"><table class="table table-condensed table-bordered dashboard"><thead>\
 <tr style="color: white; font-weight: bold; background-color: #2F95CF">\
 <th colspan=1 style="text-align: center;">header 1</th></th></thead><tbody><tr>\
-<td colspan=1 rowspan=1 align="center" bgcolor="red">\
+<td colspan=1 rowspan=1 bgcolor="red">\
 <div class="piechart_div"><canvas class="piechart_canvas" id="section_summary_chart_id">\
 </canvas></div></td></tr></tbody></table>');
     t.end();
