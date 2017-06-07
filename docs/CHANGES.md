@@ -1,3 +1,8 @@
+2017-06-07  Release 1.82.1
+
+  * Bug fix: Use a fluid container for better layout.
+  
+  
 2017-06-07  Release 1.82.0
 
   * Add metric source for a performance report format that is specific to ICTU.
