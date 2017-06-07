@@ -438,8 +438,8 @@ function draw_section_summary_charts(metrics_data) {
     var nr_rows = dashboard_rows(metrics_data["dashboard"]);
     var nr_columns = dashboard_columns(metrics_data["dashboard"]);
     // Calculate the size of the canvas as percentage of the viewport, excluding margin
-    var width = Math.round(89 / nr_columns).toString() + 'vw';
-    var height = Math.round(89 / nr_rows).toString() + 'vh';
+    var width = Math.round(90 / nr_columns).toString() + 'vw';
+    var height = Math.round(90 / nr_rows).toString() + 'vh';
     metrics_data["sections"].forEach(function(section) {
         draw_section_summary_chart(section["id"], section["title"], metrics_data["metrics"], width, height);
     });
