@@ -14,7 +14,7 @@
  */
 
 import test from 'tape';
-import {create_sections, create_navigation_menu_items} from '../js/sections.js';
+import {create_sections, create_navigation_menu_items, status_counts} from '../js/sections.js';
 
 test('no sections', function(t) {
     t.deepEqual(
@@ -48,4 +48,28 @@ test('section without subtitle', function(t) {
         '<section id="section_all" style="display:none"><div id="table_all"></div></section><section id="section_id">\
 <div class="page-header="><h1>title</h1></div><div id="table_id"></div></section>');
     t.end();
-})
+});
+
+test('status counts without metrics', function(t) {
+    t.deepEqual(
+        status_counts([], "id", ["a", "b"]),
+        [0, 0]
+    );
+    t.end();
+});
+
+test('status counts with one metric', function(t) {
+    t.deepEqual(
+        status_counts([["", "id", "a"]], "id", ["a", "b"]),
+        [1, 0]
+    );
+    t.end();
+});
+
+test('status counts with multiple metrics, some in a different section', function(t) {
+    t.deepEqual(
+        status_counts([["", "id", "a"], ["", "other sectiob", "b"]], "id", ["a", "b"]),
+        [1, 0]
+    );
+    t.end();
+});

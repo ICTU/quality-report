@@ -20,7 +20,7 @@ import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
 import {create_dashboard_table, dashboard_rows, dashboard_columns} from '../js/dashboard_table.js';
-import {create_sections, create_navigation_menu_items} from '../js/sections.js';
+import {create_sections, create_navigation_menu_items, status_counts} from '../js/sections.js';
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
@@ -76,11 +76,7 @@ function create_dashboard() {
         set_report_date(new Date(...metrics_data["report_date"]));
         $("#hq_version").html(metrics_data["hq_version"]);
         $(".report_title").html(metrics_data["report_title"]);
-        var rows = dashboard_rows(metrics_data["dashboard"]);
-        var columns = dashboard_columns(metrics_data["dashboard"]);
-        metrics_data["sections"].forEach(function(section) {
-            draw_section_summary_chart(section["id"], section["title"], columns, rows);
-        });
+        draw_section_summary_charts(metrics_data);
         hide('#loading');
         show('#sections');
     });
@@ -438,19 +434,24 @@ function table_view_filtered_rows() {
     return colored_rows;
 }
 
-function draw_section_summary_chart(section_id, section_title, columns, rows) {
+function draw_section_summary_charts(metrics_data) {
+    var nr_rows = dashboard_rows(metrics_data["dashboard"]);
+    var nr_columns = dashboard_columns(metrics_data["dashboard"]);
     // Calculate the size of the canvas as percentage of the viewport, excluding margin
-    var width = Math.round(89 / columns).toString() + 'vw';
-    var height = Math.round(89 / rows).toString() + 'vh';
-    draw_pie_chart(section_id, strip_brackets(section_title), width, height);
+    var width = Math.round(89 / nr_columns).toString() + 'vw';
+    var height = Math.round(89 / nr_rows).toString() + 'vh';
+    metrics_data["sections"].forEach(function(section) {
+        draw_section_summary_chart(section["id"], section["title"], metrics_data["metrics"], width, height);
+    });
 }
 
-function status_count(section, color) {
-   return window.metrics.getFilteredRows([{column: METRICS_COLUMN_SECTION, value: section},
-                                          {column: METRICS_COLUMN_STATUS_TEXT, value: color}]).length;
+function draw_section_summary_chart(section_id, section_title, metrics, width, height) {
+    var counts = status_counts(metrics, section_id,
+                               ['perfect', 'green', 'yellow', 'red','grey', 'missing', 'missing_source']);
+    draw_pie_chart(section_id, strip_brackets(section_title), counts, width, height);
 }
 
-function draw_pie_chart(section_id, section_title, width, height) {
+function draw_pie_chart(section_id, section_title, data, width, height) {
     var piechart_canvas = document.getElementById('section_summary_chart_' + section_id);
     if (piechart_canvas === null) {
         // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
@@ -462,15 +463,7 @@ function draw_pie_chart(section_id, section_title, width, height) {
         type: 'pie',
         data: {
             datasets: [{
-                data: [
-                    status_count(section_id, 'perfect'),
-                    status_count(section_id, 'green'),
-                    status_count(section_id, 'yellow'),
-                    status_count(section_id, 'red'),
-                    status_count(section_id, 'grey'),
-                    status_count(section_id, 'missing'),
-                    status_count(section_id, 'missing_source')
-                ],
+                data: data,
                 backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED,
                                   COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
             }],

@@ -38,4 +38,13 @@ function create_navigation_menu_items(sections) {
     return menu_items.join("");
 }
 
-export {create_sections, create_navigation_menu_items};
+function status_counts(metrics, section_id, statuses) {
+    var section_metrics = metrics.filter(function(metric) {return metric[1] === section_id});
+    var counts = [];
+    statuses.forEach(function(status) {
+        counts.push(section_metrics.filter(function(metric) {return metric[2] === status}).length);
+    });
+    return counts;
+}
+
+export {create_sections, create_navigation_menu_items, status_counts};
