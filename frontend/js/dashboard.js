@@ -72,7 +72,7 @@ function create_dashboard() {
         $("#sections").append(create_dashboard_table(metrics_data["dashboard"]));
         $("#sections").append(create_sections(metrics_data["sections"]));
         $('#navigation_menu_items').append(create_navigation_menu_items(metrics_data['sections']));
-        fill_metrics_table(metrics_data["metrics"]);
+        fill_metrics_table(metrics_data);
         set_report_date(new Date(...metrics_data["report_date"]));
         $("#hq_version").html(metrics_data["hq_version"]);
         $(".report_title").html(metrics_data["report_title"]);
@@ -104,18 +104,15 @@ function create_metrics_table() {
 }
 
 function fill_metrics_table(metrics_data) {
-    window.metrics.addRows(metrics_data);
+    window.metrics.addRows(metrics_data["metrics"]);
     color_metrics(BG_COLOR_PERFECT, BG_COLOR_GREEN, BG_COLOR_YELLOW, BG_COLOR_RED, BG_COLOR_GREY, BG_COLOR_MISSING);
-
-    var sections = window.metrics.getDistinctValues(METRICS_COLUMN_SECTION);
-
     tables.all = new google.visualization.Table(document.getElementById('table_all'));
     google.visualization.events.addListener(tables.all, 'sort', save_sort_order);
-    for (var index = 0; index < sections.length; index++) {
-        var section = sections[index];
-        tables[section] = new google.visualization.Table(document.getElementById('table_' + section));
-        google.visualization.events.addListener(tables[section], 'sort', save_sort_order);
-    }
+    metrics_data["sections"].forEach(function(section) {
+        var section_id = section["id"];
+        tables[section_id] = new google.visualization.Table(document.getElementById('table_' + section_id));
+        google.visualization.events.addListener(tables[section_id], 'sort', save_sort_order);
+    });
     show_or_hide_dashboard();
     draw_tables(tables);
 }
