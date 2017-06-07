@@ -1,3 +1,8 @@
+2017-06-07  Release 1.82.0
+
+  * Add metric source for a performance report format that is specific to ICTU.
+
+
 2017-06-06  Release 1.81.17
 
   * Bug fix: Don't crash when the OpenVAS scan report is invalid or empty.

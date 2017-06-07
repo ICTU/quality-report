@@ -38,6 +38,8 @@ from .performance_report.jmeter import JMeterPerformanceLoadTestReport, JMeterPe
     JMeterPerformanceScalabilityTestReport
 from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
     SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
+from .performance_report.ictu_lrk import ICTULRKPerformanceLoadTestReport, ICTULRKPerformanceEnduranceTestReport, \
+    ICTULRKPerformanceScalabilityTestReport
 from .sonar import Sonar
 from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki

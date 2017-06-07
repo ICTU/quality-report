@@ -83,7 +83,11 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def __queries_violating_response_time(self, product: str, color: str) -> int:
         """ Return the number of queries that are violating either the maximum or the desired response time. """
         return len([row for row in self._query_rows(product)
-                    if color in row('td')[self.COLUMN_90_PERC]['class']])
+                    if color in self._query_color(row('td')[self.COLUMN_90_PERC])])
+
+    def _query_color(self, td) -> bool:
+        """ Return whether the query has the specified color. """
+        return td['class']
 
     def _date_from_soup(self, soup) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
