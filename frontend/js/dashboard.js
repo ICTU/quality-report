@@ -462,7 +462,8 @@ function draw_pie_chart(section_id, section_title, data, width, height) {
             datasets: [{
                 data: data,
                 backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED,
-                                  COLOR_GREY, COLOR_MISSING, COLOR_MISSING]
+                                  COLOR_GREY, COLOR_MISSING, COLOR_MISSING],
+                borderWidth: 1,
             }],
             labels: ['Perfect', 'Goed', 'Bijna goed', 'Actie vereist', 'Technische schuld', 'Bron niet beschikbaar',
                      'Bron niet geconfigureerd'],
