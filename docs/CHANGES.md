@@ -1,3 +1,8 @@
+2017-06-08  Release 1.82.2
+
+  * Bug fix: Required version numbers for C# quality profile and plugin were mixed up.
+  
+
 2017-06-07  Release 1.82.1
 
   * Bug fix: Use a fluid container for better layout.

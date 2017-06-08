@@ -107,8 +107,8 @@ class SonarQualityProfileVersionCSharp(SonarQualityProfileVersion):
     name = 'Versie van het Sonar C# quality profile'
     language_key = 'cs'
     language_name = 'C#'
-    target_value = LooseVersion('5.11')
-    low_target_value = LooseVersion('5.11')
+    target_value = LooseVersion('1.4')
+    low_target_value = LooseVersion('1.4')
 
 
 class SonarQualityProfileVersionJS(SonarQualityProfileVersion):
@@ -234,8 +234,8 @@ class SonarPluginVersionCSharp(SonarPluginVersion):
     name = 'Versie van de Sonar C# plugin'
     plugin_key = 'csharp'
     plugin_name = 'C#'
-    target_value = LooseVersion('5.2')
-    low_target_value = LooseVersion('4.2')
+    target_value = LooseVersion('5.11')
+    low_target_value = LooseVersion('5.2')
 
 
 class SonarPluginVersionJS(SonarPluginVersion):
