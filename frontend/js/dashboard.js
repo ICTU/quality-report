@@ -24,6 +24,7 @@ import {create_sections, create_navigation_menu_items, status_counts} from '../j
 import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
+import {draw_pie_chart} from '../js/pie_chart.js';
 import '../js/compatibility.js';
 
 /*
@@ -445,51 +446,10 @@ function draw_section_summary_charts(metrics_data) {
 function draw_section_summary_chart(section_id, section_title, metrics, width, height) {
     var counts = status_counts(metrics, section_id,
                                ['perfect', 'green', 'yellow', 'red','grey', 'missing', 'missing_source']);
-    draw_pie_chart(section_id, strip_brackets(section_title), counts, width, height);
-}
-
-function draw_pie_chart(section_id, section_title, data, width, height) {
-    var piechart_canvas = document.getElementById('section_summary_chart_' + section_id);
-    if (piechart_canvas === null) {
-        // Not all sections have a pie chart, e.g. the meta metrics (MM) section.
-        return;
-    };
-    piechart_canvas.parentNode.style.width = width;
-    piechart_canvas.parentNode.style.height = height;
-    var piechart = new Chart(piechart_canvas, {
-        type: 'pie',
-        data: {
-            datasets: [{
-                data: data,
-                backgroundColor: [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED,
-                                  COLOR_GREY, COLOR_MISSING, COLOR_MISSING],
-                borderWidth: 1,
-            }],
-            labels: ['Perfect', 'Goed', 'Bijna goed', 'Actie vereist', 'Technische schuld', 'Bron niet beschikbaar',
-                     'Bron niet geconfigureerd'],
-        },
-        options: {
-            title: {
-                display: true,
-                text: section_title,
-                fontSize: 14,
-                fontStyle: 'normal',
-                padding: 5
-            },
-            legend: {
-                display: false
-            },
-            animation: {
-                duration: 0
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-            onClick: function(event, array) {
-                document.getElementById('section_' + section_id).scrollIntoView();
-                scrollBy(0, -50);
-            }
-        }
-    });
+    var colors = [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING, COLOR_MISSING];
+    var labels = ['Perfect', 'Goed', 'Bijna goed', 'Actie vereist', 'Technische schuld', 'Bron niet beschikbaar',
+                  'Bron niet geconfigureerd'];
+    draw_pie_chart(window, document, section_id, strip_brackets(section_title), counts, colors, labels, width, height);
 }
 
 function draw_area_charts(datasets) {
