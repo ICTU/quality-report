@@ -14,8 +14,6 @@
  */
 
 import $ from 'jquery';
-import Chart from 'chart.js';
-import '../js/chartjs-plugin-stackedline100.js';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/quality_report.css';
@@ -25,6 +23,7 @@ import {read_cookie, write_cookie} from '../js/cookie.js';
 import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
 import {parse_history_json} from '../js/history.js';
 import {draw_pie_chart} from '../js/pie_chart.js';
+import {draw_area_chart} from '../js/area_chart.js';
 import '../js/compatibility.js';
 
 /*
@@ -453,90 +452,11 @@ function draw_section_summary_chart(section_id, section_title, metrics, width, h
 }
 
 function draw_area_charts(datasets) {
-    draw_area_chart(datasets, 'meta_metrics_history_relative_graph_canvas', "Percentage metrieken per status", true);
-    draw_area_chart(datasets, 'meta_metrics_history_absolute_graph_canvas', "Aantal metrieken per status", false);
-}
-
-function draw_area_chart(datasets, element_id, title, relative) {
-    var meta_metrics_history_relative_graph_canvas = document.getElementById(element_id);
-    var meta_metrics_history_relative_graph = new Chart(meta_metrics_history_relative_graph_canvas, {
-        type: 'line',
-        data: {
-            labels: datasets[0],
-            datasets: [
-                {
-                    label: "Perfect",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_PERFECT,
-                    data: datasets[1]
-                },
-                {
-                    label: "Goed",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_GREEN,
-                    data: datasets[2]
-                },
-                {
-                    label: "Bijna goed",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_YELLOW,
-                    data: datasets[3]
-                },
-                {
-                    label: "Actie vereist",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_RED,
-                    data: datasets[4]
-                },
-                {
-                    label: "Technische schuld",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_GREY,
-                    data: datasets[5]
-                },
-                {
-                    label: "Bron niet beschikbaar",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_MISSING,
-                    data: datasets[6]
-                },
-                {
-                    label: "Bron niet geconfigureerd",
-                    fill: true,
-                    pointRadius: 0,
-                    backgroundColor: COLOR_MISSING,
-                    data: datasets[7]
-                }
-            ]},
-        options: {
-            title: {
-                text: title,
-                display: true,
-                fontSize: 14
-            },
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {minUnit: 'week'}
-                }],
-                yAxes: [{
-                    stacked: true
-                }]
-            },
-            animation: {
-                duration: 0
-            },
-            plugins: {
-                stackedline100: {enable: relative}
-            }
-        }
-    });
+    var colors = [COLOR_PERFECT, COLOR_GREEN, COLOR_YELLOW, COLOR_RED, COLOR_GREY, COLOR_MISSING, COLOR_MISSING];
+    draw_area_chart(document, 'meta_metrics_history_relative_graph_canvas', datasets, colors,
+                    "Percentage metrieken per status", true);
+    draw_area_chart(document, 'meta_metrics_history_absolute_graph_canvas', datasets, colors,
+                    "Aantal metrieken per status", false);
 }
 
 function show_or_hide_dashboard() {

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import Chart from 'chart.js';
 
 // Derived from https://github.com/y-takey/chartjs-plugin-stacked100
 
