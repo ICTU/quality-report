@@ -462,10 +462,10 @@ function draw_area_charts(datasets) {
 function show_or_hide_dashboard() {
     if (settings.show_dashboard) {
         show('#section_dashboard');
-        show('.link_section_' + section);
+        show('.link_section_dashboard');
     } else {
         hide('#section_dashboard');
-        hide('.link_section_' + section);
+        hide('.link_section_dashboard');
     };
 }
 
