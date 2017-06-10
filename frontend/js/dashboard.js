@@ -360,7 +360,7 @@ function show_or_hide_table(table, section) {
 
 function show_table(table, section, view) {
     show('#section_' + section);
-    show_links_to(section);
+    show('.link_section_' + section);
     var columns_to_hide = [METRICS_COLUMN_SECTION, METRICS_COLUMN_STATUS_TEXT];
     var sort_column = settings.table_sort_column;
     var columns_to_hide_when_empty = [METRICS_COLUMN_COMMENT];
@@ -380,7 +380,7 @@ function show_table(table, section, view) {
 
 function hide_table(section) {
     hide('#section_' + section);
-    hide_links_to(section);
+    hide('.link_section_' + section);
 }
 
 function table_view(section) {
@@ -462,35 +462,11 @@ function draw_area_charts(datasets) {
 function show_or_hide_dashboard() {
     if (settings.show_dashboard) {
         show('#section_dashboard');
-        show_links_to('dashboard');
+        show('.link_section_' + section);
     } else {
         hide('#section_dashboard');
-        hide_links_to('dashboard');
+        hide('.link_section_' + section);
     };
-}
-
-function show_links_to(section) {
-    var links = $('.link_section_' + section, document);
-    for (var index = 0; index < links.length; index++) {
-        if (links[index].tagName.toLowerCase() === 'a') {
-            links[index].style.display = 'block';
-        } else {
-            var title = links[index].getAttribute('title');
-            var style = links[index].getAttribute('style');
-            links[index].innerHTML = '<a href="#section_' + section + '" style="' + style + '">' + title + '</a>';
-        }
-    }
-}
-
-function hide_links_to(section) {
-    var links = $('.link_section_' + section, document);
-    for (var index = 0; index < links.length; index++) {
-        if (links[index].tagName.toLowerCase() === 'a') {
-            links[index].style.display = 'none';
-        } else {
-            links[index].innerHTML = links[index].getAttribute('title');
-        }
-    }
 }
 
 function set_radio_indicator(radio_items_classname, id_of_radio_item_to_select) {
