@@ -248,7 +248,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def version_number(self) -> Optional[str]:
         """ Return the version number of Sonar. """
         try:
-            return self.__get_json(self.__version_number_url)['version']
+            return self.url_read(self.__version_number_url)
         except self.url_open_exceptions:
             return None
 

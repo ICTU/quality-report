@@ -237,6 +237,8 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 
     def url_read(self, url):
         """ Return the static contents. """
+        if 'server/version' in url:
+            return '1.2.3'
         if 'projects/index' in url:
             json = self.project_json
         elif 'metrics=true' in url:
@@ -444,12 +446,6 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_version_number(self):
         """ Test that the version number is correct. """
-        self._sonar.json = """
-        {
-            "id": "23422",
-             "version": "1.2.3",
-             "status": "UP"
-        }"""
         self.assertEqual('1.2.3', self._sonar.version_number())
 
     def test_plugin_version(self):
