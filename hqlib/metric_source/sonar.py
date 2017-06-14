@@ -74,6 +74,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             profiles = self.__get_json(self.__quality_profiles_api_url.format(language=language))
         except self.url_open_exceptions:
             return ''
+        logging.info("Profiles: %s", profiles)
         for profile in profiles:
             if profile['isDefault']:
                 return profile['name']
