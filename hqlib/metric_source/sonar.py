@@ -71,11 +71,10 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def default_quality_profile(self, language: str) -> str:
         """ Return the default quality profile for the language. """
         try:
-            profiles = self.__get_json(self.__quality_profiles_api_url.format(language=language))
+            response = self.__get_json(self.__quality_profiles_api_url.format(language=language))
         except self.url_open_exceptions:
             return ''
-        logging.info("Profiles: %s", profiles)
-        for profile in profiles:
+        for profile in response["profiles"]:
             if profile['isDefault']:
                 return profile['name']
         return ''

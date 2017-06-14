@@ -469,7 +469,7 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_default_quality_profile(self):
         """ Test that the name of the quality profile is returned. """
-        self._sonar.json = """
+        self._sonar.json = """{"profiles":
         [{
             "key": "java-findbugs-94130",
             "name": "FindBugs",
@@ -493,7 +493,7 @@ class SonarVersionsTest(SonarTestCase):
             "name": "Sonar way",
             "language": "java",
             "isDefault": false
-        }]"""
+        }]}"""
         self.assertEqual("Java profile v1.8-20151111", self._sonar.default_quality_profile('java'))
 
     def test_quality_profiles_url(self):
