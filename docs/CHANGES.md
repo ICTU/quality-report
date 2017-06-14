@@ -1,3 +1,8 @@
+2017-06-14  Release 1.82.3
+
+  * Bug fix: Update deprecated SonarQube API for fetching the SonarQube version number.
+
+
 2017-06-08  Release 1.82.2
 
   * Bug fix: Required version numbers for C# quality profile and plugin were mixed up.
