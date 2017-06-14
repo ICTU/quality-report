@@ -474,25 +474,25 @@ class SonarVersionsTest(SonarTestCase):
             "key": "java-findbugs-94130",
             "name": "FindBugs",
             "language": "java",
-            "default": false
+            "isDefault": false
         },
         {
             "key": "java-java-profile-v1-7-20151021-85551",
             "name": "Java profile v1.7-20151021",
             "language": "java",
-            "default": false
+            "isDefault": false
         },
         {
             "key": "java-java-profile-v1-8-20151111-91699",
             "name": "Java profile v1.8-20151111",
             "language": "java",
-            "default": true
+            "isDefault": true
         },
         {
             "key": "java-sonar-way-31199",
             "name": "Sonar way",
             "language": "java",
-            "default": false
+            "isDefault": false
         }]"""
         self.assertEqual("Java profile v1.8-20151111", self._sonar.default_quality_profile('java'))
 
