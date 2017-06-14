@@ -1,6 +1,7 @@
 2017-06-14  Release 1.82.3
 
   * Bug fix: Update deprecated SonarQube API for fetching the SonarQube version number.
+  * Bug fix: Update deprecated SonarQube API for fetching a component version number.
 
 
 2017-06-08  Release 1.82.2

@@ -37,6 +37,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         # FIXME: Resource API is deprecated!
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
+        self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&category=VERSION&format=json'
         self.__projects_api_url = sonar_url + 'api/projects/index'
         self.__project_api_url = sonar_url + 'api/projects/{project}'
         self.__metrics_api_url = self.__resource_api_url + '&metrics={metrics}'
@@ -51,7 +52,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def version(self, product: str) -> str:
         """ Return the version of the product. """
         try:
-            return self.__get_json(self.__resource_api_url.format(resource=product))[0]['version']
+            return self.__get_json(self.__analyses_api_url.format(project=product))['analyses'][0]['events'][0]['name']
         except self.url_open_exceptions:
             return '?'
 
