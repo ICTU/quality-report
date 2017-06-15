@@ -30,7 +30,7 @@ class FakeSonar(object):
     @staticmethod
     def version_number():
         """ Return a fake version number. """
-        return '5.4.1.4'
+        return '999.4.1.4'
 
     @staticmethod
     def plugin_version(plugin):
@@ -70,7 +70,7 @@ class SonarVersionTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual("Sonar is versie 5.4.1.4.", self.__metric.report())
+        self.assertEqual("Sonar is versie 999.4.1.4.", self.__metric.report())
 
     def test_url(self):
         """ Test that the url is correct. """
@@ -82,7 +82,7 @@ class SonarVersionTest(unittest.TestCase):
 
     def test_numerical_value(self):
         """ Test that the numerical value is a weighted sum of the first three version number parts. """
-        self.assertEqual(50401, self.__metric.numerical_value())
+        self.assertEqual(9990401, self.__metric.numerical_value())
 
     def test_missing(self):
         """ Test that the value is -1 without a metric source. """

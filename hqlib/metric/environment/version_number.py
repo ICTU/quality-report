@@ -30,9 +30,9 @@ class SonarVersion(HigherIsBetterMetric):
     unit = ''
     norm_template = 'Sonar heeft minimaal versie {target}, lager dan versie {low_target} is rood.'
     template = 'Sonar is versie {value}.'
-    target_value = LooseVersion('4.5.7')
+    target_value = LooseVersion('5.6.6')
     perfect_value = LooseVersion('999.999.999')
-    low_target_value = LooseVersion('4.5.6')
+    low_target_value = LooseVersion('5.6.4')
     metric_source_class = metric_source.Sonar
 
     def numerical_value(self) -> Number:
