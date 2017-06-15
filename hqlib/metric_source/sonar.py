@@ -37,7 +37,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         # FIXME: Resource API is deprecated!
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
-        self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&category=VERSION&format=json'
+        self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
         self.__projects_api_url = sonar_url + 'api/projects/index'
         self.__project_api_url = sonar_url + 'api/projects/{project}'
         self.__metrics_api_url = self.__resource_api_url + '&metrics={metrics}'
@@ -52,7 +52,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def version(self, product: str) -> str:
         """ Return the version of the product. """
         try:
-            return self.__get_json(self.__analyses_api_url.format(project=product))['analyses'][0]['events'][0]['name']
+            return self.__get_json(self.__analyses_api_url.format(project=product)+'&category=VERSION')['analyses'][0]['events'][0]['name']
         except self.url_open_exceptions:
             return '?'
 
@@ -255,9 +255,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
-        url = self.__resource_api_url.format(resource=products[0])
+        url = self.__analyses_api_url.format(project=products[0])
         try:
-            datetime_string = self.__get_json(url)[0]['date']
+            datetime_string = self.__get_json(url)['analyses'][0]['date']
         except self.url_open_exceptions:
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone

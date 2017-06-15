@@ -28,7 +28,6 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     json = violations_json = """
 [
     {"lang": "java",
-     "date": "2016-04-07T16:27:27+0000",
      "k": "product",
      "msr":
          [
@@ -237,7 +236,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
         if 'server/version' in url:
             return '1.2.3'
         if 'analyses' in url:
-            return '{"analyses": [{"events": [{"name": "4.2"}]}]}'
+            return '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
         if 'projects/index' in url:
             json = self.project_json
         elif 'metrics=true' in url:
