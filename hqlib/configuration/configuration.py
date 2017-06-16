@@ -16,6 +16,7 @@ limitations under the License.
 
 import os
 import sys
+import logging
 
 from hqlib import filesystem
 
@@ -92,8 +93,10 @@ class Configuration(object):
         module_name = project_definition_filename[:-len('.py')]
         try:
             project_definition_module = __import__(module_name)
-        except ModuleNotFoundError:
+        except ModuleNotFoundError as reason:
             project_definition_filepath = os.path.join(project_folder, project_definition_filename)
+            logging.warning("Couldn't open %s: %s. Creating a default project definition in %s and using that.",
+                            module_name, reason, project_definition_filepath)
             filesystem.write_file(NEW_PROJECT_DEFINITION_CONTENTS, project_definition_filepath, 'w')
             project_definition_module = __import__(module_name)
         return project_definition_module.PROJECT
