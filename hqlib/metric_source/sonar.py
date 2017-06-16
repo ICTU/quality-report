@@ -264,8 +264,14 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the date and time of the last analysis of the product. """
         url = self.__analyses_api_url.format(project=products[0])
         try:
-            datetime_string = self.__get_json(url)['analyses'][0]['date']
+            json = self.__get_json(url)['analyses']
         except self.url_open_exceptions:
+            return datetime.datetime.min
+        try:
+            datetime_string = json[0]['date']
+        except (KeyError, IndexError) as reason:
+            logging.warning("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
+                            products[0], json, url, reason)
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')

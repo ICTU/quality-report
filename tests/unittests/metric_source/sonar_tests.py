@@ -236,7 +236,10 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
         if 'server/version' in url:
             return '1.2.3'
         if 'analyses' in url:
-            return '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
+            if 'empty' in url:
+                return '{"analyses": []}'
+            else:
+                return '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
         if 'projects/index' in url:
             json = self.project_json
         elif 'metrics=true' in url:
@@ -275,6 +278,10 @@ class SonarTest(SonarTestCase):
     def test_version(self):
         """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
         self.assertEqual('4.2', self._sonar.version('product'))
+
+    def test_version_without_analyses(self):
+        """ Test that the version is unknowm if Sonar has no analyses for the product. """
+        self.assertEqual('?', self._sonar.version('empty'))
 
     def test_ncloc(self):
         """ Test that the number of non-commented lines of code equals the ncloc returned by the dashboard. """
@@ -343,6 +350,10 @@ class SonarTest(SonarTestCase):
     def test_analysis_datetime(self):
         """ Test that the analysis date and time is correct. """
         self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
+
+    def test_analysis_datetime_without_analyses(self):
+        """ Test that the analysis date and time is the minimum date and time if Sonar has no analyses. """
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime('empty'))
 
 
 class SonarCoverage(SonarTestCase):
