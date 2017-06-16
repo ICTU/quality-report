@@ -51,9 +51,16 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def version(self, product: str) -> str:
         """ Return the version of the product. """
+        url = self.__analyses_api_url.format(project=product)+'&category=VERSION'
         try:
-            return self.__get_json(self.__analyses_api_url.format(project=product)+'&category=VERSION')['analyses'][0]['events'][0]['name']
+            json = self.__get_json(url)
         except self.url_open_exceptions:
+            return '?'
+        try:
+            return json['analyses'][0]['events'][0]['name']
+        except (KeyError, IndexError) as reason:
+            logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
+                            product, json, url, reason)
             return '?'
 
     def plugin_version(self, plugin: str) -> str:

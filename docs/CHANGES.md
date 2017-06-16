@@ -1,3 +1,8 @@
+2017-06-16  Release 1.82.4
+
+  * Bug fix: Don't crash when SonarQube has no analyses for a project yet.
+  
+  
 2017-06-16  Release 1.82.3
 
   * Bug fix: Update deprecated SonarQube API for fetching the SonarQube version number.
