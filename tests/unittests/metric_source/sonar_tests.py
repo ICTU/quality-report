@@ -52,31 +52,33 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     }
 ]"""
 
-    metrics_json = """
-    [
-        {"lang": "java",
-         "msr":
-             [
-                {"val": 100, "key": "critical_violations"},
-                {"val": 100, "key": "blocker_violations"},
-                {"val": 100, "key": "major_violations"},
-                {"val": 100, "key": "branch_coverage"},
-                {"val": 100, "key": "commented_loc"},
-                {"val": 100, "key": "duplicated_lines"},
-                {"val": 100, "key": "test_failures"},
-                {"val": 100, "key": "test_errors"},
-                {"val": 100, "key": "line_coverage"},
-                {"val": 100, "key": "it_line_coverage"},
-                {"val": 100, "key": "it_branch_coverage"},
-                {"val": 100, "key": "overall_line_coverage"},
-                {"val": 100, "key": "overall_branch_coverage"},
-                {"val": 100, "key": "lines"},
-                {"val": 100, "key": "ncloc"},
-                {"val": 100, "key": "functions"},
-                {"val": 100, "key": "tests"}
-            ]
-        }
-    ]"""
+    metrics_json = """{
+                "component": {
+                    "id": "AVxecPLIOLHGO__A5L2R",
+                    "key": "product",
+                    "name": "product",
+                    "qualifier": "TRK",
+                    "measures": [
+                                    {"metric": "critical_violations", "value": "100"},
+                                    {"metric": "blocker_violations", "value": "100"},
+                                    {"metric": "major_violations", "value": "100"},
+                                    {"metric": "branch_coverage", "value": "100"},
+                                    {"metric": "commented_loc", "value": "100"},
+                                    {"metric": "duplicated_lines", "value": "100"},
+                                    {"metric": "test_failures", "value": "100"},
+                                    {"metric": "test_errors", "value": "100"},
+                                    {"metric": "line_coverage", "value": "100"},
+                                    {"metric": "it_line_coverage", "value": "100"},
+                                    {"metric": "it_branch_coverage", "value": "100"},
+                                    {"metric": "overall_line_coverage", "value": "100"},
+                                    {"metric": "overall_branch_coverage", "value": "100"},
+                                    {"metric": "lines", "value": "100"},
+                                    {"metric": "ncloc", "value": "100"},
+                                    {"metric": "functions", "value": "100"},
+                                    {"metric": "tests", "value": "100"}
+                    ]
+                }
+        }"""
 
     false_positives_json = """
 {
@@ -242,7 +244,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
                 return '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
         if 'projects/index' in url:
             json = self.project_json
-        elif 'metrics=true' in url:
+        elif 'metricKeys' in url:
             json = self.metrics_json
         elif 'FALSE-POSITIVE' in url:
             json = self.false_positives_json
@@ -338,9 +340,9 @@ class SonarTest(SonarTestCase):
         self.assertEqual(0, self._sonar.many_parameters_methods('product'))
 
     def test_missing_metric_value(self):
-        """ Test that the default value is returned for missing values. """
-        self._sonar.metrics_json = '[{"msr": []}]'
-        self.assertEqual(0, self._sonar.unittests('product'))
+        """ Test that -1 is returned for missing values. """
+        self._sonar.metrics_json = '{"component": {"measures":[]}}'
+        self.assertEqual(-1, self._sonar.unittests('product'))
 
     def test_missing_violation_value(self):
         """ Test that the default value is returned for missing violations. """

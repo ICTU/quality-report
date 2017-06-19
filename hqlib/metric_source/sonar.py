@@ -35,12 +35,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__base_dashboard_url = sonar_url + 'dashboard/index/'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
-        # FIXME: Resource API is deprecated!
-        self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
         self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
         self.__projects_api_url = sonar_url + 'api/projects/index'
         self.__project_api_url = sonar_url + 'api/projects/{project}'
-        self.__metrics_api_url = self.__resource_api_url + '&metrics={metrics}'
         self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
         self.__false_positives_api_url = sonar_url + \
             'api/issues/search?resolutions=FALSE-POSITIVE&componentRoots={resource}'
@@ -294,20 +291,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             pass
         except (TypeError, KeyError):
             pass
-        # Then try older API:
-        json = self.__all_metrics(product)
-        for metric in json[0]['msr']:
-            if metric['key'] == metric_name:
-                return metric['val']
-        logging.debug("Can't get %s value for %s from %s", metric_name, product, json)
-        return default
-
-    def __all_metrics(self, product: str) -> Union[Dict, List[Dict]]:
-        """ Return all available metric values for the product. """
-        try:
-            return self.__get_json(self.__metrics_api_url.format(resource=product, metrics='true'))
-        except self.url_open_exceptions:
-            return [{'msr': []}]
+        logging.warning("Can't get %s value for %s from %s", metric_name, product, json)
+        return -1
 
     def __rule_violation(self, product: str, rule_name: str, default=0) -> int:
         """ Return a specific violation value for the product. """
