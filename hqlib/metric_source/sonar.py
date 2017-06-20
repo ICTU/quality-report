@@ -275,7 +275,12 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         try:
             json = self.__get_json(url)['analyses']
         except self.url_open_exceptions:
-            return datetime.datetime.min
+            # Try older API:
+            url = self.__resource_api_url.format(resource=products[0])
+            try:
+                json = self.__get_json(url)
+            except self.url_open_exceptions:
+                return datetime.datetime.min
         try:
             datetime_string = json[0]['date']
         except (KeyError, IndexError) as reason:
