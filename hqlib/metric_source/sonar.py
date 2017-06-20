@@ -36,6 +36,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
+        self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
         self.__projects_api_url = sonar_url + 'api/projects/index'
         self.__project_api_url = sonar_url + 'api/projects/{project}'
         self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
@@ -51,14 +52,25 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         url = self.__analyses_api_url.format(project=product)+'&category=VERSION'
         try:
             json = self.__get_json(url)
+            try:
+                return json['analyses'][0]['events'][0]['name']
+            except (KeyError, IndexError) as reason:
+                logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
+                                product, json, url, reason)
+                return '?'
         except self.url_open_exceptions:
-            return '?'
-        try:
-            return json['analyses'][0]['events'][0]['name']
-        except (KeyError, IndexError) as reason:
-            logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
-                            product, json, url, reason)
-            return '?'
+            # Try older API:
+            url = self.__resource_api_url.format(resource=product)
+            try:
+                json = self.__get_json(url)
+            except self.url_open_exceptions:
+                return '?'
+            try:
+                return json[0]['version']
+            except (KeyError, IndexError) as reason:
+                logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
+                                product, json, url, reason)
+                return '?'
 
     def plugin_version(self, plugin: str) -> str:
         try:
