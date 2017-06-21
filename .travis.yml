@@ -29,7 +29,7 @@ script:
 - coverage xml -o it-coverage.xml
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 addons:
-  sonarqube: true
+  sonarcloud: true
   code_climate:
     repo_token: 58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
 env:
