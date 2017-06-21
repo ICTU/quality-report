@@ -46,6 +46,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__version_number_url = sonar_url + 'api/server/version'
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
         self.__quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?language={language}&format=json'
+        self.__old_quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}&format=json'
 
     def version(self, product: str) -> str:
         """ Return the version of the product. """
@@ -86,13 +87,21 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def default_quality_profile(self, language: str) -> str:
         """ Return the default quality profile for the language. """
+        url = self.__quality_profiles_api_url.format(language=language)
         try:
-            response = self.__get_json(self.__quality_profiles_api_url.format(language=language))
+            response = self.__get_json(url)
         except self.url_open_exceptions:
-            return ''
+            # Try old API
+            url = self.__old_quality_profiles_api_url.format(language=language)
+            try:
+                response = self.__get_json(url)
+            except self.url_open_exceptions:
+                return ''
         for profile in response["profiles"]:
-            if profile['isDefault']:
-                return profile['name']
+            for keyword in ('isDefault', 'default'):
+                if keyword in profile and profile[keyword]:
+                    return profile['name']
+        logging.warning("Couldn't find a default quality profile in %s, retrieved from %s", response, url)
         return ''
 
     def quality_profiles_url(self) -> str:
