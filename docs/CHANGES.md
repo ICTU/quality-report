@@ -1,6 +1,7 @@
 2017-06-21  Release 1.82.6
 
   * Bug fix: Don't crash when a metric can't be retrieved from SonarQube.
+  * Bug fix: Bring back support for SonarQube v4.5.7.
   
   
 2017-06-20  Release 1.82.5

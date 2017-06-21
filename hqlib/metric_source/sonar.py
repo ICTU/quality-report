@@ -304,7 +304,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 if measure['metric'] == metric_name:
                     return float(measure['value'])
         except self.url_open_exceptions:
-            pass
+            # Try old API
+            url = self.__resource_api_url + '&metrics=' + metric_name
+            try:
+                json = self.__get_json(url)
+                return float(json[0]["msr"][0]["val"])
+            except self.url_open_exceptions:
+                pass
         except (TypeError, KeyError) as reason:
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                             json, url, reason)
