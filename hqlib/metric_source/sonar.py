@@ -293,22 +293,21 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Helper methods
 
     @functools.lru_cache(maxsize=4096)
-    def __metric(self, product: str, metric_name: str, default=0) -> Number:
+    def __metric(self, product: str, metric_name: str) -> Number:
         """ Return a specific metric value for the product. """
         if not self.__has_project(product):
             return -1
-
-        # First try API starting with SonarQube 5.4:
+        url = self.__measures_api_url.format(component=product, metric=metric_name)
         try:
-            json = self.__get_json(self.__measures_api_url.format(component=product, metric=metric_name))
+            json = self.__get_json(url)
             for measure in json['component']['measures']:
                 if measure['metric'] == metric_name:
                     return float(measure['value'])
         except self.url_open_exceptions:
             pass
-        except (TypeError, KeyError):
-            pass
-        logging.warning("Can't get %s value for %s from %s", metric_name, product, json)
+        except (TypeError, KeyError) as reason:
+            logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
+                            json, url, reason)
         return -1
 
     def __rule_violation(self, product: str, rule_name: str, default=0) -> int:

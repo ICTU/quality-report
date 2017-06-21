@@ -1,3 +1,8 @@
+2017-06-21  Release 1.82.6
+
+  * Bug fix: Don't crash when a metric can't be retrieved from SonarQube.
+  
+  
 2017-06-20  Release 1.82.5
 
   * Bug fix: Update deprecated SonarQube API for fetching a component.
