@@ -1,3 +1,8 @@
+2017-06-21  Release 1.82.7
+ 
+  * Bug fix: Frontend was missing in the Python package.
+
+
 2017-06-21  Release 1.82.6
 
   * Bug fix: Don't crash when a metric can't be retrieved from SonarQube.
