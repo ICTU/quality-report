@@ -90,7 +90,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         url = self.__quality_profiles_api_url.format(language=language)
         try:
             profiles = self.__get_json(url)['profiles']
-        except (self.url_open_exceptions, KeyError):
+        except self.url_open_exceptions + (KeyError,):
             # Try old API
             url = self.__old_quality_profiles_api_url.format(language=language)
             try:

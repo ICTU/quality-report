@@ -27,7 +27,8 @@ from typing import cast, Callable, IO
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
-    url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, http.client.BadStatusLine)
+    url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
+                           http.client.BadStatusLine)
 
     def __init__(self, uri: str=None, username: str=None, password: str=None,
                  build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen) -> None:
