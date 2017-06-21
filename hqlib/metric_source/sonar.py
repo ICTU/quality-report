@@ -305,7 +305,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                     return float(measure['value'])
         except self.url_open_exceptions:
             # Try old API
-            url = self.__resource_api_url + '&metrics=' + metric_name
+            url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
             try:
                 json = self.__get_json(url)
                 return float(json[0]["msr"][0]["val"])
