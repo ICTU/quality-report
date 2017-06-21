@@ -89,19 +89,19 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the default quality profile for the language. """
         url = self.__quality_profiles_api_url.format(language=language)
         try:
-            response = self.__get_json(url)
-        except self.url_open_exceptions:
+            profiles = self.__get_json(url)['profiles']
+        except (self.url_open_exceptions, KeyError):
             # Try old API
             url = self.__old_quality_profiles_api_url.format(language=language)
             try:
-                response = self.__get_json(url)
+                profiles = self.__get_json(url)
             except self.url_open_exceptions:
-                return ''
-        for profile in response["profiles"]:
+                return ''  # Give up
+        for profile in profiles:
             for keyword in ('isDefault', 'default'):
                 if keyword in profile and profile[keyword]:
                     return profile['name']
-        logging.warning("Couldn't find a default quality profile in %s, retrieved from %s", response, url)
+        logging.warning("Couldn't find a default quality profile in %s, retrieved from %s", profiles, url)
         return ''
 
     def quality_profiles_url(self) -> str:
