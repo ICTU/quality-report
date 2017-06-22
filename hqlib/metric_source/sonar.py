@@ -312,18 +312,25 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             for measure in json['component']['measures']:
                 if measure['metric'] == metric_name:
                     return float(measure['value'])
-        except self.url_open_exceptions:
-            # Try old API
-            url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
-            try:
-                json = self.__get_json(url)
-                return float(json[0]["msr"][0]["val"])
-            except self.url_open_exceptions:
-                pass
+            logging.warning("Can't get %s value for %s from %s (retrieved from %s)", metric_name, product,
+                            json, url)
+            return -1
         except (TypeError, KeyError, IndexError, ValueError) as reason:
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                             json, url, reason)
-        return -1
+            return -1
+        except self.url_open_exceptions:
+            pass  # Keep going, and try the old API
+        url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
+        try:
+            json = self.__get_json(url)
+            return float(json[0]["msr"][0]["val"])
+        except (TypeError, KeyError, IndexError, ValueError) as reason:
+            logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
+                            json, url, reason)
+            return -1
+        except self.url_open_exceptions:
+            return -1
 
     def __rule_violation(self, product: str, rule_name: str, default=0) -> int:
         """ Return a specific violation value for the product. """
