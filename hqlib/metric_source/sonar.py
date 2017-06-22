@@ -55,7 +55,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             json = self.__get_json(url)
             try:
                 return json['analyses'][0]['events'][0]['name']
-            except (KeyError, IndexError) as reason:
+            except (KeyError, IndexError, TypeError) as reason:
                 logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
                                 product, json, url, reason)
                 return '?'
@@ -68,7 +68,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return '?'
             try:
                 return json[0]['version']
-            except (KeyError, IndexError) as reason:
+            except (KeyError, IndexError, TypeError) as reason:
                 logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
                                 product, json, url, reason)
                 return '?'
@@ -90,7 +90,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         url = self.__quality_profiles_api_url.format(language=language)
         try:
             profiles = self.__get_json(url)['profiles']
-        except self.url_open_exceptions + (KeyError,):
+        except self.url_open_exceptions + (KeyError, TypeError):
             # Try old API
             url = self.__old_quality_profiles_api_url.format(language=language)
             try:
@@ -292,7 +292,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return datetime.datetime.min
         try:
             datetime_string = json[0]['date']
-        except (KeyError, IndexError) as reason:
+        except (TypeError, KeyError, IndexError) as reason:
             logging.warning("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
                             products[0], json, url, reason)
             return datetime.datetime.min
@@ -320,7 +320,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return float(json[0]["msr"][0]["val"])
             except self.url_open_exceptions:
                 pass
-        except (TypeError, KeyError) as reason:
+        except (TypeError, KeyError, IndexError, ValueError) as reason:
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                             json, url, reason)
         return -1
