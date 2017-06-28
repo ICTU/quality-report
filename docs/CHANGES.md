@@ -1,3 +1,8 @@
+2017-06-28  Release 1.82.9
+
+  * Bug fix: Allow for multiple SonarQube instances as metric source.
+  
+  
 2017-06-22  Release 1.82.8
 
   * Bug fix: Don't crash when a metric can't be retrieved from SonarQube v4.5.7.
