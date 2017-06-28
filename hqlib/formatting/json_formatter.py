@@ -33,14 +33,9 @@ class JSONFormatter(base_formatter.Formatter):
         """ Return a JSON formatted version of the report prefix. """
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
-        sonar = report.project().metric_source(metric_source.Sonar)
-        sonars = sonar if isinstance(sonar, list) else [sonar]
         for product in report.products():
-            for sonar in sonars:
-                sonar_id = product.metric_source_id(sonar)
-                if sonar_id:
-                    break
-            latest_version = sonar.version(sonar_id) if sonar_id else ''
+            sonar, sonar_id = report.sonar_id(product)
+            latest_version = report.latest_product_version(product)
             prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,
                                                                               version=latest_version))
         # Add the current date to the prefix

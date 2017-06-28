@@ -167,3 +167,11 @@ class Report(object):
     def get_meta_section(self):
         """ Return the meta section of the report. """
         return Section(self.__meta_metrics)
+
+    def sonar_id(self, product):  # pylint: disable=unused-argument
+        """ Return the Sonar and Sonar id for the product. """
+        return 'Fake Sonar', 'Product'
+
+    def latest_product_version(self, product):  # pylint: disable=unused-argument
+        """ Return the latest version of the product according to Sonar. """
+        return '2'

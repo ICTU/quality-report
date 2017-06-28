@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import datetime
-from typing import cast, Set, Type, Sequence, Optional, List
+from typing import cast, Set, Tuple, Type, Sequence, Optional, List
 
 from .section import Section, SectionHeader
 from .. import metric, metric_source, domain, requirement
@@ -156,11 +156,20 @@ class QualityReport(domain.DomainObject):
         else:
             return True  # No metrics, so direct action is needed to add metrics
 
-    def __latest_product_version(self, product: domain.Product) -> str:
+    def latest_product_version(self, product: domain.Product) -> str:
         """ Return the most recent version of the product. """
-        sonar = cast(metric_source.Sonar, self.__project.metric_source(metric_source.Sonar))
-        sonar_id = product.metric_source_id(sonar) or ''
+        sonar, sonar_id = self.sonar_id(product)
         return sonar.version(sonar_id) if sonar_id else ''
+
+    def sonar_id(self, product: domain.Product) -> Tuple[Optional[metric_source.Sonar], str]:
+        """ Return the Sonar id of the product. """
+        sonar = self.__project.metric_source(metric_source.Sonar)
+        sonars = sonar if isinstance(sonar, list) else [sonar]
+        for sonar in sonars:
+            sonar_id = product.metric_source_id(sonar)
+            if sonar_id:
+                return sonar, sonar_id
+        return None, ''
 
     def __process_section(self) -> Optional[Section]:
         """ Return the process section. """
@@ -202,7 +211,7 @@ class QualityReport(domain.DomainObject):
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
         self.__metrics.extend(metrics)
-        return Section(SectionHeader(product.short_name(), product.name(), self.__latest_product_version(product)),
+        return Section(SectionHeader(product.short_name(), product.name(), self.latest_product_version(product)),
                        metrics, product=product) if metrics else None
 
     def __team_section(self, team: domain.Team) -> Optional[Section]:
