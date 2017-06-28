@@ -30,10 +30,10 @@ class CommentedLOC(SonarDashboardMetric, LowerPercentageIsBetterMetric):
     low_target_value = 5
 
     def _numerator(self):
-        return self._metric_source.commented_loc(self._sonar_id())
+        return self._metric_source.commented_loc(self._sonar_id()) if self._metric_source else -1
 
     def _denominator(self):
-        return self._metric_source.ncloc(self._sonar_id())
+        return self._metric_source.ncloc(self._sonar_id()) if self._metric_source else -1
 
 
 class MethodQualityMetric(SonarViolationsMetric, LowerPercentageIsBetterMetric):
