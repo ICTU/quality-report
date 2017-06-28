@@ -55,7 +55,7 @@ class MethodQualityMetric(SonarViolationsMetric, LowerPercentageIsBetterMetric):
         raise NotImplementedError  # pragma: no cover
 
     def _denominator(self):
-        return self._metric_source.methods(self._sonar_id())
+        return self._metric_source.methods(self._sonar_id()) if self._metric_source else -1
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
@@ -72,7 +72,7 @@ class CyclomaticComplexity(MethodQualityMetric):
     attribute = 'een cyclomatische complexiteit van 10 of hoger'
 
     def _numerator(self):
-        return self._metric_source.complex_methods(self._sonar_id())
+        return self._metric_source.complex_methods(self._sonar_id()) if self._metric_source else -1
 
 
 class LongMethods(MethodQualityMetric):
@@ -83,7 +83,7 @@ class LongMethods(MethodQualityMetric):
     attribute = 'een lengte van meer dan 20 NCSS (Non-Comment Source Statements)'
 
     def _numerator(self):
-        return self._metric_source.long_methods(self._sonar_id())
+        return self._metric_source.long_methods(self._sonar_id()) if self._metric_source else -1
 
 
 class ManyParameters(MethodQualityMetric):
@@ -94,4 +94,4 @@ class ManyParameters(MethodQualityMetric):
     attribute = 'meer dan 5 parameters'
 
     def _numerator(self):
-        return self._metric_source.many_parameters_methods(self._sonar_id())
+        return self._metric_source.many_parameters_methods(self._sonar_id()) if self._metric_source else -1
