@@ -26,10 +26,10 @@ class Duplication(SonarDashboardMetric, LowerPercentageIsBetterMetric):
     template = '{name} heeft {value}% ({numerator} op {denominator}) duplicatie.'
 
     def _numerator(self) -> int:
-        return self._metric_source.duplicated_lines(self._sonar_id())
+        return self._metric_source.duplicated_lines(self._sonar_id()) if self._metric_source else -1
 
     def _denominator(self) -> int:
-        return self._metric_source.lines(self._sonar_id())
+        return self._metric_source.lines(self._sonar_id()) if self._metric_source else -1
 
 
 class JavaDuplication(Duplication):  # pylint: disable=too-many-ancestors
