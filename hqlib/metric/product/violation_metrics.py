@@ -87,7 +87,7 @@ class NoSonar(SonarViolationsMetric, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        no_sonar = self._metric_source.no_sonar(self._sonar_id())
+        no_sonar = self._metric_source.no_sonar(self._sonar_id()) if self._metric_source else -1
         return -1 if no_sonar is None else no_sonar
 
 
@@ -102,9 +102,9 @@ class FalsePositives(SonarMetric, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        false_positives = self._metric_source.false_positives(self._sonar_id())
+        false_positives = self._metric_source.false_positives(self._sonar_id()) if self._metric_source else -1
         return -1 if false_positives is None else false_positives
 
     def _metric_source_urls(self) -> List[str]:
         """ Return the url to the Sonar violations. """
-        return [self._metric_source.false_positives_url(self._sonar_id())]
+        return [self._metric_source.false_positives_url(self._sonar_id())] if self._metric_source else []
