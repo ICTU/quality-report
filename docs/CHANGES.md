@@ -1,3 +1,8 @@
+2017-06-30  Release 1.83.0
+
+  * Add metric source for the CSV performance report exported from Splunk by Spirit.
+  
+  
 2017-06-28  Release 1.82.9
 
   * Bug fix: Allow for multiple SonarQube instances as metric source.

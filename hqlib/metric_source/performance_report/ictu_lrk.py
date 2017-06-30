@@ -22,10 +22,11 @@ import re
 from typing import List, Iterable
 
 from ..abstract import performance_report
+from hqlib.metric_source import url_opener, beautifulsoup
 from hqlib.typing import DateTime
 
 
-class ICTULRKPerformanceReport(performance_report.PerformanceReport):
+class ICTULRKPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
     """ The ICTU LRK performance report is a simple HTML table. """
     COLUMN_90_PERC = 4
 
@@ -52,18 +53,27 @@ class ICTULRKPerformanceReport(performance_report.PerformanceReport):
                 rows.append(row)
         return rows
 
-    def _query_color(self, td) -> bool:
-        """ Return whether the query has the specified color. """
-        return td['bgcolor']
+    def _has_query_color(self, row, color: str) -> bool:
+        """ Return whether the row has a query has the specified color. """
+        return color in row('td')[self.COLUMN_90_PERC]['bgcolor']
 
-    def _date_from_soup(self, soup) -> DateTime:
+    def _datetime_from_url(self, url: str) -> DateTime:
+        """ Return the date when performance was last measured. """
+        try:
+            soup = self.soup(url)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return datetime.datetime.min
+        return self.__datetime_from_soup(soup)
+
+    @staticmethod
+    def __datetime_from_soup(soup) -> DateTime:
         """ Return the date when performance was last measured. """
         try:
             paragraph = soup('p')[-1]
             date_string = paragraph['data-date']
         except (IndexError, AttributeError) as reason:
             logging.warning("Can't get date from performance report: %s", reason)
-            return datetime.datetime.today()
+            return datetime.datetime.min
         return dateutil.parser.parse(date_string)
 
     def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument

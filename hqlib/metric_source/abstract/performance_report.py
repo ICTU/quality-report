@@ -19,17 +19,15 @@ import datetime
 import functools
 from typing import List, Iterable
 
-from .. import beautifulsoup
 from ..url_opener import UrlOpener
 from ... import domain
 from hqlib.typing import DateTime
 
 
-class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
+class PerformanceReport(domain.MetricSource):
     """ Abstract class representing a performance report. """
     metric_source_name = 'Performancerapport'
     needs_metric_source_id = True
-    COLUMN_90_PERC = 0  # Subclass responsibility
 
     def __init__(self, report_url: str, *args, **kwargs) -> None:
         super().__init__(url=report_url, *args, **kwargs)
@@ -68,13 +66,13 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         urls = self.urls(products[0])
         if urls:
             url = list(urls)[0]  # Any url is fine
-            try:
-                soup = self.soup(url)
-            except UrlOpener.url_open_exceptions:
-                return datetime.datetime.min
-            return self._date_from_soup(soup)
+            return self._datetime_from_url(url)
         else:
             return datetime.datetime.min
+
+    def _datetime_from_url(self, url) -> DateTime:
+        """ Return the date when the performance was last measured. """
+        raise NotImplementedError
 
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
@@ -82,16 +80,11 @@ class PerformanceReport(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
 
     def __queries_violating_response_time(self, product: str, color: str) -> int:
         """ Return the number of queries that are violating either the maximum or the desired response time. """
-        return len([row for row in self._query_rows(product)
-                    if color in self._query_color(row('td')[self.COLUMN_90_PERC])])
+        return len([row for row in self._query_rows(product) if self._has_query_color(row, color)])
 
-    def _query_color(self, td) -> bool:
-        """ Return whether the query has the specified color. """
-        return td['class']
-
-    def _date_from_soup(self, soup) -> DateTime:
-        """ Return the date when the performance was last measured based on the report at the url. """
-        raise NotImplementedError  # pragma: no cover
+    def _has_query_color(self, row, color: str) -> bool:
+        """ Return whether the row has a query has the specified color. """
+        raise NotImplementedError
 
 
 class PerformanceLoadTestReport(PerformanceReport):
@@ -104,9 +97,13 @@ class PerformanceLoadTestReport(PerformanceReport):
         """ Return the queries for the specified product. """
         raise NotImplementedError  # pragma: no cover
 
-    def _date_from_soup(self, soup) -> DateTime:
+    def _datetime_from_url(self, url) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
         raise NotImplementedError  # pragma: no cover
+
+    def _has_query_color(self, row, color: str) -> bool:
+        """ Return whether the row has a query has the specified color. """
+        raise NotImplementedError
 
 
 class PerformanceEnduranceTestReport(PerformanceReport):
@@ -119,9 +116,13 @@ class PerformanceEnduranceTestReport(PerformanceReport):
         """ Return the queries for the specified product. """
         raise NotImplementedError  # pragma: no cover
 
-    def _date_from_soup(self, soup) -> DateTime:
+    def _datetime_from_url(self, url) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
         raise NotImplementedError  # pragma: no cover
+
+    def _has_query_color(self, row, color: str) -> bool:
+        """ Return whether the row has a query has the specified color. """
+        raise NotImplementedError
 
 
 class PerformanceScalabilityTestReport(PerformanceReport):
@@ -134,6 +135,10 @@ class PerformanceScalabilityTestReport(PerformanceReport):
         """ Return the queries for the specified product. """
         raise NotImplementedError  # pragma: no cover
 
-    def _date_from_soup(self, soup) -> DateTime:
+    def _datetime_from_url(self, url) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
         raise NotImplementedError  # pragma: no cover
+
+    def _has_query_color(self, row, color: str) -> bool:
+        """ Return whether the row has a query has the specified color. """
+        raise NotImplementedError
