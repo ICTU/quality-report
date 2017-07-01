@@ -41,11 +41,11 @@ class VersionControlSystem(archive_system.ArchiveSystem):
 
     def last_changed_date(self, url: str):
         """ Return the date when the url was last changed. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the specified path. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
                           list_of_branches_to_include=None):
@@ -53,7 +53,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
             unmerged revisions. Branches listed in the list of branches to ignore or that match the regular
             expression of branches to ignore are, obviously, ignored. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @staticmethod
     def _ignore_branch(branch_name, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
@@ -70,7 +70,7 @@ class VersionControlSystem(archive_system.ArchiveSystem):
     @classmethod
     def branch_folder_for_branch(cls, trunk_url: str, branch: str) -> str:  # pylint: disable=unused-argument
         """ Return the branch folder for the specified branch. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
     def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str='', log_level: int=logging.WARNING) -> str:

@@ -39,7 +39,7 @@ class PerformanceMetric(domain.LowerIsBetterMetric):
 
     def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def __total_queries(self) -> int:
         """ Return the total number of queries. """
@@ -114,7 +114,7 @@ class PerformanceLoadTestMetric(PerformanceMetric):
 
     def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
 
 class PerformanceLoadTestWarnings(PerformanceLoadTestMetric):
@@ -144,7 +144,7 @@ class PerformanceEnduranceTestMetric(PerformanceMetric):
 
     def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
 
 class PerformanceEnduranceTestWarnings(PerformanceEnduranceTestMetric):
@@ -174,7 +174,7 @@ class PerformanceScalabilityTestMetric(PerformanceMetric):
 
     def _violating_queries(self) -> int:
         """ Return the number of queries not meting the required response times. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
 
 class PerformanceScalabilityTestWarnings(PerformanceScalabilityTestMetric):

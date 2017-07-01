@@ -33,7 +33,7 @@ class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
 
     def _nr_user_stories_ok(self) -> int:
         """ Return the number of user stories whose quality is good. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _nr_user_stories(self) -> int:
         """ Return the total number of user stories. """

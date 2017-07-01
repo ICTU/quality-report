@@ -37,7 +37,7 @@ class Formatter(object):
 
     def prefix(self, report: QualityReport) -> str:  # pylint: disable=W0613
         """ Override to return a prefix for the report. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def body(self, report: QualityReport) -> str:
         """ Return a formatted version of the body of the report. """
@@ -56,7 +56,7 @@ class Formatter(object):
 
     def metric(self, metric: Metric) -> str:  # pylint: disable=W0613
         """ Return a formatted version of the metric. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @staticmethod
     def postfix() -> str:

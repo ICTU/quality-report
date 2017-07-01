@@ -52,7 +52,7 @@ class MethodQualityMetric(SonarViolationsMetric, LowerPercentageIsBetterMetric):
         return values
 
     def _numerator(self):
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _denominator(self):
         return self._metric_source.methods(self._sonar_id()) if self._metric_source else -1

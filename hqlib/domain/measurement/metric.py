@@ -187,11 +187,11 @@ class Metric(object):
 
     def value(self) -> MetricValue:
         """ Return the actual value of the metric. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _is_value_better_than(self, target: MetricValue) -> bool:
         """ Return whether the actual value of the metric is better than the specified target value. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def report(self, max_subject_length: int=200) -> str:
         """ Return the actual value of the metric in the form of a short, mostly one sentence, report. """
@@ -300,7 +300,7 @@ class Metric(object):
         if isinstance(value, (int, float)):
             return value
         else:
-            raise NotImplementedError  # pragma: no cover
+            raise NotImplementedError
 
     def __subject_name(self) -> str:
         """ Return the subject name, or a string representation if the subject has no name. """

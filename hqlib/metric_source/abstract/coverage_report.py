@@ -46,7 +46,7 @@ class CoverageReport(domain.MetricSource):
 
     def _parse_statement_coverage_percentage(self, soup) -> int:
         """ Parse the coverage percentage from the soup. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def branch_coverage(self, coverage_url: str) -> int:
         """ Return the ART branch coverage for a specific product. """
@@ -60,7 +60,7 @@ class CoverageReport(domain.MetricSource):
 
     def _parse_branch_coverage_percentage(self, soup) -> int:
         """ Parse the coverage percentage from the soup. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *coverage_urls) -> DateTime:
@@ -77,7 +77,7 @@ class CoverageReport(domain.MetricSource):
 
     def _parse_coverage_date(self, soup) -> DateTime:
         """ Parse the coverage date from the soup. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @staticmethod
     def _get_coverage_date_urls(coverage_url: str) -> List[str]:

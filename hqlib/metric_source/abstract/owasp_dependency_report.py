@@ -34,7 +34,7 @@ class OWASPDependencyReport(domain.MetricSource):
 
     def _nr_warnings(self, metric_source_id: str, priority: str) -> int:
         """ Return the  number of warnings in the report with the specified priority. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *metric_source_ids):
@@ -46,4 +46,4 @@ class OWASPDependencyReport(domain.MetricSource):
 
     def _report_datetime(self, metric_source_id):
         """ Return the date/time of one report. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError

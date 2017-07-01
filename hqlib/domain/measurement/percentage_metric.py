@@ -52,11 +52,11 @@ class PercentageMetric(metric.Metric):
 
     def _numerator(self) -> int:
         """ Return the numerator (the number above the divider) for the metric. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _denominator(self) -> int:
         """ Return the denominator (the number below the divider) for the metric. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def y_axis_range(self) -> Tuple[int, int]:
         """ Return the y-axis range. This is always 0-100, since this class represents a metric measured as
@@ -71,10 +71,10 @@ class LowerPercentageIsBetterMetric(PercentageMetric, directed_metric.LowerIsBet
 
     @functools.lru_cache(maxsize=1024)
     def _numerator(self) -> int:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _denominator(self) -> int:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
 
 class HigherPercentageIsBetterMetric(PercentageMetric, directed_metric.HigherIsBetterMetric):
@@ -84,7 +84,7 @@ class HigherPercentageIsBetterMetric(PercentageMetric, directed_metric.HigherIsB
 
     @functools.lru_cache(maxsize=1024)
     def _numerator(self) -> int:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _denominator(self) -> int:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError

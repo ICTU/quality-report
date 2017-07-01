@@ -37,11 +37,11 @@ class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
 
     def _nr_ltcs_ok(self) -> int:
         """ Return the number of logical test cases whose quality is good. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _nr_ltcs(self) -> int:
         """ Return the total number of logical test cases. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()

@@ -36,7 +36,7 @@ class UnitAndIntegrationTestCoverage(UnitAndIntegrationTestMetricMixin, HigherIs
     perfect_value = 100
 
     def value(self):
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
 
 class UnitAndIntegrationTestLineCoverage(UnitAndIntegrationTestCoverage):

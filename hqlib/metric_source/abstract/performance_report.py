@@ -34,7 +34,7 @@ class PerformanceReport(domain.MetricSource):
 
     def urls(self, product: str) -> Iterable[str]:
         """ Return the report urls for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
     def queries(self, product: str) -> int:
@@ -70,20 +70,20 @@ class PerformanceReport(domain.MetricSource):
         else:
             return datetime.datetime.min
 
-    def _datetime_from_url(self, url) -> DateTime:
+    def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured. """
         raise NotImplementedError
 
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def __queries_violating_response_time(self, product: str, color: str) -> int:
         """ Return the number of queries that are violating either the maximum or the desired response time. """
         return len([row for row in self._query_rows(product) if self._has_query_color(row, color)])
 
     def _has_query_color(self, row, color: str) -> bool:
-        """ Return whether the row has a query has the specified color. """
+        """ Return whether the row has a query with the specified color. """
         raise NotImplementedError
 
 
@@ -91,15 +91,15 @@ class PerformanceLoadTestReport(PerformanceReport):
     """ Performance load test report. """
     def urls(self, product: str) -> Iterable[str]:
         """ Return the report urls for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
-    def _datetime_from_url(self, url) -> DateTime:
+    def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _has_query_color(self, row, color: str) -> bool:
         """ Return whether the row has a query has the specified color. """
@@ -110,15 +110,15 @@ class PerformanceEnduranceTestReport(PerformanceReport):
     """ Performance endurance test report. """
     def urls(self, product: str) -> Iterable[str]:
         """ Return the report urls for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
-    def _datetime_from_url(self, url) -> DateTime:
+    def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _has_query_color(self, row, color: str) -> bool:
         """ Return whether the row has a query has the specified color. """
@@ -129,15 +129,15 @@ class PerformanceScalabilityTestReport(PerformanceReport):
     """ Performance scalability test report. """
     def urls(self, product: str) -> Iterable[str]:
         """ Return the report urls for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
-    def _datetime_from_url(self, url) -> DateTime:
+    def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _has_query_color(self, row, color: str) -> bool:
         """ Return whether the row has a query has the specified color. """

@@ -26,7 +26,7 @@ class ArchiveSystem(domain.MetricSource):
 
     def last_changed_date(self, url: str) -> datetime:
         """ Return the date when the url was last changed. """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     @staticmethod
     def normalize_path(path: str) -> str:
