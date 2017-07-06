@@ -1,6 +1,7 @@
 2017-07-06  Release 1.83.1
 
   * Bug fix: Don't crash when a Checkmarx analysis can't be found.
+  * Bug fix: Open CSV files in text mode.
   
   
 2017-06-30  Release 1.83.0

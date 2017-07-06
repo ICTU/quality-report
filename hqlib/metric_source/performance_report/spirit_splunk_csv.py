@@ -38,8 +38,8 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
         """ Return the queries for the specified product. """
         rows = []
         for url in self.urls(product):
-            for row in csv.reader(self.url_open(url), delimiter=';'):
-                if row[self.PRODUCT_COLUMN] == product:
+            for row in self.__rows(url):
+                if len(row) > self.PASS_FAIL_COLUMN and row[self.PRODUCT_COLUMN] == product:
                     rows.append(row)
         return rows
 
@@ -53,18 +53,22 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
     def _datetime_from_url(self, url) -> DateTime:
         """ Return the date when performance was last measured. """
         try:
-            rows = csv.reader(self.url_open(url), delimiter=';')
+            rows = self.__rows(url)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         try:
             return dateutil.parser.parse(list(rows)[1][6].split(' ')[0])
-        except (ValueError, IndexError) as reason:
+        except (ValueError, IndexError, TypeError) as reason:
             logging.error("Couldn't parse report date time from %s, retrieved from %s: %s", rows, url, reason)
             return datetime.datetime.min
 
     def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """
         return self.__report_urls or [self.url()]
+
+    def __rows(self, url):
+        """ Return the rows from the CSV file. """
+        return csv.reader(self.url_read(url).split('\n'), delimiter=';')
 
 
 class SpiritSplunkCSVPerformanceLoadTestReport(SpiritSplunkCSVPerformanceReport):

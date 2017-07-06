@@ -22,7 +22,7 @@ import urllib.error
 from hqlib.metric_source import SpiritSplunkCSVPerformanceLoadTestReport
 
 
-CSV = r""";KEI Performance-acceptatiecriteria;;;;;;;;;;;;;;;;;;;;;;;
+CSV = b""";KEI Performance-acceptatiecriteria;;;;;;;;;;;;;;;;;;;;;;;
 Nr.;Criterium;Applicatie;"Zakelijk/
 Prive";Eindgebruikershandeling;Bestandsgrootte (MB);"24-05-2017 (S1718)
 Baseline Test (PT03)";;"13-06-2017 (S1720)
@@ -84,7 +84,7 @@ class ReportUnderTest(SpiritSplunkCSVPerformanceLoadTestReport):  # pylint: disa
         if 'error' in url:
             raise urllib.error.URLError('reason')
         else:
-            return io.StringIO(CSV)
+            return io.BytesIO(CSV)
 
 
 class SpiritSplunkCSVPerformanceReportTest(unittest.TestCase):
