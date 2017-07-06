@@ -1,3 +1,8 @@
+2017-07-06  Release 1.83.1
+
+  * Bug fix: Don't crash when a Checkmarx analysis can't be found.
+  
+  
 2017-06-30  Release 1.83.0
 
   * Add metric source for the CSV performance report exported from Splunk by Spirit.
