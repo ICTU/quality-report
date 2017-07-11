@@ -1,3 +1,13 @@
+2017-07-??  Release 2.0.0
+
+  * Remove Google Chart dependencies from frontend and replace with Chart.js so that no internet access is 
+    needed for creating quality reports.
+  * Use React for the front-end.
+  * Use Pygal on the back-end to create SVGs of sparkline charts.
+  * Use local storage for front-end settings instead of cookies.
+  * Move help info into its own tab.
+
+
 2017-07-06  Release 1.83.1
 
   * Bug fix: Don't crash when a Checkmarx analysis can't be found.
