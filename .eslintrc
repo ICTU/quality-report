@@ -1,13 +1,17 @@
-ecmaFeatures:
-  modules: true
-  jsx: true
-
 env:
   amd: true
   browser: true
   es6: true
   jquery: true
   node: true
+
+parser: babel-eslint
+
+parserOptions:
+  sourceType: module
+
+plugins:
+  - react
 
 # http://eslint.org/docs/rules/
 rules:
@@ -57,7 +61,6 @@ rules:
   no-case-declarations: 2
   no-div-regex: 2
   no-else-return: 0
-  no-empty-label: 2
   no-empty-pattern: 2
   no-eq-null: 2
   no-eval: 2

@@ -17,10 +17,9 @@ limitations under the License.
 
 # Python script to retrieve metrics from different back-end systems, like Sonar and Jenkins.
 
-import logging
 import os
 import sys
-import urllib.request
+import pygal
 
 import pkg_resources
 
@@ -86,21 +85,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     @classmethod
     def __create_trend_images(cls, quality_report, report_dir):
         """ Retrieve and write the trend images. """
+        style = pygal.style.Style(background='transparent', plot_background='transparent')
         for metric in quality_report.metrics():
-            try:
-                history = ','.join([str(value) for value in metric.recent_history()])
-            except ValueError:
-                history = ''
-            y_axis_range = cls.__format_y_axis_range(metric.y_axis_range())
-            url = "http://chart.apis.google.com/chart?" \
-                  "chs=100x25&cht=ls&chf=bg,s,00000000&chd=t:{history}&" \
-                  "chds={y_axis_range}".format(history=history, y_axis_range=y_axis_range)
-            try:
-                image = urllib.request.urlopen(url).read()
-            except metric_source.UrlOpener.url_open_exceptions as reason:
-                logging.warning("Couldn't open %s history chart at %s: %s", metric.id_string(), url, reason)
-                image = cls.EMPTY_HISTORY_PNG
-            filename = os.path.join(report_dir, 'img', '{0!s}.png'.format(metric.id_string()))
+            line_chart = pygal.Line(style=style, range=metric.y_axis_range())
+            line_chart.add('', metric.recent_history(), stroke_style={'width': 2})
+            image = line_chart.render_sparkline()
+            filename = os.path.join(report_dir, 'img', '{0!s}.svg'.format(metric.id_string()))
             filesystem.write_file(image, filename, mode='wb', encoding=None)
 
     @staticmethod
@@ -108,11 +98,6 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Format the report using the formatter and write it to the specified file. """
         formatted_report = report_formatter(**kwargs).process(quality_report)
         filesystem.write_file(formatted_report, filename, mode, encoding)
-
-    @staticmethod
-    def __format_y_axis_range(y_axis_range):
-        """ Return the y axis range parameter for the Google sparkline graph. """
-        return '{0:d},{1:d}'.format(*y_axis_range) if y_axis_range else 'a'
 
 
 if __name__ == '__main__':

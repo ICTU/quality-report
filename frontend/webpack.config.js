@@ -8,6 +8,12 @@ module.exports = {
     path: path.resolve(__dirname, '../hqlib/app/dist'),
     publicPath: 'dist/'
   },
+  resolve: {
+    modules: [
+      path.resolve('./js'),
+      path.resolve('./node_modules')
+    ]
+  },
   plugins: [
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
@@ -27,8 +33,8 @@ module.exports = {
         use: [ 'style-loader', 'css-loader' ]
       },
       {
-		test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-		use: [{
+	test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+	use: [{
           loader: 'file-loader',
           options: {
             limit: 10000,
@@ -69,7 +75,7 @@ module.exports = {
             mimetype: 'image/svg+xml'
           }
         }]
-	  }
+      }
     ]
   }
 };

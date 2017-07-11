@@ -13,16 +13,19 @@
  * limitations under the License.
  */
 
+import React from 'react';
 
-function parse_history_json(history_json) {
-    var datasets = [[], [], [], [], [], [], [], []];
-    history_json.forEach(function(value) {
-        datasets[0].push(new Date(value[0][0], value[0][1], value[0][2], value[0][3], value[0][4], value[0][5]));
-        for (var index = 1; index < 8; index++) {
-            datasets[index].push(value[1][index - 1]);
-        }
-    });
-    return datasets;
+
+class UrlList extends React.Component {
+    render() {
+        var urls = this.props.children.map((url, index) =>
+            <p key={index}><a href={url} target="_blank">{url}</a></p>);
+        return (
+            <div>
+                {urls}
+            </div>
+        );
+    }
 }
 
-export {parse_history_json};
+export {UrlList};

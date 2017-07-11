@@ -33,6 +33,10 @@ table.first-col-centered > tbody > tr > td:first-child {
     text-align: center;
 }
 
+table.dashboard {
+    width: 100%;
+}
+
 table.dashboard > tbody > tr > td {
     padding: 0;
     margin: 0;
@@ -48,22 +52,34 @@ p span.very_old {
     font-weight: bold;
 }
 
-canvas.piechart_canvas {
-    padding: 0;
-}
-
-div.piechart_div {
-    position: relative;
-    margin: auto;
-    padding: 0;
-}
-
-canvas.meta_metrics_history_graph_canvas {
-    display: block;
-    height: 100%;
-    width: 100%;
-}
-
 div.meta_metrics_history_graph {
     width: 100%;
+}
+
+.perfect_metric {
+    background-color: #EDFFE6;
+}
+
+.green_metric {
+    background-color: #E6F8E0;
+}
+
+.yellow_metric {
+    background-color: #F8F8C0;
+}
+
+.red_metric {
+    background-color: #F8E0E0;
+}
+
+.grey_metric {
+    background-color: #CCCCCC;
+}
+
+.missing_metric {
+    background-color: #F8F8F8;
+}
+
+.missing_source_metric {
+    background-color: #F8F8F8;
 }

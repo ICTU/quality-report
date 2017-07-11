@@ -3,7 +3,6 @@ exclude_paths:
   - docs/examples/**/*
   - hqlib/app/*
   - frontend/node_modules/*
-  - frontend/js/compatibility.js
 engines:
  pylint:
    enabled: true

@@ -29,7 +29,7 @@ class History(domain.MetricSource):
     """ Class representing the history file. """
     metric_source_name = 'Measurement history file'
 
-    def __init__(self, history_filename: str, recent_history: int=250, file_: Callable[[str], TextIO]=None) -> None:
+    def __init__(self, history_filename: str, recent_history: int=100, file_: Callable[[str], TextIO]=None) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_ if file_ else open

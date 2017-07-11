@@ -14,19 +14,23 @@
  */
 
 import test from 'tape';
-import {draw_area_chart} from '../js/area_chart.js';
+import React from 'react';
+import ShallowRenderer from 'react-test-renderer/shallow';
+import {UrlList} from '../../js/widgets/url_list.js';
 
-var MockBrowser = require('mock-browser').mocks.MockBrowser;
 
-test('draw area chart', function(t) {
-    var doc = MockBrowser.createDocument();
-    var canvas_div = doc.createElement('div'),
-    	canvas = doc.createElement('canvas');
-    canvas_div.id = 'element_id';
-    canvas_div.appendChild(canvas);
-    doc.body.appendChild(canvas_div);
-    var colors = ['#FFF', '#FFF', '#FFF', '#FFF', '#FFF', '#FFF', '#FFF'];
-    var chart = draw_area_chart(doc, "element_id", [[1], [1], [1], [1], [1], [1], [1]], colors,"title", true);
-    t.equals(chart['config']['type'], 'line');
+test('url list consists of paragraphs', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<UrlList>{["http://url"]}</UrlList>);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.children[0].type, 'p');
+    t.end();
+});
+
+test('empty url list consist of div only', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<UrlList>{[]}</UrlList>);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.children.length, 0);
     t.end();
 });
