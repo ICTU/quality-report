@@ -11,7 +11,7 @@
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![Requirements Status](https://requires.io/github/ICTU/quality-report/requirements.svg?branch=master)](https://requires.io/github/ICTU/quality-report/requirements/?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/58891e2fc64626004feb312f/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58891e2fc64626004feb312f)
-[![Updates](https://pyup.io/repos/github/ictu/quality-report/shield.svg)](https://pyup.io/repos/github/ictu/quality-report/)
+[![Updates](https://pyup.io/repos/github/ICTU/quality-report/shield.svg)](https://pyup.io/repos/github/ICTU/quality-report/)
 [![](https://images.microbadger.com/badges/image/ictu/quality-report.svg)](https://microbadger.com/images/ictu/quality-report "Get your own image badge on microbadger.com")
 
 HQ - Holistic Software Quality Reporting
