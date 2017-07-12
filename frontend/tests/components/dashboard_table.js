@@ -60,7 +60,6 @@ test('empty dashboard table', function(t) {
 });
 
 test('dashboard table row pie data', function(t) {
-    const metrics_data = {dashboard: {headers: [], rows: []}};
     var row = new DashboardTableRow();
     t.deepEqual(
         row.pie_data([], 'section_id'),
