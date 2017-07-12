@@ -1,4 +1,4 @@
-2017-07-??  Release 2.0.0
+2017-07-12  Release 2.0.0
 
   * Remove Google Chart dependencies from frontend and replace with Chart.js so that no internet access is 
     needed for creating quality reports.

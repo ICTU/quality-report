@@ -26,7 +26,7 @@ developed in any language as it doesn't measure the quality itself, but instead
 relies on other tools to feed it information. Metric sources include SonarQube, Jenkins,
 Jira, Jacoco, JMeter, OWASP dependency checker, and more.
 
-The user interface is in Dutch. 
+The user interface is currently available in Dutch only.
 
 An example report is available via http://ictu.github.io/quality-report/.
 
@@ -38,7 +38,27 @@ See docs/AUTHORS.txt for contact information.
 See docs/LICENSE.txt for license information.
 See docs/HOWTO.txt for information on how to configure quality reports.
 
+Screenshots
+-----------
+
+### Dashboard
+
+Each report has a dashboard that provides an overview of the project.
+
 ![Screenshot](docs/screenshot.png)
+
+### Metrics
+
+Clicking a component (pie chart) in the dashboard navigates to the metrics of the clicked component.
+
+![Screenshot](docs/screenshot2.png)
+
+### Trend
+
+Recent changes in individual metrics are displayed using spark line graphs. 
+Long term changes are visible in the trend graphs.
+
+![Screenshot](docs/screenshot3.png)
 
 Usage
 -----
