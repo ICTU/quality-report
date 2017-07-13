@@ -1,3 +1,8 @@
+2017-07-13  Release 2.1.2
+
+  * Bug fix: Don't include related dependencies in the number of dependencies with warnings (OWASP Dependency Check).
+
+
 2017-07-13  Release 2.1.1
 
   * Bug fix: Don't let Travis clean the workspace before creating the source distribution.
