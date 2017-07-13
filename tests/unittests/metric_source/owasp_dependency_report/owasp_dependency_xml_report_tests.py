@@ -49,6 +49,17 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                             <severity>High</severity>
                         </vulnerability>
                     </vulnerabilities>
+                    <relatedDependencies>
+                        <relatedDependency>
+                            <filePath>/tmp/src/packaging/target/vib/WEB-INF/lib/vib-services-soap-client-11.0.234.jar</filePath>
+                            <sha1>93622cad52550fa7b5dd186ae8bddd10c16df215</sha1>
+                            <md5>5bb4f244edd7d043507432e76e804581</md5>
+                            <identifier type="maven">
+                                <name>(nl.ictu.isr.templates:vib-services-soap-client:11.0.234)</name>
+                            </identifier>
+                         </relatedDependency>
+                    </relatedDependencies>
+
                 </dependency>
             </dependencies>
         </analysis>
@@ -61,6 +72,16 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
+                <relatedDependencies>
+                <relatedDependency>
+                    <filePath>/tmp/src/packaging/target/vib/WEB-INF/lib/vib-services-soap-client-11.0.234.jar</filePath>
+                    <sha1>93622cad52550fa7b5dd186ae8bddd10c16df215</sha1>
+                    <md5>5bb4f244edd7d043507432e76e804581</md5>
+                    <identifier type="maven">
+                        <name>(nl.ictu.isr.templates:vib-services-soap-client:11.0.234)</name>
+                    </identifier>
+                </relatedDependency>
+                </relatedDependencies>
                 <filePath>testNormal</filePath>
                     <vulnerabilities>
                         <vulnerability>
@@ -84,6 +105,16 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                             <severity>Medium</severity>
                         </vulnerability>
                     </vulnerabilities>
+                    <relatedDependencies>
+                    <relatedDependency>
+                        <filePath>/tmp/src/packaging/target/vib/WEB-INF/lib/vib-services-soap-client-11.0.234.jar</filePath>
+                        <sha1>93622cad52550fa7b5dd186ae8bddd10c16df215</sha1>
+                        <md5>5bb4f244edd7d043507432e76e804581</md5>
+                        <identifier type="maven">
+                            <name>(nl.ictu.isr.templates:vib-services-soap-client:11.0.234)</name>
+                        </identifier>
+                    </relatedDependency>
+                    </relatedDependencies>
                 </dependency>
             </dependencies>
         </analysis>
@@ -150,6 +181,16 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                             <severity>Low</severity>
                         </vulnerability>
                     </vulnerabilities>
+                    <relatedDependencies>
+                        <relatedDependency>
+                            <filePath>/tmp/src/packaging/target/vib/WEB-INF/lib/vib-services-soap-client-11.0.234.jar</filePath>
+                            <sha1>93622cad52550fa7b5dd186ae8bddd10c16df215</sha1>
+                            <md5>5bb4f244edd7d043507432e76e804581</md5>
+                            <identifier type="maven">
+                                <name>(nl.ictu.isr.templates:vib-services-soap-client:11.0.234)</name>
+                            </identifier>
+                        </relatedDependency>
+                    </relatedDependencies>
                 </dependency>
             </dependencies>
         </analysis>

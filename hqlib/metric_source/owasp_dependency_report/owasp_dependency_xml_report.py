@@ -35,7 +35,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
     def _nr_warnings(self, report_url: str, priority: str) -> int:
         """ Return the number of warnings for the specified priority in the report. """
-        debug_logging = True
+        debug_logging = False
         if priority == 'normal':
             priority = 'medium'
         try:
@@ -46,7 +46,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         # Construct XPaths for dependencies, their filePath and severity child nodes:
         severity_xpath = ".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace)
         dependencies_xpath = ".//{{{ns}}}dependency".format(ns=namespace)
-        file_path_xpath = ".//{{{ns}}}filePath".format(ns=namespace)
+        file_path_xpath = "./{{{ns}}}filePath".format(ns=namespace)
 
         dependencies = root.findall(dependencies_xpath)
         vulnerable_dependencies = []
