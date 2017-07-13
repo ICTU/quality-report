@@ -1,3 +1,8 @@
+2017-07-13  Release 2.1.1
+
+  * Bug fix: Don't let Travis clean the workspace before creating the source distribution.
+  
+
 2017-07-13  Release 2.1.0
 
   * To provide more accurate feedback to developers, changed the return value for both OWASP Dependency Check parsers
