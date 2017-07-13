@@ -14,10 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TAG=v`python3 -c "import hqlib; print(hqlib.VERSION)"`
-echo "Releasing HQ $TAG..."
-python3 setup.py bundle sdist upload
+echo "Releasing HQ..."
 docker build --no-cache -t ictu/quality-report .
 docker push ictu/quality-report
-echo "Done release HQ $TAG."
+echo "Done release HQ."
 
