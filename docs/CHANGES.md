@@ -1,3 +1,9 @@
+2017-07-13  Release 2.1.0
+
+  * To provide more accurate feedback to developers, changed the return value for both OWASP Dependency Check parsers
+    from total number of severity nodes to total number of vulnerable dependencies.
+
+
 2017-07-12  Release 2.0.0
 
   * Remove Google Chart dependencies from frontend and replace with Chart.js so that no internet access is 
