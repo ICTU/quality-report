@@ -20,11 +20,75 @@ import urllib.error
 
 from hqlib import metric_source
 
+import bs4
 
 class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependencyReport):
     # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
     contents = '{"jobs": []}'
+    html = (
+    '<tr>\n'
+    '<tr>\n'
+    '    <td class="pane">\n'
+    '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+    '    </td>\n'
+    '    <td class="pane">\n'
+    '        <table cellpadding="0" cellspacing="0" tooltip="High:1 - Normal:2" width="100%">\n'
+    '            </tr>\n'
+    '        </table>\n'
+    '    </td>\n'
+    '</tr>\n'
+    '<tr>\n'
+    '    <td class="pane">\n'
+    '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+    '    </td>\n'
+    '    <td class="pane">\n'
+    '        <table cellpadding="0" cellspacing="0" tooltip="Normal:2" width="100%">\n'
+    '            </tr>\n'
+    '        </table>\n'
+    '    </td>\n'
+    '</tr>\n'
+    '<tr>\n'
+    '    <td class="pane">\n'
+    '        <a href="file.-92822313/">Microsoft.AspNet.WebApi.Core.nuspec</a>\n'
+    '    </td>\n'
+    '    <td class="pane">\n'
+    '        <table cellpadding="0" cellspacing="0" tooltip="High:1 " width="100%">\n'
+    '            </tr>\n'
+    '        </table>\n'
+    '    </td>\n'
+    '</tr>\n'
+    '\n'
+    '<tr>\n'
+    '    <td class="pane">\n'
+    '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+    '    </td>\n'
+    '    <td class="pane">\n'
+    '        <table cellpadding="0" cellspacing="0" tooltip="High:1width="100%">\n'
+    '            </tr>\n'
+    '        </table>\n'
+    '    </td>\n'
+    '</tr>\n'
+    '        <tr>\n'
+    '    <td class="pane">\n'
+    '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+    '    </td>\n'
+    '    <td class="pane">\n'
+    '        <table cellpadding="0" cellspacing="0" tooltip="Normal:2" width="100%">\n'
+    '            </tr>\n'
+    '        </table>\n'
+    '    </td>\n'
+    '</tr>\n'
+    '        <tr>\n'
+    '    <td class="pane">\n'
+    '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+    '    </td>\n'
+    '    <td class="pane">\n'
+    '        <table cellpadding="0" cellspacing="0" tooltip="Normal:2" width="100%">\n'
+    '            </tr>\n'
+    '        </table>\n'
+    '    </td>\n'
+    '</tr>')
 
     def url_read(self, url):  # pylint: disable=unused-argument
         """ Return the static contents or raise an exception. """
@@ -33,28 +97,98 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
         else:
             return self.contents
 
+    def _get_soup(self, url: str):
+        """ Get a beautiful soup of the HTML at the url. """
+        if 'raise' in self.contents:
+            raise urllib.error.HTTPError(None, None, None, None, None)
+        else:
+            return bs4.BeautifulSoup(self.html, "lxml")
 
 class JenkinsOWASPDependencyReportTest(unittest.TestCase):
+
     """ Unit tests for the Jenkins OWASP dependency report class. """
     def setUp(self):
         JenkinsOWASPDependencyReportUnderTest._api.cache_clear()
         JenkinsOWASPDependencyReportUnderTest.nr_warnings.cache_clear()
         self.__jenkins = JenkinsOWASPDependencyReportUnderTest('http://jenkins/', 'username', 'password')
+        self.html = (
+            '<tr>\n'
+            '<tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="High:1 - Normal:2" width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>\n'
+            '<tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="Normal:2" width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>\n'
+            '<tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-92822313/">Microsoft.AspNet.WebApi.Core.nuspec</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="High:1 " width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>\n'
+            '\n'
+            '<tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="High:1width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>\n'
+            '        <tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="Normal:2" width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>\n'
+            '        <tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-1840927159/">Microsoft.AspNet.WebApi.Cors.nuspec</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="Normal:2" width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>')
 
     def test_high_priority_warnings(self):
         """ Test retrieving high priority warnings. """
-        self.__jenkins.contents = '{"numberOfHighPriorityWarnings":2}'
-        self.assertEqual(2, self.__jenkins.nr_warnings(('job',), 'high'))
+        self.__jenkins.contents = self.html
+        self.assertEqual(3, self.__jenkins.nr_warnings(('job',), 'high'))
 
     def test_normal_priority_warnings(self):
         """ Test retrieving normal priority warnings. """
-        self.__jenkins.contents = '{"numberOfNormalPriorityWarnings":4}'
+        self.__jenkins.contents = self.html
         self.assertEqual(4, self.__jenkins.nr_warnings(('job',), 'normal'))
 
     def test_low_priority_warnings(self):
         """ Test retrieving low priority warnings. """
-        self.__jenkins.contents = '{"numberOfLowPriorityWarnings":9}'
-        self.assertEqual(9, self.__jenkins.nr_warnings(('job',), 'low'))
+        self.__jenkins.contents = self.html
+        self.assertEqual(0, self.__jenkins.nr_warnings(('job',), 'low'))
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """

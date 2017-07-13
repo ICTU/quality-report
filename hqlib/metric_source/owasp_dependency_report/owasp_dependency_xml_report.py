@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import functools
+import logging
 import re
 import xml.etree.cElementTree
 from typing import List, Tuple, Any
@@ -40,9 +41,35 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             root, namespace = self.__report_root(report_url)
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
-        # Using XPath, find all vulnerability nodes with a severity child node:
-        severity_nodes = root.findall(".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace))
-        return len([node for node in severity_nodes if node.text == priority.capitalize()])
+
+        # Construct XPaths for dependencies, their filePath and severity child nodes:
+        severity_xpath = ".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace)
+        dependencies_xpath = ".//{{{ns}}}dependency".format(ns=namespace)
+        file_path_xpath = ".//{{{ns}}}filePath".format(ns=namespace)
+
+        dependencies = root.findall(dependencies_xpath)
+        vulnerable_dependencies = []
+
+        for node in dependencies:
+            severities = node.findall(severity_xpath)
+
+            # Collect severity nodes matching 'priority'
+            relevant_severities = []
+            for severity in severities:
+                if severity.text == priority.capitalize():
+                    relevant_severities.append(severity.text)
+
+            # For nodes matching 'priority'; append filePath to vulnerable_dependencies
+            if relevant_severities:
+                file_path_node_list = node.findall(file_path_xpath)
+                for file_path_node in file_path_node_list:
+                    file_path = file_path_node.text
+                    if file_path not in vulnerable_dependencies:
+                        vulnerable_dependencies.append(file_path)
+
+        log_descriptor = "Number of vulnerable filePaths: %s, List of vulnerable filePaths: %s"
+        logging.info(log_descriptor, len(vulnerable_dependencies), vulnerable_dependencies)
+        return len(vulnerable_dependencies)
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]

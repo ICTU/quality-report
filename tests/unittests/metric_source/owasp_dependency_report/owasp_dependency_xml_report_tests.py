@@ -43,6 +43,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
+                <filePath>testHigh</filePath>
                     <vulnerabilities>
                         <vulnerability>
                             <severity>High</severity>
@@ -60,12 +61,24 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
+                <filePath>testNormal</filePath>
                     <vulnerabilities>
                         <vulnerability>
                             <severity>High</severity>
                         </vulnerability>
                          <vulnerability>
                             <severity>Medium</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Medium</severity>
+                        </vulnerability>
+                    </vulnerabilities>
+                </dependency>
+                <dependency>
+                <filePath>testNormal2</filePath>
+                    <vulnerabilities>
+                        <vulnerability>
+                            <severity>High</severity>
                         </vulnerability>
                          <vulnerability>
                             <severity>Medium</severity>
@@ -83,6 +96,49 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
             <dependencies>
                 <dependency>
+                <filePath>testLow</filePath>
+                    <vulnerabilities>
+                        <vulnerability>
+                            <severity>Medium</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Low</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Low</severity>
+                        </vulnerability>
+                    </vulnerabilities>
+                </dependency>
+                <dependency>
+                <filePath>testLow2</filePath>
+                    <vulnerabilities>
+                        <vulnerability>
+                            <severity>Medium</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Low</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Low</severity>
+                        </vulnerability>
+                    </vulnerabilities>
+                </dependency>
+                <dependency>
+                <filePath>testLow3</filePath>
+                    <vulnerabilities>
+                        <vulnerability>
+                            <severity>Medium</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Low</severity>
+                        </vulnerability>
+                         <vulnerability>
+                            <severity>Low</severity>
+                        </vulnerability>
+                    </vulnerabilities>
+                </dependency>
+                <dependency>
+                <filePath>testLow4</filePath>
                     <vulnerabilities>
                         <vulnerability>
                             <severity>Medium</severity>
@@ -98,7 +154,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
             </dependencies>
         </analysis>
         '''
-        self.assertEqual(4, self.__report.nr_warnings(('url', 'url'), 'low'))
+        self.assertEqual(4, self.__report.nr_warnings(('url', ), 'low'))
 
     def test_url(self):
         """ Test the url for a OWASP dependency report. """

@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import logging
+import re
 from typing import List
 
 from .. import url_opener
@@ -31,16 +32,26 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         self.__report_url = self._last_successful_build_url + 'dependency-check-jenkins-pluginResult/'
         self.__report_api_url = self.__report_url + self.api_postfix
 
+        # URL for the partial OWASP dependency page listing individual files
+        self.__report_html_file_list = self.__report_url + 'tab.files/'
+
     def _nr_warnings(self, job_name: str, priority: str) -> int:
-        """ Return the number of warnings of the specified type in the job. """
+        """ Return the number of vulnerable files of the specified type in the job. """
         job_name = self.resolve_job_name(job_name)
-        url = self.__report_api_url.format(job=job_name)
+        url = self.__report_html_file_list.format(job=job_name)
         try:
-            report_dict = self._api(url)
+            soup = self._get_soup(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s to read warning count %s: %s", url, priority, reason)
             return -1
-        return int(report_dict['numberOf{0}PriorityWarnings'.format(priority.capitalize())])
+
+        regex = re.compile('.*{0}.*'.format(priority.capitalize()))
+        relevant_severities = soup.find_all(attrs={"tooltip": regex})
+        vulnerable_files = [tag.parent.parent.find('a').text for tag in relevant_severities]
+        vulnerable_file_count = len(vulnerable_files)
+        log_message = "Number of vulnerable files: %s \nList of filenames: %s"
+        logging.info(log_message, str(vulnerable_file_count), str(vulnerable_files))
+        return vulnerable_file_count
 
     def metric_source_urls(self, *job_names: str) -> List[str]:
         """ Return the url of the job. """

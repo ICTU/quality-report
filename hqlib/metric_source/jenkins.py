@@ -21,6 +21,7 @@ import logging
 import re
 import urllib.parse
 from typing import Dict, IO, List, Optional
+import bs4
 
 from . import url_opener
 from .. import domain
@@ -28,7 +29,6 @@ from hqlib.typing import DateTime, TimeDelta
 
 Job = Dict[str, str]
 Jobs = List[Job]
-
 
 class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     """ Class representing the Jenkins instance. """
@@ -178,6 +178,11 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Couldn't open %s: %s", url, reason)
             raise
+
+    @functools.lru_cache(maxsize=1024)
+    def _get_soup(self, url: str):
+        """ Get a beautiful soup of the HTML at the url. """
+        return bs4.BeautifulSoup(self.url_open(url), "lxml")
 
     def resolve_job_name(self, job_name: str) -> str:
         """ If the job name is a regular expression, resolve it to a concrete job name.
