@@ -35,6 +35,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
     def _nr_warnings(self, report_url: str, priority: str) -> int:
         """ Return the number of warnings for the specified priority in the report. """
+        debug_logging = False
         if priority == 'normal':
             priority = 'medium'
         try:
@@ -67,8 +68,9 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
                     if file_path not in vulnerable_dependencies:
                         vulnerable_dependencies.append(file_path)
 
-        log_descriptor = "Number of vulnerable filePaths: %s, List of vulnerable filePaths: %s"
-        logging.info(log_descriptor, len(vulnerable_dependencies), vulnerable_dependencies)
+        if debug_logging:
+            log_descriptor = "Number of vulnerable filePaths: %s, List of vulnerable filePaths: %s"
+            logging.info(log_descriptor, len(vulnerable_dependencies), vulnerable_dependencies)
         return len(vulnerable_dependencies)
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:
