@@ -35,7 +35,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
     def _nr_warnings(self, report_url: str, priority: str) -> int:
         """ Return the number of warnings for the specified priority in the report. """
-        debug_logging = False
+        debug_logging = True
         if priority == 'normal':
             priority = 'medium'
         try:
