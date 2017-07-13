@@ -2,7 +2,7 @@ sudo: required
 dist: trusty
 language: python
 python:
-- "3.6"
+- '3.6'
 before_install:
 - nvm install node
 install:
@@ -20,18 +20,28 @@ script:
 - cd ..
 - coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"
 - coverage xml
-- CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904 codeclimate-test-reporter --file build/.coverage
+- CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
+  codeclimate-test-reporter --file build/.coverage
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
-- coverage run --parallel-mode --branch tests/run_integrationtests.py discover -s tests/integrationtests -p "*_tests.py"
+- coverage run --parallel-mode --branch tests/run_integrationtests.py discover -s
+  tests/integrationtests -p "*_tests.py"
 - coverage combine build
 - coverage xml -o it-coverage.xml
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+before_deploy: "python setup.py bundle"
+deploy:
+  provider: pypi
+  user: fniessink
+  password:
+    secure: FI9Q2kC5D6i2hjK7t0GTVzYIgmU7H9GoI0qqtzVtT6V7gfV74HtfPxuIbkF6HND09GY1moSF5I0vyR8Bm2nMxEs+9PflYtNUMeNlyrEEof/brbYIrKujPGr6wVdgT4iZlMAVeybRTWhPQpo5PFsGuGcQa5cZOzt4fPPy/KO8C0c=
+  on:
+    tags: true
 addons:
   sonarcloud: true
   code_climate:
     repo_token: 58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
 env:
   global:
-    - secure: mOpbXELefnD2snAx7ie+wQwcF52/ee1n1ILeqjnSunDGHCZzitpYwVR1+hhqXyK0bNy+HdALCXf2rlqzJUvOsQmAYefj19w4K5SzejVd27MVeJ15EFX9NAruRo0Z3qg1jr5s0argFra5JrdXbfGGLWqY7Ejj5ZzG40VlRjKMx88=
+  - secure: mOpbXELefnD2snAx7ie+wQwcF52/ee1n1ILeqjnSunDGHCZzitpYwVR1+hhqXyK0bNy+HdALCXf2rlqzJUvOsQmAYefj19w4K5SzejVd27MVeJ15EFX9NAruRo0Z3qg1jr5s0argFra5JrdXbfGGLWqY7Ejj5ZzG40VlRjKMx88=
