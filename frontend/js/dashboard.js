@@ -143,6 +143,7 @@ class App extends React.Component {
             )
         } else {
             var report_date = this.state.metrics_data["report_date"];
+            report_date[1] = report_date[1] - 1;  // Date's month is zero based
             return (
                 <div>
                     <NavBar sections={this.state.metrics_data['sections']}

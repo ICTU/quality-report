@@ -75,7 +75,7 @@ class MetricsFormatterTest(unittest.TestCase):
     def test_process(self):
         """ Test that the report is processed correctly. """
         self.maxDiff = None
-        self.assertEqual('''{{"report_date": [2012, 0, 1, 12, 0, 0], "report_title": "Report title", "hq_version": \
+        self.assertEqual('''{{"report_date": [2012, 1, 1, 12, 0, 0], "report_title": "Report title", "hq_version": \
 "{0}", "sections": [{{"id": "id", "title": "Section title", "subtitle": "Section subtitle"}}], "dashboard": \
 {{"headers": [{{"header": "ME", "colspan": 1}}], "rows": [[{{"section_id": "ID", "section_title": "Section title", \
 "bgcolor": "lightsteelblue", "colspan": 1, "rowspan": 1}}]]}}, "metrics": [{{"id_value": "id_string-01", \

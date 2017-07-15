@@ -170,7 +170,7 @@ title='{hover}' border='0' />", "measurement": "{text}", "norm": "{norm}", "comm
     def __report_date(cls, report: QualityReport) -> str:
         """ Return a Javascript version of the report date. """
         date_time = report.date()
-        return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month - 1, date_time.day,
+        return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month, date_time.day,
                                                        date_time.hour, date_time.minute, date_time.second)
 
     @classmethod
