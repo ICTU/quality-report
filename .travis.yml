@@ -43,7 +43,8 @@ deploy:
     tags: true
 after_deploy: "docker build --no-cache -t ictu/quality-report ."
 addons:
-  sonarcloud: true
+  sonarcloud:
+    organization: ictu
   code_climate:
     repo_token: 58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
 env:
