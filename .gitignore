@@ -3,6 +3,7 @@
 
 # Ignore python byte-compiled files:
 *.pyc
+__pycache__/
 
 # Ignore generated coverage and test reports and test data:
 tests/integrationtests/*/*history.json

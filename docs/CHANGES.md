@@ -1,3 +1,8 @@
+2017-07-19  Release 2.2.0
+
+  * Add a filter for hiding metrics that haven't had a status change for more than a week. 
+  
+  
 2017-07-13  Release 2.1.2
 
   * Bug fix: Don't include related dependencies in the number of dependencies with warnings (OWASP Dependency Check).

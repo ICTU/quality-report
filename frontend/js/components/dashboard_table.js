@@ -37,9 +37,6 @@ class DashboardTableRow extends React.Component {
                 fontStyle: 'normal',
                 padding: 5
             },
-            legend: {
-                display: false
-            },
             animation: {
                 duration: 0
             },
@@ -69,14 +66,14 @@ class DashboardTableRow extends React.Component {
         var tds = [];
         this.props.cells.forEach(function(cell, index) {
             if (cell['section_id']) {  // Cell has a section id and thus should get a pie chart
-                var pie_options = this.pie_options(cell['section_id'], cell['section_title']);
-                var pie_data = this.pie_data(this.props.metrics, cell['section_id']);
+                const pie_options = this.pie_options(cell['section_id'], cell['section_title']);
+                const pie_data = this.pie_data(this.props.metrics, cell['section_id']);
                 // The has "margin: auto" to make it center in a wide td
                 tds.push(
                     <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
                         style={{backgroundColor: cell['bgcolor'], cursor: "pointer", verticalAlign: "middle"}}>
                         <div style={{width: this.props.pie_width, height: this.props.pie_height, margin: "auto"}}>
-                            <Pie type='pie' data={pie_data} options={pie_options} />
+                            <Pie type='pie' data={pie_data} options={pie_options} legend={{display: false}}/>
                         </div>
                     </td>
                 )

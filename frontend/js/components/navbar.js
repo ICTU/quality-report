@@ -61,8 +61,11 @@ class MenuItem extends React.Component {
 
 class NavBar extends React.Component {
     report_date_time_class() {
+        let report_date_time = new Date(this.props.report_date_time[0], this.props.report_date_time[1] - 1,
+                                        this.props.report_date_time[2], this.props.report_date_time[3],
+                                        this.props.report_date_time[4])
         var now = new Date();
-        var seconds = parseInt((now - this.props.report_date_time)/1000, 10);
+        var seconds = parseInt((now - report_date_time)/1000, 10);
         if (seconds > 60 * 60) {
             return seconds > 60 * 60 * 24 ? 'very_old' : 'old';
         } else {
@@ -71,7 +74,7 @@ class NavBar extends React.Component {
     }
 
     render() {
-        var report_date_time = format_date_time(this.props.report_date_time)
+        var report_date_time = format_date_time(...this.props.report_date_time)
         var section_menu_items = [];
         this.props.sections.forEach(function(section) {
             var id = section["id"], title = section["title"];
@@ -109,30 +112,33 @@ class NavBar extends React.Component {
                                           check={!this.props.show_one_table}
                                           onClick={this.props.on_toggle_one_table} />
                                 <li role="separator" className="divider"></li>
-                                <MenuItem id="filter_color_all" title="Alle metrieken"
-                                          check={this.props.filter_color.filter_color_all}
-                                          onClick={this.props.on_filter_color} />
-                                <MenuItem id="filter_color_red" title="Rode metrieken"
-                                          check={this.props.filter_color.filter_color_red}
-                                          onClick={this.props.on_filter_color} />
-                                <MenuItem id="filter_color_yellow" title="Gele metrieken"
-                                          check={this.props.filter_color.filter_color_yellow}
-                                          onClick={this.props.on_filter_color} />
-                                <MenuItem id="filter_color_green" title="Groene metrieken"
-                                          check={this.props.filter_color.filter_color_green}
-                                          onClick={this.props.on_filter_color} />
-                                 <MenuItem id="filter_color_perfect" title="Perfecte metrieken"
-                                          check={this.props.filter_color.filter_color_perfect}
-                                          onClick={this.props.on_filter_color} />
-                                <MenuItem id="filter_color_grey" title="Grijze metrieken"
-                                          check={this.props.filter_color.filter_color_grey}
-                                          onClick={this.props.on_filter_color} />
-                                <MenuItem id="filter_color_missing_source" title="Metrieken zonder bron"
-                                          check={this.props.filter_color.filter_color_missing_source}
-                                          onClick={this.props.on_filter_color} />
-                                <MenuItem id="filter_color_missing" title="Metrieken met onbeschikbare bron"
-                                          check={this.props.filter_color.filter_color_missing}
-                                          onClick={this.props.on_filter_color} />
+                                <MenuItem id="filter_all" title="Alle metrieken"
+                                          check={this.props.filter.filter_all}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_color_red" title="Actie vereist"
+                                          check={this.props.filter.filter_color_red}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_color_yellow" title="Bijna goed"
+                                          check={this.props.filter.filter_color_yellow}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_color_green" title="Goed"
+                                          check={this.props.filter.filter_color_green}
+                                          onClick={this.props.on_filter} />
+                                 <MenuItem id="filter_color_perfect" title="Perfect"
+                                          check={this.props.filter.filter_color_perfect}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_color_grey" title="Technische schuld"
+                                          check={this.props.filter.filter_color_grey}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_color_missing_source" title="Bron niet geconfigureerd"
+                                          check={this.props.filter.filter_color_missing_source}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_color_missing" title="Bron niet beschikbaar"
+                                          check={this.props.filter.filter_color_missing}
+                                          onClick={this.props.on_filter} />
+                                <MenuItem id="filter_status_week" title="Langer dan een week dezelfde status"
+                                          check={this.props.filter.filter_status_week}
+                                          onClick={this.props.on_filter} />
                             </Menu>
                             <MenuItem id="trend_tab" onClick={this.props.on_tab} title="Trend"
                                       hide={this.props.tab === 'trend_tab'} />

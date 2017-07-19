@@ -52,12 +52,12 @@ test('intersection of overlapping arrays is the overlap', function(t) {
 });
 
 test('format 1st of january without time', function(t) {
-    t.equal(format_date_time(new Date(2017, 0, 1)), '1-1-2017 0:00');
+    t.equal(format_date_time(2017, 1, 1, 0, 0), '1-1-2017 0:00');
     t.end();
 });
 
 test('format 31st of december with time', function(t) {
-    t.equal(format_date_time(new Date(2017, 11, 31, 23, 59, 59)), '31-12-2017 23:59');
+    t.equal(format_date_time(2017, 12, 31, 23, 59, 59), '31-12-2017 23:59');
     t.end();
 });
 

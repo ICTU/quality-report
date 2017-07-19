@@ -34,11 +34,12 @@ class App extends React.Component {
         super();
         let state = {
             metrics_data: 'loading', tab: 'metrics_tab', show_one_table: false, show_dashboard: true,
-            metrics: [], filter_color: this.filter_all(true)
+            metrics: [], filter: this.filter_all(true)
         };
-        const stored_filter_color = JSON.parse(localStorage.getItem('filter_color'));
-        if (stored_filter_color !== null) {
-            Object.assign(state, stored_filter_color);
+        const stored_filter = JSON.parse(localStorage.getItem('filter'));
+        if (stored_filter !== null) {
+            let filter = Object.assign(this.filter_all(true), stored_filter['filter']);
+            Object.assign(state, {filter: filter});
         }
         const stored_show_one_table = JSON.parse(localStorage.getItem('show_one_table'));
         if (stored_show_one_table !== null) {
@@ -52,12 +53,13 @@ class App extends React.Component {
         this.onToggleOneTable = this.onToggleOneTable.bind(this);
         this.onToggleDashboard = this.onToggleDashboard.bind(this);
         this.onTab = this.onTab.bind(this);
-        this.onFilterColor = this.onFilterColor.bind(this);
+        this.onFilter = this.onFilter.bind(this);
     }
 
     filter_all(state) {
         return {
-            filter_color_all: state,
+            filter_all: state,
+            filter_status_week: state,
             filter_color_red: state,
             filter_color_yellow: state,
             filter_color_green: state,
@@ -73,7 +75,7 @@ class App extends React.Component {
         $.getJSON("json/metrics.json", "", function(metrics_data) {
             self.setState({
                 metrics_data: metrics_data,
-                metrics: self.filter(metrics_data, self.state.filter_color)
+                metrics: self.filter(metrics_data, self.state.filter)
             });
             document.title = metrics_data["report_title"]
         });
@@ -100,29 +102,39 @@ class App extends React.Component {
         this.setState({tab: event.target.id});
     }
 
-    onFilterColor(event) {
+    onFilter(event) {
         event.preventDefault();
         var self = this;
         const target = event.target.id;
         this.setState(function(previous_state, props) {
-            let filter = Object.assign({}, previous_state.filter_color);  // Copy filter
-            if (target === 'filter_color_all') {
+            let filter = Object.assign({}, previous_state.filter);  // Copy filter
+            if (target === 'filter_all') {
                 // User clicked "all metrics": turn all filters on or off, depending on its previous state
-                filter = self.filter_all(!previous_state.filter_color['filter_color_all']);
+                filter = self.filter_all(!previous_state.filter['filter_all']);
             } else {
                 // User clicked a specific filter: toggle it
                 filter[target] = !filter[target];
                 // Also adjust the "all metrics" menu item state accordingly
-                filter['filter_color_all'] = !Object.values(filter).includes(false);
+                filter['filter_all'] = true;
+                filter['filter_all'] = !Object.values(filter).includes(false);
             }
-            localStorage.setItem('filter_color', JSON.stringify({filter_color: filter}));
-            return {filter_color: filter, metrics: self.filter(previous_state.metrics_data, filter)};
+            localStorage.setItem('filter', JSON.stringify({filter: filter}));
+            return {filter: filter, metrics: self.filter(previous_state.metrics_data, filter)};
         });
     }
 
     filter(metrics_data, filter) {
         var metrics = [];
+        const now = new Date();
         metrics_data['metrics'].forEach(function(metric) {
+            if (!filter['filter_status_week']) {
+                const d = metric['status_start_date'];
+                const status_change_date = d.length > 0 ? new Date(d[0], d[1] - 1, d[2], d[3], d[4], d[5]) : new Date(1970, 1, 1);
+                const seconds = parseInt((now - status_change_date)/1000, 10);
+                if (seconds > 60 * 60 * 24 * 7) {
+                    return;
+                }
+            }
             if (filter['filter_color_' + metric["status"]]) {
                 metrics.push(metric);
             }
@@ -142,20 +154,18 @@ class App extends React.Component {
                 </div>
             )
         } else {
-            var report_date = this.state.metrics_data["report_date"];
-            report_date[1] = report_date[1] - 1;  // Date's month is zero based
             return (
                 <div>
                     <NavBar sections={this.state.metrics_data['sections']}
                             report_title={this.state.metrics_data["report_title"]}
-                            report_date_time={new Date(...report_date)}
+                            report_date_time={this.state.metrics_data["report_date"]}
                             show_dashboard={this.state.show_dashboard}
                             show_one_table={this.state.show_one_table}
                             on_toggle_dashboard={this.onToggleDashboard}
                             on_toggle_one_table={this.onToggleOneTable}
                             tab={this.state.tab} on_tab={this.onTab}
-                            filter_color={this.state.filter_color}
-                            on_filter_color={this.onFilterColor} />
+                            filter={this.state.filter}
+                            on_filter={this.onFilter} />
                     <MainContainer metrics_data={this.state.metrics_data}
                                    metrics={this.state.metrics}
                                    show_one_table={this.state.show_one_table}

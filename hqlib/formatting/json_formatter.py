@@ -108,7 +108,8 @@ class MetricsFormatter(base_formatter.Formatter):
     columns = '''{{"id_value": "{metric_number}", "id_format": "{metric_id}", "section": "{section}", \
 "status": "{status}", "sparkline": "<img src='img/{metric_id}.png' border='0' width='100' height='25' />", \
 "status_value": "{status_nr}", "status_format": "<img src='img/{image}.png' alt='{alt}' width='48' height='48' \
-title='{hover}' border='0' />", "measurement": "{text}", "norm": "{norm}", "comment": "{comment}"}}'''
+title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measurement": "{text}", \
+"norm": "{norm}", "comment": "{comment}"}}'''
     kwargs_by_status: Dict[str, Any] = dict(
         red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
         yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
@@ -138,9 +139,11 @@ title='{hover}' border='0' />", "measurement": "{text}", "norm": "{norm}", "comm
     def __metric_data(self, metric: Metric) -> Dict[str, Any]:
         """ Return the metric data as a dictionary, so it can be used in string templates. """
         status = metric.status()
+        status_start_date = metric.status_start_date()
         kwargs = self.kwargs_by_status[status].copy()
-        kwargs['hover'] += ' (sinds {date})'.format(date=utils.format_date(metric.status_start_date(), year=True))
+        kwargs['hover'] += ' (sinds {date})'.format(date=utils.format_date(status_start_date, year=True))
         kwargs['status'] = status
+        kwargs['status_start_date'] = self.__date_array(status_start_date) if status_start_date else []
         kwargs['metric_id'] = metric.id_string()
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['norm'] = metric.norm()
@@ -169,7 +172,11 @@ title='{hover}' border='0' />", "measurement": "{text}", "norm": "{norm}", "comm
     @classmethod
     def __report_date(cls, report: QualityReport) -> str:
         """ Return a Javascript version of the report date. """
-        date_time = report.date()
+        return cls.__date_array(report.date())
+
+    @staticmethod
+    def __date_array(date_time):
+        """ Return a JSON array representing the date. """
         return '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(date_time.year, date_time.month, date_time.day,
                                                        date_time.hour, date_time.minute, date_time.second)
 
