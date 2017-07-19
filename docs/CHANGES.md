@@ -1,3 +1,8 @@
+2017-07-19  Release 2.2.2
+
+  * Bug fix: Don't show legends in the dashboard.
+  
+  
 2017-07-19  Release 2.2.1
 
   * Use Travis to push the Docker image to Docker Hub.

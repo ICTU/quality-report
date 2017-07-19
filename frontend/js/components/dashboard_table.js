@@ -37,6 +37,9 @@ class DashboardTableRow extends React.Component {
                 fontStyle: 'normal',
                 padding: 5
             },
+            legend: {
+                display: false
+            },
             animation: {
                 duration: 0
             },
