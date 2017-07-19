@@ -48,9 +48,10 @@ class QualityReport(domain.DomainObject):
                 requirement.TrustedProductMaintainability, requirement.TrackBranches)
 
     @classmethod
-    def metric_classes(cls) -> Sequence[Type[domain.Metric]]:
+    def metric_classes(cls) -> Set[Type[domain.Metric]]:
         """ Return a list of metric classes that the report can measure. """
-        return [metric_class for req_class in cls.requirement_classes() for metric_class in req_class.metric_classes()]
+        return set([metric_class for req_class in cls.requirement_classes()
+                    for metric_class in req_class.metric_classes()])
 
     @classmethod
     def metric_source_classes(cls) -> Set[Type[domain.MetricSource]]:

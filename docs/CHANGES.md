@@ -1,6 +1,7 @@
 2017-07-19  Release 2.2.0
 
-  * Add a filter for hiding metrics that haven't had a status change for more than a week. 
+  * Add a filter for hiding metrics that haven't had a status change for more than a week.
+  * Bug fix: Product size metric was shown twice in the help information.
   
   
 2017-07-13  Release 2.1.2
