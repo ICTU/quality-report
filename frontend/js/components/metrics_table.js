@@ -83,19 +83,22 @@ class MetricsTable extends React.Component {
     }
 
     render() {
+        const has_comments = this.props.metrics.some(function(metric) {
+            return metric["comment"];
+        });
         var table_rows = [];
         this.props.metrics.forEach(function(metric) {
             var cells = [{__html: metric["id_format"]}, {__html: this.sparkline(metric)},
                          {__html: metric["status_format"]}, {__html: metric["measurement"]},
                          {__html: metric["norm"]}];
-            if (this.props.comments) {
+            if (has_comments) {
                 cells.push({__html: metric["comment"]});
             }
             table_rows.push({cells: cells, className: metric['status'] + '_metric'});
         }, this);
         var headers = [["id_format", "Id"], ["sparkline", "Trend"], ["status_format", "Status"],
                        ["measurement", "Meting"], ["norm", "Norm"]];
-        if (this.props.comments) {
+        if (has_comments) {
             headers.push(["comment", "Comment"]);
         }
         return (

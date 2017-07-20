@@ -1,3 +1,8 @@
+2017-07-20  Release 2.2.3
+
+  * Bug fix: The comment column would sometimes disappear.
+  
+  
 2017-07-19  Release 2.2.2
 
   * Bug fix: Don't show legends in the dashboard.
