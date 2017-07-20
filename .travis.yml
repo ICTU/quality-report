@@ -22,8 +22,13 @@ script:
 - cd ..
 - coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"
 - coverage xml
-- CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
-  codeclimate-test-reporter --file build/.coverage
+# Code climate is compatible with Coverage.py versions >=4.0,<4.4.
+# Your Coverage.py report version is 4.4.1.
+# Consider locking your version of Coverage.py to >4,0,<4.4 until the
+# following Coverage.py issue is addressed:
+# https://bitbucket.org/ned/coveragepy/issues/578/incomplete-file-path-in-xml-report
+#- CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
+#  codeclimate-test-reporter --file build/.coverage
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
