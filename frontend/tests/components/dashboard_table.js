@@ -15,6 +15,7 @@
 
 import test from 'tape';
 import React from 'react';
+import Pie from 'react-chartjs-2';
 import ShallowRenderer from 'react-test-renderer/shallow';
 import {DashboardTable, DashboardTableRow} from '../../js/components/dashboard_table.js';
 import {STATUS_COLORS} from '../../js/colors.js';
@@ -45,6 +46,37 @@ test('status counts with multiple metrics, in different sections', function(t) {
                            "section_id", ["red", "yellow"]),
         [1, 0]
     );
+    t.end();
+});
+
+test('empty dashboard table row', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<DashboardTableRow cells={[]} />);
+    const result = renderer.getRenderOutput();
+    t.equal(result.type, 'tr');
+    t.equal(result.props.children.length, 0);
+    t.end();
+});
+
+test('dashboard table row with one empty cell', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<DashboardTableRow cells={[{section_id: "", colspan: 1, rowspan: 1, bgcolor: "white"}]} />);
+    const result = renderer.getRenderOutput();
+    t.equal(result.type, 'tr');
+    t.equal(result.props.children.length, 1);
+    t.equal(result.props.children[0].type, 'td');
+    t.end();
+});
+
+test('dashboard table row with pie chart', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<DashboardTableRow metrics={[]} cells={[{section_id: "id", colspan: 1, rowspan: 1, bgcolor: "white"}]} />);
+    const result = renderer.getRenderOutput();
+    t.equal(result.type, 'tr');
+    t.equal(result.props.children.length, 1);
+    t.equal(result.props.children[0].type, 'td');
+    t.equal(result.props.children[0].props.children.type, 'div');
+    t.equal(result.props.children[0].props.children.props.children.type, <Pie data={{}} type="pie"/>.type);
     t.end();
 });
 
