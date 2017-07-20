@@ -1,3 +1,8 @@
+2017-07-21  Release 2.2.4
+
+  * Bug fix: Work around npm dependency issues.
+
+
 2017-07-20  Release 2.2.3
 
   * Bug fix: The comment column would sometimes disappear.
