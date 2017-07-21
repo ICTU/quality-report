@@ -70,7 +70,8 @@ class MetricsSections extends React.Component {
                 <MetricsSection key="all" section="all" class_name="" title="Alle metrieken"
                             metrics={metrics} onSort={this.onSort}
                             table_sort_column_name={this.state.table_sort_column_name}
-                            table_sort_ascending={this.state.table_sort_ascending}/>);
+                            table_sort_ascending={this.state.table_sort_ascending}
+                            on_hide_metric={this.props.on_hide_metric} />);
         } else {
             this.props.metrics_data["sections"].forEach(function(section) {
                 var section_metrics = [];
@@ -84,7 +85,7 @@ class MetricsSections extends React.Component {
                                     class_name="metric_section" title={section["title"]} metrics={section_metrics}
                                     table_sort_column_name={this.state.table_sort_column_name}
                                     table_sort_ascending={this.state.table_sort_ascending}
-                                    onSort={this.onSort}/>
+                                    onSort={this.onSort} on_hide_metric={this.props.on_hide_metric} />
                 );
             }, this);
         }

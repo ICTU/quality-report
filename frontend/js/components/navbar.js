@@ -15,49 +15,8 @@
 
 import React from 'react';
 import {format_date_time} from 'utils.js';
+import {Menu, MenuItem} from 'widgets/menu.js';
 
-
-class Menu extends React.Component {
-    render() {
-        if (this.props.hide) {
-            return null;
-        }
-        return (
-            <li className="dropdown">
-                <a id={this.props.id} className="dropdown-toggle" role="button"
-                   data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-                    {this.props.title}<span className="caret"></span>
-                </a>
-                <ul className="dropdown-menu" aria-labelledby={this.props.id}>
-                    {this.props.children}
-                </ul>
-            </li>
-        )
-    }
-}
-
-class MenuItem extends React.Component {
-    render() {
-        if (this.props.hide) {
-            return null;
-        }
-        var icon;
-        if (this.props.icon) {
-            icon = 'glyphicon glyphicon-' + this.props.icon;
-        } else {
-            icon = this.props.check ? 'glyphicon glyphicon-ok' : '';
-        }
-        var disabled = this.props.disabled ? 'disabled' : '';
-        return (
-            <li className={disabled}>
-                <a className={this.props.className} id={this.props.id} href={"#" + this.props.href}
-                   onClick={this.props.onClick} data-toggle={this.props.data_toggle}>
-                    <span aria-hidden="true" className={icon}></span> {this.props.title}
-                </a>
-            </li>
-        );
-    }
-}
 
 class NavBar extends React.Component {
     report_date_time_class() {

@@ -31,7 +31,8 @@ class Metrics extends React.Component {
                 }
                 <MetricsSections metrics_data={this.props.metrics_data}
                                  metrics={this.props.metrics}
-                                 show_one_table={this.props.show_one_table} />
+                                 show_one_table={this.props.show_one_table}
+                                 on_hide_metric={this.props.on_hide_metric} />
             </div>
         )
     }
@@ -43,7 +44,8 @@ class MainContainer extends React.Component {
             metrics_tab: <Metrics metrics_data={this.props.metrics_data}
                                   metrics={this.props.metrics}
                                   show_dashboard={this.props.show_dashboard}
-                                  show_one_table={this.props.show_one_table} />,
+                                  show_one_table={this.props.show_one_table}
+                                  on_hide_metric={this.props.on_hide_metric} />,
             trend_tab: <TrendGraphs />,
             help_tab: <Help hq_version={this.props.metrics_data["hq_version"]} />
         };

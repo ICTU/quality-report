@@ -54,6 +54,7 @@ class App extends React.Component {
         this.onToggleDashboard = this.onToggleDashboard.bind(this);
         this.onTab = this.onTab.bind(this);
         this.onFilter = this.onFilter.bind(this);
+        this.onHideMetric = this.onHideMetric.bind(this);
     }
 
     filter_all(state) {
@@ -66,7 +67,8 @@ class App extends React.Component {
             filter_color_perfect: state,
             filter_color_grey: state,
             filter_color_missing_source: state,
-            filter_color_missing: state
+            filter_color_missing: state,
+            hidden_metrics: []
         };
     }
 
@@ -123,10 +125,25 @@ class App extends React.Component {
         });
     }
 
+    onHideMetric(event) {
+        event.preventDefault();
+        var self = this;
+        const target = event.target.id;
+        this.setState(function(previous_state, props) {
+            let filter = Object.assign({}, previous_state.filter); // Copy filter
+            filter['hidden_metrics'].push(target);
+            localStorage.setItem('filter', JSON.stringify({filter: filter}));
+            return {filter: filter, metrics: self.filter(previous_state.metrics_data, filter)};
+        });
+    }
+
     filter(metrics_data, filter) {
         var metrics = [];
         const now = new Date();
         metrics_data['metrics'].forEach(function(metric) {
+            if (filter['hidden_metrics'].indexOf(metric["id_value"]) > -1) {
+                return;
+            }
             if (!filter['filter_status_week']) {
                 const d = metric['status_start_date'];
                 const status_change_date = d.length > 0 ? new Date(d[0], d[1] - 1, d[2], d[3], d[4], d[5]) : new Date(1970, 1, 1);
@@ -170,6 +187,7 @@ class App extends React.Component {
                                    metrics={this.state.metrics}
                                    show_one_table={this.state.show_one_table}
                                    show_dashboard={this.state.show_dashboard}
+                                   on_hide_metric={this.onHideMetric}
                                    tab={this.state.tab} />
                 </div>
             );
