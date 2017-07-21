@@ -52,7 +52,8 @@ class BootstrapTableBody extends React.Component {
     render() {
         var rows = [];
         this.props.children.forEach(function(row) {
-            rows.push(row['cells'].map((cell, index) => <td key={index} dangerouslySetInnerHTML={cell}></td>));
+            rows.push(row['cells'].map((cell, index) => cell.hasOwnProperty('__html') ?
+                <td key={index} dangerouslySetInnerHTML={cell}></td> : <td key={index}>{cell}</td>));
         });
         const table_rows = rows.map((row, index) => <tr key={index}
                                                         className={this.props.children[index]['className']}>{row}</tr>);
@@ -79,7 +80,7 @@ class BootstrapTable extends React.Component {
 
 class MetricsTable extends React.Component {
     sparkline(metric) {
-        return '<img width="100px" height="25px" src="img/' + metric["id_format"] + '.svg"/>';
+        return <img width="100px" height="25px" src={"img/" + metric["id_format"] + ".svg"}/>;
     }
 
     render() {
@@ -88,7 +89,7 @@ class MetricsTable extends React.Component {
         });
         var table_rows = [];
         this.props.metrics.forEach(function(metric) {
-            var cells = [{__html: metric["id_format"]}, {__html: this.sparkline(metric)},
+            var cells = [metric["id_format"], this.sparkline(metric),
                          {__html: metric["status_format"]}, {__html: metric["measurement"]},
                          {__html: metric["norm"]}];
             if (has_comments) {
