@@ -23,6 +23,7 @@ ratings:
 exclude_paths:
 - "hqlib/app/dist/"
 - "frontend/node_modules/"
+- "frontend/tests/"
 - "docs/examples/"
 - "tests/unittests/"
 - "tests/integrationtests/"
