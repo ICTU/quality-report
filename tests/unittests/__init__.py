@@ -14,4 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# Package for unit tests.
+import unittest
+
+from hqlib import VERSION
+
+
+class VersionTest(unittest.TestCase):
+    def test_parts(self):
+        """ Test that the version number string consists of three integers. """
+        self.assertEqual([int, int, int], [type(int(part)) for part in VERSION.split('.')])
