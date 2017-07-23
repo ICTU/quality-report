@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_PATH=js babel-node node_modules/tape/bin/tape -r ignore-styles './tests/**/*.js' | faucet",
-    "cover": "NODE_PATH=js babel-node node_modules/.bin/babel-istanbul cover --report lcov --report text --report html --include-all-sources -- node_modules/tape/bin/tape -r ignore-styles './tests/**/*.js'",
+    "cover": "NODE_PATH=js babel-node node_modules/.bin/babel-istanbul cover --root js --report lcov --report text --report html --include-all-sources -- node_modules/tape/bin/tape -r ignore-styles './tests/**/*.js'",
     "build": "webpack"
   },
   "repository": {
