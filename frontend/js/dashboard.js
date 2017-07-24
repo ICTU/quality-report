@@ -15,6 +15,7 @@
 
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import 'bootstrap/dist/css/bootstrap.css';

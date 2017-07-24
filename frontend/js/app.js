@@ -25,11 +25,11 @@ class App extends React.Component {
         super(props);
         let state = {
             metrics_data: 'loading', tab: 'metrics_tab', show_one_table: false, show_dashboard: true,
-            metrics: [], filter: this.filter_all(true)
+            metrics: [], filter: this.filter_all(true, [])
         };
         const stored_filter = JSON.parse(this.props.storage.getItem('filter'));
         if (stored_filter !== null) {
-            let filter = Object.assign(this.filter_all(true), stored_filter['filter']);
+            let filter = Object.assign(this.filter_all(true, []), stored_filter['filter']);
             Object.assign(state, {filter: filter});
         }
         const stored_show_one_table = JSON.parse(this.props.storage.getItem('show_one_table'));
@@ -48,7 +48,7 @@ class App extends React.Component {
         this.onHideMetric = this.onHideMetric.bind(this);
     }
 
-    filter_all(state) {
+    filter_all(state, hidden_metrics) {
         return {
             filter_all: state,
             filter_status_week: state,
@@ -59,7 +59,7 @@ class App extends React.Component {
             filter_color_grey: state,
             filter_color_missing_source: state,
             filter_color_missing: state,
-            hidden_metrics: []
+            hidden_metrics: hidden_metrics
         };
     }
 
@@ -103,15 +103,19 @@ class App extends React.Component {
         const target = event.target.id;
         this.setState(function(previous_state, props) {
             let filter = Object.assign({}, previous_state.filter);  // Copy filter
-            if (target === 'filter_all') {
-                // User clicked "all metrics": turn all filters on or off, depending on its previous state
-                filter = self.filter_all(!previous_state.filter['filter_all']);
+            if (target === 'hidden_metrics') {
+                // User clicked "hidden metrics": clear the list of hidden metrics
+                filter.hidden_metrics = [];
+            } else if (target === 'filter_all') {
+                // User clicked "all metrics": turn all filters on or off, depending on its previous state but
+                // keep the list of hidden metrics unchanged
+                filter = self.filter_all(!previous_state.filter.filter_all, previous_state.filter.hidden_metrics);
             } else {
                 // User clicked a specific filter: toggle it
                 filter[target] = !filter[target];
                 // Also adjust the "all metrics" menu item state accordingly
-                filter['filter_all'] = true;
-                filter['filter_all'] = !Object.values(filter).includes(false);
+                filter.filter_all = true;
+                filter.filter_all = !Object.values(filter).includes(false);
             }
             self.props.storage.setItem('filter', JSON.stringify({filter: filter}));
             return {filter: filter, metrics: self.filter(previous_state.metrics_data, filter)};

@@ -71,7 +71,7 @@ class NavBar extends React.Component {
                                           check={!this.props.show_one_table}
                                           onClick={this.props.on_toggle_one_table} />
                                 <li role="separator" className="divider"></li>
-                                <MenuItem id="filter_all" title="Alle metrieken"
+                                <MenuItem id="filter_all" title="Alle statussen"
                                           check={this.props.filter.filter_all}
                                           onClick={this.props.on_filter} />
                                 <MenuItem id="filter_color_red" title="Actie vereist"
@@ -97,6 +97,10 @@ class NavBar extends React.Component {
                                           onClick={this.props.on_filter} />
                                 <MenuItem id="filter_status_week" title="Langer dan een week dezelfde status"
                                           check={this.props.filter.filter_status_week}
+                                          onClick={this.props.on_filter} />
+                                <li role="separator" className="divider"></li>
+                                <MenuItem id="hidden_metrics" title="Verborgen metrieken"
+                                          disabled={this.props.filter.hidden_metrics.length === 0}
                                           onClick={this.props.on_filter} />
                             </Menu>
                             <MenuItem id="trend_tab" onClick={this.props.on_tab} title="Trend"

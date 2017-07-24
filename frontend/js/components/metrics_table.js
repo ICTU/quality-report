@@ -96,7 +96,7 @@ class MetricsTable extends React.Component {
                      {metric["id_format"]} <span className="caret"></span>
                  </button>
                  <ul className="dropdown-menu">
-                     <li><a id={metric["id_value"]} onClick={this.props.on_hide_metric} href="#">Hide</a></li>
+                     <li><a id={metric["id_value"]} onClick={this.props.on_hide_metric} href="#">Verberg</a></li>
                  </ul>
              </div>
         );
