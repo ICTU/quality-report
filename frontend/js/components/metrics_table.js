@@ -14,70 +14,10 @@
  */
 
 import React from 'react';
+import {BootstrapTable} from 'widgets/bootstrap_table.js';
 import {Menu, MenuItem} from 'widgets/menu.js';
 
 
-class Caret extends React.Component {
-    render() {
-        if (!this.props.show) {
-            return null;
-        }
-        var caret = <span className="caret"></span>;
-        if (this.props.table_sort_ascending) {
-            caret = <span className="dropup">{caret}</span>;
-        }
-        return caret;
-    }
-}
-
-class BootstrapTableHeader extends React.Component {
-    render() {
-        const headers = this.props.headers.map(
-            (header, index) =>
-                <th id={header[0]} key={index} onClick={this.props.onSort} style={{cursor: "pointer"}}>
-                    {header[1]}<Caret show={header[0] === this.props.table_sort_column_name}
-                                      table_sort_ascending={this.props.table_sort_ascending}/>
-                </th>
-        );
-        return (
-            <thead>
-                <tr>
-                    {headers}
-                </tr>
-            </thead>
-        );
-    }
-}
-
-class BootstrapTableBody extends React.Component {
-    render() {
-        var rows = [];
-        this.props.children.forEach(function(row) {
-            rows.push(row['cells'].map((cell, index) => cell.hasOwnProperty('__html') ?
-                <td key={index} dangerouslySetInnerHTML={cell}></td> : <td key={index}>{cell}</td>));
-        });
-        const table_rows = rows.map((row, index) => <tr key={index}
-                                                        className={this.props.children[index]['className']}>{row}</tr>);
-        return (
-            <tbody>
-                {table_rows}
-            </tbody>
-        )
-    }
-}
-
-class BootstrapTable extends React.Component {
-    render() {
-        return (
-            <table className="table">
-                <BootstrapTableHeader {...this.props} />
-                <BootstrapTableBody>
-                    {this.props.children}
-                </BootstrapTableBody>
-            </table>
-        );
-    }
-}
 
 class MetricsTable extends React.Component {
     sparkline(metric) {
