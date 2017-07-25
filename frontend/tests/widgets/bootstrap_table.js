@@ -16,7 +16,7 @@
 import test from 'tape';
 import React from 'react';
 import ShallowRenderer from 'react-test-renderer/shallow';
-import {BootstrapTable, BootstrapTableHeader, BootstrapTableBody} from '../../js/widgets/bootstrap_table.js';
+import {BootstrapTable, BootstrapTableHeader, BootstrapTableBody, Caret} from '../../js/widgets/bootstrap_table.js';
 
 
 test('bootstrap table empty', function(t) {
@@ -45,8 +45,32 @@ test('bootstrap table header', function(t) {
 
 test('bootstrap table body', function(t) {
     const renderer = new ShallowRenderer();
-    renderer.render(<BootstrapTable headers={[["id", "title"]]}>{["cell 1"]}</BootstrapTable>);
+    renderer.render(<BootstrapTable headers={[["id", "title"]]}>{[]}</BootstrapTable>);
     const result = renderer.getRenderOutput();
-    t.deepEquals(result.props.children[1], <BootstrapTableBody>{["cell 1"]}</BootstrapTableBody>);
+    t.deepEquals(result.props.children[1], <BootstrapTableBody>{[]}</BootstrapTableBody>);
+    t.end();
+});
+
+test('bootstrap table header thead', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<BootstrapTableHeader headers={[["id", "title"]]} />);
+    const result = renderer.getRenderOutput();
+    t.equals(result.type, 'thead');
+    t.end();
+});
+
+test('bootstrap table body tbody', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<BootstrapTableBody>{[{cells: ["cell 1"], className: ''}]}</BootstrapTableBody>);
+    const result = renderer.getRenderOutput();
+    t.equals(result.type, 'tbody');
+    t.end();
+});
+
+test('bootstrap table header with caret', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<BootstrapTableHeader table_sort_column_name="id" table_sort_ascending headers={[["id", "title"]]} />);
+    const result = renderer.getRenderOutput();
+    t.deepEquals(result.props.children.props.children[0].props.children[1], <Caret show table_sort_ascending />);
     t.end();
 });

@@ -79,4 +79,4 @@ class BootstrapTable extends React.Component {
 }
 
 
-export {BootstrapTable, BootstrapTableHeader, BootstrapTableBody};
+export {BootstrapTable, BootstrapTableHeader, BootstrapTableBody, Caret};
