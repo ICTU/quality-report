@@ -67,10 +67,43 @@ test('bootstrap table body tbody', function(t) {
     t.end();
 });
 
+test('bootstrap table body html', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<BootstrapTableBody>{[{cells: [{__html: "<p>cell 1</p>"}], className: ''}]}</BootstrapTableBody>);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.children[0].props.children[0].props.dangerouslySetInnerHTML.__html, '<p>cell 1</p>');
+    t.end();
+});
+
 test('bootstrap table header with caret', function(t) {
     const renderer = new ShallowRenderer();
     renderer.render(<BootstrapTableHeader table_sort_column_name="id" table_sort_ascending headers={[["id", "title"]]} />);
     const result = renderer.getRenderOutput();
     t.deepEquals(result.props.children.props.children[0].props.children[1], <Caret show table_sort_ascending />);
+    t.end();
+});
+
+test('bootstrap table caret is hidden by default', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<Caret />);
+    const result = renderer.getRenderOutput();
+    t.equals(result, null);
+    t.end();
+});
+
+test('bootstrap table caret ascending', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<Caret show />);
+    const result = renderer.getRenderOutput();
+    t.equals(result.type, 'span');
+    t.equals(result.props.className, 'caret');
+    t.end();
+});
+
+test('bootstrap table caret descending', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<Caret show table_sort_ascending />);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.className, 'dropup');
     t.end();
 });
