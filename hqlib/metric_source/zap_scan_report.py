@@ -17,6 +17,7 @@ limitations under the License.
 
 import functools
 import logging
+import traceback
 
 import bs4
 
@@ -44,6 +45,7 @@ class ZAPScanReport(domain.MetricSource):
                 return -1
             except IndexError as reason:
                 logging.warning("Couldn't parse alerts with %s risk level from %s: %s", risk_level, url, reason)
+                traceback.print_exc()
                 return -1
         return nr_alerts
 
