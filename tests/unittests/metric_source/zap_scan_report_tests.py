@@ -24,29 +24,29 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake the url opener to return static html. """
     html = '''<html>
 <body>
-<table width="45%" border="0">
+<table width="45%" class="summary">
 <tr bgcolor="#666666">
-<td width="45%" height="24"><strong><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif">Risk
-      Level</font></strong></td><td width="55%" align="center"><strong><font color="#FFFFFF" size="2"
-      face="Arial, Helvetica, sans-serif">Number of Alerts</font></strong></td>
+<th width="45%" height="24">Risk 
+      Level</th><th width="55%" align="center">Number 
+      of Alerts</th>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#high">High</a></font></td>
-<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">0</font></td>
+<td><a href="#high">High</a></td><td align="center">0</td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#medium">Medium</a></font></td>
-<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">1</font></td>
+<td><a href="#medium">Medium</a></td><td align="center">1</td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#low">Low</a></font></td>
-<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">4</font></td>
+<td><a href="#low">Low</a></td><td align="center">4</td>
 </tr>
 <tr bgcolor="#e8e8e8">
-<td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#info">Informational</a></font></td>
-<td align="center"><font size="2" face="Arial, Helvetica, sans-serif">2</font></td>
+<td><a href="#info">Informational</a></td><td align="center">1</td>
 </tr>
 </table>
+<div class="spacer-lg"></div>
+<h3>Alert Detail</h3>
+<div class="spacer"></div>
+<table width="100%" class="results">
 </body>
 </html>
 '''
