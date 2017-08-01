@@ -29,7 +29,7 @@ $(document).ready(create_app);
 
 function create_app() {
     fix_navigation_links();
-    ReactDOM.render(<App storage={localStorage} />, document.getElementById('app'));
+    ReactDOM.render(<App/>, document.getElementById('app'));
 }
 
 function fix_navigation_links() {

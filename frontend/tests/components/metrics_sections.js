@@ -16,24 +16,14 @@
 import test from 'tape';
 import React from 'react';
 import ShallowRenderer from 'react-test-renderer/shallow';
-import {App} from '../js/app.js';
-import {Loader} from '../js/widgets/loader.js';
-import {EmptyStorage} from './stubs/storage.js';
+import {MetricsSections} from '../../js/components/metrics_sections.js';
+import {EmptyStorage} from '../stubs/storage.js';
 
 
-test('app', function(t) {
+test('metrics sections show one table', function(t) {
     const renderer = new ShallowRenderer();
-    renderer.render(<App storage={new EmptyStorage()}/>);
+    renderer.render(<MetricsSections show_one_table storage={new EmptyStorage()} metrics={[]} />);
     const result = renderer.getRenderOutput();
-    t.equals(result.type, 'div');
-    t.end();
-});
-
-test('app starts loading', function(t) {
-    const renderer = new ShallowRenderer();
-    renderer.render(<App storage={new EmptyStorage()} />);
-    const result = renderer.getRenderOutput();
-    t.comment(Object.keys(result.props));
-    t.deepEquals(result.props.children.props.children.props.children, <Loader/>);
+    t.equal(result.type, 'div');
     t.end();
 });

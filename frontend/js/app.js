@@ -23,20 +23,21 @@ import {Loader} from 'widgets/loader.js';
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.storage = this.props.storage === undefined ? localStorage : this.props.storage;
         let state = {
             metrics_data: 'loading', tab: 'metrics_tab', show_one_table: false, show_dashboard: true,
             metrics: [], filter: this.filter_all(true, [])
         };
-        const stored_filter = JSON.parse(this.props.storage.getItem('filter'));
+        const stored_filter = JSON.parse(this.storage.getItem('filter'));
         if (stored_filter !== null) {
             let filter = Object.assign(this.filter_all(true, []), stored_filter['filter']);
             Object.assign(state, {filter: filter});
         }
-        const stored_show_one_table = JSON.parse(this.props.storage.getItem('show_one_table'));
+        const stored_show_one_table = JSON.parse(this.storage.getItem('show_one_table'));
         if (stored_show_one_table !== null) {
             Object.assign(state, {show_one_table: stored_show_one_table});
         }
-        const stored_show_dashboard = JSON.parse(this.props.storage.getItem('show_dashboard'));
+        const stored_show_dashboard = JSON.parse(this.storage.getItem('show_dashboard'));
         if (stored_show_dashboard !== null) {
             Object.assign(state, {show_dashboard: stored_show_dashboard});
         }

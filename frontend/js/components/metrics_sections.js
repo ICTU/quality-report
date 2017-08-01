@@ -20,13 +20,14 @@ import {MetricsSection} from 'components/metrics_section.js';
 class MetricsSections extends React.Component {
     constructor(props) {
         super(props);
+        this.storage = this.props.storage === undefined ? localStorage : this.props.storage;
         this.onSort = this.onSort.bind(this);
         let state = {
             table_sort_column_name: 'id_format',
             table_sort_key: 'id_value',
             table_sort_ascending: true
         };
-        const stored_sort_order = JSON.parse(localStorage.getItem('sort_order'));
+        const stored_sort_order = JSON.parse(this.storage.getItem('sort_order'));
         if (stored_sort_order !== null) {
             Object.assign(state, stored_sort_order);
         }
@@ -45,7 +46,7 @@ class MetricsSections extends React.Component {
                 !this.state.table_sort_ascending : this.state.table_sort_ascending
         };
         this.setState(state);
-        localStorage.setItem('sort_order', JSON.stringify(state));
+        this.storage.setItem('sort_order', JSON.stringify(state));
     }
 
     sorted_metrics() {
