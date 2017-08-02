@@ -6,18 +6,19 @@
 __pycache__/
 
 # Ignore generated coverage and test reports and test data:
-tests/integrationtests/*/*history.json
+backend/tests/integrationtests/*/*history.json
 repos
 
 # Ignore build folders
 build
+backend/build
 dist
 quality_report.egg-info
 frontend/node_modules
 frontend/coverage
-hqlib/app/dist
-hqlib/app/img
-hqlib/app/html
+backend/hqlib/app/dist
+backend/hqlib/app/img
+backend/hqlib/app/html
 
 # Ignore OS specific folders and files
 .DS_Store

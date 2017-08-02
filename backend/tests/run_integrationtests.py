@@ -34,4 +34,5 @@ if __name__ == '__main__':  # pragma: no branch
     if not os.path.exists('build'):  # pragma: no branch
         os.mkdir('build')  # pragma: no cover
     os.system('python3 setup.py bundle')
-    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'))
+    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'),
+                  argv=[sys.argv[0], 'discover', '-s', 'integrationtests', '-p', '*_tests.py'])

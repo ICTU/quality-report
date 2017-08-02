@@ -8,7 +8,7 @@ services:
 before_install:
 - nvm install node
 install:
-- pip install -r requirements.txt
+- pip install -r backend/requirements.txt
 - pip install codeclimate-test-reporter
 - pip install codacy-coverage
 - pip install coveralls
@@ -21,6 +21,7 @@ script:
 - cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
 - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 - cd ..
+- cd backend
 - coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"
 - coverage xml
 # Code climate is compatible with Coverage.py versions >=4.0,<4.4.
@@ -37,8 +38,12 @@ script:
   tests/integrationtests -p "*_tests.py"
 - coverage combine build
 - coverage xml -o it-coverage.xml
+- cd ..
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
-before_deploy: "python setup.py bundle"
+before_deploy:
+- cd backend
+- python setup.py bundle
+- cd ..
 deploy:
   provider: pypi
   user: fniessink

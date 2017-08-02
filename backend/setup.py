@@ -37,11 +37,11 @@ class Bundle(core.Command):
         pass
 
     def run(self):
-        os.chdir('frontend')
+        os.chdir('../frontend')
         os.system('npm install; npm run build')
-        dir_util.copy_tree('html', '../hqlib/app/html')
-        dir_util.copy_tree('img', '../hqlib/app/img')
-        os.chdir('..')
+        dir_util.copy_tree('html', '../backend/hqlib/app/html')
+        dir_util.copy_tree('img', '../backend/hqlib/app/img')
+        os.chdir('../backend')
 
 
 setup(name='quality_report',

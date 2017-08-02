@@ -33,4 +33,5 @@ if __name__ == '__main__':  # pragma: no branch
     # can be processed by Sonar.
     if not os.path.exists('build'):  # pragma: no branch
         os.mkdir('build')  # pragma: no cover
-    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/unit-test-reports'))
+    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/unit-test-reports'),
+                  argv=[sys.argv[0], 'discover', '-s', 'unittests', '-p', '*_tests.py'])

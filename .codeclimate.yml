@@ -21,10 +21,10 @@ ratings:
   - "**.jsx"
   - "**.py"
 exclude_paths:
-- "hqlib/app/dist/"
+- "backend/hqlib/app/dist/"
 - "frontend/node_modules/"
 - "frontend/tests/"
 - "docs/examples/"
-- "tests/unittests/"
-- "tests/integrationtests/"
+- "backend/tests/unittests/"
+- "backend/tests/integrationtests/"
 - ".pylintrc"
