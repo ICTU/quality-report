@@ -14,42 +14,8 @@
  */
 
 import test from 'tape';
-import {intersection, format_date_time, strip_brackets} from '../js/utils.js';
+import {format_date_time} from '../js/utils.js';
 
-test('intersection of two empty arrays is an empty array', function(t) {
-    t.deepEqual([], intersection([], []));
-    t.end();
-});
-
-test('intersection with first array empty is an empty array', function(t) {
-    t.deepEqual([], intersection([], [1, 2]));
-    t.end();
-});
-
-test('intersection with second array empty is an empty array', function(t) {
-    t.deepEqual([], intersection([1, 2], []));
-    t.end();
-});
-
-test('intersection of equal arrays equals both arrays', function(t) {
-    t.deepEqual([1, 2], intersection([1, 2], [1, 2]));
-    t.end();
-});
-
-test('intersection of differently ordered equal arrays equals first array', function(t) {
-    t.deepEqual([1, 2], intersection([1, 2], [2, 1]));
-    t.end();
-});
-
-test('intersection of different arrays is empty', function(t) {
-    t.deepEqual([], intersection([1, 2], [3, 4]));
-    t.end();
-});
-
-test('intersection of overlapping arrays is the overlap', function(t) {
-    t.deepEqual([2], intersection([1, 2], [2, 3]));
-    t.end();
-});
 
 test('format 1st of january without time', function(t) {
     t.equal(format_date_time(2017, 1, 1, 0, 0), '1-1-2017 0:00');
@@ -58,15 +24,5 @@ test('format 1st of january without time', function(t) {
 
 test('format 31st of december with time', function(t) {
     t.equal(format_date_time(2017, 12, 31, 23, 59, 59), '31-12-2017 23:59');
-    t.end();
-});
-
-test('stripping brackets from a string without brackets leaves the string unchanged', function(t) {
-    t.equal(strip_brackets('Foo'), 'Foo');
-    t.end();
-});
-
-test('stripping brackets from a string with brackets', function(t) {
-    t.equal(strip_brackets('Foo (bar)'), 'Foo');
     t.end();
 });

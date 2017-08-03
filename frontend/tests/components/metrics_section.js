@@ -13,12 +13,16 @@
  * limitations under the License.
  */
 
-function format_date_time(year, month, day, hours, minutes) {
-    // Format the date and time as a string
-    var date_string = day + "-" + month + "-" + year;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var time_string = hours + ":" + minutes;
-    return date_string + ' ' + time_string;
-}
+import test from 'tape';
+import React from 'react';
+import ShallowRenderer from 'react-test-renderer/shallow';
+import {MetricsSection} from '../../js/components/metrics_section.js';
 
-export {format_date_time};
+
+test('metrics section is a section', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<MetricsSection />);
+    const result = renderer.getRenderOutput();
+    t.equal(result.type, 'section');
+    t.end();
+});

@@ -15,6 +15,7 @@
 
 import test from 'tape';
 import React from 'react';
+import ReactTestUtils from 'react-dom/test-utils';
 import ShallowRenderer from 'react-test-renderer/shallow';
 import {MetricsSections} from '../../js/components/metrics_sections.js';
 import {EmptyStorage} from '../stubs/storage.js';
