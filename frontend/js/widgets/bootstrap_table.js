@@ -68,7 +68,7 @@ class BootstrapTableBody extends React.Component {
 class BootstrapTable extends React.Component {
     render() {
         return (
-            <table className="table">
+            <table className={"table" + (this.props.className ? " " + this.props.className : "")}>
                 <BootstrapTableHeader {...this.props} />
                 <BootstrapTableBody>
                     {this.props.children}
