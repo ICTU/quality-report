@@ -23,7 +23,7 @@ from typing import List, Tuple, Any
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
-from hqlib.typing import DateTime
+from ...typing import DateTime
 
 
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
@@ -49,7 +49,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         file_path_xpath = "./{{{ns}}}filePath".format(ns=namespace)
 
         dependencies = root.findall(dependencies_xpath)
-        vulnerable_dependencies = []
+        vulnerable_dependencies: List = []
 
         for node in dependencies:
             severities = node.findall(severity_xpath)

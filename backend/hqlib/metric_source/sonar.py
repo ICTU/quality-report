@@ -22,7 +22,7 @@ from typing import List, Dict, Optional, Union
 
 from . import url_opener
 from .. import utils, domain
-from hqlib.typing import DateTime, Number
+from ..typing import DateTime, Number
 
 
 class Sonar(domain.MetricSource, url_opener.UrlOpener):
@@ -307,8 +307,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         if not self.__has_project(product):
             return -1
         url = self.__measures_api_url.format(component=product, metric=metric_name)
+        json = self.__get_json(url)
         try:
-            json = self.__get_json(url)
             for measure in json['component']['measures']:
                 if measure['metric'] == metric_name:
                     return float(measure['value'])
@@ -322,8 +322,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         except self.url_open_exceptions:
             pass  # Keep going, and try the old API
         url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
+        json = self.__get_json(url)
         try:
-            json = self.__get_json(url)
             return float(json[0]["msr"][0]["val"])
         except (TypeError, KeyError, IndexError, ValueError) as reason:
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
@@ -353,7 +353,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return len(json['issues'])
 
     @functools.lru_cache(maxsize=4096)
-    def __get_json(self, url: str) -> Union[Dict, List[Dict]]:
+    def __get_json(self, url: str) -> Union[Dict[str, Dict], List[Dict[str, Union[str, List[Dict[str, str]]]]]]:
         """ Get and evaluate the json from the url. """
         try:
             json_string = self.url_read(url)
