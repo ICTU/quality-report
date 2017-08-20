@@ -58,15 +58,13 @@ class ZAPScanReport(domain.MetricSource):
     def __parse_alerts(soup, risk_level: str) -> int:
         """ Get the number of alerts from the HTML soup. """
         summary_table = soup('table', {"class": "summary"})
-        # Find the row where the first td contains the specified risk level and get the number of alerts form
+        # Find the row where the first td contains the specified risk level and get the number of alerts from
         # the second td.
         if len(summary_table) > 0:
             for row in summary_table[0]('tr'):
-                if len(row('td')) > 0:
-                    if row('td')[0].text == risk_level.capitalize():
-                        return int(row('td')[1].text)
+                if len(row('td')) > 0 and row('td')[0].text == risk_level.capitalize():
+                    return int(row('td')[1].text)
             logging.error("Risk level %s could not be found in ZAP Scan report.", risk_level)
-            return -1
         else:
             logging.error("Summary table could not be found in ZAP Scan report.")
-            return -1
+        return -1
