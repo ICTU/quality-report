@@ -2,6 +2,7 @@
 
   * Bug fix: Update parser for new ZAP report structure.
 
+
 2017-07-21  Release 2.2.4
 
   * Bug fix: Work around npm dependency issues.
