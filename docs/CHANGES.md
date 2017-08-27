@@ -1,4 +1,4 @@
-2017-08-21  Release 2.2.5
+2017-08-27  Release 2.2.5
 
   * Bug fix: Update parser for new ZAP report structure.
 
