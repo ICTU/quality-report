@@ -43,7 +43,6 @@ script:
 before_deploy:
 - cd backend
 - python setup.py bundle
-- cd ..
 deploy:
   provider: pypi
   user: fniessink
@@ -53,6 +52,7 @@ deploy:
   on:
     tags: true
 after_deploy:
+  - cd ..
   - docker build --no-cache -t ictu/quality-report .
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push ictu/quality-report
