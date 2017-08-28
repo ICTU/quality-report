@@ -1,3 +1,8 @@
+2017-08-28  Release 2.2.8
+
+  * More logging when Splunk performance report can't be parsed.
+  
+  
 2017-08-28  Release 2.2.7
 
   * Fix Travis release build.
