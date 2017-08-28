@@ -1,3 +1,8 @@
+2017-08-28  Release 2.2.10
+
+  * Bug fix: The Splunk performance report CSV is encoded in ANSI.
+ 
+ 
 2017-08-28  Release 2.2.9
 
   * More logging when Splunk performance report can't be parsed.

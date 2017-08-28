@@ -70,7 +70,7 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
 
     def __rows(self, url):
         """ Return the rows from the CSV file. """
-        data = self.url_read(url)
+        data = self.url_read(url, encoding='iso-8859-1')
         logging.error('%s', data)
         return csv.reader(data.split('\n'), delimiter=';')
 
