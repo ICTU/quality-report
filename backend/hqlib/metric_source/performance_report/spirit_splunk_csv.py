@@ -60,8 +60,6 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
             return dateutil.parser.parse(list(rows)[1][6].split(' ')[0])
         except (ValueError, IndexError, TypeError) as reason:
             logging.error("Couldn't parse report date time from %s, retrieved from %s: %s", rows, url, reason)
-            logging.error('%s', list(rows))
-            raise
             return datetime.datetime.min
 
     def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument
@@ -71,7 +69,6 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
     def __rows(self, url):
         """ Return the rows from the CSV file. """
         data = self.url_read(url, encoding='iso-8859-1')
-        logging.error('%s', data)
         return csv.reader(data.split('\n'), delimiter=';')
 
 
