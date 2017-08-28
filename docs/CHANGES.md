@@ -1,3 +1,8 @@
+2017-08-28  Release 2.2.6
+
+  * Show traceback when Splunk performance report can't be parsed.
+
+
 2017-08-27  Release 2.2.5
 
   * Bug fix: Update parser for new ZAP report structure.
