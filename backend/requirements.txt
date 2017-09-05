@@ -4,5 +4,5 @@ lxml==3.8.0
 coverage==4.4.1
 xmlrunner==1.7.7
 python-dateutil==2.6.1
-setuptools==36.2.7
+setuptools==36.4.0
 pygal==2.4.0
