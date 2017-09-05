@@ -27,7 +27,7 @@ from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
-from .history import History
+from .history import History, CompactHistory
 from .holiday_planner import HolidayPlanner
 from .jenkins import Jenkins
 from .jira import Jira

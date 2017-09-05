@@ -281,7 +281,7 @@ class Metric(object):
 
     def recent_history(self) -> List[int]:
         """ Return a list of recent values of the metric, to be used in e.g. a spark line graph. """
-        history = self.__history.recent_history(self.stable_id(), self.id_string()) or []
+        history = self.__history.recent_history(self.stable_id()) or []
         return [int(round(float(value))) for value in history]
 
     def y_axis_range(self) -> Tuple[int, int]:

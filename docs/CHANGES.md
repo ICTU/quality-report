@@ -1,3 +1,9 @@
+2017-09-05  Release 2.3.0
+
+  * Add a CompactHistory metric source that stores the history in a real JSON format and requires less disk space.
+  * Bug fix: Menu items with a check mark didn't work.
+  
+  
 2017-08-28  Release 2.2.10
 
   * Bug fix: The Splunk performance report CSV is encoded in ANSI.

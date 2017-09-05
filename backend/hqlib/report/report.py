@@ -124,6 +124,7 @@ class QualityReport(domain.DomainObject):
 
     def metrics(self) -> Sequence[domain.Metric]:
         """ Return all metrics we report on. """
+        self.sections()
         return self.__metrics
 
     def included_metric_classes(self):
