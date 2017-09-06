@@ -1,3 +1,8 @@
+2017-09-06  Release 2.4.1
+
+  * Bug fix: Don't crash when SonarQube doesn't respond to the new measures API.
+  
+  
 2017-09-06  Release 2.4.0
 
   * Add a TestNG test report metric source.

@@ -307,8 +307,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         if not self.__has_project(product):
             return -1
         url = self.__measures_api_url.format(component=product, metric=metric_name)
-        json = self.__get_json(url)
         try:
+            json = self.__get_json(url)
             for measure in json['component']['measures']:
                 if measure['metric'] == metric_name:
                     return float(measure['value'])
