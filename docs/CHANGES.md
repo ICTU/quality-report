@@ -1,3 +1,8 @@
+2017-09-06  Release 2.4.0
+
+  * Add a TestNG test report metric source.
+  
+
 2017-09-05  Release 2.3.0
 
   * Add a CompactHistory metric source that stores the history in a real JSON format and requires less disk space.
