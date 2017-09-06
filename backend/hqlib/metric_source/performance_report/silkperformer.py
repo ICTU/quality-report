@@ -27,7 +27,7 @@ from hqlib.metric_source import beautifulsoup, url_opener
 
 class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
     """ The Silk Performer performance report is a variant of a JMeter report. """
-    COLUMN_90_PERC = 5
+    COLUMN_90_PERC = 4
 
     def __init__(self, *args, **kwargs) -> None:
         self.__report_urls = kwargs.pop('report_urls', None)
