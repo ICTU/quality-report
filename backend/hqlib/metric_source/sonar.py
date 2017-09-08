@@ -309,26 +309,27 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         url = self.__measures_api_url.format(component=product, metric=metric_name)
         try:
             json = self.__get_json(url)
-            for measure in json['component']['measures']:
-                if measure['metric'] == metric_name:
-                    return float(measure['value'])
-            logging.warning("Can't get %s value for %s from %s (retrieved from %s)", metric_name, product,
-                            json, url)
-            return -1
-        except (TypeError, KeyError, IndexError, ValueError) as reason:
+            try:
+                for measure in json['component']['measures']:
+                    if measure['metric'] == metric_name:
+                        return float(measure['value'])
+                reason = 'metric not found in component measures'
+            except (TypeError, KeyError, IndexError, ValueError) as reason:
+                pass  # Next lines will log exception and return from this method
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                             json, url, reason)
             return -1
         except self.url_open_exceptions:
             pass  # Keep going, and try the old API
         url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
-        json = self.__get_json(url)
         try:
-            return float(json[0]["msr"][0]["val"])
-        except (TypeError, KeyError, IndexError, ValueError) as reason:
-            logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
-                            json, url, reason)
-            return -1
+            json = self.__get_json(url)
+            try:
+                return float(json[0]["msr"][0]["val"])
+            except (TypeError, KeyError, IndexError, ValueError) as reason:
+                logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
+                                json, url, reason)
+                return -1
         except self.url_open_exceptions:
             return -1
 
