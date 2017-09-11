@@ -73,7 +73,7 @@ class UrlOpener(object):
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)
-    def url_read(self, url: str, encoding='utf-8') -> str:
+    def url_read(self, url: str, encoding: str='utf-8') -> str:
         """ Open and read a url, and transform the bytes to a string. """
         data = self.url_open(url).read()
         return data.decode(encoding) if isinstance(data, bytes) else data
