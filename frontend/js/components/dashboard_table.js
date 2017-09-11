@@ -81,11 +81,20 @@ class DashboardTableRow extends React.Component {
                     </td>
                 )
             } else {  // Empty or text-only cell
-                tds.push(
-                    <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
-                        style={{backgroundColor: cell['bgcolor']}}>{cell['section_title']}
-                    </td>
-                )
+                if (cell['section_title']) {
+                    tds.push(
+                        <td key={index} colSpane={cell['collspan']} rowSpan={cell['rowspan']}
+                            style={{backgroundColor: cell['bgcolor'] fontWeight: bold}} align="center">
+                            {cell['section_title']}
+                        </td>
+                    )
+                } else {
+                    tds.push(
+                        <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
+                            style={{backgroundColor: cell['bgcolor']}}>
+                        </td>
+                    )
+                }
             }
         }, this);
         return (
