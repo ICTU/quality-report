@@ -1,3 +1,8 @@
+2017-09-11  Release 2.5.0
+
+  * Allow for putting strings in dashboard table cells and use them as labels.
+  
+  
 2017-09-08  Release 2.4.2
 
   * Bug fix: Don't crash when SonarQube doesn't respond to the old measures API.

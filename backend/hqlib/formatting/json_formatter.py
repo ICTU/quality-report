@@ -208,7 +208,11 @@ title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measu
             for cell in row:
                 section_id = cell[0].short_name() if isinstance(cell[0], DomainObject) else cell[0].upper()
                 section = report.get_section(section_id)
-                section_title = section.title() if section else ''
+                if section:
+                    section_title = section.title()
+                else:  # No section found, use the text in the cell as header.
+                    section_id = ''
+                    section_title = cell[0]
                 bgcolor = cell[1]
                 colspan, rowspan = cell[2] if len(cell) == 3 else (1, 1)
                 cells.append('{{"section_id": "{0}", "section_title": "{1}", "bgcolor": "{2}", "colspan": {3}, '

@@ -80,10 +80,10 @@ class DashboardTableRow extends React.Component {
                         </div>
                     </td>
                 )
-            } else {  // Empty cell
+            } else {  // Empty or text-only cell
                 tds.push(
                     <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
-                        style={{backgroundColor: cell['bgcolor']}}>
+                        style={{backgroundColor: cell['bgcolor']}}>{cell['section_id']}
                     </td>
                 )
             }
