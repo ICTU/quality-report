@@ -83,8 +83,8 @@ class DashboardTableRow extends React.Component {
             } else {  // Empty or text-only cell
                 if (cell['section_title']) {
                     tds.push(
-                        <td key={index} colSpane={cell['collspan']} rowSpan={cell['rowspan']}
-                            style={{backgroundColor: cell['bgcolor'], fontWeight: "bold"}} align="center">
+                        <td key={index} colSpan={cell['collspan']} rowSpan={cell['rowspan']}
+                            style={{backgroundColor: cell['bgcolor'], fontWeight: "bold", textAlign: "center"}}>
                             {cell['section_title']}
                         </td>
                     )
