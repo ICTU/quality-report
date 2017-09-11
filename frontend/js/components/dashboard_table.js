@@ -84,7 +84,7 @@ class DashboardTableRow extends React.Component {
                 if (cell['section_title']) {
                     tds.push(
                         <td key={index} colSpane={cell['collspan']} rowSpan={cell['rowspan']}
-                            style={{backgroundColor: cell['bgcolor'] fontWeight: bold}} align="center">
+                            style={{backgroundColor: cell['bgcolor'], fontWeight: bold}} align="center">
                             {cell['section_title']}
                         </td>
                     )
