@@ -1,3 +1,8 @@
+2017-09-11  Release 2.5.1
+   
+  * Bug fix: Prevent really long time outs when opening URLs.
+  
+  
 2017-09-11  Release 2.5.0
 
   * Allow for putting strings in dashboard table cells and use them as labels.

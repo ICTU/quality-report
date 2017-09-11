@@ -25,7 +25,7 @@ from hqlib.metric_source import url_opener
 class FakeBuildOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake a url opener build method. """
 
-    raise_exception = False
+    raise_exception = None
 
     def __init__(self, *args, **kwargs):
         pass
@@ -34,7 +34,7 @@ class FakeBuildOpener(object):  # pylint: disable=too-few-public-methods
     def open(cls, *args):  # pylint: disable=unused-argument
         """ Fake opening a url and returning its contents. """
         if cls.raise_exception:
-            raise urllib.error.HTTPError(None, None, None, None, None)
+            raise cls.raise_exception(None, None, None, None, None)
         else:
             return 'url contents'
 
@@ -65,10 +65,17 @@ class UrlOpenerTest(unittest.TestCase):
 
     def test_exception_while_opening(self):
         """ Test an exception during opening. """
-        FakeBuildOpener.raise_exception = True
+        FakeBuildOpener.raise_exception = urllib.error.HTTPError
         opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
-        FakeBuildOpener.raise_exception = False
+        FakeBuildOpener.raise_exception = None
+
+    def test_timeout(self):
+        """ Test the timeout exception. """
+        FakeBuildOpener.raise_exception = url_opener.Timeout.Timeout
+        opener = url_opener.UrlOpener(url_open=FakeBuildOpener.open)
+        self.assertRaises(url_opener.Timeout.Timeout, opener.url_open, 'http://bla')
+        FakeBuildOpener.raise_exception = None
 
     def test_url_read(self):
         """ Test reading an url. """

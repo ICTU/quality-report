@@ -18,17 +18,41 @@ import base64
 import functools
 import http.client
 import logging
+import signal
 import socket
 import urllib.error
 import urllib.request
 from typing import cast, Callable, IO
 
 
+class Timeout(object):
+    """ Time out class using the alarm signal. """
+
+    class Timeout(Exception):
+        """ Timeout exception class. """
+        pass
+
+    def __init__(self, duration_in_seconds):
+        self.__duration = duration_in_seconds
+
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.__raise_timeout)
+        signal.alarm(self.__duration)
+
+    def __exit__(self, *args):
+        signal.alarm(0)  # Disable the alarm
+
+    @staticmethod
+    def __raise_timeout(*args):
+        """ Raise the Timeout exception. """
+        raise Timeout.Timeout()
+
+
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
-                           http.client.BadStatusLine)
+                           http.client.BadStatusLine, Timeout.Timeout)
 
     def __init__(self, uri: str=None, username: str=None, password: str=None,
                  build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen) -> None:
@@ -67,7 +91,8 @@ class UrlOpener(object):
     def url_open(self, url: str) -> IO:
         """ Return an opened url, using the opener created earlier. """
         try:
-            return self.__opener(url)
+            with Timeout(5):
+                return self.__opener(url)
         except self.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
