@@ -27,32 +27,27 @@ from typing import cast, Callable, IO
 
 class Timeout(object):
     """ Time out class using the alarm signal. """
-
-    class Timeout(Exception):
-        """ Timeout exception class. """
-        pass
-
-    def __init__(self, duration_in_seconds):
+    def __init__(self, duration_in_seconds, signal=signal):
         self.__duration = duration_in_seconds
+        self.__signal_module = signal
 
     def __enter__(self):
-        signal.signal(signal.SIGALRM, self.__raise_timeout)
-        signal.alarm(self.__duration)
+        self.__signal_module.signal(self.__signal_module.SIGALRM, self.__raise_timeout)
+        self.__signal_module.alarm(self.__duration)
 
     def __exit__(self, *args):
-        signal.alarm(0)  # Disable the alarm
+        self.__signal_module.alarm(0)  # Disable the alarm
 
-    @staticmethod
-    def __raise_timeout(*args):
-        """ Raise the Timeout exception. """
-        raise Timeout.Timeout()
+    def __raise_timeout(self, *args):
+        """ Raise the TimeoutError exception. """
+        raise TimeoutError("Operation timed out after {0} seconds.".format(self.__duration))
 
 
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
-                           http.client.BadStatusLine, Timeout.Timeout)
+                           http.client.BadStatusLine, TimeoutError)
 
     def __init__(self, uri: str=None, username: str=None, password: str=None,
                  build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen) -> None:
