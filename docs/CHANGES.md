@@ -1,3 +1,8 @@
+2017-09-12  Release 2.5.2
+
+  * Bug fix: Total LOC metric would report size as number of products times -1 if Sonar is unavailable.
+  
+  
 2017-09-11  Release 2.5.1
    
   * Bug fix: Prevent really long time outs when opening URLs.

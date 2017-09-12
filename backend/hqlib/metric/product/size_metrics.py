@@ -62,7 +62,10 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
         for product in self.__main_products():
             sonar_id = product.metric_source_id(self._metric_source)
             if sonar_id:
-                total += self._metric_source.ncloc(sonar_id)
+                product_size = self._metric_source.ncloc(sonar_id)
+                if product_size == -1:
+                    return -1
+                total += product_size
         return total
 
     def recent_history(self):
