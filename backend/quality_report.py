@@ -28,12 +28,6 @@ from hqlib import app, formatting, commandlineargs, report, metric_source, log, 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
     """ Class for creating the quality report for a specific project. """
-
-    EMPTY_HISTORY_PNG = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00\x19\x08\x06\x00\x00\x00" \
-                        b"\xc7^\x8bK\x00\x00\x00\x06bKGD\x00\xff\x00\xff\x00\xff\xa0\xbd\xa7\x93\x00\x00\x00 " \
-                        b"IDATh\x81\xed\xc1\x01\r\x00\x00\x00\xc2\xa0\xf7Om\x0f\x07\x14\x00\x00\x00\x00\x00\x00" \
-                        b"\x00\x00\x00\x1c\x1b')\x00\x01\xbca\xfe\x1a\x00\x00\x00\x00IEND\xaeB`\x82"
-
     def __init__(self, project_folder_or_filename):
         self.__project = configuration.Configuration.project(project_folder_or_filename)
 
