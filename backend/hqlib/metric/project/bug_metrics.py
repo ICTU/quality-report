@@ -36,7 +36,8 @@ class OpenBugs(LowerIsBetterMetric):
         return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
 
     def _metric_source_urls(self):
-        return [self._metric_source.nr_open_bugs_url()]
+        nr_open_bugs_url = getattr(self._metric_source, self.nr_open_bugs + '_url')()
+        return [nr_open_bugs_url]
 
 
 class OpenSecurityBugs(OpenBugs):
@@ -48,9 +49,6 @@ class OpenSecurityBugs(OpenBugs):
     low_target_value = 3
     nr_open_bugs = 'nr_open_security_bugs'
 
-    def _metric_source_urls(self):
-        return [self._metric_source.nr_open_security_bugs_url()]
-
 
 class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
     """ Metric for measuring the number of open static security analysis bugs. """
@@ -58,9 +56,6 @@ class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
     name = 'Hoeveelheid open beveiligingsbugreports uit statische security analyse'
     unit = 'open beveiligingsbugreports uit statische security analyse'
     nr_open_bugs = 'nr_open_static_security_analysis_bugs'
-
-    def _metric_source_urls(self):
-        return [self._metric_source.nr_open_static_security_analysis_bugs_url()]
 
 
 class TechnicalDebtIssues(LowerIsBetterMetric):
