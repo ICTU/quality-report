@@ -14,4 +14,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-VERSION = '2.5.3'
+VERSION = '2.5.4'

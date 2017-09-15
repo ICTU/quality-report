@@ -240,6 +240,11 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.assertEqual(self.__metric.no_manual_tests_template.format(name='FakeSubject', unit=self.__metric.unit),
                          self.__metric.report())
 
+    def test_status_without_manual_testcases(self):
+        """ Test that the status is green when there are no manual test cases. """
+        self.__birt.nr_manual_tests = 0
+        self.assertEqual('perfect', self.__metric.status())
+
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({'Birt reports': self.__birt.manual_test_execution_url()}, self.__metric.url())

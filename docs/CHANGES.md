@@ -1,3 +1,8 @@
+2017-09-15  Release 2.5.4
+
+  * Bug fix: Mark the manual test cases metric perfect when there are no manual test cases.
+
+
 2017-09-15  Release 2.5.3
 
   * Bug fix: Don't mark the manual test cases metric red when there are no manual test cases.
