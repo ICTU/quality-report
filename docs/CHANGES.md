@@ -1,3 +1,8 @@
+2017-09-15  Release 2.5.3
+
+  * Bug fix: Don't mark the manual test cases metric red when there are no manual test cases.
+  
+  
 2017-09-15  Release 2.5.2
 
   * Bug fix: Total LOC metric would report size as number of products times -1 if Sonar is unavailable.

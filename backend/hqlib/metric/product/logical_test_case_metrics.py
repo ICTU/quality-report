@@ -109,6 +109,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} {unit} van {name} zijn ' \
         'te lang geleden (meest recente {value} dag(en)) uitgevoerd.'
     never_template = 'De {nr_manual_ltcs} {unit} van {name} zijn nog niet allemaal uitgevoerd.'
+    no_manual_tests_template = '{name} heeft geen {unit}.'
     target_value = 21
     low_target_value = 28
     metric_source_class = metric_source.Birt
@@ -128,8 +129,12 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
         return parameters
 
     def _get_template(self) -> str:
-        return self.never_template if self._metric_source.date_of_last_manual_test() == datetime.datetime.min \
-            else super()._get_template()
+        if self._metric_source.nr_manual_ltcs() == 0:
+            return self.no_manual_tests_template
+        elif self._metric_source.date_of_last_manual_test() == datetime.datetime.min:
+            return self.never_template
+        else:
+            return super()._get_template()
 
     def _missing(self) -> bool:
         return self._metric_source.date_of_last_manual_test() in (None, datetime.datetime.min)
