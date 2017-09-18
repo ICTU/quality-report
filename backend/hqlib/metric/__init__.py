@@ -45,7 +45,8 @@ from .product.zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAP
 from .product.checkmarx_metrics import HighRiskCheckmarxAlertsMetric, MediumRiskCheckmarxAlertsMetric
 
 # Project metrics
-from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues
+from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues, \
+    OpenFindingsA, OpenFindingsI, OpenFindingsF
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
     UserStoriesWithoutPerformanceRiskAssessment
 from .project.project_management_metrics import RiskLog, ActionActivity, OverDueActions, StaleActions

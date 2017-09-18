@@ -41,6 +41,12 @@ class TrackBugs(Requirement):
     _metric_classes = (metric.OpenBugs, metric.OpenSecurityBugs, metric.OpenStaticSecurityAnalysisBugs)
 
 
+class TrackFindings(Requirement):
+    """ Require findings for environments to be tracked. """
+    _name = 'Track open findings'
+    _metric_classes = (metric.OpenFindingsA, metric.OpenFindingsI, metric.OpenFindingsF)
+
+
 class TrackTechnicalDebt(Requirement):
     """ Require technical debt to be tracked. """
     _name = 'Track technical debt'
