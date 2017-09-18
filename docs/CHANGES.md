@@ -1,3 +1,8 @@
+2017-09-18  Release 2.6.0
+
+  * Add Jira metrics for the number of open findings in different environments.
+  
+  
 2017-09-18  Release 2.5.5
 
   * Bug fix: The target and low target values of the ready user stories metric were reversed.

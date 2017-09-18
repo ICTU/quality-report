@@ -58,6 +58,35 @@ class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
     nr_open_bugs = 'nr_open_static_security_analysis_bugs'
 
 
+class OpenFindings(OpenBugs):
+    """ Metric for open findings in different test environments. """
+
+    unit = 'open bevindingen'
+    target_value = 0
+    low_target_value = 0
+
+
+class OpenFindingsA(OpenFindings):
+    """ Metric for open findings in the A-environment. """
+
+    name = 'Hoeveelheid open bevindingen in A-omgeving'
+    nr_open_bugs = 'nr_open_findings_a_environment'
+
+
+class OpenFindingsI(OpenFindings):
+    """ Metric for open findings in the I-environment. """
+
+    name = 'Hoeveelheid open bevindingen in I-omgeving'
+    nr_open_bugs = 'nr_open_findings_i_environment'
+
+
+class OpenFindingsF(OpenFindings):
+    """ Metric for open findings in the F-environment. """
+
+    name = 'Hoeveelheid open bevindingen in F-omgeving'
+    nr_open_bugs = 'nr_open_findings_f_environment'
+
+
 class TechnicalDebtIssues(LowerIsBetterMetric):
     """ Metric for measuring the number of technical debt issues. """
 
