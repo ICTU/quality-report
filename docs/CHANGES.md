@@ -1,3 +1,8 @@
+2017-09-18  Release 2.5.5
+
+  * Bug fix: The target and low target values of the ready user stories metric were reversed.
+
+
 2017-09-15  Release 2.5.4
 
   * Bug fix: Mark the manual test cases metric perfect when there are no manual test cases.
