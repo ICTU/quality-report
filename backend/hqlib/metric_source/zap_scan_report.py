@@ -63,9 +63,8 @@ class ZAPScanReport(domain.MetricSource):
         # the second td.
         if len(summary_table) > 0:
             for row in summary_table[0]('tr'):
-                if len(row('td')) > 0:
-                    if row('td')[0].text == risk_level.capitalize():
-                        return int(row('td')[1].text)
+                if len(row('td')) > 0 and row('td')[0].text == risk_level.capitalize():
+                    return int(row('td')[1].text)
         else:
             table_list = soup('table')
             # Prevent IndexError in case of empty table
