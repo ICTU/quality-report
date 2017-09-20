@@ -37,7 +37,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
-        self.__projects_api_url = sonar_url + 'api/projects/index'
+        self.__projects_api_url = sonar_url + 'api/projects/index?subprojects=true'
         self.__project_api_url = sonar_url + 'api/projects/{project}'
         self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
         self.__false_positives_api_url = sonar_url + \

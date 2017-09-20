@@ -1,3 +1,8 @@
+2017-09-20  Release 2.6.2
+
+  * Bug fix: Support subprojects in Sonar.
+  
+  
 2017-09-20  Release 2.6.1
 
   * Bug fix: Metrics for open findings were missing in the set of optional project requirements.
