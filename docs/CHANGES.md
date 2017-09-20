@@ -1,3 +1,8 @@
+2017-09-20  Release 2.6.1
+
+  * Bug fix: Metrics for open findings were missing in the set of optional project requirements.
+  
+
 2017-09-18  Release 2.6.0
 
   * Add Jira metrics for the number of open findings in different environments.

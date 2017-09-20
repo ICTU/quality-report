@@ -46,9 +46,10 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     @staticmethod
     def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackActions, requirement.TrackBugs,  requirement.TrackManualLTCs,
-                requirement.TrackReadyUS, requirement.TrackRisks, requirement.TrackSecurityAndPerformanceRisks,
-                requirement.TrustedProductMaintainability, requirement.TrackTechnicalDebt}
+        return {requirement.TrackActions, requirement.TrackBugs,  requirement.TrackFindings,
+                requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
+                requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,
+                requirement.TrackTechnicalDebt}
 
     def organization(self) -> str:
         """ Return the name of the organization. """

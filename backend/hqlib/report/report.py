@@ -177,8 +177,8 @@ class QualityReport(domain.DomainObject):
         """ Return the process section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions,
                                                   requirement.TrackRisks, requirement.TrackBugs,
-                                                  requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
-                                                  requirement.TrackReadyUS,
+                                                  requirement.TrackFindings, requirement.TrackTechnicalDebt,
+                                                  requirement.TrackManualLTCs, requirement.TrackReadyUS,
                                                   requirement.TrackSecurityAndPerformanceRisks)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
