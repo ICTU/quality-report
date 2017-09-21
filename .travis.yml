@@ -21,8 +21,9 @@ script:
 - cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
 - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 - cd ..
-- cd backend
-- coverage run --branch tests/run_unittests.py discover -s tests/unittests -p "*_tests.py"
+#- cd backend
+- export PYTHONPATH=$PYTHONPATH:backend
+- coverage run --branch backend/tests/run_unittests.py discover -s backend/tests/unittests -p "*_tests.py"
 - coverage xml
 # Code climate is compatible with Coverage.py versions >=4.0,<4.4.
 # Your Coverage.py report version is 4.4.1.
@@ -34,11 +35,11 @@ script:
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
-- coverage run --parallel-mode --branch tests/run_integrationtests.py discover -s
-  tests/integrationtests -p "*_tests.py"
+- coverage run --parallel-mode --branch backend/tests/run_integrationtests.py discover -s
+  backend/tests/integrationtests -p "*_tests.py"
 - coverage combine build
 - coverage xml -o it-coverage.xml
-- cd ..
+#- cd ..
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 before_deploy:
 - cd backend
