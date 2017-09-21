@@ -61,7 +61,7 @@ class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
 class OpenFindings(OpenBugs):
     """ Metric for open findings in different test environments. """
 
-    unit = 'open bevindingen'
+    unit = 'open blokkerende bevindingen'
     target_value = 0
     low_target_value = 0
 
@@ -69,6 +69,7 @@ class OpenFindings(OpenBugs):
 class OpenFindingsA(OpenFindings):
     """ Metric for open findings in the A-environment. """
 
+    unit = OpenFindings.unit + ' in de A-omgeving'
     name = 'Hoeveelheid open bevindingen in A-omgeving'
     nr_open_bugs = 'nr_open_findings_a_environment'
 
@@ -76,6 +77,7 @@ class OpenFindingsA(OpenFindings):
 class OpenFindingsI(OpenFindings):
     """ Metric for open findings in the I-environment. """
 
+    unit = OpenFindings.unit + ' in de I-omgeving'
     name = 'Hoeveelheid open bevindingen in I-omgeving'
     nr_open_bugs = 'nr_open_findings_i_environment'
 
@@ -83,6 +85,7 @@ class OpenFindingsI(OpenFindings):
 class OpenFindingsF(OpenFindings):
     """ Metric for open findings in the F-environment. """
 
+    unit = OpenFindings.unit + ' in de F-omgeving'
     name = 'Hoeveelheid open bevindingen in F-omgeving'
     nr_open_bugs = 'nr_open_findings_f_environment'
 

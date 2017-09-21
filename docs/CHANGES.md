@@ -1,3 +1,8 @@
+2017-09-21  Release 2.6.4
+
+  * Bug fix: Better template for open findings metrics.
+  
+  
 2017-09-21  Release 2.6.3
 
   * Slightly longer time-out to cater for slow Jira queries.
