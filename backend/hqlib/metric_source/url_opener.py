@@ -86,7 +86,7 @@ class UrlOpener(object):
     def url_open(self, url: str) -> IO:
         """ Return an opened url, using the opener created earlier. """
         try:
-            with Timeout(5):
+            with Timeout(15):
                 return self.__opener(url)
         except self.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)

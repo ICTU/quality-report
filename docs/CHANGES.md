@@ -1,3 +1,8 @@
+2017-09-21  Release 2.6.3
+
+  * Slightly longer time-out to cater for slow Jira queries.
+  
+  
 2017-09-20  Release 2.6.2
 
   * Bug fix: Support subprojects in Sonar.
