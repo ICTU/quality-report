@@ -1,3 +1,8 @@
+2017-09-21  Release 2.6.6
+
+  * Bug fix: Force day-first for for the dates in Splunk performance reports.
+  
+
 2017-09-21  Release 2.6.5
 
   * Bug fix: Use correct date from the Splunk performance report.
