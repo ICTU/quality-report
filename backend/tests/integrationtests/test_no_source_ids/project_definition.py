@@ -4,7 +4,7 @@ from hqlib import metric_source, requirement
 from hqlib.domain import Project, Product, Application, Component, Team, Document, Person, Environment
 
 # Sources
-HISTORY = metric_source.History('tests/integrationtests/test_no_source_ids/history.json')
+HISTORY = metric_source.History('backend/tests/integrationtests/test_no_source_ids/history.json')
 GIT = metric_source.Git(url='http://git/repo')
 SONAR = metric_source.Sonar('http://sonar/')
 JIRA = metric_source.Jira(url='http://jira/', username='user', password='pass')

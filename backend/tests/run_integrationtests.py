@@ -31,8 +31,8 @@ if __name__ == '__main__':  # pragma: no branch
     logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
     # Run the unit test with the XML test runner so that the test output
     # can be processed by Sonar.
-    if not os.path.exists('build'):  # pragma: no branch
-        os.mkdir('build')  # pragma: no cover
-    os.system('python3 setup.py bundle')
-    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'),
+    if not os.path.exists('backend/build'):  # pragma: no branch
+        os.mkdir('backend/build')  # pragma: no cover
+    os.system('(cd backend && python3 setup.py bundle)')
+    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='backend/build/integration-test-reports'),
                   argv=[sys.argv[0], 'discover', '-s', 'integrationtests', '-p', '*_tests.py'])

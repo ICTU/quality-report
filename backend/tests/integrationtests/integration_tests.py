@@ -34,7 +34,7 @@ class IntegrationTestCase(unittest.TestCase):
     def setUpClass(cls):
         """ Create the report. """
         cls.report_folder = tempfile.mkdtemp(dir='build')
-        os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
+        os.system('coverage{0} run --parallel-mode --branch backend/quality_report.py --project {1} --report {2} '
                   '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
 
     @classmethod
@@ -45,7 +45,7 @@ class IntegrationTestCase(unittest.TestCase):
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
-    project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
+    project_folder = 'backend/tests/integrationtests/test_all_requirements_no_sources'
     expected_number_of_metrics = 191
 
     def report(self):
@@ -77,7 +77,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
 class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
     """ Integration tests using a report with all requirements and all sources, but no source ids defined. """
-    project_folder = 'tests/integrationtests/test_no_source_ids'
+    project_folder = 'backend/tests/integrationtests/test_no_source_ids'
 
 
 class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
