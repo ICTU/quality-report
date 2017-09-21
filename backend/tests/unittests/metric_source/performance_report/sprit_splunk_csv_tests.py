@@ -120,7 +120,7 @@ class SpiritSplunkCSVPerformanceReportTest(unittest.TestCase):
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
-        self.assertEqual(datetime.datetime(2017, 5, 24), self._performance_report.datetime('ABC'))
+        self.assertEqual(datetime.datetime(2017, 6, 14), self._performance_report.datetime('ABC'))
 
     def test_date_without_urls(self):
         """ Test that the min date is passed if there are no report urls to consult. """

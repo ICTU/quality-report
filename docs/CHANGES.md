@@ -1,3 +1,8 @@
+2017-09-21  Release 2.6.5
+
+  * Bug fix: Use correct date from the Splunk performance report.
+  
+  
 2017-09-21  Release 2.6.4
 
   * Bug fix: Better template for open findings metrics.
