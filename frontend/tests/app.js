@@ -37,3 +37,57 @@ test('app starts loading', function(t) {
     t.deepEquals(result.props.children.props.children.props.children, <Loader/>);
     t.end();
 });
+
+test('app filter without metrics', function(t) {
+    let app = new App({storage: new EmptyStorage()});
+    t.deepEqual(app.filter({metrics: []}), []);
+    t.end();
+});
+
+test('app filter without filter', function(t) {
+    let app = new App({storage: new EmptyStorage()});
+    t.deepEqual(
+        app.filter(
+            {metrics: [{status: 'green'}]},
+            {hidden_metrics: '', filter_status_week: true, filter_color_green: true}
+        ),
+        [{status: 'green'}]
+    );
+    t.end();
+});
+
+test('app filter by status', function(t) {
+    let app = new App({storage: new EmptyStorage()});
+    t.deepEqual(
+        app.filter(
+            {metrics: [{status: 'green'}]},
+            {hidden_metrics: '', filter_status_week: true, filter_color_green: false}
+        ),
+        []
+    );
+    t.end();
+});
+
+test('app filter hidden metric', function(t) {
+    let app = new App({storage: new EmptyStorage()});
+    t.deepEqual(
+        app.filter(
+            {metrics: [{status: 'green', id_value: 'id'}]},
+            {hidden_metrics: 'id', filter_status_week: true, filter_color_green: true}
+        ),
+        []
+    );
+    t.end();
+});
+
+test('app filter by status start date, without status start', function(t) {
+    let app = new App({storage: new EmptyStorage()});
+    t.deepEqual(
+        app.filter(
+            {metrics: [{status: 'green', status_start_date: []}]},
+            {hidden_metrics: '', filter_status_week: false, filter_color_green: true}
+        ),
+        []
+    );
+    t.end();
+});
