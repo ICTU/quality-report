@@ -4,7 +4,7 @@ from hqlib import metric_source, requirement
 from hqlib.domain import Project, Product, Team, Document, Person, Application, Component, Environment
 
 # Sources
-HISTORY = metric_source.CompactHistory('backend/tests/integrationtests/test_all_requirements_no_sources/history.json')
+HISTORY = metric_source.CompactHistory('tests/integrationtests/test_all_requirements_no_sources/history.json')
 
 # The project
 PROJECT = Project(

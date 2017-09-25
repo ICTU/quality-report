@@ -21,8 +21,7 @@ from mypy import api
 
 
 if __name__ == '__main__':  # pragma: no branch
-    if not os.path.exists('build'):
-        os.mkdir('build')
+    os.makedirs('build', exist_ok=True)
     result = api.run(['hqlib', '--html-report', 'build/mypy_report'])
 
     if result[0]:

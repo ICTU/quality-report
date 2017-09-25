@@ -6,7 +6,7 @@ from hqlib.domain import Project
 import project_definition
 
 # Sources
-HISTORY = metric_source.History('backend/tests/integrationtests/test_no_source_ids/second_history.json')
+HISTORY = metric_source.History('tests/integrationtests/test_no_source_ids/second_history.json')
 
 # The project
 PROJECT = Project(
