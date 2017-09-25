@@ -1,3 +1,8 @@
+2017-09-25  Release 2.6.8
+
+  * Bug fix: Don't crash when the JaCoCo session HTML file does not contain session information.
+  
+  
 2017-09-25  Release 2.6.7
 
   * Bug fix: Don't count ignored TestNG tests as skipped, but ignore them completely.
