@@ -31,7 +31,8 @@ class Checkmarx(Requirement):
     """ Require applications to be statically analyzed for security vulnerabilities. """
     _name = 'Checkmarx SCA'
     _url = 'https://www.checkmarx.com/'
-    _metric_classes = (metric.HighRiskCheckmarxAlertsMetric, metric.MediumRiskCheckmarxAlertsMetric)
+    _metric_classes = (metric.HighRiskCheckmarxAlertsMetric, metric.MediumRiskCheckmarxAlertsMetric,
+                       metric.CheckmarxReportAge)
 
 
 class OWASPZAP(Requirement):
