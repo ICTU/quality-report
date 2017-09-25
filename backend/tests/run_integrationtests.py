@@ -25,6 +25,7 @@ import unittest
 import xmlrunner
 
 if __name__ == '__main__':  # pragma: no branch
+    sys.path.insert(0, '.')
     # Make sure log messages are not shown on stdout/stderr. We can't simply
     # increase the log level since some integration tests may expect logging to happen.
     logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
