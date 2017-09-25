@@ -57,7 +57,7 @@ class JunitTestReportTest(unittest.TestCase):
 </testng-results>'''
         self.assertEqual(1, self.__testng.failed_tests('url'))
         self.assertEqual(2, self.__testng.passed_tests('url'))
-        self.assertEqual(3, self.__testng.skipped_tests('url'))
+        self.assertEqual(0, self.__testng.skipped_tests('url'))
 
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """

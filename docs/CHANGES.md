@@ -1,3 +1,8 @@
+2017-09-25  Release 2.6.7
+
+  * Bug fix: Don't count ignored TestNG tests as skipped, but ignore them completely.
+  
+
 2017-09-21  Release 2.6.6
 
   * Bug fix: Force day-first for for the dates in Splunk performance reports.

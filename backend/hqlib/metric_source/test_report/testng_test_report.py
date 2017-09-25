@@ -42,9 +42,7 @@ class TestNGTestReport(test_report.TestReport):
 
     def _skipped_tests(self, report_url: str) -> int:
         """ Return the number of skipped tests. """
-        skipped = self.__test_count(report_url, 'skipped')
-        ignored = self.__test_count(report_url, 'ignored')
-        return -1 if -1 in (skipped, ignored) else skipped + ignored
+        return self.__test_count(report_url, 'skipped')
 
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
