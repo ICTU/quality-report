@@ -59,7 +59,7 @@ class CheckmarxReportAge(MetricSourceAgeMetric):
     """ Metric to measure the age of the Checkmarx report. """
 
     name = 'Leeftijd van het Checkmarx rapport'
-    norm_template = 'De leeftijd van hetCheckmarx rapport is maximaal {target} {unit} oud. ' \
+    norm_template = 'De leeftijd van het Checkmarx rapport is maximaal {target} {unit} oud. ' \
                     'Meer dan {low_target} {unit} is rood.'
     template = 'Het meest recente Checkmarx rapport van {name} is {value} {unit} oud.'
     metric_source_class = metric_source.Checkmarx
