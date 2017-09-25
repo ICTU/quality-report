@@ -61,8 +61,8 @@ class Checkmarx(domain.MetricSource):
                 json = self.__fetch_report(project_name)
                 nr_alerts += self.__parse_alerts(json, priority)
             except Exception as reason:
-                logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s",
-                                priority, self.url(), reason, project_name)
+                logging.warning("Couldn't parse alerts for project %s with %s risk level from %s: %s",
+                                project_name, priority, self.url(), reason)
                 return -1
         return nr_alerts
 
@@ -76,6 +76,7 @@ class Checkmarx(domain.MetricSource):
             except Exception as reason:
                 logging.warning("Couldn't parse date and time for project %s from %s: %s",
                                 project_name, self.url(), reason)
+                logging.warning("JSON: %s", json)
                 return datetime.datetime.min
         return min(dates, default=datetime.datetime.min)
 
