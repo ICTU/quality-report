@@ -66,7 +66,7 @@ class Checkmarx(domain.MetricSource):
                 return -1
         return nr_alerts
 
-    def datetime(self, metric_source_ids: Iterable[str]) -> DateTime:
+    def datetime(self, *metric_source_ids: Iterable[str]) -> DateTime:
         """ Return the last date and time the projects were scanned. """
         dates = []
         for project_name in metric_source_ids:
