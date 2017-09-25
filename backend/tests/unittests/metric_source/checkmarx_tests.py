@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import unittest
 import urllib.error
 
@@ -22,7 +23,7 @@ from hqlib.metric_source import Checkmarx
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake the url opener to return static json. """
-    json = '{"value": [{"LastScan": {"High": 0, "Medium": 1}}]}'
+    json = '{"value": [{"LastScan": {"High": 0, "Medium": 1, "ScanCompletedOn": "2017-09-20T00:43:35.73+01:00"}}]}'
 
     def url_read(self, url):
         """ Open a url. """
@@ -71,3 +72,11 @@ class CheckmarxTest(unittest.TestCase):
         """ Test the metric source base url. """
         self.assertEqual('http://url', self.__report.url())
 
+    def test_datetime(self):
+        """ Test the date and time of the report. """
+        self.assertEqual(datetime.datetime(2017, 9, 20, 0, 43, 35), self.__report.datetime('id'))
+
+    def test_datetime_missing(self):
+        """ Test a missing date and time of the report. """
+        self.__opener.json = '{}'
+        self.assertEqual(datetime.datetime.min, self.__report.datetime('id'))
