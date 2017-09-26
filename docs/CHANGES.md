@@ -1,3 +1,8 @@
+2017-09-26  Release 2.8.0
+
+  * Add an UFT test report metric source.
+  
+
 2017-09-25  Release 2.7.0
 
   * Add a Checkmarx report age metric.

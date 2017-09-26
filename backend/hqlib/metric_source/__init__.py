@@ -46,6 +46,7 @@ from .team_spirit.wiki import Wiki
 from .test_report.jenkins_test_report import JenkinsTestReport
 from .test_report.junit_test_report import JunitTestReport
 from .test_report.testng_test_report import TestNGTestReport
+from .test_report.uft_test_report import UFTTestReport
 from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard
 from .url_opener import UrlOpener
 from .version_control_system.git import Git

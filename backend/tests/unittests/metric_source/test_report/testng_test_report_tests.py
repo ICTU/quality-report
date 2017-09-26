@@ -33,8 +33,8 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
             return self.contents
 
 
-class JunitTestReportTest(unittest.TestCase):
-    """ Unit tests for the Junit test report class. """
+class TestNGTestReportTest(unittest.TestCase):
+    """ Unit tests for the TestNG test report class. """
     def setUp(self):
         self.__opener = FakeUrlOpener()
         for method in (TestNGTestReport.datetime, TestNGTestReport.failed_tests, TestNGTestReport.skipped_tests,
@@ -43,7 +43,7 @@ class JunitTestReportTest(unittest.TestCase):
         self.__testng = TestNGTestReport(url_read=self.__opener.url_read)
 
     def test_test_report(self):
-        """ Test retrieving a Junit test report. """
+        """ Test retrieving a TestNG test report. """
         self.__opener.contents = '''<testng-results skipped="0" failed="1" ignored="3" total="6" passed="2">
 <suite name="TestSuite" duration-ms="6548" started-at="2017-09-05T14:18:23Z" finished-at="2017-09-05T14:18:29Z">
 <test name="engine" duration-ms="3474" started-at="2017-09-05T14:18:23Z" finished-at="2017-09-05T14:18:26Z">
@@ -118,6 +118,6 @@ class JunitTestReportTest(unittest.TestCase):
 
     def test_urls(self):
         """ Test that the urls point to the HTML versions of the reports. """
-        # FIXME: To be implemented
+        # Points to the XML at the moment because the TestNG HTML report isn't stored at a predictable location.
         self.assertEqual(['http://server/testng/testng.xml'],
                          self.__testng.metric_source_urls('http://server/testng/testng.xml'))
