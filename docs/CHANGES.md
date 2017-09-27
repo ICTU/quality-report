@@ -1,3 +1,8 @@
+2017-09-27  Release 2.8.1
+
+  * Bug fix: When determining last Checkmarx run, take into account that Checkmarx skips runs when code is unchanged.
+
+
 2017-09-26  Release 2.8.0
 
   * Add an UFT test report metric source.

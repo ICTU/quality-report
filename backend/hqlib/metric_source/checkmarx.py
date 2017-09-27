@@ -16,6 +16,7 @@ limitations under the License.
 
 
 import datetime
+import dateutil
 import functools
 import logging
 import urllib.parse
@@ -74,9 +75,9 @@ class Checkmarx(domain.MetricSource):
                 json = self.__fetch_report(project_name)
                 dates.append(self.__parse_datetime(json))
             except Exception as reason:
-                logging.warning("Couldn't parse date and time for project %s from %s: %s",
+                logging.error("Couldn't parse date and time for project %s from %s: %s",
                                 project_name, self.url(), reason)
-                logging.warning("JSON: %s", json)
+                logging.error("JSON: %s", json)
                 return datetime.datetime.min
         return min(dates, default=datetime.datetime.min)
 
@@ -88,9 +89,15 @@ class Checkmarx(domain.MetricSource):
     @staticmethod
     def __parse_datetime(json: Dict) -> DateTime:
         """ Parse the JSON to get the date and time of the last scan. """
-        datetime_string = json["value"][0]["LastScan"]["ScanCompletedOn"]
-        timestamp = datetime_string.split('.')[0]
-        return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
+        datetimes = []
+        last_scan = json["value"][0]["LastScan"]
+        datetime_string = last_scan["ScanCompletedOn"].split('.')[0]
+        datetimes.append(datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S'))
+        comment = last_scan.get("Comment", "")
+        if "No code changes were detected" in comment:
+            datetime_string = comment.strip('Attempt to perform scan on ').strip(' - No code changes were detected; ')
+            datetimes.append(dateutil.parser.parse(datetime_string, dayfirst=False))
+        return max(datetimes)
 
     @functools.lru_cache(maxsize=1024)
     def __fetch_report(self, project_name: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:

@@ -80,3 +80,10 @@ class CheckmarxTest(unittest.TestCase):
         """ Test a missing date and time of the report. """
         self.__opener.json = '{}'
         self.assertEqual(datetime.datetime.min, self.__report.datetime('id'))
+
+    def test_datetime_when_code_unchanged(self):
+        """ Test that the date and time of the report is the date and time of the last check when code is unchanged. """
+        self.__opener.json = '{"value": [{"LastScan": {"ScanCompletedOn": "2017-09-20T00:43:35.73+01:00", ' \
+                             '"Comment": "Attempt to perform scan on 9/26/2017 12:30:24 PM - No code changes ' \
+                             'were detected; "}}]}'
+        self.assertEqual(datetime.datetime(2017, 9, 26, 12, 30, 24), self.__report.datetime('id'))
