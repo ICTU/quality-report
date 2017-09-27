@@ -37,8 +37,8 @@ script:
 - coverage run --parallel-mode --branch tests/run_integrationtests.py
 - coverage combine
 - coverage xml --ignore-errors -o it-coverage.xml
+- nosetests --with-xunit tests/unittests/
 - cd ..
-- nosetests --with-xunit backend/tests/unittests/
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 before_deploy:
 - cd backend
