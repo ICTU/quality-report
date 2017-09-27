@@ -94,9 +94,11 @@ class Checkmarx(domain.MetricSource):
         datetime_string = last_scan["ScanCompletedOn"].split('.')[0]
         datetimes.append(datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S'))
         comment = last_scan.get("Comment", "")
-        if "No code changes were detected" in comment:
-            datetime_string = comment.strip('Attempt to perform scan on ').strip(' - No code changes were detected; ')
-            datetimes.append(dateutil.parser.parse(datetime_string, dayfirst=False))
+        comment_sep = '; '
+        if comment_sep in comment:
+            for check in comment.strip(comment_sep).split(comment_sep):
+                datetime_string = check.strip('Attempt to perform scan on ').strip(' - No code changes were detected')
+                datetimes.append(dateutil.parser.parse(datetime_string, dayfirst=False))
         return max(datetimes)
 
     @functools.lru_cache(maxsize=1024)
