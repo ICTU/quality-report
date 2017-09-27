@@ -37,6 +37,7 @@ script:
 - coverage combine
 - coverage xml --ignore-errors -o it-coverage.xml
 - cd ..
+- touch backend/__init__.py
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 before_deploy:
 - cd backend
