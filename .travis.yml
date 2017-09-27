@@ -9,6 +9,7 @@ before_install:
 - nvm install node
 install:
 - pip install -r backend/requirements.txt
+- pip install nose
 - pip install codeclimate-test-reporter
 - pip install codacy-coverage
 - pip install coveralls
@@ -37,6 +38,7 @@ script:
 - coverage combine
 - coverage xml --ignore-errors -o it-coverage.xml
 - cd ..
+- nosetests --with-xunit backend/tests/unittests/
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 before_deploy:
 - cd backend
