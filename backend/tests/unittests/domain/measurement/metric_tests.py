@@ -104,11 +104,11 @@ class MetricTest(unittest.TestCase):
 
     def test_missing_metric_source_id_report(self):
         """ Test that the metric report explains which metric source ids need to be configured. """
-        project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
+        project = domain.Project(metric_sources={metric_source.SystemTestReport: metric_source.JunitTestReport()})
         metric = MetricUnderTest(self.__subject, project=project)
-        metric.metric_source_class = metric_source.TestReport
+        metric.metric_source_class = metric_source.SystemTestReport
         self.assertEqual('De subclass responsibility van FakeSubject kon niet gemeten worden omdat niet alle '
-                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de bron TestReport.',
+                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de bron SystemTestReport.',
                          metric.report())
 
     def test_missing_metric_report(self):
@@ -250,9 +250,9 @@ class MetricStatusTest(unittest.TestCase):
     def test_missing_metric_source_id_status(self):
         """ Test that the status is missing metric sources when the subject doesn't have the required metric source
             id. """
-        project = domain.Project(metric_sources={metric_source.TestReport: metric_source.JunitTestReport()})
+        project = domain.Project(metric_sources={metric_source.SystemTestReport: metric_source.JunitTestReport()})
         metric = MetricUnderTest(self.__subject, project=project)
-        metric.metric_source_class = metric_source.TestReport
+        metric.metric_source_class = metric_source.SystemTestReport
         self.assert_status('missing_source', metric)
 
     def test_missing_metric(self):

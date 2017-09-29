@@ -21,7 +21,7 @@ from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
 from .abstract.team_spirit import TeamSpirit
-from .abstract.test_report import TestReport
+from .abstract.test_report import TestReport, SystemTestReport
 from .abstract.version_control_system import VersionControlSystem
 from .archive_system.nexus import Nexus
 from .birt import Birt

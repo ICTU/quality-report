@@ -71,7 +71,7 @@ class FailingRegressionTestsTest(unittest.TestCase):
     def setUp(self):
         self.__jenkins = FakeJenkinsTestReport()
         self.__subject = FakeSubject(metric_source_ids={self.__jenkins: 'jenkins_job'})
-        self.__project = domain.Project(metric_sources={metric_source.TestReport: self.__jenkins})
+        self.__project = domain.Project(metric_sources={metric_source.SystemTestReport: self.__jenkins})
         self.__metric = metric.FailingRegressionTests(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -118,7 +118,7 @@ class RegressionTestAgeTest(unittest.TestCase):
     def setUp(self):
         self.__jenkins = FakeJenkinsTestReport()
         self.__subject = FakeSubject(metric_source_ids={self.__jenkins: 'jenkins_job'})
-        self.__project = domain.Project(metric_sources={metric_source.TestReport: self.__jenkins})
+        self.__project = domain.Project(metric_sources={metric_source.SystemTestReport: self.__jenkins})
         self.__metric = metric.RegressionTestAge(subject=self.__subject, project=self.__project)
 
     def test_value(self):

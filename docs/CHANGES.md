@@ -1,3 +1,10 @@
+2017-09-29  Release 2.9.0
+
+  * metric_source.TestReport has been renamed to metric_source.SystemTestReport in preparation for multiple test 
+    report types. Search project definitions for usage of metric_source.TestReport and replace them with 
+    metric_source.SystemTestReport.
+    
+
 2017-09-27  Release 2.8.1
 
   * Bug fix: When determining last Checkmarx run, take into account that Checkmarx skips runs when code is unchanged.
