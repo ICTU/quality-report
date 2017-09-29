@@ -61,8 +61,10 @@ class FakeSonar(object):
 class SonarVersionTest(unittest.TestCase):
     """ Unit tests for the SonarVersion metric. """
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self.__metric = metric.SonarVersion(project=project)
+        sonar = FakeSonar()
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        environment = domain.Environment(metric_source_ids={sonar: 'dummy'})
+        self.__metric = metric.SonarVersion(project=project, subject=environment)
 
     def test_value(self):
         """ Test that the value is correct. """
@@ -86,22 +88,24 @@ class SonarVersionTest(unittest.TestCase):
 
     def test_missing(self):
         """ Test that the value is -1 without a metric source. """
-        self.assertEqual(-1, metric.SonarVersion(project=domain.Project()).value())
+        self.assertEqual(-1, metric.SonarVersion(project=domain.Project(), subject=domain.Environment()).value())
 
 
 class SonarQualityProfileVersionTest(unittest.TestCase):
     """ Unit tests for the Sonar quality profile version metric. """
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self.__metric = metric.SonarQualityProfileVersionJava(project=self.__project)
+        sonar = FakeSonar()
+        self.__project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        self.__environment = domain.Environment(metric_source_ids={sonar: 'dummy'})
+        self.__metric = metric.SonarQualityProfileVersionJava(project=self.__project, subject=self.__environment)
 
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(LooseVersion('1.6'), self.__metric.value())
 
     def test_value_when_missing(self):
-        """ Test that the value is '' when the plugin is missing. """
-        version = metric.SonarQualityProfileVersionCSharp(project=self.__project)
+        """ Test that the value is '0.0' when the plugin is missing. """
+        version = metric.SonarQualityProfileVersionCSharp(project=self.__project, subject=self.__environment)
         self.assertEqual(LooseVersion('0.0'), version.value())
 
     def test_numerical_value(self):
@@ -110,7 +114,7 @@ class SonarQualityProfileVersionTest(unittest.TestCase):
 
     def test_numerical_value_when_missing(self):
         """ Test that the numerical value is -1 when the plugin is missing. """
-        version = metric.SonarQualityProfileVersionCSharp(project=self.__project)
+        version = metric.SonarQualityProfileVersionCSharp(project=self.__project, subject=self.__environment)
         self.assertEqual(-1, version.numerical_value())
 
     def test_report(self):
@@ -135,8 +139,10 @@ class SonarQualityProfileVersionTest(unittest.TestCase):
 class SonarPluginVersionTest(unittest.TestCase):
     """ Unit tests for the SonarPluginVersion class and its subclasses. """
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        self.__metric = metric.SonarPluginVersionJava(project=self.__project)
+        sonar = FakeSonar()
+        self.__project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        self.__environment = domain.Environment(metric_source_ids={sonar: 'dummy'})
+        self.__metric = metric.SonarPluginVersionJava(project=self.__project, subject=self.__environment)
 
     def test_value(self):
         """ Test that the value is correct. """
@@ -144,7 +150,7 @@ class SonarPluginVersionTest(unittest.TestCase):
 
     def test_value_when_missing(self):
         """ Test that the value is '0.0' when the plugin is missing. """
-        version = metric.SonarPluginVersionCSharp(project=self.__project)
+        version = metric.SonarPluginVersionCSharp(project=self.__project, subject=self.__environment)
         self.assertEqual(LooseVersion('0.0'), version.value())
 
     def test_report(self):
