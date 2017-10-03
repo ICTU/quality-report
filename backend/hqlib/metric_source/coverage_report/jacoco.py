@@ -53,7 +53,11 @@ class JaCoCo(coverage_report.CoverageReport):
 
     def _parse_coverage_date(self, soup) -> DateTime:
         coverage_date = datetime.datetime.min
-        session_rows = soup('tbody')[0]('tr')
+        try:
+            session_rows = soup('tbody')[0]('tr')
+        except IndexError:
+            logging.error("Can't find JaCoCo session table in %s", soup)
+            return coverage_date
         for row in session_rows:
             date_time_string = row('td')[2].string
             try:

@@ -25,14 +25,13 @@ import unittest
 import xmlrunner
 
 if __name__ == '__main__':  # pragma: no branch
-    sys.path.insert(0, os.path.abspath('.'))
+    sys.path.insert(0, '.')
     # Make sure log messages are not shown on stdout/stderr. We can't simply
     # increase the log level since some integration tests may expect logging to happen.
     logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
     # Run the unit test with the XML test runner so that the test output
     # can be processed by Sonar.
-    if not os.path.exists('build'):  # pragma: no branch
-        os.mkdir('build')  # pragma: no cover
+    os.makedirs('build', exist_ok=True)
     os.system('python3 setup.py bundle')
     unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'),
                   argv=[sys.argv[0], 'discover', '-s', 'integrationtests', '-p', '*_tests.py'])

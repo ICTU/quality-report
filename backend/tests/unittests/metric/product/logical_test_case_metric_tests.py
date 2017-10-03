@@ -26,6 +26,7 @@ class FakeBirt(object):
     metric_source_name = metric_source.Birt.metric_source_name
     needs_metric_source_id = metric_source.Birt.needs_metric_source_id
     date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=5)
+    nr_manual_tests = 10
 
     def __init__(self, test_design=True):
         self.__test_design = test_design
@@ -54,10 +55,9 @@ class FakeBirt(object):
         """ Return the date that the manual test cases were last executed. """
         return self.date_of_last_manual_tests
 
-    @staticmethod
-    def nr_manual_ltcs(version='trunk'):
+    def nr_manual_ltcs(self, version='trunk'):
         """ Return the number of manual logical test cases. """
-        return 10
+        return self.nr_manual_tests
 
     @staticmethod
     def nr_manual_ltcs_too_old(version, target):
@@ -233,6 +233,17 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
         self.assertEqual('De 10 handmatige logische testgevallen van FakeSubject zijn nog niet allemaal uitgevoerd.',
                          self.__metric.report())
+
+    def test_report_without_manual_testcases(self):
+        """ Test the report when there are no manual test cases. """
+        self.__birt.nr_manual_tests = 0
+        self.assertEqual(self.__metric.no_manual_tests_template.format(name='FakeSubject', unit=self.__metric.unit),
+                         self.__metric.report())
+
+    def test_status_without_manual_testcases(self):
+        """ Test that the status is green when there are no manual test cases. """
+        self.__birt.nr_manual_tests = 0
+        self.assertEqual('perfect', self.__metric.status())
 
     def test_url(self):
         """ Test that the url is correct. """

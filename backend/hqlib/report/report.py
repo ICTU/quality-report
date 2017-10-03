@@ -37,9 +37,9 @@ class QualityReport(domain.DomainObject):
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
                 requirement.CodeQuality, requirement.JSFCodeQuality, requirement.PerformanceLoad,
                 requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
-                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackTechnicalDebt,
-                requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
-                requirement.TrackReadyUS, requirement.TrackCIJobs,
+                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackFindings,
+                requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
+                requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
@@ -124,6 +124,7 @@ class QualityReport(domain.DomainObject):
 
     def metrics(self) -> Sequence[domain.Metric]:
         """ Return all metrics we report on. """
+        self.sections()
         return self.__metrics
 
     def included_metric_classes(self):
@@ -176,8 +177,8 @@ class QualityReport(domain.DomainObject):
         """ Return the process section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions,
                                                   requirement.TrackRisks, requirement.TrackBugs,
-                                                  requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
-                                                  requirement.TrackReadyUS,
+                                                  requirement.TrackFindings, requirement.TrackTechnicalDebt,
+                                                  requirement.TrackManualLTCs, requirement.TrackReadyUS,
                                                   requirement.TrackSecurityAndPerformanceRisks)
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None

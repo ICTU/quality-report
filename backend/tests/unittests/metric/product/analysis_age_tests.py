@@ -120,3 +120,18 @@ class OpenVASScanReportAgeTest(SonarAnalysisAgeTest):
     metric_source_class_mock = FakeOpenVASScanReport
     metric_class = metric.OpenVASScanReportAge
     expected_metric_source_text = 'Het meest recente Open VAS Scan rapport'
+
+
+class FakeCheckmarxReport(FakeMetricSource):
+    """ Provide for a fake Checkmarx report so that the unit test don't need access to an actual report
+        instance. """
+    metric_source_name = metric_source.Checkmarx.metric_source_name
+    needs_metric_source_id = metric_source.Checkmarx.needs_metric_source_id
+
+
+class CheckmarxReportAgeTest(SonarAnalysisAgeTest):
+    """ Unit tests for the Checkmarx report age metric. """
+    metric_source_class = metric_source.Checkmarx
+    metric_source_class_mock = FakeCheckmarxReport
+    metric_class = metric.CheckmarxReportAge
+    expected_metric_source_text = 'Het meest recente Checkmarx rapport'

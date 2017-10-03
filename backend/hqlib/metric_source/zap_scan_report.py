@@ -59,19 +59,18 @@ class ZAPScanReport(domain.MetricSource):
         """ Get the number of alerts from the HTML soup. """
         summary_table = soup('table', {"class": "summary"})
         # First try the new table format
-        # Find the row where the first td contains the specified risk level and get the number of alerts form
+        # Find the row where the first td contains the specified risk level and get the number of alerts from
         # the second td.
         if len(summary_table) > 0:
             for row in summary_table[0]('tr'):
-                if len(row('td')) > 0:
-                    if row('td')[0].text == risk_level.capitalize():
-                        return int(row('td')[1].text)
+                if len(row('td')) > 0 and row('td')[0].text == risk_level.capitalize():
+                    return int(row('td')[1].text)
         else:
             table_list = soup('table')
-            #Prevent IndexError in case of empty table
-            if (len(table_list)>0):
+            # Prevent IndexError in case of empty table
+            if len(table_list) > 0:
                 summary_table = table_list[0]
-                # Find the row where the first td contains the specified risk level and get the number of alerts form
+                # Find the row where the first td contains the specified risk level and get the number of alerts from
                 # the second td. We use item(text=True)[0] to skip font and anchor tags and get the inner text node.
                 alert = [row('td')[1](text=True)[0] for row in summary_table('tr')
                          if row('td')[0](text=True)[0] == risk_level.capitalize()][0]

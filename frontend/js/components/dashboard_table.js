@@ -71,7 +71,7 @@ class DashboardTableRow extends React.Component {
             if (cell['section_id']) {  // Cell has a section id and thus should get a pie chart
                 const pie_options = this.pie_options(cell['section_id'], cell['section_title']);
                 const pie_data = this.pie_data(this.props.metrics, cell['section_id']);
-                // The has "margin: auto" to make it center in a wide td
+                // The div has "margin: auto" to make it center in a wide td
                 tds.push(
                     <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
                         style={{backgroundColor: cell['bgcolor'], cursor: "pointer", verticalAlign: "middle"}}>
@@ -80,12 +80,21 @@ class DashboardTableRow extends React.Component {
                         </div>
                     </td>
                 )
-            } else {  // Empty cell
-                tds.push(
-                    <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
-                        style={{backgroundColor: cell['bgcolor']}}>
-                    </td>
-                )
+            } else {  // Empty or text-only cell
+                if (cell['section_title']) {
+                    tds.push(
+                        <td key={index} colSpan={cell['collspan']} rowSpan={cell['rowspan']}
+                            style={{backgroundColor: cell['bgcolor'], fontWeight: "bold", textAlign: "center"}}>
+                            {cell['section_title']}
+                        </td>
+                    )
+                } else {
+                    tds.push(
+                        <td key={index} colSpan={cell['colspan']} rowSpan={cell['rowspan']}
+                            style={{backgroundColor: cell['bgcolor']}}>
+                        </td>
+                    )
+                }
             }
         }, this);
         return (

@@ -24,9 +24,9 @@ from hqlib.metric_source import SpiritSplunkCSVPerformanceLoadTestReport
 
 CSV = b""";KEI Performance-acceptatiecriteria;;;;;;;;;;;;;;;;;;;;;;;
 Nr.;Criterium;Applicatie;"Zakelijk/
-Prive";Eindgebruikershandeling;Bestandsgrootte (MB);"24-05-2017 (S1718)
-Baseline Test (PT03)";;"13-06-2017 (S1720)
-Baseline Test (PT06)";;"14-06-2017 (S1720)
+Prive";Eindgebruikershandeling;Bestandsgrootte (MB);"10-05-2017 (S1718)
+Baseline Test (PT03)";;"11-06-2017 (S1720)
+Baseline Test (PT06)";;"12-06-2017 (S1720)
 Baseline Test (PT07)";;;"% Verbetering
 (laatste vs voorlaatste)";;;;;;;;;;;%
 ;;;;;;0;;0;;0;;;;;;;;;;;Totaal requirements;37;;100
@@ -120,7 +120,7 @@ class SpiritSplunkCSVPerformanceReportTest(unittest.TestCase):
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
-        self.assertEqual(datetime.datetime(2017, 5, 24), self._performance_report.datetime('ABC'))
+        self.assertEqual(datetime.datetime(2017, 6, 12), self._performance_report.datetime('ABC'))
 
     def test_date_without_urls(self):
         """ Test that the min date is passed if there are no report urls to consult. """

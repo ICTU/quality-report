@@ -29,7 +29,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
     template = '{value} van de {tests} {unit} van {name} slagen niet.'
     target_value = 0
     low_target_value = 0
-    metric_source_class = metric_source.TestReport
+    metric_source_class = metric_source.SystemTestReport
 
     def value(self):
         if self._missing():
@@ -63,4 +63,4 @@ class RegressionTestAge(MetricSourceAgeMetric):
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De regressietest van {name} is vandaag gedraaid.'
     template = 'De regressietest van {name} is {value} {unit} geleden gedraaid.'
-    metric_source_class = metric_source.TestReport
+    metric_source_class = metric_source.SystemTestReport

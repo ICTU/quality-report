@@ -1,6 +1,151 @@
-2017-08-21  Release 2.2.5
+2017-09-29  Release 2.9.0
+
+  * metric_source.TestReport has been renamed to metric_source.SystemTestReport in preparation for multiple test 
+    report types. Search project definitions for usage of metric_source.TestReport and replace them with 
+    metric_source.SystemTestReport.
+    
+
+2017-09-27  Release 2.8.1
+
+  * Bug fix: When determining last Checkmarx run, take into account that Checkmarx skips runs when code is unchanged.
+
+
+2017-09-26  Release 2.8.0
+
+  * Add an UFT test report metric source.
+  
+
+2017-09-25  Release 2.7.0
+
+  * Add a Checkmarx report age metric.
+  
+  
+2017-09-25  Release 2.6.8
+
+  * Bug fix: Don't crash when the JaCoCo session HTML file does not contain session information.
+  
+  
+2017-09-25  Release 2.6.7
+
+  * Bug fix: Don't count ignored TestNG tests as skipped, but ignore them completely.
+  
+
+2017-09-21  Release 2.6.6
+
+  * Bug fix: Force day-first for for the dates in Splunk performance reports.
+  
+
+2017-09-21  Release 2.6.5
+
+  * Bug fix: Use correct date from the Splunk performance report.
+  
+  
+2017-09-21  Release 2.6.4
+
+  * Bug fix: Better template for open findings metrics.
+  
+  
+2017-09-21  Release 2.6.3
+
+  * Slightly longer time-out to cater for slow Jira queries.
+  
+  
+2017-09-20  Release 2.6.2
+
+  * Bug fix: Support subprojects in Sonar.
+  
+  
+2017-09-20  Release 2.6.1
+
+  * Bug fix: Metrics for open findings were missing in the set of optional project requirements.
+  
+
+2017-09-18  Release 2.6.0
+
+  * Add Jira metrics for the number of open findings in different environments.
+  
+  
+2017-09-18  Release 2.5.5
+
+  * Bug fix: The target and low target values of the ready user stories metric were reversed.
+
+
+2017-09-15  Release 2.5.4
+
+  * Bug fix: Mark the manual test cases metric perfect when there are no manual test cases.
+
+
+2017-09-15  Release 2.5.3
+
+  * Bug fix: Don't mark the manual test cases metric red when there are no manual test cases.
+  
+  
+2017-09-15  Release 2.5.2
+
+  * Bug fix: Total LOC metric would report size as number of products times -1 if Sonar is unavailable.
+  * Bug fix: Rename Visual Basic to VB.NET
+  
+  
+2017-09-11  Release 2.5.1
+   
+  * Bug fix: Prevent really long time outs when opening URLs.
+  
+  
+2017-09-11  Release 2.5.0
+
+  * Allow for putting strings in dashboard table cells and use them as labels.
+  
+  
+2017-09-08  Release 2.4.2
+
+  * Bug fix: Don't crash when SonarQube doesn't respond to the old measures API.
+  
+  
+2017-09-06  Release 2.4.1
+
+  * Bug fix: Don't crash when SonarQube doesn't respond to the new measures API.
+  
+  
+2017-09-06  Release 2.4.0
+
+  * Add a TestNG test report metric source.
+  
+
+2017-09-05  Release 2.3.0
+
+  * Add a CompactHistory metric source that stores the history in a real JSON format and requires less disk space.
+  * Bug fix: Menu items with a check mark didn't work.
+  
+  
+2017-08-28  Release 2.2.10
+
+  * Bug fix: The Splunk performance report CSV is encoded in ANSI.
+ 
+ 
+2017-08-28  Release 2.2.9
+
+  * More logging when Splunk performance report can't be parsed.
+ 
+ 
+2017-08-28  Release 2.2.8
+
+  * More logging when Splunk performance report can't be parsed.
+  
+  
+2017-08-28  Release 2.2.7
+
+  * Fix Travis release build.
+
+
+2017-08-28  Release 2.2.6
+
+  * Show traceback when Splunk performance report can't be parsed.
+
+
+2017-08-27  Release 2.2.5
 
   * Bug fix: Update parser for new ZAP report structure.
+
 
 2017-07-21  Release 2.2.4
 

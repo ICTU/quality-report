@@ -79,7 +79,7 @@ class App extends React.Component {
         let self = this;
         this.setState(function(previous_state, props) {
             const next_state = !previous_state.show_one_table;
-            self.props.storage.setItem('show_one_table', JSON.stringify(next_state));
+            self.storage.setItem('show_one_table', JSON.stringify(next_state));
             return {show_one_table: next_state};
         });
     }
@@ -88,7 +88,7 @@ class App extends React.Component {
         let self = this;
         this.setState(function(previous_state, props) {
             const next_state = !previous_state.show_dashboard;
-            self.props.storage.setItem('show_dashboard', JSON.stringify(next_state));
+            self.storage.setItem('show_dashboard', JSON.stringify(next_state));
             return {show_dashboard: next_state};
         });
     }
@@ -118,7 +118,7 @@ class App extends React.Component {
                 filter.filter_all = true;
                 filter.filter_all = !Object.values(filter).includes(false);
             }
-            self.props.storage.setItem('filter', JSON.stringify({filter: filter}));
+            self.storage.setItem('filter', JSON.stringify({filter: filter}));
             return {filter: filter, metrics: self.filter(previous_state.metrics_data, filter)};
         });
     }
@@ -130,7 +130,7 @@ class App extends React.Component {
         this.setState(function(previous_state, props) {
             let filter = Object.assign({}, previous_state.filter); // Copy filter
             filter['hidden_metrics'].push(target);
-            self.props.storage.setItem('filter', JSON.stringify({filter: filter}));
+            self.storage.setItem('filter', JSON.stringify({filter: filter}));
             return {filter: filter, metrics: self.filter(previous_state.metrics_data, filter)};
         });
     }

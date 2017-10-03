@@ -59,7 +59,10 @@ class JiraBugTest(JiraTestCase):
 
     def setUp(self):
         self.__jira = self.jira(open_bug_query_id=123, open_security_bug_query_id=456,
-                                open_static_security_analysis_bug_query_id=567)
+                                open_static_security_analysis_bug_query_id=567,
+                                nr_open_findings_a_environment_query_id=234,
+                                nr_open_findings_i_environment_query_id=345,
+                                nr_open_findings_f_environment_query_id=321)
 
     def test_bugs(self):
         """ Test that the number of open bugs is correct. """
@@ -96,6 +99,24 @@ class JiraBugTest(JiraTestCase):
     def test_static_security_analysis_bugs_url(self):
         """ Test that the url is correct. """
         self.assertEqual(self.__jira.view_url, self.__jira.nr_open_static_security_analysis_bugs_url())
+
+    def test_open_findings(self):
+        """ Test that the number of open findings is correct. """
+        self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_findings_a_environment())
+        self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_findings_i_environment())
+        self.assertEqual(self.__jira.nr_query_results, self.__jira.nr_open_findings_f_environment())
+
+    def test_open_findings_without_query(self):
+        """ Test that the number of open findingss is -1 when Jira has no query id. """
+        self.assertEqual(-1, self.jira().nr_open_findings_a_environment())
+        self.assertEqual(-1, self.jira().nr_open_findings_i_environment())
+        self.assertEqual(-1, self.jira().nr_open_findings_f_environment())
+
+    def test_open_findings_url(self):
+        """ Test that the number of open findings is correct. """
+        self.assertEqual(self.__jira.view_url, self.__jira.nr_open_findings_a_environment_url())
+        self.assertEqual(self.__jira.view_url, self.__jira.nr_open_findings_i_environment_url())
+        self.assertEqual(self.__jira.view_url, self.__jira.nr_open_findings_f_environment_url())
 
 
 class JiraManualTestCasesTest(JiraTestCase):

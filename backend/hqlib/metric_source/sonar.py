@@ -37,7 +37,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
-        self.__projects_api_url = sonar_url + 'api/projects/index'
+        self.__projects_api_url = sonar_url + 'api/projects/index?subprojects=true'
         self.__project_api_url = sonar_url + 'api/projects/{project}'
         self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
         self.__false_positives_api_url = sonar_url + \
@@ -307,28 +307,29 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         if not self.__has_project(product):
             return -1
         url = self.__measures_api_url.format(component=product, metric=metric_name)
-        json = self.__get_json(url)
         try:
-            for measure in json['component']['measures']:
-                if measure['metric'] == metric_name:
-                    return float(measure['value'])
-            logging.warning("Can't get %s value for %s from %s (retrieved from %s)", metric_name, product,
-                            json, url)
-            return -1
-        except (TypeError, KeyError, IndexError, ValueError) as reason:
+            json = self.__get_json(url)
+            try:
+                for measure in json['component']['measures']:
+                    if measure['metric'] == metric_name:
+                        return float(measure['value'])
+                reason = 'metric not found in component measures'
+            except (TypeError, KeyError, IndexError, ValueError) as reason:
+                pass  # Next lines will log exception and return from this method
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                             json, url, reason)
             return -1
         except self.url_open_exceptions:
             pass  # Keep going, and try the old API
         url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
-        json = self.__get_json(url)
         try:
-            return float(json[0]["msr"][0]["val"])
-        except (TypeError, KeyError, IndexError, ValueError) as reason:
-            logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
-                            json, url, reason)
-            return -1
+            json = self.__get_json(url)
+            try:
+                return float(json[0]["msr"][0]["val"])
+            except (TypeError, KeyError, IndexError, ValueError) as reason:
+                logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
+                                json, url, reason)
+                return -1
         except self.url_open_exceptions:
             return -1
 

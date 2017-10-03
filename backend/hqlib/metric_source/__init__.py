@@ -21,13 +21,13 @@ from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
 from .abstract.team_spirit import TeamSpirit
-from .abstract.test_report import TestReport
+from .abstract.test_report import TestReport, SystemTestReport
 from .abstract.version_control_system import VersionControlSystem
 from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
-from .history import History
+from .history import History, CompactHistory
 from .holiday_planner import HolidayPlanner
 from .jenkins import Jenkins
 from .jira import Jira
@@ -45,6 +45,8 @@ from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki
 from .test_report.jenkins_test_report import JenkinsTestReport
 from .test_report.junit_test_report import JunitTestReport
+from .test_report.testng_test_report import TestNGTestReport
+from .test_report.uft_test_report import UFTTestReport
 from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard
 from .url_opener import UrlOpener
 from .version_control_system.git import Git

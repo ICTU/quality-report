@@ -17,12 +17,97 @@ limitations under the License.
 import datetime
 import functools
 import io
+import json
 import logging
 from ast import literal_eval
 from typing import Callable, TextIO, List, Dict, Union, Tuple, cast
 
 from .. import domain
-from ..typing import DateTime, HistoryRecord
+from ..typing import DateTime, HistoryRecord, Number
+
+
+class CompactHistory(domain.MetricSource):
+    """ Class for reading and writing history JSON files. """
+    def __init__(self, history_filename: str, recent_history: int=100, file_: Callable[[str], TextIO]=None) -> None:
+        self.__history_filename = history_filename
+        self.__recent_history = recent_history
+        self.__file = file_ if file_ else open
+        super().__init__(url=history_filename)
+
+    def filename(self) -> str:
+        """ Return the history filename """
+        return self.__history_filename
+
+    def recent_history(self, metric_id) -> List[Number]:
+        """ Retrieve the recent history for the metric_ids. """
+        history = self.__read_history()
+        measurements = history['metrics'].get(metric_id, [])
+        values = []
+        for date in history['dates'][-self.__recent_history:]:
+            for measurement in reversed(measurements):
+                if measurement['start'] <= date <= measurement['end']:
+                    values.append(measurement.get('value', -1))
+                    break  # Next date
+        return values
+
+    def status_start_date(self, metric_id: str, current_status: str,
+                          now: Callable[[], DateTime]=datetime.datetime.now) -> DateTime:
+        """ Return the start date of the current status of the metric. """
+        history = self.__read_history()
+        measurements = history['metrics'].get(metric_id, [])
+        if measurements:
+            last_status, date_string = measurements[-1]['status'], measurements[-1]['start']
+            start_date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+            return start_date if last_status == current_status else now()
+        else:
+            return now()
+
+    def statuses(self) -> List[Dict[str, Union[str, int]]]:
+        """ Return the statuses for each measurement. """
+        history = self.__read_history()
+        status_records = []
+        for (date, statuses) in zip(history['dates'], history['statuses']):
+            status_record = dict(date=date)
+            status_record.update(statuses)
+            status_records.append(status_record)
+        return status_records
+
+    def add_report(self, quality_report):
+        """ Add the report to the history file. """
+        self.add_metrics(quality_report.date(), quality_report.metrics())
+
+    def add_metrics(self, date_time, metrics):
+        """ Add the metrics to the history file. """
+        history = self.__read_history()
+        date = date_time.strftime('%Y-%m-%d %H:%M:%S')
+        history['dates'].append(date)
+        history['statuses'].append(dict())
+        for metric in metrics:
+            measurements = history['metrics'].setdefault(metric.stable_id(), [])
+            value = metric.numerical_value()
+            status = metric.status()
+            if measurements and measurements[-1].get('value', -1) == value and measurements[-1].get('status') == status:
+                measurements[-1]['end'] = date
+            else:
+                new_measurement = dict(start=date, end=date, status=status)
+                if value != -1:
+                    new_measurement['value'] = value
+                measurements.append(new_measurement)
+            history['statuses'][-1][status] = history['statuses'][-1].get(status, 0) + 1
+        self.__write_history(history)
+
+    @functools.lru_cache(maxsize=1024)
+    def __read_history(self) -> Dict[str, Union[List, Dict]]:
+        """ Return the parsed history JSON. """
+        try:
+            return json.load(self.__file(self.__history_filename))
+        except FileNotFoundError:
+            return dict(dates=[], statuses=[], metrics={})
+
+    def __write_history(self, history):
+        """ Write the history to the JSON file. """
+        json.dump(history, self.__file(self.__history_filename, mode='w', encoding='utf-8'),
+                  sort_keys=True, indent=2)
 
 
 class History(domain.MetricSource):
@@ -39,21 +124,16 @@ class History(domain.MetricSource):
         """ Return the history filename """
         return self.__history_filename
 
-    def recent_history(self, *metric_ids: str) -> List:
+    def recent_history(self, metric_id: str) -> List:
         """ Retrieve the recent history for the metric_ids. """
         values = []
         for measurement in self.__historic_values():
-            for metric_id in metric_ids:
-                if metric_id in measurement:
-                    values.append(measurement[metric_id])
-                    break  # inner loop
+            if metric_id in measurement:
+                values.append(measurement[metric_id])
         return values
 
-    def complete_history(self) -> List:
-        """ Return the complete history. """
-        return self.__historic_values(recent_only=False)
-
-    def status_start_date(self, metric_id: str, current_status: str, now: Callable[[], DateTime]=datetime.datetime.now) -> DateTime:
+    def status_start_date(self, metric_id: str, current_status: str,
+                          now: Callable[[], DateTime]=datetime.datetime.now) -> DateTime:
         """ Return the start date of the current status of the metric. """
         last_status, date = self.__last_status(metric_id)
         return date if last_status == current_status else now()
@@ -122,3 +202,9 @@ class History(domain.MetricSource):
         lines = [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
         logging.info('Read %d lines from %s', len(lines), self.__history_filename)
         return lines
+
+    def add_report(self, quality_report):
+        """ Write the report to the history file. """
+        from .. import filesystem, formatting  # Prevent circular import
+        formatted_report = formatting.JSONFormatter().process(quality_report)
+        filesystem.write_file(formatted_report, self.__history_filename, 'a', 'ascii')

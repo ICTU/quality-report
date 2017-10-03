@@ -18,17 +18,36 @@ import base64
 import functools
 import http.client
 import logging
+import signal
 import socket
 import urllib.error
 import urllib.request
 from typing import cast, Callable, IO
 
 
+class Timeout(object):
+    """ Time out class using the alarm signal. """
+    def __init__(self, duration_in_seconds, signal=signal):
+        self.__duration = duration_in_seconds
+        self.__signal_module = signal
+
+    def __enter__(self):
+        self.__signal_module.signal(self.__signal_module.SIGALRM, self.__raise_timeout)
+        self.__signal_module.alarm(self.__duration)
+
+    def __exit__(self, *args):
+        self.__signal_module.alarm(0)  # Disable the alarm
+
+    def __raise_timeout(self, *args):
+        """ Raise the TimeoutError exception. """
+        raise TimeoutError("Operation timed out after {0} seconds.".format(self.__duration))
+
+
 class UrlOpener(object):
     """ Class for opening urls with or without authentication. """
 
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
-                           http.client.BadStatusLine)
+                           http.client.BadStatusLine, TimeoutError)
 
     def __init__(self, uri: str=None, username: str=None, password: str=None,
                  build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen) -> None:
@@ -67,13 +86,14 @@ class UrlOpener(object):
     def url_open(self, url: str) -> IO:
         """ Return an opened url, using the opener created earlier. """
         try:
-            return self.__opener(url)
+            with Timeout(15):
+                return self.__opener(url)
         except self.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)
-    def url_read(self, url: str) -> str:
+    def url_read(self, url: str, encoding: str='utf-8') -> str:
         """ Open and read a url, and transform the bytes to a string. """
         data = self.url_open(url).read()
-        return data.decode('utf-8') if isinstance(data, bytes) else data
+        return data.decode(encoding) if isinstance(data, bytes) else data

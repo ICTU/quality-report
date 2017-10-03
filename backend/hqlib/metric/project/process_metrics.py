@@ -27,8 +27,8 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     unit = 'ready user story punten'
     norm_template = 'Het aantal {unit} is meer dan {target}. Minder dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
-    target_value = 10
-    low_target_value = 20
+    target_value = 30
+    low_target_value = 15
     metric_source_class = metric_source.Jira
 
     def value(self):

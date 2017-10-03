@@ -120,7 +120,6 @@ class QualityReportTest(unittest.TestCase):
     def test_direct_action_needed_without_metrics(self):
         """ Test that direct action is needed if the report doesn't contain any metrics. """
         quality_report = report.QualityReport(self.__project)
-        self.assertFalse(quality_report.metrics())
         self.assertTrue(quality_report.direct_action_needed())
 
     def test_no_direct_action_needed_when_all_metrics_green(self):

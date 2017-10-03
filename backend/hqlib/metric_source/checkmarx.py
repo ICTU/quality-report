@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 
+import datetime
+import dateutil
 import functools
 import logging
 import urllib.parse
@@ -22,6 +24,7 @@ from typing import Dict, List, Iterable
 
 from . import url_opener
 from .. import utils, domain
+from hqlib.typing import DateTime
 
 
 class Checkmarx(domain.MetricSource):
@@ -29,7 +32,8 @@ class Checkmarx(domain.MetricSource):
     metric_source_name = 'Checkmarx'
     needs_metric_source_id = True
 
-    def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener=None, *args, **kwargs) -> None:
+    def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener=None,
+                 *args, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         super().__init__(url=url, *args, **kwargs)
 
@@ -58,15 +62,44 @@ class Checkmarx(domain.MetricSource):
                 json = self.__fetch_report(project_name)
                 nr_alerts += self.__parse_alerts(json, priority)
             except Exception as reason:
-                logging.warning("Couldn't parse alerts with %s risk level from %s - %s - %s",
-                                priority, self.url(), reason, project_name)
+                logging.warning("Couldn't parse alerts for project %s with %s risk level from %s: %s",
+                                project_name, priority, self.url(), reason)
                 return -1
         return nr_alerts
+
+    def datetime(self, *metric_source_ids: Iterable[str]) -> DateTime:
+        """ Return the last date and time the projects were scanned. """
+        dates = []
+        for project_name in metric_source_ids:
+            try:
+                json = self.__fetch_report(project_name)
+                dates.append(self.__parse_datetime(json))
+            except Exception as reason:
+                logging.error("Couldn't parse date and time for project %s from %s: %s",
+                                project_name, self.url(), reason)
+                logging.error("JSON: %s", json)
+                return datetime.datetime.min
+        return min(dates, default=datetime.datetime.min)
 
     @staticmethod
     def __parse_alerts(json: Dict[str, List[Dict[str, Dict[str, int]]]], risk_level: str) -> int:
         """ Parse the JSON to get the number of alerts for the risk_level """
         return json["value"][0]["LastScan"][risk_level.title()]
+
+    @staticmethod
+    def __parse_datetime(json: Dict) -> DateTime:
+        """ Parse the JSON to get the date and time of the last scan. """
+        datetimes = []
+        last_scan = json["value"][0]["LastScan"]
+        datetime_string = last_scan["ScanCompletedOn"].split('.')[0]
+        datetimes.append(datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S'))
+        comment = last_scan.get("Comment", "")
+        comment_sep = '; '
+        if comment_sep in comment:
+            for check in comment.strip(comment_sep).split(comment_sep):
+                datetime_string = check.strip('Attempt to perform scan on ').strip(' - No code changes were detected')
+                datetimes.append(dateutil.parser.parse(datetime_string, dayfirst=False))
+        return max(datetimes)
 
     @functools.lru_cache(maxsize=1024)
     def __fetch_report(self, project_name: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:

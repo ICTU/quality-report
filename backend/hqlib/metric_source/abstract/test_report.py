@@ -69,3 +69,23 @@ class TestReport(domain.MetricSource):
     def _skipped_tests(self, report_url: str) -> int:
         """ Return the number of skipped tests as reported by the test report. """
         raise NotImplementedError  # pragma: nocover
+
+
+class UnittestReport(TestReport):
+    """ Metric source for unit test reports. """
+    pass
+
+
+class IntegrationTestReport(TestReport):
+    """ Metric source for integration test reports. """
+    pass
+
+
+class CombinedUnitAndIntegrationTestReport(TestReport):
+    """ Metric source for combined unit and integration test reports. """
+    pass
+
+
+class SystemTestReport(TestReport):
+    """ Metric source for system test reports. """
+    pass

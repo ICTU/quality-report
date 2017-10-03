@@ -46,7 +46,7 @@ class IntegrationTestCase(unittest.TestCase):
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
-    expected_number_of_metrics = 188
+    expected_number_of_metrics = 194
 
     def report(self):
         """ Read the report and return as beautiful soup. """
@@ -88,7 +88,7 @@ class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
 class MissingProjectDefinition(AllRequirementsNoSourcesTests):
     """ Integration tests without a project definition. """
     project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/missing_project_definition.py'
-    expected_number_of_metrics = 36
+    expected_number_of_metrics = 37
 
     def test_contents(self):
         """ Test that the contents of the created project definition file is correct. """

@@ -25,6 +25,7 @@ class FakeSonar(object):
 
     metric_source_name = metric_source.Sonar.metric_source_name
     needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
+    ncloc_to_return = 123
 
     @staticmethod
     def dashboard_url(*args):
@@ -33,10 +34,9 @@ class FakeSonar(object):
 
     url = dashboard_url
 
-    @staticmethod
-    def ncloc(*args):
+    def ncloc(self, *args):
         """ Return the number of non-comment LOC. """
-        return 123
+        return self.ncloc_to_return
 
 
 class FakeHistory(object):  # pylint: disable=too-few-public-methods
@@ -72,10 +72,12 @@ class TotalLOCTest(unittest.TestCase):
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
             metric_options={metric.TotalLOC: dict(target=1000000, low_target=2000000)})
-        product = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})
+        product1 = domain.Product(short_name='PR1', name='FakeSubject1', metric_source_ids={self.__sonar: 'sonar id1'})
+        product2 = domain.Product(short_name='PR2', name='FakeSubject2', metric_source_ids={self.__sonar: 'sonar id2'})
         product_without_sonar_id = domain.Product(short_name='PW', name='ProductWithoutSonarId')
         test_product = domain.Product(short_name='TP', is_main=False, metric_source_ids={self.__sonar: 'sonar id'})
-        project.add_product(product)
+        project.add_product(product1)
+        project.add_product(product2)
         # Add products that should be ignored:
         project.add_product(product_without_sonar_id)
         project.add_product(test_product)
@@ -83,7 +85,7 @@ class TotalLOCTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value of the metric equals the sum of the NCLOC returned by Sonar. """
-        self.assertEqual(FakeSonar().ncloc(), self.__metric.value())
+        self.assertEqual(2 * FakeSonar().ncloc(), self.__metric.value())
 
     def test_url(self):
         """ Test that the url refers to Sonar. """
@@ -91,8 +93,8 @@ class TotalLOCTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Het totaal aantal regels code voor de producten FakeSubject, '
-                         'ProductWithoutSonarId is 123 regels code.', self.__metric.report())
+        self.assertEqual('Het totaal aantal regels code voor de producten FakeSubject1, FakeSubject2, '
+                         'ProductWithoutSonarId is 246 regels code.', self.__metric.report())
 
     def test_recent_history(self):
         """ Test that the recent history subtracts the minimum value of each value so that more data can be plotted. """
@@ -116,3 +118,8 @@ class TotalLOCTest(unittest.TestCase):
         project.add_product(product)
         total_loc = metric.TotalLOC(subject=project, project=project)
         self.assertEqual('grey', total_loc.status())
+
+    def test_unavailable_sonar(self):
+        """ Test that the value is -1 when Sonar is not available. """
+        self.__sonar.ncloc_to_return = -1
+        self.assertEqual(-1, self.__metric.value())
