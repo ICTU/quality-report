@@ -1,3 +1,8 @@
+2017-10-04  Release 2.9.5
+
+  * Bug fix: Don't crash due to missing logging parameters.
+  
+  
 2017-10-04  Release 2.9.4
 
   * Add HQ version to logging.

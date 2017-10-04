@@ -100,7 +100,7 @@ if __name__ == '__main__':
     # pylint: disable=invalid-name
     args = commandlineargs.parse()
     log.init_logging(args.log)
-    logging.info("%s v%s starting quality report for %s", NAME, VERSION, args.project)
+    logging.info("%s v%s starting quality report", NAME, VERSION)
     report = Reporter(args.project).create_report(args.report)
-    logging.info("%s v%s done with quality report for $s", NAME, VERSION, args.project)
+    logging.info("%s v%s done with quality report", NAME, VERSION)
     sys.exit(2 if args.failure_exit_code and report.direct_action_needed() else 0)
