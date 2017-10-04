@@ -38,15 +38,15 @@ class UnusedCIJobs(LowerIsBetterMetric):
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters['number_of_jobs'] = str(self._metric_source.number_of_active_jobs())
+        parameters['number_of_jobs'] = str(self._metric_source.number_of_active_jobs()) if self._metric_source else '?'
         return parameters
 
     def value(self):
         """ Return the number of unused jobs. """
-        url = self._metric_source.unused_jobs_url()
+        url = self._metric_source.unused_jobs_url() if self._metric_source else None
         return -1 if url is None else len(url)
 
     def url(self) -> Dict[str, str]:
         """ Return the urls for the unused jobs. """
-        url = self._metric_source.unused_jobs_url()
+        url = self._metric_source.unused_jobs_url() if self._metric_source else None
         return dict() if url is None else url
