@@ -95,3 +95,9 @@ class CheckmarxTest(unittest.TestCase):
                              'were detected; Attempt to perform scan on 9/27/2017 12:30:24 PM - No code changes ' \
                              'were detected; "}}]}'
         self.assertEqual(datetime.datetime(2017, 9, 27, 12, 30, 24), self.__report.datetime('id'))
+
+    def test_datetime_when_some_checks_have_no_date(self):
+        self.__opener.json = '{"value": [{"LastScan": {"ScanCompletedOn": "2016-12-14T00:01:30.737+01:00", ' \
+                             '"Comment": "Attempt to perform scan on 2/13/2017 8:00:06 PM - No code changes were ' \
+                             'detected;  No code changes were detected No code changes were detected"}}]}'
+        self.assertEqual(datetime.datetime(2017, 2, 13, 20, 0, 6), self.__report.datetime('id'))

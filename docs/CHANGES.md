@@ -1,3 +1,8 @@
+2017-10-04  Release 2.9.1
+
+  * Bug fix: When determining last Checkmarx run, be prepared for checks without date and time.
+  
+
 2017-09-29  Release 2.9.0
 
   * metric_source.TestReport has been renamed to metric_source.SystemTestReport in preparation for multiple test 

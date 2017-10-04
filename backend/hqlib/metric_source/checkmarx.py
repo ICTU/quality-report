@@ -94,12 +94,13 @@ class Checkmarx(domain.MetricSource):
         datetime_string = last_scan["ScanCompletedOn"].split('.')[0]
         datetimes.append(datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S'))
         comment = last_scan.get("Comment", "")
-        comment_sep = '; '
+        comment_sep, prefix, postfix = '; ', 'Attempt to perform scan on ', ' - No code changes were detected'
         if comment_sep in comment:
             for check in comment.strip(comment_sep).split(comment_sep):
-                datetime_string = check.strip('Attempt to perform scan on ').strip(' - No code changes were detected')
-                datetimes.append(dateutil.parser.parse(datetime_string, dayfirst=False))
-        return max(datetimes)
+                if prefix in check:
+                    datetime_string = check.strip(prefix).strip(postfix)
+                    datetimes.append(dateutil.parser.parse(datetime_string, dayfirst=False))
+        return max(datetimes, default=datetime.datetime.min)
 
     @functools.lru_cache(maxsize=1024)
     def __fetch_report(self, project_name: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
