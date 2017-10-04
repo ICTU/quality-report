@@ -1,3 +1,8 @@
+2017-10-04  Release 2.9.2
+
+  * Bug fix: Don't crash when Jenkins hasn't been configured.
+  
+
 2017-10-04  Release 2.9.1
 
   * Bug fix: When determining last Checkmarx run, be prepared for checks without date and time.
