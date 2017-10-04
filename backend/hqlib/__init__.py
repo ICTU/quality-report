@@ -14,4 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-VERSION = '2.9.3'
+NAME = 'HQ'
+VERSION = '2.9.4'

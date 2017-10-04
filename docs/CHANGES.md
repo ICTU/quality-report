@@ -1,3 +1,8 @@
+2017-10-04  Release 2.9.4
+
+  * Add HQ version to logging.
+  
+
 2017-10-04  Release 2.9.3
 
   * Bug fix: Don't crash when Jenkins hasn't been configured.
