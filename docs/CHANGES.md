@@ -1,3 +1,8 @@
+2017-10-09  Release 2.9.7
+
+  * New release identical to release 2.9.6 for testing purposes.
+  
+  
 2017-10-09  Release 2.9.6
 
   * Allow for querying measurable objects for the metrics that have options. This is useful for meta reports.
