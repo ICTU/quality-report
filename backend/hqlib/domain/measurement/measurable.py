@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Any, Dict, List, Type, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING, Union
 
 from ..base import DomainObject
 from hqlib.typing import MetricValue
@@ -57,3 +57,7 @@ class MeasurableObject(DomainObject):
         """ Return the options of this object for the metric class. Options can be any information that is needed
             for the metric. """
         return self.__metric_options.get(metric_class, dict())
+
+    def metrics_with_options(self) -> Set[Type['Metric']]:
+        """ Return the metrics that have options. """
+        return set(self.__metric_options.keys())

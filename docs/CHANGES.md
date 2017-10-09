@@ -1,3 +1,8 @@
+2017-10-09  Release 2.9.6
+
+  * Allow for querying measurable objects for the metrics that have options. This is useful for meta reports.
+  
+  
 2017-10-04  Release 2.9.5
 
   * Bug fix: Don't crash due to missing logging parameters.
