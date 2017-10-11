@@ -1,3 +1,9 @@
+2017-10-11  Release 2.9.8
+
+  * Bug fix: Use a default project definition if the project definition file can't be read, but don't write it to disk 
+    to prevent overwriting the (faulty) project definition file.
+  
+  
 2017-10-09  Release 2.9.7
 
   * New release identical to release 2.9.6 for testing purposes.

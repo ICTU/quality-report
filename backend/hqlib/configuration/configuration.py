@@ -18,14 +18,10 @@ import os
 import sys
 import logging
 
-from hqlib import filesystem
-
-
-NEW_PROJECT_DEFINITION_CONTENTS = '''""" This is a generated project definition for HQ. Please adapt to your 
-needs. """
-
 from hqlib import metric_source, domain
 
+
+""" This is a default project definition for HQ. """
 
 # Metric sources
 
@@ -34,8 +30,8 @@ SONAR = metric_source.Sonar('http://www.sonar.my_project.my_organization:9000/')
 
 # Project
 
-PROJECT = domain.Project(
-    'My organization', name='My project',
+DEFAULT_PROJECT = domain.Project(
+    'Default organization', name='Default project',
     metric_sources={
         metric_source.Sonar: SONAR})
 
@@ -47,10 +43,10 @@ MY_APPLICATION = domain.Application(
     metric_source_ids={
         SONAR: 'my_applications_sonar_key'})
 
-PROJECT.add_product(MY_APPLICATION)
+DEFAULT_PROJECT.add_product(MY_APPLICATION)
 
 
-# Dashboard 
+# Dashboard
 
 # Columns in the dashboard is specified as a list of tuples. Each tuple
 # contains a column header and the column span.
@@ -65,9 +61,9 @@ DASHBOARD_ROWS = [
     [(MY_APPLICATION, C1), ('MM', C3)]
 ]
 
-PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)
+DEFAULT_PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)
 
-'''
+""" End of the default project definition for HQ. """
 
 
 class Configuration(object):
@@ -75,7 +71,7 @@ class Configuration(object):
     PROJECT_DEFINITION_FILENAME = 'project_definition.py'
 
     @classmethod
-    def project(cls, project_folder_or_filename):
+    def project(cls, project_folder_or_filename, __import=__import__):
         """ Import the project from the project definition file in the project folder. """
         if project_folder_or_filename.endswith('.py'):
             project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)
@@ -89,14 +85,13 @@ class Configuration(object):
         # Add the project folder itself to the python path so that we can import the project definition itself.
         sys.path.insert(0, project_folder)
 
-        # Import the project definition and get the project from it. Create a project definition if it doesn't exist.
+        # Import the project definition and get the project from it.
+        # Use the default project definition if it doesn't exist.
         module_name = project_definition_filename[:-len('.py')]
         try:
-            project_definition_module = __import__(module_name)
+            return __import(module_name).PROJECT
         except ModuleNotFoundError as reason:
-            project_definition_filepath = os.path.join(project_folder, project_definition_filename)
-            logging.warning("Couldn't open %s: %s. Creating a default project definition in %s and using that.",
-                            module_name, reason, project_definition_filepath)
-            filesystem.write_file(NEW_PROJECT_DEFINITION_CONTENTS, project_definition_filepath, 'w')
-            project_definition_module = __import__(module_name)
-        return project_definition_module.PROJECT
+            logging.error("Couldn't open %s: %s. Using default project definition.", module_name, reason)
+        except AttributeError as reason:
+            logging.error("Couldn't get PROJECT from %s: %s. Using default project definition.", module_name, reason)
+        return DEFAULT_PROJECT

@@ -14,16 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import bs4
 import json
 import os
 import shutil
 import sys
 import tempfile
 import unittest
-
-import bs4
-
-from hqlib import configuration
 
 
 class IntegrationTestCase(unittest.TestCase):
@@ -40,7 +37,7 @@ class IntegrationTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ Remove the report. """
-        #shutil.rmtree(cls.report_folder)
+        # shutil.rmtree(cls.report_folder)
 
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
@@ -83,21 +80,3 @@ class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
 class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
     """ Integration tests using a second project definition from the same folder. """
     project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/second_project_definition.py'
-
-
-class MissingProjectDefinition(AllRequirementsNoSourcesTests):
-    """ Integration tests without a project definition. """
-    project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/missing_project_definition.py'
-    expected_number_of_metrics = 37
-
-    def test_contents(self):
-        """ Test that the contents of the created project definition file is correct. """
-        with open(self.project_folder) as project_definition:
-            contents = project_definition.read()
-        self.assertEqual(configuration.configuration.NEW_PROJECT_DEFINITION_CONTENTS, contents)
-
-    @classmethod
-    def tearDownClass(cls):
-        """ Override to remove the generated project definition in addition to the report. """
-        super(MissingProjectDefinition, cls).tearDownClass()
-        os.remove(cls.project_folder)
