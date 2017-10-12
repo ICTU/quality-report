@@ -54,7 +54,7 @@ class UrlOpenerTest(unittest.TestCase):
         self.assertEqual('url contents', opener.url_open('http://bla'))
 
     def test_basic_auth_handler(self):
-        """ Test that the opener can create a basic auth handler. """
+        """ Test that the opener can create a basic auth handler.  """
         opener = url_opener.UrlOpener(username='user', password='pass', url_open=FakeBuildOpener.open)
         self.assertEqual('url contents', opener.url_open('http://bla'))
 
