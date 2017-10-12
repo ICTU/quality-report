@@ -18,7 +18,7 @@
 HQ - Holistic Software Quality Reporting
 ========================================
 
-Application to generate quality reports for software development projects.
+Application  to generate quality reports for software development projects.
 Holistic because HQ attempts to measure as many aspects of software development as
 possible, seeing how software development can go off the rails in so many ways.
 
