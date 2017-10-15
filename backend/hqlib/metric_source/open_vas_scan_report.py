@@ -54,7 +54,7 @@ class OpenVASScanReport(domain.MetricSource):
     @staticmethod
     def __parse_alerts(soup, risk_level: str) -> int:
         """ Get the number of alerts from the HTML soup. """
-        summary_table = soup('table')[0]('table')[1]  # The whole report is one big table with nested tables.
+        summary_table = soup('table')[1]  # The whole report is one big table with nested tables.
         column = dict(high=3, medium=4, low=5)[risk_level]
         return int(summary_table('tr')[-1]('td')[column].string)
 
@@ -73,7 +73,7 @@ class OpenVASScanReport(domain.MetricSource):
             soup = self.__get_soup(report_url)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
-        summary_table = soup('table')[0]('table')[0]  # The whole report is one big table with nested tables.
+        summary_table = soup('table')[1]  # The whole report is one big table with nested tables.
         date_string = summary_table('tr')[1]('td')[1].string
         return dateutil.parser.parse(date_string, ignoretz=True)
 
