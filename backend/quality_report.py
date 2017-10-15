@@ -17,13 +17,15 @@ limitations under the License.
 
 # Python script to retrieve metrics from different back-end systems, like Sonar and Jenkins.
 
+import logging
 import os
 import sys
 import pygal
 
 import pkg_resources
 
-from hqlib import app, formatting, commandlineargs, report, metric_source, log, filesystem, configuration
+from hqlib import app, formatting, commandlineargs, report, metric_source, log, filesystem, configuration, \
+    NAME, VERSION
 
 
 class Reporter(object):  # pylint: disable=too-few-public-methods
@@ -98,5 +100,7 @@ if __name__ == '__main__':
     # pylint: disable=invalid-name
     args = commandlineargs.parse()
     log.init_logging(args.log)
+    logging.info("%s v%s starting quality report", NAME, VERSION)
     report = Reporter(args.project).create_report(args.report)
+    logging.info("%s v%s done with quality report", NAME, VERSION)
     sys.exit(2 if args.failure_exit_code and report.direct_action_needed() else 0)

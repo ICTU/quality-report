@@ -1,3 +1,44 @@
+2017-10-11  Release 2.9.8
+
+  * Bug fix: Use a default project definition if the project definition file can't be read, but don't write it to disk 
+    to prevent overwriting the (faulty) project definition file.
+  
+  
+2017-10-09  Release 2.9.7
+
+  * New release identical to release 2.9.6 for testing purposes.
+  
+  
+2017-10-09  Release 2.9.6
+
+  * Allow for querying measurable objects for the metrics that have options. This is useful for meta reports.
+  
+  
+2017-10-04  Release 2.9.5
+
+  * Bug fix: Don't crash due to missing logging parameters.
+  
+  
+2017-10-04  Release 2.9.4
+
+  * Add HQ version to logging.
+  
+
+2017-10-04  Release 2.9.3
+
+  * Bug fix: Don't crash when Jenkins hasn't been configured.
+  
+
+2017-10-04  Release 2.9.2
+
+  * Bug fix: Don't crash when Jenkins hasn't been configured.
+  
+
+2017-10-04  Release 2.9.1
+
+  * Bug fix: When determining last Checkmarx run, be prepared for checks without date and time.
+  
+
 2017-09-29  Release 2.9.0
 
   * metric_source.TestReport has been renamed to metric_source.SystemTestReport in preparation for multiple test 

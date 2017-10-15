@@ -77,3 +77,7 @@ class MeasurableObjectTests(unittest.TestCase):
     def test_metric_options(self):
         """ Test the metric options for a known class. """
         self.assertEqual(self.__metric_options, self.__measurable.metric_options(self.__class__))
+
+    def test_metrics_with_options(self):
+        """ Test that the metrics with options can be retrieved. """
+        self.assertEqual({self.__class__}, self.__measurable.metrics_with_options())
