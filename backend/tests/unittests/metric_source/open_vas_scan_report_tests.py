@@ -23,70 +23,145 @@ from hqlib.metric_source import OpenVASScanReport
 
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake the url opener to return static html. """
-    html = '''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+    html = '''
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<html>
-<body><div class="content">
-<table>
-<tbody><tr>
-<td>Scan started:</td>
-<td><b>Sun Oct 15 19:17:38 2017 UTC</b></td>
-</tr>
-<tr>
-<td>Scan ended:</td>
-<td>Sun Oct 15 19:28:58 2017 UTC</td>
-</tr>
-<tr>
-<td>Task:</td>
-<td>scan</td>
-</tr>
-</tbody></table>
-<h2>Host Summary</h2>
-<table width="100%">
-<tbody><tr class="table_head">
-<td>Host</td>
-<td>Start</td>
-<td>End</td>
-<td>High</td>
-<td>Medium</td>
-<td>Low</td>
-<td>Log</td>
-<td>False Positive</td>
-</tr>
-<tr>
-<td><a href="http://www.mediakiwi.com">test</a></td>
-<td>Oct 15, 19:17:50</td>
-<td>Oct 15, 19:28:58</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>18</td>
-<td>0</td>
-</tr>
-<tr>
-<td>Total: 1</td>
-<td></td>
-<td></td>
-<td>0</td>
-<td>2</td>
-<td>1</td>
-<td>18</td>
-<td>0</td>
-</tr>
-</tbody></table>
-<h1>Results per Host</h1>
-<h2 id="test">Host test</h2>
-<table>
-<tbody><tr>
-<td>Scanning of this host started at:</td>
-<td>Sun Oct 15 19:17:50 2017 UTC</td>
-</tr>
-<tr>
-<td>Number of results:</td>
-<td>19</td>
-</tr>
-</tbody></table>
-</body></html>'''
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" />
+<!-- CSS Tabs is licensed under Creative Commons Attribution 3.0 - http://creativecommons.org/licenses/by/3.0/ -->
+<style type="text/css">
+
+body {
+font: 100% verdana, arial, sans-serif;
+background-color: #fff;
+}
+
+/* begin css tabs */
+
+ul#tabnav { /* general settings */
+text-align: left; /* set to left, right or center */
+margin: 8px 0 0 0; /* set margins as desired */
+font: bold 11px verdana, arial, sans-serif; /* set font as desired */
+border-bottom: 1px solid #6c6; /* set border COLOR as desired */
+list-style-type: none;
+padding: 3px 10px 3px 10px; /* THIRD number must change with respect to padding-top (X) below */
+}
+
+ul#tabnav li { /* do not change */
+display: inline;
+}
+
+ul#tabnav li.selected { /* settings for selected tab */
+border-bottom: 1px solid #fff; /* set border color to page background color */
+background-color: #fff; /* set background color to match above border color */
+}
+
+
+ul#tabnav li { /* settings for all tab links */
+padding: 3px 4px; /* set padding (tab size) as desired; FIRST number must change with respect to padding-top (X) above */
+border: 1px solid #6c6; /* set border COLOR as desired; usually matches border color specified in #tabnav */
+background-color: #cfc; /* set unselected tab background color as desired */
+color: #666; /* set unselected tab link color as desired */
+margin-right: 0px; /* set additional spacing between tabs as desired */
+text-decoration: none;
+border-bottom: none;
+cursor: pointer;
+}
+
+ul#tabnav li:hover { /* settings for hover effect */
+background: #afa; /* set desired hover color */
+}
+
+/* end css tabs */
+
+/* FF 100% height iframe */
+html, body, div, iframe { margin:0; padding:0; }
+iframe { display:block; width:100%; border:none; }
+
+h1
+{
+    display: inline;
+    float: left;
+    font-size: small;
+    margin: 0;
+    padding: 0 10px;
+}
+
+h2
+{
+    display: inline;
+    float: right;
+    font-size: small;
+    margin: 0;
+    padding: 0 10px;
+}
+
+</style>
+
+<script type="text/javascript">
+function updateBody(tabId, page) {
+    document.getElementById(selectedTab).setAttribute("class", "unselected");
+    tab = document.getElementById(tabId)
+    tab.setAttribute("class", "selected");
+    selectedTab = tabId;
+    iframe = document.getElementById("myframe");
+    iframe.src = tab.getAttribute("value");
+}
+function init(tabId){
+	updateBody(tabId);
+	updateViewport();
+	
+	window.onresize = updateViewport;
+}
+
+function updateViewport(){
+	 var viewportheight;
+
+	 // the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+
+	 if (typeof window.innerWidth != 'undefined')
+	 {
+	      viewportheight = window.innerHeight
+	 }
+
+	// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
+
+	 else if (typeof document.documentElement != 'undefined'
+	     && typeof document.documentElement.clientWidth !=
+	     'undefined' && document.documentElement.clientWidth != 0)
+	 {
+	       viewportheight = document.documentElement.clientHeight
+	 }
+	// older versions of IE
+	 else
+	 { 
+	       viewportheight = document.getElementsByTagName('body')[0].clientHeight
+	 }
+	
+	iframe = document.getElementById("myframe");
+	iframe.style.height = (viewportheight-30)+'px';
+}
+var selectedTab = "tab1"
+</script>
+
+</head>
+
+<body onload="init('tab1');">
+
+<h1><a id="hudson_link" href="#"></a></h1>
+<h2><a id="zip_link" href="#">Zip</a></h2>
+
+<ul id="tabnav">
+<li id="tab1" class="unselected" onclick="updateBody('tab1')" value="openvas_scan.html">openvas_scan</li><script type="text/javascript">document.getElementById("hudson_link").innerHTML="Back to Security-OpenVAS";</script><script type="text/javascript">document.getElementById("hudson_link").href="/job/Security-OpenVAS/";</script><script type="text/javascript">document.getElementById("zip_link").href="*zip*/HTML_Report.zip";</script></ul>
+<div>
+<iframe id="myframe" height="100%" width="100%" frameborder="0"></iframe>
+</div>
+
+</body>
+</html>
+'''
 
     def url_open(self, url):
         """ Open a url. """
