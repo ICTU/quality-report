@@ -24,26 +24,26 @@ from hqlib.metric_source import OpenVASScanReport
 class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     """ Fake the url opener to return static html. """
     html = '''<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
 <html>
-<body><div><table><tr><td valign="top">
-<h1>Summary</h1>
+<body><div class="content">
 <table>
-<tr>
+<tbody><tr>
 <td>Scan started:</td>
-<td><b>Mon Aug 8 12:31:31 2016 UTC</b></td>
+<td><b>Sun Oct 15 19:17:38 2017 UTC</b></td>
 </tr>
 <tr>
 <td>Scan ended:</td>
-<td>Mon Aug 8 12:37:04 2016 UTC</td>
+<td>Sun Oct 15 19:28:58 2017 UTC</td>
 </tr>
 <tr>
 <td>Task:</td>
-<td>openvas_lib_scan_www.mediawiki.dep.org</td>
+<td>scan</td>
 </tr>
-</table>
+</tbody></table>
 <h2>Host Summary</h2>
-<table>
-<tr style="background-color: #d5d5d5;">
+<table width="100%">
+<tbody><tr class="table_head">
 <td>Host</td>
 <td>Start</td>
 <td>End</td>
@@ -54,13 +54,13 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 <td>False Positive</td>
 </tr>
 <tr>
-<td><a href="#22.33.44.55">22.33.44.55 (www.mediawiki.dep.org)</a></td>
-<td>Aug 8, 12:31:36</td>
-<td>Aug 8, 12:37:04</td>
+<td><a href="http://www.mediakiwi.com">test</a></td>
+<td>Oct 15, 19:17:50</td>
+<td>Oct 15, 19:28:58</td>
 <td>0</td>
-<td>2</td>
+<td>0</td>
 <td>1</td>
-<td>13</td>
+<td>18</td>
 <td>0</td>
 </tr>
 <tr>
@@ -70,14 +70,23 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
 <td>0</td>
 <td>2</td>
 <td>1</td>
-<td>13</td>
+<td>18</td>
 <td>0</td>
 </tr>
-</table>
-</div>
-</body>
-</html>
-'''
+</tbody></table>
+<h1>Results per Host</h1>
+<h2 id="test">Host test</h2>
+<table>
+<tbody><tr>
+<td>Scanning of this host started at:</td>
+<td>Sun Oct 15 19:17:50 2017 UTC</td>
+</tr>
+<tr>
+<td>Number of results:</td>
+<td>19</td>
+</tr>
+</tbody></table>
+</body></html>'''
 
     def url_open(self, url):
         """ Open a url. """
@@ -116,7 +125,7 @@ class OpenVASScanReportTest(unittest.TestCase):
 
     def test_datetime(self):
         """ Test that the date/time can be parsed. """
-        self.assertEqual(datetime.datetime(2016, 8, 8, 12, 37, 4), self.__report.datetime('url'))
+        self.assertEqual(datetime.datetime(2017, 10, 15, 19, 17, 50), self.__report.datetime('url'))
 
     def test_empty_report(self):
         """ Test that the value is -1 when the report is invalid. """
