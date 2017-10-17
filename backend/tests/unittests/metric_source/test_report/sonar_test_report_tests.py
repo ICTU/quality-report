@@ -24,7 +24,7 @@ class FakeSonar(object):
     """ Fake a SonarQube metric source. """
     # pylint: disable=unused-argument
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         pass
 
     @staticmethod
