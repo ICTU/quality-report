@@ -14,30 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from ..metric_source_mixin import SonarDashboardMetric
-from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from hqlib.domain import LowerIsBetterMetric
 from hqlib.typing import MetricParameters
+from hqlib import metric_source
 
 
-class UnittestMetricMixin(SonarDashboardMetric):  # pylint: disable=too-few-public-methods
-    """ Mixin class for Sonar metrics about unit tests. """
-
-    @classmethod
-    def is_applicable(cls, product):
-        """ Return whether the unit test metric is applicable to the product. This is only the case if the product
-            has no integration tests, because if it does, the combined unit and integration test metrics should be
-            used. """
-        return not product.has_integration_tests()
-
-    def _parameters(self) -> MetricParameters:
-        """ Add the number of unit tests to the parameters for the report. """
-        # pylint: disable=protected-access
-        parameters = super()._parameters()
-        parameters['tests'] = self._metric_source.unittests(self._sonar_id())
-        return parameters
-
-
-class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
+class FailingUnittests(LowerIsBetterMetric):
     """ Metric for measuring the number of unit tests that fail. """
 
     name = 'Hoeveelheid falende unittesten'
@@ -48,9 +30,10 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
     no_tests_template = 'Er zijn geen {unit}.'
     target_value = 0
     low_target_value = 0
+    metric_source_class = metric_source.UnitTestReport
 
     def value(self):
-        value = self._metric_source.failing_unittests(self._sonar_id())
+        value = self._metric_source.failing_unittests(self.__metric_source_id()) if self._metric_source else None
         return -1 if value is None else value
 
     def status(self):
@@ -61,44 +44,16 @@ class FailingUnittests(UnittestMetricMixin, LowerIsBetterMetric):
 
     def __no_tests(self) -> bool:
         """ Return True if are no unit tests. """
-        return self._metric_source.unittests(self._sonar_id()) == 0
+        return self._metric_source.unittests(self.__metric_source_id()) == 0 if self._metric_source else False
 
+    def __metric_source_id(self) -> str:
+        """ Return the id of the subject in the metric source. """
+        return self._subject.metric_source_id(self._metric_source) or '' \
+            if (self._subject and self._metric_source) else ''
 
-class UnittestCoverage(UnittestMetricMixin, HigherIsBetterMetric):
-    """ Base class for metrics measuring coverage of unit tests for a product. """
-
-    unit = '%'
-    perfect_value = 100
-
-    def value(self):
-        raise NotImplementedError
-
-
-class UnittestLineCoverage(UnittestCoverage):
-    """ Metric for measuring the line coverage of unit tests for a product. """
-
-    name = 'Unit test broncode dekking (line coverage)'
-    norm_template = 'Minimaal {target}{unit} van de regels code wordt gedekt door unittests. ' \
-        'Lager dan {low_target}{unit} is rood.'
-    template = '{name} unittest line coverage is {value:.0f}{unit} ({tests} unittests).'
-    target_value = 98
-    low_target_value = 90
-
-    def value(self):
-        coverage = self._metric_source.unittest_line_coverage(self._sonar_id())
-        return -1 if coverage is None else round(coverage)
-
-
-class UnittestBranchCoverage(UnittestCoverage):
-    """ Metric for measuring the branch coverage of unit tests for a product. """
-
-    name = 'Unit test broncode dekking (branch coverage)'
-    norm_template = 'Minimaal {target}{unit} van de code branches wordt gedekt door unittests. ' \
-        'Lager dan {low_target}{unit} is rood.'
-    template = '{name} unittest branch coverage is {value:.0f}{unit} ({tests} unittests).'
-    target_value = 80
-    low_target_value = 60
-
-    def value(self):
-        coverage = self._metric_source.unittest_branch_coverage(self._sonar_id())
-        return -1 if coverage is None else round(coverage)
+    def _parameters(self) -> MetricParameters:
+        """ Add the number of unit tests to the parameters for the report. """
+        # pylint: disable=protected-access
+        parameters = super()._parameters()
+        parameters['tests'] = self._metric_source.unittests(self.__metric_source_id()) if self._metric_source else '?'
+        return parameters

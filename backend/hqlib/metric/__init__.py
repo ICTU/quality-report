@@ -18,7 +18,7 @@ limitations under the License.
 # Product metrics
 
 from .product.analysis_age import SonarAnalysisAge, OWASPDependencyReportAge, OpenVASScanReportAge, \
-    CheckmarxReportAge
+    CheckmarxReportAge, UnittestReportAge
 from .product.automated_regression_test_metrics import FailingRegressionTests, RegressionTestAge
 from .product.automated_regression_test_coverage_metrics import (
     ARTStatementCoverage, ARTBranchCoverage, CoverageReportAge)
@@ -37,7 +37,8 @@ from .product.size_metrics import ProductLOC, TotalLOC
 from .product.source_code_metrics import CommentedLOC, CyclomaticComplexity, LongMethods, ManyParameters
 from .product.unit_and_integration_test_metrics import (
     UnitAndIntegrationTestLineCoverage, UnitAndIntegrationTestBranchCoverage)
-from .product.unittest_metrics import FailingUnittests, UnittestLineCoverage, UnittestBranchCoverage
+from .product.unittest_metrics import FailingUnittests
+from .product.unittest_coverage_metrics import UnittestLineCoverage, UnittestBranchCoverage
 from .product.user_story_metrics import (
     UserStoriesNotReviewed, UserStoriesNotApproved, UserStoriesWithTooFewLogicalTestCases)
 from .product.version_control_metrics import UnmergedBranches

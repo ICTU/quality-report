@@ -38,10 +38,6 @@ class UFTTestReport(test_report.TestReport):
         """ Return the number of failed tests. """
         return self.__test_count(report_url, 'failed')
 
-    def _skipped_tests(self, report_url: str) -> int:
-        """ Return the number of skipped tests. """
-        return 0
-
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
         try:

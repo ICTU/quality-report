@@ -63,3 +63,12 @@ class CheckmarxReportAge(MetricSourceAgeMetric):
                     'Meer dan {low_target} {unit} is rood.'
     template = 'Het meest recente Checkmarx rapport van {name} is {value} {unit} oud.'
     metric_source_class = metric_source.Checkmarx
+
+
+class UnittestReportAge(MetricSourceAgeMetric):
+    """ Metric for measuring the age of a unit test report. """
+    name = 'Leeftijd van het unittest rapport'
+    norm_template = 'De leeftijd van het unittest rapport is maximaal {target} {unit} oud. ' \
+                    'Meer dan {low_target} {unit} is rood.'
+    template = 'Het meest recente unittest rapport van {name} is {value} {unit} oud.'
+    metric_source_class = metric_source.UnitTestReport

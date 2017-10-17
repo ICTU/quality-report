@@ -29,9 +29,11 @@ class TestReport(domain.MetricSource):
     metric_source_name = 'Test report'
     needs_metric_source_id = True
 
-    def __init__(self, url_read: Callable[[str], str]=None, **kwargs) -> None:
-        self._url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
-        super().__init__()
+    def __init__(self, url_read: Callable[[str], str]=None, *args, **kwargs) -> None:
+        self._url_read = url_read or url_opener.UrlOpener(
+            uri=kwargs.pop('uri', ''), username=kwargs.pop('username', ''),
+            password=kwargs.pop('password', '')).url_read
+        super().__init__(*args, **kwargs)
 
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *report_urls: str) -> DateTime:
@@ -68,24 +70,34 @@ class TestReport(domain.MetricSource):
 
     def _skipped_tests(self, report_url: str) -> int:
         """ Return the number of skipped tests as reported by the test report. """
+        return 0
+
+
+class UnitTestReport(TestReport):
+    """ Metric source for unit test reports. """
+    def _report_datetime(self, report_url: str) -> DateTime:
+        """ Return the date and time of the report. """
         raise NotImplementedError  # pragma: nocover
 
+    def _passed_tests(self, report_url: str) -> int:
+        """ Return the number of passed tests as reported by the test report. """
+        raise NotImplementedError  # pragma: nocover
 
-class UnittestReport(TestReport):
-    """ Metric source for unit test reports. """
-    pass
-
-
-class IntegrationTestReport(TestReport):
-    """ Metric source for integration test reports. """
-    pass
-
-
-class CombinedUnitAndIntegrationTestReport(TestReport):
-    """ Metric source for combined unit and integration test reports. """
-    pass
+    def _failed_tests(self, report_url: str) -> int:
+        """ Return the number of failed tests as reported by the test report. """
+        raise NotImplementedError  # pragma: nocover
 
 
 class SystemTestReport(TestReport):
     """ Metric source for system test reports. """
-    pass
+    def _report_datetime(self, report_url: str) -> DateTime:
+        """ Return the date and time of the report. """
+        raise NotImplementedError  # pragma: nocover
+
+    def _passed_tests(self, report_url: str) -> int:
+        """ Return the number of passed tests as reported by the test report. """
+        raise NotImplementedError  # pragma: nocover
+
+    def _failed_tests(self, report_url: str) -> int:
+        """ Return the number of failed tests as reported by the test report. """
+        raise NotImplementedError  # pragma: nocover
