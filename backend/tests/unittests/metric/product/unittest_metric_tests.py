@@ -28,11 +28,11 @@ class FakeUnitTestReport(metric_source.UnitTestReport):
         self.__unittests = unittests
         self.__failing_unittests = 5 if unittests else 0
 
-    def unittests(self, *args):
+    def passed_tests(self, *args):
         """ Return the number of unittests. """
-        return self.__unittests
+        return self.__unittests - self.__failing_unittests
 
-    def failing_unittests(self, *args):
+    def failed_tests(self, *args):
         """ Return the number of failing unittests. """
         return self.__failing_unittests
 

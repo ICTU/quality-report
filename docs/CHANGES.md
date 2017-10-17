@@ -1,4 +1,9 @@
-2017-10-16  Release 2.10.0
+2017-10-17  Release 2.10.1
+
+  * Bug fix: SonarTestReport didn't correctly implement the TestReport interface.
+  
+
+2017-10-17  Release 2.10.0
 
   * Introduce new abstract class for unit test reports: metric_source.UnitTestReport. Note that metric_source.Sonar 
     is no longer used as metric source for unit test metrics. You need to add a SonarTestReport as metric source to the 
