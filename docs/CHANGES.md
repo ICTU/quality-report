@@ -1,3 +1,8 @@
+2017-10-19  Release 2.10.3
+
+  * Bug fix: Don't crash when Checkmarx data can't be read.
+  
+  
 2017-10-19  Release 2.10.2
 
   * Add BambooTestReport metric source that can retrieve tests and test failures using the Bamboo API.
