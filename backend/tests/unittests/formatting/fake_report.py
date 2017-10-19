@@ -148,19 +148,7 @@ class Report(object):
                         """ Return the statuses. """
                         return [{'green': 1, 'date': '2012-04-05 16:16:58', 'red': 1}]
 
-                class FakeSonar(object):
-                    """ Fake Sonar for unit testing purposes. """
-                    @staticmethod
-                    def version(*args):
-                        """ Return the version number of the component. """
-                        return '2'
-
-                if metric_source_class == metric_source.History:
-                    return FakeHistory()
-                elif metric_source_class == metric_source.Sonar:
-                    return FakeSonar()
-                else:
-                    return [FakeGit()]
+                return FakeHistory() if metric_source_class == metric_source.History else [FakeGit()]
 
         return FakeProject()
 
