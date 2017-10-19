@@ -1,7 +1,8 @@
 2017-10-19  Release 2.10.4
 
   * Allow for using regular expressions in the Splunk performance report metric source id.
-  
+    See https://github.com/ICTU/quality-report/wiki/Performance-test-metrics-and-metric-sources
+      
 
 2017-10-19  Release 2.10.3
 
