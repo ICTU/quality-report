@@ -136,6 +136,14 @@ class QualityReportTest(unittest.TestCase):
         quality_report.sections()  # Generate the report
         self.assertTrue(quality_report.direct_action_needed())
 
+    def test_sonar_id(self):
+        """ Test that the Sonar id of a product can be retrieved. """
+        sonar = 'Sonar'
+        project = domain.Project('organization', metric_sources={metric_source.Sonar: sonar})
+        product = domain.Product(metric_source_ids={sonar: 'sonar-id'})
+        quality_report = report.QualityReport(project)
+        self.assertEqual(('Sonar', 'sonar-id'), quality_report.sonar_id(product))
+
 
 class QualityReportMetaDataTest(unittest.TestCase):
     """ Unit tests for the meta data methods of the quality report. """

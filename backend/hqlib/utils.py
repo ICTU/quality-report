@@ -106,11 +106,6 @@ def parse_us_date_time(date_time_string: str) -> DateTime:
     return _parse_date_time(_US_DATE_TIME_RE, date_time_string)
 
 
-def parse_uk_date_time_year_last(date_time_string: str) -> DateTime:
-    """ Parse a UK format date/time string of the form 'Mon Aug 24 2015 16:05:55 CEST'. """
-    return _parse_date_time(_UK_DATE_TIME_YEAR_LAST_RE, date_time_string)
-
-
 def parse_iso_date(date_string: str) -> DateTime:
     """ Parse an ISO format date string of the form '2013-11-05'. """
     match = re.search(_ISO_DATE_RE, date_string)
