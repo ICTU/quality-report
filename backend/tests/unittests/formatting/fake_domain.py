@@ -86,13 +86,3 @@ class Metric(object):
     def comment_urls():
         """ Return the urls for the comment. """
         return {}
-
-    @staticmethod
-    def recent_history():
-        """ Return a list of recent values. """
-        return [4, 9, 5]
-
-    @staticmethod
-    def y_axis_range():
-        """ Return the y axis range. """
-        return [0, 10]
