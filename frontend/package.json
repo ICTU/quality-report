@@ -25,16 +25,16 @@
   "dependencies": {
     "bootstrap": "^3.3.6",
     "chart.js": "^2.7.0",
-    "chartjs-plugin-stacked100": "^0.1.2",
+    "chartjs-plugin-stacked100": "^0.3.0",
     "jquery": "^3.2.1",
-    "react": "^15.6.2",
+    "react": "^16.0.0",
     "react-chartjs-2": "^2.6.4",
-    "react-dom": "^15.6.2"
+    "react-dom": "^16.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^7.2.3",
+    "babel-eslint": "^8.0.1",
     "babel-istanbul": "^0.12.2",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-es2015-parameters": "^6.24.1",
@@ -43,18 +43,18 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "codacy-coverage": "^2.0.3",
-    "coveralls": "^2.13.3",
+    "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
     "eslint": "^4.9.0",
     "eslint-plugin-react": "^7.4.0",
     "faucet": "0.0.1",
-    "file-loader": "^0.11.1",
+    "file-loader": "^1.1.5",
     "ignore-styles": "^5.0.1",
     "istanbul": "^0.4.4",
     "mock-browser": "^0.92.14",
-    "react-test-renderer": "^15.6.2",
-    "style-loader": "^0.18.1",
+    "react-test-renderer": "^16.0.0",
+    "style-loader": "^0.19.0",
     "tape": "^4.8.0",
-    "webpack": "^2.6.1"
+    "webpack": "^3.8.1"
   }
 }
