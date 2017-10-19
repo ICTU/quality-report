@@ -23,4 +23,4 @@ class TeamSpirit(domain.MetricSource):
 
     def team_spirit(self, team_id: str) -> str:
         """ Return the team spirit of the team. Team spirit is either :-), :-|, or :-( """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError

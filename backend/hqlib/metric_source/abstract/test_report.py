@@ -58,15 +58,15 @@ class TestReport(domain.MetricSource):
 
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _passed_tests(self, report_url: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _failed_tests(self, report_url: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _skipped_tests(self, report_url: str) -> int:
         """ Return the number of skipped tests as reported by the test report. """
@@ -77,27 +77,27 @@ class UnitTestReport(TestReport):
     """ Metric source for unit test reports. """
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _passed_tests(self, report_url: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _failed_tests(self, report_url: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
 
 class SystemTestReport(TestReport):
     """ Metric source for system test reports. """
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _passed_tests(self, report_url: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _failed_tests(self, report_url: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
