@@ -16,9 +16,11 @@ limitations under the License.
 
 import csv
 import datetime
-import dateutil
 import logging
+import re
 from typing import List, Iterable
+
+import dateutil.parser
 
 from ..abstract import performance_report
 from hqlib.metric_source import url_opener
@@ -37,9 +39,10 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         rows = []
+        product_query_re = re.compile(product)
         for url in self.urls(product):
             for row in self.__rows(url):
-                if len(row) > self.PASS_FAIL_COLUMN and row[self.PRODUCT_COLUMN] == product:
+                if len(row) > self.PASS_FAIL_COLUMN and product_query_re.match(row[self.PRODUCT_COLUMN]):
                     rows.append(row)
         return rows
 

@@ -1,3 +1,8 @@
+2017-10-19  Release 2.10.4
+
+  * Allow for using regular expressions in the Splunk performance report metric source id.
+  
+
 2017-10-19  Release 2.10.3
 
   * Bug fix: Don't crash when Checkmarx data can't be read.
