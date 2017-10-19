@@ -19,17 +19,6 @@ limitations under the License.
 import datetime
 
 
-class Product(object):  # pylint: disable=too-few-public-methods
-    """ Fake the product domain class. """
-    def __init__(self, dependencies=False):
-        self.__dependencies = dependencies
-
-    @staticmethod
-    def metric_source_id(*args):  # pylint: disable=unused-argument
-        """ Return the Sonar id of the product. """
-        return 'Product'
-
-
 class Metric(object):
     """ Fake a metric class. """
     url_label_text = 'label'

@@ -17,7 +17,8 @@ limitations under the License.
 import unittest
 
 from hqlib.formatting import Formatter
-from . import fake_domain, fake_report
+from hqlib.domain import Product
+from . import fake_report
 
 
 class FormatterUnderTest(Formatter):
@@ -41,7 +42,7 @@ class BaseFormatterTest(unittest.TestCase):
 
     def test_process(self):
         """ Test that the report is processed. """
-        report = fake_report.Report([fake_domain.Product()])
+        report = fake_report.Report([Product()])
         self.assertEqual('<prefix><metric><metric>', self.__formatter.process(report))
 
     def test_postfix(self):

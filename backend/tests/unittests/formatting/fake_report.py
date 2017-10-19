@@ -26,7 +26,7 @@ from . import fake_domain
 class Section(object):
     """ Fake a report section. """
     def __init__(self, product=None):
-        self.__product = product or fake_domain.Product()
+        self.__product = product or domain.Product()
 
     @staticmethod
     def title():
