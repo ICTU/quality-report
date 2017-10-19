@@ -43,6 +43,7 @@ from .performance_report.spirit_splunk_csv import SpiritSplunkCSVPerformanceLoad
 from .sonar import Sonar
 from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki
+from .test_report.bamboo_test_report import BambooTestReport
 from .test_report.jenkins_test_report import JenkinsTestReport
 from .test_report.junit_test_report import JunitTestReport
 from .test_report.testng_test_report import TestNGTestReport

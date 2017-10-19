@@ -1,3 +1,9 @@
+2017-10-19  Release 2.10.2
+
+  * Add BambooTestReport metric source that can retrieve tests and test failures using the Bamboo API.
+    See https://github.com/ICTU/quality-report/wiki/Bamboo-test-report.
+  
+
 2017-10-17  Release 2.10.1
 
   * Bug fix: SonarTestReport didn't correctly implement the TestReport interface.
