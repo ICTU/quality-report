@@ -281,7 +281,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
-        if LooseVersion(self.version_number()) >= LooseVersion('6.4'):
+        sonar_version = self.version_number()
+        if sonar_version and LooseVersion(sonar_version) >= LooseVersion('6.4'):
             # Use the components API, it should contain the analysis date both for projects and components
             url = self.__components_show_api_url.format(component=products[0])
             try:

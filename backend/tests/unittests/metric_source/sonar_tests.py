@@ -362,6 +362,11 @@ class SonarTest(SonarTestCase):
         """ Test that the analysis date and time is correct. """
         self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
 
+    def test_analysis_datetime_without_version(self):
+        """ Test that the analysis date and time is correct even if Sonar has no version number. """
+        self._sonar.sonar_version = None
+        self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
+
     def test_analysis_datetime_without_analyses(self):
         """ Test that the analysis date and time is the minimum date and time if Sonar has no analyses. """
         self.assertEqual(datetime.datetime.min, self._sonar.datetime('empty'))
