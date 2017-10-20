@@ -16,12 +16,17 @@ limitations under the License.
 
 import datetime
 import unittest
+import urllib.error
 
 from hqlib.metric_source import Sonar
 
 
 class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     """ Override the url open method to be able to return test data. """
+
+    sonar_version = '5.6'
+
+    api_components_show_json = '{"component": {"analysisDate": "2017-04-07T16:27:27+0000"}}'
 
     project_json = """[{"k": "product"}]"""
 
@@ -235,8 +240,12 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 
     def url_read(self, url):
         """ Return the static contents. """
+        if 'raise' in url:
+            raise urllib.error.HTTPError(None, None, None, None, None)
         if 'server/version' in url:
-            return '1.2.3'
+            return self.sonar_version
+        if 'api/components/show' in url:
+            return self.api_components_show_json
         if 'analyses' in url:
             if 'empty' in url:
                 return '{"analyses": []}'
@@ -357,6 +366,22 @@ class SonarTest(SonarTestCase):
         """ Test that the analysis date and time is the minimum date and time if Sonar has no analyses. """
         self.assertEqual(datetime.datetime.min, self._sonar.datetime('empty'))
 
+    def test_analysis_datetime_6_4(self):
+        """ Test the analysis date and time using SonarQube >= 6.4. """
+        self._sonar.sonar_version = '6.4'
+        self.assertEqual(datetime.datetime(2017, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
+
+    def test_analysis_datetime_6_4_url_exception(self):
+        """ Test the analysis date and time using SonarQube >= 6.4. """
+        self._sonar.sonar_version = '6.4'
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime('raise'))
+
+    def test_analysis_datetime_6_4_missing_data(self):
+        """ Test the analysis date and time using SonarQube >= 6.4. """
+        self._sonar.sonar_version = '6.4'
+        self._sonar.api_components_show_json = '{}'
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
+
 
 class SonarCoverage(SonarTestCase):
     """ Unit tests for unit test, integration test, and coverage metrics. """
@@ -457,7 +482,7 @@ class SonarVersionsTest(SonarTestCase):
 
     def test_version_number(self):
         """ Test that the version number is correct. """
-        self.assertEqual('1.2.3', self._sonar.version_number())
+        self.assertEqual('5.6', self._sonar.version_number())
 
     def test_plugin_version(self):
         """ Test that the plugins can be retrieved. """

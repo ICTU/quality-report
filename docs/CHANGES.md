@@ -1,3 +1,11 @@
+2017-10-20  Release 2.10.5
+
+  * Bug fix: The SonarQube API for retrieving the date and time of the last analysis only works for projects, not for 
+    components. As of SonarQube 6.4, the components API returns the date and time of the last analysis date for both
+    projects and components. So, HQ now uses the components API for retrieving the date and time of the last analysis 
+    if SonarQube is version 6.4 or newer.
+    
+
 2017-10-19  Release 2.10.4
 
   * Allow for using regular expressions in the Splunk performance report metric source id.

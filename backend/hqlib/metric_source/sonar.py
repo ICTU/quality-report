@@ -19,6 +19,7 @@ import datetime
 import functools
 import logging
 from typing import List, Dict, Optional, Union
+from distutils.version import LooseVersion
 
 from . import url_opener
 from .. import utils, domain
@@ -36,6 +37,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
+        self.__components_show_api_url = sonar_url + 'api/components/show?component={component}'
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
         self.__projects_api_url = sonar_url + 'api/projects/index?subprojects=true'
         self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
@@ -279,6 +281,22 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
+        if LooseVersion(self.version_number()) >= LooseVersion('6.4'):
+            # Use the components API, it should contain the analysis date both for projects and components
+            url = self.__components_show_api_url.format(component=products[0])
+            try:
+                json = self.__get_json(url)
+                try:
+                    datetime_string = json['component']['analysisDate']
+                    datetime_string = datetime_string.split('+')[0]  # Ignore timezone
+                    return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
+                except (TypeError, KeyError, IndexError) as reason:
+                    logging.error("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
+                                  products[0], json, url, reason)
+            except self.url_open_exceptions:
+                pass
+            return datetime.datetime.min
+        # Use analyses API:
         url = self.__analyses_api_url.format(project=products[0])
         try:
             json = self.__get_json(url)['analyses']
