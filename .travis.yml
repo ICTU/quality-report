@@ -27,7 +27,7 @@ script:
 - cd ../backend
 - coverage run --branch tests/run_unittests.py
 - coverage xml
-- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+- ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
