@@ -10,7 +10,6 @@ before_install:
 install:
 - pip install -r backend/requirements.txt
 - pip install nose
-- pip install codeclimate-test-reporter
 - pip install codacy-coverage
 - pip install coveralls
 - pip install codecov
