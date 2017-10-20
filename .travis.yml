@@ -14,6 +14,10 @@ install:
 - pip install codacy-coverage
 - pip install coveralls
 - pip install codecov
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- ./cc-test-reporter before-build
 script:
 - cd frontend
 - npm install
@@ -24,13 +28,7 @@ script:
 - cd ../backend
 - coverage run --branch tests/run_unittests.py
 - coverage xml
-# Code climate is compatible with Coverage.py versions >=4.0,<4.4.
-# Your Coverage.py report version is 4.4.1.
-# Consider locking your version of Coverage.py to >4,0,<4.4 until the
-# following Coverage.py issue is addressed:
-# https://bitbucket.org/ned/coveragepy/issues/578/incomplete-file-path-in-xml-report
-#- CODECLIMATE_REPO_TOKEN=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
-#  codeclimate-test-reporter --file build/.coverage
+- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
@@ -59,8 +57,7 @@ after_deploy:
 addons:
   sonarcloud:
     organization: ictu
-  code_climate:
-    repo_token: 58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
 env:
   global:
+  - CC_TEST_REPORTER_ID=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
   - secure: mOpbXELefnD2snAx7ie+wQwcF52/ee1n1ILeqjnSunDGHCZzitpYwVR1+hhqXyK0bNy+HdALCXf2rlqzJUvOsQmAYefj19w4K5SzejVd27MVeJ15EFX9NAruRo0Z3qg1jr5s0argFra5JrdXbfGGLWqY7Ejj5ZzG40VlRjKMx88=
