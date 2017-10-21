@@ -121,11 +121,11 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __age_of_build(self, job: Job, url: str) -> TimeDelta:
         """ Return the age of the last completed or stable build of the job. """
-        build_time = self.job_datetime(job, url)
+        build_time = self._job_datetime(job, url)
         return datetime.timedelta.max if build_time == datetime.datetime.min else \
             datetime.datetime.utcnow() - build_time
 
-    def job_datetime(self, job: Job, url: str) -> DateTime:
+    def _job_datetime(self, job: Job, url: str) -> DateTime:
         """ Return the datetime of the last completed or stable build of the job. """
         builds_url = url.format(job=job['name']) + self.api_postfix
         try:

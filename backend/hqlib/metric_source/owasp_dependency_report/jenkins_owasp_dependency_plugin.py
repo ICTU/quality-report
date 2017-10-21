@@ -63,7 +63,7 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
     def _report_datetime(self, job_name: str) -> DateTime:
         """ Return the date and time of one report. """
         job_name = self.resolve_job_name(job_name)
-        return self.job_datetime(dict(name=job_name), self._last_stable_build_url)
+        return self._job_datetime(dict(name=job_name), self._last_stable_build_url)
 
     @functools.lru_cache(maxsize=1024)
     def _get_soup(self, url: str):
