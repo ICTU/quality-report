@@ -21,6 +21,7 @@ import logging
 import re
 import urllib.parse
 from typing import Dict, IO, List, Optional
+
 import bs4
 
 from . import url_opener
@@ -29,6 +30,7 @@ from hqlib.typing import DateTime, TimeDelta
 
 Job = Dict[str, str]
 Jobs = List[Job]
+
 
 class Jenkins(domain.MetricSource, url_opener.UrlOpener):
     """ Class representing the Jenkins instance. """
@@ -111,21 +113,6 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         """ Return all Jenkins jobs that match our job regular expression. """
         all_jobs = self._api(self._jobs_api_url)['jobs']
         return [job for job in all_jobs if self.__job_re.match(job['name'])]
-
-    def unstable_arts_url(self, projects, days: int) -> Dict[str, str]:
-        """ Return the urls for the ARTs that have been unstable for the specified number of days. """
-        projects_re = re.compile(projects)
-        all_jobs = self._api(self._jobs_api_url)['jobs']
-        arts = [job for job in all_jobs if projects_re.match(job['name'])]
-        max_age = datetime.timedelta(days=days)
-        unstable = dict()
-        for art in arts:
-            age = self.__age_of_last_stable_build(art)
-            if age > max_age:
-                days_str = '?' if age == datetime.timedelta.max else str(age.days)
-                art_description = art['name'] + ' ({days} dagen)'.format(days=days_str)
-                unstable[art_description] = self.__job_url.format(job=art['name'])
-        return unstable
 
     def __age_of_last_completed_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last completed build of the job. """
