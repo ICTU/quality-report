@@ -22,8 +22,6 @@ import re
 import urllib.parse
 from typing import Dict, IO, List, Optional
 
-import bs4
-
 from . import url_opener
 from .. import domain
 from hqlib.typing import DateTime, TimeDelta
@@ -46,7 +44,6 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
         self._last_stable_build_url = self.__job_url + 'lastStableBuild/'
-        self.__job_api_url = self.__job_url + self.api_postfix
         self._jobs_api_url = url + self.jobs_api_postfix
         self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
 
@@ -165,11 +162,6 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Couldn't open %s: %s", url, reason)
             raise
-
-    @functools.lru_cache(maxsize=1024)
-    def _get_soup(self, url: str):
-        """ Get a beautiful soup of the HTML at the url. """
-        return bs4.BeautifulSoup(self.url_open(url), "lxml")
 
     def resolve_job_name(self, job_name: str) -> str:
         """ If the job name is a regular expression, resolve it to a concrete job name.

@@ -14,9 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import functools
 import logging
 import re
 from typing import List
+
+import bs4
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
@@ -37,7 +40,6 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
 
     def _nr_warnings(self, job_name: str, priority: str) -> int:
         """ Return the number of vulnerable files of the specified type in the job. """
-        debug_logging = False
         job_name = self.resolve_job_name(job_name)
         url = self.__report_html_file_list.format(job=job_name)
         try:
@@ -50,9 +52,8 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         relevant_severities = soup.find_all(attrs={"tooltip": regex})
         vulnerable_files = [tag.parent.parent.find('a').text for tag in relevant_severities]
         vulnerable_file_count = len(vulnerable_files)
-        if debug_logging:
-            log_message = "Number of vulnerable files: %s \nList of filenames: %s"
-            logging.info(log_message, str(vulnerable_file_count), str(vulnerable_files))
+        logging.debug("Number of vulnerable files: %s \nList of filenames: %s", str(vulnerable_file_count),
+                      str(vulnerable_files))
         return vulnerable_file_count
 
     def metric_source_urls(self, *job_names: str) -> List[str]:
@@ -63,3 +64,8 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         """ Return the date and time of one report. """
         job_name = self.resolve_job_name(job_name)
         return self.job_datetime(dict(name=job_name), self._last_stable_build_url)
+
+    @functools.lru_cache(maxsize=1024)
+    def _get_soup(self, url: str):
+        """ Get a beautiful soup of the HTML at the url. """
+        return bs4.BeautifulSoup(self.url_open(url), "lxml")
