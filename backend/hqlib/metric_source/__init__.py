@@ -16,6 +16,7 @@ limitations under the License.
 
 
 from .abstract.archive_system import ArchiveSystem
+from .abstract.ci_server import CIServer
 from .abstract.coverage_report import CoverageReport
 from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
@@ -29,7 +30,7 @@ from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
 from .history import History, CompactHistory
 from .holiday_planner import HolidayPlanner
-from .jenkins import Jenkins
+from .ci_server.jenkins import Jenkins
 from .jira import Jira
 from .open_vas_scan_report import OpenVASScanReport
 from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport

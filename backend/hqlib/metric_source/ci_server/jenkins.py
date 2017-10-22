@@ -22,15 +22,15 @@ import re
 import urllib.parse
 from typing import Dict, IO, List, Optional
 
-from . import url_opener
-from .. import domain
 from hqlib.typing import DateTime, TimeDelta
+from .. import url_opener
+from ..abstract import ci_server
 
 Job = Dict[str, str]
 Jobs = List[Job]
 
 
-class Jenkins(domain.MetricSource, url_opener.UrlOpener):
+class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
     """ Class representing the Jenkins instance. """
 
     metric_source_name = 'Jenkins build server'
@@ -162,15 +162,3 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Couldn't open %s: %s", url, reason)
             raise
-
-    def resolve_job_name(self, job_name: str) -> str:
-        """ If the job name is a regular expression, resolve it to a concrete job name.
-            Assumes there is exactly one result. """
-        if job_name and ('\\' in job_name or '.*' in job_name or '[' in job_name):
-            if not job_name.endswith('$'):
-                job_name += '$'
-            jobs_re = re.compile(job_name)
-            all_jobs = self._api(self._jobs_api_url)['jobs']
-            jobs = [job for job in all_jobs if jobs_re.match(job['name'])]
-            job_name = jobs[0]['name']
-        return job_name

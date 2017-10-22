@@ -137,25 +137,3 @@ class JenkinsTest(unittest.TestCase):
     def test_nr_of_active_jobs_on_error(self):
         """ Test that the number of active jobs is -1 when an URL error is thrown. """
         self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())
-
-
-class JenkinsResolveJobNameTest(unittest.TestCase):
-    """ Test that the Jenkins class correctly resolved job name regular expressions. """
-
-    def setUp(self):
-        self.__jenkins = JenkinsUnderTest('http://jenkins/')
-
-    def test_resolve_job_name(self):
-        """ Test that a job name that is a regular expression is resolved. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job5"}]}'
-        self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]$'))
-
-    def test_resolve_job_name_with_partial_match(self):
-        """ Test that a job name that is a regular expression is resolved,
-            even when it partially matches another job. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job50"}, {"name": "job5"}]}'
-        self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
-
-    def test_resolve_job_name_without_re(self):
-        """ Test that the job name is returned if it is not a regular expression. """
-        self.assertEqual('job', self.__jenkins.resolve_job_name('job'))

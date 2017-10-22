@@ -23,7 +23,7 @@ import bs4
 
 from .. import url_opener
 from ..abstract import owasp_dependency_report
-from ..jenkins import Jenkins
+from ..ci_server.jenkins import Jenkins
 from hqlib.typing import DateTime
 
 
@@ -40,7 +40,6 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
 
     def _nr_warnings(self, job_name: str, priority: str) -> int:
         """ Return the number of vulnerable files of the specified type in the job. """
-        job_name = self.resolve_job_name(job_name)
         url = self.__report_html_file_list.format(job=job_name)
         try:
             soup = self._get_soup(url)
@@ -58,11 +57,10 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
 
     def metric_source_urls(self, *job_names: str) -> List[str]:
         """ Return the url of the job. """
-        return [self.__report_url.format(job=self.resolve_job_name(job_name)) for job_name in job_names]
+        return [self.__report_url.format(job=job_name) for job_name in job_names]
 
     def _report_datetime(self, job_name: str) -> DateTime:
         """ Return the date and time of one report. """
-        job_name = self.resolve_job_name(job_name)
         return self._job_datetime(dict(name=job_name), self._last_stable_build_url)
 
     @functools.lru_cache(maxsize=1024)

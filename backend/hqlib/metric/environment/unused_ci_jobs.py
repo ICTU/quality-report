@@ -33,7 +33,7 @@ class UnusedCIJobs(LowerIsBetterMetric):
     url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2
-    metric_source_class = metric_source.Jenkins
+    metric_source_class = metric_source.CIServer
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access

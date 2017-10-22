@@ -42,7 +42,7 @@ class UnusedCIJobsTests(unittest.TestCase):
 
     def setUp(self):
         """ Create the text fixture. """
-        self._project = domain.Project(metric_sources={metric_source.Jenkins: FakeJenkins()})
+        self._project = domain.Project(metric_sources={metric_source.CIServer: FakeJenkins()})
         self._metric = metric.UnusedCIJobs(subject=self._project, project=self._project)
 
     def test_norm_template_default_values(self):
