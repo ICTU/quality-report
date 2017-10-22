@@ -1,3 +1,8 @@
+2017-10-22  Release 2.11.1
+
+  * Bug fix: Don't crash when the OpenVAS report date and time can't be parsed.
+  
+  
 2017-10-22  Release 2.11.0
 
   * Introduce an abstract CIServer metric source. The only concrete implementation is Jenkins. Note that Jenkins need

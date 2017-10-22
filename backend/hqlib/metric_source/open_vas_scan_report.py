@@ -63,7 +63,7 @@ class OpenVASScanReport(domain.MetricSource):
         try:
             return min([self.__report_datetime(report_url) for report_url in report_urls],
                        default=datetime.datetime.min)
-        except IndexError as reason:
+        except (TypeError, ValueError, IndexError) as reason:
             logging.error("Error parsing date from report urls at %s: %s", report_urls, reason)
             return datetime.datetime.min
 
