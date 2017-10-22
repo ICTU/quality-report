@@ -1,3 +1,11 @@
+2017-10-22  Release 2.11.0
+
+  * Introduce an abstract CIServer metric source. The only concrete implementation is Jenkins. Note that Jenkins need
+    to be added to the project using the CIServer key. See 
+    https://github.com/ICTU/quality-report/wiki/CI-server-metrics-and-metric-sources and
+    https://github.com/ICTU/quality-report/wiki/Jenkins.
+  
+  
 2017-10-20  Release 2.10.5
 
   * Bug fix: The SonarQube API for retrieving the date and time of the last analysis only works for projects, not for 
