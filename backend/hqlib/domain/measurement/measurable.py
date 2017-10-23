@@ -18,6 +18,7 @@ limitations under the License.
 from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING, Union
 
 from ..base import DomainObject
+from .metric_source import MissingMetricSource
 from hqlib.typing import MetricValue
 if TYPE_CHECKING:  # pylint: disable=unused-import
     from .metric import Metric
@@ -27,6 +28,7 @@ if TYPE_CHECKING:  # pylint: disable=unused-import
 class MeasurableObject(DomainObject):
     """ An object that has measurable characteristics. Base class for products, teams, etc. """
     def __init__(self, *args, **kwargs) -> None:
+        self.__metric_sources: Dict = kwargs.pop('metric_sources', dict())
         self.__metric_source_ids: Dict['MetricSource', str] = kwargs.pop('metric_source_ids', dict())
         self.__metric_options: Dict[Type['Metric'], Dict[str, Any]] = kwargs.pop('metric_options', dict())
         super().__init__(*args, **kwargs)
@@ -42,6 +44,14 @@ class MeasurableObject(DomainObject):
     def technical_debt_target(self, metric_class: Type['Metric']):
         """ Return whether a score below target is considered to be accepted technical debt. """
         return self.__metric_options.get(metric_class, dict()).get('debt_target')
+
+    def metric_source(self, metric_source_class: Type['MetricSource']):
+        """ Return the metric source instance for the metric source class. """
+        return self.__metric_sources.get(metric_source_class, MissingMetricSource())
+
+    def metric_source_classes(self) -> List[Type['MetricSource']]:
+        """ Return a set of all metric source classes. """
+        return list(self.__metric_sources.keys())
 
     def metric_source_id(self, metric_source: Union[List['MetricSource'], 'MetricSource']) -> Optional[str]:
         """ Return the id of this object in the metric source. """

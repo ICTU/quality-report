@@ -23,8 +23,7 @@ from .environment import Environment
 from .product import Product
 from .requirement import RequirementSubject, Requirement
 from .team import Team
-from ..measurement import metric_source, measurable
-from ..measurement.metric_source import MetricSource
+from ..measurement import measurable
 from ..base import DomainObject
 from ...typing import Dashboard, DashboardColumns, DashboardRows
 
@@ -32,10 +31,9 @@ from ...typing import Dashboard, DashboardColumns, DashboardRows
 class Project(RequirementSubject, measurable.MeasurableObject):
     """ Class representing a software development/maintenance project. """
 
-    def __init__(self, organization: str='Unnamed organization', metric_sources=None, *args, **kwargs) -> None:
+    def __init__(self, organization: str='Unnamed organization',*args, **kwargs) -> None:
         self.__short_section_names = {'MM', 'PC', 'PD'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
-        self.__metric_sources = metric_sources or dict()
         self.__products: List[Product] = []
         self.__teams: List[Team] = []
         self.__documents: List[Document] = []
@@ -54,14 +52,6 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def organization(self) -> str:
         """ Return the name of the organization. """
         return self.__organization
-
-    def metric_source(self, metric_source_class):
-        """ Return the metric source instance for the metric source class. """
-        return self.__metric_sources.get(metric_source_class, metric_source.MissingMetricSource())
-
-    def metric_source_classes(self) -> List[Type[MetricSource]]:
-        """ Return a set of all metric source classes. """
-        return list(self.__metric_sources.keys())
 
     def domain_object_classes(self) -> Set[Type[DomainObject]]:
         """ Return a set of all the domain object classes used. """

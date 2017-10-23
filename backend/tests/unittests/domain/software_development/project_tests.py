@@ -99,24 +99,6 @@ class ProjectTest(unittest.TestCase):
         self.__project.add_document(document)
         self.assertTrue(document in self.__project.documents())
 
-    def test_unknown_metric_source(self):
-        """ Test that the project returns None for an unknown metric source class. """
-        self.assertFalse(self.__project.metric_source(self.__class__))
-
-    def test_known_metric_source(self):
-        """ Test that the project returns the instance of a known metric source class. """
-        project = domain.Project(metric_sources={''.__class__: 'metric_source'})
-        self.assertEqual('metric_source', project.metric_source(''.__class__))
-
-    def test_metric_source_classes(self):
-        """ Test that the project returns a list of all metric source classes. """
-        project = domain.Project(metric_sources={''.__class__: 'metric_source'})
-        self.assertEqual([''.__class__], project.metric_source_classes())
-
-    def test_default_metric_source_classes(self):
-        """ Test that the project returns a list of all metric source classes. """
-        self.assertEqual([], domain.Project().metric_source_classes())
-
     def test_default_domain_object_classes(self):
         """ Test that the project has no domain object classes by default. """
         self.assertEqual(set(), domain.Project().domain_object_classes())

@@ -26,6 +26,7 @@ class MeasurableObjectTests(unittest.TestCase):
         self.__metric_options = dict(comment='metric options', target=100, low_target=50,
                                      debt_target=TechnicalDebtTarget(100, 'explanation'))
         self.__measurable = MeasurableObject(
+            metric_sources={''.__class__: 'metric_source'},
             metric_source_ids={self.__class__: 'id'},
             metric_options={self.__class__: self.__metric_options})
 
@@ -81,3 +82,19 @@ class MeasurableObjectTests(unittest.TestCase):
     def test_metrics_with_options(self):
         """ Test that the metrics with options can be retrieved. """
         self.assertEqual({self.__class__}, self.__measurable.metrics_with_options())
+
+    def test_unknown_metric_source(self):
+        """ Test that the measurable returns None for an unknown metric source class. """
+        self.assertFalse(self.__measurable.metric_source(self.__class__))
+
+    def test_known_metric_source(self):
+        """ Test that the measurable returns the instance of a known metric source class. """
+        self.assertEqual('metric_source', self.__measurable.metric_source(''.__class__))
+
+    def test_metric_source_classes(self):
+        """ Test that the measurable returns a list of all metric source classes. """
+        self.assertEqual([''.__class__], self.__measurable.metric_source_classes())
+
+    def test_default_metric_source_classes(self):
+        """ Test that the project returns a list of all metric source classes. """
+        self.assertEqual([], MeasurableObject().metric_source_classes())
