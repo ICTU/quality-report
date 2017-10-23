@@ -22,12 +22,12 @@ import urllib.request
 
 from typing import Dict, Any, Optional, Callable, List
 
-from .. import utils, domain
-from ..metric_source import url_opener
-from ..typing import DateTime, TimeDelta
+from ... import utils, metric_source
+from ...metric_source import url_opener
+from ...typing import DateTime, TimeDelta
 
 
-class TrelloObject(domain.MetricSource):
+class TrelloObject(object):
     """ Base class for Trello objects. """
 
     url_template = 'https://api.trello.com/1/{object_type}/{object_id}{argument}?key={appkey}&token={token}{parameters}'
@@ -136,6 +136,7 @@ class TrelloCard(TrelloObject):
 class TrelloBoard(TrelloObject):
     """ Class representing a Trello board. """
     metric_source_name = 'Trello'
+    needs_metric_source_id = False
 
     def __init__(self, *args, **kwargs) -> None:
         self.__card_class = kwargs.pop('card_class', TrelloCard)
@@ -144,7 +145,7 @@ class TrelloBoard(TrelloObject):
     def nr_of_over_due_cards(self) -> int:
         """ Return the number of (non-archived) cards on this Trello board that are over due. """
         try:
-            return len(self.over_due_cards())
+            return len(self.__over_due_cards())
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
@@ -152,15 +153,15 @@ class TrelloBoard(TrelloObject):
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
             specified number of days. """
         try:
-            return len(self.inactive_cards(days))
+            return len(self.__inactive_cards(days))
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def over_due_cards(self) -> List[TrelloCard]:
+    def __over_due_cards(self) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board that are over due. """
         return [card for card in self.__cards() if card.is_over_due()]
 
-    def inactive_cards(self, days: int=14) -> List[TrelloCard]:
+    def __inactive_cards(self, days: int=14) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board that are inactive. """
         return [card for card in self.__cards() if card.is_inactive(days)]
 
@@ -168,7 +169,7 @@ class TrelloBoard(TrelloObject):
         """ Return the urls for the (non-archived) cards on this Trello board that are over due. """
         urls = dict()
         try:
-            for card in self.over_due_cards():
+            for card in self.__over_due_cards():
                 time_delta = utils.format_timedelta(card.over_due_time_delta())
                 remark = '{time_delta} te laat'.format(time_delta=time_delta)
                 label = '{card} ({remark})'.format(card=card.id(), remark=remark)
@@ -181,7 +182,7 @@ class TrelloBoard(TrelloObject):
         """ Return the urls for the (non-archived) cards on this Trello board that are inactive. """
         urls = dict()
         try:
-            for card in self.inactive_cards(days):
+            for card in self.__inactive_cards(days):
                 time_delta = utils.format_timedelta(card.last_update_time_delta())
                 remark = '{time_delta} niet bijgewerkt'.format(time_delta=time_delta)
                 label = '{card} ({remark})'.format(card=card.id(), remark=remark)
@@ -203,12 +204,20 @@ class TrelloBoard(TrelloObject):
         """ Create a Trello card with the specified id. """
         return self.__card_class(card_id, self._appkey, self._token)
 
+    # metric_source.ActionLog interface:
 
-class TrelloActionsBoard(TrelloBoard):
-    """ Actions board in Trello. """
-    metric_source_name = 'Trello acties'
+    def nr_of_over_due_actions(self):
+        """ Return the number of over due cards. """
+        return self.nr_of_over_due_cards()
 
+    def over_due_actions_url(self):
+        """ Return the urls to the over due cards. """
+        return self.over_due_cards_url()
 
-class TrelloRiskBoard(TrelloBoard):
-    """ Risk log in Trello. """
-    metric_source_name = 'Trello risicolog'
+    def nr_of_inactive_actions(self):
+        """ Return the number of inactive cards. """
+        return self.nr_of_inactive_cards()
+
+    def inactive_actions_url(self):
+        """ Return the urls for the inactive cards. """
+        return self.inactive_cards_url()

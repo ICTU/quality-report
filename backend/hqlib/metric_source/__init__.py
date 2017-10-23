@@ -21,6 +21,7 @@ from .abstract.coverage_report import CoverageReport
 from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
+from .abstract.issue_log import ActionLog, IssueLog, RiskLog
 from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
 from .abstract.version_control_system import VersionControlSystem
@@ -50,7 +51,7 @@ from .test_report.junit_test_report import JunitTestReport
 from .test_report.testng_test_report import TestNGTestReport
 from .test_report.uft_test_report import UFTTestReport
 from .test_report.sonar_test_report import SonarTestReport
-from .trello import TrelloBoard, TrelloActionsBoard, TrelloRiskBoard
+from .issue_log.trello import TrelloBoard
 from .url_opener import UrlOpener
 from .version_control_system.git import Git
 from .version_control_system.subversion import Subversion

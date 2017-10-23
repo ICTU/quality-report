@@ -20,10 +20,10 @@ import unittest
 from hqlib import metric, domain, metric_source, requirement
 
 
-class FakeBoard(object):
+class FakeBoard(metric_source.TrelloBoard):
     """ Fake a Trello board. """
-    metric_source_name = metric_source.TrelloActionsBoard.metric_source_name
-    needs_metric_source_id = metric_source.TrelloActionsBoard.needs_metric_source_id
+    def __init__(self):
+        super().__init__('object_id', 'appkey', 'token')
 
     @staticmethod
     def url():
@@ -95,7 +95,7 @@ class RiskLogTest(unittest.TestCase):
 
     def setUp(self):
         self.__project = domain.Project(
-            metric_sources={metric_source.TrelloRiskBoard: FakeBoard()},
+            metric_sources={metric_source.RiskLog: FakeBoard()},
             requirements=[requirement.TrackRisks])
         self.__metric = metric.RiskLog(project=self.__project)
 
@@ -116,12 +116,12 @@ class UnreachableRiskLogTest(unittest.TestCase):
     """ Unit tests for the risk log metric when Trello is unreachable. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.TrelloRiskBoard: UnreachableBoard()})
+        project = domain.Project(metric_sources={metric_source.RiskLog: UnreachableBoard()})
         self.__metric = metric.RiskLog(project=project)
 
     def test_url(self):
         """ Test that the url of the metric uses the url of the risk log board. """
-        self.assertEqual({'Trello acties': 'http://trello.com'}, self.__metric.url())
+        self.assertEqual({'Trello': 'http://trello.com'}, self.__metric.url())
 
     def test_value(self):
         """ Test that the value is -1. """
@@ -132,7 +132,7 @@ class ActionActivityTest(unittest.TestCase):
     """ Unit tests for the action activity metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
+        self.__project = domain.Project(metric_sources={metric_source.ActionLog: FakeBoard()},
                                         requirements=[requirement.TrackActions])
         self.__metric = metric.ActionActivity(project=self.__project)
 
@@ -149,7 +149,7 @@ class UnreachableActionActivityTest(unittest.TestCase):
     """ Unit tests for the action activity metric when Trello is unreachable. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
+        project = domain.Project(metric_sources={metric_source.ActionLog: UnreachableBoard()},
                                  requirements=[requirement.TrackActions])
         self.__metric = metric.ActionActivity(project=project)
 
@@ -166,7 +166,7 @@ class OldActionsTest(unittest.TestCase):
     """ Unit tests for the old actions metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
+        self.__project = domain.Project(metric_sources={metric_source.ActionLog: FakeBoard()},
                                         requirements=[requirement.TrackActions])
         self.__metric = metric.StaleActions(project=self.__project)
 
@@ -187,7 +187,7 @@ class UnreachableOldActionsTest(unittest.TestCase):
     """ Unit tests for the old actions metric when Trello is unreachable. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
+        project = domain.Project(metric_sources={metric_source.ActionLog: UnreachableBoard()},
                                  requirements=[requirement.TrackActions])
         self.__metric = metric.StaleActions(project=project)
 
@@ -204,7 +204,7 @@ class OverDueActionsTest(unittest.TestCase):
     """ Unit tests for the over due actions metric. """
 
     def setUp(self):
-        self.__project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: FakeBoard()},
+        self.__project = domain.Project(metric_sources={metric_source.ActionLog: FakeBoard()},
                                         requirements=[requirement.TrackActions])
         self.__metric = metric.OverDueActions(project=self.__project)
 
@@ -225,7 +225,7 @@ class UnreachableOverDueActionsTest(unittest.TestCase):
     """ Unit tests for the over due actions metric when Trello is unreachable. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.TrelloActionsBoard: UnreachableBoard()},
+        project = domain.Project(metric_sources={metric_source.ActionLog: UnreachableBoard()},
                                  requirements=[requirement.TrackActions])
         self.__metric = metric.OverDueActions(project=project)
 
