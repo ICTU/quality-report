@@ -73,7 +73,7 @@ class OpenVASScanReport(domain.MetricSource):
             soup = self.__get_soup(report_url)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
-        summary_table = soup('table')[1]  # The whole report is one big table with nested tables.
+        summary_table = soup('table')[0]
         date_string = summary_table('tr')[1]('td')[1].string
         return dateutil.parser.parse(date_string, ignoretz=True)
 

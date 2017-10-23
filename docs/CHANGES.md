@@ -1,3 +1,8 @@
+2017-10-23  Release 2.11.2
+
+  * Bug fix: Get OpenVAS report date from first table.
+
+
 2017-10-22  Release 2.11.1
 
   * Bug fix: Don't crash when the OpenVAS report date and time can't be parsed.
