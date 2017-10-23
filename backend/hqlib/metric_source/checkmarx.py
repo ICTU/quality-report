@@ -16,11 +16,12 @@ limitations under the License.
 
 
 import datetime
-import dateutil
 import functools
 import logging
 import urllib.parse
 from typing import Dict, List, Iterable
+
+import dateutil.parser
 
 from . import url_opener
 from .. import utils, domain
@@ -60,23 +61,29 @@ class Checkmarx(domain.MetricSource):
         for project_name in metric_source_ids:
             try:
                 json = self.__fetch_report(project_name)
+            except url_opener.UrlOpener.url_open_exceptions:
+                return -1
+            try:
                 nr_alerts += self.__parse_alerts(json, priority)
             except Exception as reason:
-                logging.warning("Couldn't parse alerts for project %s with %s risk level from %s: %s",
-                                project_name, priority, self.url(), reason)
+                logging.error("Couldn't parse alerts for project %s with %s risk level from %s: %s",
+                              project_name, priority, self.url(), reason)
                 return -1
         return nr_alerts
 
-    def datetime(self, *metric_source_ids: Iterable[str]) -> DateTime:
+    def datetime(self, *metric_source_ids: str) -> DateTime:
         """ Return the last date and time the projects were scanned. """
         dates = []
         for project_name in metric_source_ids:
             try:
                 json = self.__fetch_report(project_name)
+            except url_opener.UrlOpener.url_open_exceptions:
+                return datetime.datetime.min
+            try:
                 dates.append(self.__parse_datetime(json))
             except Exception as reason:
                 logging.error("Couldn't parse date and time for project %s from %s: %s",
-                                project_name, self.url(), reason)
+                              project_name, self.url(), reason)
                 logging.error("JSON: %s", json)
                 return datetime.datetime.min
         return min(dates, default=datetime.datetime.min)

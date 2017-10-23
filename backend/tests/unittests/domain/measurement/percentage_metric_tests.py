@@ -93,7 +93,7 @@ class PercentageMetricTestCase(unittest.TestCase):
     @staticmethod
     def metric_under_test_class():
         """ Return the metric class to be tested. """
-        return domain.Metric
+        return domain.Metric  # pragma: no cover
 
     def set_metric_value(self, numerator, denominator):
         """ Set the metric value by means of the numerator and denominator. """

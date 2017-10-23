@@ -87,11 +87,8 @@ class FakeSignalModule(object):
     """ Fake the signal module for unit test purposes. """
     SIGALRM = 0
 
-    def alarm(self, *args):
-        """ Set the alarm. """
-        pass
-
-    def signal(self, _, handler):
+    @staticmethod
+    def signal(_, handler):
         """ Register the signal. We call the handler immediately. """
         handler()
 
@@ -103,6 +100,6 @@ class TimeoutTest(unittest.TestCase):
         """ Test the with statement. """
         try:
             with url_opener.Timeout(4, signal=FakeSignalModule()):
-                self.fail("Expected TimeoutError")  # pragma: nocover
+                self.fail("Expected TimeoutError")  # pragma: no cover
         except TimeoutError as reason:
             self.assertEqual("Operation timed out after 4 seconds.", str(reason))

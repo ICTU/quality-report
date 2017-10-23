@@ -7,6 +7,7 @@ from hqlib.domain import Project, Product, Application, Component, Team, Documen
 HISTORY = metric_source.History('tests/integrationtests/test_no_source_ids/history.json')
 GIT = metric_source.Git(url='http://git/repo')
 SONAR = metric_source.Sonar('http://sonar/')
+SONAR_UNIT_TEST_REPORT = metric_source.SonarTestReport('http://sonar/')
 JIRA = metric_source.Jira(url='http://jira/', username='user', password='pass')
 
 # The project
@@ -17,6 +18,7 @@ PROJECT = Project(
         metric_source.ArchiveSystem: GIT,
         metric_source.VersionControlSystem: GIT,
         metric_source.Jira: JIRA,
+        metric_source.UnitTestReport: SONAR_UNIT_TEST_REPORT,
         metric_source.Sonar: SONAR},
     added_requirements=Project.optional_requirements())
 

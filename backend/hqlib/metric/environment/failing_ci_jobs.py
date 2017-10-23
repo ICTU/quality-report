@@ -34,7 +34,7 @@ class FailingCIJobs(LowerIsBetterMetric):
     url_label_text = 'Falende jobs'
     target_value = 0
     low_target_value = 2
-    metric_source_class = metric_source.Jenkins
+    metric_source_class = metric_source.CIServer
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()

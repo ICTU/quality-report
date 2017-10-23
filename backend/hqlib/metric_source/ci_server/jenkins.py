@@ -21,16 +21,16 @@ import logging
 import re
 import urllib.parse
 from typing import Dict, IO, List, Optional
-import bs4
 
-from . import url_opener
-from .. import domain
 from hqlib.typing import DateTime, TimeDelta
+from .. import url_opener
+from ..abstract import ci_server
 
 Job = Dict[str, str]
 Jobs = List[Job]
 
-class Jenkins(domain.MetricSource, url_opener.UrlOpener):
+
+class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
     """ Class representing the Jenkins instance. """
 
     metric_source_name = 'Jenkins build server'
@@ -44,7 +44,6 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
         self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
         self._last_stable_build_url = self.__job_url + 'lastStableBuild/'
-        self.__job_api_url = self.__job_url + self.api_postfix
         self._jobs_api_url = url + self.jobs_api_postfix
         self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
 
@@ -112,21 +111,6 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         all_jobs = self._api(self._jobs_api_url)['jobs']
         return [job for job in all_jobs if self.__job_re.match(job['name'])]
 
-    def unstable_arts_url(self, projects, days: int) -> Dict[str, str]:
-        """ Return the urls for the ARTs that have been unstable for the specified number of days. """
-        projects_re = re.compile(projects)
-        all_jobs = self._api(self._jobs_api_url)['jobs']
-        arts = [job for job in all_jobs if projects_re.match(job['name'])]
-        max_age = datetime.timedelta(days=days)
-        unstable = dict()
-        for art in arts:
-            age = self.__age_of_last_stable_build(art)
-            if age > max_age:
-                days_str = '?' if age == datetime.timedelta.max else str(age.days)
-                art_description = art['name'] + ' ({days} dagen)'.format(days=days_str)
-                unstable[art_description] = self.__job_url.format(job=art['name'])
-        return unstable
-
     def __age_of_last_completed_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last completed build of the job. """
         return self.__age_of_build(job, self.__last_completed_build_url)
@@ -137,11 +121,11 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
 
     def __age_of_build(self, job: Job, url: str) -> TimeDelta:
         """ Return the age of the last completed or stable build of the job. """
-        build_time = self.job_datetime(job, url)
+        build_time = self._job_datetime(job, url)
         return datetime.timedelta.max if build_time == datetime.datetime.min else \
             datetime.datetime.utcnow() - build_time
 
-    def job_datetime(self, job: Job, url: str) -> DateTime:
+    def _job_datetime(self, job: Job, url: str) -> DateTime:
         """ Return the datetime of the last completed or stable build of the job. """
         builds_url = url.format(job=job['name']) + self.api_postfix
         try:
@@ -178,20 +162,3 @@ class Jenkins(domain.MetricSource, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Couldn't open %s: %s", url, reason)
             raise
-
-    @functools.lru_cache(maxsize=1024)
-    def _get_soup(self, url: str):
-        """ Get a beautiful soup of the HTML at the url. """
-        return bs4.BeautifulSoup(self.url_open(url), "lxml")
-
-    def resolve_job_name(self, job_name: str) -> str:
-        """ If the job name is a regular expression, resolve it to a concrete job name.
-            Assumes there is exactly one result. """
-        if job_name and ('\\' in job_name or '.*' in job_name or '[' in job_name):
-            if not job_name.endswith('$'):
-                job_name += '$'
-            jobs_re = re.compile(job_name)
-            all_jobs = self._api(self._jobs_api_url)['jobs']
-            jobs = [job for job in all_jobs if jobs_re.match(job['name'])]
-            job_name = jobs[0]['name']
-        return job_name

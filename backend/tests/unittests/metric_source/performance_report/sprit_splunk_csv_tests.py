@@ -105,8 +105,13 @@ class SpiritSplunkCSVPerformanceReportTest(unittest.TestCase):
         self.assertEqual(0, self._performance_report.queries('product'))
 
     def test_queries(self):
-        """ Test that the total number of queries for a product/version that is in the report. """
+        """ Test the total number of queries for a product/version that is in the report. """
         self.assertEqual(self.expected_queries, self._performance_report.queries('ABC'))
+
+    def test_queries_re(self):
+        """ Test that the total number of queries for a product/version that is in the report can be found using a
+            regular expression. """
+        self.assertEqual(self.expected_queries, self._performance_report.queries('AB.*'))
 
     def test_queries_violating_max_responsetime(self):
         """ Test that the number of queries violating the maximum response times is zero. """

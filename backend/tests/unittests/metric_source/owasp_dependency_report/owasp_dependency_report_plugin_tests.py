@@ -20,8 +20,6 @@ import urllib.error
 
 from hqlib import metric_source
 
-import bs4
-
 
 class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependencyReport):
     # pylint: disable=too-few-public-methods
@@ -95,12 +93,15 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
         """ Return the static contents. """
         return self.contents
 
+    def url_open(self, url: str):
+        return self.html
+
     def _get_soup(self, url: str):
         """ Get a beautiful soup of the HTML at the url. """
         if 'raise' in self.contents:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return bs4.BeautifulSoup(self.html, "lxml")
+            return super()._get_soup(url)
 
 
 class JenkinsOWASPDependencyReportTest(unittest.TestCase):

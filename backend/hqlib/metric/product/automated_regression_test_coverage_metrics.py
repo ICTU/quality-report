@@ -44,7 +44,7 @@ class ARTCoverage(HigherIsBetterMetric):
 
     def _get_coverage_from_metric_source(self, metric_source_id):
         """ Get the actual coverage measurement from the metric source. """
-        raise NotImplementedError  # pragma: nocover
+        raise NotImplementedError
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access

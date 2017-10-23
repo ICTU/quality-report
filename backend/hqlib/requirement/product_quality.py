@@ -52,7 +52,8 @@ class TrustedProductMaintainability(Requirement):
 class UnitTests(Requirement):
     """ Require the product to have unit and/or integration tests. """
     _name = 'Unit and/or integration tests'
-    _metric_classes = (metric.FailingUnittests, metric.UnittestLineCoverage, metric.UnittestBranchCoverage,
+    _metric_classes = (metric.FailingUnittests, metric.UnittestReportAge,
+                       metric.UnittestLineCoverage, metric.UnittestBranchCoverage,
                        metric.IntegrationtestLineCoverage, metric.IntegrationtestBranchCoverage,
                        metric.UnitAndIntegrationTestLineCoverage, metric.UnitAndIntegrationTestBranchCoverage)
 

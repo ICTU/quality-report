@@ -31,7 +31,7 @@ class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
     contents = '{"jobs": []}'
 
-    def url_read(self, url):
+    def url_read(self, url: str, encoding: str='utf-8') -> str:
         """ Return the static content. """
         if 'raise' in url:
             raise urllib.error.URLError('some reason')
@@ -116,7 +116,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=400]", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{}}]}}'.format(to_jenkins_timestamp(datetime.datetime.utcnow() -
-                                                                                    datetime.timedelta(days=100)))
+                                                                                   datetime.timedelta(days=100)))
         self.assertEqual({}, self.__jenkins.unused_jobs_url())
 
     def test_unused_jobs_after_grace(self):
@@ -125,7 +125,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=200]", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{}}]}}'.format(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1,
-                                                                                                      12, 0, 0)))
+                                                                                                     12, 0, 0)))
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.unused_jobs_url())
@@ -134,60 +134,6 @@ class JenkinsTest(unittest.TestCase):
         """ Test the number of active jobs. """
         self.assertEqual(0, self.__jenkins.number_of_active_jobs())
 
-    def test_unstable_arts_none(self):
-        """ Test the number of unstable ARTs. """
-        self.assertEqual({}, self.__jenkins.unstable_arts_url('projects', 21))
-
-    def test_unstable_arts_one_just(self):
-        """ Test the number of unstable ARTs with one that just became unstable. """
-        hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job-a"}}], ' \
-                                  '"timestamp": "{}"}}'.format(to_jenkins_timestamp(hour_ago))
-        self.assertEqual({}, self.__jenkins.unstable_arts_url('job-a', 3))
-
-    def test_unstable_arts_one(self):
-        """ Test the number of unstable ARTs. """
-        week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job-a"}}], ' \
-                                  '"timestamp": "{}"}}'.format(to_jenkins_timestamp(week_ago))
-        self.assertEqual({'job-a (7 dagen)': 'http://jenkins/job/job-a/'}, self.__jenkins.unstable_arts_url('job-a', 3))
-
-    def test_unstable_art_old_age(self):
-        """ Test the unstable ART url for a build with a very old age. """
-        date_time = datetime.datetime(2000, 1, 1, 0, 0, 0)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job-a"}}], ' \
-                                  '"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
-        expected_days = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job-a ({0} dagen)'.format(expected_days): 'http://jenkins/job/job-a/'},
-                         self.__jenkins.unstable_arts_url('job-a', 3))
-
-    def test_unstable_art_key_error(self):
-        """ Test the unstable ART url when a HTTP error occurs. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job-a"}]}'
-        self.assertEqual({'job-a (? dagen)': 'http://jenkins/job/job-a/'}, self.__jenkins.unstable_arts_url('job-a', 3))
-
     def test_nr_of_active_jobs_on_error(self):
         """ Test that the number of active jobs is -1 when an URL error is thrown. """
         self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())
-
-
-class JenkinsResolveJobNameTest(unittest.TestCase):
-    """ Test that the Jenkins class correctly resolved job name regular expressions. """
-
-    def setUp(self):
-        self.__jenkins = JenkinsUnderTest('http://jenkins/')
-
-    def test_resolve_job_name(self):
-        """ Test that a job name that is a regular expression is resolved. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job5"}]}'
-        self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]$'))
-
-    def test_resolve_job_name_with_partial_match(self):
-        """ Test that a job name that is a regular expression is resolved,
-            even when it partially matches another job. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job50"}, {"name": "job5"}]}'
-        self.assertEqual('job5', self.__jenkins.resolve_job_name('job[0-9]'))
-
-    def test_resolve_job_name_without_re(self):
-        """ Test that the job name is returned if it is not a regular expression. """
-        self.assertEqual('job', self.__jenkins.resolve_job_name('job'))

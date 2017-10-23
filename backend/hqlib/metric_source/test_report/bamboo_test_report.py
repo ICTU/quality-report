@@ -20,55 +20,55 @@ import logging
 import xml.etree.cElementTree
 from xml.etree.ElementTree import Element
 
+import dateutil.parser
+
 from ..abstract import test_report
 from ..url_opener import UrlOpener
 from ...typing import DateTime
 
 
-class UFTTestReport(test_report.TestReport):
-    """ Class representing HP UFT XML test reports. """
+class BambooTestReport(test_report.TestReport):
+    """ Class representing Bamboo test reports. """
 
-    metric_source_name = 'UFT test report'
+    metric_source_name = 'Bamboo test report'
 
     def _passed_tests(self, report_url: str) -> int:
         """ Return the number of passed tests. """
-        return self.__test_count(report_url, 'passed')
+        return self.__test_count(report_url, 'successfulTestCount')
 
     def _failed_tests(self, report_url: str) -> int:
         """ Return the number of failed tests. """
-        return self.__test_count(report_url, 'failed')
+        return self.__test_count(report_url, 'failedTestCount')
+
+    def _skipped_tests(self, report_url: str) -> int:
+        """ Return the number of skipped tests. """
+        return self.__test_count(report_url, 'skippedTestCount')
 
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
-            summary = self.__summary(report_url)
-        except UrlOpener.url_open_exceptions:
-            return datetime.datetime.min
-        except xml.etree.cElementTree.ParseError:
+            root = self.__element_tree(report_url)
+        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
             return datetime.datetime.min
         try:
-            date_string, time_string = summary.get('eTime').split(' - ')
-        except AttributeError as reason:
-            logging.error("UFT report summary at %s has no e(nd)Time attribute: %s", report_url, reason)
+            date_time_string = root.find('buildCompletedDate').text
+            return dateutil.parser.parse(date_time_string, ignoretz=False)
+        except (AttributeError, ValueError, TypeError) as reason:
+            logging.error("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, report_url, reason)
             return datetime.datetime.min
-        day, month, year = date_string.split('-')
-        hour, minute, second = time_string.split(':')
-        return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
 
     def __test_count(self, report_url: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """
         try:
-            summary = self.__summary(report_url)
-        except UrlOpener.url_open_exceptions:
+            root = self.__element_tree(report_url)
+        except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
             return -1
-        except xml.etree.cElementTree.ParseError:
+        try:
+            return int(root.find(result_type).text)
+        except (AttributeError, ValueError, TypeError) as reason:
+            logging.error("Couldn't parse %s from %s at %s: %s", result_type, self.metric_source_name, report_url,
+                          reason)
             return -1
-        return int(summary.get(result_type, -1))
-
-    def __summary(self, report_url: str) -> Element:
-        """ Return the summary in the report. """
-        root = self.__element_tree(report_url)
-        return root.find('./Doc/Summary')
 
     def __element_tree(self, report_url: str) -> Element:
         """ Return the report contents as ElementTree. """
@@ -76,5 +76,5 @@ class UFTTestReport(test_report.TestReport):
         try:
             return xml.etree.cElementTree.fromstring(contents)
         except xml.etree.cElementTree.ParseError as reason:
-            logging.error("Couldn't parse report at %s: %s", report_url, reason)
+            logging.error("Couldn't parse %s at %s: %s", self.metric_source_name, report_url, reason)
             raise

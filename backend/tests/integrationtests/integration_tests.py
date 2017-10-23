@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import bs4
 import json
 import os
-import shutil
 import sys
 import tempfile
 import unittest
+
+import bs4
 
 
 class IntegrationTestCase(unittest.TestCase):
@@ -34,16 +34,11 @@ class IntegrationTestCase(unittest.TestCase):
         os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
                   '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
 
-    @classmethod
-    def tearDownClass(cls):
-        """ Remove the report. """
-        # shutil.rmtree(cls.report_folder)
-
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
-    expected_number_of_metrics = 194
+    expected_number_of_metrics = 197
 
     def report(self):
         """ Read the report and return as beautiful soup. """
