@@ -18,6 +18,7 @@ import unittest
 import urllib.request
 import urllib.error
 import io
+import sys
 
 from hqlib.metric_source import url_opener
 
@@ -98,8 +99,9 @@ class TimeoutTest(unittest.TestCase):
 
     def test_with(self):
         """ Test the with statement. """
-        try:
-            with url_opener.Timeout(4, signal=FakeSignalModule()):
-                self.fail("Expected TimeoutError")  # pragma: no cover
-        except TimeoutError as reason:
-            self.assertEqual("Operation timed out after 4 seconds.", str(reason))
+        if not sys.platform.startswith("win"):
+            try:
+                with url_opener.Timeout(4, signal=FakeSignalModule()):
+                    self.fail("Expected TimeoutError")  # pragma: no cover
+            except TimeoutError as reason:
+                self.assertEqual("Operation timed out after 4 seconds.", str(reason))

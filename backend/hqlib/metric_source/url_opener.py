@@ -22,6 +22,7 @@ import signal
 import socket
 import urllib.error
 import urllib.request
+import sys
 from typing import cast, Callable, IO
 
 
@@ -32,11 +33,13 @@ class Timeout(object):
         self.__signal_module = signal
 
     def __enter__(self):
-        self.__signal_module.signal(self.__signal_module.SIGALRM, self.__raise_timeout)
-        self.__signal_module.alarm(self.__duration)
+        if not sys.platform.startswith("win"):
+            self.__signal_module.signal(self.__signal_module.SIGALRM, self.__raise_timeout)
+            self.__signal_module.alarm(self.__duration)
 
     def __exit__(self, *args):
-        self.__signal_module.alarm(0)  # Disable the alarm
+        if not sys.platform.startswith("win"):
+            self.__signal_module.alarm(0)  # Disable the alarm
 
     def __raise_timeout(self, *args):
         """ Raise the TimeoutError exception. """
