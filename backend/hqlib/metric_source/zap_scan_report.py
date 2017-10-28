@@ -65,6 +65,8 @@ class ZAPScanReport(domain.MetricSource):
             for row in summary_table[0]('tr'):
                 if len(row('td')) > 0 and row('td')[0].text == risk_level.capitalize():
                     return int(row('td')[1].text)
+            logging.error("Risk level %s could not be found in ZAP Scan report.", risk_level)
+            return -1
         else:
             table_list = soup('table')
             # Prevent IndexError in case of empty table
