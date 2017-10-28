@@ -1,3 +1,8 @@
+2017-10-28  Release 2.13.1
+
+  * Bug fix: Docker image wouldn't build correctly.
+
+
 2017-10-28  Release 2.13.0
 
   * Add WekanBoard metric source which can be used as RiskLog and ActionLog, in addition to TrelloBoard.
