@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import Dict, Optional, Sequence, Type
+from typing import Dict, Iterator, Optional
 
 import wekanapi
 
@@ -29,8 +29,7 @@ class WekanBoard(domain.MetricSource):
 
     metric_source_name = 'Wekan'
 
-    def __init__(self, url: str, username: str, password: str, board_id: str,
-                 api: Type[wekanapi.WekanApi]=wekanapi.WekanApi):
+    def __init__(self, url: str, username: str, password: str, board_id: str, api=wekanapi.WekanApi) -> None:
         self.__url = url.strip('/')
         self.__username = username
         self.__password = password
@@ -132,13 +131,13 @@ class WekanBoard(domain.MetricSource):
         """ Parse the date time format used by Wekan. """
         return datetime.datetime.strptime(date_time_string, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    def __cards(self) -> Sequence[wekanapi.models.Card]:
+    def __cards(self) -> Iterator[wekanapi.models.Card]:
         """ Return all cards on our board. """
         for cards_list in self.__board().get_cardslists():
             for card in cards_list.get_cards():
                 yield card
 
-    def __inactive_cards(self, days: int=14, now: DateTime=None) -> Sequence[wekanapi.models.Card]:
+    def __inactive_cards(self, days: int=14, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
         """ Return all inactive cards on the board. """
         now = now or datetime.datetime.now()
         for card in self.__cards():
@@ -148,7 +147,7 @@ class WekanBoard(domain.MetricSource):
             if (now - self.__last_activity(info)).days > days:
                 yield card
 
-    def __over_due_cards(self, now: DateTime=None) -> Sequence[wekanapi.models.Card]:
+    def __over_due_cards(self, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
         """ Return all over due cards on the board. """
         now = now or datetime.datetime.now()
         for card in self.__cards():
