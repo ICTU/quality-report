@@ -1,3 +1,11 @@
+2017-10-28  Release 2.13.0
+
+  * Add WekanBoard metric source which can be used as RiskLog and ActionLog, in addition to TrelloBoard.
+    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics-and-metric-sources, 
+    https://github.com/ICTU/quality-report/wiki/Risk-log-metrics-and-metric-sources and
+    https://github.com/ICTU/quality-report/wiki/Wekan.
+  
+  
 2017-10-23  Release 2.12.0
 
   * Introduce abstract RiskLog and ActionLog metric sources. The only concrete implemention is TrelloBoard. 
