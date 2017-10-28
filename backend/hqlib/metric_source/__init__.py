@@ -52,6 +52,7 @@ from .test_report.testng_test_report import TestNGTestReport
 from .test_report.uft_test_report import UFTTestReport
 from .test_report.sonar_test_report import SonarTestReport
 from .issue_log.trello import TrelloBoard
+from .issue_log.wekan import WekanBoard
 from .url_opener import UrlOpener
 from .version_control_system.git import Git
 from .version_control_system.subversion import Subversion

@@ -22,7 +22,7 @@ import urllib.request
 
 from typing import Dict, Any, Optional, Callable, List
 
-from ... import utils, metric_source
+from ... import utils
 from ...metric_source import url_opener
 from ...typing import DateTime, TimeDelta
 
