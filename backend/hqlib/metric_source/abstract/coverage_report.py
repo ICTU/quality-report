@@ -63,7 +63,7 @@ class CoverageReport(domain.MetricSource):
         raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
-    def datetime(self, *coverage_urls) -> DateTime:
+    def datetime(self, *coverage_urls: str) -> DateTime:
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
         coverage_date_urls = self._get_coverage_date_urls(coverage_urls[0])
         for coverage_date_url in coverage_date_urls:

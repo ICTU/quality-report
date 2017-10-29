@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Sequence
 
 from ... import metric_source
-from ...typing import DateTime
+from hqlib.typing import DateTime
 
 
 class SonarTestReport(metric_source.TestReport):
@@ -26,7 +27,7 @@ class SonarTestReport(metric_source.TestReport):
         self.__sonar = sonar_class(sonar_url, username=kwargs.pop('username', ''), password=kwargs.pop('password', ''))
         super().__init__(url=sonar_url, *args, **kwargs)
 
-    def _report_datetime(self, sonar_id) -> DateTime:
+    def _report_datetime(self, sonar_id: str) -> DateTime:
         return self.__sonar.datetime(sonar_id)
 
     def _passed_tests(self, sonar_id: str) -> int:
@@ -37,6 +38,6 @@ class SonarTestReport(metric_source.TestReport):
         """ Return the number of failed tests as reported by the test report. """
         return self.__sonar.failing_unittests(sonar_id)
 
-    def metric_source_urls(self, *metric_source_ids: str):
+    def metric_source_urls(self, *metric_source_ids: str) -> Sequence[str]:
         """ Return the metric source urls for human users. """
         return [self.__sonar.dashboard_url(metric_source_id) for metric_source_id in metric_source_ids]

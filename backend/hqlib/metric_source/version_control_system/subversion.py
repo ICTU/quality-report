@@ -22,6 +22,7 @@ from typing import List, Dict
 import bs4
 
 from ..abstract import version_control_system
+from hqlib.typing import DateTime
 
 
 class Subversion(version_control_system.VersionControlSystem):
@@ -43,7 +44,7 @@ class Subversion(version_control_system.VersionControlSystem):
             svn_path += 'trunk/'
         return svn_path
 
-    def last_changed_date(self, url: str) -> datetime:
+    def last_changed_date(self, url: str) -> DateTime:
         """ Return the date when the url was last changed in Subversion. """
         svn_info_xml = str(self._run_shell_command(('svn', 'info', '--xml', url)))
         try:

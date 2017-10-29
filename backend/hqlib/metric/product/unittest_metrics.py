@@ -36,7 +36,7 @@ class FailingUnittests(LowerIsBetterMetric):
         value = self._metric_source.failed_tests(self.__metric_source_id()) if self._metric_source else None
         return -1 if value is None else value
 
-    def status(self):
+    def status(self) -> str:
         return 'red' if self.__nr_tests() == 0 else super().status()
 
     def _get_template(self) -> str:
@@ -61,5 +61,5 @@ class FailingUnittests(LowerIsBetterMetric):
         """ Add the number of unit tests to the parameters for the report. """
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters['tests'] = self.__nr_tests() if self._metric_source else '?'
+        parameters['tests'] = str(self.__nr_tests()) if self._metric_source else '?'
         return parameters

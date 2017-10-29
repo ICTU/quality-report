@@ -24,24 +24,25 @@ import urllib.error
 import urllib.request
 import sys
 from typing import cast, Callable, IO
+import types
 
 
 class Timeout(object):
     """ Time out class using the alarm signal. """
-    def __init__(self, duration_in_seconds, signal=signal):
+    def __init__(self, duration_in_seconds: int, signal: types.ModuleType=signal) -> None:
         self.__duration = duration_in_seconds
         self.__signal_module = signal
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         if not sys.platform.startswith("win"):
             self.__signal_module.signal(self.__signal_module.SIGALRM, self.__raise_timeout)
             self.__signal_module.alarm(self.__duration)
 
-    def __exit__(self, *args):
+    def __exit__(self, *args) -> None:
         if not sys.platform.startswith("win"):
             self.__signal_module.alarm(0)  # Disable the alarm
 
-    def __raise_timeout(self, *args):
+    def __raise_timeout(self, *args) -> None:
         """ Raise the TimeoutError exception. """
         raise TimeoutError("Operation timed out after {0} seconds.".format(self.__duration))
 
