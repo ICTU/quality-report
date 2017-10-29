@@ -2,7 +2,14 @@ const webpack = require('webpack'); // to access built-in plugins
 const path = require('path');
 
 module.exports = {
-  entry: './js/dashboard.js',
+  entry: [
+    // https://github.com/facebook/react/issues/8379
+    'babel-polyfill', // Load this first
+    //'react-hot-loader/patch', // This package already requires/loads react (but not react-dom). It must be loaded after babel-polyfill to ensure both react and react-dom use the same Symbol.
+    'react', // Include this to enforce order
+    'react-dom', // Include this to enforce order
+    './js/dashboard.js' // Path to your app's entry file
+  ],
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, '../backend/hqlib/app/dist'),

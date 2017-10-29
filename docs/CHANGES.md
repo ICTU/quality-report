@@ -1,3 +1,9 @@
+2017-10-29  Release 2.13.2
+
+  * Bug fix: Reports are not loading in Internet Explorer 11. 
+    Attempted fix for https://github.com/ICTU/quality-report/issues/130
+  
+  
 2017-10-28  Release 2.13.1
 
   * Bug fix: Docker image wouldn't build correctly.
