@@ -96,7 +96,7 @@ class WekanBoard(domain.MetricSource):
         if board:
             return self.__url + '/b/' + board.id + '/' + board.title.lower().replace(' ', '-')
         else:
-            return self.__url
+            return self.__url  # pragma: no cover
 
     def __card_url(self, card: wekanapi.models.Card) -> str:
         """ Return the url of the card. """

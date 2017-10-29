@@ -97,11 +97,11 @@ class FakeSignalModule(object):
 class TimeoutTest(unittest.TestCase):
     """ Unit tests for the Timeout class. """
 
+    @unittest.skipIf(sys.platform.startswith("win"), "Timeout only works on Posix platforms.")
     def test_with(self):
         """ Test the with statement. """
-        if not sys.platform.startswith("win"):
-            try:
-                with url_opener.Timeout(4, signal=FakeSignalModule()):
-                    self.fail("Expected TimeoutError")  # pragma: no cover
-            except TimeoutError as reason:
-                self.assertEqual("Operation timed out after 4 seconds.", str(reason))
+        try:
+            with url_opener.Timeout(4, signal=FakeSignalModule()):
+                self.fail("Expected TimeoutError")  # pragma: no cover
+        except TimeoutError as reason:
+            self.assertEqual("Operation timed out after 4 seconds.", str(reason))
