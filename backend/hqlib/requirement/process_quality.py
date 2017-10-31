@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-
 from .. import metric
 from ..domain import Requirement
 
