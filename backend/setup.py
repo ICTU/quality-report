@@ -38,7 +38,8 @@ class Bundle(core.Command):
 
     def run(self):
         os.chdir('../frontend')
-        os.system('npm install; npm run build')
+        os.system('npm install')
+        os.system('npm run build')
         dir_util.copy_tree('html', '../backend/hqlib/app/html')
         dir_util.copy_tree('img', '../backend/hqlib/app/img')
         os.chdir('../backend')
