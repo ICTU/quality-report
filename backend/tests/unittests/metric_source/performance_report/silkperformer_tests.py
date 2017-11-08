@@ -306,9 +306,60 @@ Reporting engine
     </tr>
 </table>
 
+<hr align="left" width="100%" size="1"/>	
+
+    <h2>Trend (ms)</h2>
+<table cellspacing="2" cellpadding="5" border="0" class="details">
+    <tr valign="top">
+        <th>Transaction</th><th>2017.10.30.00.59.38</th><th>2017.10.31.00.59.28</th><th>2017.10.31.12.00.28</th>
+        <th>2017.10.31.14.26.16</th><th>2017.10.31.17.22.32</th><th>2017.11.01.00.59.29</th>
+        <th>2017.11.02.00.59.30</th>
+        <th>2017.11.02.15.38.17</th><th>2017.11.03.10.03.11</th>
+    </tr>
+    <tr valign="top" class="">
+        <td class="name">Vastgoed_T01_Bouwwerk</td><td class="red">1.005</td><td class="red">1.133</td>
+        <td class="green">0.063</td><td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td>
+    </tr>
+    <tr valign="top" class="">
+        <td class="name">Vastgoed_T02_CheckoutGeo</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td>
+    </tr>
+    <tr valign="top" class="">
+        <td class="name">Vastgoed_T03_CheckinLeeg</td><td class="green">0.063</td>
+        <td class="green">0.062</td><td class="green">0.062</td><td class="green">0.063</td>
+        <td class="green">0.062</td><td class="green">0.062</td><td class="green">0.063</td>
+        <td class="green">0.063</td><td class="green">0.063</td>
+    </tr>
+    <tr valign="top" class="">
+        <td class="name">Vastgoed_T04_CheckoutLeeg</td>
+        <td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td>
+        <td class="green">0.047</td><td class="green">0.047</td><td class="green">0.047</td>
+    </tr>
+    <tr valign="top" class="">
+        <td class="name">Vastgoed_T05_CheckinGeo</td><td class="green">0.063</td>
+        <td class="green">0.062</td><td class="green">0.062</td><td class="green">0.063</td>
+        <td class="green">0.062</td><td class="green">0.062</td><td class="green">0.062</td>
+        <td class="green">0.063</td><td class="green">0.063</td>
+    </tr>
+
+    <tr valign="top">
+        <th>Transaction</th><th>2017.10.30.00.59.38</th>
+        <th>2017.10.31.00.59.28</th><th>2017.10.31.12.00.28</th>
+        <th>2017.10.31.14.26.16</th><th>2017.10.31.17.22.32</th>
+        <th>2017.11.01.00.59.29</th><th>2017.11.02.00.59.30</th>
+        <th>2017.11.02.15.38.17</th><th>2017.11.03.10.03.11</th>
+    </tr>
+</table>
+
+
 </body></html>
 """
-
 
 class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the Silk Performer performance report to return the url as report contents. """
@@ -317,6 +368,8 @@ class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint:
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')
+        elif 'invalid' in url:
+            return ''
         else:
             return HTML
 
@@ -349,6 +402,7 @@ class SilkPerformerTest(unittest.TestCase):
         """ Test that the number of queries violating the wished response times is zero. """
         self.assertEqual(0, self._performance_report.queries_violating_wished_responsetime(('.*[0-9][0-9].*', 'dummy')))
 
+
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
@@ -373,6 +427,14 @@ class SilkPerformerMultipleReportsTest(SilkPerformerTest):
     def setUp(self):
         self._performance_report = SilkPerformerUnderTest('http://report/',
                                                           report_urls=['http://report/1', 'http://report/2'])
+
+
+class SilkPerformerInvalidReportTest(unittest.TestCase):
+    """ Unit tests for an invalid (missing Responsetimes header) Silk Performer performance report metric source. """
+
+    def test_queries_max_responsetime_with_invalid_report(self):
+        """ Test that the value of a invalid report is -1. """
+        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').queries_violating_max_responsetime('p2'))
 
 
 class SilkPerformerMissingTest(unittest.TestCase):

@@ -51,6 +51,8 @@ class PerformanceReport(domain.MetricSource):
             return self.__queries_violating_response_time(product, 'red')
         except UrlOpener.url_open_exceptions:
             return -1
+        except ValueError:
+            return -1
 
     @functools.lru_cache(maxsize=1024)
     def queries_violating_wished_responsetime(self, product: str) -> int:
