@@ -1,3 +1,8 @@
+2017-11-09  Release 2.13.3
+
+  * Bug fix: Don't count the rows in the trend table of Silkperformer performance reports as transactions.
+  
+  
 2017-10-29  Release 2.13.2
 
   * Bug fix: Reports are not loading in Internet Explorer 11. 
