@@ -1,4 +1,4 @@
-2017-11-09  Release 2.13.3
+2017-11-10  Release 2.13.3
 
   * Bug fix: Don't count the rows in the trend table of Silkperformer performance reports as transactions.
   
