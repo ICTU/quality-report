@@ -86,8 +86,9 @@ class BambooTestReportTest(unittest.TestCase):
         """ Test that the date and time of the test suite is returned. """
         self.__opener.contents = \
             '<result><buildCompletedDate>2017-10-12T03:39:21.840+02:00</buildCompletedDate></result>'
-        self.assertEqual(datetime.datetime(2017, 10, 12, 3, 39, 21, 840000),
-                         self.__report.datetime('url').replace(tzinfo=None))
+        tzinfo = datetime.timezone(offset=datetime.timedelta(hours=2))
+        expected = datetime.datetime(2017, 10, 12, 3, 39, 21, 840000, tzinfo=tzinfo).astimezone().replace(tzinfo=None)
+        self.assertEqual(expected, self.__report.datetime('url'))
 
     def test_incomplete_xml_datetime(self):
         """ Test that the minimum datetime is returned when the xml is incomplete. """

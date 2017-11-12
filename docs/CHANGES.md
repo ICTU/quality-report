@@ -1,3 +1,8 @@
+2017-11-12  Release 2.14.1
+
+  * Bug fix: Don't crash when parsing the date and time of Bamboo test reports.
+  
+  
 2017-11-12  Release 2.14.0
 
   * Add Jira filter metric source for bug tracker metrics. 

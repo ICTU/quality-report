@@ -52,7 +52,9 @@ class BambooTestReport(test_report.TestReport):
             return datetime.datetime.min
         try:
             date_time_string = root.find('buildCompletedDate').text
-            return dateutil.parser.parse(date_time_string, ignoretz=False)
+            # Parse the date time string timezone-aware, and then convert it a date time without time zones since we
+            # use naive date times internally:
+            return dateutil.parser.parse(date_time_string, ignoretz=False).astimezone().replace(tzinfo=None)
         except (AttributeError, ValueError, TypeError) as reason:
             logging.error("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, report_url, reason)
             return datetime.datetime.min
