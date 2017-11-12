@@ -1,3 +1,10 @@
+2017-11-12  Release 2.14.2
+
+  * Bug fix: Look at the most recently changed card when reporting the last activity of a Wekan board instead of at the
+    oldest card.
+  * Bug fix: Don't consider Wekan cards inactive if their start date is in the future.
+  
+  
 2017-11-12  Release 2.14.1
 
   * Bug fix: Don't crash when parsing the date and time of Bamboo test reports.

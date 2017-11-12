@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import datetime
+import functools
 import logging
 from typing import Dict, Iterator, Optional
 
@@ -35,7 +36,7 @@ class WekanBoard(domain.MetricSource):
         self.__password = password
         self.__board_id = board_id
         self.__wekan_api = api
-        super().__init__()
+        super().__init__(url=self.__url)
 
     # metric_source.MetricSource interface:
 
@@ -46,7 +47,7 @@ class WekanBoard(domain.MetricSource):
         date_times = []
         for card in self.__cards():
             date_times.append(self.__last_activity(card.get_card_info()))
-        return min(date_times, default=datetime.datetime.min)
+        return max(date_times, default=datetime.datetime.min)
 
     # metric_source.ActionLog interface:
 
@@ -102,6 +103,7 @@ class WekanBoard(domain.MetricSource):
         """ Return the url of the card. """
         return self.__board_url() + '/' + card.id
 
+    @functools.lru_cache(maxsize=1024)
     def __board(self) -> Optional[wekanapi.models.Board]:
         """ Return the Wekan board API. """
         try:
@@ -119,6 +121,11 @@ class WekanBoard(domain.MetricSource):
     def __due_date(cls, card_info: Dict[str, str]) -> DateTime:
         """ Return the due date of the card. """
         return cls.__parse_date_time(card_info["dueAt"]) if "dueAt" in card_info else datetime.datetime.max
+
+    @classmethod
+    def __start_date(cls, card_info: Dict[str, str]) -> DateTime:
+        """ Return the start date of the card. """
+        return cls.__parse_date_time(card_info["startAt"]) if "startAt" in card_info else datetime.datetime.max
 
     @classmethod
     def __last_activity(cls, card_info: Dict[str, str]) -> DateTime:
@@ -139,13 +146,19 @@ class WekanBoard(domain.MetricSource):
 
     def __inactive_cards(self, days: int=14, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
         """ Return all inactive cards on the board. """
-        now = now or datetime.datetime.now()
         for card in self.__cards():
-            info = card.get_card_info()
-            if now < self.__due_date(info) < datetime.datetime.max:
-                continue  # Card has a due date in the future, never consider it inactive
-            if (now - self.__last_activity(info)).days > days:
+            if self.__is_inactive(card, days, now):
                 yield card
+
+    def __is_inactive(self, card: wekanapi.models.Card, days: int=14, now: DateTime=None) -> bool:
+        """ Return whether the card is inactive. """
+        now = now or datetime.datetime.now()
+        info = card.get_card_info()
+        if now < self.__due_date(info) < datetime.datetime.max:
+            return False  # Card has a due date in the future, never consider it inactive
+        if now < self.__start_date(info) < datetime.datetime.max:
+            return False  # Card has a start date in the future, never consider it inactive
+        return (now - self.__last_activity(info)).days > days
 
     def __over_due_cards(self, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
         """ Return all over due cards on the board. """

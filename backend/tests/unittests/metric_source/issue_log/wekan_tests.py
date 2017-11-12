@@ -68,14 +68,16 @@ class FakeCard(object):
     """ Fake a Wekan card. """
     id = 'card_id'
 
-    def __init__(self, due_at=None, created_at=None, date_last_activity=None):
+    def __init__(self, due_at=None, created_at=None, date_last_activity=None, start_at=None):
         self.__card_info = {}
         if due_at:
             self.__card_info["dueAt"] = due_at
         if date_last_activity:
             self.__card_info["dateLastActivity"] = date_last_activity
+        if start_at:
+            self.__card_info["startAt"] = start_at
         self.__card_info["createdAt"] = created_at if created_at else \
-            datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            datetime.datetime(2017, 1, 1).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     def get_card_info(self):
         """ Return the card information such as due date. """
@@ -84,6 +86,11 @@ class FakeCard(object):
 
 class WekanBoardTest(unittest.TestCase):
     """ Unit tests for the WekanBoard class. """
+
+    def test_url(self):
+        """ Test the url. """
+        self.assertEqual('http://wekan',
+                         WekanBoard('http://wekan/', '', '', 'id', api=FakeWekanAPI([FakeBoard()])).url())
 
     def test_over_due_actions_without_overdue_cards(self):
         """ Test the number of overdue cards when there are none. """
@@ -120,14 +127,21 @@ class WekanBoardTest(unittest.TestCase):
 
     def test_inactive_actions_with_some_inactive_cards(self):
         """ Test the number of inactive cards when there are some. """
+        now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(date_last_activity="2017-1-24T15:52:25.249Z"),
-                                                     FakeCard()])])])
+                                                     FakeCard(date_last_activity=now)])])])
         self.assertEqual(1, WekanBoard('', '', '', 'id', api=api).nr_of_inactive_actions())
 
     def test_inactive_actions_with_due_date_in_the_future(self):
         """ Test that cards with a due date in the future are not inactive. """
         api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(date_last_activity="2017-1-24T15:52:25.249Z",
                                                               due_at="3000-1-1T12:00:00.000Z")])])])
+        self.assertEqual(0, WekanBoard('', '', '', 'id', api=api).nr_of_inactive_actions())
+
+    def test_inactive_actions_with_start_date_in_the_future(self):
+        """ Test that cards with a start date in the future are not inactive. """
+        api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(date_last_activity="2017-1-24T15:52:25.249Z",
+                                                              start_at="3000-1-1T12:00:00.000Z")])])])
         self.assertEqual(0, WekanBoard('', '', '', 'id', api=api).nr_of_inactive_actions())
 
     def test_over_due_actions_url(self):
