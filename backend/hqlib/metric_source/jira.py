@@ -25,60 +25,20 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
     """ Class representing the Jira instance. """
     metric_source_name = 'Jira'
 
-    def __init__(self, url: str, username: str, password: str, open_bug_query_id: int=None,
-                 open_security_bug_query_id: int=None, open_static_security_analysis_bug_query_id: int=None,
+    def __init__(self, url: str, username: str, password: str,
                  manual_test_cases_query_id: int=None,
                  user_stories_ready_query_id: int=None,
-                 technical_debt_issues_query_id: int=None,
                  user_stories_without_security_risk_query_id: int=None,
                  user_stories_without_performance_risk_query_id: int=None,
-                 nr_open_findings_a_environment_query_id: int=None,
-                 nr_open_findings_i_environment_query_id: int = None,
-                 nr_open_findings_f_environment_query_id: int = None,
                  manual_test_cases_duration_field: str='customfield_11700',
                  user_story_points_field: str='customfield_10002') -> None:
-        self.__open_bug_query_id = open_bug_query_id
-        self.__open_security_bug_query_id = open_security_bug_query_id
-        self.__open_static_security_analysis_bug_query_id = open_static_security_analysis_bug_query_id
         self.__manual_test_cases_query_id = manual_test_cases_query_id
         self.__manual_test_cases_duration_field = manual_test_cases_duration_field
         self.__user_stories_ready_query_id = user_stories_ready_query_id
         self.__user_story_points_field = user_story_points_field
-        self.__technical_debt_issues_query_id = technical_debt_issues_query_id
         self.__user_stories_without_security_risk_query_id = user_stories_without_security_risk_query_id
         self.__user_stories_without_performance_risk_query_id = user_stories_without_performance_risk_query_id
-        self.__nr_open_findings_a_environment_query_id = nr_open_findings_a_environment_query_id
-        self.__nr_open_findings_i_environment_query_id = nr_open_findings_i_environment_query_id
-        self.__nr_open_findings_f_environment_query_id = nr_open_findings_f_environment_query_id
         super().__init__(url=url, username=username, password=password)
-
-    def nr_open_bugs(self) -> int:
-        """ Return the number of open bugs. """
-        return self.__query_total(self.__open_bug_query_id)
-
-    def nr_open_security_bugs(self) -> int:
-        """ Return the number of open security bugs. """
-        return self.__query_total(self.__open_security_bug_query_id)
-
-    def nr_open_static_security_analysis_bugs(self) -> int:
-        """ Return the number of open static security analysis bugs. """
-        return self.__query_total(self.__open_static_security_analysis_bug_query_id)
-
-    def nr_open_findings_a_environment(self) -> int:
-        """ Return the number of open findings in the A-environment. """
-        return self.__query_total(self.__nr_open_findings_a_environment_query_id)
-
-    def nr_open_findings_i_environment(self) -> int:
-        """ Return the number of open findings in the I-environment. """
-        return self.__query_total(self.__nr_open_findings_i_environment_query_id)
-
-    def nr_open_findings_f_environment(self) -> int:
-        """ Return the number of open findings in the F-environment. """
-        return self.__query_total(self.__nr_open_findings_f_environment_query_id)
-
-    def nr_technical_debt_issues(self) -> int:
-        """ Return the number of technical debt issues. """
-        return self.__query_total(self.__technical_debt_issues_query_id)
 
     def manual_test_cases_time(self) -> float:
         """ Return the number of minutes spend on manual test cases. """
@@ -86,7 +46,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def nr_manual_test_cases(self) -> int:
         """ Return the number of manual test cases. """
-        return self.__query_total(self.__manual_test_cases_query_id)
+        return self.query_total(self.__manual_test_cases_query_id)
 
     def nr_manual_test_cases_not_measured(self) -> int:
         """ Return the number of manual test cases whose duration has not been measured. """
@@ -98,13 +58,13 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def nr_user_stories_without_security_risk_assessment(self) -> int:
         """ Return the number of user stories without security risk assessment. """
-        return self.__query_total(self.__user_stories_without_security_risk_query_id)
+        return self.query_total(self.__user_stories_without_security_risk_query_id)
 
     def nr_user_stories_without_performance_risk_assessment(self) -> int:
         """ Return the number of user stories without performance risk assessment. """
-        return self.__query_total(self.__user_stories_without_performance_risk_query_id)
+        return self.query_total(self.__user_stories_without_performance_risk_query_id)
 
-    def __query_total(self, query_id: int) -> int:
+    def query_total(self, query_id: int) -> int:
         """ Return the number of results of the specified query. """
         results = self.__get_query(query_id)
         return int(results['total']) if results else -1
@@ -137,13 +97,13 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
 
     def __get_query(self, query_id: int) -> Optional[Mapping]:
         """ Get the JSON from the query and evaluate it. """
-        query_url = self.__get_query_url(query_id)
+        query_url = self.get_query_url(query_id)
         try:
             return utils.eval_json(self.url_read(query_url)) if query_url else None
         except url_opener.UrlOpener.url_open_exceptions:
             return None
 
-    def __get_query_url(self, query_id: int, search: bool=True) -> Optional[str]:
+    def get_query_url(self, query_id: int, search: bool=True) -> Optional[str]:
         """ Get the query url based on the query id. """
         if not query_id:
             return None
@@ -155,46 +115,18 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         url_type = 'searchUrl' if search else 'viewUrl'
         return utils.eval_json(json_string)[url_type]
 
-    def nr_open_bugs_url(self) -> Optional[str]:
-        """ Return the url for the nr of open bug reports query. """
-        return self.__get_query_url(self.__open_bug_query_id, search=False)
-
-    def nr_open_security_bugs_url(self) -> Optional[str]:
-        """ Return the url for the nr of open security bug reports query. """
-        return self.__get_query_url(self.__open_security_bug_query_id, search=False)
-
-    def nr_open_static_security_analysis_bugs_url(self) -> Optional[str]:
-        """ Return the url for the nr of open static security analysis bug reports query. """
-        return self.__get_query_url(self.__open_static_security_analysis_bug_query_id, search=False)
-
-    def nr_open_findings_a_environment_url(self) -> Optional[str]:
-        """ Return the url for the nr of open findings in the A-environment. """
-        return self.__get_query_url(self.__nr_open_findings_a_environment_query_id, search=False)
-
-    def nr_open_findings_i_environment_url(self) -> Optional[str]:
-        """ Return the url for the nr of open findings in the I-environment. """
-        return self.__get_query_url(self.__nr_open_findings_i_environment_query_id, search=False)
-
-    def nr_open_findings_f_environment_url(self) -> Optional[str]:
-        """ Return the url for the nr of open findings in the F-environment. """
-        return self.__get_query_url(self.__nr_open_findings_f_environment_query_id, search=False)
-
     def manual_test_cases_url(self) -> Optional[str]:
         """ Return the url for the manual test cases query. """
-        return self.__get_query_url(self.__manual_test_cases_query_id, search=False)
+        return self.get_query_url(self.__manual_test_cases_query_id, search=False)
 
     def user_stories_ready_url(self) -> Optional[str]:
         """ Return the url for the ready user stories query. """
-        return self.__get_query_url(self.__user_stories_ready_query_id, search=False)
-
-    def nr_technical_debt_issues_url(self) -> Optional[str]:
-        """ Return the url for the technical debt issues query. """
-        return self.__get_query_url(self.__technical_debt_issues_query_id, search=False)
+        return self.get_query_url(self.__user_stories_ready_query_id, search=False)
 
     def user_stories_without_security_risk_assessment_url(self) -> Optional[str]:
         """ Return the url for the user stories without security risk assessment query. """
-        return self.__get_query_url(self.__user_stories_without_security_risk_query_id, search=False)
+        return self.get_query_url(self.__user_stories_without_security_risk_query_id, search=False)
 
     def user_stories_without_performance_risk_assessment_url(self) -> Optional[str]:
         """ Return the url for the user stories without performance risk assessment query. """
-        return self.__get_query_url(self.__user_stories_without_performance_risk_query_id, search=False)
+        return self.get_query_url(self.__user_stories_without_performance_risk_query_id, search=False)

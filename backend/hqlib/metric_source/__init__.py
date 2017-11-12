@@ -22,6 +22,8 @@ from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
 from .abstract.issue_log import ActionLog, IssueLog, RiskLog
+from .abstract.issue_tracker import BugTracker, SecurityBugTracker, StaticSecurityBugTracker, FindingTracker, \
+    TechnicalDebtTracker
 from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
 from .abstract.version_control_system import VersionControlSystem
@@ -32,6 +34,7 @@ from .coverage_report.ncover import NCover
 from .history import History, CompactHistory
 from .holiday_planner import HolidayPlanner
 from .ci_server.jenkins import Jenkins
+from .issue_tracker.jira_filter import JiraFilter
 from .jira import Jira
 from .open_vas_scan_report import OpenVASScanReport
 from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport

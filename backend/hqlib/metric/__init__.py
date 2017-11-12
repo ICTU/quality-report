@@ -48,7 +48,7 @@ from .product.checkmarx_metrics import HighRiskCheckmarxAlertsMetric, MediumRisk
 
 # Project metrics
 from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues, \
-    OpenFindingsA, OpenFindingsI, OpenFindingsF
+    OpenFindings
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
     UserStoriesWithoutPerformanceRiskAssessment
 from .project.project_management_metrics import RiskLog, ActionActivity, OverDueActions, StaleActions

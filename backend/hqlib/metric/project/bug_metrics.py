@@ -28,16 +28,10 @@ class OpenBugs(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 50
     low_target_value = 100
-    metric_source_class = metric_source.Jira
-    nr_open_bugs = 'nr_open_bugs'
+    metric_source_class = metric_source.BugTracker
 
     def value(self):
-        nr_open_bugs = getattr(self._metric_source, self.nr_open_bugs)()
-        return -1 if nr_open_bugs in (-1, None) else nr_open_bugs
-
-    def _metric_source_urls(self):
-        nr_open_bugs_url = getattr(self._metric_source, self.nr_open_bugs + '_url')()
-        return [nr_open_bugs_url]
+        return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
 class OpenSecurityBugs(OpenBugs):
@@ -47,7 +41,7 @@ class OpenSecurityBugs(OpenBugs):
     unit = 'open beveiligingsbugreports'
     target_value = 0
     low_target_value = 3
-    nr_open_bugs = 'nr_open_security_bugs'
+    metric_source_class = metric_source.SecurityBugTracker
 
 
 class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
@@ -55,55 +49,24 @@ class OpenStaticSecurityAnalysisBugs(OpenSecurityBugs):
 
     name = 'Hoeveelheid open beveiligingsbugreports uit statische security analyse'
     unit = 'open beveiligingsbugreports uit statische security analyse'
-    nr_open_bugs = 'nr_open_static_security_analysis_bugs'
+    metric_source_class = metric_source.StaticSecurityBugTracker
 
 
 class OpenFindings(OpenBugs):
     """ Metric for open findings in different test environments. """
 
+    name = 'Hoeveelheid open bevindingen'
     unit = 'open blokkerende bevindingen'
     target_value = 0
     low_target_value = 0
+    metric_source_class = metric_source.FindingTracker
 
 
-class OpenFindingsA(OpenFindings):
-    """ Metric for open findings in the A-environment. """
-
-    unit = OpenFindings.unit + ' in de A-omgeving'
-    name = 'Hoeveelheid open bevindingen in A-omgeving'
-    nr_open_bugs = 'nr_open_findings_a_environment'
-
-
-class OpenFindingsI(OpenFindings):
-    """ Metric for open findings in the I-environment. """
-
-    unit = OpenFindings.unit + ' in de I-omgeving'
-    name = 'Hoeveelheid open bevindingen in I-omgeving'
-    nr_open_bugs = 'nr_open_findings_i_environment'
-
-
-class OpenFindingsF(OpenFindings):
-    """ Metric for open findings in the F-environment. """
-
-    unit = OpenFindings.unit + ' in de F-omgeving'
-    name = 'Hoeveelheid open bevindingen in F-omgeving'
-    nr_open_bugs = 'nr_open_findings_f_environment'
-
-
-class TechnicalDebtIssues(LowerIsBetterMetric):
+class TechnicalDebtIssues(OpenBugs):
     """ Metric for measuring the number of technical debt issues. """
 
     name = 'Hoeveelheid technische schuld issues'
     unit = 'technische schuld issues'
-    norm_template = 'Het aantal {unit} is maximaal {target}. Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
     target_value = 10
     low_target_value = 50
-    metric_source_class = metric_source.Jira
-
-    def value(self):
-        nr_issues = self._metric_source.nr_technical_debt_issues()
-        return -1 if nr_issues in (-1, None) else nr_issues
-
-    def _metric_source_urls(self):
-        return [self._metric_source.nr_technical_debt_issues_url()]
+    metric_source_class = metric_source.TechnicalDebtTracker

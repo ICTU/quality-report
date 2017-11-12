@@ -40,9 +40,9 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
         urls = self.urls(product)
         for url in urls:
             soup = self.soup(url)
-            resp_times_header = soup.find('h2', text="Responsetimes (ms)")
+            resp_times_header = soup.find('h2', string=["Responsetimes (ms)", "Response times (ms)"])
             if resp_times_header is None:
-                raise ValueError('Invalid report: header ''Responsetimes'' not found.')
+                raise ValueError('Invalid report: header "Responsetimes" not found.')
             table = resp_times_header.findNext('table')
             for row in table('tr'):
                 query_names = row('td', attrs={'class': ['name']})

@@ -1,5 +1,7 @@
-2017-11-10  Release 2.13.3
+2017-11-12  Release 2.14.0
 
+  * Add Jira filter metric source for bug tracker metrics. 
+    See https://github.com/ICTU/quality-report/wiki/Bug-tracker-metrics.
   * Bug fix: Don't count the rows in the trend table of Silkperformer performance reports as transactions.
   
   
@@ -17,16 +19,16 @@
 2017-10-28  Release 2.13.0
 
   * Add WekanBoard metric source which can be used as RiskLog and ActionLog, in addition to TrelloBoard.
-    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics-and-metric-sources, 
-    https://github.com/ICTU/quality-report/wiki/Risk-log-metrics-and-metric-sources and
+    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics, 
+    https://github.com/ICTU/quality-report/wiki/Risk-log-metrics and
     https://github.com/ICTU/quality-report/wiki/Wekan.
   
   
 2017-10-23  Release 2.12.0
 
   * Introduce abstract RiskLog and ActionLog metric sources. The only concrete implemention is TrelloBoard. 
-    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics-and-metric-sources, 
-    https://github.com/ICTU/quality-report/wiki/Risk-log-metrics-and-metric-sources and
+    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics, 
+    https://github.com/ICTU/quality-report/wiki/Risk-log-metrics and
     https://github.com/ICTU/quality-report/wiki/Trello.
 
 
@@ -44,7 +46,7 @@
 
   * Introduce an abstract CIServer metric source. The only concrete implementation is Jenkins. Note that Jenkins need
     to be added to the project using the CIServer key. See 
-    https://github.com/ICTU/quality-report/wiki/CI-server-metrics-and-metric-sources and
+    https://github.com/ICTU/quality-report/wiki/CI-server-metrics and
     https://github.com/ICTU/quality-report/wiki/Jenkins.
   
   
@@ -59,7 +61,7 @@
 2017-10-19  Release 2.10.4
 
   * Allow for using regular expressions in the Splunk performance report metric source id.
-    See https://github.com/ICTU/quality-report/wiki/Performance-test-metrics-and-metric-sources
+    See https://github.com/ICTU/quality-report/wiki/Performance-test-metrics.
       
 
 2017-10-19  Release 2.10.3
@@ -82,7 +84,7 @@
 
   * Introduce new abstract class for unit test reports: metric_source.UnitTestReport. Note that metric_source.Sonar 
     is no longer used as metric source for unit test metrics. You need to add a SonarTestReport as metric source to the 
-    project. See https://github.com/ICTU/quality-report/wiki/Unit-test-metrics-and-metric-sources.
+    project. See https://github.com/ICTU/quality-report/wiki/Unit-test-metrics.
   
 
 2017-10-16  Release 2.9.9

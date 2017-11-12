@@ -21,8 +21,9 @@ from .product_quality import TrustedProductMaintainability, OWASPDependencies, C
     ARTCoverage, CodeQuality, JSFCodeQuality, PerformanceLoad, PerformanceEndurance, PerformanceScalability,\
     TrackBranches
 from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScript
-from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, TrackFindings, \
-    TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, TrackSecurityAndPerformanceRisks
+from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, TrackSecurityBugs, \
+    TrackStaticSecurityBugs, TrackFindings, TrackTechnicalDebt, TrackActions, TrackRisks, TrackReadyUS, \
+    TrackSecurityAndPerformanceRisks
 from .environment import TrackCIJobs, TrackSonarVersion, OpenVAS
 from .team import ScrumTeam, TrackSpirit, TrackAbsence
 from .document import TrackDocumentAge

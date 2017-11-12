@@ -37,7 +37,8 @@ class QualityReport(domain.DomainObject):
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
                 requirement.CodeQuality, requirement.JSFCodeQuality, requirement.PerformanceLoad,
                 requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
-                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackFindings,
+                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
+                requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
                 requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
@@ -177,6 +178,7 @@ class QualityReport(domain.DomainObject):
         """ Return the process section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions,
                                                   requirement.TrackRisks, requirement.TrackBugs,
+                                                  requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
                                                   requirement.TrackFindings, requirement.TrackTechnicalDebt,
                                                   requirement.TrackManualLTCs, requirement.TrackReadyUS,
                                                   requirement.TrackSecurityAndPerformanceRisks)
@@ -203,12 +205,12 @@ class QualityReport(domain.DomainObject):
 
     def __product_section(self, product: domain.Product) -> Optional[Section]:
         """ Return the section for the product. """
-        metrics = self.__required_subject_metrics(product, requirement.UnitTests, requirement.ART,
-                                                  requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-                                                  requirement.CodeQuality, requirement.PerformanceLoad,
-                                                  requirement.PerformanceEndurance, requirement.PerformanceScalability,
-                                                  requirement.OWASPDependencies, requirement.OWASPZAP,
-                                                  requirement.Checkmarx)
+        metrics = self.__required_subject_metrics(
+            product, requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+            requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.UnitTests, requirement.ART,
+            requirement.ARTCoverage, requirement.UserStoriesAndLTCs, requirement.CodeQuality,
+            requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
+            requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))

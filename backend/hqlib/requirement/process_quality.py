@@ -37,13 +37,25 @@ class TrackManualLTCs(Requirement):
 class TrackBugs(Requirement):
     """ Require bug reports to be tracked. """
     _name = 'Track open bug reports'
-    _metric_classes = (metric.OpenBugs, metric.OpenSecurityBugs, metric.OpenStaticSecurityAnalysisBugs)
+    _metric_classes = (metric.OpenBugs,)
+
+
+class TrackSecurityBugs(Requirement):
+    """ Require security bug reports to be tracked. """
+    _name = 'Track open security bug reports'
+    _metric_classes = (metric.OpenSecurityBugs,)
+
+
+class TrackStaticSecurityBugs(Requirement):
+    """ Require security bug reports to be tracked. """
+    _name = 'Track open static security analysis bug reports'
+    _metric_classes = (metric.OpenStaticSecurityAnalysisBugs,)
 
 
 class TrackFindings(Requirement):
     """ Require findings for environments to be tracked. """
     _name = 'Track open findings'
-    _metric_classes = (metric.OpenFindingsA, metric.OpenFindingsI, metric.OpenFindingsF)
+    _metric_classes = (metric.OpenFindings,)
 
 
 class TrackTechnicalDebt(Requirement):
