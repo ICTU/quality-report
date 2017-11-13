@@ -1,3 +1,9 @@
+2017-11-13  Release 2.15.0
+
+  * Add the Track findings and Track technical debt requirement as optional requirement to the Product, Application, 
+    and Component domain objects. 
+    
+    
 2017-11-12  Release 2.14.2
 
   * Bug fix: Look at the most recently changed card when reporting the last activity of a Wekan board instead of at the
