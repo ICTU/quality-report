@@ -24,7 +24,7 @@ class OpenBugs(LowerIsBetterMetric):
 
     name = 'Hoeveelheid open bugreports'
     unit = 'open bugreports'
-    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
+    norm_template = 'Het aantal {unit} is niet meer dan {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
     target_value = 50
     low_target_value = 100
@@ -70,3 +70,13 @@ class TechnicalDebtIssues(OpenBugs):
     target_value = 10
     low_target_value = 50
     metric_source_class = metric_source.TechnicalDebtTracker
+
+
+class QualityGate(OpenBugs):
+    """ Metric for measuring whether a product passes the quality gate. """
+
+    name = 'Hoeveelheid quality gate bevindingen'
+    unit = 'quality gate bevindingen'
+    target_value = 0
+    low_target_value = 0
+    metric_source_class = metric_source.QualityGateTracker

@@ -1,3 +1,8 @@
+2017-11-13  Release 2.16.0
+
+  * Add a Quality gate metric. See https://github.com/ICTU/quality-report/wiki/Bug-tracker-metrics.
+  
+  
 2017-11-13  Release 2.15.0
 
   * Add the Track findings and Track technical debt requirement as optional requirement to the Product, Application, 

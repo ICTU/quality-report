@@ -56,8 +56,17 @@ class FindingTracker(BugTracker):
 
 
 class TechnicalDebtTracker(BugTracker):
-    """ Abstract base class for finding strackers. """
+    """ Abstract base class for finding trackers. """
     metric_source_name = 'Technische schuld tracker'
+
+    def nr_issues(self, *metric_source_ids: str) -> str:
+        """ Return the number of issues for the metric source ids. """
+        raise NotImplementedError
+
+
+class QualityGateTracker(BugTracker):
+    """ Abstract base class for quality gate trackers. """
+    metric_source_name = 'Quality gate tracker'
 
     def nr_issues(self, *metric_source_ids: str) -> str:
         """ Return the number of issues for the metric source ids. """

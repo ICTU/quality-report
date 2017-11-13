@@ -64,6 +64,12 @@ class TrackTechnicalDebt(Requirement):
     _metric_classes = (metric.TechnicalDebtIssues,)
 
 
+class TrackQualityGate(Requirement):
+    """ Require the quality gate to be tracked. """
+    _name = 'Track quality gate'
+    _metric_classes = (metric.QualityGate,)
+
+
 class TrackActions(Requirement):
     """ Require actions to be tracked. """
     _name = 'Track actions'

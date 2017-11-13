@@ -39,7 +39,7 @@ class QualityReport(domain.DomainObject):
                 requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
                 requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
                 requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
-                requirement.TrackTechnicalDebt, requirement.TrackManualLTCs,
+                requirement.TrackTechnicalDebt, requirement.TrackQualityGate, requirement.TrackManualLTCs,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence,
@@ -176,10 +176,10 @@ class QualityReport(domain.DomainObject):
 
     def __process_section(self) -> Optional[Section]:
         """ Return the process section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions,
-                                                  requirement.TrackRisks, requirement.TrackBugs,
-                                                  requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
-                                                  requirement.TrackFindings, requirement.TrackTechnicalDebt,
+        metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions, requirement.TrackRisks,
+                                                  requirement.TrackBugs, requirement.TrackSecurityBugs,
+                                                  requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
+                                                  requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
                                                   requirement.TrackManualLTCs, requirement.TrackReadyUS,
                                                   requirement.TrackSecurityAndPerformanceRisks)
         self.__metrics.extend(metrics)
@@ -207,10 +207,11 @@ class QualityReport(domain.DomainObject):
         """ Return the section for the product. """
         metrics = self.__required_subject_metrics(
             product, requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
-            requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.UnitTests, requirement.ART,
-            requirement.ARTCoverage, requirement.UserStoriesAndLTCs, requirement.CodeQuality,
-            requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
-            requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx)
+            requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
+            requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
+            requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
+            requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
+            requirement.Checkmarx)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
