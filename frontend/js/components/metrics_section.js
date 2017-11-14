@@ -15,7 +15,7 @@
 
 import React from 'react';
 import {MetricsTable} from 'components/metrics_table.js';
-
+import {LastBuiltLabel} from 'components/last_built_label.js';
 
 class MetricsSection extends React.Component {
     render() {
@@ -23,7 +23,12 @@ class MetricsSection extends React.Component {
             <section key={this.props.section} id={"section_" + this.props.section}
                      style={{display: this.props.display}} className={this.props.class_name}>
                 <div className="page-header">
-                    <h1>{this.props.title}</h1>
+                    <h1>
+                        {this.props.title}
+                        <small className="align-top">
+                            <LastBuiltLabel latest_change_date={this.props.latest_change_date}/>
+                        </small>
+                    </h1>
                 </div>
                 <div className="metric_table" id={"table_" + this.props.section}>
                     <MetricsTable key={this.props.section} metrics={this.props.metrics}

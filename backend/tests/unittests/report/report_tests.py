@@ -144,6 +144,44 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(project)
         self.assertEqual(('Sonar', 'sonar-id'), quality_report.sonar_id(product))
 
+    def test_vcs_id(self):
+        """ Test that the VCS id can be retrieved. """
+        vcs = 'VCS'
+        project = domain.Project('organization', metric_sources={metric_source.VersionControlSystem: vcs})
+        product = domain.Product(metric_source_ids={vcs: 'vcs_id'})
+        quality_report = report.QualityReport(project)
+        self.assertEqual(('VCS', 'vcs_id'), quality_report.vcs_id(product))
+
+    def test_vcs_id_when_product_is_none(self):
+        """ Test that the empty VCS id is retrieved for None product. """
+        vcs = 'VCS'
+        project = domain.Project('organization', metric_sources={metric_source.VersionControlSystem: vcs})
+        product = None
+        quality_report = report.QualityReport(project)
+        self.assertEqual((None, ''), quality_report.vcs_id(product))
+
+    def test_vcs_id_when_no_metric_source_id(self):
+        """ Test that the empty VCS id is retrieved when there is no metric source id """
+        vcs = 'VCS'
+        project = domain.Project('organization', metric_sources={metric_source.VersionControlSystem: vcs})
+        product = domain.Product(metric_source_ids={})
+        quality_report = report.QualityReport(project)
+        self.assertEqual((None, ''), quality_report.vcs_id(product))
+
+    def test_last_product_change_date(self):
+        """ Test that the report can retrieve the last changed date of a product. """
+        class FakeVCS(object):  # pylint: disable=too-few-public-methods
+            """ Fake VCS metric source with a fixed changed date. """
+            @staticmethod
+            def last_changed_date(vcs_id):  # pylint: disable=unused-argument
+                return datetime.datetime(2017, 1, 1)
+
+        vcs = FakeVCS()
+        project = domain.Project('organization', metric_sources={metric_source.VersionControlSystem: vcs})
+        product = domain.Product(metric_source_ids={vcs: 'vcs_id'})
+        quality_report = report.QualityReport(project)
+        self.assertEqual(datetime.datetime(2017, 1, 1), quality_report.latest_product_change_date(product))
+
 
 class QualityReportMetaDataTest(unittest.TestCase):
     """ Unit tests for the meta data methods of the quality report. """

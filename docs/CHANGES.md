@@ -1,3 +1,8 @@
+2017-11-14  Release 2.17.0
+
+  * Add label that shows time since last commit
+
+
 2017-11-13  Release 2.16.0
 
   * Add a Quality gate metric. See https://github.com/ICTU/quality-report/wiki/Bug-tracker-metrics.

@@ -83,6 +83,7 @@ class MetricsSections extends React.Component {
                 });
                 metrics_sections.push(
                     <MetricsSection key={section["id"]} section={section["id"]}
+                                    latest_change_date = {section["latest_change_date"]}
                                     class_name="metric_section" title={section["title"]} metrics={section_metrics}
                                     table_sort_column_name={this.state.table_sort_column_name}
                                     table_sort_ascending={this.state.table_sort_ascending}

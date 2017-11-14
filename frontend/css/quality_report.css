@@ -83,3 +83,7 @@ div.meta_metrics_history_graph {
 .missing_source_metric {
     background-color: #F8F8F8;
 }
+
+.label_space {
+    margin-left: 10px;
+}

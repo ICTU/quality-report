@@ -122,9 +122,10 @@ title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measu
 
     def prefix(self, report: QualityReport) -> str:
         return '{{"report_date": {report_date}, "report_title": "{report_title}", ' \
-               '"hq_version": "{version}", "sections": [{sections}], "dashboard": {dashboard}, "metrics": ['.format(
-            report_date=self.__report_date(report), report_title=report.title(), sections=self.__sections(report),
-            dashboard=self.__dashboard(report), version=VERSION)
+               '"hq_version": "{version}", "sections": [{sections}], "dashboard": {dashboard}, ' \
+               '"metrics": ['.format(report_date=self.__report_date(report), report_title=report.title(),
+                                     sections=self.__sections(report), dashboard=self.__dashboard(report),
+                                     version=VERSION)
 
     @staticmethod
     def postfix() -> str:
@@ -183,9 +184,11 @@ title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measu
     @classmethod
     def __sections(cls, report: QualityReport) -> str:
         """ Return a JSON list of the report sections. """
-        return ', '.join(['{{"id": "{id_}", "title": "{title}", "subtitle": "{subtitle}"}}'.format(
-            id_=section.id_prefix(), title=section.title(), subtitle=section.subtitle())
-            for section in report.sections()])
+        return ', '.join(['{{"id": "{id_}", "title": "{title}", "subtitle": "{subtitle}", '
+                          '"latest_change_date": "{latest_change_date}"}}'.format(
+                              id_=section.id_prefix(), title=section.title(), subtitle=section.subtitle(),
+                              latest_change_date=report.latest_product_change_date(section.product()))
+                          for section in report.sections()])
 
     @classmethod
     def __dashboard(cls, report: QualityReport) -> str:
