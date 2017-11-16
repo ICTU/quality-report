@@ -190,7 +190,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return parameters
 
     def _missing(self) -> bool:
-        return self._metric_source.plugin_version(self.plugin_key) in ('0.0', None)
+        return self._metric_source.plugin_version(self.plugin_key) in ('0.0', None) if self._metric_source else True
 
 
 class SonarPluginVersionJava(SonarPluginVersion):

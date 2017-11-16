@@ -153,6 +153,14 @@ class SonarPluginVersionTest(unittest.TestCase):
         version = metric.SonarPluginVersionCSharp(project=self.__project, subject=self.__environment)
         self.assertEqual(LooseVersion('0.0'), version.value())
 
+    def test_value_with_multiple_sources(self):
+        """ Test that the value is '0.0' when multiple metric source have been configured, but not metric source id. """
+        sonar1, sonar2 = FakeSonar(), FakeSonar()
+        version = metric.SonarPluginVersionJava(
+            project=domain.Project(metric_sources={metric_source.Sonar: [sonar1, sonar2]}),
+            subject=domain.Environment())
+        self.assertEqual(LooseVersion('0.0'), version.value())
+
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual("Sonar plugin Java is versie 11.4.", self.__metric.report())
