@@ -1,3 +1,8 @@
+2017-11-16  Release 2.17.2
+
+  * Bug fix: Don't crash when multiple Sonar instances have been configured but no metric source id.
+  
+
 2017-11-16  Release 2.17.1
 
   * Bug fix: Don't crash when multiple Sonar instances have been configured but no metric source id.

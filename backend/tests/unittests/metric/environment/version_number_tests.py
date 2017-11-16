@@ -108,6 +108,14 @@ class SonarQualityProfileVersionTest(unittest.TestCase):
         version = metric.SonarQualityProfileVersionCSharp(project=self.__project, subject=self.__environment)
         self.assertEqual(LooseVersion('0.0'), version.value())
 
+    def test_value_with_multiple_sources(self):
+        """ Test that the value is '0.0' when multiple metric source have been configured, but not metric source id. """
+        sonar1, sonar2 = FakeSonar(), FakeSonar()
+        version = metric.SonarQualityProfileVersionJava(
+            project=domain.Project(metric_sources={metric_source.Sonar: [sonar1, sonar2]}),
+            subject=domain.Environment())
+        self.assertEqual(LooseVersion('0.0'), version.value())
+
     def test_numerical_value(self):
         """ Test that the numerical value is a weighted sum of the first three version number parts. """
         self.assertEqual(10600, self.__metric.numerical_value())

@@ -90,7 +90,8 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
         return parameters
 
     def _missing(self) -> bool:
-        return self._metric_source.default_quality_profile(self.language_key) in ('', None)
+        return self._metric_source.default_quality_profile(self.language_key) in ('', None) \
+            if self._metric_source else True
 
 
 class SonarQualityProfileVersionJava(SonarQualityProfileVersion):
