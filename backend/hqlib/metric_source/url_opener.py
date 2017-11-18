@@ -21,30 +21,32 @@ import logging
 import signal
 import socket
 import urllib.error
+import urllib.parse
 import urllib.request
 import sys
 from typing import cast, Callable, IO
-import types
 
 
 class Timeout(object):
     """ Time out class using the alarm signal. """
-    def __init__(self, duration_in_seconds: int, signal: types.ModuleType=signal) -> None:
+    def __init__(self, duration_in_seconds: int) -> None:
         self.__duration = duration_in_seconds
-        self.__signal_module = signal
 
     def __enter__(self) -> None:
         if not sys.platform.startswith("win"):
-            self.__signal_module.signal(self.__signal_module.SIGALRM, self.__raise_timeout)
-            self.__signal_module.alarm(self.__duration)
+            signal.signal(signal.SIGALRM, self.__raise_timeout)
+            signal.alarm(self.__duration)
 
     def __exit__(self, *args) -> None:
         if not sys.platform.startswith("win"):
-            self.__signal_module.alarm(0)  # Disable the alarm
+            signal.alarm(0)  # Disable the alarm
 
     def __raise_timeout(self, *args) -> None:
         """ Raise the TimeoutError exception. """
         raise TimeoutError("Operation timed out after {0} seconds.".format(self.__duration))
+
+
+TIMED_OUT_NETLOCS = set()  # Keep track of the network locations (host/port) that have timed out
 
 
 class UrlOpener(object):
@@ -53,11 +55,10 @@ class UrlOpener(object):
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
                            http.client.BadStatusLine, TimeoutError)
 
-    def __init__(self, uri: str=None, username: str=None, password: str=None,
-                 build_opener=urllib.request.build_opener, url_open=urllib.request.urlopen) -> None:
+    def __init__(self, uri: str=None, username: str=None, password: str=None) -> None:
         self.__username = username
         self.__password = password
-        self.__opener = self.__create_url_opener(uri, build_opener, url_open)
+        self.__opener = self.__create_url_opener(uri)
 
     def username(self) -> str:
         """ Return the username, if any. """
@@ -67,13 +68,13 @@ class UrlOpener(object):
         """ Return the password, if any. """
         return self.__password
 
-    def __create_url_opener(self, uri: str, build_opener, url_open) -> Callable[[str], IO]:
+    def __create_url_opener(self, uri: str) -> Callable[[str], IO]:
         """ Return a url opener method. If credentials are supplied, create an opener with authentication handler. """
         if uri and self.__username and self.__password:
             password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             password_manager.add_password(realm=None, uri=uri, user=self.__username, passwd=self.__password)
             auth_handler = urllib.request.HTTPBasicAuthHandler(cast(urllib.request.HTTPPasswordMgr, password_manager))
-            return build_opener(auth_handler).open
+            return urllib.request.build_opener(auth_handler).open
         elif self.__username and self.__password:
             credentials = base64.b64encode(bytes(':'.join([self.__username, self.__password]), 'utf-8')).decode('ascii')
 
@@ -81,19 +82,26 @@ class UrlOpener(object):
                 """ Open the url with basic authentication. """
                 request = urllib.request.Request(url)
                 request.add_header('Authorization', 'Basic ' + credentials)
-                return url_open(request)
+                return urllib.request.urlopen(request)
 
             return url_open_with_basic_auth
         else:
-            return url_open
+            return urllib.request.urlopen
 
     def url_open(self, url: str) -> IO:
         """ Return an opened url, using the opener created earlier. """
+        netloc = urllib.parse.urlparse(url).netloc
+        if netloc in TIMED_OUT_NETLOCS:
+            reason = "Skipped because {0} timed out before.".format(netloc)
+            logging.warning("Not opening %s: %s", url, reason)
+            raise TimeoutError(reason)
         try:
             with Timeout(15):
                 return self.__opener(url)
         except self.url_open_exceptions as reason:
-            logging.warning("Couldn't open %s: %s", url, reason)
+            logging.error("Couldn't open %s: %s", url, reason)
+            if "Operation timed out after " in str(reason):
+                TIMED_OUT_NETLOCS.add(netloc)
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)

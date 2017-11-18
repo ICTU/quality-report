@@ -1,3 +1,8 @@
+2017-11-18  Release 2.17.3
+
+  * Don't keep contacting hosts that are known to be unavailable. Closes #142.
+  
+
 2017-11-16  Release 2.17.2
 
   * Bug fix: Don't crash when multiple Sonar instances have been configured but no metric source id.
