@@ -90,7 +90,7 @@ class Metric(object):
                 self._metric_source = None
         self.__id_string = self.stable_id()
         from hqlib import metric_source
-        self.__history = self._project.metric_source(metric_source.History)
+        self.__history = self._project.metric_source(metric_source.History) if self._project else None
 
     def stable_id(self) -> str:
         """ Return an id that doesn't depend on numbering/order of metrics. """

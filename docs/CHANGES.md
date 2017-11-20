@@ -1,3 +1,7 @@
+2017-11-20  Release 2.17.4
+
+  * Metric source analysis age gives age of 0 days if it appears to be negative. Closes #152.
+
 2017-11-18  Release 2.17.3
 
   * Don't keep contacting hosts that are known to be unavailable. Closes #142.

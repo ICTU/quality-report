@@ -29,8 +29,12 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
-        return -1 if self._missing() else \
-            (datetime.datetime.now() - self._metric_source.datetime(*self._get_metric_source_ids())).days
+        if self._missing():
+            return -1
+
+        days = (datetime.datetime.now() - self._metric_source.datetime(*self._get_metric_source_ids())).days
+        return 0 if days < 0 else days
+
 
     @functools.lru_cache(maxsize=1024)
     def _missing(self):
