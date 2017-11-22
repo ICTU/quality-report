@@ -279,6 +279,14 @@ class QualityReportMetricsTest(unittest.TestCase):
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(documents=[domain.Document()]))
 
+    def test_document_added_requirements(self):
+        """ Test that the document metrics are added if a document with added requirements is added to the project. """
+        for req in [requirement.TrackDocumentAge, requirement.TrackSecurityTestDate]:
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class,
+                                     project_kwargs=dict(documents=[domain.Document()],
+                                                         added_requirements=[requirement.TrackSecurityTestDate]))
+
     def test_product_requirements(self):
         """ Test that the product metrics are added if required. """
         for req in [requirement.CodeQuality, requirement.ART, requirement.ARTCoverage,
@@ -309,6 +317,13 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the document age metric is added if possible. """
         document = domain.Document(name='Title', url='http://url/')
         self.__assert_metric(metric.DocumentAge, project_kwargs=dict(documents=[document]))
+
+    def test_last_security_test_metrics(self):
+        """ Test that the document age metric is added if possible. """
+        document = domain.Document(name='Title', url='http://url/')
+        self.__assert_metric(metric.LastSecurityTest,
+                             project_kwargs=dict(documents=[document],
+                                                 added_requirements=[requirement.TrackSecurityTestDate]))
 
     def test_metric_classes(self):
         """ Test that the report gives a list of metric classes. """

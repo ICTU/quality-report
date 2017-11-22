@@ -41,9 +41,9 @@ class Product(RequirementSubject, MeasurableObject):
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
                 requirement.TrackBranches, requirement.UnitTests, requirement.UserStoriesAndLTCs, requirement.TrackBugs,
-                requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs, requirement.TrackTechnicalDebt,
-                requirement.TrackFindings, requirement.TrackQualityGate, requirement.TrackSecurityAndPerformanceRisks,
-                requirement.TrackReadyUS}
+                requirement.TrackSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackStaticSecurityBugs,
+                requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate,
+                requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS}
 
     def __eq__(self, other):
         return self.name() == other.name()

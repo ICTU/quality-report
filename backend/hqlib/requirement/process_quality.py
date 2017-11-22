@@ -46,6 +46,12 @@ class TrackSecurityBugs(Requirement):
     _metric_classes = (metric.OpenSecurityBugs,)
 
 
+class TrackSecurityTestDate(Requirement):
+    """ Require security bug reports to be tracked. """
+    _name = 'Track the last security test date'
+    _metric_classes = (metric.LastSecurityTest,)
+
+
 class TrackStaticSecurityBugs(Requirement):
     """ Require security bug reports to be tracked. """
     _name = 'Track open static security analysis bug reports'

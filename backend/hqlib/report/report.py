@@ -38,7 +38,7 @@ class QualityReport(domain.DomainObject):
                 requirement.CodeQuality, requirement.JSFCodeQuality, requirement.PerformanceLoad,
                 requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
                 requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
-                requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
+                requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackFindings,
                 requirement.TrackTechnicalDebt, requirement.TrackQualityGate, requirement.TrackManualLTCs,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
@@ -196,7 +196,8 @@ class QualityReport(domain.DomainObject):
         """ Return the process section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions, requirement.TrackRisks,
                                                   requirement.TrackBugs, requirement.TrackSecurityBugs,
-                                                  requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
+                                                  requirement.TrackStaticSecurityBugs,
+                                                  requirement.TrackSecurityTestDate, requirement.TrackFindings,
                                                   requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
                                                   requirement.TrackManualLTCs, requirement.TrackReadyUS,
                                                   requirement.TrackSecurityAndPerformanceRisks)
@@ -217,7 +218,8 @@ class QualityReport(domain.DomainObject):
         """ Return the products overall section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TrustedProductMaintainability)
         for document in self.__project.documents():
-            metrics.extend(self.__required_subject_metrics(document, requirement.TrackDocumentAge))
+            metrics.extend(self.__required_subject_metrics(document, requirement.TrackDocumentAge,
+                                                           requirement.TrackSecurityTestDate))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics) if metrics else None
 

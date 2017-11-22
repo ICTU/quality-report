@@ -1,3 +1,8 @@
+2017-11-29  Release 2.19.0
+
+  * Add metric for time last security test.
+
+
 2017-11-23  Release 2.18.1
 
   * Bug fix: Jira filter metric source didn't work.

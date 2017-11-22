@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import unittest
-from typing import Tuple, Type
+from typing import Tuple
 
 from hqlib import domain
 
@@ -107,3 +107,11 @@ class RequirementSubjectTest(unittest.TestCase):
     def test_should_not_be_measured_by(self):
         """ Test that the subject should not be measured by a metric if it is not required by the subject. """
         self.assertFalse(self.__subject.should_be_measured_by('FakeMetricClass 3'))
+
+    def test_default_default_requirements(self):
+        """ Test that the default requirements are an empty set by default. """
+        self.assertEqual(set(), domain.RequirementSubject.default_requirements())
+
+    def test_default_optional_requirements(self):
+        """ Test that the optiona requirements are an empty set by default. """
+        self.assertEqual(set(), domain.RequirementSubject.optional_requirements())

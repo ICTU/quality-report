@@ -60,6 +60,7 @@ from .team.spirit import TeamSpirit, TeamSpiritAge
 
 # Document metrics
 from .document.age import DocumentAge
+from .document.last_security_test import LastSecurityTest
 
 # Environment metrics
 from .environment.failing_ci_jobs import FailingCIJobs

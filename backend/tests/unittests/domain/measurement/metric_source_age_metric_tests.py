@@ -41,8 +41,8 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
 
         result = self.__metric.value()
 
-        assert missing_mock.called
-        assert self._MetricSourceAgeMetricTest__metric_source.datetime.assert_called_once
+        self.assertTrue(missing_mock.called)
+        self.assertTrue(self._MetricSourceAgeMetricTest__metric_source.datetime.assert_called_once)
         self.assertEqual(0, result)
 
     @patch.object(domain.MetricSourceAgeMetric, '_missing')
@@ -53,8 +53,8 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
 
         result = self.__metric.value()
 
-        assert missing_mock.called
-        assert self._MetricSourceAgeMetricTest__metric_source.datetime.assert_not_called
+        self.assertTrue(missing_mock.called)
+        self.assertTrue(self._MetricSourceAgeMetricTest__metric_source.datetime.assert_not_called)
         self.assertEqual(-1, result)
 
     @patch.object(domain.MetricSourceAgeMetric, '_missing')
@@ -66,8 +66,8 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
             MagicMock(return_value=datetime.datetime.now() - datetime.timedelta(2))
         result = self.__metric.value()
 
-        assert missing_mock.called
-        assert self._MetricSourceAgeMetricTest__metric_source.datetime.assert_called_once
+        self.assertTrue(missing_mock.called)
+        self.assertTrue(self._MetricSourceAgeMetricTest__metric_source.datetime.assert_called_once)
         self.assertEqual(2, result)
 
     @patch.object(domain.MetricSourceAgeMetric, '_missing')
@@ -81,8 +81,8 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
 
         result = self.__metric.value()
 
-        assert missing_mock.called
-        assert self._MetricSourceAgeMetricTest__metric_source.datetime.assert_called_once
+        self.assertTrue(missing_mock.called)
+        self.assertTrue(self._MetricSourceAgeMetricTest__metric_source.datetime.assert_called_once)
         self.assertEqual(0, result)
 
     def test_status(self):

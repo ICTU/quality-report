@@ -1,11 +1,13 @@
 """ Project definition for the Quality Report software itself. """
 
 import datetime
+import os
 
 from hqlib import metric_source, metric, requirement
 from hqlib.domain import Project, Environment, Application, Team, Document, TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
@@ -15,6 +17,7 @@ HISTORY = metric_source.History('docs/examples/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
+SECURITY_REPORT_PROXY = metric_source.FileWithDate()
 
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
@@ -25,7 +28,9 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.Sonar: SONAR,
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
-                      metric_source.History: HISTORY},
+                      metric_source.History: HISTORY,
+                      metric_source.FileWithDate: SECURITY_REPORT_PROXY
+                  },
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
@@ -60,6 +65,17 @@ QUALITY_REPORT = Application(
                                                         25, datetime.datetime(2014, 6, 1))),
         metric.UnmergedBranches:
             dict(branches_to_ignore=['spike'], comment="Ignore the spike branch (2016-06-15).")})
+
+SECURITY_REPORT = Document(
+    name='Security report',
+    url='http://url/to/report',
+    added_requirements=[requirement.TrackSecurityTestDate],
+    metric_source_ids={
+        SECURITY_REPORT_PROXY: 'file:///' + dir_path + '/../example_metric_sources/file_with_date.json'
+    }
+)
+
+PROJECT.add_document(SECURITY_REPORT)
 
 PROJECT.add_product(QUALITY_REPORT)
 

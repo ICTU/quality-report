@@ -44,7 +44,8 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     @staticmethod
     def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackActions, requirement.TrackBugs, requirement.TrackSecurityBugs,
+        return {requirement.TrackActions, requirement.TimeLastSecurityTest, requirement.TrackBugs,
+                requirement.TrackSecurityBugs, requirement.TrackSecurityTestDate,
                 requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
                 requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,

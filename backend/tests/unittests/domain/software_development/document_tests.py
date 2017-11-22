@@ -17,6 +17,7 @@ limitations under the License.
 import unittest
 
 from hqlib import domain
+from hqlib import requirement
 
 
 class DocumentTest(unittest.TestCase):
@@ -35,3 +36,11 @@ class DocumentTest(unittest.TestCase):
     def test_id_string(self):
         """ Test that the id string for the document does not contain spaces. """
         self.assertEqual('document_name', self.__document.id_string())
+
+    def test_optional_requirements(self):
+        """ Test optional requirements. """
+        self.assertEqual(self.__document.optional_requirements(), {requirement.TrackSecurityTestDate})
+
+    def test_default_requirements(self):
+        """ Test default requirements. """
+        self.assertEqual(self.__document.default_requirements(), {requirement.TrackDocumentAge})

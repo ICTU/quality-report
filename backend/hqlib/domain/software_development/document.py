@@ -28,6 +28,11 @@ class Document(RequirementSubject, MeasurableObject):
         from ... import requirement  # Run time import to prevent circular dependency.
         return {requirement.TrackDocumentAge}
 
+    @staticmethod
+    def optional_requirements() -> Set[Type[Requirement]]:
+        from ... import requirement
+        return {requirement.TrackSecurityTestDate}
+
     def __str__(self) -> str:
         """ Return the id string of the document. """
         return self.id_string()
