@@ -1,6 +1,13 @@
+2017-11-23  Release 2.18.0
+
+  * Add Jira filter metric source for all issue tracker metrics.
+    See https://github.com/ICTU/quality-report/wiki/Issue-tracker-metrics.
+
+
 2017-11-20  Release 2.17.4
 
-  * Metric source analysis age gives age of 0 days if it appears to be negative. Closes #152.
+  * Bug fix: Metric source analysis age gives age of 0 days if it appears to be negative. Closes #152.
+
 
 2017-11-18  Release 2.17.3
 
@@ -48,7 +55,7 @@
 2017-11-12  Release 2.14.0
 
   * Add Jira filter metric source for bug tracker metrics. 
-    See https://github.com/ICTU/quality-report/wiki/Bug-tracker-metrics.
+    https://github.com/ICTU/quality-report/wiki/Issue-tracker-metrics.
   * Bug fix: Don't count the rows in the trend table of Silkperformer performance reports as transactions.
   
   
