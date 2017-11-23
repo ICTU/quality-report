@@ -31,7 +31,7 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     metric_source_class = metric_source.ReadyUserStoryPointsTracker
 
     def value(self):
-        return self._metric_source.nr_points(*self._get_metric_source_ids()) if self._metric_source else -1
+        return self._metric_source.sum_field(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
 class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):

@@ -1,3 +1,8 @@
+2017-11-23  Release 2.18.1
+
+  * Bug fix: Jira filter metric source didn't work.
+  
+
 2017-11-23  Release 2.18.0
 
   * Add Jira filter metric source for all issue tracker metrics.

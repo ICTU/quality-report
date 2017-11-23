@@ -32,7 +32,7 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(20, self.__metric.value())
+        self.assertEqual(120, self.__metric.value())
 
     def test_url(self):
         """ Test that the url is correct. """
