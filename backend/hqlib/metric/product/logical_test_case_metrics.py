@@ -16,7 +16,6 @@ limitations under the License.
 
 
 import datetime
-from typing import List
 
 from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
@@ -177,20 +176,18 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} {unit}.'
     target_value = 120
     low_target_value = 240
-    metric_source_class = metric_source.Jira
+    metric_source_class = metric_source.ManualLogicalTestCaseTracker
 
     def value(self):
-        duration = self._metric_source.manual_test_cases_time()
-        return -1 if duration is None else duration
-
-    def _metric_source_urls(self) -> List[str]:
-        return [self._metric_source.manual_test_cases_url()]
+        return self._metric_source.manual_test_cases_duration(*self._get_metric_source_ids()) \
+            if self._metric_source else -1
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         if not self._missing():
-            parameters['total'] = total = self._metric_source.nr_manual_test_cases()
-            parameters['measured'] = total - self._metric_source.nr_manual_test_cases_not_measured()
+            parameters['total'] = total = self._metric_source.nr_issues(*self._get_metric_source_ids())
+            not_measured = self._metric_source.nr_manual_test_cases_not_measured(*self._get_metric_source_ids())
+            parameters['measured'] = total - not_measured
         return parameters
 
 
@@ -204,16 +201,13 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
     template = 'Van {value} van de {total} {unit} is de uitvoeringstijd niet ingevuld.'
     target_value = 0
     low_target_value = 5
-    metric_source_class = metric_source.Jira
+    metric_source_class = metric_source.ManualLogicalTestCaseTracker
 
     def value(self):
-        nr_ltcs = self._metric_source.nr_manual_test_cases_not_measured()
-        return -1 if nr_ltcs is None else nr_ltcs
-
-    def _metric_source_urls(self) -> List[str]:
-        return [self._metric_source.manual_test_cases_url()]
+        return self._metric_source.nr_manual_test_cases_not_measured(*self._get_metric_source_ids()) \
+            if self._metric_source else -1
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
-        parameters['total'] = str(self._metric_source.nr_manual_test_cases())
+        parameters['total'] = str(self._metric_source.nr_issues(*self._get_metric_source_ids()))
         return parameters

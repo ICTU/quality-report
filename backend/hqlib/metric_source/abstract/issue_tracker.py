@@ -71,3 +71,51 @@ class QualityGateTracker(BugTracker):
     def nr_issues(self, *metric_source_ids: str) -> str:
         """ Return the number of issues for the metric source ids. """
         raise NotImplementedError
+
+
+class UserStoryWithoutSecurityRiskAssessmentTracker(domain.MetricSource):
+    """ Abstract base class for user story trackers, such as Jira. """
+    metric_source_name = 'User story without security risk assessment tracker'
+    needs_metric_source_id = True
+
+    def nr_issues(self, *metric_source_ids: str) -> str:
+        """ Return the number of issues for the metric source ids. """
+        raise NotImplementedError
+
+
+class UserStoryWithoutPerformanceRiskAssessmentTracker(domain.MetricSource):
+    """ Abstract base class for user story trackers, such as Jira. """
+    metric_source_name = 'User story without performance risk assessment tracker'
+    needs_metric_source_id = True
+
+    def nr_issues(self, *metric_source_ids: str) -> str:
+        """ Return the number of issues for the metric source ids. """
+        raise NotImplementedError
+
+
+class ReadyUserStoryPointsTracker(domain.MetricSource):
+    """ Abstract base class for ready user story points trackers, such as Jira. """
+    metric_source_name = 'Ready user story points tracker'
+    needs_metric_source_id = True
+
+    def nr_points(self, *metric_source_ids: str) -> float:
+        """ Return the number of points for the metric source ids. """
+        raise NotImplementedError
+
+
+class ManualLogicalTestCaseTracker(domain.MetricSource):
+    """ Abstract base class for manual logical test case trackers, such as Jira. """
+    metric_source_name = 'Manual logical test case tracker'
+    needs_metric_source_id = True
+
+    def nr_issues(self, *metric_source_ids: str) -> str:
+        """ Return the number of manual logical test cases for the metric source ids. """
+        raise NotImplementedError
+
+    def nr_manual_test_cases_not_measured(self, *metric_source_ids: str) -> int:
+        """ Return the number of manual test cases whose duration has not been measured. """
+        raise NotImplementedError
+
+    def manual_logical_test_cases_duration(self, *metric_source_ids: str) -> float:
+        """ Return the number of minutes spend on manual test cases. """
+        raise NotImplementedError

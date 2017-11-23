@@ -33,6 +33,21 @@ class FakeJiraFilter(object):
         return 12
 
     @staticmethod
+    def nr_points(*metric_source_ids):
+        """ Return a fake number of points. """
+        return 20
+
+    @staticmethod
+    def manual_test_cases_duration(*metric_source_ids):
+        """ Return a fake duration. """
+        return 120
+
+    @staticmethod
+    def nr_manual_test_cases_not_measured(*metric_source_ids):
+        """ Return a fake number of manual test cases without duration filled in. """
+        return 4
+
+    @staticmethod
     def metric_source_urls(*metric_source_ids):
         """ Return a fake url for each query. """
         return ['http://filter/']

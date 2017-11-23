@@ -46,6 +46,27 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of items is -1 when an error occurs. """
         self.assertEqual(-1, JiraFilter('', '', '', jira=JiraUnderTest('raise', '', '')).nr_issues('12345'))
 
+    def test_sum_field(self):
+        """ Test that the number of points equals what Jira returns. """
+        jira = JiraUnderTest('', '', '')
+        jira.issues = '[{"fields": {"customfield_10002": "2"}},' \
+                      ' {"fields": {"customfield_10002": 10}},' \
+                      ' {"fields": {"customfield_10002": null}}]'
+        self.assertEqual(12, JiraFilter('', '', '', jira=jira, field_name='customfield_10002').sum_field('12345'))
+
+    def test_nr_issues_with_field_empty(self):
+        """ Test that the number of issues with an empty field can be counted. """
+        jira = JiraUnderTest('', '', '')
+        jira.issues = '[{"fields": {"customfield_10002": "2"}},' \
+                      ' {"fields": {"customfield_10002": 10}},' \
+                      ' {"fields": {"customfield_10002": null}}]'
+        self.assertEqual(1, JiraFilter('', '', '', jira=jira,
+                                       field_name='customfield_10002').nr_issues_with_field_empty('12345'))
+
+    def test_sum_fields_on_error(self):
+        """ Test that the number of points is -1 when an error occurs. """
+        self.assertEqual(-1, JiraFilter('', '', '', jira=JiraUnderTest('raise', '', '')).sum_field('12345'))
+
     def test_url(self):
         """ Test that the Jira filter returns the correct url for the filters. """
         self.assertEqual(['http://view'],

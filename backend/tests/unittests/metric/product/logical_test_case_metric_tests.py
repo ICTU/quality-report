@@ -18,6 +18,7 @@ import datetime
 import unittest
 
 from hqlib import metric, domain, metric_source
+from ..project.bug_metrics_tests import FakeJiraFilter
 
 
 class FakeBirt(object):
@@ -250,52 +251,27 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.assertEqual({'Birt reports': self.__birt.manual_test_execution_url()}, self.__metric.url())
 
 
-class FakeJira(object):
-    """ A fake Jira for testing purposes. """
-    metric_source_name = metric_source.Jira.metric_source_name
-    needs_metric_source_id = metric_source.Jira.needs_metric_source_id
-
-    @staticmethod
-    def manual_test_cases_time():
-        """ Return a fake duration of manual tests. """
-        return 110
-
-    @staticmethod
-    def manual_test_cases_url():
-        """ Return the url for the manual test case query. """
-        return 'http://jira'
-
-    @staticmethod
-    def nr_manual_test_cases():
-        """ Return the number of manual test cases. """
-        return 5
-
-    @staticmethod
-    def nr_manual_test_cases_not_measured():
-        """ Return the number of manual test cases whose duration hasn't been measured. """
-        return 2
-
-
 class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
     """ Unit tests for the DurationOfManualLogicalTestCases metric. """
     def setUp(self):
-        self.__jira = FakeJira()
-        self.__project = domain.Project(metric_sources={metric_source.Jira: self.__jira})
+        jira = FakeJiraFilter()
+        self.__project = domain.Project(metric_sources={metric_source.ManualLogicalTestCaseTracker: jira},
+                                        metric_source_ids={jira: '12345'})
         self.__metric = metric.DurationOfManualLogicalTestCases(subject=self.__project, project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric is the duration of the manual logical test cases. """
-        self.assertEqual(110, self.__metric.value())
+        self.assertEqual(120, self.__metric.value())
 
     def test_report(self):
         """ Test the metric report. """
-        self.assertEqual('De uitvoering van 3 van de 5 handmatige logische testgevallen kost 110 minuten.',
+        self.assertEqual('De uitvoering van 8 van de 12 handmatige logische testgevallen kost 120 minuten.',
                          self.__metric.report())
 
     def test_report_without_jira(self):
-        """ Test the metric report when no Jira has been configured. """
+        """ Test the metric report when no Jira filter has been configured. """
         self.assertEqual('De uitvoeringstijd van handmatige logische testgevallen van <no name> kon niet gemeten '
-                         'worden omdat de bron Jira niet is geconfigureerd.',
+                         'worden omdat de bron ManualLogicalTestCaseTracker niet is geconfigureerd.',
                          metric.DurationOfManualLogicalTestCases(domain.Project(), domain.Project()).report())
 
     def test_norm(self):
@@ -305,29 +281,30 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({FakeJira.metric_source_name: FakeJira.manual_test_cases_url()}, self.__metric.url())
+        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
 
 
 class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
     """ Unit tests for the ManualLogicalTestCasesMeasured metric. """
     def setUp(self):
-        self.__jira = FakeJira()
-        self.__project = domain.Project(metric_sources={metric_source.Jira: self.__jira})
+        jira = FakeJiraFilter()
+        self.__project = domain.Project(metric_sources={metric_source.ManualLogicalTestCaseTracker: jira},
+                                        metric_source_ids={jira: '12345'})
         self.__metric = metric.ManualLogicalTestCasesWithoutDuration(subject=self.__project, project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric is the number of logical test cases not measured for duration. """
-        self.assertEqual(2, self.__metric.value())
+        self.assertEqual(4, self.__metric.value())
 
     def test_report(self):
         """ Test the metric report. """
-        self.assertEqual('Van 2 van de 5 handmatige logische testgevallen is de uitvoeringstijd niet ingevuld.',
+        self.assertEqual('Van 4 van de 12 handmatige logische testgevallen is de uitvoeringstijd niet ingevuld.',
                          self.__metric.report())
 
     def test_report_without_jira(self):
-        """ Test the metric report when no Jira has been configured. """
+        """ Test the metric report when no Jira filter has been configured. """
         self.assertEqual('De hoeveelheid logische testgevallen zonder ingevulde uitvoeringstijd van <no name> kon niet '
-                         'gemeten worden omdat de bron Jira niet is geconfigureerd.',
+                         'gemeten worden omdat de bron ManualLogicalTestCaseTracker niet is geconfigureerd.',
                          metric.ManualLogicalTestCasesWithoutDuration(domain.Project(), domain.Project()).report())
 
     def test_norm(self):
@@ -338,4 +315,4 @@ class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url is correct. """
-        self.assertEqual({FakeJira.metric_source_name: FakeJira.manual_test_cases_url()}, self.__metric.url())
+        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())

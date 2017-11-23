@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-
 from ... import metric_source
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
@@ -29,14 +28,10 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 30
     low_target_value = 15
-    metric_source_class = metric_source.Jira
+    metric_source_class = metric_source.ReadyUserStoryPointsTracker
 
     def value(self):
-        nr_points = self._metric_source.nr_story_points_ready()
-        return -1 if nr_points in (-1, None) else nr_points
-
-    def _metric_source_urls(self):
-        return [self._metric_source.user_stories_ready_url()]
+        return self._metric_source.nr_points(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
 class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
@@ -45,12 +40,10 @@ class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3
-    metric_source_class = metric_source.Jira
     nr_user_stories_without_risk_assessment = 'subclass responsibility'
 
     def value(self):
-        nr_stories = getattr(self._metric_source, self.nr_user_stories_without_risk_assessment)()
-        return -1 if nr_stories in (-1, None) else nr_stories
+        return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
 class UserStoriesWithoutSecurityRiskAssessment(UserStoriesWithoutAssessmentMetric):
@@ -58,10 +51,7 @@ class UserStoriesWithoutSecurityRiskAssessment(UserStoriesWithoutAssessmentMetri
 
     name = 'Hoeveelheid user stories zonder security risk beoordeling'
     unit = 'ready user stories zonder security risk beoordeling'
-    nr_user_stories_without_risk_assessment = 'nr_user_stories_without_security_risk_assessment'
-
-    def _metric_source_urls(self):
-        return [self._metric_source.user_stories_without_security_risk_assessment_url()]
+    metric_source_class = metric_source.UserStoryWithoutSecurityRiskAssessmentTracker
 
 
 class UserStoriesWithoutPerformanceRiskAssessment(UserStoriesWithoutAssessmentMetric):
@@ -69,7 +59,4 @@ class UserStoriesWithoutPerformanceRiskAssessment(UserStoriesWithoutAssessmentMe
 
     name = 'Hoeveelheid user stories zonder performance risk beoordeling'
     unit = 'ready user stories zonder performance risk beoordeling'
-    nr_user_stories_without_risk_assessment = 'nr_user_stories_without_performance_risk_assessment'
-
-    def _metric_source_urls(self):
-        return [self._metric_source.user_stories_without_performance_risk_assessment_url()]
+    metric_source_class = metric_source.UserStoryWithoutPerformanceRiskAssessmentTracker

@@ -227,6 +227,7 @@ class QualityReport(domain.DomainObject):
             product, requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
             requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
             requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
+            requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
             requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
             requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
             requirement.Checkmarx)

@@ -17,7 +17,7 @@ limitations under the License.
 
 from typing import List
 
-from hqlib.metric_source import BugTracker
+from ..abstract.issue_tracker import BugTracker
 
 
 class JiraFilter(BugTracker):
@@ -25,14 +25,27 @@ class JiraFilter(BugTracker):
     metric_source_name = 'Jira filter'
     needs_metric_source_id = True
 
-    def __init__(self, url: str, username: str, password: str, jira=None) -> None:
+    def __init__(self, url: str, username: str, password: str, jira=None, field_name: str = '') -> None:
         from hqlib.metric_source import Jira  # Import here to prevent circular import
         self.__jira = jira or Jira(url, username, password)
+        self.__field_name = field_name
         super().__init__()
 
     def nr_issues(self, *metric_source_ids: str) -> int:
         """ Return the number of issues in the filter. """
         results = [self.__jira.query_total(int(metric_source_id)) for metric_source_id in metric_source_ids]
+        return -1 if -1 in results else sum(results)
+
+    def nr_issues_with_field_empty(self, *metric_source_ids: str) -> int:
+        """ Return the number of issues whose field has not been filled in. """
+        results = [self.__jira.query_field_empty(int(metric_source_id), self.__field_name)
+                   for metric_source_id in metric_source_ids]
+        return -1 if -1 in results else sum(results)
+
+    def sum_field(self, *metric_source_ids: str) -> float:
+        """ Return the sum of the values in the specified field. """
+        results = [self.__jira.query_sum(int(metric_source_id), self.__field_name)
+                   for metric_source_id in metric_source_ids]
         return -1 if -1 in results else sum(results)
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:

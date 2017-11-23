@@ -18,58 +18,22 @@ limitations under the License.
 from typing import Optional, Mapping
 
 from . import url_opener
-from .. import utils, domain
+from .. import utils
 
 
-class Jira(domain.MetricSource, url_opener.UrlOpener):
+class Jira(url_opener.UrlOpener):
     """ Class representing the Jira instance. """
-    metric_source_name = 'Jira'
 
-    def __init__(self, url: str, username: str, password: str,
-                 manual_test_cases_query_id: int=None,
-                 user_stories_ready_query_id: int=None,
-                 user_stories_without_security_risk_query_id: int=None,
-                 user_stories_without_performance_risk_query_id: int=None,
-                 manual_test_cases_duration_field: str='customfield_11700',
-                 user_story_points_field: str='customfield_10002') -> None:
-        self.__manual_test_cases_query_id = manual_test_cases_query_id
-        self.__manual_test_cases_duration_field = manual_test_cases_duration_field
-        self.__user_stories_ready_query_id = user_stories_ready_query_id
-        self.__user_story_points_field = user_story_points_field
-        self.__user_stories_without_security_risk_query_id = user_stories_without_security_risk_query_id
-        self.__user_stories_without_performance_risk_query_id = user_stories_without_performance_risk_query_id
-        super().__init__(url=url, username=username, password=password)
-
-    def manual_test_cases_time(self) -> float:
-        """ Return the number of minutes spend on manual test cases. """
-        return self.__query_sum(self.__manual_test_cases_query_id, self.__manual_test_cases_duration_field)
-
-    def nr_manual_test_cases(self) -> int:
-        """ Return the number of manual test cases. """
-        return self.query_total(self.__manual_test_cases_query_id)
-
-    def nr_manual_test_cases_not_measured(self) -> int:
-        """ Return the number of manual test cases whose duration has not been measured. """
-        return self.__query_field_empty(self.__manual_test_cases_query_id, self.__manual_test_cases_duration_field)
-
-    def nr_story_points_ready(self) -> float:
-        """ Return the number of user story points ready. """
-        return self.__query_sum(self.__user_stories_ready_query_id, self.__user_story_points_field)
-
-    def nr_user_stories_without_security_risk_assessment(self) -> int:
-        """ Return the number of user stories without security risk assessment. """
-        return self.query_total(self.__user_stories_without_security_risk_query_id)
-
-    def nr_user_stories_without_performance_risk_assessment(self) -> int:
-        """ Return the number of user stories without performance risk assessment. """
-        return self.query_total(self.__user_stories_without_performance_risk_query_id)
+    def __init__(self, url: str, username: str, password: str) -> None:
+        self.__url = url + '/' if not url.endswith('/') else url
+        super().__init__(username=username, password=password)
 
     def query_total(self, query_id: int) -> int:
         """ Return the number of results of the specified query. """
         results = self.__get_query(query_id)
         return int(results['total']) if results else -1
 
-    def __query_sum(self, query_id: int, field: str) -> float:
+    def query_sum(self, query_id: int, field: str) -> float:
         """ Return the sum of the fields as returned by the query. """
         results = self.__get_query(query_id)
         if not results:
@@ -82,7 +46,7 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
                 pass  # field is null
         return total
 
-    def __query_field_empty(self, query_id: int, field: str) -> int:
+    def query_field_empty(self, query_id: int, field: str) -> int:
         """ Return the number of query results with field empty (null). """
         results = self.__get_query(query_id)
         if not results:
@@ -107,26 +71,10 @@ class Jira(domain.MetricSource, url_opener.UrlOpener):
         """ Get the query url based on the query id. """
         if not query_id:
             return None
-        url = self.url() + 'rest/api/2/filter/{qid}'.format(qid=query_id)
+        url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)
         try:
             json_string = self.url_read(url)
         except url_opener.UrlOpener.url_open_exceptions:
             return None
         url_type = 'searchUrl' if search else 'viewUrl'
         return utils.eval_json(json_string)[url_type]
-
-    def manual_test_cases_url(self) -> Optional[str]:
-        """ Return the url for the manual test cases query. """
-        return self.get_query_url(self.__manual_test_cases_query_id, search=False)
-
-    def user_stories_ready_url(self) -> Optional[str]:
-        """ Return the url for the ready user stories query. """
-        return self.get_query_url(self.__user_stories_ready_query_id, search=False)
-
-    def user_stories_without_security_risk_assessment_url(self) -> Optional[str]:
-        """ Return the url for the user stories without security risk assessment query. """
-        return self.get_query_url(self.__user_stories_without_security_risk_query_id, search=False)
-
-    def user_stories_without_performance_risk_assessment_url(self) -> Optional[str]:
-        """ Return the url for the user stories without performance risk assessment query. """
-        return self.get_query_url(self.__user_stories_without_performance_risk_query_id, search=False)
