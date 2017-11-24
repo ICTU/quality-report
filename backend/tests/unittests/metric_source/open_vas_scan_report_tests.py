@@ -127,6 +127,10 @@ class OpenVASScanReportTest(unittest.TestCase):
         """ Test that the date/time can be parsed. """
         self.assertEqual(datetime.datetime(2017, 10, 15, 19, 28, 58), self.__report.datetime('url'))
 
+    def test_datetime_on_error(self):
+        """ Test that the date/time is the minimum date/time when an error occurs. """
+        self.assertEqual(datetime.datetime.min, self.__report.datetime('raise'))
+
     def test_empty_report(self):
         """ Test that the value is -1 when the report is invalid. """
         opener = FakeUrlOpener()

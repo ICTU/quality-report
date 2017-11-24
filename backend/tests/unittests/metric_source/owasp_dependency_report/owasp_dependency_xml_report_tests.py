@@ -218,3 +218,8 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         </analysis>
         '''
         self.assertEqual(datetime.datetime(2017, 2, 10, 15, 29, 30), self.__report.datetime('url'))
+
+    def test_datetime_on_error(self):
+        """ Test that the date time is the minimum date/time when an error occurs. """
+        self.contents = 'raise'
+        self.assertEqual(datetime.datetime.min, self.__report.datetime('url'))

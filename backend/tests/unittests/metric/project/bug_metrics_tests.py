@@ -33,11 +33,6 @@ class FakeJiraFilter(object):
         return 12
 
     @staticmethod
-    def nr_points(*metric_source_ids):
-        """ Return a fake number of points. """
-        return 20
-
-    @staticmethod
     def sum_field(*metric_source_ids):
         """ Return a fake duration. """
         return 120
