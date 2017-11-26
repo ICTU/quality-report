@@ -12,6 +12,7 @@
 [![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![Requirements Status](https://requires.io/github/ICTU/quality-report/requirements.svg?branch=master)](https://requires.io/github/ICTU/quality-report/requirements/?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/59e506102de28c2198ef9808/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58891e2fc64626004feb312f)
+[![Known Vulnerabilities](https://snyk.io/test/github/ictu/quality-report/badge.svg?targetFile=backend%2Frequirements.txt)](https://snyk.io/test/github/ictu/quality-report?targetFile=backend%2Frequirements.txt)
 [![Updates](https://pyup.io/repos/github/ICTU/quality-report/shield.svg)](https://pyup.io/repos/github/ICTU/quality-report/)
 [![](https://images.microbadger.com/badges/image/ictu/quality-report.svg)](https://microbadger.com/images/ictu/quality-report "Get your own image badge on microbadger.com")
 
