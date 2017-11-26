@@ -16,7 +16,6 @@ limitations under the License.
 
 import datetime
 import functools
-import logging
 import re
 import xml.etree.cElementTree
 from typing import List, Tuple, Any

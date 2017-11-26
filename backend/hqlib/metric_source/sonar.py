@@ -75,6 +75,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return '?'
 
     def plugin_version(self, plugin: str) -> str:
+        """ Return the version of the SonarQube plugin. """
         try:
             plugins = self.__get_json(self.__plugin_api_url)
         except self.url_open_exceptions:
