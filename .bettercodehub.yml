@@ -1,5 +1,5 @@
 exclude:
-- /docs/examples/quality_report/.*
+- /docs/examples/.*
 - /backend/hqlib/app/.*
 - /frontend/node_modules/.*
 component_depth: 2
