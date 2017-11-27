@@ -16,7 +16,7 @@ PROJECT = Project(
 APPLICATION = Application(
     short_name="HQ", name="HQ - Holistic Software Quality Reporting",
     metric_source_ids={
-        SONAR: 'nl.ictu:quality_report'})
+        SONAR: 'nl.ictu:hq'})
 
 PROJECT.add_product(APPLICATION)
 
