@@ -4,6 +4,6 @@ lxml==4.1.1
 coverage==4.4.2
 xmlrunner==1.7.7
 python-dateutil==2.6.1
-setuptools==38.1.0
+setuptools==38.2.1
 pygal==2.4.0
 git+https://github.com/ICTU/wekan-python-api-client.git#egg=wekanapi&subdirectory=src
