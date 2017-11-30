@@ -217,12 +217,11 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def long_methods(self, product: str) -> int:
         """ Return the number of methods in the product that have to many non-comment statements. """
-        # NB: There is no long methods rule for C#. How to deal with this? FIXME
+        # NB: There is no long methods rule for C# and VB.NET. How to deal with this? FIXME
         rule_names = ('squid:S138',
                       'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
                       'Pylint:R0915',
-                      'Web:LongJavaScriptCheck',
-                      'vbnet:S138')
+                      'Web:LongJavaScriptCheck')
         for rule_name in rule_names:
             nr_long_methods = self.__rule_violation(product, rule_name)
             if nr_long_methods:
