@@ -254,8 +254,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return 0
 
     def no_sonar(self, product: str) -> int:
-        """ Return the number of NOSONAR usages in the source code of the product. """
-        return self.__rule_violation(product, 'squid:NoSonar')
+        """ Return the number of NOSONAR usages (or other suppressions) in the source code of the product. """
+        rule_names = ('squid:NoSonar', 'Pylint:I0011')
+        for rule_name in rule_names:
+            nr_no_sonar = self.__rule_violation(product, rule_name)
+            if nr_no_sonar:
+                return nr_no_sonar
+        return 0
 
     def violations_url(self, product: str) -> str:
         """ Return the url for the violations of the product. """
