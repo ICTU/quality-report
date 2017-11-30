@@ -207,7 +207,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'javascript:FunctionComplexity',
                       'Web:ComplexityCheck',
                       'python:FunctionComplexity',
-                      'vb:S1541',
+                      'vbnet:S1541',
                       'tslint:cyclomatic-complexity')
         for rule_name in rule_names:
             nr_complex_methods = self.__rule_violation(product, rule_name)
@@ -222,7 +222,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck',
                       'Pylint:R0915',
                       'Web:LongJavaScriptCheck',
-                      'vb:S138')
+                      'vbnet:S138')
         for rule_name in rule_names:
             nr_long_methods = self.__rule_violation(product, rule_name)
             if nr_long_methods:
