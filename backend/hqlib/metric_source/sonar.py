@@ -244,7 +244,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def commented_loc(self, product: str) -> int:
         """ Return the number of commented out lines in the source code of the product. """
-        rule_names = ('csharpsquid:CommentedCode', 'csharpsquid:S125', 'squid:CommentedOutCodeLine',
+        rule_names = ('csharpsquid:S125', 'csharpsquid:CommentedCode', 'squid:CommentedOutCodeLine',
                       'javascript:CommentedCode', 'python:S125', 'Web:AvoidCommentedOutCodeCheck')
         for rule_name in rule_names:
             nr_commented_loc = self.__rule_violation(product, rule_name)
