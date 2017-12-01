@@ -29,10 +29,12 @@ class IntegrationTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """ Create the report. """
+        """ Create the report and read it. """
         cls.report_folder = tempfile.mkdtemp(dir='build')
         os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
                   '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
+        with open('{0}/json/metrics.json'.format(cls.report_folder)) as metrics_json:
+            cls.metrics = json.load(metrics_json)["metrics"]
 
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
@@ -62,9 +64,7 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def test_number_of_metrics(self):
         """ Test the number of metrics in the report. """
-        with open('{0}/json/metrics.json'.format(self.report_folder)) as metrics_json:
-            metrics = json.load(metrics_json)["metrics"]
-        self.assertEqual(self.expected_number_of_metrics, len(metrics))
+        self.assertEqual(self.expected_number_of_metrics, len(self.metrics))
 
 
 class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
@@ -75,3 +75,43 @@ class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
 class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
     """ Integration tests using a second project definition from the same folder. """
     project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/second_project_definition.py'
+
+
+class MetricOptionsTests(IntegrationTestCase):
+    """ Integration tests for metric options. """
+    project_folder = 'tests/integrationtests/test_metric_options'
+
+    def test_technical_debt_does_not_change_norm(self):
+        """ Test that the norm is not changed when there is technical debt. """
+        for metric in self.metrics:
+            if metric['measurement'] == 'De automatic regression test statement coverage van Application FOO kon ' \
+                                        'niet gemeten worden omdat de bron CoverageReport niet is geconfigureerd.':
+                self.assertTrue(metric["norm"].startswith("Minimaal 80% van de statements wordt gedekt door "
+                                                          "geautomatiseerde functionele tests."))
+                break
+
+    def test_technical_debt_adds_commment(self):
+        """ Test that the comment shows the technical debt. """
+        for metric in self.metrics:
+            if metric['measurement'] == 'De automatic regression test statement coverage van Application FOO kon ' \
+                                        'niet gemeten worden omdat de bron CoverageReport niet is geconfigureerd.':
+                self.assertEqual("De op dit moment geaccepteerde technische schuld is 42%. How do we explain this?",
+                                 metric["comment"])
+                break
+
+    def test_adapted_target_does_change_norm(self):
+        """ Test that the norm is not changed when there is technical debt. """
+        for metric in self.metrics:
+            if metric['measurement'] == 'De automatic regression test branch coverage van Application FOO kon ' \
+                                        'niet gemeten worden omdat de bron CoverageReport niet is geconfigureerd.':
+                self.assertTrue(metric["norm"].startswith("Minimaal 32% van de branches wordt gedekt door "
+                                                          "geautomatiseerde functionele tests."))
+                break
+
+    def test_adapted_target_adds_no_comment(self):
+        """ Test that the comment shows the adapted target. """
+        for metric in self.metrics:
+            if metric['measurement'] == 'De automatic regression test branch coverage van Application FOO kon ' \
+                                        'niet gemeten worden omdat de bron CoverageReport niet is geconfigureerd.':
+                self.assertEqual("", metric["comment"])
+                break

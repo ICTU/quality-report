@@ -15,7 +15,7 @@ PROJECT = Project(
         metric_source.History: HISTORY,
         metric_source.ArchiveSystem: project_definition.GIT,
         metric_source.VersionControlSystem: project_definition.GIT,
-        metric_source.Jira: project_definition.JIRA,
+        metric_source.BugTracker: project_definition.BUG_TRACKER,
         metric_source.Sonar: project_definition.SONAR},
     requirements=project_definition.PROJECT.requirements())
 
