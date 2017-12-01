@@ -1,6 +1,6 @@
 """ Project definition for testing metric options. """
 
-from hqlib import metric, domain, requirement
+from hqlib import metric, domain
 
 # The project
 PROJECT = domain.Project(
@@ -10,9 +10,9 @@ PROJECT = domain.Project(
 APPLICATION = domain.Application(
     short_name='AP', name='Application FOO',
     metric_options={
-        metric.ARTStatementCoverage: dict(debt_target=domain.TechnicalDebtTarget(42,
-                                                                                 explanation="How do we explain this?")),
-        metric.ARTBranchCoverage: dict(target=32)
+        metric.ARTStatementCoverage: dict(
+            debt_target=domain.TechnicalDebtTarget(42, explanation="How do we explain this?")),
+        metric.ARTBranchCoverage: dict(target=35, low_target=30)
     })
 
 PROJECT.add_product(APPLICATION)

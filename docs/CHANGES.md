@@ -1,3 +1,9 @@
+2017-12-01  Release 2.20.0
+
+  * Show adapted metric targets in the report, in the metric comment. Closes #172. 
+    See https://github.com/ICTU/quality-report/wiki/Metric-options.
+  
+  
 2017-11-29  Release 2.19.0
 
   * Add metric for time last security test.

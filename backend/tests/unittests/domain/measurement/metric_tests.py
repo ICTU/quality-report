@@ -215,6 +215,22 @@ class MetricTest(unittest.TestCase):
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo. Debt. Subject.',
                          self.__metric.comment())
 
+    def test_adapted_target_comment(self):
+        """ Test that the metric comment mentions that the target has been adapted. """
+        # pylint: disable=attribute-defined-outside-init
+        self.__subject.low_target = lambda subject: 'Subject specific target'
+        self.assertEqual("De norm is aangepast van Subclass responsibility foo (default) naar Subject specific "
+                         "target foo.", self.__metric.comment())
+
+    def test_debt_and_adapted_target_comment(self):
+        """ Test that the metric comment mentions both debt and adapted target. """
+        # pylint: disable=attribute-defined-outside-init
+        self.__subject.debt_target = domain.TechnicalDebtTarget(10, 'Debt.')
+        self.__subject.low_target = lambda subject: 'Subject specific target'
+        self.assertEqual("De norm is aangepast van Subclass responsibility foo (default) naar Subject specific "
+                         "target foo. De op dit moment geaccepteerde technische schuld is 10 foo. Debt.",
+                         self.__metric.comment())
+
     def test_numerical_value(self):
         """ Test that the numerical value is the value by default. """
         self.assertEqual(self.__metric.numerical_value(), self.__metric.value())

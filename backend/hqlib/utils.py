@@ -194,3 +194,8 @@ def version_number_to_numerical(version_number_tuple: Tuple[int, ...]) -> int:
     for part, factor in zip(version_number_tuple[:3], (10000, 100, 1)):
         result += part * factor
     return result
+
+
+def format_unit(unit: str) -> str:
+    """ Add a space before the unit if necessary, e.g. 'LOC' -> ' LOC', but '%' -> '%'. """
+    return ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit

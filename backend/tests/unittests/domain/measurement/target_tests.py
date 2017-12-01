@@ -17,8 +17,19 @@ limitations under the License.
 import datetime
 import unittest
 
-from hqlib.domain import TechnicalDebtTarget, DynamicTechnicalDebtTarget
+from hqlib.domain import AdaptedTarget, TechnicalDebtTarget, DynamicTechnicalDebtTarget
 from hqlib.utils import format_date
+
+
+class AdaptedTargetTests(unittest.TestCase):
+    """ Unit tests for the adapted target class. """
+    def test_explanation(self):
+        """ Test that a default explanation is given for adapted targets. """
+        self.assertEqual("De norm is aangepast van 11% (default) naar 10%.", AdaptedTarget(10, 11).explanation("%"))
+
+    def test_no_explanation_when_not_adapted(self):
+        """ Test that no explanation is given for targets that haven't been adapted. """
+        self.assertEqual("", AdaptedTarget(10, 10).explanation("%"))
 
 
 class TechnicalDebtTargetTests(unittest.TestCase):
@@ -37,16 +48,6 @@ class TechnicalDebtTargetTests(unittest.TestCase):
         """ Test that explanation uses the unit passed. """
         self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 foo.',
                          TechnicalDebtTarget(10).explanation('foo'))
-
-    def test_unit(self):
-        """ Test that the explanation for the technical debt includes the unit. """
-        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10 LOC. Explanation',
-                         TechnicalDebtTarget(10, 'Explanation').explanation('LOC'))
-
-    def test_percentage_unit(self):
-        """ Test that the percentage has no space before it. """
-        self.assertEqual('De op dit moment geaccepteerde technische schuld is 10%. Explanation',
-                         TechnicalDebtTarget(10, 'Explanation').explanation('%'))
 
 
 class DynamicTechnicalDebtTargetTests(unittest.TestCase):

@@ -104,14 +104,14 @@ class MetricOptionsTests(IntegrationTestCase):
         for metric in self.metrics:
             if metric['measurement'] == 'De automatic regression test branch coverage van Application FOO kon ' \
                                         'niet gemeten worden omdat de bron CoverageReport niet is geconfigureerd.':
-                self.assertTrue(metric["norm"].startswith("Minimaal 32% van de branches wordt gedekt door "
-                                                          "geautomatiseerde functionele tests."))
+                self.assertEqual("Minimaal 35% van de branches wordt gedekt door geautomatiseerde functionele tests. "
+                                 "Minder dan 30% is rood.", metric["norm"])
                 break
 
-    def test_adapted_target_adds_no_comment(self):
+    def test_adapted_target_adds_comment(self):
         """ Test that the comment shows the adapted target. """
         for metric in self.metrics:
             if metric['measurement'] == 'De automatic regression test branch coverage van Application FOO kon ' \
                                         'niet gemeten worden omdat de bron CoverageReport niet is geconfigureerd.':
-                self.assertEqual("", metric["comment"])
+                self.assertEqual("De norm is aangepast van 60% (default) naar 30%.", metric["comment"])
                 break

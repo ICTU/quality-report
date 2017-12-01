@@ -17,8 +17,22 @@ limitations under the License.
 
 import datetime
 
-from ...utils import format_date
+from ...utils import format_date, format_unit
 from hqlib.typing import DateTime, MetricValue
+
+
+class AdaptedTarget(object):
+    """ A target that's different than the default target. """
+    def __init__(self, target_value: MetricValue, default_target: MetricValue) -> None:
+        self.__target_value = target_value
+        self.__default_target = default_target
+
+    def explanation(self, unit: str='') -> str:
+        """ Return the explanation for the adapted target. """
+        if self.__target_value == self.__default_target:
+            return ""
+        return "De norm is aangepast van {default_target}{unit} (default) naar {target_value}{unit}.".format(
+            default_target=self.__default_target, target_value=self.__target_value, unit=format_unit(unit))
 
 
 class TechnicalDebtTarget(object):
@@ -35,15 +49,10 @@ class TechnicalDebtTarget(object):
     def explanation(self, unit: str='') -> str:
         """ Return the explanation for the technical debt. """
         explanation = 'De op dit moment geaccepteerde technische schuld is {val}{unit}.'.format(
-            val=self.target_value(), unit=self._space_unit(unit))
+            val=self.target_value(), unit=format_unit(unit))
         if self.__explanation:
             explanation += ' ' + self.__explanation
         return explanation
-
-    @staticmethod
-    def _space_unit(unit: str) -> str:
-        """ Add a space before the unit if necessary. """
-        return ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit
 
 
 class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
@@ -79,7 +88,7 @@ class DynamicTechnicalDebtTarget(TechnicalDebtTarget):
         start_date = format_date(self.__initial_datetime, year=True)
         end_date = format_date(self.__end_datetime, year=True)
         explanation = 'Het doel is dat de technische schuld vermindert van {old_val}{unit} op {old_date} ' \
-            'naar {new_val}{unit} op {new_date}.'.format(unit=self._space_unit(unit),
+            'naar {new_val}{unit} op {new_date}.'.format(unit=format_unit(unit),
                                                          old_val=self.__initial_target_value,
                                                          old_date=start_date,
                                                          new_val=super().target_value(),

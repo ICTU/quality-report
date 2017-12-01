@@ -21,6 +21,7 @@ import logging
 
 from .metric_source import MetricSource
 from .measurable import MeasurableObject
+from .target import AdaptedTarget
 from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 if TYPE_CHECKING:  # pragma: no cover
     from ..software_development.project import Project
@@ -260,7 +261,8 @@ class Metric(object):
 
     def comment(self) -> str:
         """ Return a comment on the metric. The comment is retrieved from either the technical debt or the subject. """
-        comments = [comment for comment in (self.__technical_debt_comment(), self.__subject_comment()) if comment]
+        comments = [comment for comment in (self.__non_default_target_comment(), self.__technical_debt_comment(),
+                                            self.__subject_comment()) if comment]
         return ' '.join(comments)
 
     def __subject_comment(self) -> str:
@@ -274,6 +276,10 @@ class Metric(object):
         """ Return the comment of the accepted technical debt, if any. """
         td_target = self.__technical_debt_target()
         return td_target.explanation(self.unit) if td_target else ''
+
+    def __non_default_target_comment(self) -> str:
+        """ Return a comment about a non-default target, if relevant. """
+        return AdaptedTarget(self.low_target(), self.low_target_value).explanation(self.unit)
 
     def comment_urls(self) -> Dict[str, str]:  # pylint: disable=no-self-use
         """ Return the source for the comment on the metric. """

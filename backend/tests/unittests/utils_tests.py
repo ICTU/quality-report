@@ -264,3 +264,18 @@ class VersionNumberToNumericalTest(unittest.TestCase):
     def test_short_version_number(self):
         """ Test a short version number. """
         self.assertEqual(10200, utils.version_number_to_numerical((1, 2)))
+
+
+class FormatUnitTests(unittest.TestCase):
+    """ Unit tests for the format unit method. """
+    def test_unit(self):
+        """ Test that a regular unit gets a space prefixed. """
+        self.assertEqual(" LOC", utils.format_unit("LOC"))
+
+    def test_unit_with_space(self):
+        """ Test that a regular unit with a space doesn't get a space prefixed. """
+        self.assertEqual(" LOC", utils.format_unit(" LOC"))
+
+    def test_percentage_unit(self):
+        """ Test that the percentage has no space before it. """
+        self.assertEqual("%", utils.format_unit("%"))
