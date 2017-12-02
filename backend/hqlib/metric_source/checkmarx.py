@@ -51,7 +51,7 @@ class Checkmarx(domain.MetricSource):
             except (IndexError, KeyError, TypeError) as reason:
                 logging.warning("Couldn't load values from json: %s - %s", project_name, reason)
             except url_opener.UrlOpener.url_open_exceptions:
-                return []
+                return [self.url()]
 
         return checkmarx_report_urls
 

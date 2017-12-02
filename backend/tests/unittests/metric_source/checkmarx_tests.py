@@ -66,7 +66,7 @@ class CheckmarxTest(unittest.TestCase):
 
     def test_metric_source_urls_on_error(self):
         """ Test the metric source urls when an error occurs. """
-        self.assertEqual([], self.__report.metric_source_urls('raise'))
+        self.assertEqual(['http://url'], self.__report.metric_source_urls('raise'))
 
     def test_url(self):
         """ Test the metric source base url. """

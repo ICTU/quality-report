@@ -1,3 +1,8 @@
+2017-12-02  Release 2.20.1
+
+  * Bug fix: Show a link to Checkmarx in the Checkmarx metrics, even if Checkmarx is not reachable. Closes #81.
+  
+
 2017-12-01  Release 2.20.0
 
   * Show adapted metric targets in the report, in the metric comment. Closes #172. 
