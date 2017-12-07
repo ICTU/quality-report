@@ -65,6 +65,8 @@ class Jira(url_opener.UrlOpener):
         query_url = self.get_query_url(query_id)
         if not query_url:
             return None
+        # We know that the base url configured for Jira can be used for querying so keep using that for querying
+        # whatever Jira returns as scheme and netloc
         config_parts = urllib.parse.urlparse(self.__url)
         query_parts = urllib.parse.urlparse(query_url)
         read_url = config_parts.scheme + '://' + config_parts.netloc + query_parts.path + '?' + query_parts.query
