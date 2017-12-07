@@ -24,7 +24,7 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
     """ Override class to return a fixed JSON file. """
 
     nr_query_results = 5
-    view_url = 'http://view'
+    view_url = 'http://jira/view'
     issues = '[]'
 
     def url_read(self, url):  # pylint: disable=unused-argument
@@ -32,7 +32,7 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return '{{"searchUrl": "http://search", "viewUrl": "{0}", "total": {1}, "issues": {2}}}'.format(
+            return '{{"searchUrl": "http://jira/search", "viewUrl": "{0}", "total": {1}, "issues": {2}}}'.format(
                 self.view_url, self.nr_query_results, self.issues)
 
 
@@ -69,5 +69,5 @@ class JiraFilterTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that the Jira filter returns the correct url for the filters. """
-        self.assertEqual(['http://view'],
-                         JiraFilter('', '', '', jira=JiraUnderTest('', '', '')).metric_source_urls('12345'))
+        self.assertEqual(['http://jira/view'],
+                         JiraFilter('', '', '', jira=JiraUnderTest('http://jira/', '', '')).metric_source_urls('12345'))

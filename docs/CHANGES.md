@@ -1,5 +1,7 @@
 2017-12-07  Release 2.20.2
-  * Bug fix: JIRA url didn't work
+
+  * Bug fix: Jira url didn't work.
+
 
 2017-12-02  Release 2.20.1
 

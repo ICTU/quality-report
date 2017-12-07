@@ -30,8 +30,8 @@ class JiraUnderTest(Jira):  # pylint: disable=too-few-public-methods
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         else:
-            return '{{"searchUrl": "http://search", "viewUrl": "http://view", "total": 5, "issues": {0}}}'.format(
-                self.issues)
+            return '{{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", ' \
+                   '"total": 5, "issues": {0}}}'.format(self.issues)
 
 
 class JiraTest(unittest.TestCase):
@@ -70,13 +70,13 @@ class JiraTest(unittest.TestCase):
         """ Test that the number of issues is -1 when Jira has no query id. """
         self.assertEqual(-1, self.__jira.query_field_empty('', ''))
 
-    def test_get_query_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual("http://search", self.__jira.get_query_url('filter id'))
-
     def test_get_query_url_view(self):
         """ Test that the url is correct. """
-        self.assertEqual("http://view", self.__jira.get_query_url('filter id', search=False))
+        self.assertEqual("http://jira/view", self.__jira.get_query_url('filter id', search=False))
+
+    def test_get_query_url_search(self):
+        """ Test that the url is correct. """
+        self.assertEqual("http://jira/search", self.__jira.get_query_url('filter id', search=True))
 
 
 class JiraWhenFailingTest(unittest.TestCase):
