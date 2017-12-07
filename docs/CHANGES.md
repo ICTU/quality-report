@@ -1,3 +1,6 @@
+2017-12-07  Release 2.20.2
+  * Bug fix: JIRA url didn't work
+
 2017-12-02  Release 2.20.1
 
   * Bug fix: Show a link to Checkmarx in the Checkmarx metrics, even if Checkmarx is not reachable. Closes #81.
