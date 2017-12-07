@@ -16,6 +16,7 @@ limitations under the License.
 
 
 from typing import Optional, Mapping
+import urllib.parse
 
 from . import url_opener
 from .. import utils
@@ -62,8 +63,13 @@ class Jira(url_opener.UrlOpener):
     def __get_query(self, query_id: int) -> Optional[Mapping]:
         """ Get the JSON from the query and evaluate it. """
         query_url = self.get_query_url(query_id)
+        if not query_url:
+            return None
+        config_parts = urllib.parse.urlparse(self.__url)
+        query_parts = urllib.parse.urlparse(query_url)
+        read_url = config_parts.scheme + '://' + config_parts.netloc + query_parts.path + '?' + query_parts.query
         try:
-            return utils.eval_json(self.url_read(query_url)) if query_url else None
+            return utils.eval_json(self.url_read(read_url))
         except url_opener.UrlOpener.url_open_exceptions:
             return None
 
