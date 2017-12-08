@@ -24,7 +24,7 @@ from .measurable import MeasurableObject
 from .target import AdaptedTarget
 from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 if TYPE_CHECKING:  # pragma: no cover
-    from ..software_development.project import Project
+    from ..software_development.project import Project  # pylint: disable=unused-import
 
 
 class Metric(object):

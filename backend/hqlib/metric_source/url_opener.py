@@ -41,7 +41,7 @@ class Timeout(object):
         if not sys.platform.startswith("win"):
             signal.alarm(0)  # Disable the alarm
 
-    def __raise_timeout(self, *args) -> None:
+    def __raise_timeout(self, *args) -> None:  # pylint: disable=unused-argument
         """ Raise the TimeoutError exception. """
         raise TimeoutError("Operation timed out after {0} seconds.".format(self.__duration))
 

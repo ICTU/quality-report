@@ -20,7 +20,8 @@ from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING, Union
 from ..base import DomainObject
 from .metric_source import MissingMetricSource
 from hqlib.typing import MetricValue
-if TYPE_CHECKING:  # pylint: disable=unused-import
+if TYPE_CHECKING:  # pragma: no cover
+    # pylint: disable=unused-import
     from .metric import Metric
     from .metric_source import MetricSource
 

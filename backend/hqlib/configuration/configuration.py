@@ -20,8 +20,7 @@ import logging
 
 from hqlib import metric_source, domain
 
-
-""" This is a default project definition for HQ. """
+# This is a default project definition for HQ.
 
 # Metric sources
 
@@ -63,7 +62,7 @@ DASHBOARD_ROWS = [
 
 DEFAULT_PROJECT.set_dashboard(DASHBOARD_COLUMNS, DASHBOARD_ROWS)
 
-""" End of the default project definition for HQ. """
+# End of the default project definition for HQ.
 
 
 class Configuration(object):

@@ -18,7 +18,6 @@ limitations under the License.
 import codecs
 import os
 import stat
-from typing import Optional
 
 
 class FileSystem(object):

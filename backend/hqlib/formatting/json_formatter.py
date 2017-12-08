@@ -34,7 +34,7 @@ class JSONFormatter(base_formatter.Formatter):
         prefix_elements = []
         # Add the product versions of trunk versions to the prefix
         for product in report.products():
-            sonar, sonar_id = report.sonar_id(product)
+            sonar_id = report.sonar_id(product)[1]
             latest_version = report.latest_product_version(product)
             prefix_elements.append('"{sonar_id}-version": "{version}"'.format(sonar_id=sonar_id,
                                                                               version=latest_version))

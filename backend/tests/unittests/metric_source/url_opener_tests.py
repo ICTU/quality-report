@@ -64,12 +64,12 @@ class UrlOpenerTest(unittest.TestCase):
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
 
     @unittest.mock.patch('signal.signal', side_effect=lambda _, handler: handler())
-    def test_timeout(self, mock_signal):
+    def test_timeout(self, mock_signal):  # pylint: disable=unused-argument
         """ Test the timeout exception. """
         self.assertRaises(TimeoutError, url_opener.UrlOpener().url_open, 'http://bla')
 
     @unittest.mock.patch('signal.signal', side_effect=lambda _, handler: handler())
-    def test_multiple_timeouts(self, mock_signal):
+    def test_multiple_timeouts(self, mock_signal):  # pylint: disable=unused-argument
         """ Test that a timed out host isn't contacted again. """
         opener = url_opener.UrlOpener()
         self.assertRaises(TimeoutError, opener.url_open, 'http://bla:9000/url1')
@@ -91,7 +91,7 @@ class TimeoutTest(unittest.TestCase):
 
     @unittest.skipIf(sys.platform.startswith("win"), "Timeout only works on Posix platforms.")
     @unittest.mock.patch('signal.signal', side_effect=lambda _, handler: handler())  # Throw time out immediately
-    def test_with(self, signal_mock):
+    def test_with(self, mock_signal):  # pylint: disable=unused-argument
         """ Test the with statement. """
         try:
             with url_opener.Timeout(4):
