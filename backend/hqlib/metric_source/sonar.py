@@ -18,12 +18,33 @@ limitations under the License.
 import datetime
 import functools
 import logging
+import json
 from typing import List, Dict, Optional, Union
 from distutils.version import LooseVersion
 
 from . import url_opener
 from .. import utils, domain
 from ..typing import DateTime, Number
+
+
+def extract_branch_decorator(func):
+    """" Checks if product name has to be splitted into product and branch and performs the splitting."""
+    def _branch_param(self, product: str) -> (str, str):
+        """ Return the branch url parameter. """
+
+        if self.version_number() \
+                and LooseVersion(self.version_number()) >= LooseVersion('6.7') \
+                and self.is_branch_plugin_installed() \
+                and self.is_component_absent(product):
+
+            prod = product.rsplit(":", 1)
+            if len(prod) == 2:
+                return func(self, prod[0], None if prod[1] == '' else prod[1])
+            logging.warning(
+                "A branch name is not defined in '%s' and no component with corresponding name is found.", product)
+
+        return func(self, product, None)
+    return _branch_param
 
 
 class Sonar(domain.MetricSource, url_opener.UrlOpener):
@@ -33,7 +54,9 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def __init__(self, sonar_url: str, *args, **kwargs) -> None:
         super().__init__(url=sonar_url, *args, **kwargs)
-        self.__base_dashboard_url = sonar_url + 'dashboard/index/'
+
+        self.__version_number_url = sonar_url + 'api/server/version'
+        self.__base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
@@ -44,14 +67,22 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__false_positives_api_url = sonar_url + \
             'api/issues/search?resolutions=FALSE-POSITIVE&componentRoots={resource}'
         self.__false_positives_url = sonar_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
-        self.__version_number_url = sonar_url + 'api/server/version'
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
         self.__quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?language={language}&format=json'
         self.__old_quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}&format=json'
 
-    def version(self, product: str) -> str:
+    @classmethod
+    def __add_branch_param_to_url(cls, url: str, branch: str) -> str:
+        """" Adds branch url query param to the url, if defined. """
+        return url + "&branch=" + branch if branch else url
+
+    @extract_branch_decorator
+    def version(self, product: str, branch: str) -> str:
         """ Return the version of the product. """
-        url = self.__analyses_api_url.format(project=product)+'&category=VERSION'
+
+        url = self.__add_branch_param_to_url(
+            self.__analyses_api_url.format(project=product)+'&category=VERSION', branch)
+
         try:
             json = self.__get_json(url)
             try:
@@ -62,7 +93,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                 return '?'
         except self.url_open_exceptions:
             # Try older API:
-            url = self.__resource_api_url.format(resource=product)
+            url = self.__add_branch_param_to_url(self.__resource_api_url.format(resource=product), branch)
             try:
                 json = self.__get_json(url)
             except self.url_open_exceptions:
@@ -110,94 +141,139 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """ Return the quality profiles url. """
         return self.url() + 'profiles/'
 
+    @functools.lru_cache(maxsize=4096)
+    def is_branch_plugin_installed(self) -> bool:
+        try:
+            plugins = json.loads(self.url_read(self.__plugin_api_url))
+            if "branch" in [item["key"] for item in plugins]:
+                return True
+            logging.info("Branch plugin not installed.")
+        except self.url_open_exceptions as reason:
+            logging.error("Couldn't open %s: %s", self.__plugin_api_url, reason)
+        except ValueError as reason:
+            logging.error("Error parsing response from %s: '%s'. "
+                          "Assume the Branch plugin is not installed.", self.__plugin_api_url, reason)
+        return False
+
+    @functools.lru_cache(maxsize=4096)
+    def is_component_absent(self, product) -> bool:
+        """" Checks if the component with complete name, including branch, is defined """
+        try:
+            url = self.__components_show_api_url.format(component=product)
+            if json.loads(self.url_read(url))["component"]:
+                logging.info("Component '%s' found. No branch is defined.", product)
+                return False
+        except (ValueError, KeyError):
+            pass
+        except self.url_open_exceptions as reason:
+            logging.error("Couldn't open %s: %s", url, reason)
+        return True
+
     # Sonar projects
 
-    def __has_project(self, project: str) -> bool:
+    def __has_project(self, project: str, branch) -> bool:
         """ Return whether Sonar has the project (analysis). """
-        found = project in self.__projects()
+        found = project in self.__projects(branch)
         if not found:
             logging.warning("Sonar has no analysis of %s", project)
         return found
 
-    def __projects(self) -> List[str]:
+    def __projects(self, branch) -> List[str]:
         """ Return all projects in Sonar. """
         try:
-            json = self.__get_json(self.__projects_api_url)
+            json = self.__get_json(self.__add_branch_param_to_url(self.__projects_api_url, branch))
             return [project['k'] for project in json]
         except self.url_open_exceptions:
             return []
 
     # Metrics
 
-    def ncloc(self, product: str) -> int:
+    @extract_branch_decorator
+    def ncloc(self, product: str, branch: str) -> int:
         """ Non-comment lines of code. """
-        return int(self.__metric(product, 'ncloc'))
+        return int(self.__metric(product, 'ncloc', branch))
 
-    def lines(self, product: str) -> int:
+    @extract_branch_decorator
+    def lines(self, product: str, branch: str) -> int:
         """ Bruto lines of code, including comments, whitespace, javadoc. """
-        return int(self.__metric(product, 'lines'))
+        return int(self.__metric(product, 'lines', branch))
 
-    def major_violations(self, product: str) -> int:
+    @extract_branch_decorator
+    def major_violations(self, product: str, branch: str) -> int:
         """ Return the number of major violations for the product. """
-        return int(self.__metric(product, 'major_violations'))
+        return int(self.__metric(product, 'major_violations', branch))
 
-    def critical_violations(self, product: str) -> int:
+    @extract_branch_decorator
+    def critical_violations(self, product: str, branch: str) -> int:
         """ Return the number of critical violations for the product. """
-        return int(self.__metric(product, 'critical_violations'))
+        return int(self.__metric(product, 'critical_violations', branch))
 
-    def blocker_violations(self, product: str) -> int:
+    @extract_branch_decorator
+    def blocker_violations(self, product: str, branch: str) -> int:
         """ Return the number of blocker violations for the product. """
-        return int(self.__metric(product, 'blocker_violations'))
+        return int(self.__metric(product, 'blocker_violations', branch))
 
-    def duplicated_lines(self, product: str) -> int:
+    @extract_branch_decorator
+    def duplicated_lines(self, product: str, branch: str) -> int:
         """ Return the number of duplicated lines for the product. """
-        return int(self.__metric(product, 'duplicated_lines'))
+        return int(self.__metric(product, 'duplicated_lines', branch))
 
-    def unittest_line_coverage(self, product: str) -> float:
+    @extract_branch_decorator
+    def unittest_line_coverage(self, product: str, branch: str) -> float:
         """ Return the line coverage of the unit tests for the product. """
-        return float(self.__metric(product, 'line_coverage'))
+        return float(self.__metric(product, 'line_coverage', branch))
 
-    def unittest_branch_coverage(self, product: str) -> float:
+    @extract_branch_decorator
+    def unittest_branch_coverage(self, product: str, branch: str) -> float:
         """ Return the branch coverage of the unit tests for the product. """
-        return float(self.__metric(product, 'branch_coverage'))
+        return float(self.__metric(product, 'branch_coverage', branch))
 
-    def unittests(self, product: str) -> int:
+    @extract_branch_decorator
+    def unittests(self, product: str, branch: str) -> int:
         """ Return the number of unit tests for the product. """
-        return int(self.__metric(product, 'tests'))
+        return int(self.__metric(product, 'tests', branch))
 
-    def failing_unittests(self, product: str) -> int:
+    @extract_branch_decorator
+    def failing_unittests(self, product: str, branch: str) -> int:
         """ Return the number of failing unit tests for the product. """
-        failures = int(self.__metric(product, 'test_failures'))
-        errors = int(self.__metric(product, 'test_errors'))
+        failures = int(self.__metric(product, 'test_failures', branch))
+        errors = int(self.__metric(product, 'test_errors', branch))
         return failures + errors if failures >= 0 and errors >= 0 else -1
 
-    def integration_test_line_coverage(self, product: str) -> float:
+    @extract_branch_decorator
+    def integration_test_line_coverage(self, product: str, branch: str) -> float:
         """ Return the line coverage of the integration tests for the product. """
-        return float(self.__metric(product, 'it_line_coverage'))
+        return float(self.__metric(product, 'it_line_coverage', branch))
 
-    def integration_test_branch_coverage(self, product: str) -> float:
+    @extract_branch_decorator
+    def integration_test_branch_coverage(self, product: str, branch: str) -> float:
         """ Return the branch coverage of the integration tests for the product. """
-        return float(self.__metric(product, 'it_branch_coverage'))
+        return float(self.__metric(product, 'it_branch_coverage', branch))
 
-    def overall_test_line_coverage(self, product: str) -> float:
+    @extract_branch_decorator
+    def overall_test_line_coverage(self, product: str, branch: str) -> float:
         """ Return the overall line coverage of the tests for the product. """
-        return float(self.__metric(product, 'overall_line_coverage'))
+        return float(self.__metric(product, 'overall_line_coverage', branch))
 
-    def overall_test_branch_coverage(self, product: str) -> float:
+    @extract_branch_decorator
+    def overall_test_branch_coverage(self, product: str, branch: str) -> float:
         """ Return the overall branch coverage of the tests for the product. """
-        return float(self.__metric(product, 'overall_branch_coverage'))
+        return float(self.__metric(product, 'overall_branch_coverage', branch))
 
-    def methods(self, product: str) -> int:
+    @extract_branch_decorator
+    def methods(self, product: str, branch: str) -> int:
         """ Return the number of methods/functions in the product. """
-        return int(self.__metric(product, 'functions'))
+        return int(self.__metric(product, 'functions', branch))
 
-    def dashboard_url(self, product: str) -> str:
+    @extract_branch_decorator
+    def dashboard_url(self, product: str, branch: str) -> str:
         """ Return the url for the Sonar dashboard for the product. """
-        return self.__base_dashboard_url + product
+        return self.__add_branch_param_to_url(self.__base_dashboard_url.format(project=product), branch)
 
     # Violations
 
-    def complex_methods(self, product: str) -> int:
+    @extract_branch_decorator
+    def complex_methods(self, product: str, branch: str) -> int:
         """ Return the number of methods that violate the Cyclomatic complexity threshold. """
         rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck',
                       'pmd:CyclomaticComplexity',
@@ -210,12 +286,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'vbnet:S1541',
                       'tslint:cyclomatic-complexity')
         for rule_name in rule_names:
-            nr_complex_methods = self.__rule_violation(product, rule_name)
+            nr_complex_methods = self.__rule_violation(product, rule_name, 0, branch)
             if nr_complex_methods:
                 return nr_complex_methods
         return 0
 
-    def long_methods(self, product: str) -> int:
+    @extract_branch_decorator
+    def long_methods(self, product: str, branch: str) -> int:
         """ Return the number of methods in the product that have to many non-comment statements. """
         # NB: There is no long methods rule for C# and VB.NET. How to deal with this? FIXME
         rule_names = ('squid:S138',
@@ -223,12 +300,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'Pylint:R0915',
                       'Web:LongJavaScriptCheck')
         for rule_name in rule_names:
-            nr_long_methods = self.__rule_violation(product, rule_name)
+            nr_long_methods = self.__rule_violation(product, rule_name, 0, branch)
             if nr_long_methods:
                 return nr_long_methods
         return 0
 
-    def many_parameters_methods(self, product: str) -> int:
+    @extract_branch_decorator
+    def many_parameters_methods(self, product: str, branch: str) -> int:
         """ Return the number of methods in the product that have too many parameters. """
         rule_names = ('checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck',
                       'pmd:ExcessiveParameterList',
@@ -237,46 +315,52 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                       'javascript:ExcessiveParameterList',
                       'python:S107')
         for rule_name in rule_names:
-            nr_many_parameters = self.__rule_violation(product, rule_name)
+            nr_many_parameters = self.__rule_violation(product, rule_name, 0, branch)
             if nr_many_parameters:
                 return nr_many_parameters
         return 0
 
-    def commented_loc(self, product: str) -> int:
+    @extract_branch_decorator
+    def commented_loc(self, product: str, branch: str) -> int:
         """ Return the number of commented out lines in the source code of the product. """
         rule_names = ('csharpsquid:S125', 'csharpsquid:CommentedCode', 'squid:CommentedOutCodeLine',
                       'javascript:CommentedCode', 'python:S125', 'Web:AvoidCommentedOutCodeCheck')
         for rule_name in rule_names:
-            nr_commented_loc = self.__rule_violation(product, rule_name)
+            nr_commented_loc = self.__rule_violation(product, rule_name, 0, branch)
             if nr_commented_loc:
                 return nr_commented_loc
         return 0
 
-    def no_sonar(self, product: str) -> int:
+    @extract_branch_decorator
+    def no_sonar(self, product: str, branch: str) -> int:
         """ Return the number of NOSONAR usages (or other suppressions) in the source code of the product. """
         rule_names = ('squid:NoSonar', 'Pylint:I0011')
         for rule_name in rule_names:
-            nr_no_sonar = self.__rule_violation(product, rule_name)
+            nr_no_sonar = self.__rule_violation(product, rule_name, 0, branch)
             if nr_no_sonar:
                 return nr_no_sonar
         return 0
 
-    def violations_url(self, product: str) -> str:
+    @extract_branch_decorator
+    def violations_url(self, product: str, branch: str) -> str:
         """ Return the url for the violations of the product. """
-        return self.__base_violations_url + product
+        return self.__add_branch_param_to_url(self.__base_violations_url + product, branch)
 
     # Issues
 
-    def false_positives(self, product: str) -> int:
+    @extract_branch_decorator
+    def false_positives(self, product: str, branch: str) -> int:
         """ Return the number of false positives listed for the product. """
-        return self.__false_positives(product)
+        return self.__false_positives(product, 0, branch)
 
-    def false_positives_url(self, product: str) -> str:
+    @extract_branch_decorator
+    def false_positives_url(self, product: str, branch: str) -> str:
         """ Return the url to the list of false positives. """
         return self.__false_positives_url.format(resource=product)
 
     # Meta data
 
+    @functools.lru_cache(maxsize=1024)
     def version_number(self) -> Optional[str]:
         """ Return the version number of Sonar. """
         try:
@@ -286,10 +370,14 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
-        sonar_version = self.version_number()
-        if sonar_version and LooseVersion(sonar_version) >= LooseVersion('6.4'):
+
+        split_branch = extract_branch_decorator(lambda self, x, a: (x, a))
+        product, branch = split_branch(self, products[0])
+
+        server_version = self.version_number()
+        if server_version and LooseVersion(server_version) >= LooseVersion('6.4'):
             # Use the components API, it should contain the analysis date both for projects and components
-            url = self.__components_show_api_url.format(component=products[0])
+            url = self.__add_branch_param_to_url(self.__components_show_api_url.format(component=product), branch)
             try:
                 json = self.__get_json(url)
                 try:
@@ -298,17 +386,17 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
                     return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
                 except (TypeError, KeyError, IndexError) as reason:
                     logging.error("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
-                                  products[0], json, url, reason)
+                                  product, json, url, reason)
             except self.url_open_exceptions:
                 pass
             return datetime.datetime.min
         # Use analyses API:
-        url = self.__analyses_api_url.format(project=products[0])
+        url = self.__add_branch_param_to_url(self.__analyses_api_url.format(project=product), branch)
         try:
             json = self.__get_json(url)['analyses']
         except self.url_open_exceptions:
             # Try older API:
-            url = self.__resource_api_url.format(resource=products[0])
+            url = self.__add_branch_param_to_url(self.__resource_api_url.format(resource=product), branch)
             try:
                 json = self.__get_json(url)
             except self.url_open_exceptions:
@@ -317,7 +405,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             datetime_string = json[0]['date']
         except (TypeError, KeyError, IndexError) as reason:
             logging.warning("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
-                            products[0], json, url, reason)
+                            product, json, url, reason)
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
@@ -325,11 +413,12 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     # Helper methods
 
     @functools.lru_cache(maxsize=4096)
-    def __metric(self, product: str, metric_name: str) -> Number:
+    def __metric(self, product: str, metric_name: str, branch: str) -> Number:
         """ Return a specific metric value for the product. """
-        if not self.__has_project(product):
+        if not self.__has_project(product, branch):
             return -1
-        url = self.__measures_api_url.format(component=product, metric=metric_name)
+        url = self.__add_branch_param_to_url(
+            self.__measures_api_url.format(component=product, metric=metric_name), branch)
         try:
             json = self.__get_json(url)
             try:
@@ -344,7 +433,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             return -1
         except self.url_open_exceptions:
             pass  # Keep going, and try the old API
-        url = self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name
+        url = self.__add_branch_param_to_url(
+            self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name, branch)
         try:
             json = self.__get_json(url)
             try:
@@ -356,22 +446,25 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         except self.url_open_exceptions:
             return -1
 
-    def __rule_violation(self, product: str, rule_name: str, default=0) -> int:
+    def __rule_violation(self, product: str, rule_name: str, default=0, branch: str=None) -> int:
         """ Return a specific violation value for the product. """
-        if not self.__has_project(product):
+        if not self.__has_project(product, branch):
             return -1
         try:
-            json = self.__get_json(self.__issues_api_url.format(component=product, rule=rule_name))
+            json = self.__get_json(
+                self.__add_branch_param_to_url(self.__issues_api_url.format(component=product, rule=rule_name), branch))
         except self.url_open_exceptions:
             return default
         return int(json['paging']['total'])
 
-    def __false_positives(self, product: str, default=0) -> int:
+    def __false_positives(self, product: str, default=0, branch: str=None) -> int:
         """ Return the number of issues resolved as false positive. """
-        if not self.__has_project(product):
+        if not self.__has_project(product, branch):
             return -1
         try:
-            json = self.__get_json(self.__false_positives_api_url.format(resource=product))
+            json = self.__get_json(
+                self.__add_branch_param_to_url(self.__false_positives_api_url.format(resource=product), branch))
+
         except self.url_open_exceptions:
             return default
         return len(json['issues'])

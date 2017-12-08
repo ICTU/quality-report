@@ -53,7 +53,7 @@ PROJECT.add_environment(ENVIRONMENT)
 QUALITY_REPORT = Application(
     short_name='QR', name='Example product',
     metric_source_ids={
-        SONAR: 'nl.ictu:quality_report',
+        SONAR: 'nl.ictu:quality_report:branch_name',
         JACOCO: 'quality-report-coverage-report',
         GIT: '.',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},

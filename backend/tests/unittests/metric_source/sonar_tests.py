@@ -15,10 +15,10 @@ limitations under the License.
 """
 
 import datetime
-import unittest
 import urllib.error
-
-from hqlib.metric_source import Sonar
+import unittest
+from unittest.mock import patch, call, MagicMock
+from hqlib.metric_source import Sonar, url_opener, extract_branch_decorator
 
 
 class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
@@ -279,7 +279,7 @@ class SonarTest(SonarTestCase):
 
     def test_dashboard_url(self):
         """ Test the url of a dashboard for a specific product. """
-        self.assertEqual('http://sonar/dashboard/index/product', self._sonar.dashboard_url('product'))
+        self.assertEqual('http://sonar/dashboard?id=product', self._sonar.dashboard_url('product'))
 
     def test_violations_url(self):
         """ Test the url of a violations page for a specific product. """
@@ -545,3 +545,1555 @@ class SonarVersionsTest(SonarTestCase):
     def test_plugins_url(self):
         """ Test that the url to the plugin updatecenter page is correct. """
         self.assertEqual('http://sonar/updatecenter/', self._sonar.plugins_url())
+
+
+@patch.object(url_opener.UrlOpener, 'url_read')
+class SonarBranchTest(unittest.TestCase):
+    """" Unit tests for branch functionality """
+
+    def test_version_number(self, url_read_mock):
+        """ Test that the server version number is acquired when Sonar object is created. """
+
+        fake_url = "http://fake.url/"
+        server_version = '6.3.0.1234'
+        url_read_mock.return_value = server_version
+
+        sonar = Sonar(fake_url)
+
+        self.assertEqual(server_version, sonar.version_number())
+
+    def test_version_number_when_url_opener_throws(self, url_read_mock):
+        """ Test that the server version number is acquired when Sonar object created. """
+
+        fake_url = "http://fake.url/"
+        url_read_mock.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        product = "product:my-branch"
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        self.assertIsNone(sonar.version_number())
+        func.assert_called_with(sonar, product, None)
+
+    def test_branch_param(self, url_read_mock):
+        """" Test that the correct branch name is returned, when server version is >= 6.7 """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.8.1234'
+        non_json_ret_val = 'non json'
+        plugins_json = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
+        url_read_mock.side_effect = [server_version, plugins_json, non_json_ret_val]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url+'api/server/version'),
+                 call(fake_url+'api/updatecenter/installed_plugins'),
+                 call(fake_url+'api/components/show?component={component}'.format(component=product))]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
+
+    def test_branch_param_no_component_json_valid(self, url_read_mock):
+        """" Test that the correct branch name is returned, when server version is >= 6.7 """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.8.1234'
+        component_ret_val = '{"whatever": "not a component"}'
+        plugins_json = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url + 'api/server/version'),
+                 call(fake_url + 'api/updatecenter/installed_plugins'),
+                 call(fake_url + 'api/components/show?component={component}'.format(component=product))]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
+
+    def test_branch_param_no_branch(self, url_read_mock):
+        """" Test that no branch name is returned, when the product has no : character """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu_quality_report_my-branch"
+        server_version = '6.8.1234'
+        non_json_ret_val = 'non json'
+        url_read_mock.side_effect = [server_version, non_json_ret_val]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url + 'api/server/version'),
+                 call(fake_url + 'api/updatecenter/installed_plugins')]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, product, None)
+
+    def test_branch_param_when_component(self, url_read_mock):
+        """" Test that the branch name is empty, when component exists """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        component_ret_val = '{"component": {"organization": "my-org-1"}}'
+        plugins_json = '[{"key":"branch"}]'
+        server_version = '6.8.1234'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url + 'api/server/version'),
+                 call(fake_url + 'api/updatecenter/installed_plugins'),
+                 call(fake_url + 'api/components/show?component={component}'.format(component=product))]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, product, None)
+
+    def test_branch_param_old(self, url_read_mock):
+        """" Test that the empty branch name is returned, when server version is < 6.7 """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.6.1234'
+        url_read_mock.return_value = server_version
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        url_read_mock.assert_called_with(fake_url + 'api/server/version')
+        func.assert_called_with(sonar, product, None)
+
+    def test_branch_param_plugin_answer_no_json(self, url_read_mock):
+        """" Test that the empty branch name is returned, when no Branch plugin is installed """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.8.1234'
+        plugins_json = 'non json'
+        url_read_mock.side_effect = [server_version, plugins_json]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url + 'api/server/version'),
+                 call(fake_url + 'api/updatecenter/installed_plugins')]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, product, None)
+
+    def test_branch_param_no_plugin(self, url_read_mock):
+        """" Test that the branch name is empty, when component exists """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        plugins_json = '[{"key":"not-a-branch"}]'
+        server_version = '6.8.1234'
+        url_read_mock.side_effect = [server_version, plugins_json]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url + 'api/server/version'),
+                 call(fake_url + 'api/updatecenter/installed_plugins')]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, product, None)
+
+    def test_branch_param_url_fault(self, url_read_mock):
+        """" Test that the branch name is empty, when component exists """
+
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        plugins_json = '[{"key":"not-a-branch"}]'
+        server_version = '6.8.1234'
+        url_read_mock.side_effect = [server_version, plugins_json]
+        sonar = Sonar(fake_url)
+        func = MagicMock()
+        decorated_func = extract_branch_decorator(func)
+
+        decorated_func(sonar, product)
+
+        calls = [call(fake_url + 'api/server/version'),
+                 call(fake_url + 'api/updatecenter/installed_plugins')]
+        url_read_mock.assert_has_calls(calls)
+        func.assert_called_with(sonar, product, None)
+
+    def test_version_with_branch(self, url_read_mock):
+        """" Check that version function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        component_ret_val = '{"whatever": "not a component"}'
+        plugins_json = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
+        analyses_json = '{"analyses":[{"events":[{"category":"VERSION","name":"version_name"}]}]}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, analyses_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.version(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION&branch={branch}'
+            .format(project=product, branch=branch))
+        self.assertEqual("version_name", result)
+
+    def test_version_without_given_branch(self, url_read_mock):
+        """" Check that version function correctly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = ""
+        server_version = '6.8.1234'
+        component_ret_val = '{"whatever": "not a component"}'
+        plugins_json = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
+        analyses_json = '{"analyses":[{"key":"AWA","events":[{"category":"VERSION","name":"version_name"}]}]}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, analyses_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.version(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION'
+            .format(project=product))
+        self.assertEqual("version_name", result)
+
+    def test_version_wit_branch_when_url_opener_throws(self, url_read_mock):
+        """" Check that version function correctly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my_branch"
+        server_version = '6.8.1234'
+        component_ret_val = '{"whatever": "not a component"}'
+        plugins_json = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
+        analyses_json = urllib.error.HTTPError(None, None, None, None, None)
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, analyses_json, analyses_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.version(product + ':' + branch)
+
+        calls = [call(fake_url +
+                      'api/project_analyses/search?project={project}&format=json&category=VERSION&branch={branch}'
+                      .format(project=product, branch=branch)),
+                 call(fake_url +
+                      'api/resources?resource={project}&format=json&branch={branch}'
+                      .format(project=product, branch=branch))]
+        url_read_mock.assert_has_calls(calls)
+        self.assertEqual("?", result)
+
+    def test_ncloc_with_branch(self, url_read_mock):
+        """" Check that ncloc function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","ncloc":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        ncloc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"ncloc","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, ncloc, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.ncloc(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='ncloc', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_ncloc_without_branch(self, url_read_mock):
+        """" Check that ncloc function orrectly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","ncloc":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        ncloc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"ncloc","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, ncloc, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.ncloc(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='ncloc'))
+        self.assertEqual(1192, result)
+
+    def test_ncloc_with_branch_old(self, url_read_mock):
+        """" Check that ncloc function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        ncloc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"ncloc","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, ncloc, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.ncloc(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='ncloc'))
+        self.assertEqual(1192, result)
+
+    def test_lines_with_branch(self, url_read_mock):
+        """" Check that lines function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","lines":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"lines","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, lines, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.lines(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='lines', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_lines_without_branch(self, url_read_mock):
+        """" Check that lines function orrectly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","lines":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"lines","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, lines, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.lines(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='lines'))
+        self.assertEqual(1192, result)
+
+    def test_lines_with_branch_old(self, url_read_mock):
+        """" Check that lines function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"lines","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, lines, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.lines(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='lines'))
+        self.assertEqual(1192, result)
+
+    def test_major_violations_with_branch(self, url_read_mock):
+        """" Check that major_violations function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","major_violations":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        major_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"major_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, major_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.major_violations(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='major_violations', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_major_violations_without_branch(self, url_read_mock):
+        """" Check that major_violations function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","major_violations":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        major_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"major_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, major_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.major_violations(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='major_violations'))
+        self.assertEqual(1192, result)
+
+    def test_major_violations_with_branch_old(self, url_read_mock):
+        """" Check that major_violations correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        major_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"major_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, major_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.major_violations(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='major_violations'))
+        self.assertEqual(1192, result)
+
+    def test_critical_violations_with_branch(self, url_read_mock):
+        """" Check that critical_violations correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","critical_violations":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        critical_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"critical_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     critical_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.critical_violations(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='critical_violations', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_critical_violations_without_branch(self, url_read_mock):
+        """" Check that critical_violations correctly splits an empty branch and does not add it to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","critical_violations":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        critical_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"critical_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     critical_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.critical_violations(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='critical_violations'))
+        self.assertEqual(1192, result)
+
+    def test_critical_violations_with_branch_old(self, url_read_mock):
+        """" Check that critical_violations correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        critical_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"critical_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, critical_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.critical_violations(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='critical_violations'))
+        self.assertEqual(1192, result)
+
+    def test_blocker_violations_with_branch(self, url_read_mock):
+        """" Check that blocker_violations correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","blocker_violations":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        blocker_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"blocker_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, blocker_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.blocker_violations(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='blocker_violations', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_blocker_violations_without_branch(self, url_read_mock):
+        """" Check that blocker_violations correctly splits an empty branch and does not add it to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","blocker_violations":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        blocker_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"blocker_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, blocker_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.blocker_violations(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='blocker_violations'))
+        self.assertEqual(1192, result)
+
+    def test_blocker_violations_with_branch_old(self, url_read_mock):
+        """" Check that blocker_violations correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        blocker_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"blocker_violations","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, blocker_violations, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.blocker_violations(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='blocker_violations'))
+        self.assertEqual(1192, result)
+
+    def test_duplicated_lines_with_branch(self, url_read_mock):
+        """" Check that duplicated_lines function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","duplicated_lines":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        duplicated_lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"duplicated_lines","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, duplicated_lines, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.duplicated_lines(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='duplicated_lines', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_duplicated_lines_without_branch(self, url_read_mock):
+        """" Check that duplicated_lines correctly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","duplicated_lines":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        duplicated_lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"duplicated_lines","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, duplicated_lines, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.duplicated_lines(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='duplicated_lines'))
+        self.assertEqual(1192, result)
+
+    def test_duplicated_lines_with_branch_old(self, url_read_mock):
+        """" Check that duplicated_lines correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        duplicated_lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"duplicated_lines","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, duplicated_lines, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.duplicated_lines(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='duplicated_lines'))
+        self.assertEqual(1192, result)
+
+    def test_line_coverage_with_branch(self, url_read_mock):
+        """" Check that line_coverage function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","line_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittest_line_coverage(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='line_coverage', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_line_coverage_without_branch(self, url_read_mock):
+        """" Check that line_coverage function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","line_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittest_line_coverage(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='line_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_line_coverage_with_branch_old(self, url_read_mock):
+        """" Check that line_coverage function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittest_line_coverage(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='line_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_branch_coverage_with_branch(self, url_read_mock):
+        """" Check that branch_coverage function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","branch_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittest_branch_coverage(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='branch_coverage', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_branch_coverage_without_branch(self, url_read_mock):
+        """" Check that branch_coverage correctly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","branch_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittest_branch_coverage(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='branch_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_branch_coverage_with_branch_old(self, url_read_mock):
+        """" Check that branch_coverage correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittest_branch_coverage(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='branch_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_tests_with_branch(self, url_read_mock):
+        """" Check that tests function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","tests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        tests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"tests","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, tests, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittests(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='tests', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_tests_without_branch(self, url_read_mock):
+        """" Check that tests function orrectly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","tests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        tests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"tests","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, tests, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittests(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='tests'))
+        self.assertEqual(1192, result)
+
+    def test_tests_with_branch_old(self, url_read_mock):
+        """" Check that tests function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        tests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"tests","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, tests, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.unittests(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='tests'))
+        self.assertEqual(1192, result)
+
+    def test_it_line_coverage_with_branch(self, url_read_mock):
+        """" Check that it_line_coverage function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","it_line_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        it_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"it_line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.integration_test_line_coverage(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='it_line_coverage', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_it_line_coverage_without_branch(self, url_read_mock):
+        """" Check that it_line_coverage correctly splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","it_line_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        it_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"it_line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.integration_test_line_coverage(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='it_line_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_it_line_coverage_with_branch_old(self, url_read_mock):
+        """" Check that it_line_coverage correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        it_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"it_line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, it_line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.integration_test_line_coverage(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='it_line_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_it_branch_coverage_with_branch(self, url_read_mock):
+        """" Check that it_branch_coverage correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","it_branch_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        it_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"it_branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.integration_test_branch_coverage(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='it_branch_coverage', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_it_branch_coverage_without_branch(self, url_read_mock):
+        """" Check that it_branch_coverage splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","it_branch_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        it_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"it_branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.integration_test_branch_coverage(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='it_branch_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_it_branch_coverage_with_branch_old(self, url_read_mock):
+        """" Check that it_branch_coverage function handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        it_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"it_branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, it_branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.integration_test_branch_coverage(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='it_branch_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_overall_line_coverage_with_branch(self, url_read_mock):
+        """" Check that overall_line_coverage correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","overall_line_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        overall_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"overall_line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     overall_line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.overall_test_line_coverage(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='overall_line_coverage', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_overall_line_coverage_without_branch(self, url_read_mock):
+        """" Check that overall_line_coverage splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","overall_line_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        overall_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"overall_line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     overall_line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.overall_test_line_coverage(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='overall_line_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_overall_line_coverage_with_branch_old(self, url_read_mock):
+        """" Check that overall_line_coverage handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        overall_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"overall_line_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, overall_line_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.overall_test_line_coverage(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='overall_line_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_overall_branch_coverage_with_branch(self, url_read_mock):
+        """" Check that overall_branch_coverage correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","overall_branch_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        overall_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"overall_branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     overall_branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.overall_test_branch_coverage(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='overall_branch_coverage', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_overall_branch_coverage_without_branch(self, url_read_mock):
+        """" Check that overall_branch_coverage splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","overall_branch_coverage":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        overall_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"overall_branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     overall_branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.overall_test_branch_coverage(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='overall_branch_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_overall_branch_coverage_with_branch_old(self, url_read_mock):
+        """" Check that overall_branch_coverage handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        overall_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"overall_branch_coverage","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, overall_branch_coverage, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.overall_test_branch_coverage(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='overall_branch_coverage'))
+        self.assertEqual(1192, result)
+
+    def test_functions_with_branch(self, url_read_mock):
+        """" Check that functions function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        metric_json = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"functions","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, metric_json, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.methods(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+            .format(component=product, metric='functions', branch=branch))
+        self.assertEqual(1192, result)
+
+    def test_functions_without_branch(self, url_read_mock):
+        """" Check that functions function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        metric_json = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"functions","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, metric_json, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.methods(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='functions'))
+        self.assertEqual(1192, result)
+
+    def test_functions_with_branch_old(self, url_read_mock):
+        """" Check that functions function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        metric_json = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"functions","value":"1192"}]}}'
+        url_read_mock.side_effect = [server_version, metric_json, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.methods(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+            .format(component=product, metric='functions'))
+        self.assertEqual(1192, result)
+
+    def test_dashboard_url(self, url_read_mock):
+        """" Check that dashboard_url correctly splits the branch from product and completely ignores it. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val]
+        sonar = Sonar(fake_url)
+
+        result = sonar.dashboard_url(product + ':' + branch)
+
+        self.assertEqual(fake_url + 'dashboard?id={component}&branch={branch}'.format(component=product, branch=branch), result)
+
+    def test_dashboard_url_old(self, url_read_mock):
+        """" Check that dashboard_url does not split the branch from product for sonar versions prior to 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.5.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val]
+        sonar = Sonar(fake_url)
+
+        result = sonar.dashboard_url(product)
+
+        self.assertEqual(fake_url + 'dashboard?id={component}'.format(component=product), result)
+
+    def test_complex_methods_with_branch(self, url_read_mock):
+        """" Check that complex_methods function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","complex_methods":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        complex_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, complex_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.complex_methods(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}&branch={branch}'
+            .format(component=product, rule=rule_name, branch=branch))
+        self.assertEqual(7, result)
+
+    def test_complex_methods_without_branch(self, url_read_mock):
+        """" Check that complex_methods splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","complex_methods":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        complex_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, complex_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.complex_methods(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_complex_methods_with_branch_old(self, url_read_mock):
+        """" Check that complex_methods correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        complex_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck'
+        url_read_mock.side_effect = [server_version, complex_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.complex_methods(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_long_methods_with_branch(self, url_read_mock):
+        """" Check that long_methods function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","long_methods":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        long_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'squid:S138'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, long_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.long_methods(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}&branch={branch}'
+            .format(component=product, rule=rule_name, branch=branch))
+        self.assertEqual(7, result)
+
+    def test_long_methods_without_branch(self, url_read_mock):
+        """" Check that long_methods function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","long_methods":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        long_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'squid:S138'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, long_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.long_methods(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_long_methods_with_branch_old(self, url_read_mock):
+        """" Check that long_methods function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        long_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'squid:S138'
+        url_read_mock.side_effect = [server_version, long_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.long_methods(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_many_parameters_methods_with_branch(self, url_read_mock):
+        """" Check that many_parameters_methods correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","many_parameters_methods":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        many_parameters_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     many_parameters_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.many_parameters_methods(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}&branch={branch}'
+            .format(component=product, rule=rule_name, branch=branch))
+        self.assertEqual(7, result)
+
+    def test_many_parameters_methods_without_branch(self, url_read_mock):
+        """" Check that many_parameters_methods splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","many_parameters_methods":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        many_parameters_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
+                                     many_parameters_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.many_parameters_methods(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_many_parameters_methods_with_branch_old(self, url_read_mock):
+        """" Check that many_parameters_methods correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        many_parameters_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck'
+        url_read_mock.side_effect = [server_version, many_parameters_methods, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.many_parameters_methods(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_commented_loc_with_branch(self, url_read_mock):
+        """" Check that commented_loc function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","commented_loc":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        commented_loc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'csharpsquid:S125'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, commented_loc, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.commented_loc(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}&branch={branch}'
+            .format(component=product, rule=rule_name, branch=branch))
+        self.assertEqual(7, result)
+
+    def test_commented_loc_without_branch(self, url_read_mock):
+        """" Check that commented_loc function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","commented_loc":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        commented_loc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'csharpsquid:S125'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, commented_loc, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.commented_loc(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_commented_loc_with_branch_old(self, url_read_mock):
+        """" Check that commented_loc function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        commented_loc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'csharpsquid:S125'
+        url_read_mock.side_effect = [server_version, commented_loc, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.commented_loc(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_no_sonar_with_branch(self, url_read_mock):
+        """" Check that no_sonar function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","no_sonar":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        no_sonar = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'squid:NoSonar'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, no_sonar, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.no_sonar(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}&branch={branch}'
+            .format(component=product, rule=rule_name, branch=branch))
+        self.assertEqual(7, result)
+
+    def test_no_sonar_without_branch(self, url_read_mock):
+        """" Check that no_sonar function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","no_sonar":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        no_sonar = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'squid:NoSonar'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, no_sonar, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.no_sonar(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_no_sonar_with_branch_old(self, url_read_mock):
+        """" Check that no_sonar function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        no_sonar = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        rule_name = 'squid:NoSonar'
+        url_read_mock.side_effect = [server_version, no_sonar, measures_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.no_sonar(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+            .format(component=product, rule=rule_name))
+        self.assertEqual(7, result)
+
+    def test_false_positives_url(self, url_read_mock):
+        """" Check that false_positives_url correctly splits the branch from product and completely ignores it. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val]
+        sonar = Sonar(fake_url)
+
+        result = sonar.false_positives_url(product + ':' + branch)
+
+        self.assertEqual(fake_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
+                         .format(resource=product), result)
+
+    def test_false_positives_url_old(self, url_read_mock):
+        """" Check that false_positives_url does not split the branch from product for sonar versions prior to 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.5.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val]
+        sonar = Sonar(fake_url)
+
+        result = sonar.false_positives_url(product)
+
+        self.assertEqual(fake_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
+                         .format(resource=product), result)
+
+    def test_failing_unittests_with_branch(self, url_read_mock):
+        """" Check that failing_unittests correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        failing_unittests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
+        measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
+        url_read_mock.side_effect = \
+            [server_version, plugins_json, component_ret_val, failing_unittests, measures_json, measures_err_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.failing_unittests(product + ':' + branch)
+
+        calls = [
+            call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+                 .format(component=product, metric='test_failures', branch=branch)),
+            call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
+                 .format(component=product, metric='test_errors', branch=branch))]
+
+        url_read_mock.assert_has_calls(calls)
+        self.assertEqual(11, result)
+
+    def test_failing_unittests_without_branch(self, url_read_mock):
+        """" Check that failing_unittests function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        failing_unittests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
+        measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
+        url_read_mock.side_effect = \
+            [server_version, plugins_json, component_ret_val, failing_unittests, measures_json, measures_err_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.failing_unittests(product + ':')
+
+        calls = [
+            call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+                 .format(component=product, metric='test_failures')),
+            call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+                 .format(component=product, metric='test_errors'))]
+
+        url_read_mock.assert_has_calls(calls)
+        self.assertEqual(11, result)
+
+    def test_failing_unittests_with_branch_old(self, url_read_mock):
+        """" Check that failing_unittests function handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        failing_unittests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
+        measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
+        url_read_mock.side_effect = [server_version, failing_unittests, measures_json, measures_err_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.failing_unittests(product)
+
+        calls = [
+            call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+                 .format(component=product, metric='test_failures')),
+            call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
+                 .format(component=product, metric='test_errors'))]
+
+        url_read_mock.assert_has_calls(calls)
+        self.assertEqual(11, result)
+
+    def test_datetime_with_branch(self, url_read_mock):
+        """" Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        branch = "my-branch"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","vrs":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        show_json = '{"component":{"analysisDate":"2017-11-23T10:55:33+0000"}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, show_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.datetime(product + ':' + branch)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/components/show?component={component}&branch={branch}'
+            .format(component=product, branch=branch))
+        self.assertEqual(datetime.datetime(2017, 11, 23, 10, 55, 33), result)
+
+    def test_datetime_without_branch(self, url_read_mock):
+        """" Check that datetime function splits an empty branch and does not it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report"
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","vrs":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        show_json = '{"component":{"analysisDate":"2017-11-23T10:55:33+0000"}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, show_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.datetime(product + ':')
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/components/show?component={component}'
+            .format(component=product))
+        self.assertEqual(datetime.datetime(2017, 11, 23, 10, 55, 33), result)
+
+    def test_datetime_with_branch_old(self, url_read_mock):
+        """" Check that datetime function correctly handles product with branch, for sonar version before 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:brnch"
+        server_version = '6.5.1234'
+        show_json = '{"component":{"analysisDate":"2017-11-23T10:55:33+0000"}}'
+        url_read_mock.side_effect = [server_version, show_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.datetime(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/components/show?component={component}'
+            .format(component=product))
+        self.assertEqual(datetime.datetime(2017, 11, 23, 10, 55, 33), result)
+
+    def test_datetime_with_branch_with_resource_url(self, url_read_mock):
+        """" Check that datetime does not split the branch and calls resource url, with sonar >= 6.4 and < 6.7. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.3.1234'
+        show_json = urllib.error.HTTPError(None, None, None, None, None)
+        old_show_json = '[{"date":"2017-11-29T15:10:31+0000"}]'
+        url_read_mock.side_effect = [server_version, show_json, old_show_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.datetime(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/resources?resource={resource}&format=json'.format(resource=product))
+        self.assertEqual(datetime.datetime(2017, 11, 29, 15, 10, 31), result)
+
+    def test_datetime_with_branch_with_resource_url_throwing(self, url_read_mock):
+        """" Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
+        fake_url = "http://fake.url/"
+        product = "nl.ictu:quality_report:my-branch"
+        server_version = '6.3.1234'
+        show_json = urllib.error.HTTPError(None, None, None, None, None)
+        resource_throw = urllib.error.HTTPError(None, None, None, None, None)
+        url_read_mock.side_effect = [server_version, show_json, resource_throw]
+        sonar = Sonar(fake_url)
+
+        result = sonar.datetime(product)
+
+        url_read_mock.assert_called_with(
+            fake_url + 'api/resources?resource={resource}&format=json'.format(resource=product))
+        self.assertEqual(datetime.datetime.min, result)

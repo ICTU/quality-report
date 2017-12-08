@@ -1,3 +1,8 @@
+2017-12-07  Release 2.21.0
+
+  * Feature 164: support for branch analysis implemented
+
+
 2017-12-07  Release 2.20.2
 
   * Bug fix: Jira url didn't work.
