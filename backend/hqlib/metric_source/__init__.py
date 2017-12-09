@@ -53,6 +53,7 @@ from .team_spirit.wiki import Wiki
 from .test_report.bamboo_test_report import BambooTestReport
 from .test_report.jenkins_test_report import JenkinsTestReport
 from .test_report.junit_test_report import JunitTestReport
+from .test_report.robot_framework_test_report import RobotFrameworkTestReport
 from .test_report.testng_test_report import TestNGTestReport
 from .test_report.uft_test_report import UFTTestReport
 from .test_report.sonar_test_report import SonarTestReport

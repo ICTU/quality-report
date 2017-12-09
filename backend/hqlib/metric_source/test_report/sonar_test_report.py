@@ -22,6 +22,8 @@ from hqlib.typing import DateTime
 
 class SonarTestReport(metric_source.TestReport):
     """ Metric source for retrieving (unit) test data from Sonar. """
+    metric_source_name = "Sonar test report"
+
     def __init__(self, sonar_url: str, *args, **kwargs) -> None:
         sonar_class = kwargs.pop('sonar_class', metric_source.Sonar)
         self.__sonar = sonar_class(sonar_url, username=kwargs.pop('username', ''), password=kwargs.pop('password', ''))

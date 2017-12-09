@@ -1,3 +1,9 @@
+2017-12-09  Release 2.22.0
+
+  * Add Robot Framework test report as metric source for regression test and unit test metrics. 
+    See https://github.com/ICTU/quality-report/wiki/Robot-Framework-test-report. Closes #182.
+  
+
 2017-12-07  Release 2.21.0
 
   * Feature 164: support for branch analysis implemented
