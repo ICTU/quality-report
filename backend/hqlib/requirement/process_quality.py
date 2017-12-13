@@ -94,6 +94,12 @@ class TrackReadyUS(Requirement):
     _metric_classes = (metric.ReadyUserStoryPoints,)
 
 
+class TrackUserStoriesInProgress(Requirement):
+    """ Require the amount of ready user stories to be tracked. """
+    _name = 'Track user stories in progress'
+    _metric_classes = (metric.UserStoriesInProgress,)
+
+
 class TrackSecurityAndPerformanceRisks(Requirement):
     """ Require user stories to have security and performance risks to be assessed. """
     _name = 'Track whether user stories have security and performance risks'

@@ -19,6 +19,9 @@ JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 SECURITY_REPORT_PROXY = metric_source.FileWithDate()
 
+USER_STORIES_IN_PROGRESS_TRACKER = \
+    metric_source.JiraFilter('https://jira.myorg.nl/jira', username="jira_user", password="jira_password")
+
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
@@ -29,12 +32,16 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
+                      metric_source.UserStoriesInProgressTracker: USER_STORIES_IN_PROGRESS_TRACKER,
                       metric_source.FileWithDate: SECURITY_REPORT_PROXY
+                  },
+                  metric_source_ids={
+                      USER_STORIES_IN_PROGRESS_TRACKER: '15208'
                   },
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TrustedProductMaintainability])
+                  requirements=[requirement.TrustedProductMaintainability, requirement.TrackUserStoriesInProgress])
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', short_name='QU')
@@ -53,7 +60,7 @@ PROJECT.add_environment(ENVIRONMENT)
 QUALITY_REPORT = Application(
     short_name='QR', name='Example product',
     metric_source_ids={
-        SONAR: 'nl.ictu:quality_report:branch_name',
+        SONAR: 'nl.ictu:quality_report:',
         JACOCO: 'quality-report-coverage-report',
         GIT: '.',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},

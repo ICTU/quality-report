@@ -93,6 +93,16 @@ class UserStoryWithoutPerformanceRiskAssessmentTracker(domain.MetricSource):
         raise NotImplementedError
 
 
+class UserStoriesInProgressTracker (domain.MetricSource):
+    """ Abstract base class for ready user story points trackers, such as Jira. """
+    metric_source_name = 'User stories in progress tracker'
+    needs_metric_source_id = True
+
+    def nr_points(self, *metric_source_ids: str) -> float:
+        """ Return the number of points for the metric source ids. """
+        raise NotImplementedError
+
+
 class ReadyUserStoryPointsTracker(domain.MetricSource):
     """ Abstract base class for ready user story points trackers, such as Jira. """
     metric_source_name = 'Ready user story points tracker'

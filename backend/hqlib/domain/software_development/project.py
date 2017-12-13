@@ -49,7 +49,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
                 requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
                 requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,
-                requirement.TrackTechnicalDebt}
+                requirement.TrackTechnicalDebt, requirement.TrackUserStoriesInProgress}
 
     def organization(self) -> str:
         """ Return the name of the organization. """

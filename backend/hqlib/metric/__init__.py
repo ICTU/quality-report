@@ -50,7 +50,7 @@ from .product.checkmarx_metrics import HighRiskCheckmarxAlertsMetric, MediumRisk
 from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues, \
     OpenFindings, QualityGate
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
-    UserStoriesWithoutPerformanceRiskAssessment
+    UserStoriesWithoutPerformanceRiskAssessment, UserStoriesInProgress
 from .project.project_management_metrics import RiskLog, ActionActivity, OverDueActions, StaleActions
 
 # Team metrics

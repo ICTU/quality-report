@@ -34,6 +34,21 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
         return self._metric_source.sum_field(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
+class UserStoriesInProgress(LowerIsBetterMetric):
+    """ Metric for measuring the number of user stories in progress in current sprint . """
+
+    name = 'Hoeveelheid user stories in progress.'
+    unit = 'stories in progress'
+    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
+    template = 'Het aantal {unit} is {value}.'
+    target_value = 3
+    low_target_value = 5
+    metric_source_class = metric_source.UserStoriesInProgressTracker
+
+    def value(self):
+        return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
+
+
 class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
     """ Metric for measuring the number of user stories without the proper assessment. """
     norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'

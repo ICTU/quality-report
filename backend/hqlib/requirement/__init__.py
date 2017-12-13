@@ -23,7 +23,7 @@ from .product_quality import TrustedProductMaintainability, OWASPDependencies, C
 from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScript
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, TrackSecurityBugs, \
     TrackStaticSecurityBugs, TrackFindings, TrackTechnicalDebt, TrackQualityGate, TrackActions, TrackRisks, \
-    TrackReadyUS, TrackSecurityAndPerformanceRisks, TrackSecurityTestDate
+    TrackReadyUS, TrackUserStoriesInProgress, TrackSecurityAndPerformanceRisks, TrackSecurityTestDate
 from .environment import TrackCIJobs, TrackSonarVersion, OpenVAS
 from .team import ScrumTeam, TrackSpirit, TrackAbsence
 from .document import TrackDocumentAge, TimeLastSecurityTest

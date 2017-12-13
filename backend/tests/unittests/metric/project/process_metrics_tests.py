@@ -38,6 +38,22 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
 
+class UserStoriesInProgressTrackerTest(unittest.TestCase):
+    """ Unit tests for the number of user stories in progress metric. """
+
+    def setUp(self):
+        jira = FakeJiraFilter()
+        project = domain.Project(metric_sources={metric_source.UserStoriesInProgressTracker: jira},
+                                 metric_source_ids={jira: '12345'})
+        self.__metric = metric.UserStoriesInProgress(project=project, subject=project)
+
+    def test_value(self):
+        """ Test that the value is correct. """
+        self.assertEqual(12, self.__metric.value())
+
+    def test_url(self):
+        """ Test that the url is correct. """
+        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
 
 class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
     """ Unit tests for the number of user stories without security risk assessment metric. """

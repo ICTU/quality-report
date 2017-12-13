@@ -1,3 +1,8 @@
+2017-12-13  Release 2.23.0
+
+  * Feature #185: Add metric for the number of user stories In Progress
+
+
 2017-12-09  Release 2.22.0
 
   * Add Robot Framework test report as metric source for regression test and unit test metrics. 
