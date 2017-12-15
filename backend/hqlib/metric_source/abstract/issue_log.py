@@ -15,13 +15,15 @@ limitations under the License.
 """
 
 
+from typing import Dict
+
 from ... import domain
 
 
 class IssueLog(domain.MetricSource):
     """ Abstract based class for issues logs. """
     metric_source_name = 'Issue log'
-    needs_metric_source_id = False
+    needs_metric_source_id = True
 
 
 class RiskLog(IssueLog):
@@ -33,18 +35,18 @@ class ActionLog(IssueLog):
     """ Abstract base class for action logs. """
     metric_source_name = 'Action log'
 
-    def nr_of_over_due_actions(self):
+    def nr_of_over_due_actions(self, *metric_source_ids: str) -> int:
         """ Return the number of over due actions. """
         raise NotImplementedError
 
-    def over_due_actions_url(self):
+    def over_due_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
         """ Return the urls to the over due actions. """
         raise NotImplementedError
 
-    def nr_of_inactive_actions(self):
+    def nr_of_inactive_actions(self, *metric_source_ids: str) -> int:
         """ Return the number of inactive actions. """
         raise NotImplementedError
 
-    def inactive_actions_url(self):
+    def inactive_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
         """ Return the urls for the inactive actions. """
         raise NotImplementedError

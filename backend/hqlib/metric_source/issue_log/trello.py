@@ -18,11 +18,11 @@ import datetime
 import functools
 import logging
 import time
-import urllib.request
 
 from typing import Dict, Any, Optional, Callable, List
 
 from ... import utils
+from ...domain import MetricSource
 from ...metric_source import url_opener
 from ...typing import DateTime, TimeDelta
 
@@ -32,66 +32,48 @@ class TrelloObject(object):
 
     url_template = 'https://api.trello.com/1/{object_type}/{object_id}{argument}?key={appkey}&token={token}{parameters}'
 
-    def __init__(self, object_id: str, appkey: str, token: str, urlopen=urllib.request.urlopen) -> None:
+    def __init__(self, appkey: str, token: str, object_id: str='', urlopen=None) -> None:
         self._appkey = appkey
         self._token = token
-        self.__urlopen = urlopen
-        object_type = self.__class__.__name__[len('Trello'):].lower()
-        self.__parameters = dict(object_type=object_type, object_id=object_id, appkey=appkey, token=token)
-        self.__json: Dict[str, Any] = dict()
+        self.__object_id = object_id
+        self.__urlopen = urlopen or url_opener.UrlOpener().url_open
+        self.__object_type = self.__class__.__name__[len('Trello'):].lower()
         super().__init__()
 
-    def __bool__(self) -> bool:
-        return bool(self.__parameters['appkey']) and bool(self.__parameters['object_id'])
-
-    def __repr__(self) -> str:
-        return repr(self._json())
-
     @functools.lru_cache(maxsize=1024)
-    def _json(self, argument: str='', extra_parameters: str='') -> Any:
+    def _json(self, object_id: str='', argument: str='', extra_parameters: str='') -> Any:
         """ Return the JSON at url. """
-        parameters = self.__parameters.copy()
-        parameters.update(dict(argument=argument, parameters=extra_parameters))
-        return self.__get_json(self.url_template.format(**parameters))
+        url = self.url_template.format(
+            object_type=self.__object_type, object_id=object_id or self.__object_id,
+            appkey=self._appkey, token=self._token, argument=argument, parameters=extra_parameters)
+        json_string = self.__urlopen(url).read()
+        return utils.eval_json(json_string)
 
-    def __get_json(self, url: str) -> Any:
-        """ Return and evaluate the JSON at the url. """
-        if url in self.__json:
-            return self.__json[url]
-        try:
-            json_string = self.__urlopen(url).read()
-        except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.warning("Couldn't open %s: %s", url, reason)
-            raise
-        json = self.__json[url] = utils.eval_json(json_string)
-        return json
+    def url(self, object_id: str='') -> str:
+        """ Return the url of a Trello object, if object id is passed, or of trello.com. """
+        if object_id or self.__object_id:
+            try:
+                return self._json(object_id)['shortUrl']
+            except url_opener.UrlOpener.url_open_exceptions:
+                pass
+        return 'http://trello.com'
 
-    def name(self) -> str:
-        """ Return the name of this Trello object. """
-        return self._json()['name']
-
-    def id(self) -> str:
-        """ Return the id of this Trello object. """
-        return self._json()['idShort']
-
-    def url(self) -> str:
-        """ Return the url of this Trello object. """
-        try:
-            return self._json()['shortUrl']
-        except url_opener.UrlOpener.url_open_exceptions:
-            return 'http://trello.com'
-
-    def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument
+    def datetime(self, *object_ids: str) -> DateTime:
         """ Return the date of the last action at this Trello object. """
+        object_ids = object_ids or [self.__object_id]
+        datetimes = []
         try:
-            actions = self._json(argument='/actions', extra_parameters='&filter=all')
+            for object_id in object_ids:
+                actions = self._json(object_id=object_id, argument='/actions', extra_parameters='&filter=all')
+                if actions:
+                    datetimes.append(self.date_time_from_string(actions[0]['date']))
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
-        return self.date_time_from_string(actions[0]['date']) if actions else datetime.datetime.min
+        return max(datetimes) if datetimes else datetime.datetime.min
 
-    def last_update_time_delta(self) -> TimeDelta:
+    def last_update_time_delta(self, *board_ids: str) -> TimeDelta:
         """ Return the amount of time since the last update. """
-        return datetime.datetime.now() - self.datetime()
+        return datetime.datetime.now() - self.datetime(*board_ids)
 
     @staticmethod
     def date_time_from_string(date_time_timezone_string: str) -> DateTime:
@@ -104,6 +86,10 @@ class TrelloObject(object):
 
 class TrelloCard(TrelloObject):
     """ Class representing a Trello card. """
+
+    def id(self) -> str:
+        """ Return the id of this Trello object. """
+        return self._json()['idShort']
 
     def due_date_time(self) -> Optional[DateTime]:
         """ Return the date/time when this card is due or None when the card has no due date/time. """
@@ -133,43 +119,43 @@ class TrelloCard(TrelloObject):
             return now() - self.datetime() > max_age
 
 
-class TrelloBoard(TrelloObject):
+class TrelloBoard(TrelloObject, MetricSource):
     """ Class representing a Trello board. """
     metric_source_name = 'Trello'
-    needs_metric_source_id = False
+    needs_metric_source_id = True
 
     def __init__(self, *args, **kwargs) -> None:
         self.__card_class = kwargs.pop('card_class', TrelloCard)
         super().__init__(*args, **kwargs)
 
-    def nr_of_over_due_cards(self) -> int:
+    def nr_of_over_due_cards(self, *board_ids: str) -> int:
         """ Return the number of (non-archived) cards on this Trello board that are over due. """
         try:
-            return len(self.__over_due_cards())
+            return len(self.__over_due_cards(*board_ids))
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def nr_of_inactive_cards(self, days: int=14) -> int:
+    def nr_of_inactive_cards(self, *board_ids: str, days: int=14) -> int:
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
             specified number of days. """
         try:
-            return len(self.__inactive_cards(days))
+            return len(self.__inactive_cards(*board_ids, days=days))
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def __over_due_cards(self) -> List[TrelloCard]:
+    def __over_due_cards(self, *board_ids: str) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board that are over due. """
-        return [card for card in self.__cards() if card.is_over_due()]
+        return [card for card in self.__cards(*board_ids) if card.is_over_due()]
 
-    def __inactive_cards(self, days: int=14) -> List[TrelloCard]:
+    def __inactive_cards(self, *board_ids: str, days: int=14) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board that are inactive. """
-        return [card for card in self.__cards() if card.is_inactive(days)]
+        return [card for card in self.__cards(*board_ids) if card.is_inactive(days)]
 
-    def over_due_cards_url(self) -> Dict[str, str]:
-        """ Return the urls for the (non-archived) cards on this Trello board that are over due. """
+    def over_due_cards_url(self, *board_ids: str) -> Dict[str, str]:
+        """ Return the urls for the (non-archived) cards on the Trello boards that are over due. """
         urls = dict()
         try:
-            for card in self.__over_due_cards():
+            for card in self.__over_due_cards(*board_ids):
                 time_delta = utils.format_timedelta(card.over_due_time_delta())
                 remark = '{time_delta} te laat'.format(time_delta=time_delta)
                 label = '{card} ({remark})'.format(card=card.id(), remark=remark)
@@ -178,11 +164,11 @@ class TrelloBoard(TrelloObject):
             return {self.metric_source_name: 'http://trello'}
         return urls
 
-    def inactive_cards_url(self, days: int=14) -> Dict[str, str]:
+    def inactive_cards_url(self, *board_ids: str, days: int=14) -> Dict[str, str]:
         """ Return the urls for the (non-archived) cards on this Trello board that are inactive. """
         urls = dict()
         try:
-            for card in self.__inactive_cards(days):
+            for card in self.__inactive_cards(*board_ids, days=days):
                 time_delta = utils.format_timedelta(card.last_update_time_delta())
                 remark = '{time_delta} niet bijgewerkt'.format(time_delta=time_delta)
                 label = '{card} ({remark})'.format(card=card.id(), remark=remark)
@@ -192,32 +178,41 @@ class TrelloBoard(TrelloObject):
         return urls
 
     @functools.lru_cache(maxsize=1024)
-    def __cards(self) -> List[TrelloCard]:
+    def __cards(self, *board_ids: str) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board. """
+        cards = []
         try:
-            return [self.__create_card(card['id']) for card in self._json(argument='/cards')]
+            for board_id in board_ids:
+                cards.extend([self.__create_card(card['id']) for card in
+                              self._json(object_id=board_id, argument='/cards')])
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't get cards from Trello board: %s", reason)
-            return []
+        return cards
 
     def __create_card(self, card_id: str) -> TrelloCard:
         """ Create a Trello card with the specified id. """
-        return self.__card_class(card_id, self._appkey, self._token)
+        return self.__card_class(self._appkey, self._token, card_id)
+
+    # metric_source.MetricSource interface:
+
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
+        """ Return the url(s) to the metric source for the metric source id. """
+        return [self.url(metric_source_id) for metric_source_id in metric_source_ids]
 
     # metric_source.ActionLog interface:
 
-    def nr_of_over_due_actions(self):
+    def nr_of_over_due_actions(self, *metric_source_ids: str) -> int:
         """ Return the number of over due cards. """
-        return self.nr_of_over_due_cards()
+        return self.nr_of_over_due_cards(*metric_source_ids)
 
-    def over_due_actions_url(self):
+    def over_due_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
         """ Return the urls to the over due cards. """
-        return self.over_due_cards_url()
+        return self.over_due_cards_url(*metric_source_ids)
 
-    def nr_of_inactive_actions(self):
+    def nr_of_inactive_actions(self, *metric_source_ids: str) -> int:
         """ Return the number of inactive cards. """
-        return self.nr_of_inactive_cards()
+        return self.nr_of_inactive_cards(*metric_source_ids)
 
-    def inactive_actions_url(self):
+    def inactive_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
         """ Return the urls for the inactive cards. """
-        return self.inactive_cards_url()
+        return self.inactive_cards_url(*metric_source_ids)

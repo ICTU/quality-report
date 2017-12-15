@@ -24,7 +24,7 @@ from hqlib.metric_source.issue_log.trello import TrelloCard, TrelloBoard
 
 class FakeCard(object):
     """ Fake card class to use for testing the Trello board class. """
-    def __init__(self, card_id, *args, **kwargs):  # pylint: disable=unused-argument
+    def __init__(self, app_key, token, card_id, *args, **kwargs):  # pylint: disable=unused-argument
         self.__card_id = card_id
         # The card id determines the status of the fake card:
         self.__over_due = card_id in (1, 3)
@@ -61,7 +61,7 @@ class TrelloBoardTest(unittest.TestCase):
     def setUp(self):
         self.__raise = False
         self.__cards_json = ''
-        self.__trello_board = TrelloBoard('object_id', 'appkey', 'token', urlopen=self.__urlopen, card_class=FakeCard)
+        self.__trello_board = TrelloBoard('appkey', 'token', urlopen=self.__urlopen, card_class=FakeCard)
 
     def __urlopen(self, url):
         """ Return a fake JSON string. """
@@ -77,68 +77,55 @@ class TrelloBoardTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url of the Trello board. """
-        self.assertEqual('https://api.trello.com/1/board/object_id?key=appkey&token=token', self.__trello_board.url())
+        self.assertEqual('https://api.trello.com/1/board/board_id?key=appkey&token=token',
+                         self.__trello_board.url('board_id'))
 
     def test_over_due_cards_url(self):
         """ Test the urls for the over due cards. """
         self.__cards_json = '[{"id": 1}]'
         self.assertEqual({'1 (3 dagen te laat)': 'http://trello.com/api/card/1'},
-                         self.__trello_board.over_due_cards_url())
+                         self.__trello_board.over_due_cards_url('board_id'))
 
     def test_inactive_cards_url(self):
         """ Test the urls for the inactive cards. """
         self.__cards_json = '[{"id": 2}]'
         self.assertEqual({'2 (4 dagen niet bijgewerkt)': 'http://trello.com/api/card/2'},
-                         self.__trello_board.inactive_cards_url())
-
-    def test_name(self):
-        """ Test the name of the Trello board. """
-        self.assertEqual('name', self.__trello_board.name())
+                         self.__trello_board.inactive_cards_url('board_id'))
 
     def test_last_update_delta(self):
         """ Test the time delta since last update. """
         expected = datetime.datetime.now() - datetime.datetime(2015, 1, 1, 10, 0, 0)
-        actual = self.__trello_board.last_update_time_delta()
+        actual = self.__trello_board.last_update_time_delta('board_id')
         self.assertAlmostEqual(expected.total_seconds(), actual.total_seconds(), places=2)
-
-    def test_repr(self):
-        """ Test that repr(board) gives the json. """
-        repr_string = repr(self.__trello_board)
-        self.assertTrue("'name': 'name'" in repr_string)
-        self.assertTrue("'shortUrl': 'https://api.trello.com/1/board/object_id?key=appkey&token=token'" in repr_string)
-
-    def test_bool(self):
-        """ Test that the board is true if it has an app key and an id. """
-        self.assertTrue(self.__trello_board)
 
     def test_one_over_due(self):
         """ Test the count with one over due card. """
         self.__cards_json = '[{"id": 1}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards())
-        self.assertEqual(0, self.__trello_board.nr_of_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards('board_id'))
+        self.assertEqual(0, self.__trello_board.nr_of_inactive_cards('board_id'))
 
     def test_one_inactive(self):
         """Test the count with one inactive card. """
         self.__cards_json = '[{"id": 2}]'
-        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards())
-        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards('board_id'))
+        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards('board_id'))
 
     def test_one_over_due_and_inactive(self):
         """ Test the count with one over due card. """
         self.__cards_json = '[{"id": 3}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards())
-        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards('board_id'))
+        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards('board_id'))
 
     def test_one_inactive_and_one_over_due(self):
         """ Test the count with one inactive and one over due card. """
         self.__cards_json = '[{"id": 1}, {"id": 2}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards())
-        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards())
+        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards('board_id'))
+        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards('board_id'))
 
     def test_http_error(self):
         """ Test dealing with http errors when retrieving the JSON. """
         self.__raise = True
-        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards())
+        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards('board_id'))
 
 
 class TrelloCardTest(unittest.TestCase):

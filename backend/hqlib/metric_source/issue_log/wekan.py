@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import functools
 import logging
-from typing import Dict, Iterator, Optional
+from typing import Dict, Iterator, Sequence
 
 import wekanapi
 
@@ -29,40 +29,40 @@ class WekanBoard(domain.MetricSource):
     """ Wekan board used as action list and/or risk log. """
 
     metric_source_name = 'Wekan'
+    needs_metric_source_id = True
 
-    def __init__(self, url: str, username: str, password: str, board_id: str, api=wekanapi.WekanApi) -> None:
+    def __init__(self, url: str, username: str, password: str, api=wekanapi.WekanApi) -> None:
         self.__url = url.strip('/')
         self.__username = username
         self.__password = password
-        self.__board_id = board_id
         self.__wekan_api = api
         super().__init__(url=self.__url)
 
     # metric_source.MetricSource interface:
 
-    def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument
+    def datetime(self, *board_ids: str) -> DateTime:  # pylint: disable=unused-argument
         """ Return the date of the latest activity at this Wekan board. """
-        if not self.__board():
-            return datetime.datetime.min
-        date_times = []
-        for card in self.__cards():
-            date_times.append(self.__last_activity(card.get_card_info()))
+        date_times = [self.__last_activity(card.get_card_info()) for card in self.__cards(*board_ids)]
         return max(date_times, default=datetime.datetime.min)
+
+    def metric_source_urls(self, *metric_source_ids: str):
+        """ Convert board ids to urls. """
+        return self.__board_urls(*metric_source_ids)
 
     # metric_source.ActionLog interface:
 
-    def nr_of_over_due_actions(self) -> int:
+    def nr_of_over_due_actions(self, *board_ids: str) -> int:
         """ Return the number of over due cards. """
-        return len(list(self.__over_due_cards())) if self.__board() else -1
+        return len(list(self.__over_due_cards(*board_ids))) if self.__boards(*board_ids) else -1
 
-    def over_due_actions_url(self, now: DateTime=None) -> Dict[str, str]:
+    def over_due_actions_url(self, *board_ids: str, now: DateTime=None) -> Dict[str, str]:
         """ Return the urls to the over due cards. """
-        if not self.__board():
+        if not self.__boards(*board_ids):
             return {self.metric_source_name: self.__url}
         now = now or datetime.datetime.now()
-        over_due_cards = list(self.__over_due_cards(now))
+        over_due_cards = list(self.__over_due_cards(*board_ids, now=now))
         if not over_due_cards:
-            return {self.metric_source_name: self.__board_url()}
+            return self.__board_urls_dict(*board_ids)
         urls = {}
         for card in over_due_cards:
             time_delta = utils.format_timedelta(now - self.__due_date(card.get_card_info()))
@@ -71,18 +71,18 @@ class WekanBoard(domain.MetricSource):
             urls[label] = self.__card_url(card)
         return urls
 
-    def nr_of_inactive_actions(self, days: int=14) -> int:
+    def nr_of_inactive_actions(self, *board_ids: str, days: int=14) -> int:
         """ Return the number of inactive cards. """
-        return len(list(self.__inactive_cards(days))) if self.__board() else -1
+        return len(list(self.__inactive_cards(*board_ids, days=days))) if self.__boards(*board_ids) else -1
 
-    def inactive_actions_url(self, days: int=14, now: DateTime=None) -> Dict[str, str]:
+    def inactive_actions_url(self, *board_ids: str, days: int=14, now: DateTime=None) -> Dict[str, str]:
         """ Return the urls for the inactive cards. """
-        if not self.__board():
+        if not self.__boards(*board_ids):
             return {self.metric_source_name: self.__url}
         now = now or datetime.datetime.now()
-        inactive_cards = list(self.__inactive_cards(days, now))
+        inactive_cards = list(self.__inactive_cards(*board_ids, days=days, now=now))
         if not inactive_cards:
-            return {self.metric_source_name: self.__board_url()}
+            return self.__board_urls_dict(*board_ids)
         urls = {}
         for card in inactive_cards:
             time_delta = utils.format_timedelta(now - self.__last_activity(card.get_card_info()))
@@ -91,31 +91,40 @@ class WekanBoard(domain.MetricSource):
             urls[label] = self.__card_url(card)
         return urls
 
-    def __board_url(self) -> str:
-        """ Return the url of the board. """
-        board = self.__board()
-        if board:
-            return self.__url + '/b/' + board.id + '/' + board.title.lower().replace(' ', '-')
-        else:
-            return self.__url  # pragma: no cover
+    def __board_urls_dict(self, *board_ids) -> Dict[str, str]:
+        """ Create a url dict where the keys are the anchors and the values are the urls. """
+        urls = self.__board_urls(*board_ids)
+        template = '{label}' if len(urls) == 1 else '{label} ({index}/{count})'
+        return {template.format(label=self.metric_source_name, index=index, count=len(urls)): url
+                for index, url in enumerate(urls, start=1)}
+
+    def __board_urls(self, *board_ids: str) -> Sequence[str]:
+        """ Return the urls of the boards. """
+        urls = []
+        for board in self.__boards(*board_ids):
+            urls.append(self.__url + '/b/' + board.id + '/' + board.title.lower().replace(' ', '-'))
+        return urls if urls else [self.__url]
 
     def __card_url(self, card: wekanapi.models.Card) -> str:
         """ Return the url of the card. """
-        return self.__board_url() + '/' + card.id
+        return self.__board_urls(card.cardslist.board.id)[0] + '/' + card.id
 
     @functools.lru_cache(maxsize=1024)
-    def __board(self) -> Optional[wekanapi.models.Board]:
-        """ Return the Wekan board API. """
+    def __boards(self, *board_ids: str) -> Sequence[wekanapi.models.Board]:
+        """ Return the boards for the specified board ids. Will returns an empty sequence if one of the
+            boards cannot be found. """
         try:
             api = self.__wekan_api(self.__url, credentials=dict(username=self.__username, password=self.__password))
         except Exception as reason:
             logging.error("Couldn't create API for Wekan at %s for user %s: %s", self.__url, self.__username, reason)
-            return None
+            return []
+        boards = []
         for board in api.get_user_boards():
-            if board.id == self.__board_id:
-                return board
-        logging.error("Couldn't find board with id %s at %s for user %s", self.__board_id, self.__url, self.__username)
-        return None
+            if board.id in board_ids:
+                boards.append(board)
+        if not boards:
+            logging.error("Couldn't find boards with ids %s at %s for user %s", board_ids, self.__url, self.__username)
+        return boards
 
     @classmethod
     def __due_date(cls, card_info: Dict[str, str]) -> DateTime:
@@ -138,15 +147,16 @@ class WekanBoard(domain.MetricSource):
         """ Parse the date time format used by Wekan. """
         return datetime.datetime.strptime(date_time_string, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    def __cards(self) -> Iterator[wekanapi.models.Card]:
-        """ Return all cards on our board. """
-        for cards_list in self.__board().get_cardslists():
-            for card in cards_list.get_cards():
-                yield card
+    def __cards(self, *board_ids: str) -> Iterator[wekanapi.models.Card]:
+        """ Return all cards on the boards. """
+        for board in self.__boards(*board_ids):
+            for cards_list in board.get_cardslists():
+                for card in cards_list.get_cards():
+                    yield card
 
-    def __inactive_cards(self, days: int=14, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
-        """ Return all inactive cards on the board. """
-        for card in self.__cards():
+    def __inactive_cards(self, *board_ids: str, days: int=14, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
+        """ Return all inactive cards on the boards. """
+        for card in self.__cards(*board_ids):
             if self.__is_inactive(card, days, now):
                 yield card
 
@@ -160,10 +170,10 @@ class WekanBoard(domain.MetricSource):
             return False  # Card has a start date in the future, never consider it inactive
         return (now - self.__last_activity(info)).days > days
 
-    def __over_due_cards(self, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
-        """ Return all over due cards on the board. """
+    def __over_due_cards(self, *board_ids: str, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
+        """ Return all over due cards on the boards. """
         now = now or datetime.datetime.now()
-        for card in self.__cards():
+        for card in self.__cards(*board_ids):
             info = card.get_card_info()
             if datetime.datetime.min < self.__due_date(info) < now:
                 yield card

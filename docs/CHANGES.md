@@ -1,3 +1,9 @@
+2017-12-15  Release 2.24.0
+
+  * Make the board id of Trello and Wekan instance the metric source id in project definitions for consistency with
+    other metric sources.
+  
+  
 2017-12-13  Release 2.23.0
 
   * Feature #185: Add metric for the number of user stories In Progress
@@ -16,7 +22,7 @@
 
 2017-12-07  Release 2.20.2
 
-  * Bug fix: Jira url didn't work.
+  * Bug fix: Jira url did not work.
 
 
 2017-12-02  Release 2.20.1

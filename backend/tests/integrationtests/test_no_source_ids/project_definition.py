@@ -9,7 +9,7 @@ GIT = metric_source.Git(url='http://git/repo')
 SONAR = metric_source.Sonar('http://sonar/')
 SONAR_UNIT_TEST_REPORT = metric_source.SonarTestReport('http://sonar/')
 BUG_TRACKER = metric_source.JiraFilter(url='http://jira/', username='user', password='pass')
-WEKAN = metric_source.WekanBoard('http://wekan', username='user', password='pass', board_id='id')
+WEKAN = metric_source.WekanBoard('http://wekan', username='user', password='pass')
 
 # The project
 PROJECT = Project(
