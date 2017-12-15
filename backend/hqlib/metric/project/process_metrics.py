@@ -37,7 +37,7 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
 class UserStoriesInProgress(LowerIsBetterMetric):
     """ Metric for measuring the number of user stories in progress in current sprint . """
 
-    name = 'Hoeveelheid user stories in progress.'
+    name = 'Hoeveelheid user stories in progress'
     unit = 'stories in progress'
     norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
     template = 'Het aantal {unit} is {value}.'
