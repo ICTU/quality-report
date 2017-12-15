@@ -22,12 +22,12 @@ from . import url_opener
 from .. import utils
 
 
-class Jira(url_opener.UrlOpener):
+class Jira(object):
     """ Class representing the Jira instance. """
 
     def __init__(self, url: str, username: str, password: str) -> None:
         self.__url = url + '/' if not url.endswith('/') else url
-        super().__init__(username=username, password=password)
+        self.__url_opener = url_opener.UrlOpener(username=username, password=password)
 
     def query_total(self, query_id: int) -> int:
         """ Return the number of results of the specified query. """
@@ -71,7 +71,7 @@ class Jira(url_opener.UrlOpener):
         query_parts = urllib.parse.urlparse(query_url)
         read_url = config_parts.scheme + '://' + config_parts.netloc + query_parts.path + '?' + query_parts.query
         try:
-            return utils.eval_json(self.url_read(read_url))
+            return utils.eval_json(self.__url_opener.url_read(read_url))
         except url_opener.UrlOpener.url_open_exceptions:
             return None
 
@@ -81,7 +81,7 @@ class Jira(url_opener.UrlOpener):
             return None
         url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)
         try:
-            json_string = self.url_read(url)
+            json_string = self.__url_opener.url_read(url)
         except url_opener.UrlOpener.url_open_exceptions:
             return None
         url_type = 'searchUrl' if search else 'viewUrl'

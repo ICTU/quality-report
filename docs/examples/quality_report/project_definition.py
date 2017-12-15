@@ -1,13 +1,18 @@
 """ Project definition for the Quality Report software itself. """
 
-import datetime
-import os
+###
+### BEGIN: This block mocks http calls needed to avoid real http cals and to provide example results instead
+### Real report should have those lines removed, in order to contact real metric sources
+###
+import hqlib.metric_source.url_opener
+from tests.url_calls_mocker.url_calls_mocker import UrlOpenerMock
+hqlib.metric_source.url_opener.UrlOpener = UrlOpenerMock
+### END
 
+import datetime
 from hqlib import metric_source, metric, requirement
 from hqlib.domain import Project, Environment, Application, Team, Document, TechnicalDebtTarget, \
     DynamicTechnicalDebtTarget
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
@@ -78,7 +83,7 @@ SECURITY_REPORT = Document(
     url='http://url/to/report',
     added_requirements=[requirement.TrackSecurityTestDate],
     metric_source_ids={
-        SECURITY_REPORT_PROXY: 'file:///' + dir_path + '/../example_metric_sources/file_with_date.json'
+        SECURITY_REPORT_PROXY: 'https://last_security_date_url'
     }
 )
 
