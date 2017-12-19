@@ -38,6 +38,36 @@ class UFTTestReport(test_report.TestReport):
         """ Return the number of failed tests. """
         return self.__test_count(report_url, 'failed')
 
+    def _skipped_tests(self, report_url: str) -> int:
+        """ Return the number of skipped tests. The UFT xml does not contain this information by default, but
+            it can be computed from the total amount of tests if it is added as extra data of a step. """
+        passed_tests, failed_tests = self._passed_tests(report_url), self._failed_tests(report_url)
+        if -1 in (passed_tests, failed_tests):
+            return -1
+        try:
+            root = self.__element_tree(report_url)
+        except UrlOpener.url_open_exceptions:  # pragma: no cover
+            return -1
+        except xml.etree.cElementTree.ParseError:  # pragma: no cover
+            return -1
+        steps = [step for step in root.findall(".//Step[Obj]") if "Stappenreferentie" in (step.find("Obj").text or '')]
+        if not steps:
+            logging.warning("No 'Stappenreferentie' found in %s at %s", self.metric_source_name, report_url)
+            return 0  # No "Stappenreferentie" found, assume no tests were skipped
+        try:
+            total = int(steps[0].find("Details").text)
+        except (AttributeError, TypeError, ValueError) as reason:
+            logging.error("Can't parse 'Stappenreferentie' from %s at %s: %s",
+                          self.metric_source_name, report_url, reason)
+            return -1
+        skipped = total - (passed_tests + failed_tests)
+        if skipped < 0:
+            logging.error("'Stappenreferentie' (%d) from %s at %s is smaller than the number of passed tests (%d) "
+                          "plus the number of failed tests (%d)",  total, self.metric_source_name, report_url,
+                          passed_tests, failed_tests)
+            return -1
+        return skipped
+
     def _report_datetime(self, report_url: str) -> DateTime:
         """ Return the date and time of the report. """
         try:

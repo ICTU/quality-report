@@ -1,3 +1,8 @@
+2017-12-19  Release 2.24.1
+
+  * Read the step count in the UFT test report to calculate the skipped number of tests.
+  
+
 2017-12-15  Release 2.24.0
 
   * Make the board id of Trello and Wekan instance the metric source id in project definitions for consistency with

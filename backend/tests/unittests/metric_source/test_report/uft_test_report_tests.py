@@ -49,11 +49,18 @@ class UFTTestReportTest(unittest.TestCase):
         self.assertEqual(2, self.__uft.passed_tests('url'))
         self.assertEqual(0, self.__uft.skipped_tests('url'))
 
+    def test_report_skipped(self):
+        """ Test that the number of skipped tests can be parsed. """
+        self.__opener.contents = """<Report><Step><Obj><![CDATA[ Stappenreferentie ]]></Obj>
+            <Details><![CDATA[ 108 ]]></Details></Step>
+            <Doc><Summary failed="1" passed="2"/></Doc></Report>"""
+        self.assertEqual(105, self.__uft.skipped_tests('url'))
+
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """
         self.assertEqual(-1, self.__uft.failed_tests('raise'))
         self.assertEqual(-1, self.__uft.passed_tests('raise'))
-        self.assertEqual(0, self.__uft.skipped_tests('raise'))
+        self.assertEqual(-1, self.__uft.skipped_tests('raise'))
 
     def test_missing_url(self):
         """ Test that the default is returned when no urls are provided. """
@@ -71,6 +78,27 @@ class UFTTestReportTest(unittest.TestCase):
         """ Test incorrect XML. """
         self.__opener.contents = '<foo><bar>'
         self.assertEqual(-1, self.__uft.failed_tests('url'))
+
+    def test_missing_step_reference(self):
+        """ Test that the number of skipped tests returns -1 when the step reference can't be parsed. """
+        self.__opener.contents = """<Report><Step><Obj><![CDATA[ Stappenreferentie ]]></Obj>
+            <Details></Details></Step>
+            <Doc><Summary failed="1" passed="2"/></Doc></Report>"""
+        self.assertEqual(-1, self.__uft.skipped_tests('url'))
+
+    def test_faulty_step_reference(self):
+        """ Test that the number of skipped tests returns -1 when the step reference can't be parsed. """
+        self.__opener.contents = """<Report><Step><Obj></Obj>
+            <Details><![CDATA[ 108 ]]></Details></Step>
+            <Doc><Summary failed="1" passed="2"/></Doc></Report>"""
+        self.assertEqual(0, self.__uft.skipped_tests('url'))
+
+    def test_passed_larget_than_step_reference(self):
+        """ Test that the number of skipped tests returns -1 when the step reference can't be parsed. """
+        self.__opener.contents = """<Report><Step><Obj><![CDATA[ Stappenreferentie ]]></Obj>
+            <Details>10</Details></Step>
+            <Doc><Summary failed="1" passed="20"/></Doc></Report>"""
+        self.assertEqual(-1, self.__uft.skipped_tests('url'))
 
     def test_datetime_with_faulty_xml(self):
         """ Test incorrect XML. """
