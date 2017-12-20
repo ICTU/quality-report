@@ -25,7 +25,7 @@ from .abstract.issue_log import ActionLog, IssueLog, RiskLog
 from .abstract.issue_tracker import BugTracker, SecurityBugTracker, StaticSecurityBugTracker, FindingTracker, \
     TechnicalDebtTracker, QualityGateTracker, UserStoryWithoutSecurityRiskAssessmentTracker, \
     UserStoryWithoutPerformanceRiskAssessmentTracker, ReadyUserStoryPointsTracker, ManualLogicalTestCaseTracker, \
-    UserStoriesInProgressTracker
+    UserStoriesInProgressTracker, UserStoriesDurationTracker
 from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
 from .abstract.version_control_system import VersionControlSystem

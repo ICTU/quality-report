@@ -29,7 +29,7 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of items equals the sum of totals per metric source returned by Jira. """
         query_total_mock.side_effect = [12, 13]
 
-        result = JiraFilter('', '', '', jira=Jira('', '', '')).nr_issues('123', '567')
+        result = JiraFilter('', '', '').nr_issues('123', '567')
 
         query_total_mock.assert_has_calls([call(123), call(567)])
         self.assertEqual(25, result)
@@ -39,9 +39,29 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of items is set to -1 if Jira returned -1 for any metric source. """
         query_total_mock.side_effect = [-1, 13]
 
-        result = JiraFilter('', '', '', jira=Jira('', '', '')).nr_issues('123', '567')
+        result = JiraFilter('', '', '').nr_issues('123', '567')
 
         query_total_mock.assert_has_calls([call(123), call(567)])
+        self.assertEqual(-1, result)
+
+    @patch.object(Jira, 'duration_of_stories')
+    def test_cumulative_stories_duration(self, duration_of_stories_mock):
+        """ Test that the number of items equals the sum of totals per metric source returned by Jira. """
+        duration_of_stories_mock.side_effect = [12, 13]
+
+        result = JiraFilter('', '', '').cumulative_stories_duration('123', '567')
+
+        duration_of_stories_mock.assert_has_calls([call(123), call(567)])
+        self.assertEqual(25, result)
+
+    @patch.object(Jira, 'duration_of_stories')
+    def test_cumulative_stories_duration_on_error(self, duration_of_stories_mock):
+        """ Test that the number of items is set to -1 if Jira returned -1 for any metric source. """
+        duration_of_stories_mock.side_effect = [-1, 13]
+
+        result = JiraFilter('', '', '').cumulative_stories_duration('123', '567')
+
+        duration_of_stories_mock.assert_has_calls([call(123), call(567)])
         self.assertEqual(-1, result)
 
     @patch.object(Jira, 'query_sum')
@@ -49,7 +69,7 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of points equals the sum of sums per metric source returned by Jira. """
         query_sum_mock.side_effect = [12.1, 13.2]
 
-        result = JiraFilter('', '', '', jira=Jira('', '', ''), field_name='customfield_1').sum_field('123', '567')
+        result = JiraFilter('', '', '', field_name='customfield_1').sum_field('123', '567')
 
         query_sum_mock.assert_has_calls([call(123,'customfield_1'), call(567, 'customfield_1')])
         self.assertAlmostEqual(25.3, result)
@@ -59,7 +79,7 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of points is set to -1 if Jira returned -1 for any metric source. """
         query_sum_mock.side_effect = [-1, 13.2]
 
-        result = JiraFilter('', '', '', jira=Jira('', '', ''), field_name='customfield_1').sum_field('123', '567')
+        result = JiraFilter('', '', '', field_name='customfield_1').sum_field('123', '567')
 
         query_sum_mock.assert_has_calls([call(123, 'customfield_1'), call(567, 'customfield_1')])
         self.assertEqual(-1, result)
@@ -71,7 +91,7 @@ class JiraFilterTest(unittest.TestCase):
         jira2 = 'http://jira2/view'
         get_query_url_mock.side_effect = [jira1, jira2]
 
-        result = JiraFilter('', '', '', jira=Jira('http://jira/', '', '')).metric_source_urls('123', '567')
+        result = JiraFilter('', '', '').metric_source_urls('123', '567')
 
         get_query_url_mock.assert_has_calls([call(123, search=False), call(567, search=False)])
         self.assertEqual([jira1, jira2], result)
@@ -81,7 +101,7 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of points equals the sum of sums per metric source returned by Jira. """
         query_field_empty_mock.side_effect = [1, 2]
 
-        result = JiraFilter('', '', '', jira=Jira('', '', ''), field_name='customfield_1').nr_issues_with_field_empty(
+        result = JiraFilter('', '', '', field_name='customfield_1').nr_issues_with_field_empty(
             '123', '567')
 
         query_field_empty_mock.assert_has_calls([call(123, 'customfield_1'), call(567, 'customfield_1')])
@@ -92,7 +112,7 @@ class JiraFilterTest(unittest.TestCase):
         """ Test that the number of points is set to -1 if Jira returned -1 for any metric source. """
         query_field_empty_mock.side_effect = [-1, 2]
 
-        result = JiraFilter('', '', '', jira=Jira('', '', ''), field_name='customfield_1').nr_issues_with_field_empty(
+        result = JiraFilter('', '', '', field_name='customfield_1').nr_issues_with_field_empty(
             '123', '567')
 
         query_field_empty_mock.assert_has_calls([call(123, 'customfield_1'), call(567, 'customfield_1')])

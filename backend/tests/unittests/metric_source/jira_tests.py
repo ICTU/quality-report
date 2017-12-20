@@ -15,8 +15,10 @@ limitations under the License.
 """
 
 import unittest
+import logging
 import urllib.error
 
+from json import JSONDecodeError
 from unittest.mock import patch, call
 from hqlib.metric_source import Jira, url_opener
 
@@ -74,6 +76,257 @@ class JiraTest(unittest.TestCase):
         result = jira.query_total('')
 
         url_read_mock.assert_not_called()
+        self.assertEqual(-1, result)
+
+    def test_get_duration_of_stories(self, url_read_mock):
+        """ Test that the average number of days a story spent in status 'In Progress' is correct. """
+        issue = "ISSUE-1"
+        issue2 = "ISSUE-2"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}, {"key": "' + issue2 + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-11-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]}, ' \
+                         '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        changelog_json2 = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-11-15T08:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-11-16T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json, changelog_json2]
+
+        result = jira.duration_of_stories('12345')
+
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue)),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue2))])
+        self.assertEqual(5, result)
+
+    def test_get_duration_of_stories_multiple_state_changes(self, url_read_mock):
+        """ Test that the number of days from the first enter in status 'In Progress' till the last exit of it
+        is correct for multiple status changes. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "Op", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-12-16T10:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}, ' \
+                         '{"created": "2017-12-16T23:52:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "RO", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories('12345')
+
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual(9, result)
+
+    @patch.object(logging, 'info')
+    def test_get_duration_never_got_in_progress_single(self, logging_info_mock, url_read_mock):
+        """ Test that the number of days returned is -1 if a single story never entered the state "In Progress". """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "Open"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories('12345')
+
+        logging_info_mock.assert_called_with(
+            "Invalid date, or issue %s never moved to status 'In Progress'", issue)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'info')
+    def test_get_duration_that_never_got_in_progress(self, logging_info_mock, url_read_mock):
+        """ Test that story never entered the state "In Progress" does not influence calculated average. """
+        issue = "ISSUE-1"
+        issue2 = "ISSUE-2"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}, {"key": "' + issue2 + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "Open"}]}]}}'
+        changelog_json2 = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json, changelog_json2]
+
+        result = jira.duration_of_stories('12345')
+
+        logging_info_mock.assert_called_with(
+            "Invalid date, or issue %s never moved to status 'In Progress'", issue)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue)),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue2))])
+        self.assertEqual(9, result)
+
+    @patch.object(logging, 'info')
+    def test_get_duration_still_in_progress_single(self, logging_info_mock, url_read_mock):
+        """ Test that the number of days returned is -1 if a story is still in state "In Progress". """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories('12345')
+
+        logging_info_mock.assert_called_with(
+            "Invalid date, or issue %s still in status 'In Progress'", issue)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'info')
+    def test_get_duration_of_stories_still_in_progress(self, logging_info_mock, url_read_mock):
+        """ Test that a story that is still in state "In Progress" does not influence calculated average. """
+        issue = "ISSUE-1"
+        issue2 = "ISSUE-2"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}, {"key": "' + issue2 + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}'
+        changelog_json2 = '{"id": "133274", "changelog": { "histories": [' \
+                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                          '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                          '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json, changelog_json2]
+
+        result = jira.duration_of_stories('12345')
+
+        logging_info_mock.assert_called_with(
+            "Invalid date, or issue %s still in status 'In Progress'", issue)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue)),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue2))])
+        self.assertEqual(9, result)
+
+    @patch.object(logging, 'info')
+    def test_get_duration_of_stories_invalid_to_date(self, logging_info_mock, url_read_mock):
+        """ Test that the number of days returned is -1 for a story that has invalid date of progress start. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-33-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-11-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]}, ' \
+                         '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories('12345')
+
+        logging_info_mock.assert_called_with(
+            "Invalid date, or issue %s never moved to status 'In Progress'", issue)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'info')
+    def test_get_duration_of_stories_invalid_from_date(self, logging_info_mock, url_read_mock):
+        """ Test that the number of days returned is -1 for a a story that has invalid date of progress end. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-22-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories('12345')
+
+        logging_info_mock.assert_called_with(
+            "Invalid date, or issue %s still in status 'In Progress'", issue)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'error')
+    def test_get_duration_of_stories_http_error(self, logging_error_mock, url_read_mock):
+        """ Test that the number of days returned is -1 if a http error occurs. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = urllib.error.HTTPError(None, None, None, None, None)
+        query_id = '12345'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories(query_id)
+
+        logging_error_mock.assert_called_with(
+            "Error opening jira filter %s. Reason: %s.", query_id, changelog_json)
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'error')
+    def test_get_duration_of_stories_json_error(self, logging_error_mock, url_read_mock):
+        """ Test that the number of days returned is -1 if an invalid json is returned as a result. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_jason = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        changelog_json = 'not a json'
+        url_read_mock.side_effect = [search_jason, issues_json, changelog_json]
+
+        result = jira.duration_of_stories('12345')
+
+        args, _ = logging_error_mock.call_args
+        self.assertEqual("Couldn't load json string '%s': %s", args[0])
+        self.assertEqual(changelog_json, args[1])
+        self.assertTrue(isinstance(args[2], JSONDecodeError))
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
         self.assertEqual(-1, result)
 
     def test_query_sum(self, url_read_mock):

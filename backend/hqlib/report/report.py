@@ -43,10 +43,10 @@ class QualityReport(domain.DomainObject):
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.ScrumTeam,
                 requirement.TrackSpirit, requirement.TrackAbsence, requirement.TrackUserStoriesInProgress,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
-                requirement.Java, requirement.CSharp, requirement.JavaScript, requirement.Web, requirement.VisualBasic,
-                requirement.Python, requirement.TypeScript,
-                requirement.TrustedProductMaintainability, requirement.TrackBranches)
+                requirement.TrackDurationOfUserStories, requirement.OWASPDependencies, requirement.OWASPZAP,
+                requirement.Checkmarx, requirement.OpenVAS, requirement.Java, requirement.CSharp,
+                requirement.JavaScript, requirement.Web, requirement.VisualBasic, requirement.Python,
+                requirement.TypeScript, requirement.TrustedProductMaintainability, requirement.TrackBranches)
 
     @classmethod
     def metric_classes(cls) -> Set[Type[domain.Metric]]:
@@ -196,6 +196,7 @@ class QualityReport(domain.DomainObject):
                                                   requirement.TrackSecurityTestDate, requirement.TrackFindings,
                                                   requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
                                                   requirement.TrackManualLTCs, requirement.TrackReadyUS,
+                                                  requirement.TrackDurationOfUserStories,
                                                   requirement.TrackUserStoriesInProgress,
                                                   requirement.TrackSecurityAndPerformanceRisks)
         self.__metrics.extend(metrics)
@@ -229,7 +230,7 @@ class QualityReport(domain.DomainObject):
             requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
             requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
             requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
-            requirement.Checkmarx, requirement.TrackUserStoriesInProgress)
+            requirement.Checkmarx, requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))

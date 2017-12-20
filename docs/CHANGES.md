@@ -1,3 +1,8 @@
+2017-01-02  Release 2.27.0
+
+  * Feature #195: metric for user stories duration added.
+
+
 2017-12-28  Release 2.26.2
 
   * Bug fix: Don't crash if Jenkins is unreachable.

@@ -1,0 +1,132 @@
+{
+  "key": "ISS-1",
+  "changelog": {
+    "startAt": 0,
+    "total": 7,
+    "histories": [
+      {
+        "created": "2017-12-14T13:26:29.000+0100",
+        "items": [
+          {
+            "field": "Rank",
+            "fieldtype": "custom",
+            "from": "",
+            "fromString": "",
+            "to": "",
+            "toString": "Ranked higher"
+          }
+        ]
+      },
+      {
+        "created": "2017-12-14T14:29:31.000+0100",
+        "items": [
+          {
+            "field": "summary",
+            "fieldtype": "jira",
+            "from": null,
+            "fromString": "what? what?",
+            "to": null,
+            "toString": "blah, blah..."
+          }
+        ]
+      },
+      {
+        "created": "2017-12-20T09:42:41.000+0100",
+        "items": [
+          {
+            "field": "status",
+            "fieldtype": "jira",
+            "from": "1",
+            "fromString": "Open",
+            "to": "3",
+            "toString": "In Progress"
+          },
+          {
+            "field": "assignee",
+            "fieldtype": "jira",
+            "from": null,
+            "fromString": null,
+            "to": "too-too",
+            "toString": "Tough though"
+          }
+        ]
+      },
+      {
+        "created": "2017-12-20T11:15:20.000+0100",
+        "items": [
+          {
+            "field": "status",
+            "fieldtype": "jira",
+            "from": "3",
+            "fromString": "In Progress",
+            "to": "5",
+            "toString": "Resolved"
+          },
+          {
+            "field": "resolution",
+            "fieldtype": "jira",
+            "from": null,
+            "fromString": null,
+            "to": "1",
+            "toString": "Fixed"
+          }
+        ]
+      },
+      {
+        "created": "2017-12-28T13:10:20.000+0100",
+        "items": [
+          {
+            "field": "resolution",
+            "fieldtype": "jira",
+            "from": "1",
+            "fromString": "Fixed",
+            "to": null,
+            "toString": null
+          },
+          {
+            "field": "status",
+            "fieldtype": "jira",
+            "from": "5",
+            "fromString": "Resolved",
+            "to": "4",
+            "toString": "Reopened"
+          }
+        ]
+      },
+      {
+        "created": "2017-12-28T13:10:46.000+0100",
+        "items": [
+          {
+            "field": "status",
+            "fieldtype": "jira",
+            "from": "4",
+            "fromString": "Reopened",
+            "to": "3",
+            "toString": "In Progress"
+          }
+        ]
+      },
+      {
+        "created": "2017-12-28T13:11:01.000+0100",
+        "items": [
+          {
+            "field": "status",
+            "fieldtype": "jira",
+            "from": "3",
+            "fromString": "In Progress",
+            "to": "5",
+            "toString": "Resolved"
+          },
+          {
+            "field": "resolution",
+            "fieldtype": "jira",
+            "from": null,
+            "fromString": null,
+            "to": "1",
+            "toString": "Fixed"
+          }
+        ]
+      }
+    ]
+  }
+}

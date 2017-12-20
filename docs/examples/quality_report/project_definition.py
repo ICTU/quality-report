@@ -27,6 +27,9 @@ SECURITY_REPORT_PROXY = metric_source.FileWithDate()
 USER_STORIES_IN_PROGRESS_TRACKER = \
     metric_source.JiraFilter('https://jira.myorg.nl/jira', username="jira_user", password="jira_password")
 
+USER_STORIES_DURATION_TRACKER =  \
+    metric_source.JiraFilter('https://jira.myorg.nl/jira', username="jira_user", password="jira_password")
+
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
@@ -38,6 +41,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
                       metric_source.UserStoriesInProgressTracker: USER_STORIES_IN_PROGRESS_TRACKER,
+                      metric_source.UserStoriesDurationTracker: USER_STORIES_DURATION_TRACKER,
                       metric_source.FileWithDate: SECURITY_REPORT_PROXY
                   },
                   # Override the total LOC metric targets:
@@ -48,9 +52,10 @@ PROJECT = Project('Organization name', name='Quality Report',
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', short_name='QU',
                   metric_source_ids={
-                      USER_STORIES_IN_PROGRESS_TRACKER: '15208'
+                      USER_STORIES_IN_PROGRESS_TRACKER: '15208',
+                      USER_STORIES_DURATION_TRACKER: '15225'
                   },
-                  added_requirements=[requirement.TrackUserStoriesInProgress])
+                  added_requirements=[requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories])
 PROJECT.add_team(QUALITY_TEAM)
 
 # Documents of the project.

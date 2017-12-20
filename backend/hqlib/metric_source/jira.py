@@ -17,9 +17,11 @@ limitations under the License.
 
 from typing import Optional, Mapping
 import urllib.parse
+import logging
 
 from . import url_opener
 from .. import utils
+import dateutil.parser
 
 
 class Jira(object):
@@ -34,31 +36,84 @@ class Jira(object):
         results = self.__get_query(query_id)
         return int(results['total']) if results else -1
 
-    def query_sum(self, query_id: int, field: str) -> float:
-        """ Return the sum of the fields as returned by the query. """
+    def _sum_for_all_issues(self, query_id: int, func: callable, total: object, *args, **kwargs):
+        """ Perform the func calculation over jira issues returned by the query specified by query_id. """
         results = self.__get_query(query_id)
         if not results:
-            return -1
-        total = 0.
+            return None
         for issue in results['issues']:
-            try:
-                total += float(issue['fields'][field])
-            except TypeError:
-                pass  # field is null
+            total += func(issue, *args, **kwargs)
         return total
 
+    def duration_of_stories(self, query_id: int) -> int:
+        """ Return the sum of the duration in days the stories were in status 'In Progress'. """
+        try:
+            tpl = self._sum_for_all_issues(query_id, self._get_days_in_progress, tuple())
+
+            days = sum(tpl[0::2])
+            stories = sum(tpl[1::2])
+            return days/stories if stories>0 else -1
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.error("Error opening jira filter %s. Reason: %s.", query_id, reason)
+        except ValueError:
+            # error already logged in utils.eval_json
+            pass
+        return -1
+
+    @classmethod
+    def _get_create_date_from_json(cls, json: str, to_str: bool):
+        to_from = "toString" if to_str else "fromString"
+        return list(dateutil.parser.parse(date["created"])
+             for date in
+             list(filter(lambda h: list(
+                 filter(lambda i: i["field"] == "status" and i["fieldtype"] == "jira"
+                        and i[to_from] == "In Progress", h['items'])),
+                         json['changelog']['histories'])))
+
+    def _get_days_in_progress(self, issue: object) -> (int, int):
+        """" Fetch the changelog of the given issue and get number of days between it is moved for the first time
+        to the status "In Progress", till the last time it is moved out of it. """
+
+        url = self.__url + 'rest/api/2/issue/{issue_id}?expand=changelog&fields="*all,-comment"' \
+            .format(issue_id=issue['key'])
+        json_string = self.__url_opener.url_read(url)
+        json = utils.eval_json(json_string)
+        try:
+            to_in_progress_date = min(self._get_create_date_from_json(json, True))
+        except ValueError:
+            logging.info("Invalid date, or issue %s never moved to status 'In Progress'", issue['key'])
+            return (0, 0)
+        try:
+            from_in_progress_date = max(self._get_create_date_from_json(json, False))
+        except ValueError:
+            logging.info("Invalid date, or issue %s still in status 'In Progress'", issue['key'])
+            return (0, 0)
+        return ((from_in_progress_date - to_in_progress_date).days, 1)
+
+    def query_sum(self, query_id: int, field: str) -> float:
+        """ Return the sum of the fields as returned by the query. """
+        return self._sum_for_all_issues(query_id, self._get_field_float_value, 0.0, field) or -1
+
+    @classmethod
+    def _get_field_float_value(cls, issue: object, field: str) -> float:
+        """ Get the float value from issue's field, or 0, in the case of error. """
+        try:
+            return float(issue['fields'][field])
+        except TypeError:
+            return 0
+
     def query_field_empty(self, query_id: int, field: str) -> int:
-        """ Return the number of query results with field empty (null). """
-        results = self.__get_query(query_id)
-        if not results:
-            return -1
-        total = 0
-        for issue in results['issues']:
-            try:
-                int(issue['fields'][field])
-            except TypeError:
-                total += 1
-        return total
+        """ Return the number of empty fields, returned by the query. """
+        return self._sum_for_all_issues(query_id, self._increment_if_field_empty, 0, field) or -1
+
+    @classmethod
+    def _increment_if_field_empty(cls, issue: object, field: str) -> float:
+        """ Return 1 if the field is empty, otherwise 0. """
+        try:
+            int(issue['fields'][field])
+            return 0
+        except TypeError:
+            return 1
 
     def __get_query(self, query_id: int) -> Optional[Mapping]:
         """ Get the JSON from the query and evaluate it. """

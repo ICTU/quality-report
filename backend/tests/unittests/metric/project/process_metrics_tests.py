@@ -15,10 +15,22 @@ limitations under the License.
 """
 
 import unittest
-
+from unittest.mock import MagicMock
 from hqlib import metric, domain, metric_source
-
 from .bug_metrics_tests import FakeJiraFilter
+
+
+class ProjectPrerequisitesTestCase(unittest.TestCase):
+    """" Prerequisites tests for UserStoriesDurationTest and UserStoriesInProgress"""
+
+    def test_project_for_user_stories_in_progress(self):
+        """" Checks if the real objects fulfill requirements expected by LastSecurityTestCase """
+
+        project = domain.Project()
+
+        self.assertTrue(project is not None)
+        self.assertTrue(callable(getattr(project, "metric_sources")))
+        self.assertTrue(callable(getattr(project, "metric_source_id")))
 
 
 class ReadyUserStoryPointsTest(unittest.TestCase):
@@ -38,22 +50,71 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
 
-class UserStoriesInProgressTrackerTest(unittest.TestCase):
-    """ Unit tests for the number of user stories in progress metric. """
 
-    def setUp(self):
-        jira = FakeJiraFilter()
-        project = domain.Project(metric_sources={metric_source.UserStoriesInProgressTracker: jira},
-                                 metric_source_ids={jira: '12345'})
-        self.__metric = metric.UserStoriesInProgress(project=project, subject=project)
+class UserStoriesDurationTest(unittest.TestCase):
+    """ Unit tests for duration of user stories. """
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(12, self.__metric.value())
+        project = MagicMock()
+        mock_metric_source = MagicMock()
+        mock_metric_source.cumulative_stories_duration.return_value = 2.33
+        project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+
+        self.assertEqual(2.33, duration_metric.value())
+
+    def test_value_empty_metric_source(self):
+        """ Test that the value method returns -1 if the metric source is None. """
+        project = MagicMock()
+        project.metric_sources = MagicMock(return_value=[None])
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+
+        self.assertEqual(-1, duration_metric.value())
+
+
+class UserStoriesInProgressTest(unittest.TestCase):
+    """ Unit tests for the number of user stories in progress metric. """
+
+    def test_value(self):
+        """ Test that the value is correct. """
+        project = MagicMock()
+        mock_metric_source = MagicMock()
+        mock_metric_source.nr_issues.return_value = 12
+        project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        progress_metric = metric.UserStoriesInProgress(project=project, subject=subject)
+
+        self.assertEqual(12, progress_metric.value())
+
+    def test_value_empty_metric_source(self):
+        """ Test that the value method returns -1 if the metric source is None. """
+        project = MagicMock()
+        project.metric_sources = MagicMock(return_value=[None])
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        progress_metric = metric.UserStoriesInProgress(project=project, subject=subject)
+
+        self.assertEqual(-1, progress_metric.value())
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
+        project = MagicMock()
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ['http://filter/']
+        mock_metric_source.metric_source_name = 'Jira filter'
+        project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        progress_metric = metric.UserStoriesInProgress(project=project, subject=subject)
+
+        self.assertEqual({'Jira filter': 'http://filter/'}, progress_metric.url())
+
 
 class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
     """ Unit tests for the number of user stories without security risk assessment metric. """

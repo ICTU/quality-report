@@ -94,8 +94,18 @@ class UserStoriesInProgressTracker (domain.MetricSource):
     """ Abstract base class for ready user story points trackers, such as Jira. """
     metric_source_name = 'User stories in progress tracker'
 
-    def nr_points(self, *metric_source_ids: str) -> float:
-        """ Return the number of points for the metric source ids. """
+    def nr_issues(self, *metric_source_ids: str) -> float:
+        """ Return the number of issues for the metric source ids. """
+        raise NotImplementedError
+
+
+class UserStoriesDurationTracker (domain.MetricSource):
+    """ Abstract base class for ready user story points trackers, such as Jira. """
+    metric_source_name = 'User stories duration tracker'
+    needs_metric_source_id = True
+
+    def cumulative_stories_duration(self, *metric_source_ids: str) -> float:
+        """ Returns duration of stories in days for the metric source ids. """
         raise NotImplementedError
 
 

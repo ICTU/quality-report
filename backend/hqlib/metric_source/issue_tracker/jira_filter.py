@@ -24,15 +24,20 @@ class JiraFilter(BugTracker):
     """ Metric source for Jira filters. The metric source id is the filter id. """
     metric_source_name = 'Jira filter'
 
-    def __init__(self, url: str, username: str, password: str, jira=None, field_name: str = '') -> None:
+    def __init__(self, url: str, username: str, password: str, field_name: str = '') -> None:
         from hqlib.metric_source import Jira  # Import here to prevent circular import
-        self.__jira = jira or Jira(url, username, password)
+        self.__jira = Jira(url, username, password)
         self.__field_name = field_name
         super().__init__()
 
     def nr_issues(self, *metric_source_ids: str) -> int:
         """ Return the number of issues in the filter. """
         results = [self.__jira.query_total(int(metric_source_id)) for metric_source_id in metric_source_ids]
+        return -1 if -1 in results else sum(results)
+
+    def cumulative_stories_duration(self, *metric_source_ids: str) -> int:
+        """ Returns cumulative duration (in days), for stories in filter, since the begin till the end of progress. """
+        results = [self.__jira.duration_of_stories(int(metric_source_id)) for metric_source_id in metric_source_ids]
         return -1 if -1 in results else sum(results)
 
     def nr_issues_with_field_empty(self, *metric_source_ids: str) -> int:

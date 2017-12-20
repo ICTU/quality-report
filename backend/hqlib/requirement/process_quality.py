@@ -100,6 +100,12 @@ class TrackUserStoriesInProgress(Requirement):
     _metric_classes = (metric.UserStoriesInProgress,)
 
 
+class TrackDurationOfUserStories(Requirement):
+    """ Require the amount of ready user stories to be tracked. """
+    _name = 'Track the duration of user stories'
+    _metric_classes = (metric.UserStoriesDuration,)
+
+
 class TrackSecurityAndPerformanceRisks(Requirement):
     """ Require user stories to have security and performance risks to be assessed. """
     _name = 'Track whether user stories have security and performance risks'

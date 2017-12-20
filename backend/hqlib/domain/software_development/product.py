@@ -44,7 +44,7 @@ class Product(RequirementSubject, MeasurableObject):
                 requirement.TrackSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackStaticSecurityBugs,
                 requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS,
-                requirement.TrackUserStoriesInProgress}
+                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories}
 
     def __eq__(self, other):
         return self.name() == other.name()

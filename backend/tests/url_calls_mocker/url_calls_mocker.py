@@ -29,6 +29,7 @@ class UrlOpenerMock(UrlOpener):
     def __init__(self, uri: str=None, username: str=None, password: str=None) -> None:
         self._dir_path = os.getcwd()
         self._map = {
+            # begin UserStoriesInProgress
             'https://jira.myorg.nl/jira/rest/api/2/filter/15208': self._get_file_content(
                 os.path.join(self._dir_path,
                              'docs/examples/example_metric_sources/jira_filter_stories_in_progress.json')),
@@ -36,6 +37,21 @@ class UrlOpenerMock(UrlOpener):
             'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters': self._get_file_content(
                 os.path.join(self._dir_path,
                              'docs/examples/example_metric_sources/jira_filter_search_stories_in_progress.json')),
+            # end UserStoriesInProgress
+
+            # begin UserStoriesDuration
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15225': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jira_filter_stories_duration.json')),
+
+            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters_duration': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jira_filter_search_stories_duration.json')),
+
+            'https://jira.myorg.nl/jira/rest/api/2/issue/ISS-1?expand=changelog&fields="*all,-comment"':
+                self._get_file_content(os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jira_changelog_stories_duration.json')),
+            # end UserStoriesDuration
 
             'https://last_security_date_url': self._get_file_content(
                 os.path.join(self._dir_path, 'docs/examples/example_metric_sources/file_with_date.json'))
