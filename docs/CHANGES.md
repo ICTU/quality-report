@@ -1,3 +1,8 @@
+2017-12-20  Release 2.25.2
+
+  * Bug fix: Fix description of the security test frequency metric. (#190)
+
+
 2017-12-20  Release 2.25.1
 
   * Add information about skipped tests to the failing unit/regression test metrics. (#196) 

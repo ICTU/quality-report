@@ -22,12 +22,12 @@ from ...domain import LowerIsBetterMetric
 class LastSecurityTest(LowerIsBetterMetric):
     """ Metric for measuring period from last security test. """
 
-    name = 'Security test'
+    name = 'Beveiligingstest frequentie'
     unit = 'dag(en)'
-    norm_template = 'De securitytest wordt minimaal een keer per {target} {unit} bijgewerkt. Als de test langer ' \
-                    'dan {low_target} {unit} geleden is bijgewerkt is deze metriek rood.'
-    template = 'Het document "{name}" is {value} {unit} geleden bijgewerkt.'
-    missing_template = 'Het document "{name}" is niet aangetroffen.'
+    norm_template = 'De beveiligingstest wordt minimaal een keer per {target} {unit} uitgevoerd. Als de test langer ' \
+                    'dan {low_target} {unit} geleden is uitgevoerd is deze metriek rood.'
+    template = 'De beveiligingstest van {name} is {value} {unit} geleden uitgevoerd.'
+    missing_template = 'De datum van de laatste beveiligingstest van {name} is niet aangetroffen.'
     target_value = 180
     low_target_value = 200
 

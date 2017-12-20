@@ -49,6 +49,7 @@ from .product.checkmarx_metrics import HighRiskCheckmarxAlertsMetric, MediumRisk
 # Project metrics
 from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityAnalysisBugs, TechnicalDebtIssues, \
     OpenFindings, QualityGate
+from .project.last_security_test import LastSecurityTest
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
     UserStoriesWithoutPerformanceRiskAssessment, UserStoriesInProgress
 from .project.project_management_metrics import RiskLog, ActionActivity, OverDueActions, StaleActions
@@ -60,7 +61,6 @@ from .team.spirit import TeamSpirit, TeamSpiritAge
 
 # Document metrics
 from .document.age import DocumentAge
-from .document.last_security_test import LastSecurityTest
 
 # Environment metrics
 from .environment.failing_ci_jobs import FailingCIJobs
