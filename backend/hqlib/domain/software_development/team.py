@@ -36,7 +36,7 @@ class Team(RequirementSubject, MeasurableObject):
     @staticmethod
     def optional_requirements() -> Set[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackAbsence, requirement.ScrumTeam}
+        return {requirement.TrackAbsence, requirement.ScrumTeam, requirement.TrackUserStoriesInProgress}
 
     def __str__(self) -> str:
         return self.name()

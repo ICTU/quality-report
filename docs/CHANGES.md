@@ -1,3 +1,8 @@
+2017-12-20  Release 2.25.0
+
+  * TrackUserStoriesInProgress is now an optional requirement of Project, Product, and Team. (#185)
+
+
 2017-12-19  Release 2.24.1
 
   * Read the step count in the UFT test report to calculate the skipped number of tests.

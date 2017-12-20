@@ -1,7 +1,7 @@
 """ Project definition for the Quality Report software itself. """
 
 ###
-### BEGIN: This block mocks http calls needed to avoid real http cals and to provide example results instead
+### BEGIN: This block mocks http calls needed to avoid real http calls and to provide example results instead
 ### Real report should have those lines removed, in order to contact real metric sources
 ###
 import hqlib.metric_source.url_opener
@@ -40,16 +40,17 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.UserStoriesInProgressTracker: USER_STORIES_IN_PROGRESS_TRACKER,
                       metric_source.FileWithDate: SECURITY_REPORT_PROXY
                   },
-                  metric_source_ids={
-                      USER_STORIES_IN_PROGRESS_TRACKER: '15208'
-                  },
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TrustedProductMaintainability, requirement.TrackUserStoriesInProgress])
+                  requirements=[requirement.TrustedProductMaintainability])
 
 # Teams of the project.
-QUALITY_TEAM = Team(name='Quality team', short_name='QU')
+QUALITY_TEAM = Team(name='Quality team', short_name='QU',
+                  metric_source_ids={
+                      USER_STORIES_IN_PROGRESS_TRACKER: '15208'
+                  },
+                  added_requirements=[requirement.TrackUserStoriesInProgress])
 PROJECT.add_team(QUALITY_TEAM)
 
 # Documents of the project.

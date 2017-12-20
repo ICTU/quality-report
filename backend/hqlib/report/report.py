@@ -243,8 +243,7 @@ class QualityReport(domain.DomainObject):
 
     def __team_section(self, team: domain.Team) -> Optional[Section]:
         """ Return a report section for the team. """
-        metrics = self.__required_subject_metrics(team, requirement.ScrumTeam, requirement.TrackSpirit,
-                                                  requirement.TrackAbsence)
+        metrics = self.__required_subject_metrics(team, *(team.default_requirements() | team.optional_requirements()))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics) if metrics else None
 
