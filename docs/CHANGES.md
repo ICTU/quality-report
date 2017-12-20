@@ -1,3 +1,8 @@
+2017-12-20  Release 2.25.1
+
+  * Add information about skipped tests to the failing unit/regression test metrics. (#196) 
+
+
 2017-12-20  Release 2.25.0
 
   * TrackUserStoriesInProgress is now an optional requirement of Project, Product, and Team. (#185)

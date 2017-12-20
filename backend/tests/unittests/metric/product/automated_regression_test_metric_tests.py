@@ -42,6 +42,7 @@ class FakeJenkinsTestReport(domain.MetricSource):
 
     def __init__(self):
         self.passed = 14
+        self.skipped = 0
         self._datetime = datetime.datetime.now() - datetime.timedelta(hours=36)
         super().__init__()
 
@@ -52,10 +53,9 @@ class FakeJenkinsTestReport(domain.MetricSource):
         """ Return the number of failing tests for the job. """
         return 4
 
-    @staticmethod
-    def skipped_tests(*args):
+    def skipped_tests(self, *args):
         """ Return the number of skipped tests for the job. """
-        return 2
+        return self.skipped
 
     def passed_tests(self, *args):
         """ Return the number of passed tests for the job. """
@@ -94,7 +94,13 @@ class FailingRegressionTestsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        self.assertEqual('6 van de 20 regressietesten van FakeSubject slagen niet.', self.__metric.report())
+        self.assertEqual('4 van de 18 regressietesten van FakeSubject slagen niet.', self.__metric.report())
+
+    def test_report_with_skipped_tests(self):
+        """ Test that the report for the metric is correct when tests are skipped. """
+        self.__jenkins.skipped = 2
+        self.assertEqual('6 van de 20 regressietesten van FakeSubject slagen niet. '
+                         '2 van de 20 regressietesten zijn overgeslagen.', self.__metric.report())
 
     def test_url(self):
         """ Test that the url points to the Jenkins job. """

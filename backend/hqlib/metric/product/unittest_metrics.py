@@ -40,7 +40,12 @@ class FailingUnittests(LowerIsBetterMetric):
         return 'red' if self.__nr_tests() == 0 else super().status()
 
     def _get_template(self) -> str:
-        return self.no_tests_template if self.__nr_tests() == 0 else super()._get_template()
+        if self.__nr_tests() == 0:
+            return self.no_tests_template
+        template = super()._get_template()
+        if self._metric_source and self._metric_source.skipped_tests(self.__metric_source_id()) > 0:
+            template += ' {skipped} van de {tests} {unit} zijn overgeslagen.'
+        return template
 
     def __nr_tests(self) -> int:
         """ Return the number of unit tests. """
@@ -58,8 +63,10 @@ class FailingUnittests(LowerIsBetterMetric):
             if (self._subject and self._metric_source) else ''
 
     def _parameters(self) -> MetricParameters:
-        """ Add the number of unit tests to the parameters for the report. """
+        """ Add the number of (skipped) unit tests to the parameters for the report. """
         # pylint: disable=protected-access
         parameters = super()._parameters()
         parameters['tests'] = str(self.__nr_tests()) if self._metric_source else '?'
+        parameters['skipped'] = str(self._metric_source.skipped_tests(self.__metric_source_id())) \
+            if self._metric_source else '?'
         return parameters

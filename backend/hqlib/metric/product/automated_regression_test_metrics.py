@@ -52,7 +52,16 @@ class FailingRegressionTests(LowerIsBetterMetric):
         parameters = super()._parameters()
         parameters['tests'] = '?' if self._missing() else \
             self.value() + self._metric_source.passed_tests(*self._get_metric_source_ids())
+        parameters['skipped'] = '?' if self._missing() else \
+            self._metric_source.skipped_tests(*self._get_metric_source_ids())
         return parameters
+
+    def _get_template(self) -> str:
+        # pylint: disable=protected-access
+        template = super()._get_template()
+        if not self._missing() and self._metric_source.skipped_tests(*self._get_metric_source_ids()) > 0:
+            template += ' {skipped} van de {tests} {unit} zijn overgeslagen.'
+        return template
 
 
 class RegressionTestAge(MetricSourceAgeMetric):

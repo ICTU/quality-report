@@ -27,14 +27,19 @@ class FakeUnitTestReport(metric_source.UnitTestReport):
     def __init__(self, unittests=10):
         self.__unittests = unittests
         self.__failing_unittests = 5 if unittests else 0
+        self.skipped = 0
 
     def passed_tests(self, *args):
         """ Return the number of unittests. """
-        return self.__unittests - self.__failing_unittests
+        return self.__unittests - (self.__failing_unittests + self.skipped)
 
     def failed_tests(self, *args):
         """ Return the number of failing unittests. """
         return self.__failing_unittests
+
+    def skipped_tests(self, *args):
+        """ Return the number of skipped unittests. """
+        return self.skipped
 
 
 class FakeSubject(object):
@@ -66,6 +71,12 @@ class FailingUnittestsTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual('5 van de 10 unittesten falen.', self.__metric.report())
+
+    def test_report_with_skipped_tests(self):
+        """ Test that the report is correct when tests were skipped. """
+        self.__report.skipped = 2
+        self.assertEqual('5 van de 10 unittesten falen. 2 van de 10 unittesten zijn overgeslagen.',
+                         self.__metric.report())
 
     def test_url(self):
         """ Test that the url is correct. """
