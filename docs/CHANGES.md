@@ -1,3 +1,9 @@
+2017-12-21  Release 2.25.3
+
+  * Bug fix: Instead of reporting an UFT test report as broken, assume no tests were skipped if the total number of 
+    tests can't be read from the UFT test report.
+  
+
 2017-12-20  Release 2.25.2
 
   * Bug fix: Fix description of the security test frequency metric. (#190)

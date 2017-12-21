@@ -62,10 +62,11 @@ class UFTTestReport(test_report.TestReport):
             return -1
         skipped = total - (passed_tests + failed_tests)
         if skipped < 0:
-            logging.error("'Stappenreferentie' (%d) from %s at %s is smaller than the number of passed tests (%d) "
-                          "plus the number of failed tests (%d)",  total, self.metric_source_name, report_url,
-                          passed_tests, failed_tests)
-            return -1
+            logging.warning(
+                "'Stappenreferentie' (%d) from %s at %s is smaller than the number of passed tests (%d) plus the "
+                "number of failed tests (%d): can't calculate number of skipped tests, assuming no tests were skipped",
+                total, self.metric_source_name, report_url, passed_tests, failed_tests)
+            return 0
         return skipped
 
     def _report_datetime(self, report_url: str) -> DateTime:

@@ -94,11 +94,13 @@ class UFTTestReportTest(unittest.TestCase):
         self.assertEqual(0, self.__uft.skipped_tests('url'))
 
     def test_passed_larget_than_step_reference(self):
-        """ Test that the number of skipped tests returns -1 when the step reference can't be parsed. """
+        """ Test that the number of skipped tests returns 0 when the step reference is lower than the sum of passed and
+            failed tests. Assume the step reference wasn't updated after tests were added and the number of skipped
+            tests is zero. """
         self.__opener.contents = """<Report><Step><Obj><![CDATA[ Stappenreferentie ]]></Obj>
             <Details>10</Details></Step>
             <Doc><Summary failed="1" passed="20"/></Doc></Report>"""
-        self.assertEqual(-1, self.__uft.skipped_tests('url'))
+        self.assertEqual(0, self.__uft.skipped_tests('url'))
 
     def test_datetime_with_faulty_xml(self):
         """ Test incorrect XML. """
