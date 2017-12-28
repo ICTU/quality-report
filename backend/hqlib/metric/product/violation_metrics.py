@@ -37,10 +37,8 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
         return values
 
     def value(self):
-        if not self._metric_source:
-            return -1
-        violations = getattr(self._metric_source, '{0}_violations'.format(self.violation_type))(self._sonar_id())
-        return -1 if violations is None else violations
+        method_name = '{0}_violations'.format(self.violation_type)
+        return getattr(self._metric_source, method_name)(self._sonar_id()) if self._metric_source else -1
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
@@ -87,8 +85,7 @@ class NoSonar(SonarViolationsMetric, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        no_sonar = self._metric_source.no_sonar(self._sonar_id()) if self._metric_source else -1
-        return -1 if no_sonar is None else no_sonar
+        return self._metric_source.no_sonar(self._sonar_id()) if self._metric_source else -1
 
 
 class FalsePositives(SonarMetric, LowerIsBetterMetric):
@@ -102,8 +99,7 @@ class FalsePositives(SonarMetric, LowerIsBetterMetric):
     low_target_value = 50
 
     def value(self):
-        false_positives = self._metric_source.false_positives(self._sonar_id()) if self._metric_source else -1
-        return -1 if false_positives is None else false_positives
+        return self._metric_source.false_positives(self._sonar_id()) if self._metric_source else -1
 
     def _metric_source_urls(self) -> List[str]:
         """ Return the url to the Sonar violations. """

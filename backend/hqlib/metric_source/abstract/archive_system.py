@@ -22,7 +22,6 @@ from ... import domain
 class ArchiveSystem(domain.MetricSource):
     """ Abstract base class for systems that archive files, such as Nexus, and version control systems. """
     metric_source_name = 'Archive system'
-    needs_metric_source_id = True
 
     def last_changed_date(self, url: str) -> datetime:
         """ Return the date when the url was last changed. """

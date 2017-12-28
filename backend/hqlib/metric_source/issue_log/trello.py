@@ -122,7 +122,6 @@ class TrelloCard(TrelloObject):
 class TrelloBoard(TrelloObject, MetricSource):
     """ Class representing a Trello board. """
     metric_source_name = 'Trello'
-    needs_metric_source_id = True
 
     def __init__(self, *args, **kwargs) -> None:
         self.__card_class = kwargs.pop('card_class', TrelloCard)

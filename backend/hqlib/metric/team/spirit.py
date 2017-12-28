@@ -38,7 +38,7 @@ class TeamSpirit(Metric):
     metric_source_class = metric_source.TeamSpirit
 
     def value(self) -> MetricValue:
-        return self._metric_source.team_spirit(self._metric_source_id) or '?'
+        return self._metric_source.team_spirit(self._metric_source_id) if self._metric_source else '?'
 
     def numerical_value(self) -> int:
         return self.numerical_value_map.get(self.value(), -1)
@@ -57,7 +57,9 @@ class TeamSpirit(Metric):
         return self.numerical_value() < max(self.numerical_value_map.values())
 
     def _missing(self) -> bool:
-        return not self._metric_source.team_spirit(self._metric_source_id)
+        if self._metric_source:
+            return not self._metric_source.team_spirit(self._metric_source_id)
+        return True
 
 
 class TeamSpiritAge(LowerIsBetterMetric):
@@ -76,7 +78,6 @@ class TeamSpiritAge(LowerIsBetterMetric):
             (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
 
     def _missing(self) -> bool:
-        if self._metric_source_id:
-            return self._metric_source.datetime(self._metric_source_id) in (None, datetime.datetime.min)
-        else:
-            return True
+        if self._metric_source:
+            return self._metric_source.datetime(self._metric_source_id) == datetime.datetime.min
+        return True

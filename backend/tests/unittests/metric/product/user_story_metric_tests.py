@@ -23,7 +23,6 @@ class FakeBirt(object):
     """ Provide for a fake Birt object. """
 
     metric_source_name = metric_source.Birt.metric_source_name
-    needs_metric_source_id = metric_source.Birt.needs_metric_source_id
 
     def __init__(self):
         self.down = False

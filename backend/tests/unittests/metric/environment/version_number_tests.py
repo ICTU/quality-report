@@ -25,7 +25,6 @@ class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
 
     metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     @staticmethod
     def version_number():
@@ -46,6 +45,10 @@ class FakeSonar(object):
     def url():
         """ Return the Sonar url. """
         return 'http://sonar/'
+
+    def metric_source_urls(self, *metric_source_ids):
+        """ Return the urls for the metric source ids. """
+        return [self.url() for _ in metric_source_ids]
 
     @staticmethod
     def quality_profiles_url():

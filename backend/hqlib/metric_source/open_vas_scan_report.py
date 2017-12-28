@@ -29,7 +29,6 @@ from hqlib.typing import DateTime
 class OpenVASScanReport(domain.MetricSource):
     """ Class representing open VAS Scan reports. """
     metric_source_name = 'Open VAS Scan rapport'
-    needs_metric_source_id = True
 
     def __init__(self, url_open: Callable[[str], str]=None, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open

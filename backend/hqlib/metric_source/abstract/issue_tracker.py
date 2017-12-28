@@ -21,7 +21,6 @@ from ... import domain
 class BugTracker(domain.MetricSource):
     """ Abstract base class for bug trackers, such as Jira. """
     metric_source_name = 'Bug tracker'
-    needs_metric_source_id = True
 
     def nr_issues(self, *metric_source_ids: str) -> str:
         """ Return the number of issues for the metric source ids. """
@@ -76,7 +75,6 @@ class QualityGateTracker(BugTracker):
 class UserStoryWithoutSecurityRiskAssessmentTracker(domain.MetricSource):
     """ Abstract base class for user story trackers, such as Jira. """
     metric_source_name = 'User story without security risk assessment tracker'
-    needs_metric_source_id = True
 
     def nr_issues(self, *metric_source_ids: str) -> str:
         """ Return the number of issues for the metric source ids. """
@@ -86,7 +84,6 @@ class UserStoryWithoutSecurityRiskAssessmentTracker(domain.MetricSource):
 class UserStoryWithoutPerformanceRiskAssessmentTracker(domain.MetricSource):
     """ Abstract base class for user story trackers, such as Jira. """
     metric_source_name = 'User story without performance risk assessment tracker'
-    needs_metric_source_id = True
 
     def nr_issues(self, *metric_source_ids: str) -> str:
         """ Return the number of issues for the metric source ids. """
@@ -96,7 +93,6 @@ class UserStoryWithoutPerformanceRiskAssessmentTracker(domain.MetricSource):
 class UserStoriesInProgressTracker (domain.MetricSource):
     """ Abstract base class for ready user story points trackers, such as Jira. """
     metric_source_name = 'User stories in progress tracker'
-    needs_metric_source_id = True
 
     def nr_points(self, *metric_source_ids: str) -> float:
         """ Return the number of points for the metric source ids. """
@@ -106,7 +102,6 @@ class UserStoriesInProgressTracker (domain.MetricSource):
 class ReadyUserStoryPointsTracker(domain.MetricSource):
     """ Abstract base class for ready user story points trackers, such as Jira. """
     metric_source_name = 'Ready user story points tracker'
-    needs_metric_source_id = True
 
     def nr_points(self, *metric_source_ids: str) -> float:
         """ Return the number of points for the metric source ids. """
@@ -116,7 +111,6 @@ class ReadyUserStoryPointsTracker(domain.MetricSource):
 class ManualLogicalTestCaseTracker(domain.MetricSource):
     """ Abstract base class for manual logical test case trackers, such as Jira. """
     metric_source_name = 'Manual logical test case tracker'
-    needs_metric_source_id = True
 
     def nr_issues(self, *metric_source_ids: str) -> str:
         """ Return the number of manual logical test cases for the metric source ids. """

@@ -38,7 +38,6 @@ class FakeSubject(object):
 class FakeJenkinsTestReport(domain.MetricSource):
     """ Fake a Jenkins test report instance for unit test purposes. """
     metric_source_name = metric_source.JenkinsTestReport.metric_source_name
-    needs_metric_source_id = True
 
     def __init__(self):
         self.passed = 14

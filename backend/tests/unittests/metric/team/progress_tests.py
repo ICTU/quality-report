@@ -22,7 +22,6 @@ from hqlib import metric, domain, metric_source
 class FakeBirt(object):
     """ Fake Birt so we can return fake velocity information. """
     metric_source_name = metric_source.Birt.metric_source_name
-    needs_metric_source_id = metric_source.Birt.needs_metric_source_id
 
     @staticmethod
     def planned_velocity():

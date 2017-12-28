@@ -23,7 +23,6 @@ class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
 
     metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     def __init__(self, line_coverage=0, branch_coverage=0):
         self.__line_coverage = line_coverage

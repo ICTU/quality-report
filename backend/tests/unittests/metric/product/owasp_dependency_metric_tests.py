@@ -42,7 +42,6 @@ class FakeJenkinsOWASPDependenciesReport(domain.MetricSource):
     """ Fake a Jenkins OWASP dependency report for unit test purposes. """
 
     metric_source_name = metric_source.JenkinsOWASPDependencyReport.metric_source_name
-    needs_metric_source_id = metric_source.JenkinsOWASPDependencyReport.needs_metric_source_id
 
     @staticmethod
     def nr_warnings(job_names, priority):

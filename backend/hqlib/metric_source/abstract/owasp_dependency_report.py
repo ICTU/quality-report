@@ -24,7 +24,6 @@ from ... import domain
 class OWASPDependencyReport(domain.MetricSource):
     """ Abstract class representing a OWASP dependency report. """
     metric_source_name = 'OWASP dependency rapport'
-    needs_metric_source_id = True
 
     @functools.lru_cache(maxsize=1024)
     def nr_warnings(self, metric_source_ids: Iterable[str], priority: str) -> int:

@@ -77,8 +77,7 @@ class MetaMetricsHistoryFormatter(base_formatter.Formatter):
     def body(self, report: QualityReport) -> str:
         """ Return a JSON array of dates and status counts. """
         history_table = []
-        history = report.project().metric_source(metric_source.History)
-        if history:
+        for history in report.project().metric_sources(metric_source.History):
             for status_record in history.statuses():
                 date_and_time = '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(*self.__date_and_time(status_record))
                 counts = '[{0}, {1}, {2}, {3}, {4}, {5}, {6}]'.format(*self.__status_record_counts(status_record))
@@ -304,7 +303,6 @@ class MetaDataJSONFormatter(object):
         included = 'true' if metric_source in report.included_metric_source_classes() else 'false'
         name = metric_source.metric_source_name
         id_ = metric_source.__name__
-        instances = report.project().metric_source(metric_source)
-        instances = instances if isinstance(instances, list) else [instances]
+        instances = report.project().metric_sources(metric_source)
         urls = ', '.join(sorted(['"{0}"'.format(instance.url()) for instance in instances if instance.url()]))
         return '{{"included": {0}, "name": "{1}", "id": "{2}", "urls": [{3}]}}'.format(included, name, id_, urls)

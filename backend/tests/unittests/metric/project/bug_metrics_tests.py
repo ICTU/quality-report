@@ -23,7 +23,6 @@ class FakeJiraFilter(object):
     """ Fake Jira filter. """
 
     metric_source_name = metric_source.JiraFilter.metric_source_name
-    needs_metric_source_id = metric_source.JiraFilter.needs_metric_source_id
 
     # pylint: disable=unused-argument
 

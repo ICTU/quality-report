@@ -23,7 +23,6 @@ class FakeSonar(object):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
 
     metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     # pylint: disable=unused-argument
 
@@ -47,8 +46,9 @@ class DuplicationTest(unittest.TestCase):
     """ Unit tests for the duplication metric. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        product = domain.Product(short_name='PR', name='FakeSubject')
+        sonar = FakeSonar()
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        product = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: 'sonar id'})
         self._metric = metric.JavaDuplication(subject=product, project=project)
 
     def test_value(self):

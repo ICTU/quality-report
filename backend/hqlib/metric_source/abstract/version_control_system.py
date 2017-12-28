@@ -30,7 +30,6 @@ class VersionControlSystem(archive_system.ArchiveSystem):
     """ Abstract base class for version control systems such as Subversion and Git. """
 
     metric_source_name = 'Version control system'
-    needs_metric_source_id = True
 
     def __init__(self, username: str='', password: str='', url: str=None,
                  run_shell_command=subprocess.check_output) -> None:

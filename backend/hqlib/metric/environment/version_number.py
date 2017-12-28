@@ -82,7 +82,7 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
             return LooseVersion(profile_version)
 
     def _metric_source_urls(self) -> List[str]:
-        return [self._metric_source.quality_profiles_url()]
+        return [self._metric_source.quality_profiles_url()] if self._metric_source else []
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
@@ -183,7 +183,7 @@ class SonarPluginVersion(HigherIsBetterMetric):
         return LooseVersion('0.0' if self._missing() else self._metric_source.plugin_version(self.plugin_key))
 
     def _metric_source_urls(self) -> List[str]:
-        return [self._metric_source.plugins_url()]
+        return [self._metric_source.plugins_url()] if self._metric_source else []
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()

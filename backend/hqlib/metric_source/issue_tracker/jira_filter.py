@@ -23,7 +23,6 @@ from ..abstract.issue_tracker import BugTracker
 class JiraFilter(BugTracker):
     """ Metric source for Jira filters. The metric source id is the filter id. """
     metric_source_name = 'Jira filter'
-    needs_metric_source_id = True
 
     def __init__(self, url: str, username: str, password: str, jira=None, field_name: str = '') -> None:
         from hqlib.metric_source import Jira  # Import here to prevent circular import

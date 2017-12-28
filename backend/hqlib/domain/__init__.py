@@ -24,7 +24,7 @@ from .measurement.directed_metric import HigherIsBetterMetric, LowerIsBetterMetr
 from .measurement.percentage_metric import PercentageMetric, HigherPercentageIsBetterMetric, \
     LowerPercentageIsBetterMetric
 from .measurement.metric_source_age_metric import MetricSourceAgeMetric
-from .measurement.metric_source import MetricSource, MissingMetricSource
+from .measurement.metric_source import MetricSource
 from .measurement.target import AdaptedTarget, TechnicalDebtTarget, DynamicTechnicalDebtTarget
 
 from .software_development.product import Product, Component, Application

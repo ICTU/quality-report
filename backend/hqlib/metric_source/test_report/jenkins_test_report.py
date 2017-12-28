@@ -28,7 +28,6 @@ from ...typing import DateTime
 class JenkinsTestReport(test_report.TestReport):
     """ Class representing Jenkins test reports. """
     metric_source_name = 'Jenkins testreport'
-    needs_metric_source_id = True
 
     def _passed_tests(self, report_url: str) -> int:
         """ Return the number of passed tests. """

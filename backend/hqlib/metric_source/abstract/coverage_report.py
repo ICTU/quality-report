@@ -28,7 +28,6 @@ from hqlib.typing import DateTime
 class CoverageReport(domain.MetricSource):
     """ Abstract class representing a coverage report. """
     metric_source_name = 'Coverage report'
-    needs_metric_source_id = True
 
     def __init__(self, url_open: Callable[[str], bytes]=None, **kwargs) -> None:
         self.__url_open = url_open or UrlOpener(**kwargs).url_open

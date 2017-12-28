@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import List
+
 import datetime
 import unittest
 
@@ -24,20 +26,22 @@ class FakeWiki(domain.MetricSource):
     """ Fake a wiki metric source. """
 
     metric_source_name = metric_source.Wiki.metric_source_name
-    needs_metric_source_id = metric_source.Wiki.needs_metric_source_id
 
     def __init__(self):
+        self.team_ids = ['team']
         self.date_of_last_measurement = datetime.datetime.now()
         super().__init__(url='http://wiki')
 
-    @staticmethod
-    def team_spirit(*args):  # pylint: disable=unused-argument
+    def team_spirit(self, team_id):  # pylint: disable=unused-argument
         """ Return a fake team spirit. """
-        return ':-)'
+        return ':-)' if team_id in self.team_ids else ''
 
-    def datetime(self, *args):  # pylint: disable=unused-argument
+    def datetime(self, *team_ids):  # pylint: disable=unused-argument
         """ Return a fake date. """
-        return self.date_of_last_measurement
+        return self.date_of_last_measurement if set(team_ids) & set(self.team_ids) else datetime.datetime.min
+
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
+        return ['http://wiki' for _ in metric_source_ids]
 
 
 class TeamSpiritTest(unittest.TestCase):

@@ -24,7 +24,6 @@ class FakeSonar(object):
     # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
     ncloc_to_return = 123
 
     @staticmethod
@@ -51,8 +50,9 @@ class ProductLOCTest(unittest.TestCase):
     """ Unit tests for the product LOC metric. """
 
     def setUp(self):
-        project = domain.Project(metric_sources={metric_source.Sonar: FakeSonar()})
-        subject = domain.Product(short_name='PR', name='FakeSubject')
+        sonar = FakeSonar()
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: 'sonar id'})
         self._metric = metric.ProductLOC(subject=subject, project=project)
 
     def test_value(self):
@@ -71,7 +71,8 @@ class TotalLOCTest(unittest.TestCase):
         self.__sonar = FakeSonar()
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
-            metric_options={metric.TotalLOC: dict(target=1000000, low_target=2000000)})
+            metric_options={metric.TotalLOC: dict(target=1000000, low_target=2000000)},
+            metric_source_ids={self.__sonar: 'dummy'})
         product1 = domain.Product(short_name='PR1', name='FakeSubject1', metric_source_ids={self.__sonar: 'sonar id1'})
         product2 = domain.Product(short_name='PR2', name='FakeSubject2', metric_source_ids={self.__sonar: 'sonar id2'})
         product_without_sonar_id = domain.Product(short_name='PW', name='ProductWithoutSonarId')
@@ -112,6 +113,7 @@ class TotalLOCTest(unittest.TestCase):
         """ Test that technical debt can be specified via the project. """
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: FakeHistory()},
+            metric_source_ids={self.__sonar: "dummy"},
             metric_options={metric.TotalLOC: dict(target=100, low_target=110,
                                                   debt_target=domain.TechnicalDebtTarget(150))})
         product = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={self.__sonar: 'sonar id'})

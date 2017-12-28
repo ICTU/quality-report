@@ -27,7 +27,6 @@ from hqlib.typing import DateTime
 class PerformanceReport(domain.MetricSource):
     """ Abstract class representing a performance report. """
     metric_source_name = 'Performancerapport'
-    needs_metric_source_id = True
 
     def __init__(self, report_url: str, *args, **kwargs) -> None:
         super().__init__(url=report_url, *args, **kwargs)

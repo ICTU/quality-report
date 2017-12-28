@@ -37,19 +37,3 @@ class MetricSourceTests(unittest.TestCase):
     def test_datetime(self):
         """ Test that the datetime is now by default. """
         self.assertTrue(datetime.datetime.now() - domain.MetricSource().datetime() < datetime.timedelta(seconds=10))
-
-
-class MissingMetricSourceTests(unittest.TestCase):
-    """ Unit tests for the missing metric source domain class. """
-    def test_iteration(self):
-        """ Test that missing metric sources are iterable. """
-        for _ in domain.MissingMetricSource():  # pragma: no branch
-            self.fail('Expected no items to iterate.')  # pragma: no cover
-
-    def test_url(self):
-        """ Test that the missing metric source has no url. """
-        self.assertEqual('', domain.MissingMetricSource().url())
-
-    def test_datetime(self):
-        """ Test that the datetime is the min datetime for missing metric sources. """
-        self.assertEqual(datetime.datetime.min, domain.MissingMetricSource().datetime())

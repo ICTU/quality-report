@@ -41,7 +41,7 @@ class SonarMetricTest(unittest.TestCase):
         sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product()
-        self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetric(product, project).url())
+        self.assertEqual(dict(), SonarMetric(product, project).url())
 
 
 class FakeBirt(object):
@@ -49,7 +49,6 @@ class FakeBirt(object):
     # pylint: disable=too-few-public-methods
 
     metric_source_name = metric_source.Birt.metric_source_name
-    needs_metric_source_id = metric_source.Birt.needs_metric_source_id
 
     @staticmethod
     def whats_missing_url():
@@ -87,5 +86,4 @@ class BirtTestDesignMetricTest(unittest.TestCase):
         birt = FakeBirt()
         project = domain.Project(metric_sources={metric_source.Birt: birt})
         product = domain.Product()
-        self.assertEqual({birt.metric_source_name: birt.whats_missing_url()},
-                         BirtTestDesignMetric(product, project).url())
+        self.assertEqual(dict(), BirtTestDesignMetric(product, project).url())

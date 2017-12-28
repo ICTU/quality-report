@@ -22,7 +22,6 @@ from hqlib import metric, domain, metric_source
 class FakeJenkins(object):
     """ Fake Jenkins instance for testing purposes. """
     # pylint: disable=unused-argument
-    needs_metric_source_id = metric_source.Jenkins.needs_metric_source_id
 
     @staticmethod
     def number_of_active_jobs(*args):
@@ -42,7 +41,9 @@ class UnusedCIJobsTests(unittest.TestCase):
 
     def setUp(self):
         """ Create the text fixture. """
-        self._project = domain.Project(metric_sources={metric_source.CIServer: FakeJenkins()})
+        jenkins = FakeJenkins()
+        self._project = domain.Project(metric_sources={metric_source.CIServer: jenkins},
+                                       metric_source_ids={jenkins: "dummy"})
         self._metric = metric.UnusedCIJobs(subject=self._project, project=self._project)
 
     def test_norm_template_default_values(self):

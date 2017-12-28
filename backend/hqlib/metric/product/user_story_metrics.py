@@ -26,7 +26,7 @@ class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
 
     def value(self):
         nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()
-        if -1 in [nr_user_stories, nr_user_stories_ok] or None in [nr_user_stories, nr_user_stories_ok]:
+        if -1 in [nr_user_stories, nr_user_stories_ok]:
             return -1
         else:
             return nr_user_stories - nr_user_stories_ok
@@ -37,7 +37,7 @@ class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
 
     def _nr_user_stories(self) -> int:
         """ Return the total number of user stories. """
-        return self._metric_source.nr_user_stories()
+        return self._metric_source.nr_user_stories() if self._metric_source else -1
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
@@ -56,7 +56,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
     low_target_value = 5
 
     def _nr_user_stories_ok(self) -> int:
-        return self._metric_source.reviewed_user_stories()
+        return self._metric_source.reviewed_user_stories() if self._metric_source else -1
 
 
 class UserStoriesNotApproved(UserStoryMetric):
@@ -69,11 +69,11 @@ class UserStoriesNotApproved(UserStoryMetric):
     low_target_value = 3
 
     def _nr_user_stories_ok(self) -> int:
-        return self._metric_source.approved_user_stories()
+        return self._metric_source.approved_user_stories() if self._metric_source else -1
 
     def _nr_user_stories(self) -> int:
         """ Override the total number of user stories. """
-        return self._metric_source.reviewed_user_stories()
+        return self._metric_source.reviewed_user_stories() if self._metric_source else -1
 
 
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
@@ -88,4 +88,4 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     low_target_value = 5
 
     def _nr_user_stories_ok(self) -> int:
-        return self._metric_source.nr_user_stories_with_sufficient_ltcs()
+        return self._metric_source.nr_user_stories_with_sufficient_ltcs() if self._metric_source else -1

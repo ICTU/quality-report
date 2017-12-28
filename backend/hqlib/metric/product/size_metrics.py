@@ -32,8 +32,7 @@ class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
     low_target_value = 100000
 
     def value(self):
-        loc = self._metric_source.ncloc(self._sonar_id()) if self._metric_source else -1
-        return -1 if loc is None else loc
+        return self._metric_source.ncloc(self._sonar_id()) if self._metric_source else -1
 
 
 class TotalLOC(SonarMetric, LowerIsBetterMetric):

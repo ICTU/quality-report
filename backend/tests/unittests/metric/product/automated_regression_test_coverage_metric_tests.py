@@ -26,7 +26,6 @@ from hqlib.metric.product.automated_regression_test_coverage_metrics import ARTC
 class FakeNCover(domain.MetricSource):
     """ Fake NCover. """
     metric_source_name = metric_source.NCover.metric_source_name
-    needs_metric_source_id = metric_source.CoverageReport.needs_metric_source_id
 
     @staticmethod
     def statement_coverage(*args):  # pylint: disable=unused-argument

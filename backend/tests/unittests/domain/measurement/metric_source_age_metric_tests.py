@@ -97,18 +97,13 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
     def test_value_with_missing_source(self):
         """ Test that the status is missing_source if the project has no metric source. """
         metric = MetricSourceAgeMetricUnderTest(self.__subject,
-                                                project=domain.Project(metric_sources={domain.MetricSource: None}))
+                                                project=domain.Project(metric_sources={domain.MetricSource: []}))
         self.assertEqual(-1, metric.value())
 
     def test_missing_metric_source_id(self):
         """ Test that the status is missing_source if the subject has no metric source id. """
         metric = MetricSourceAgeMetricUnderTest(domain.Product(name='Product'), project=self.__project)
-        old_need_metric_source_id = metric.metric_source_class.needs_metric_source_id
-        metric.metric_source_class.needs_metric_source_id = True
-        result = metric.status()
-        metric.metric_source_class.needs_metric_source_id = old_need_metric_source_id
-
-        self.assertEqual('missing_source', result)
+        self.assertEqual('missing_source', metric.status())
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """

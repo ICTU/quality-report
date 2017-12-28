@@ -24,7 +24,6 @@ class FakeSonar(object):
     # pylint: disable=unused-argument
 
     metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     def __init__(self, blocker_violations=0, critical_violations=0, major_violations=0):
         self.__blocker_violations = blocker_violations
@@ -65,10 +64,11 @@ class ViolationsTestMixin(object):
     def setUp(self):  # pylint: disable=invalid-name,missing-docstring
         self.__nr_violations = 51
         self.__sonar = FakeSonar(blocker_violations=self.__nr_violations,
-                          critical_violations=self.__nr_violations,
-                          major_violations=self.__nr_violations)
+                                 critical_violations=self.__nr_violations,
+                                 major_violations=self.__nr_violations)
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
-        self.__subject = domain.Product(short_name='PR', name='FakeSubject')
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject',
+                                        metric_source_ids={self.__sonar: "sonar id"})
         self._metric = self.metric_class(subject=self.__subject, project=project)
 
     def test_numerical_value(self):
@@ -95,10 +95,11 @@ class ViolationsTestMixin(object):
                          self._metric.report())
 
     def test_is_perfect(self):
-        """ Test that the metric is perfect when both the number of major and the number of violations is zero. """
+        """ Test that the metric is perfect when the number of violations is zero. """
         sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        violations = metric.CriticalViolations(subject=self.__subject, project=project)
+        product = domain.Product(metric_source_ids={sonar: "sonar id"})
+        violations = self.metric_class(subject=product, project=project)
         self.assertEqual('perfect', violations.status())
 
     def test_url(self):
@@ -137,7 +138,7 @@ class FalsePositivesTest(unittest.TestCase):
     def setUp(self):
         sonar = FakeSonar()
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        self.__subject = domain.Product(short_name='PR', name='FakeSubject')
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: "sonar id"})
         self.__metric = metric.FalsePositives(subject=self.__subject, project=project)
 
     def test_value(self):

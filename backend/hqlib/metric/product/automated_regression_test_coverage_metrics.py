@@ -37,10 +37,7 @@ class ARTCoverage(HigherIsBetterMetric):
         return values
 
     def value(self):
-        if self._metric_source_id is None:
-            return -1
-        coverage = self._get_coverage_from_metric_source(self._metric_source_id)
-        return -1 if coverage is None else int(round(coverage))
+        return int(round(self._get_coverage_from_metric_source(self._metric_source_id))) if self._metric_source else -1
 
     def _get_coverage_from_metric_source(self, metric_source_id):
         """ Get the actual coverage measurement from the metric source. """

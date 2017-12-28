@@ -27,7 +27,6 @@ from ...typing import DateTime
 class TestReport(domain.MetricSource):
     """ Abstract class representing a test report. """
     metric_source_name = 'Test report'
-    needs_metric_source_id = True
 
     def __init__(self, url_read: Callable[[str], str]=None, *args, **kwargs) -> None:
         self._url_read = url_read or url_opener.UrlOpener(

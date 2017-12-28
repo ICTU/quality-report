@@ -16,6 +16,7 @@ limitations under the License.
 
 from typing import Dict, List, Type, Tuple, TYPE_CHECKING
 
+import datetime
 import functools
 import logging
 
@@ -66,32 +67,23 @@ class Metric(object):
     def __init__(self, subject=None, project: 'Project'=None) -> None:
         self._subject = subject
         self._project = project
-        self._metric_source = self._project.metric_source(self.metric_source_class) if self.metric_source_class \
-            else None
-        if isinstance(self._metric_source, list):
-            for source in self._metric_source:
-                try:
-                    source_id = self._subject.metric_source_id(source)
-                except AttributeError:
-                    continue
-                if source_id:
-                    self._metric_source = source
-                    self._metric_source_id = source_id
-                    break
-            else:
-                logging.warning("Couldn't find metric source for %s", self.stable_id())
-                self._metric_source = None
-                self._metric_source_id = None
-        else:
+        for source in self._project.metric_sources(self.metric_source_class):
             try:
-                self._metric_source_id = self._subject.metric_source_id(self._metric_source)
+                source_id = self._subject.metric_source_id(source)
             except AttributeError:
-                self._metric_source_id = None
-            if self._metric_source and self._metric_source.needs_metric_source_id and not self._metric_source_id:
-                self._metric_source = None
+                continue
+            if source_id:
+                self._metric_source = source
+                self._metric_source_id = source_id
+                break
+        else:
+            logging.warning("Couldn't find metric source for %s", self.stable_id())
+            self._metric_source = None
+            self._metric_source_id = None
         self.__id_string = self.stable_id()
         from hqlib import metric_source
-        self.__history = self._project.metric_source(metric_source.History) if self._project else None
+        history_sources = self._project.metric_sources(metric_source.History) if self._project else []
+        self.__history = history_sources[0] if history_sources else None
 
     def stable_id(self) -> str:
         """ Return an id that doesn't depend on numbering/order of metrics. """
@@ -145,7 +137,8 @@ class Metric(object):
 
     def status_start_date(self) -> DateTime:
         """ Return since when the metric has the current status. """
-        return self.__history.status_start_date(self.stable_id(), self.status())
+        return self.__history.status_start_date(self.stable_id(), self.status()) \
+            if self.__history else datetime.datetime.min
 
     def __has_accepted_technical_debt(self) -> bool:
         """ Return whether the metric is below target but above the accepted technical debt level. """
@@ -164,14 +157,13 @@ class Metric(object):
         return self.__missing_source_class() or self.__missing_source_ids()
 
     def __missing_source_class(self) -> bool:
-        """ Return whether the metric source class that needs to be configured for the metric to be measurable is
+        """ Return whether a metric source class that needs to be configured for the metric to be measurable is
             available from the project. """
-        return not self._project.metric_source(self.metric_source_class) if self.metric_source_class else False
+        return not self._project.metric_sources(self.metric_source_class) if self.metric_source_class else False
 
     def __missing_source_ids(self) -> bool:
         """ Return whether the metric source ids have been configured for the metric source class. """
-        return bool(self.metric_source_class) and self.metric_source_class.needs_metric_source_id and \
-            not self._subject.metric_source_id(self._project.metric_source(self.metric_source_class))
+        return bool(self.metric_source_class) and not self._get_metric_source_ids()
 
     def _needs_immediate_action(self) -> bool:
         """ Return whether the metric needs immediate action, i.e. its actual value is below its low target value. """
@@ -247,12 +239,11 @@ class Metric(object):
     def _metric_source_urls(self) -> List[str]:
         """ Return a list of metric source urls to be used to create the url dict. """
         if self._metric_source:
-            if self._metric_source.needs_metric_source_id:
+            if self._get_metric_source_ids():
                 return self._metric_source.metric_source_urls(*self._get_metric_source_ids())
             else:
                 return [self._metric_source.url()]
-        else:
-            return []
+        return []
 
     def _get_metric_source_ids(self) -> List[str]:
         """ Allow for subclasses to override what the metric source id is. """
@@ -287,7 +278,7 @@ class Metric(object):
 
     def recent_history(self) -> List[int]:
         """ Return a list of recent values of the metric, to be used in e.g. a spark line graph. """
-        history = self.__history.recent_history(self.stable_id()) or []
+        history = self.__history.recent_history(self.stable_id()) if self.__history else []
         return [int(round(float(value))) for value in history]
 
     def y_axis_range(self) -> Tuple[int, int]:

@@ -18,7 +18,6 @@ limitations under the License.
 from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING, Union
 
 from ..base import DomainObject
-from .metric_source import MissingMetricSource
 from hqlib.typing import MetricValue
 if TYPE_CHECKING:  # pragma: no cover
     # pylint: disable=unused-import
@@ -46,23 +45,20 @@ class MeasurableObject(DomainObject):
         """ Return whether a score below target is considered to be accepted technical debt. """
         return self.__metric_options.get(metric_class, dict()).get('debt_target')
 
-    def metric_source(self, metric_source_class: Type['MetricSource']):
-        """ Return the metric source instance for the metric source class. """
-        return self.__metric_sources.get(metric_source_class, MissingMetricSource())
+    def metric_sources(self, metric_source_class: Type['MetricSource']) -> List['MetricSource']:
+        """ Return the metric source instances for the metric source class. """
+        metric_sources = self.__metric_sources.get(metric_source_class, [])
+        if metric_sources and not isinstance(metric_sources, list):
+            metric_sources = [metric_sources]
+        return metric_sources
 
     def metric_source_classes(self) -> List[Type['MetricSource']]:
         """ Return a set of all metric source classes. """
         return list(self.__metric_sources.keys())
 
-    def metric_source_id(self, metric_source: Union[List['MetricSource'], 'MetricSource']) -> Optional[str]:
+    def metric_source_id(self, metric_source: 'MetricSource') -> Optional[str]:
         """ Return the id of this object in the metric source. """
-        if isinstance(metric_source, list):
-            for source in metric_source:
-                if source in self.__metric_source_ids:
-                    return self.__metric_source_ids.get(source)
-            return None
-        else:
-            return self.__metric_source_ids.get(metric_source)
+        return self.__metric_source_ids.get(metric_source)
 
     def metric_options(self, metric_class: Type['Metric']) -> Dict[str, Any]:
         """ Return the options of this object for the metric class. Options can be any information that is needed

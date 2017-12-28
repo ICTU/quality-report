@@ -31,7 +31,6 @@ from hqlib.typing import DateTime
 class Checkmarx(domain.MetricSource):
     """ Class representing the Checkmarx API. """
     metric_source_name = 'Checkmarx'
-    needs_metric_source_id = True
 
     def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener=None,
                  *args, **kwargs) -> None:

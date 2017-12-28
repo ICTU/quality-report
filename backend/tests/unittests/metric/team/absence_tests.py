@@ -24,7 +24,6 @@ class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
     """ Fake a holiday planner. """
 
     metric_source_name = metric_source.HolidayPlanner.metric_source_name
-    needs_metric_source_id = metric_source.HolidayPlanner.needs_metric_source_id
 
     def __init__(self):
         self.period = 6
@@ -39,6 +38,10 @@ class FakeHolidayPlanner(object):  # pylint: disable=too-few-public-methods
         """ Return the url for the holiday planner. """
         return 'http://planner'
 
+    def metric_source_urls(self, *args):  # pylint: disable=unused-argument
+        """ Return the urls for the metric source ids. """
+        return [self.url()]
+
 
 class TeamAbsenceTest(unittest.TestCase):
     """ Unit tests for the team absence metric. """
@@ -46,7 +49,7 @@ class TeamAbsenceTest(unittest.TestCase):
     def setUp(self):
         self.__planner = FakeHolidayPlanner()
         self.__project = domain.Project(metric_sources={metric_source.HolidayPlanner: self.__planner})
-        self.__team = domain.Team(name='Team')
+        self.__team = domain.Team(name='Team', metric_source_ids={self.__planner: "team"})
         self.__team.add_member(domain.Person(name='Piet Programmer'))
         self.__team.add_member(domain.Person(name='Derk Designer'))
         self.__metric = metric.TeamAbsence(self.__team, project=self.__project)
@@ -57,7 +60,8 @@ class TeamAbsenceTest(unittest.TestCase):
 
     def test_value_when_ignoring_near_future(self):
         """ Test that the near future can be ignored. """
-        team = domain.Team(name='Team', metric_options={metric.TeamAbsence: dict(start_date=datetime.date(9999, 1, 1))})
+        team = domain.Team(name='Team', metric_source_ids={self.__planner: "team"},
+                           metric_options={metric.TeamAbsence: dict(start_date=datetime.date(9999, 1, 1))})
         absence = metric.TeamAbsence(team, project=self.__project)
         self.assertEqual(0, absence.value())
 

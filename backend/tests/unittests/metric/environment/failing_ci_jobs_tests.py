@@ -22,7 +22,6 @@ from hqlib import metric, domain, metric_source
 class FakeJenkins(object):
     """ Fake Jenkins instance for testing purposes. """
     # pylint: disable=unused-argument
-    needs_metric_source_id = metric_source.Jenkins.needs_metric_source_id
 
     @classmethod
     def failing_jobs_url(cls, *args):
@@ -42,9 +41,10 @@ class FailingCIJobsTest(unittest.TestCase):
 
     def setUp(self):
         """ Create the text fixture. """
-        self._subject = None
-        self._project = domain.Project(metric_sources={metric_source.CIServer: FakeJenkins()})
-        self._metric = metric.FailingCIJobs(subject=self._subject, project=self._project)
+        jenkins = FakeJenkins()
+        self._project = domain.Project(metric_sources={metric_source.CIServer: jenkins},
+                                       metric_source_ids={jenkins: 'dummy'})
+        self._metric = metric.FailingCIJobs(subject=self._project, project=self._project)
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """

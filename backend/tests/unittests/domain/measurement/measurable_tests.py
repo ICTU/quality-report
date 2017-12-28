@@ -63,14 +63,6 @@ class MeasurableObjectTests(unittest.TestCase):
         """ Test the metric source id for a known class. """
         self.assertEqual('id', self.__measurable.metric_source_id(self.__class__))
 
-    def test_metric_source_id_list(self):
-        """ Test the metric source id for a list of metric sources. """
-        self.assertEqual('id', self.__measurable.metric_source_id([self.__class__]))
-
-    def test_no_metric_source_id_list(self):
-        """ Test the metric source id for a list of metric sources without a known class. """
-        self.assertEqual(None, self.__measurable.metric_source_id([''.__class__]))
-
     def test_no_metric_option(self):
         """ Test the metric option for an unknown class. """
         self.assertFalse(self.__measurable.metric_options(''.__class__))
@@ -85,11 +77,11 @@ class MeasurableObjectTests(unittest.TestCase):
 
     def test_unknown_metric_source(self):
         """ Test that the measurable returns None for an unknown metric source class. """
-        self.assertFalse(self.__measurable.metric_source(self.__class__))
+        self.assertFalse(self.__measurable.metric_sources(self.__class__))
 
     def test_known_metric_source(self):
         """ Test that the measurable returns the instance of a known metric source class. """
-        self.assertEqual('metric_source', self.__measurable.metric_source(''.__class__))
+        self.assertEqual(['metric_source'], self.__measurable.metric_sources(''.__class__))
 
     def test_metric_source_classes(self):
         """ Test that the measurable returns a list of all metric source classes. """

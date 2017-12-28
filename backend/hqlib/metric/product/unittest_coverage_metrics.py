@@ -40,7 +40,7 @@ class UnittestCoverage(SonarDashboardMetric, HigherIsBetterMetric):  # pylint: d
         """ Add the number of unit tests to the parameters for the report. """
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters['tests'] = self._metric_source.unittests(self._sonar_id())
+        parameters['tests'] = self._metric_source.unittests(self._sonar_id()) if self._metric_source else '?'
         return parameters
 
 
@@ -55,8 +55,7 @@ class UnittestLineCoverage(UnittestCoverage):
     low_target_value = 90
 
     def value(self):
-        coverage = self._metric_source.unittest_line_coverage(self._sonar_id())
-        return -1 if coverage is None else round(coverage)
+        return round(self._metric_source.unittest_line_coverage(self._sonar_id())) if self._metric_source else -1
 
 
 class UnittestBranchCoverage(UnittestCoverage):
@@ -70,5 +69,4 @@ class UnittestBranchCoverage(UnittestCoverage):
     low_target_value = 60
 
     def value(self):
-        coverage = self._metric_source.unittest_branch_coverage(self._sonar_id())
-        return -1 if coverage is None else round(coverage)
+        return round(self._metric_source.unittest_branch_coverage(self._sonar_id())) if self._metric_source else -1

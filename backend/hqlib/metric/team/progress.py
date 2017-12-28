@@ -46,27 +46,27 @@ class TeamProgress(LowerIsBetterMetric):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        planned_velocity = self._metric_source.planned_velocity() or 0
+        planned_velocity = self._metric_source.planned_velocity() if self._metric_source else 0
         self.target_value = planned_velocity * self.target_factor
         self.low_target_value = planned_velocity * self.low_target_factor
 
     def value(self) -> MetricValue:
-        velocity = self._metric_source.required_velocity()
-        return -1 if velocity is None else velocity
+        return self._metric_source.required_velocity() if self._metric_source else -1
 
     def _metric_source_urls(self) -> List[str]:
-        return [self._metric_source.sprint_progress_url()]
+        return [self._metric_source.sprint_progress_url()] if self._metric_source else []
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
         birt = self._metric_source
-        parameters['sprint_goal'] = birt.nr_points_planned()
-        parameters['actual_points'] = birt.nr_points_realized()
-        parameters['actual_velocity'] = birt.actual_velocity()
-        parameters['planned_velocity'] = birt.planned_velocity()
-        parameters['sprint_length'] = birt.days_in_sprint()
-        parameters['sprint_day'] = birt.day_in_sprint()
+        if birt:
+            parameters['sprint_goal'] = birt.nr_points_planned()
+            parameters['actual_points'] = birt.nr_points_realized()
+            parameters['actual_velocity'] = birt.actual_velocity()
+            parameters['planned_velocity'] = birt.planned_velocity()
+            parameters['sprint_length'] = birt.days_in_sprint()
+            parameters['sprint_day'] = birt.day_in_sprint()
         parameters['target_factor'] = self.target_factor
         parameters['low_target_factor'] = self.low_target_factor
         return parameters

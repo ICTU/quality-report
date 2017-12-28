@@ -19,7 +19,7 @@ import unittest
 
 from typing import Type
 
-from hqlib import metric, metric_source, domain
+from hqlib import metric, domain
 from hqlib.metric.product.performance_metrics import PerformanceTestAge, PerformanceMetric
 
 
@@ -28,7 +28,6 @@ class FakePerformanceReport(object):
     # pylint: disable=unused-argument, invalid-name
 
     metric_source_name = 'Performancerapport'
-    needs_metric_source_id = metric_source.PerformanceLoadTestReport.needs_metric_source_id
 
     def __init__(self, queries=0, queries_violating_max_responsetime=0, queries_violating_wished_responsetime=0):
         self.__queries = queries
@@ -112,7 +111,6 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
 
         class MissingPerformanceReport(object):  # pylint: disable=too-few-public-methods
             """ Fake a missing performance report. """
-            needs_metric_source_id = metric_source.PerformanceLoadTestReport.needs_metric_source_id
 
             @staticmethod
             def queries_violating_max_responsetime(*args):  # pylint: disable=unused-argument
@@ -186,7 +184,6 @@ class PerformanceLoadTestAgeTest(unittest.TestCase):
 
         class MissingPerformanceReport(object):  # pylint: disable=too-few-public-methods
             """ Fake a missing performance report. """
-            needs_metric_source_id = True
 
             @staticmethod
             def datetime(*args):  # pylint: disable=unused-argument

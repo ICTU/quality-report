@@ -42,7 +42,6 @@ class FakeCheckmarxReport(domain.MetricSource):  # pylint: disable=too-few-publi
     """ Fake a Checkmarx report for unit test purposes. """
 
     metric_source_name = metric_source.Checkmarx.metric_source_name
-    needs_metric_source_id = metric_source.Checkmarx.needs_metric_source_id
 
     @staticmethod
     def nr_warnings(report_urls, risk_level):

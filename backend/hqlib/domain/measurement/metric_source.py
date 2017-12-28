@@ -17,7 +17,7 @@ limitations under the License.
 
 import datetime
 
-from typing import Any, Callable, List
+from typing import List
 
 from ..base import DomainObject
 from hqlib.typing import DateTime
@@ -26,7 +26,6 @@ from hqlib.typing import DateTime
 class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     """ Base class for metric sources. """
     metric_source_name: str = ''
-    needs_metric_source_id: bool = False
     needs_values_as_list: bool = False
 
     def __init__(self, *args: str, **kwargs: str) -> None:
@@ -41,27 +40,3 @@ class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods
     def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument,no-self-use
         """ Return the date and time of the last measurement. """
         return datetime.datetime.now()
-
-
-class MissingMetricSource(MetricSource):
-    """ Class that represents a missing metric source. """
-
-    def url(self) -> str:
-        return ''
-
-    def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument,no-self-use
-        return datetime.datetime.min
-
-    def __getattr__(self, attribute: str) -> Callable[..., None]:
-        return self.__default_method
-
-    @staticmethod
-    def __default_method(*args: Any, **kwargs: Any) -> None:  # pylint: disable=unused-argument
-        """ Do nothing and return nothing for any method called. """
-        return
-
-    def __bool__(self) -> bool:
-        return False
-
-    def __getitem__(self, index: int) -> None:
-        raise StopIteration

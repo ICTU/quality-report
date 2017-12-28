@@ -33,7 +33,7 @@ class ActivityMetric(LowerIsBetterMetric):
             (datetime.datetime.now() - self._metric_source.datetime(*self._get_metric_source_ids())).days
 
     def _missing(self) -> bool:
-        return self._metric_source.datetime(*self._get_metric_source_ids()) in (None, datetime.datetime.min) \
+        return self._metric_source.datetime(*self._get_metric_source_ids()) == datetime.datetime.min \
             if self._metric_source else True
 
 
@@ -75,13 +75,10 @@ class OverDueActions(LowerIsBetterMetric):
     metric_source_class = metric_source.ActionLog
 
     def value(self) -> MetricValue:
-        nr_cards = self._metric_source.nr_of_over_due_actions(*self._get_metric_source_ids()) \
-            if self._metric_source else -1
-        return -1 if nr_cards is None else nr_cards
+        return self._metric_source.nr_of_over_due_actions(*self._get_metric_source_ids()) if self._metric_source else -1
 
     def url(self) -> Dict[str, str]:
-        return self._metric_source.over_due_actions_url(*self._get_metric_source_ids()) \
-            if self._metric_source else {}
+        return self._metric_source.over_due_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}
 
 
 class StaleActions(LowerIsBetterMetric):
@@ -98,11 +95,7 @@ class StaleActions(LowerIsBetterMetric):
     metric_source_class = metric_source.ActionLog
 
     def value(self) -> MetricValue:
-        nr_cards = self._metric_source.nr_of_inactive_actions(*self._get_metric_source_ids()) \
-            if self._metric_source else -1
-        return -1 if nr_cards is None else nr_cards
+        return self._metric_source.nr_of_inactive_actions(*self._get_metric_source_ids()) if self._metric_source else -1
 
     def url(self) -> Dict[str, str]:
-        return self._metric_source.inactive_actions_url(*self._get_metric_source_ids()) \
-            if self._metric_source else {}
-
+        return self._metric_source.inactive_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}

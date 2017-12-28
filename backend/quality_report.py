@@ -36,9 +36,9 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """
         quality_report = report.QualityReport(self.__project)
-        history = self.__project.metric_source(metric_source.History)
-        if history.filename():
-            history.add_report(quality_report)
+        for history in self.__project.metric_sources(metric_source.History):
+            if history.filename():
+                history.add_report(quality_report)
         self.__create_report(quality_report, report_folder)
         return quality_report
 

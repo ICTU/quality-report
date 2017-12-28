@@ -23,7 +23,6 @@ from ... import domain
 class IssueLog(domain.MetricSource):
     """ Abstract based class for issues logs. """
     metric_source_name = 'Issue log'
-    needs_metric_source_id = True
 
 
 class RiskLog(IssueLog):

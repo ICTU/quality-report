@@ -49,7 +49,6 @@ class FakeMetricSource(object):
 class FakeSonar(FakeMetricSource):
     """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
     metric_source_name = metric_source.Sonar.metric_source_name
-    needs_metric_source_id = metric_source.Sonar.needs_metric_source_id
 
     violations_url = dashboard_url = FakeMetricSource.url
 
@@ -96,7 +95,6 @@ class FakeOWASPDependencyReport(FakeMetricSource):
     """ Provide for a fake OWASP dependency report so that the unit test don't need access to an actual report
         instance. """
     metric_source_name = metric_source.OWASPDependencyReport.metric_source_name
-    needs_metric_source_id = metric_source.OWASPDependencyReport.needs_metric_source_id
 
 
 class OWASPDependencyReportAgeTest(SonarAnalysisAgeTest):
@@ -111,7 +109,6 @@ class FakeOpenVASScanReport(FakeMetricSource):
     """ Provide for a fake Open VAS Scan report so that the unit test don't need access to an actual report
         instance. """
     metric_source_name = metric_source.OpenVASScanReport.metric_source_name
-    needs_metric_source_id = metric_source.OpenVASScanReport.needs_metric_source_id
 
 
 class OpenVASScanReportAgeTest(SonarAnalysisAgeTest):
@@ -126,7 +123,6 @@ class FakeCheckmarxReport(FakeMetricSource):
     """ Provide for a fake Checkmarx report so that the unit test don't need access to an actual report
         instance. """
     metric_source_name = metric_source.Checkmarx.metric_source_name
-    needs_metric_source_id = metric_source.Checkmarx.needs_metric_source_id
 
 
 class CheckmarxReportAgeTest(SonarAnalysisAgeTest):

@@ -23,7 +23,6 @@ from ... import domain
 class CIServer(domain.MetricSource):
     """ Abstract base class for continuous integration servers, also known as build servers. """
     metric_source_name = 'Continuous Integration (CI) server'
-    needs_metric_source_id = False
 
     def number_of_active_jobs(self) -> int:
         """ Return the total number of active CI jobs. """

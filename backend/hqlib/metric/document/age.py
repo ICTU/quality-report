@@ -53,4 +53,4 @@ class DocumentAge(LowerIsBetterMetric):
 
     def _missing(self) -> bool:
         """ Return whether the age of the document could be established. """
-        return self.__changed_date() in (None, datetime.datetime.min)
+        return self.__changed_date() == datetime.datetime.min

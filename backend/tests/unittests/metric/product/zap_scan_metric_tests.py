@@ -42,7 +42,6 @@ class FakeZAPScanReport(domain.MetricSource):  # pylint: disable=too-few-public-
     """ Fake a ZAP Scan report for unit test purposes. """
 
     metric_source_name = metric_source.ZAPScanReport.metric_source_name
-    needs_metric_source_id = metric_source.ZAPScanReport.needs_metric_source_id
 
     @staticmethod
     def alerts(risk_level, *report_urls):

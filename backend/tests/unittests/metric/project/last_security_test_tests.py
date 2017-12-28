@@ -29,7 +29,7 @@ class ProjectAndFileWithDatePrerequisitesTestCase(unittest.TestCase):
 
         project = domain.Project(metric_sources={metric_source.FileWithDate: metric_source.FileWithDate()})
 
-        fwd = project.metric_source(metric_source.FileWithDate)
+        fwd = project.metric_sources(metric_source.FileWithDate)[0]
 
         self.assertTrue(project is not None)
         self.assertTrue(fwd is not None)
@@ -44,9 +44,9 @@ class LastSecurityTestCase(unittest.TestCase):
         """ Test that the value of the metric equals the period from last security test in days. """
 
         fake_url = 'http://fake_url'
-        project_mock.metric_source = MagicMock()
-        project_mock.metric_source.return_value.get_datetime_from_content = \
-            MagicMock(return_value=datetime.datetime.now() - datetime.timedelta(2))
+        file_with_date = MagicMock()
+        project_mock.metric_sources.return_value = [file_with_date]
+        file_with_date.get_datetime_from_content.return_value = datetime.datetime.now() - datetime.timedelta(2)
 
         subject_mock = MagicMock()
         subject_mock.metric_source_id.return_value = fake_url
@@ -54,16 +54,16 @@ class LastSecurityTestCase(unittest.TestCase):
 
         result = last_security_test.value()
 
-        project_mock.metric_source.return_value.get_datetime_from_content.assert_called_once_with(fake_url)
+        file_with_date.get_datetime_from_content.assert_called_once_with(fake_url)
         self.assertEqual(2, result)
 
     def test_value_newer(self, project_mock):
         """ Test that the value of the metric is 0 when last test happens to have newer date (due to server time)."""
 
         fake_url = 'http://fake_url'
-        project_mock.metric_source = MagicMock()
-        project_mock.metric_source.return_value.get_datetime_from_content = \
-            MagicMock(return_value=datetime.datetime.now() + datetime.timedelta(seconds=5))
+        file_with_date = MagicMock()
+        project_mock.metric_sources.return_value = [file_with_date]
+        file_with_date.get_datetime_from_content.return_value = datetime.datetime.now() + datetime.timedelta(seconds=5)
 
         subject_mock = MagicMock()
         subject_mock.metric_source_id.return_value = fake_url
@@ -71,16 +71,16 @@ class LastSecurityTestCase(unittest.TestCase):
 
         result = last_security_test.value()
 
-        project_mock.metric_source.return_value.get_datetime_from_content.assert_called_once_with(fake_url)
+        file_with_date.get_datetime_from_content.assert_called_once_with(fake_url)
         self.assertEqual(0, result)
 
     def test_value_invalid(self, project_mock):
         """ Test that the value returns -1 when last security happens to min date . """
 
         fake_url = 'http://fake_url'
-        project_mock.metric_source = MagicMock()
-        project_mock.metric_source.return_value.get_datetime_from_content = \
-            MagicMock(return_value=datetime.datetime.min)
+        file_with_date = MagicMock()
+        project_mock.metric_sources.return_value = [file_with_date]
+        file_with_date.get_datetime_from_content.return_value = datetime.datetime.min
 
         subject_mock = MagicMock()
         subject_mock.metric_source_id.return_value = fake_url
@@ -88,14 +88,14 @@ class LastSecurityTestCase(unittest.TestCase):
 
         result = last_security_test.value()
 
-        project_mock.metric_source.return_value.get_datetime_from_content.assert_called_once_with(fake_url)
+        file_with_date.get_datetime_from_content.assert_called_once_with(fake_url)
         self.assertEqual(-1, result)
 
     def test_value_without_metric_source(self, project_mock):
         """ Test that the value returns -1 when there is no metric source. """
 
-        project_mock.metric_source = MagicMock()
-        project_mock.metric_source.return_value = None
+        project_mock.metric_sources = MagicMock()
+        project_mock.metric_sources.return_value = []
 
         last_security_test = metric.LastSecurityTest(subject=None, project=project_mock)
 
@@ -107,9 +107,9 @@ class LastSecurityTestCase(unittest.TestCase):
         """ Test that the value returns -1 when there is no metric source id is None. """
 
         fake_url = None
-        project_mock.metric_source = MagicMock()
-        project_mock.metric_source.return_value.get_datetime_from_content = \
-            MagicMock(return_value=datetime.datetime.now())
+        file_with_date = MagicMock()
+        project_mock.metric_sources.return_value = [file_with_date]
+        file_with_date.get_datetime_from_content.return_value = datetime.datetime.now()
 
         subject_mock = MagicMock()
         subject_mock.metric_source_id.return_value = fake_url
@@ -117,5 +117,5 @@ class LastSecurityTestCase(unittest.TestCase):
 
         result = last_security_test.value()
 
-        self.assertFalse(project_mock.metric_source.return_value.get_datetime_from_content.called)
+        self.assertFalse(file_with_date.get_datetime_from_content.called)
         self.assertEqual(-1, result)

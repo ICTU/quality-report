@@ -29,7 +29,6 @@ class WekanBoard(domain.MetricSource):
     """ Wekan board used as action list and/or risk log. """
 
     metric_source_name = 'Wekan'
-    needs_metric_source_id = True
 
     def __init__(self, url: str, username: str, password: str, api=wekanapi.WekanApi) -> None:
         self.__url = url.strip('/')

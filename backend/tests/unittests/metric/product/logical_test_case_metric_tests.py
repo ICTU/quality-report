@@ -25,7 +25,6 @@ class FakeBirt(object):
     """ Provide for a fake Birt object. """
     # pylint: disable=unused-argument
     metric_source_name = metric_source.Birt.metric_source_name
-    needs_metric_source_id = metric_source.Birt.needs_metric_source_id
     date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=5)
     nr_manual_tests = 10
 

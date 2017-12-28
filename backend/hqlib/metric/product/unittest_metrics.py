@@ -33,8 +33,7 @@ class FailingUnittests(LowerIsBetterMetric):
     metric_source_class = metric_source.UnitTestReport
 
     def value(self):
-        value = self._metric_source.failed_tests(self.__metric_source_id()) if self._metric_source else None
-        return -1 if value is None else value
+        return self._metric_source.failed_tests(self.__metric_source_id()) if self._metric_source else -1
 
     def status(self) -> str:
         return 'red' if self.__nr_tests() == 0 else super().status()
@@ -54,8 +53,7 @@ class FailingUnittests(LowerIsBetterMetric):
             return self._metric_source.passed_tests(metric_source_id) + \
                 self._metric_source.failed_tests(metric_source_id) + \
                 self._metric_source.skipped_tests(metric_source_id)
-        else:
-            return 0
+        return 0
 
     def __metric_source_id(self) -> str:
         """ Return the id of the subject in the metric source. """
