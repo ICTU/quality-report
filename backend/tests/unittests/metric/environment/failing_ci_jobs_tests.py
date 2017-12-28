@@ -33,6 +33,11 @@ class FakeJenkins(object):
         """ Return the total number of active CI jobs. """
         return 2
 
+    @staticmethod
+    def number_of_failing_jobs(*args):
+        """ Return the number of failing CI jobs. """
+        return 1
+
 
 class FailingCIJobsTest(unittest.TestCase):
     """ Unit tests for the failing CI jobs metric. """

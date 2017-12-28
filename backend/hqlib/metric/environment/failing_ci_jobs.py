@@ -42,7 +42,7 @@ class FailingCIJobs(LowerIsBetterMetric):
         return parameters
 
     def value(self):
-        return len(self._metric_source.failing_jobs_url()) if self._metric_source else -1
+        return self._metric_source.number_of_failing_jobs() if self._metric_source else -1
 
     def url(self) -> Dict[str, str]:
         return self._metric_source.failing_jobs_url() if self._metric_source else dict()

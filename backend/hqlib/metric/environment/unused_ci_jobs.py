@@ -43,7 +43,7 @@ class UnusedCIJobs(LowerIsBetterMetric):
 
     def value(self):
         """ Return the number of unused jobs. """
-        return len(self._metric_source.unused_jobs_url()) if self._metric_source else -1
+        return self._metric_source.number_of_unused_jobs() if self._metric_source else -1
 
     def url(self) -> Dict[str, str]:
         """ Return the urls for the unused jobs. """

@@ -28,6 +28,11 @@ class FakeJenkins(object):
         """ Return the total number of active CI jobs. """
         return 2
 
+    @staticmethod
+    def number_of_unused_jobs(*args):
+        """ Return the number of unused CI jobs. """
+        return 1
+
     @classmethod
     def unused_jobs_url(cls, *args):
         """ Return the url(s) of the unused job(s). """

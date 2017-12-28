@@ -20,7 +20,7 @@ import functools
 import logging
 import re
 import urllib.parse
-from typing import Dict, IO, List, Optional
+from typing import Dict, IO, List
 
 from hqlib.typing import DateTime, TimeDelta
 from .. import url_opener
@@ -54,19 +54,33 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def failing_jobs_url(self) -> Optional[Dict[str, str]]:
+    def number_failing_jobs(self) -> int:
+        """ Return the number of failing Jenkins jobs. """
+        try:
+            return len(self.__failing_jobs())
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
+
+    def number_unused_jobs(self) -> int:
+        """ Return the number of unused Jenkins jobs. """
+        try:
+            return len(self.__unused_jobs())
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
+
+    def failing_jobs_url(self) -> Dict[str, str]:
         """ Return the urls for the failing Jenkins jobs. """
         try:
             return self.__job_urls(self.__failing_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
-            return None
+            return dict()
 
-    def unused_jobs_url(self) -> Optional[Dict[str, str]]:
+    def unused_jobs_url(self) -> Dict[str, str]:
         """ Return the urls for the unused Jenkins jobs. """
         try:
             return self.__job_urls(self.__unused_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
-            return None
+            return dict()
 
     def __job_urls(self, jobs: Jobs) -> Dict[str, str]:
         """ Return the urls for the Jenkins jobs. """
