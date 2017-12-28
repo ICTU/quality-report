@@ -54,14 +54,14 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def number_failing_jobs(self) -> int:
+    def number_of_failing_jobs(self) -> int:
         """ Return the number of failing Jenkins jobs. """
         try:
             return len(self.__failing_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def number_unused_jobs(self) -> int:
+    def number_of_unused_jobs(self) -> int:
         """ Return the number of unused Jenkins jobs. """
         try:
             return len(self.__unused_jobs())

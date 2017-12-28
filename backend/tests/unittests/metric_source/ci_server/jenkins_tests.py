@@ -52,9 +52,21 @@ class JenkinsTest(unittest.TestCase):
 
     def test_no_failing_jobs(self):
         """ Test the number of failing jobs when there are no failing jobs. """
+        self.assertEqual(0, self.__jenkins.number_of_failing_jobs())
+
+    def test_no_failing_jobs_url(self):
+        """ Test the number of failing jobs when there are no failing jobs. """
         self.assertEqual({}, self.__jenkins.failing_jobs_url())
 
     def test_one_failing_job(self):
+        """ Test the failing jobs with one failing job. """
+        date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
+        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
+                                  '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
+                                  '"builds": [{{}}]}}'.format(to_jenkins_timestamp(date_time))
+        self.assertEqual(1, self.__jenkins.number_of_failing_jobs())
+
+    def test_one_failing_job_url(self):
         """ Test the failing jobs with one failing job. """
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
@@ -99,9 +111,21 @@ class JenkinsTest(unittest.TestCase):
 
     def test_no_unused_jobs(self):
         """ Test the number of unused jobs when there are no unused jobs. """
+        self.assertEqual(0, self.__jenkins.number_of_unused_jobs())
+
+    def test_no_unused_jobs_url(self):
+        """ Test the number of unused jobs when there are no unused jobs. """
         self.assertEqual({}, self.__jenkins.unused_jobs_url())
 
     def test_one_unused_job(self):
+        """ Test the unused jobs with one unused job. """
+        date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
+        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
+                                  '"url": "http://url", "buildable": True}}], ' \
+                                  '"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
+        self.assertEqual(1, self.__jenkins.number_of_unused_jobs())
+
+    def test_one_unused_job_url(self):
         """ Test the unused jobs with one unused job. """
         date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
@@ -137,3 +161,11 @@ class JenkinsTest(unittest.TestCase):
     def test_nr_of_active_jobs_on_error(self):
         """ Test that the number of active jobs is -1 when an URL error is thrown. """
         self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())
+
+    def test_nr_of_failing_jobs_on_error(self):
+        """ Test that the number of failing jobs is -1 when an URL error is thrown. """
+        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_failing_jobs())
+
+    def test_nr_of_unused_jobs_on_error(self):
+        """ Test that the number of unused jobs is -1 when an URL error is thrown. """
+        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_unused_jobs())

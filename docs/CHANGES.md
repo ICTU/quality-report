@@ -1,3 +1,8 @@
+2017-12-28  Release 2.26.2
+
+  * Bug fix: Don't crash if Jenkins is unreachable.
+  
+
 2017-12-28  Release 2.26.1
 
   * Bug fix: Don't crash if Jenkins is unreachable.
