@@ -1,3 +1,9 @@
+2017-12-28  Release 2.26.0
+
+  * All metric sources need a metric source id. See for example 
+    https://github.com/ICTU/quality-report/wiki/CI-server-metrics.
+  
+  
 2017-12-21  Release 2.25.3
 
   * Bug fix: Instead of reporting an UFT test report as broken, assume no tests were skipped if the total number of 
