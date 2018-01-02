@@ -144,6 +144,14 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(project)
         self.assertEqual(('Sonar', 'sonar-id'), quality_report.sonar_id(product))
 
+    def test_sonar_id_empty(self):
+        """ Test that the Sonar id of a product can be retrieved. """
+        sonar = 'Sonar'
+        project = domain.Project('organization', metric_sources={metric_source.Sonar: sonar})
+        product = domain.Product(metric_source_ids={sonar: ''})
+        quality_report = report.QualityReport(project)
+        self.assertEqual((None, ''), quality_report.sonar_id(product))
+
     def test_vcs_id(self):
         """ Test that the VCS id can be retrieved. """
         vcs = 'VCS'

@@ -1,3 +1,8 @@
+2018-01-02  Release 2.28.0
+
+  * Feature #206: TeamProgress metric removed.
+
+
 2018-01-02  Release 2.27.2
 
   * Bug fix: Don't mark Jira filters as unavailable when they return no issues.
