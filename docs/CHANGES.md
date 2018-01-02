@@ -1,3 +1,8 @@
+2018-01-02  Release 2.27.2
+
+  * Bug fix: Don't mark Jira filters as unavailable when they return no issues.
+  
+
 2018-01-02  Release 2.27.1
 
   * Bug fix: Don't report that the last security test was just now when the date provided is in the future.
