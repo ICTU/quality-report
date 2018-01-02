@@ -1,3 +1,8 @@
+2018-01-02  Release 2.27.1
+
+  * Bug fix: Don't report that the last security test was just now when the date provided is in the future.
+  
+
 2017-01-02  Release 2.27.0
 
   * Feature #195: metric for user stories duration added.

@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 import datetime
+import logging
+
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
@@ -35,12 +37,16 @@ class LastSecurityTest(LowerIsBetterMetric):
 
     def value(self):
         """ Return the number of days since the last security test. """
-        if self._metric_source and self._metric_source_id:
-            read_date = self._metric_source.get_datetime_from_content(self._metric_source_id)
-            if read_date == datetime.datetime.min:
-                return -1
-
-            days = (datetime.datetime.now() - read_date).days
-            return 0 if days < 0 else days
-        else:
+        if not (self._metric_source and self._metric_source_id):
             return -1
+
+        read_date = self._metric_source.get_datetime_from_content(self._metric_source_id)
+        if read_date == datetime.datetime.min:
+            return -1
+
+        if read_date > datetime.datetime.now() + datetime.timedelta(seconds=60):
+            logging.error("%s at %s returned a date and time in the future: %s",
+                          self.metric_source_class.metric_source_name, self._metric_source.url(), read_date)
+            return -1
+
+        return max(0, (datetime.datetime.now() - read_date).days)

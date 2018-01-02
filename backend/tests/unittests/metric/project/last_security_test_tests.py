@@ -57,8 +57,9 @@ class LastSecurityTestCase(unittest.TestCase):
         file_with_date.get_datetime_from_content.assert_called_once_with(fake_url)
         self.assertEqual(2, result)
 
-    def test_value_newer(self, project_mock):
-        """ Test that the value of the metric is 0 when last test happens to have newer date (due to server time)."""
+    def test_value_slightly_newer(self, project_mock):
+        """ Test that the value of the metric is 0 when last test happens to have a slightly newer date
+            (due to server time)."""
 
         fake_url = 'http://fake_url'
         file_with_date = MagicMock()
@@ -73,6 +74,23 @@ class LastSecurityTestCase(unittest.TestCase):
 
         file_with_date.get_datetime_from_content.assert_called_once_with(fake_url)
         self.assertEqual(0, result)
+
+    def test_value_newer(self, project_mock):
+        """ Test that the value of the metric is -1 when last test has a date in the future."""
+
+        fake_url = 'http://fake_url'
+        file_with_date = MagicMock()
+        project_mock.metric_sources.return_value = [file_with_date]
+        file_with_date.get_datetime_from_content.return_value = datetime.datetime.now() + datetime.timedelta(days=5)
+
+        subject_mock = MagicMock()
+        subject_mock.metric_source_id.return_value = fake_url
+        last_security_test = metric.LastSecurityTest(subject=subject_mock, project=project_mock)
+
+        result = last_security_test.value()
+
+        file_with_date.get_datetime_from_content.assert_called_once_with(fake_url)
+        self.assertEqual(-1, result)
 
     def test_value_invalid(self, project_mock):
         """ Test that the value returns -1 when last security happens to min date . """
