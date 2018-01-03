@@ -131,7 +131,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
                                   '"url": "http://url", "buildable": True}}], ' \
                                   '"timestamp": "{}", "builds": [{{"result": "SUCCESS"}}]}}'.format(
-            to_jenkins_timestamp(date_time))
+                                      to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.unused_jobs_url())
@@ -141,7 +141,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=400]", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(
-            to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))
+                                      to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))
         self.assertEqual({}, self.__jenkins.unused_jobs_url())
 
     def test_unused_jobs_after_grace(self):
@@ -150,7 +150,7 @@ class JenkinsTest(unittest.TestCase):
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=200]", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(
-            to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))
+                                      to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.unused_jobs_url())
