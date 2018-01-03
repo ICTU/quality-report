@@ -464,7 +464,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         try:
             json = self.__get_json(
                 self.__add_branch_param_to_url(self.__false_positives_api_url.format(resource=product), branch))
-
         except self.url_open_exceptions:
             return default
         return len(json['issues'])
@@ -472,11 +471,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @functools.lru_cache(maxsize=4096)
     def __get_json(self, url: str) -> Union[Dict[str, Dict], List[Dict[str, Union[str, List[Dict[str, str]]]]]]:
         """ Get and evaluate the json from the url. """
-        try:
-            json_string = self.url_read(url)
-        except self.url_open_exceptions as reason:
-            logging.warning("Can't retrieve url %s from Sonar: %s", url, reason)
-            raise
+        json_string = self.url_read(url)
         if not json_string:
             logging.error("Received empty json from %s", url)
         return utils.eval_json(json_string)
