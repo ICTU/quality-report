@@ -45,7 +45,7 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
         self._last_successful_build_url = self.__job_url + 'lastSuccessfulBuild/'
         self._last_stable_build_url = self.__job_url + 'lastStableBuild/'
         self._jobs_api_url = url + self.jobs_api_postfix
-        self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds'
+        self.__builds_api_url = self.__job_url + self.api_postfix + '?tree=builds[result]'
 
     def number_of_active_jobs(self) -> int:
         """ Return the total number of active Jenkins jobs. """
@@ -102,7 +102,7 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
             """ Return whether the build age of the job is considered to be long ago. """
             return self.__age_of_last_stable_build(job) > datetime.timedelta(days=1)
 
-        return [job for job in self.__active_jobs() if self.__has_builds(job) and failing(job) and old(job)]
+        return [job for job in self.__active_jobs() if self.__builds(job) and failing(job) and old(job)]
 
     def __unused_jobs(self) -> Jobs:
         """ Return the active Jenkins jobs that are unused. """
@@ -127,11 +127,13 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
 
     def __age_of_last_completed_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last completed build of the job. """
-        return self.__age_of_build(job, self.__last_completed_build_url)
+        return self.__age_of_build(job, self.__last_completed_build_url) \
+            if any(self.__builds(job, "SUCCESS", "FAILURE", "UNSTABLE")) else datetime.timedelta.max
 
     def __age_of_last_stable_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last stable build of the job. """
-        return self.__age_of_build(job, self._last_stable_build_url)
+        return self.__age_of_build(job, self._last_stable_build_url) \
+            if any(self.__builds(job, "SUCCESS")) else datetime.timedelta.max
 
     def __age_of_build(self, job: Job, url: str) -> TimeDelta:
         """ Return the age of the last completed or stable build of the job. """
@@ -152,9 +154,10 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
             logging.warning("Couldn't get timestamp from %s: %s.", builds_url, reason)
             return datetime.datetime.min
 
-    def __has_builds(self, job: Job) -> bool:
-        """ Return whether the job has builds or not. """
-        return bool(self._api(self.__builds_api_url.format(job=job['name']))['builds'])
+    def __builds(self, job: Job, *results: str) -> List[Dict]:
+        """" Return the builds of the job with the given status, if any. """
+        builds = self._api(self.__builds_api_url.format(job=job['name'])).get('builds', [])
+        return [build for build in builds if build.get("result") in results] if results else builds
 
     @functools.lru_cache(maxsize=1024)
     def _api(self, url: str) -> Dict:
@@ -170,9 +173,4 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
 
     def url_open(self, url: str) -> IO:
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
-        url = urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
-        try:
-            return super().url_open(url)
-        except url_opener.UrlOpener.url_open_exceptions as reason:
-            logging.error("Couldn't open %s: %s", url, reason)
-            raise
+        return super().url_open(urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]"))

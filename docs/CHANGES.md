@@ -1,3 +1,9 @@
+2018-01-03  Release 2.28.2
+
+  * Bug fix: Don't complain in the log about the meta metrics not having a metric source.
+  * Bug fix: Don't complain in the log about Jenkins jobs not having a last stable or completed build.
+  
+
 2018-01-03  Release 2.28.1
 
   * Show the total number of stories in the user story duration metric. 

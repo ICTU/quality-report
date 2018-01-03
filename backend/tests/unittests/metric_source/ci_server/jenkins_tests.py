@@ -63,7 +63,7 @@ class JenkinsTest(unittest.TestCase):
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{}}]}}'.format(to_jenkins_timestamp(date_time))
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(date_time))
         self.assertEqual(1, self.__jenkins.number_of_failing_jobs())
 
     def test_one_failing_job_url(self):
@@ -71,7 +71,7 @@ class JenkinsTest(unittest.TestCase):
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{}}]}}'.format(to_jenkins_timestamp(date_time))
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.failing_jobs_url())
@@ -93,7 +93,7 @@ class JenkinsTest(unittest.TestCase):
         timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{}}]}}'.format(timestamp)
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(timestamp)
         self.assertEqual({'job1 (100 dagen)': 'http://url'}, self.__jenkins.failing_jobs_url())
 
     def test_failing_jobs_url_no_description(self):
@@ -104,7 +104,7 @@ class JenkinsTest(unittest.TestCase):
             jan_first = jan_first.replace(year=jan_first.year - 1)  # pragma: no cover
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": None, ' \
                                   '"url": "http://url", "buildable":  True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{}}]}}'.format(to_jenkins_timestamp(jan_first))
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(jan_first))
         expected_days_ago = (datetime.datetime.utcnow() - jan_first).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.failing_jobs_url())
@@ -130,7 +130,8 @@ class JenkinsTest(unittest.TestCase):
         date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
                                   '"url": "http://url", "buildable": True}}], ' \
-                                  '"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
+                                  '"timestamp": "{}", "builds": [{{"result": "SUCCESS"}}]}}'.format(
+            to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.unused_jobs_url())
@@ -139,8 +140,8 @@ class JenkinsTest(unittest.TestCase):
         """ Test the unused jobs with one unused job within grace time. """
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=400]", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{}}]}}'.format(to_jenkins_timestamp(datetime.datetime.utcnow() -
-                                                                                   datetime.timedelta(days=100)))
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(
+            to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))
         self.assertEqual({}, self.__jenkins.unused_jobs_url())
 
     def test_unused_jobs_after_grace(self):
@@ -148,8 +149,8 @@ class JenkinsTest(unittest.TestCase):
         last_year = datetime.datetime.utcnow().year - 1
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=200]", ' \
                                   '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{}}]}}'.format(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1,
-                                                                                                     12, 0, 0)))
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(
+            to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
         self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
                          self.__jenkins.unused_jobs_url())

@@ -77,7 +77,9 @@ class Metric(object):
                 self._metric_source_id = source_id
                 break
         else:
-            logging.warning("Couldn't find metric source for %s", self.stable_id())
+            if self.metric_source_class:
+                logging.warning("Couldn't find metric source of class %s for %s", self.metric_source_class.__name__,
+                                self.stable_id())
             self._metric_source = None
             self._metric_source_id = None
         self.__id_string = self.stable_id()
@@ -89,7 +91,6 @@ class Metric(object):
         """ Return an id that doesn't depend on numbering/order of metrics. """
         stable_id = self.__class__.__name__
         if not isinstance(self._subject, list):
-            # Add the product or team to the id:
             stable_id += self._subject.name() if self._subject else str(self._subject)
         return stable_id
 
