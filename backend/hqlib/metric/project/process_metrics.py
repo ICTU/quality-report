@@ -39,15 +39,22 @@ class UserStoriesDuration(LowerIsBetterMetric):
 
     name = 'Gemiddelde looptijd van user stories'
     unit = 'gemiddeld aantal dagen'
-    norm_template = 'Het {unit} is minder dan {target}. Een {unit} meer dan {low_target} is rood.'
-    template = 'Het {unit} dat een afgeronde issue in progress was is {value}.'
+    norm_template = 'Het {unit} is minder dan {target}. Een {unit} van meer dan {low_target} is rood.'
+    template = '{total} user stories waren gemiddeld {value} dagen in progress.'
     target_value = 7
     low_target_value = 14
     metric_source_class = metric_source.UserStoriesDurationTracker
 
     def value(self):
-        return self._metric_source.cumulative_stories_duration(*self._get_metric_source_ids()) \
+        return self._metric_source.average_duration_of_issues(*self._get_metric_source_ids()) \
             if self._metric_source else -1
+
+    def _parameters(self):
+        parameters = super()._parameters()
+        parameters["total"] = self._metric_source.nr_issues(*self._get_metric_source_ids()) \
+            if self._metric_source else "?"
+        return parameters
+
 
 class UserStoriesInProgress(LowerIsBetterMetric):
     """ Metric for measuring the number of user stories in progress in current sprint . """

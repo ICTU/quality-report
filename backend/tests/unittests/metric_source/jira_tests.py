@@ -102,6 +102,17 @@ class JiraTest(unittest.TestCase):
         url_read_mock.has_call(call('http://jira/rest/api/2/filter/12345'))
         self.assertEqual(-1, result)
 
+    def test_query_total_on_http_error_during_second_call(self, url_read_mock):
+        """ Test that the result is -1 when an HTTP error occurs during the second call to Jira. """
+        jira = Jira('http://jira/', 'username', 'password')
+        url_read_mock.side_effect = ['{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view"}',
+                                     urllib.error.HTTPError(None, None, None, None, None)]
+
+        result = jira.query_total(12345)
+
+        url_read_mock.has_calls([call('http://jira/rest/api/2/filter/12345'), call('http://jira/search?')])
+        self.assertEqual(-1, result)
+
     def test_get_duration_of_stories(self, url_read_mock):
         """ Test that the average number of days a story spent in status 'In Progress' is correct. """
         issue = "ISSUE-1"
@@ -123,7 +134,7 @@ class JiraTest(unittest.TestCase):
                           '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json, changelog_json2]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         url_read_mock.assert_has_calls([
             call('http://jira/rest/api/2/filter/12345'),
@@ -150,7 +161,7 @@ class JiraTest(unittest.TestCase):
                          '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         url_read_mock.assert_has_calls([
             call('http://jira/rest/api/2/filter/12345'),
@@ -170,7 +181,7 @@ class JiraTest(unittest.TestCase):
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "Open"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         logging_info_mock.assert_called_with(
             "Invalid date, or issue %s never moved to status 'In Progress'", issue)
@@ -198,7 +209,7 @@ class JiraTest(unittest.TestCase):
                           '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json, changelog_json2]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         logging_info_mock.assert_called_with(
             "Invalid date, or issue %s never moved to status 'In Progress'", issue)
@@ -221,7 +232,7 @@ class JiraTest(unittest.TestCase):
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         logging_info_mock.assert_called_with(
             "Invalid date, or issue %s still in status 'In Progress'", issue)
@@ -249,7 +260,7 @@ class JiraTest(unittest.TestCase):
                           '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json, changelog_json2]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         logging_info_mock.assert_called_with(
             "Invalid date, or issue %s still in status 'In Progress'", issue)
@@ -276,7 +287,7 @@ class JiraTest(unittest.TestCase):
                          '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         logging_info_mock.assert_called_with(
             "Invalid date, or issue %s never moved to status 'In Progress'", issue)
@@ -300,7 +311,7 @@ class JiraTest(unittest.TestCase):
                          '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         logging_info_mock.assert_called_with(
             "Invalid date, or issue %s still in status 'In Progress'", issue)
@@ -321,7 +332,7 @@ class JiraTest(unittest.TestCase):
         query_id = '12345'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(query_id)
+        result = jira.average_duration_of_issues(query_id)
 
         logging_error_mock.assert_called_with(
             "Error opening jira filter %s: %s.", query_id, changelog_json)
@@ -341,7 +352,7 @@ class JiraTest(unittest.TestCase):
         changelog_json = 'not a json'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 
-        result = jira.duration_of_stories(12345)
+        result = jira.average_duration_of_issues(12345)
 
         args, _ = logging_error_mock.call_args
         self.assertEqual("Couldn't load json string '%s': %s", args[0])

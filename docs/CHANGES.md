@@ -1,3 +1,8 @@
+2018-01-03  Release 2.28.1
+
+  * Show the total number of stories in the user story duration metric. 
+  
+  
 2018-01-02  Release 2.28.0
 
   * Feature #206: TeamProgress metric removed.

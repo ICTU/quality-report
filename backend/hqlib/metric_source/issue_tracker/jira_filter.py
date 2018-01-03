@@ -35,10 +35,13 @@ class JiraFilter(BugTracker):
         results = [self.__jira.query_total(int(metric_source_id)) for metric_source_id in metric_source_ids]
         return -1 if -1 in results else sum(results)
 
-    def cumulative_stories_duration(self, *metric_source_ids: str) -> int:
-        """ Returns cumulative duration (in days), for stories in filter, since the begin till the end of progress. """
-        results = [self.__jira.duration_of_stories(int(metric_source_id)) for metric_source_id in metric_source_ids]
-        return -1 if -1 in results else sum(results)
+    def average_duration_of_issues(self, *metric_source_ids: str) -> int:
+        """ Returns average duration (in days), for stories in filter, since the begin till the end of progress. """
+        results = [self.__jira.average_duration_of_issues(int(metric_source_id))
+                   for metric_source_id in metric_source_ids]
+        if -1 in results:
+            return -1
+        return sum(results) / len(results) if results else 0
 
     def nr_issues_with_field_empty(self, *metric_source_ids: str) -> int:
         """ Return the number of issues whose field has not been filled in. """

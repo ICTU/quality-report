@@ -43,3 +43,24 @@ class SuppressRepeatMessagesTest(unittest.TestCase):
         """Test two equal messages. """
         self.assertTrue(self.__suppressor.filter(self.log_message()))
         self.assertFalse(self.__suppressor.filter(self.log_message()))
+
+
+class InitLogTest(unittest.TestCase):
+    """ Unit tests for the initLogging method. """
+
+    def test_init(self):
+        """ Test that the logging system is initialized properly. """
+
+        root_logger = logging.getLogger()
+
+        def reset_logging_system():
+            """ Reset the logging system so we can initialize it. """
+            for handler in root_logger.handlers:
+                root_logger.removeHandler(handler)
+
+        reset_logging_system()
+        log.init_logging("DEBUG")
+        self.assertEqual(logging.DEBUG, root_logger.getEffectiveLevel())
+        reset_logging_system()
+        log.init_logging("CRITICAL")
+        self.assertEqual(logging.CRITICAL, root_logger.getEffectiveLevel())

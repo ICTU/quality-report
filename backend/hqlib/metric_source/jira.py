@@ -48,8 +48,8 @@ class Jira(object):
             total += func(issue, *args, **kwargs)
         return total
 
-    def duration_of_stories(self, query_id: QueryId) -> int:
-        """ Return the sum of the duration in days the stories were in status 'In Progress'. """
+    def average_duration_of_issues(self, query_id: QueryId) -> int:
+        """ Return the average duration in days the issues were in status 'In Progress'. """
         try:
             tpl = self._sum_for_all_issues(query_id, self._get_days_in_progress, tuple())
 

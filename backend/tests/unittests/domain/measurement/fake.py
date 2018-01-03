@@ -54,8 +54,3 @@ class FakeSubject(object):  # pylint: disable=too-few-public-methods
     def metric_options(self, metric_class):
         """ Return the options for the metric class. """
         return self.options
-
-    @staticmethod
-    def metric_source_id(metric_class):
-        """ Return the metric source id for the metric class. """
-        return

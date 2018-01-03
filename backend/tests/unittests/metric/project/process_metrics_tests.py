@@ -58,8 +58,8 @@ class UserStoriesDurationTest(unittest.TestCase):
         """ Test that the value is correct. """
         project = MagicMock()
         mock_metric_source = MagicMock()
-        mock_metric_source.cumulative_stories_duration.return_value = 2.33
-        project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        mock_metric_source.average_duration_of_issues.return_value = 2.33
+        project.metric_sources.return_value = [mock_metric_source]
         subject = MagicMock()
         subject.metric_source_id = MagicMock(return_value='src_id')
         duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
@@ -69,12 +69,25 @@ class UserStoriesDurationTest(unittest.TestCase):
     def test_value_empty_metric_source(self):
         """ Test that the value method returns -1 if the metric source is None. """
         project = MagicMock()
-        project.metric_sources = MagicMock(return_value=[None])
+        project.metric_sources.return_value = []
         subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
+        subject.metric_source_id.return_value = 'src_id'
         duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
 
         self.assertEqual(-1, duration_metric.value())
+
+    def test_report(self):
+        """ Test that the report includes the total number of issues in the filter. """
+        project = MagicMock()
+        mock_metric_source = MagicMock()
+        mock_metric_source.average_duration_of_issues.return_value = 2.5
+        mock_metric_source.nr_issues.return_value = 10
+        project.metric_sources.return_value = [mock_metric_source]
+        subject = MagicMock()
+        subject.metric_source_id.return_value = 'src_id'
+        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+
+        self.assertEqual("10 user stories waren gemiddeld 2.5 dagen in progress.", duration_metric.report())
 
 
 class UserStoriesInProgressTest(unittest.TestCase):

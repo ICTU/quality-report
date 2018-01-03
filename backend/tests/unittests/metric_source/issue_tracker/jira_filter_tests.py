@@ -44,24 +44,24 @@ class JiraFilterTest(unittest.TestCase):
         query_total_mock.assert_has_calls([call(123), call(567)])
         self.assertEqual(-1, result)
 
-    @patch.object(Jira, 'duration_of_stories')
-    def test_cumulative_stories_duration(self, duration_of_stories_mock):
-        """ Test that the number of items equals the sum of totals per metric source returned by Jira. """
-        duration_of_stories_mock.side_effect = [12, 13]
+    @patch.object(Jira, 'average_duration_of_issues')
+    def test_average_duration_of_issues(self, average_duration_of_issues_mock):
+        """ Test that the average duration is the average of the averages returned by different filters. """
+        average_duration_of_issues_mock.side_effect = [12, 13]
 
-        result = JiraFilter('', '', '').cumulative_stories_duration('123', '567')
+        result = JiraFilter('', '', '').average_duration_of_issues('123', '567')
 
-        duration_of_stories_mock.assert_has_calls([call(123), call(567)])
-        self.assertEqual(25, result)
+        average_duration_of_issues_mock.assert_has_calls([call(123), call(567)])
+        self.assertEqual(12.5, result)
 
-    @patch.object(Jira, 'duration_of_stories')
-    def test_cumulative_stories_duration_on_error(self, duration_of_stories_mock):
-        """ Test that the number of items is set to -1 if Jira returned -1 for any metric source. """
-        duration_of_stories_mock.side_effect = [-1, 13]
+    @patch.object(Jira, 'average_duration_of_issues')
+    def test_average_duration_of_issues_on_error(self, average_duration_of_issues_mock):
+        """ Test that the average is set to -1 if Jira returned -1 for any metric source. """
+        average_duration_of_issues_mock.side_effect = [-1, 13]
 
-        result = JiraFilter('', '', '').cumulative_stories_duration('123', '567')
+        result = JiraFilter('', '', '').average_duration_of_issues('123', '567')
 
-        duration_of_stories_mock.assert_has_calls([call(123), call(567)])
+        average_duration_of_issues_mock.assert_has_calls([call(123), call(567)])
         self.assertEqual(-1, result)
 
     @patch.object(Jira, 'query_sum')
