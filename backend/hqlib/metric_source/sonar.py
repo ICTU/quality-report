@@ -84,25 +84,25 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             self.__analyses_api_url.format(project=product)+'&category=VERSION', branch)
 
         try:
-            json = self.__get_json(url)
+            analyses_json = self.__get_json(url, log_error=False)
             try:
-                return json['analyses'][0]['events'][0]['name']
+                return analyses_json['analyses'][0]['events'][0]['name']
             except (KeyError, IndexError, TypeError) as reason:
                 logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
-                                product, json, url, reason)
+                                product, analyses_json, url, reason)
                 return '?'
         except self.url_open_exceptions:
             # Try older API:
             url = self.__add_branch_param_to_url(self.__resource_api_url.format(resource=product), branch)
             try:
-                json = self.__get_json(url)
+                analyses_json = self.__get_json(url)
             except self.url_open_exceptions:
                 return '?'
             try:
-                return json[0]['version']
+                return analyses_json[0]['version']
             except (KeyError, IndexError, TypeError) as reason:
                 logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
-                                product, json, url, reason)
+                                product, analyses_json, url, reason)
                 return '?'
 
     def plugin_version(self, plugin: str) -> str:
@@ -158,8 +158,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @functools.lru_cache(maxsize=4096)
     def is_component_absent(self, product) -> bool:
         """" Checks if the component with complete name, including branch, is defined """
+        url = self.__components_show_api_url.format(component=product)
         try:
-            url = self.__components_show_api_url.format(component=product)
             if json.loads(self.url_read(url))["component"]:
                 logging.info("Component '%s' found. No branch is defined.", product)
                 return False
@@ -181,8 +181,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def __projects(self, branch) -> List[str]:
         """ Return all projects in Sonar. """
         try:
-            json = self.__get_json(self.__add_branch_param_to_url(self.__projects_api_url, branch))
-            return [project['k'] for project in json]
+            projects_json = self.__get_json(self.__add_branch_param_to_url(self.__projects_api_url, branch))
+            return [project['k'] for project in projects_json]
         except self.url_open_exceptions:
             return []
 
@@ -356,7 +356,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     @extract_branch_decorator
     def false_positives_url(self, product: str, branch: str) -> str:
         """ Return the url to the list of false positives. """
-        return self.__false_positives_url.format(resource=product)
+        return self.__add_branch_param_to_url(self.__false_positives_url.format(resource=product), branch)
 
     # Meta data
 
@@ -371,7 +371,7 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
     def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
 
-        split_branch = extract_branch_decorator(lambda self, x, a: (x, a))
+        split_branch = extract_branch_decorator(lambda this, x, a: (x, a))
         product, branch = split_branch(self, products[0])
 
         server_version = self.version_number()
@@ -379,33 +379,33 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
             # Use the components API, it should contain the analysis date both for projects and components
             url = self.__add_branch_param_to_url(self.__components_show_api_url.format(component=product), branch)
             try:
-                json = self.__get_json(url)
+                components_json = self.__get_json(url)
                 try:
-                    datetime_string = json['component']['analysisDate']
+                    datetime_string = components_json['component']['analysisDate']
                     datetime_string = datetime_string.split('+')[0]  # Ignore timezone
                     return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
                 except (TypeError, KeyError, IndexError) as reason:
                     logging.error("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
-                                  product, json, url, reason)
+                                  product, components_json, url, reason)
             except self.url_open_exceptions:
                 pass
             return datetime.datetime.min
         # Use analyses API:
         url = self.__add_branch_param_to_url(self.__analyses_api_url.format(project=product), branch)
         try:
-            json = self.__get_json(url)['analyses']
+            components_json = self.__get_json(url, log_error=False)['analyses']
         except self.url_open_exceptions:
             # Try older API:
             url = self.__add_branch_param_to_url(self.__resource_api_url.format(resource=product), branch)
             try:
-                json = self.__get_json(url)
+                components_json = self.__get_json(url)
             except self.url_open_exceptions:
                 return datetime.datetime.min
         try:
-            datetime_string = json[0]['date']
+            datetime_string = components_json[0]['date']
         except (TypeError, KeyError, IndexError) as reason:
             logging.warning("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
-                            product, json, url, reason)
+                            product, components_json, url, reason)
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
@@ -420,28 +420,28 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         url = self.__add_branch_param_to_url(
             self.__measures_api_url.format(component=product, metric=metric_name), branch)
         try:
-            json = self.__get_json(url)
+            measures_json = self.__get_json(url, log_error=False)
             try:
-                for measure in json['component']['measures']:
+                for measure in measures_json['component']['measures']:
                     if measure['metric'] == metric_name:
                         return float(measure['value'])
                 reason = 'metric not found in component measures'
             except (TypeError, KeyError, IndexError, ValueError) as reason:
                 pass  # Next lines will log exception and return from this method
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
-                            json, url, reason)
+                            measures_json, url, reason)
             return -1
         except self.url_open_exceptions:
             pass  # Keep going, and try the old API
         url = self.__add_branch_param_to_url(
             self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name, branch)
         try:
-            json = self.__get_json(url)
+            measures_json = self.__get_json(url)
             try:
-                return float(json[0]["msr"][0]["val"])
+                return float(measures_json[0]["msr"][0]["val"])
             except (TypeError, KeyError, IndexError, ValueError) as reason:
                 logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
-                                json, url, reason)
+                                measures_json, url, reason)
                 return -1
         except self.url_open_exceptions:
             return -1
@@ -451,27 +451,26 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         if not self.__has_project(product, branch):
             return -1
         try:
-            json = self.__get_json(
+            issues_json = self.__get_json(
                 self.__add_branch_param_to_url(self.__issues_api_url.format(component=product, rule=rule_name), branch))
         except self.url_open_exceptions:
             return default
-        return int(json['paging']['total'])
+        return int(issues_json['paging']['total'])
 
     def __false_positives(self, product: str, default=0, branch: str=None) -> int:
         """ Return the number of issues resolved as false positive. """
         if not self.__has_project(product, branch):
             return -1
         try:
-            json = self.__get_json(
+            false_positives_json = self.__get_json(
                 self.__add_branch_param_to_url(self.__false_positives_api_url.format(resource=product), branch))
         except self.url_open_exceptions:
             return default
-        return len(json['issues'])
+        return len(false_positives_json['issues'])
 
     @functools.lru_cache(maxsize=4096)
-    def __get_json(self, url: str) -> Union[Dict[str, Dict], List[Dict[str, Union[str, List[Dict[str, str]]]]]]:
+    def __get_json(self, url: str, *args, **kwargs) -> Union[Dict[str, Dict],
+                                                             List[Dict[str, Union[str, List[Dict[str, str]]]]]]:
         """ Get and evaluate the json from the url. """
-        json_string = self.url_read(url)
-        if not json_string:
-            logging.error("Received empty json from %s", url)
+        json_string = self.url_read(url, *args, **kwargs)
         return utils.eval_json(json_string)

@@ -1,3 +1,9 @@
+2018-01-04  Release 2.28.3
+
+  * Bug fix: Don't complain in the log when one version of the SonarQube API doesn't work, but an older one does.
+    Closes #174.
+  
+  
 2018-01-03  Release 2.28.2
 
   * Bug fix: Don't complain in the log about the meta metrics not having a metric source.

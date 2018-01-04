@@ -46,7 +46,27 @@ class Timeout(object):
         raise TimeoutError("Operation timed out after {0} seconds.".format(self.__duration))
 
 
-TIMED_OUT_NETLOCS = set()  # Keep track of the network locations (host/port) that have timed out
+class TimeoutTracker(object):
+    """ Class to keep track of urls that have timed out. """
+
+    timed_out_netlocs = set()  # Keep track of the network locations (host/port) that have timed out
+
+    def raise_timeout_if_url_timed_out_before(self, url):
+        """ Raise a time out error if the netloc of the url has timed out before. """
+        netloc = self.__netloc(url)
+        if netloc in self.timed_out_netlocs:
+            reason = "Skipped because {0} timed out before.".format(netloc)
+            logging.warning("Not opening %s: %s", url, reason)
+            raise TimeoutError(reason)
+
+    def register_url(self, url):
+        """ Register the url as timed out. """
+        self.timed_out_netlocs.add(self.__netloc(url))
+
+    @staticmethod
+    def __netloc(url):
+        """ Return the netloc for the url. """
+        return urllib.parse.urlparse(url).netloc
 
 
 class UrlOpener(object):
@@ -59,6 +79,7 @@ class UrlOpener(object):
         self.__username = username
         self.__password = password
         self.__opener = self.__create_url_opener(uri)
+        self.__time_out_tracker = TimeoutTracker()
 
     def username(self) -> str:
         """ Return the username, if any. """
@@ -88,24 +109,23 @@ class UrlOpener(object):
         else:
             return urllib.request.urlopen
 
-    def url_open(self, url: str) -> IO:
+    def url_open(self, url: str, log_error: bool=True) -> IO:
         """ Return an opened url, using the opener created earlier. """
-        netloc = urllib.parse.urlparse(url).netloc
-        if netloc in TIMED_OUT_NETLOCS:
-            reason = "Skipped because {0} timed out before.".format(netloc)
-            logging.warning("Not opening %s: %s", url, reason)
-            raise TimeoutError(reason)
+        self.__time_out_tracker.raise_timeout_if_url_timed_out_before(url)
         try:
-            with Timeout(15):
-                return self.__opener(url)
+            try:
+                with Timeout(15):
+                    return self.__opener(url)
+            except TimeoutError:
+                self.__time_out_tracker.register_url(url)
+                raise  # Outer exception handler handles the logging
         except self.url_open_exceptions as reason:
-            logging.error("Couldn't open %s: %s", url, reason)
-            if "Operation timed out after " in str(reason):
-                TIMED_OUT_NETLOCS.add(netloc)
+            if log_error:
+                logging.error("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)
-    def url_read(self, url: str, encoding: str='utf-8') -> str:
+    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
         """ Open and read a url, and transform the bytes to a string. """
-        data = self.url_open(url).read()
+        data = self.url_open(url, *args, **kwargs).read()
         return data.decode(encoding) if isinstance(data, bytes) else data

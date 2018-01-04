@@ -238,7 +238,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 }
 """
 
-    def url_read(self, url):
+    def url_read(self, url: str,  encoding: str='utf-8', *args, **kwargs) -> str:
         """ Return the static contents. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
@@ -706,6 +706,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, product, None)
 
+
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarBranchVersionNumberTest(unittest.TestCase):
     """" Unit tests for branch functionality """
@@ -757,7 +758,7 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION&branch={branch}'
-            .format(project=product, branch=branch))
+            .format(project=product, branch=branch), log_error=False)
         self.assertEqual("version_name", result)
 
     def test_version_without_given_branch(self, url_read_mock):
@@ -776,7 +777,7 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION'
-            .format(project=product))
+            .format(project=product), log_error=False)
         self.assertEqual("version_name", result)
 
     def test_version_wit_branch_when_url_opener_throws(self, url_read_mock):
@@ -795,7 +796,7 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
         calls = [call(fake_url +
                       'api/project_analyses/search?project={project}&format=json&category=VERSION&branch={branch}'
-                      .format(project=product, branch=branch)),
+                      .format(project=product, branch=branch), log_error=False),
                  call(fake_url +
                       'api/resources?resource={project}&format=json&branch={branch}'
                       .format(project=product, branch=branch))]
@@ -806,7 +807,6 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarNclocBranchTest(unittest.TestCase):
     """" Unit tests for branch functionality """
-
 
     def test_ncloc_with_branch(self, url_read_mock):
         """" Check that ncloc function correctly splits the branch and adds it as a parameter to the url. """
@@ -825,7 +825,7 @@ class SonarNclocBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='ncloc', branch=branch))
+            .format(component=product, metric='ncloc', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_ncloc_without_branch(self, url_read_mock):
@@ -844,7 +844,7 @@ class SonarNclocBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='ncloc'))
+            .format(component=product, metric='ncloc'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_ncloc_with_branch_old(self, url_read_mock):
@@ -861,14 +861,13 @@ class SonarNclocBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='ncloc'))
+            .format(component=product, metric='ncloc'), log_error=False)
         self.assertEqual(1192, result)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarLinesWithBranchTest(unittest.TestCase):
     """" Unit tests for branch functionality """
-
 
     def test_lines_with_branch(self, url_read_mock):
         """" Check that lines function correctly splits the branch and adds it as a parameter to the url. """
@@ -887,7 +886,7 @@ class SonarLinesWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='lines', branch=branch))
+            .format(component=product, metric='lines', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_lines_without_branch(self, url_read_mock):
@@ -906,7 +905,7 @@ class SonarLinesWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='lines'))
+            .format(component=product, metric='lines'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_lines_with_branch_old(self, url_read_mock):
@@ -923,14 +922,13 @@ class SonarLinesWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='lines'))
+            .format(component=product, metric='lines'), log_error=False)
         self.assertEqual(1192, result)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarViolationsWithBranchTest(unittest.TestCase):
     """" Unit tests for branch functionality """
-
 
     def test_major_violations_with_branch(self, url_read_mock):
         """" Check that major_violations function correctly splits the branch and adds it as a parameter to the url. """
@@ -949,7 +947,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='major_violations', branch=branch))
+            .format(component=product, metric='major_violations', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_major_violations_without_branch(self, url_read_mock):
@@ -968,7 +966,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='major_violations'))
+            .format(component=product, metric='major_violations'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_major_violations_with_branch_old(self, url_read_mock):
@@ -985,7 +983,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='major_violations'))
+            .format(component=product, metric='major_violations'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_critical_violations_with_branch(self, url_read_mock):
@@ -1006,7 +1004,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='critical_violations', branch=branch))
+            .format(component=product, metric='critical_violations', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_critical_violations_without_branch(self, url_read_mock):
@@ -1026,7 +1024,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='critical_violations'))
+            .format(component=product, metric='critical_violations'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_critical_violations_with_branch_old(self, url_read_mock):
@@ -1043,7 +1041,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='critical_violations'))
+            .format(component=product, metric='critical_violations'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_blocker_violations_with_branch(self, url_read_mock):
@@ -1063,7 +1061,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='blocker_violations', branch=branch))
+            .format(component=product, metric='blocker_violations', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_blocker_violations_without_branch(self, url_read_mock):
@@ -1082,7 +1080,7 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='blocker_violations'))
+            .format(component=product, metric='blocker_violations'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_blocker_violations_with_branch_old(self, url_read_mock):
@@ -1099,14 +1097,13 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='blocker_violations'))
+            .format(component=product, metric='blocker_violations'), log_error=False)
         self.assertEqual(1192, result)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
     """" Unit tests for branch functionality """
-
 
     def test_duplicated_lines_with_branch(self, url_read_mock):
         """" Check that duplicated_lines function correctly splits the branch and adds it as a parameter to the url. """
@@ -1125,7 +1122,7 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='duplicated_lines', branch=branch))
+            .format(component=product, metric='duplicated_lines', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_duplicated_lines_without_branch(self, url_read_mock):
@@ -1144,7 +1141,7 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='duplicated_lines'))
+            .format(component=product, metric='duplicated_lines'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_duplicated_lines_with_branch_old(self, url_read_mock):
@@ -1161,14 +1158,13 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='duplicated_lines'))
+            .format(component=product, metric='duplicated_lines'), log_error=False)
         self.assertEqual(1192, result)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarCoverageWithBranchTest(unittest.TestCase):
     """" Unit tests for branch functionality """
-
 
     def test_line_coverage_with_branch(self, url_read_mock):
         """" Check that line_coverage function correctly splits the branch and adds it as a parameter to the url. """
@@ -1187,7 +1183,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='line_coverage', branch=branch))
+            .format(component=product, metric='line_coverage', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_line_coverage_without_branch(self, url_read_mock):
@@ -1206,7 +1202,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='line_coverage'))
+            .format(component=product, metric='line_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_line_coverage_with_branch_old(self, url_read_mock):
@@ -1223,7 +1219,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='line_coverage'))
+            .format(component=product, metric='line_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_branch_coverage_with_branch(self, url_read_mock):
@@ -1243,7 +1239,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='branch_coverage', branch=branch))
+            .format(component=product, metric='branch_coverage', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_branch_coverage_without_branch(self, url_read_mock):
@@ -1262,7 +1258,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='branch_coverage'))
+            .format(component=product, metric='branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_branch_coverage_with_branch_old(self, url_read_mock):
@@ -1279,7 +1275,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='branch_coverage'))
+            .format(component=product, metric='branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_it_line_coverage_with_branch(self, url_read_mock):
@@ -1299,7 +1295,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='it_line_coverage', branch=branch))
+            .format(component=product, metric='it_line_coverage', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_it_line_coverage_without_branch(self, url_read_mock):
@@ -1318,7 +1314,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_line_coverage'))
+            .format(component=product, metric='it_line_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_it_line_coverage_with_branch_old(self, url_read_mock):
@@ -1335,7 +1331,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_line_coverage'))
+            .format(component=product, metric='it_line_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_it_branch_coverage_with_branch(self, url_read_mock):
@@ -1355,7 +1351,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='it_branch_coverage', branch=branch))
+            .format(component=product, metric='it_branch_coverage', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_it_branch_coverage_without_branch(self, url_read_mock):
@@ -1374,7 +1370,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_branch_coverage'))
+            .format(component=product, metric='it_branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_it_branch_coverage_with_branch_old(self, url_read_mock):
@@ -1391,7 +1387,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_branch_coverage'))
+            .format(component=product, metric='it_branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_overall_line_coverage_with_branch(self, url_read_mock):
@@ -1412,7 +1408,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='overall_line_coverage', branch=branch))
+            .format(component=product, metric='overall_line_coverage', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_overall_line_coverage_without_branch(self, url_read_mock):
@@ -1432,7 +1428,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_line_coverage'))
+            .format(component=product, metric='overall_line_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_overall_line_coverage_with_branch_old(self, url_read_mock):
@@ -1449,7 +1445,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_line_coverage'))
+            .format(component=product, metric='overall_line_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_overall_branch_coverage_with_branch(self, url_read_mock):
@@ -1470,7 +1466,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='overall_branch_coverage', branch=branch))
+            .format(component=product, metric='overall_branch_coverage', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_overall_branch_coverage_without_branch(self, url_read_mock):
@@ -1490,7 +1486,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_branch_coverage'))
+            .format(component=product, metric='overall_branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_overall_branch_coverage_with_branch_old(self, url_read_mock):
@@ -1507,7 +1503,7 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_branch_coverage'))
+            .format(component=product, metric='overall_branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
 
@@ -1532,7 +1528,7 @@ class SonarTestsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='tests', branch=branch))
+            .format(component=product, metric='tests', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_tests_without_branch(self, url_read_mock):
@@ -1551,7 +1547,7 @@ class SonarTestsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='tests'))
+            .format(component=product, metric='tests'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_tests_with_branch_old(self, url_read_mock):
@@ -1568,7 +1564,7 @@ class SonarTestsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='tests'))
+            .format(component=product, metric='tests'), log_error=False)
         self.assertEqual(1192, result)
 
 
@@ -1593,7 +1589,7 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='functions', branch=branch))
+            .format(component=product, metric='functions', branch=branch), log_error=False)
         self.assertEqual(1192, result)
 
     def test_functions_without_branch(self, url_read_mock):
@@ -1612,7 +1608,7 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='functions'))
+            .format(component=product, metric='functions'), log_error=False)
         self.assertEqual(1192, result)
 
     def test_functions_with_branch_old(self, url_read_mock):
@@ -1629,7 +1625,7 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
 
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='functions'))
+            .format(component=product, metric='functions'), log_error=False)
         self.assertEqual(1192, result)
 
 
@@ -1650,7 +1646,8 @@ class SonarDashboardWithBranchTest(unittest.TestCase):
 
         result = sonar.dashboard_url(product + ':' + branch)
 
-        self.assertEqual(fake_url + 'dashboard?id={component}&branch={branch}'.format(component=product, branch=branch), result)
+        self.assertEqual(fake_url + 'dashboard?id={component}&branch={branch}'.format(component=product, branch=branch),
+                         result)
 
     def test_dashboard_url_old(self, url_read_mock):
         """" Check that dashboard_url does not split the branch from product for sonar versions prior to 6.7. """
@@ -1996,8 +1993,9 @@ class SonarFalsePositivesWithBranchTest(unittest.TestCase):
 
         result = sonar.false_positives_url(product + ':' + branch)
 
-        self.assertEqual(fake_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
-                         .format(resource=product), result)
+        self.assertEqual(fake_url + 'issues/search#resolutions=FALSE-POSITIVE|'
+                                    'componentRoots={resource}&branch={branch}'.format(resource=product, branch=branch),
+                         result)
 
     def test_false_positives_url_old(self, url_read_mock):
         """" Check that false_positives_url does not split the branch from product for sonar versions prior to 6.7. """
@@ -2038,9 +2036,9 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
 
         calls = [
             call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-                 .format(component=product, metric='test_failures', branch=branch)),
+                 .format(component=product, metric='test_failures', branch=branch), log_error=False),
             call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-                 .format(component=product, metric='test_errors', branch=branch))]
+                 .format(component=product, metric='test_errors', branch=branch), log_error=False)]
 
         url_read_mock.assert_has_calls(calls)
         self.assertEqual(11, result)
@@ -2063,9 +2061,9 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
 
         calls = [
             call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-                 .format(component=product, metric='test_failures')),
+                 .format(component=product, metric='test_failures'), log_error=False),
             call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-                 .format(component=product, metric='test_errors'))]
+                 .format(component=product, metric='test_errors'), log_error=False)]
 
         url_read_mock.assert_has_calls(calls)
         self.assertEqual(11, result)
@@ -2085,9 +2083,9 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
 
         calls = [
             call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-                 .format(component=product, metric='test_failures')),
+                 .format(component=product, metric='test_failures'), log_error=False),
             call(fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-                 .format(component=product, metric='test_errors'))]
+                 .format(component=product, metric='test_errors'), log_error=False)]
 
         url_read_mock.assert_has_calls(calls)
         self.assertEqual(11, result)

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
 import unittest
 import unittest.mock
 import urllib.request
@@ -28,7 +29,7 @@ class UrlOpenerTest(unittest.TestCase):
     """ Unit tests for the URL opener class. """
 
     def setUp(self):
-        url_opener.TIMED_OUT_NETLOCS = set()
+        url_opener.TimeoutTracker.timed_out_netlocs = set()
 
     def test_username_password(self):
         """ Test that the username and password can be set. """
@@ -59,9 +60,19 @@ class UrlOpenerTest(unittest.TestCase):
 
     def test_exception_while_opening(self):
         """ Test an exception during opening. """
+        logging.error = unittest.mock.MagicMock()
         opener = url_opener.UrlOpener()
         opener._UrlOpener__opener = unittest.mock.Mock(side_effect=urllib.error.HTTPError(None, None, None, None, None))
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
+        logging.error.assert_called_once()
+
+    def test_exception_while_opening_without_logging(self):
+        """ Test an exception during opening without logging. """
+        logging.error = unittest.mock.MagicMock()
+        opener = url_opener.UrlOpener()
+        opener._UrlOpener__opener = unittest.mock.Mock(side_effect=urllib.error.HTTPError(None, None, None, None, None))
+        self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla', log_error=False)
+        logging.error.assert_not_called()
 
     @unittest.mock.patch('signal.signal', side_effect=lambda _, handler: handler())
     def test_timeout(self, mock_signal):  # pylint: disable=unused-argument
@@ -98,3 +109,23 @@ class TimeoutTest(unittest.TestCase):
                 self.fail("Expected TimeoutError")  # pragma: no cover
         except TimeoutError as reason:
             self.assertEqual("Operation timed out after 4 seconds.", str(reason))
+
+
+class TimeoutTrackerTest(unittest.TestCase):
+    """ Unit tests for the TimeoutTracker class. """
+    def setUp(self):
+        url_opener.TimeoutTracker.timed_out_netlocs = set()
+        self.__time_out_tracker = url_opener.TimeoutTracker()
+        self.__url = "http://timed.out/path"
+
+    def test_registered_url_raises_timeout(self):
+        """ Test that a url that is registered triggers a time out exception. """
+        self.__time_out_tracker.register_url(self.__url)
+        self.assertRaises(TimeoutError, self.__time_out_tracker.raise_timeout_if_url_timed_out_before, self.__url)
+
+    def test_unregistered_url_does_not_raise_timeout(self):
+        """ Test that a url that hasn't been registered before does not trigger a time out exception. """
+        try:
+            self.__time_out_tracker.raise_timeout_if_url_timed_out_before(self.__url)
+        except TimeoutError:  # pragma: no cover
+            self.fail("No Timeout exception should have been raised.")
