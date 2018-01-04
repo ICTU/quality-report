@@ -1,6 +1,6 @@
 {
   "name": "HQ",
-  "version": "2.29.0",
+  "version": "2.30.0",
   "description": "Holistic Software Quality Reporting",
   "main": "index.js",
   "scripts": {
@@ -46,6 +46,8 @@
     "codacy-coverage": "^2.0.3",
     "coveralls": "^3.0.0",
     "css-loader": "^0.28.7",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.9.0",
     "eslint-plugin-react": "^7.4.0",
     "faucet": "0.0.1",
@@ -53,7 +55,7 @@
     "ignore-styles": "^5.0.1",
     "istanbul": "^0.4.4",
     "mock-browser": "^0.92.14",
-    "react-test-renderer": "^16.0.0",
+    "react-test-renderer": "^16.2.0",
     "style-loader": "^0.19.0",
     "tape": "^4.8.0",
     "webpack": "^3.8.1"

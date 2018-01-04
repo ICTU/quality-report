@@ -1,3 +1,8 @@
+2018-01-08  Release 2.30.0
+
+  * Footer with report title and date added. Closes #214.
+
+
 2018-01-07  Release 2.29.0
 
   * Add a process domain object for measuring process metrics such as number of open bugs, overdue actions, and

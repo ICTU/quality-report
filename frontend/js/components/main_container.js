@@ -19,6 +19,7 @@ import {DashboardTable} from 'components/dashboard_table.js';
 import {MetricsSections} from 'components/metrics_sections.js';
 import {TrendGraphs} from 'components/trend_graphs.js';
 import {Help} from 'components/help.js';
+import {format_date_time} from 'utils.js';
 
 
 class Metrics extends React.Component {
@@ -38,8 +39,22 @@ class Metrics extends React.Component {
     }
 }
 
-class MainContainer extends React.Component {
+class Footer extends React.Component {
     render() {
+        const report_date_time = format_date_time(...this.props.report_date);
+        return (
+            <footer className="text-center">
+                <hr />
+                <span>{this.props.report_title}, {report_date_time}</span>
+                <br />
+                <span>Gegenereerd door HQ versie {this.props.hq_version}</span>
+            </footer>
+        );
+    }
+}
+
+class MainContainer extends React.Component {
+    render() {        
         var tabs = {
             metrics_tab: <Metrics metrics_data={this.props.metrics_data}
                                   metrics={this.props.metrics}
@@ -56,6 +71,7 @@ class MainContainer extends React.Component {
                         {tabs[this.props.tab]}
                     </div>
                 </div>
+                <Footer report_title={this.props.metrics_data["report_title"]} report_date={this.props.metrics_data["report_date"]} hq_version={this.props.metrics_data["hq_version"]} />
             </div>
         );
     }
