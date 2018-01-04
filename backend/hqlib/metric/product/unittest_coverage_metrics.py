@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from hqlib.typing import MetricParameters
-
 from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import HigherIsBetterMetric
 
@@ -36,13 +34,6 @@ class UnittestCoverage(SonarDashboardMetric, HigherIsBetterMetric):  # pylint: d
     def value(self):
         raise NotImplementedError
 
-    def _parameters(self) -> MetricParameters:
-        """ Add the number of unit tests to the parameters for the report. """
-        # pylint: disable=protected-access
-        parameters = super()._parameters()
-        parameters['tests'] = self._metric_source.unittests(self._sonar_id()) if self._metric_source else '?'
-        return parameters
-
 
 class UnittestLineCoverage(UnittestCoverage):
     """ Metric for measuring the line coverage of unit tests for a product. """
@@ -50,7 +41,7 @@ class UnittestLineCoverage(UnittestCoverage):
     name = 'Unit test broncode dekking (line coverage)'
     norm_template = 'Minimaal {target}{unit} van de regels code wordt gedekt door unittests. ' \
         'Lager dan {low_target}{unit} is rood.'
-    template = '{name} unittest line coverage is {value:.0f}{unit} ({tests} unittests).'
+    template = '{name} unittest line coverage is {value:.0f}{unit}.'
     target_value = 98
     low_target_value = 90
 
@@ -64,7 +55,7 @@ class UnittestBranchCoverage(UnittestCoverage):
     name = 'Unit test broncode dekking (branch coverage)'
     norm_template = 'Minimaal {target}{unit} van de code branches wordt gedekt door unittests. ' \
         'Lager dan {low_target}{unit} is rood.'
-    template = '{name} unittest branch coverage is {value:.0f}{unit} ({tests} unittests).'
+    template = '{name} unittest branch coverage is {value:.0f}{unit}.'
     target_value = 80
     low_target_value = 60
 

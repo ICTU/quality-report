@@ -1,3 +1,9 @@
+2018-01-04  Release 2.28.4
+
+  * Bug fix: Don't mention the number of unit tests in the unit test coverage metrics since the coverage and the
+    number of tests may come from different sources.
+     
+  
 2018-01-04  Release 2.28.3
 
   * Bug fix: Don't complain in the log when one version of the SonarQube API doesn't work, but an older one does.

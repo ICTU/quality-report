@@ -19,54 +19,6 @@ import unittest
 from hqlib import metric, domain, metric_source
 
 
-class FakeUnitTestReport(metric_source.UnitTestReport):
-    """ Provide for a fake unittest report object so that the unit test don't need access to an actual report
-        instance. """
-    # pylint: disable=unused-argument
-
-    def __init__(self, line_coverage=0, branch_coverage=0, unittests=10):
-        self.__line_coverage = line_coverage
-        self.__branch_coverage = branch_coverage
-        self.__unittests = unittests
-
-    def unittest_line_coverage(self, *args):
-        """ Return the percentage line coverage. """
-        return self.__line_coverage
-
-    def unittest_branch_coverage(self, *args):
-        """ Return the percentage branch coverage. """
-        return self.__branch_coverage
-
-    def unittests(self, *args):
-        """ Return the number of unittests. """
-        return self.__unittests
-
-    @staticmethod
-    def dashboard_url(*args):
-        """ Return a fake dashboard url. """
-        return 'http://sonar'
-
-
-class FakeSubject(object):
-    """ Provide for a fake subject. """
-    def __init__(self, integration_tests=False):
-        self.__has_integration_tests = integration_tests
-
-    @staticmethod
-    def name():
-        """ Return the name of the subject. """
-        return 'FakeSubject'
-
-    @staticmethod
-    def metric_source_id(*args):  # pylint: disable=unused-argument
-        """ Return the metric source id for the test report. """
-        return 'some:fake:id'
-
-    def has_integration_tests(self):
-        """ Return whether the subject has integration tests. """
-        return self.__has_integration_tests
-
-
 class CommonUnittestMetricTestsMixin(object):
     """ Mixin for common unit tests. """
 
@@ -76,9 +28,14 @@ class CommonUnittestMetricTestsMixin(object):
 
     def setUp(self):  # pylint: disable=invalid-name
         """ Set up the fixture for the unit tests. """
-        self.__report = FakeUnitTestReport(line_coverage=self.expected_value, branch_coverage=self.expected_value)
+        self.__report = unittest.mock.MagicMock()
+        self.__report.unittest_line_coverage.return_value = 89
+        self.__report.unittest_branch_coverage.return_value = 87
         project = domain.Project(metric_sources={metric_source.Sonar: self.__report})
-        self.__metric = self.class_under_test(subject=FakeSubject(), project=project)
+        self.__subject = unittest.mock.MagicMock()
+        self.__subject.name.return_value = "FakeSubject"
+        self.__subject.has_integration_tests.return_value = False
+        self.__metric = self.class_under_test(subject=self.__subject, project=project)
 
     def test_value(self):
         """ Test that the value of the metric equals the value reported by Sonar. """
@@ -94,8 +51,7 @@ class CommonUnittestMetricTestsMixin(object):
 
     def test_is_applicable(self):
         """ Test that the metric is applicable. """
-        product = FakeSubject()
-        self.assertTrue(self.class_under_test.is_applicable(product))
+        self.assertTrue(self.class_under_test.is_applicable(self.__subject))
 
 
 class UnittestLineCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase):
@@ -103,7 +59,7 @@ class UnittestLineCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase
 
     class_under_test = metric.UnittestLineCoverage
     expected_value = 89
-    expected_report = 'FakeSubject unittest line coverage is 89% (10 unittests).'
+    expected_report = 'FakeSubject unittest line coverage is 89%.'
 
 
 class UnittestBranchCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase):
@@ -111,4 +67,4 @@ class UnittestBranchCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCa
 
     class_under_test = metric.UnittestBranchCoverage
     expected_value = 87
-    expected_report = 'FakeSubject unittest branch coverage is 87% (10 unittests).'
+    expected_report = 'FakeSubject unittest branch coverage is 87%.'
