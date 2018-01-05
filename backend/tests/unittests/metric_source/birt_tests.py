@@ -21,7 +21,7 @@ import urllib.error
 import bs4
 
 from hqlib.metric_source import Birt
-from hqlib.metric_source.birt import SprintProgressReport
+
 
 TEST_DESIGN_HTML = """
 <html>
@@ -199,166 +199,6 @@ TEST_DESIGN_HTML = """
     </body>
 </html>
 """
-
-SPRINT_PROGRESS_REPORT_HTML = """
-<table>
-    <table>
-        <table>
-            <tr>
-                <td><div>Gerealiseerde punten in sprint:</div></td>
-                <td><div>20</div></td>
-            </tr>
-            <tr>
-                <td><div>Geplande punten in sprint:</div></td>
-                <td><div>23,5</div></td>
-            </tr>
-            <tr>
-                <td><div>Startdatum sprint:</div></td>
-                <td><div>01-02-2013</div></td>
-            </tr>
-            <tr>
-                <td><div>Einddatum sprint:</div></td>
-                <td><div>21-02-2013</div></td>
-            </tr>
-            <tr>
-                <td><div>Vandaag is dag:</div></td>
-                <td><div>14</div></td>
-            </tr>
-            <tr>
-                <td><div>Prognose sprint:</div></td>
-                <td><div>21</div></td>
-            </tr>
-        </table>
-    </table>
-</table>
-"""
-
-SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA = """
-<html>
-    <body class="style_0" style=" margin:0px;">
-        <table cellpadding="0" style="empty-cells: show; border-collapse:collapse; width:284.29999999999995mm; overflow: hidden; table-layout:fixed;">
-            <col></col>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td valign="top">
-                    <table class="style_1" style="border-collapse: collapse; empty-cells: show; width: 100%; overflow:hidden; table-layout:fixed;" id="__bookmark_1">
-                        <col style=" width: 2%;"></col>
-                        <col style=" width: 10%;"></col>
-                        <col style=" width: 61%;"></col>
-                        <col style=" width: 22%;"></col>
-                        <col style=" width: 10%;"></col>
-                        <tr valign="top" align="center">
-                            <th colspan="3" style=" overflow:hidden;">
-                                <div class="style_3" style=" text-align:left; overflow:hidden;">Voortgang sprint 'null'</div>
-                            </th>
-                            <th colspan="2" style=" overflow:hidden;">
-                                <table class="style_1" style="border-collapse: collapse; empty-cells: show; width: 100%; overflow:hidden; table-layout:fixed;" id="AUTOGENBOOKMARK_1_510b0e9b-1ffe-44ea-b3ed-ebca46dd9a2d">
-                                    <col style=" width: 69%;"></col>
-                                    <col style=" width: 31%;"></col>
-                                    <tr valign="top">
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_5" id="AUTOGENBOOKMARK_2_7273e4ed-51e4-4ccc-aba5-60b7b6ab13e2" style=" text-align:left;">Gerealiseerde punten in sprint:</div>
-                                        </td>
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_6" style=" text-align:right;">
-                                                <div style="visibility:hidden">&#xa0;</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr valign="top">
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_5" id="AUTOGENBOOKMARK_3_9f190811-e3aa-4216-9c35-88ce99fe6ef0" style=" text-align:left;">Geplande punten in sprint:</div>
-                                        </td>
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_6" style=" text-align:right;">
-                                                <div style="visibility:hidden">&#xa0;</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr valign="top">
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_7" id="AUTOGENBOOKMARK_4_83cae1b8-fee6-4493-b684-174ac426ae66" style=" text-align:left;">Startdatum sprint:</div>
-                                        </td>
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_6" style=" text-align:right;">null-null-null</div>
-                                        </td>
-                                    </tr>
-                                    <tr valign="top">
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_7" id="AUTOGENBOOKMARK_5_31d4501b-9a5b-45cb-a783-8adbb621d6a7" style=" text-align:left;">Einddatum sprint:</div>
-                                        </td>
-                                        <td class="style_8" style=" overflow:hidden;">
-                                            <div class="style_9" style=" text-align:right;">null-null-null</div>
-                                        </td>
-                                    </tr>
-                                    <tr valign="top">
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_7" id="AUTOGENBOOKMARK_6_588c7460-0f93-483a-9f68-374f98621dda" style=" text-align:left;">Vandaag is dag:</div>
-                                        </td>
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_6" style=" text-align:right;">
-                                                <div style="visibility:hidden">&#xa0;</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr valign="top">
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_7" id="AUTOGENBOOKMARK_7_b7adfece-0388-4107-bef4-db669dbd2ff5" style=" text-align:left;">Prognose sprint:</div>
-                                        </td>
-                                        <td class="style_4" style=" overflow:hidden;">
-                                            <div class="style_6" style=" text-align:right;">NaN</div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </th>
-                        </tr>
-                        <tr valign="top" align="center">
-                            <th style=" overflow:hidden;"></th>
-                            <th style=" overflow:hidden;"></th>
-                            <th style=" overflow:hidden;">
-                                <div id="AUTOGENBOOKMARK_8_e3203f33-e867-4c16-bb34-8c92b1d195ad">&#xa0;</div>
-                            </th>
-                            <th style=" overflow:hidden;"></th>
-                            <th style=" overflow:hidden;"></th>
-                        </tr>
-                        <tr valign="top" align="center">
-                            <th style=" overflow:hidden;"></th>
-                            <th class="style_4" style=" overflow:hidden;">
-                                <div class="style_10" id="AUTOGENBOOKMARK_9_e6d73e14-3aa3-4912-b1f8-a0c5ddb3905a" style=" text-align:left;">Nummer</div>
-                            </th>
-                            <th class="style_4" style=" overflow:hidden;">
-                                <div class="style_10" id="AUTOGENBOOKMARK_10_f7bdd47c-baef-47e0-a5ac-ca54c96f3ecc" style=" text-align:left;">Functie</div>
-                            </th>
-                            <th class="style_4" style=" overflow:hidden;">
-                                <div class="style_11" id="AUTOGENBOOKMARK_11_008f645d-f1ff-4335-8f06-8618d0e8bfee" style=" text-align:right;">Voortgang (taken)</div>
-                            </th>
-                            <th class="style_4" style=" overflow:hidden;">
-                                <div class="style_11" id="AUTOGENBOOKMARK_12_a5beefb2-c414-4608-afc6-b38167430bd5" style=" text-align:right;">Punten</div>
-                            </th>
-                        </tr>
-                        <tr valign="top">
-                            <td style=" overflow:hidden;"></td>
-                            <td style=" overflow:hidden;"></td>
-                            <td style=" overflow:hidden;"></td>
-                            <td style=" overflow:hidden;"></td>
-                            <td style=" overflow:hidden;"></td>
-                        </tr>
-                    </table>
-                    <div style=" overflow:hidden;">REPORT_URL=[jdbc:mysql://mysql:3306/report]</div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div style="overflow:hidden; height:0.5in">
-                        <div style=" overflow:hidden;">1 sep. 2015 19:14</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </body>
-</html>"""
 
 MANUAL_TEST_EXECUTION_HTML_NEVER_EXECUTED = """
 <html>
@@ -722,11 +562,6 @@ class BirtTest(unittest.TestCase):
         self.assertEqual('http://birt/birt/preview?__report=reports/manual_test_execution_report.rptdesign&version=1',
                          self.__birt.manual_test_execution_url('1'))
 
-    def test_sprint_progress_url(self):
-        """ Test the sprint progress url. """
-        self.assertEqual('http://birt/birt/preview?__report=reports/sprint_voortgang.rptdesign',
-                         self.__birt.sprint_progress_url())
-
     def test_nr_user_stories_with_sufficient_ltcs(self):
         """ Test that the number of user stories with sufficient number of logical test cases is correct. """
         self.__birt.html = TEST_DESIGN_HTML
@@ -828,42 +663,3 @@ class BirtTest(unittest.TestCase):
         """ Test that the date of the last manual test execution is the min date when Birt is unavailable. """
         self.__birt.html = 'raise'
         self.assertEqual(datetime.datetime.min, self.__birt.date_of_last_manual_test())
-
-
-class BirtSprintProgressReportUnderTest(SprintProgressReport):  # pylint: disable=too-few-public-methods
-    """ Override the soup method to return a fixed HTML fragment. """
-    html = ''
-
-    def soup(self, url):  # pylint: disable=unused-argument
-        """ Return the static html. """
-        return bs4.BeautifulSoup(self.html, "lxml")
-
-
-class BirtSprintProgressReportTest(unittest.TestCase):
-    """ Unit tests for the Birt sprint progress report. """
-
-    def setUp(self):
-        self.__birt = BirtSprintProgressReportUnderTest('http://birt/')
-        self.__birt.html = SPRINT_PROGRESS_REPORT_HTML
-
-    def test_actual_velocity(self):
-        """ Test that the actual velocity is the number of points realized per day so far. """
-        self.assertEqual(20 / 14., self.__birt.actual_velocity())
-
-    def test_planned_velocity(self):
-        """ Test that the planned velocity is correct. """
-        self.assertEqual(23.5 / 15, self.__birt.planned_velocity())
-
-    def test_required_velocity(self):
-        """ Test that the required velocity is correct. """
-        self.assertEqual(3.5 / 2, self.__birt.required_velocity())
-
-    def test_days_in_sprint_no_end_date(self):
-        """ Test that the days in the sprint is zero when the end date is unknown. """
-        self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
-        self.assertEqual(0, self.__birt.days_in_sprint())
-
-    def test_missing_velocity(self):
-        """ Test that the actual velocity is zero when the data is missing. """
-        self.__birt.html = SPRINT_PROGRESS_REPORT_HTML_MISSING_DATA
-        self.assertEqual(0., self.__birt.actual_velocity())

@@ -17,124 +17,11 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import Optional, Callable, List
+from typing import List
 
 from . import beautifulsoup, url_opener
 from .. import utils, domain
 from hqlib.typing import DateTime
-
-
-class BirtReport(beautifulsoup.BeautifulSoupOpener):
-    """ Class representing a specific Birt report. """
-    def __init__(self, url: str) -> None:
-        super().__init__()
-        self.__url = url
-
-    def url(self) -> str:
-        """ Return the url of the report. """
-        return self.__url
-
-
-class SprintProgressReport(BirtReport):
-    """ Class representing the sprint progress Birt report. """
-
-    def actual_velocity(self) -> float:
-        """ Return the actual velocity (in points per day) of the team in the current sprint. """
-        current_day = max(1., self.day_in_sprint())
-        return self.nr_points_realized() / float(current_day)
-
-    def planned_velocity(self) -> float:
-        """ Return the planned velocity (in points per day) of the team in the current sprint. """
-        sprint_length = max(1, self.days_in_sprint())
-        return self.nr_points_planned() / float(sprint_length)
-
-    def required_velocity(self) -> float:
-        """ Return the required velocity (in points per day) of the team in the current sprint. """
-        points_to_do = self.__nr_points_to_do()
-        days_left = max(1., self.__days_left())
-        return points_to_do / float(days_left)
-
-    def nr_points_realized(self) -> float:
-        """ Return the number of points realized in the current sprint of the specified team. """
-        return self.__parse_float(self.__summary_table_cell(0, 1))
-
-    def nr_points_planned(self) -> float:
-        """ Return the sprint commitment of the team for the current sprint. """
-        return self.__parse_float(self.__summary_table_cell(1, 1))
-
-    def days_in_sprint(self) -> int:
-        """ Return the number of days in the current sprint. """
-        start_date = self.__sprint_start_date()
-        end_date = self.__sprint_end_date()
-        if start_date and end_date:
-            return utils.workdays_in_period(start_date, end_date)
-        else:
-            return 0
-
-    def day_in_sprint(self) -> float:
-        """ Return the number of the current day in the sprint. """
-        return self.__parse_float(self.__summary_table_cell(4, 1))
-
-    def __days_left(self) -> float:
-        """ Return the number of days left in the current sprint of the team. """
-        return 1 + self.days_in_sprint() - self.day_in_sprint()
-
-    def __nr_points_to_do(self) -> float:
-        """ Return the number of points to be realized in the current sprint. """
-        return max(0., self.nr_points_planned() - self.nr_points_realized())
-
-    def __sprint_start_date(self) -> datetime.date:
-        """ Return the start date of the current sprint of the team. """
-        return self.__parse_date(self.__summary_table_cell(2, 1))
-
-    def __sprint_end_date(self) -> datetime.date:
-        """ Return the end date of the current sprint of the team. """
-        return self.__parse_date(self.__summary_table_cell(3, 1))
-
-    def __summary_table_cell(self, row_index: int, column_index: int) -> str:
-        """ Return a specific cell from the sprint progress table in the sprint progress Birt report. """
-        summary_table = self.__summary_table()
-        if summary_table:
-            row = summary_table('tr')[row_index]
-            cell = row('td')[column_index]
-            return cell('div')[0].string
-        else:
-            return ''
-
-    def __summary_table(self) -> Optional[Callable]:
-        """ Return the sprint progress table in the sprint progress Birt report. """
-        url = self.url()
-        try:
-            soup = self.soup(url)
-        except url_opener.UrlOpener.url_open_exceptions:
-            return None
-        try:
-            return soup('table')[0]('table')[0]('table')[0]
-        except IndexError:
-            logging.warning("There's no active sprint in the sprint progress report at %s", url)
-            return None
-
-    @staticmethod
-    def __parse_date(date_string: str) -> Optional[datetime.date]:
-        """ Parse the date string and return a date object. """
-        try:
-            day, month, year = date_string.split('-')
-        except (AttributeError, ValueError):
-            return None
-        try:
-            return datetime.date(int(year), int(month), int(day))
-        except ValueError:
-            return None
-
-    @staticmethod
-    def __parse_float(float_string: str) -> float:
-        """ Parse the float string and return the float. """
-        if float_string:
-            float_string = float_string.replace(',', '.')
-        try:
-            return float(float_string)
-        except (ValueError, TypeError):
-            return 0.
 
 
 class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
@@ -150,8 +37,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         self.__manual_test_execution_url = birt_report_url + \
             'manual_test_execution_report.rptdesign&version={ver}'
         self.__whats_missing_url = birt_report_url + 'whats_missing.rptdesign'
-        sprint_progress_url = birt_report_url + 'sprint_voortgang.rptdesign'
-        self.__sprint_progress_report = SprintProgressReport(sprint_progress_url)
 
     def __getattr__(self, attribute):  # pragma: no cover
         # Forward method calls that this class doesn't support to the sprint progress report.
@@ -166,10 +51,6 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def manual_test_execution_url(self, version: str='trunk') -> str:
         """ Return the url for the Birt manual test execution report. """
         return self.__manual_test_execution_url.format(ver=version)
-
-    def sprint_progress_url(self) -> str:
-        """ Return the url for the Birt sprint progress report. """
-        return self.__sprint_progress_report.url()
 
     def whats_missing_url(self) -> str:
         """ Return the What's missing report url for the product. """
