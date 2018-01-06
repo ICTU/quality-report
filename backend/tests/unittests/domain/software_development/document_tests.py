@@ -39,8 +39,8 @@ class DocumentTest(unittest.TestCase):
 
     def test_optional_requirements(self):
         """ Test optional requirements. """
-        self.assertEqual(self.__document.optional_requirements(), {requirement.TrackSecurityTestDate})
+        self.assertEqual((requirement.TrackSecurityTestDate,), self.__document.optional_requirements())
 
     def test_default_requirements(self):
         """ Test default requirements. """
-        self.assertEqual(self.__document.default_requirements(), {requirement.TrackDocumentAge})
+        self.assertEqual((requirement.TrackDocumentAge,), self.__document.default_requirements())

@@ -23,9 +23,3 @@ class TrackDocumentAge(Requirement):
     """ Requirements for tracking document age. """
     _name = 'Track document age'
     _metric_classes = (metric.DocumentAge,)
-
-
-class TimeLastSecurityTest(Requirement):
-    """ Require time since last security test. """
-    _name = 'Time since last security test'
-    _metric_classes = (metric.LastSecurityTest,)

@@ -66,12 +66,12 @@ class ComponentTest(unittest.TestCase):
 
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
-        self.assertEqual({requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches},
+        self.assertEqual((requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches),
                          domain.Component.default_requirements())
 
     def test_optional_requirements(self):
         """ Test that the optional requirements don't contain the default requirements. """
-        self.assertFalse(domain.Component.default_requirements() & domain.Component.optional_requirements())
+        self.assertFalse(set(domain.Component.default_requirements()) & set(domain.Component.optional_requirements()))
 
 
 class ApplicationTest(unittest.TestCase):
@@ -79,11 +79,12 @@ class ApplicationTest(unittest.TestCase):
 
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
-        self.assertEqual({requirement.CodeQuality, requirement.TrackBranches, requirement.PerformanceLoad,
-                          requirement.PerformanceEndurance, requirement.ART, requirement.ARTCoverage,
-                          requirement.OWASPZAP, requirement.OWASPDependencies, requirement.Checkmarx},
+        self.assertEqual((requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches,
+                          requirement.PerformanceLoad, requirement.PerformanceEndurance,
+                          requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx),
                          domain.Application.default_requirements())
 
     def test_optional_requirements(self):
         """ Test that the optional requirements don't contain the default requirements. """
-        self.assertFalse(domain.Application.default_requirements() & domain.Application.optional_requirements())
+        self.assertFalse(set(domain.Application.default_requirements()) &
+                         set(domain.Application.optional_requirements()))

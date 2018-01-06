@@ -56,29 +56,19 @@ class QualityReportTest(unittest.TestCase):
         """ Test that a unknown id results in None returned. """
         self.assertEqual(None, self.__report.get_section('unknown'))
 
+    def test_process(self):
+        """ Test that the report has two sections when we add a process:
+            one for the process itself, and one for meta metrics. """
+        project = domain.Project()
+        project.add_process(domain.Process(short_name='FP', requirements=[requirement.TrackActions]))
+        self.assertEqual(2, len(report.QualityReport(project).sections()))
+
     def test_product(self):
-        """ Test that the report has three sections when we add a product:
+        """ Test that the report has two sections when we add a product:
             one for the product itself, and one for meta metrics. """
         project = domain.Project()
         project.add_product(domain.Product(short_name='FP', requirements=[requirement.CodeQuality]))
         self.assertEqual(2, len(report.QualityReport(project).sections()))
-
-    def test_get_product_section(self):
-        """ Test that the section for the product can be found. """
-        product = domain.Product(short_name='FP', requirements=[requirement.CodeQuality])
-        self.__project.add_product(product)
-        quality_report = report.QualityReport(self.__project)
-        section = quality_report.get_product_section(product)
-        self.assertEqual(product, section.product())
-
-    def test_get_product_section_twice(self):
-        """ Test that the product section is cached. """
-        product = domain.Product(short_name='FP', requirements=[requirement.CodeQuality])
-        self.__project.add_product(product)
-        quality_report = report.QualityReport(self.__project)
-        section1 = quality_report.get_product_section(product)
-        section2 = quality_report.get_product_section(product)
-        self.assertTrue(section1 is section2)
 
     def test_get_environment_section(self):
         """ Test that the environment can be found. """
@@ -87,10 +77,6 @@ class QualityReportTest(unittest.TestCase):
         quality_report = report.QualityReport(self.__project)
         section = quality_report.get_section('ENV')
         self.assertEqual('ENV', section.id_prefix())
-
-    def test_get_meta_section(self):
-        """ Test that the report has no meta section by default. """
-        self.assertFalse(self.__report.get_meta_section())
 
     def test_dashboard(self):
         """ Test that the report has an empty dashboard by default. """
@@ -104,11 +90,11 @@ class QualityReportTest(unittest.TestCase):
         self.assertEqual(2, len(quality_report.sections()))
 
     def test_teams(self):
-        """ Test that the report returns the team. """
+        """ Test that the report contains the team section. """
         team = domain.Team(name='Team')
         self.__project.add_team(team)
         quality_report = report.QualityReport(self.__project)
-        self.assertEqual([team], quality_report.teams())
+        self.assertEqual(2, len(quality_report.sections()))
 
     def test_products(self):
         """ Test that the report returns the products. """
@@ -210,8 +196,8 @@ class QualityReportMetaDataTest(unittest.TestCase):
 
     def test_get_domain_object_classes(self):
         """ Test the set of all domain objects. """
-        self.assertEqual({domain.Project, domain.Environment, domain.Product, domain.Component, domain.Application,
-                          domain.Team, domain.Document}, self.__report.domain_object_classes())
+        self.assertEqual({domain.Project, domain.Environment, domain.Process, domain.Product, domain.Component,
+                          domain.Application, domain.Team, domain.Document}, self.__report.domain_object_classes())
 
     def test_get_included_domain_object_classes(self):
         """ Test the set of included domain objects. """
@@ -222,7 +208,7 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
     """ Create a report according to provided arguments. """
 
     @staticmethod
-    def report(project_kwargs, team_kwargs, product_kwargs):
+    def report(project_kwargs, team_kwargs, process_kwargs, product_kwargs):
         """ Create the quality report. """
         documents = project_kwargs.pop('documents', [])
         project = domain.Project('organization', name='project', **project_kwargs)
@@ -230,11 +216,18 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
             project.add_document(document)
         if team_kwargs:
             project.add_team(ReportFactory.__create_team(team_kwargs))
+        if process_kwargs:
+            project.add_process(ReportFactory.__create_process(process_kwargs))
         if product_kwargs:
             project.add_product(ReportFactory.__create_product(project, product_kwargs))
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
+
+    @staticmethod
+    def __create_process(process_kwargs):  # pylint: disable=unused-argument
+        """ Create a process according to the provided arguments. """
+        return domain.Process(**process_kwargs)
 
     @staticmethod
     def __create_product(project, product_kwargs):  # pylint: disable=unused-argument
@@ -258,10 +251,11 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
 class QualityReportMetricsTest(unittest.TestCase):
     """ Unit tests for the quality report class that test whether the right metrics are added. """
 
-    def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, product_kwargs=None):
+    def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, process_kwargs=None,
+                        product_kwargs=None):
         """ Check that the metric class is included in the report. """
         quality_report = ReportFactory.report(project_kwargs or dict(), team_kwargs or dict(),
-                                              product_kwargs or dict())
+                                              process_kwargs or dict(), product_kwargs or dict())
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
         self.assertTrue(included, '{0} should be included in the report but was not.'.format(metric_class))
 
@@ -271,6 +265,13 @@ class QualityReportMetricsTest(unittest.TestCase):
         for req in domain.Project.optional_requirements():
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, project_kwargs=dict(added_requirements=[req]))
+
+    def test_process_requirements(self):
+        """ Test for each process requirement that its metrics are added if the process has the requirement. """
+        self.assertFalse(domain.Process.default_requirements())
+        for req in domain.Process.optional_requirements():
+            for metric_class in req.metric_classes():
+                self.__assert_metric(metric_class, process_kwargs=dict(added_requirements=[req]))
 
     def test_team_requirements(self):
         """ Test that the team metrics are added if required. """

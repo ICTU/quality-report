@@ -20,16 +20,16 @@ from .requirement import RequirementSubject, Requirement
 from ..measurement.measurable import MeasurableObject
 
 
-class Environment(RequirementSubject, MeasurableObject):
-    """ Class representing a software development environment. """
-
-    @staticmethod
-    def default_requirements() -> Sequence[Type[Requirement]]:
-        from ... import requirement  # Run time import to prevent circular dependency.
-        return requirement.TrackCIJobs, requirement.TrackSonarVersion
+class Process(RequirementSubject, MeasurableObject):
+    """ Class representing a software development process. """
 
     @staticmethod
     def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return (requirement.Java, requirement.JavaScript, requirement.CSharp, requirement.Python,
-                requirement.TypeScript, requirement.VisualBasic, requirement.Web, requirement.OpenVAS)
+        return (requirement.TrackActions, requirement.TrackRisks,
+                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+                requirement.TrackSecurityTestDate, requirement.TrackQualityGate, requirement.TrackFindings,
+                requirement.TrackTechnicalDebt,
+                requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
+                requirement.TrackManualLTCs)

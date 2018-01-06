@@ -16,7 +16,7 @@ limitations under the License.
 
 
 import copy
-from typing import Optional, Set, Type
+from typing import Optional, Type, Sequence
 
 from .requirement import RequirementSubject, Requirement
 from ..measurement.measurable import MeasurableObject
@@ -35,16 +35,17 @@ class Product(RequirementSubject, MeasurableObject):
         self.__is_main = is_main  # Is this product part of the main system or is it support code?
 
     @staticmethod
-    def optional_requirements() -> Set[Type[Requirement]]:
+    def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return {requirement.ARTCoverage, requirement.ART, requirement.CodeQuality, requirement.JSFCodeQuality,
+        return (requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackUserStoriesInProgress,
+                requirement.TrackDurationOfUserStories, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.CodeQuality,
+                requirement.JSFCodeQuality, requirement.TrackBranches,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
-                requirement.TrackBranches, requirement.UnitTests, requirement.UserStoriesAndLTCs, requirement.TrackBugs,
-                requirement.TrackSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackStaticSecurityBugs,
-                requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate,
-                requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS,
-                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories}
+                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+                requirement.TrackSecurityTestDate,
+                requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate)
 
     def __eq__(self, other):
         return self.name() == other.name()
@@ -79,26 +80,29 @@ class Product(RequirementSubject, MeasurableObject):
 class Component(Product):
     """ Class representing a software component. """
     @staticmethod
-    def default_requirements() -> Set[Type[Requirement]]:
+    def default_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return {requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches}
+        return requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches
 
     @staticmethod
-    def optional_requirements():
+    def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return super(Component, Component).optional_requirements() - Component.default_requirements() - \
-            {requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability}
+        return tuple([r for r in super(Component, Component).optional_requirements()
+                      if r not in Component.default_requirements() and
+                      r not in (requirement.PerformanceLoad, requirement.PerformanceEndurance,
+                                requirement.PerformanceScalability)])
 
 
 class Application(Product):
     """ Class representing a software application. """
     @staticmethod
-    def default_requirements() -> Set[Type[Requirement]]:
+    def default_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return {requirement.CodeQuality, requirement.TrackBranches, requirement.ART, requirement.ARTCoverage,
+        return (requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.OWASPDependencies,
-                requirement.OWASPZAP, requirement.Checkmarx}
+                requirement.OWASPZAP, requirement.Checkmarx)
 
     @staticmethod
-    def optional_requirements():
-        return super(Application, Application).optional_requirements() - Application.default_requirements()
+    def optional_requirements() -> Sequence[Type[Requirement]]:
+        return tuple([r for r in super(Application, Application).optional_requirements()
+                      if r not in Application.default_requirements()])

@@ -16,11 +16,12 @@ limitations under the License.
 
 import logging
 
-from typing import cast, List, Set, Type, Optional
+from typing import cast, List, Set, Sequence, Type, Optional
 
 from .document import Document
 from .environment import Environment
 from .product import Product
+from .process import Process
 from .requirement import RequirementSubject, Requirement
 from .team import Team
 from ..measurement import measurable
@@ -34,6 +35,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def __init__(self, organization: str='Unnamed organization',*args, **kwargs) -> None:
         self.__short_section_names = {'MM', 'PC', 'PD'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
+        self.__processes: List[Process] = []
         self.__products: List[Product] = []
         self.__teams: List[Team] = []
         self.__documents: List[Document] = []
@@ -42,15 +44,15 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         super().__init__(*args, **kwargs)
 
     @staticmethod
-    def optional_requirements() -> Set[Type[Requirement]]:
+    def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackActions, requirement.TimeLastSecurityTest, requirement.TrackBugs,
-                requirement.TrackSecurityBugs, requirement.TrackSecurityTestDate,
-                requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
-                requirement.TrackManualLTCs, requirement.TrackReadyUS, requirement.TrackRisks,
-                requirement.TrackSecurityAndPerformanceRisks, requirement.TrustedProductMaintainability,
-                requirement.TrackTechnicalDebt, requirement.TrackUserStoriesInProgress,
-                requirement.TrackDurationOfUserStories}
+        return (requirement.TrackActions, requirement.TrackRisks,
+                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+                requirement.TrackSecurityTestDate, requirement.TrackQualityGate, requirement.TrackFindings,
+                requirement.TrackTechnicalDebt,
+                requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
+                requirement.TrackManualLTCs, requirement.TrustedProductMaintainability)
 
     def organization(self) -> str:
         """ Return the name of the organization. """
@@ -58,8 +60,22 @@ class Project(RequirementSubject, measurable.MeasurableObject):
 
     def domain_object_classes(self) -> Set[Type[DomainObject]]:
         """ Return a set of all the domain object classes used. """
-        domain_objects = self.products() + self.teams() + self.documents() + self.environments()
+        domain_objects = self.processes() + self.products() + self.teams() + self.documents() + self.environments()
         return {cast(Type[DomainObject], domain_object.__class__) for domain_object in domain_objects}
+
+    def add_process(self, process: Process) -> None:
+        """ Add a process to the project. """
+        self.__check_short_section_name(process.short_name())
+        self.__processes.append(process)
+
+    def processes(self) -> List[Process]:
+        """ Return the processes of the project. """
+        return self.__processes
+
+    def get_process(self, name: str) -> Optional[Process]:
+        """ Find a process by name. """
+        matches = [process for process in self.__processes if process.name() == name]
+        return matches[0] if matches else None
 
     def add_product(self, product: Product) -> None:
         """ Add a product to the project. """

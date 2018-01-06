@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Set, Type
+from typing import Set, Sequence, Type
 
 from .requirement import Requirement, RequirementSubject
 from ..measurement.measurable import MeasurableObject
@@ -29,15 +29,15 @@ class Team(RequirementSubject, MeasurableObject):
         self.__members: Set[Person] = set()
 
     @staticmethod
-    def default_requirements() -> Set[Type[Requirement]]:
+    def default_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackSpirit}
+        return requirement.TrackSpirit,
 
     @staticmethod
-    def optional_requirements() -> Set[Type[Requirement]]:
+    def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement  # Run time import to prevent circular dependency.
-        return {requirement.TrackAbsence, requirement.TrackUserStoriesInProgress,
-                requirement.TrackDurationOfUserStories}
+        return (requirement.TrackAbsence, requirement.TrackUserStoriesInProgress,
+                requirement.TrackDurationOfUserStories)
 
     def __str__(self) -> str:
         return self.name()

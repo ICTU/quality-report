@@ -28,8 +28,8 @@ class QualityReport(domain.DomainObject):
     @staticmethod
     def domain_object_classes() -> Set[Type[domain.RequirementSubject]]:
         """ Return a set of all domain object classes that the report can report on. """
-        return {domain.Project, domain.Environment, domain.Product, domain.Component, domain.Application,
-                domain.Document, domain.Team}
+        return {domain.Project, domain.Environment, domain.Process, domain.Product, domain.Component,
+                domain.Application, domain.Document, domain.Team}
 
     @classmethod
     def requirement_classes(cls) -> Sequence[Type[domain.Requirement]]:
@@ -68,11 +68,7 @@ class QualityReport(domain.DomainObject):
         super().__init__(name='None')
         self.__project = project
         self.__products = sorted(project.products(), key=lambda product: (product.name(), product.short_name()))
-        self.__teams = sorted(project.teams(), key=str)
-        self.__environments = sorted(project.environments(),
-                                     key=lambda environment: (environment.name(), environment.short_name()))
         self.__sections: Sequence[Section] = []
-        self.__meta_section: Section = None
         self.__metrics: List[domain.Metric] = []
         self.__requirements: Set[Type[domain.Requirement]] = set()
 
@@ -95,13 +91,20 @@ class QualityReport(domain.DomainObject):
     def sections(self) -> Sequence[Section]:
         """ Return the sections in the report. """
         if not self.__sections:
-            sections = [self.__process_section(), self.__overall_products_section()]
-            sections.extend([self.__environment_section(environment) for environment in self.__environments])
+            sections = [self.__create_section(self.__project,
+                                              short_name="PC", name="Proceskwaliteit algemeen",
+                                              requirements_to_ignore=[requirement.TrustedProductMaintainability]),
+                        self.__overall_products_section()]
+            processes = sorted(self.__project.processes(), key=lambda process: (process.name(), process.short_name()))
+            sections.extend([self.__create_section(process) for process in processes])
+            environments = sorted(self.__project.environments(),
+                                  key=lambda environment: (environment.name(), environment.short_name()))
+            sections.extend([self.__create_section(environment) for environment in environments])
             sections.extend([self.__product_section(product) for product in self.__products])
-            sections.extend([self.__team_section(team) for team in self.__teams])
+            teams = sorted(self.__project.teams(), key=lambda team: (team.name(), team.short_name()))
+            sections.extend([self.__create_section(team, name_prefix="Team ") for team in teams])
             self.__sections = [section for section in sections if section]
-            self.__meta_section = self.__create_meta_section(self.__sections)
-            self.__sections.append(self.__meta_section)
+            self.__sections.append(self.__create_meta_section(self.__sections))
         return self.__sections
 
     def get_section(self, section_id: str) -> Optional[Section]:
@@ -110,14 +113,6 @@ class QualityReport(domain.DomainObject):
             if section_id == section.id_prefix():
                 return section
         return None
-
-    def get_product_section(self, product: domain.Product) -> Section:
-        """ Return the section for a specific product. """
-        return {section.product().name(): section for section in self.sections() if section.product()}[product.name()]
-
-    def get_meta_section(self) -> Section:
-        """ Return the section with the meta metrics. """
-        return self.__meta_section
 
     def dashboard(self) -> Dashboard:
         """ Return the dashboard layout. """
@@ -143,10 +138,6 @@ class QualityReport(domain.DomainObject):
     def included_domain_object_classes(self) -> Set[Type[domain.DomainObject]]:
         """ Return the domain object classes actually configured in the project. """
         return  self.__project.domain_object_classes() | {cast(Type[domain.DomainObject], self.__project.__class__)}
-
-    def teams(self) -> Sequence[domain.Team]:
-        """ Return the teams we report on. """
-        return self.__teams
 
     def products(self) -> Sequence[domain.Product]:
         """ Return the products we report on. """
@@ -188,36 +179,25 @@ class QualityReport(domain.DomainObject):
                 return sonar, sonar_id
         return None, ''
 
-    def __process_section(self) -> Optional[Section]:
-        """ Return the process section. """
-        metrics = self.__required_subject_metrics(self.__project, requirement.TrackActions, requirement.TrackRisks,
-                                                  requirement.TrackBugs, requirement.TrackSecurityBugs,
-                                                  requirement.TrackStaticSecurityBugs,
-                                                  requirement.TrackSecurityTestDate, requirement.TrackFindings,
-                                                  requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
-                                                  requirement.TrackManualLTCs, requirement.TrackReadyUS,
-                                                  requirement.TrackDurationOfUserStories,
-                                                  requirement.TrackUserStoriesInProgress,
-                                                  requirement.TrackSecurityAndPerformanceRisks)
+    def __create_section(self, subject: domain.RequirementSubject,
+                         short_name: str='', name: str='', name_prefix: str='',
+                         requirements_to_ignore: List[Type[domain.Requirement]]=None) -> Optional[Section]:
+        """ Return a section for the subject. """
+        requirements_to_ignore = requirements_to_ignore or []
+        requirements = [r for r in subject.default_requirements() if r not in requirements_to_ignore]
+        requirements.extend([r for r in subject.optional_requirements() if r not in requirements_to_ignore])
+        metrics = self.__required_subject_metrics(subject, *requirements)
         self.__metrics.extend(metrics)
-        return Section(SectionHeader('PC', 'Proceskwaliteit algemeen'), metrics) if metrics else None
-
-    def __environment_section(self, environment: domain.Environment) -> Optional[Section]:
-        """ Return the environment section. """
-        metrics = self.__required_subject_metrics(environment, requirement.TrackCIJobs,
-                                                  requirement.TrackSonarVersion, requirement.Java,
-                                                  requirement.CSharp, requirement.JavaScript, requirement.Web,
-                                                  requirement.VisualBasic, requirement.Python, requirement.TypeScript,
-                                                  requirement.OpenVAS)
-        self.__metrics.extend(metrics)
-        return Section(SectionHeader(environment.short_name(), environment.name()), metrics) if metrics else None
+        header = SectionHeader(short_name or subject.short_name(), name or name_prefix + subject.name())
+        return Section(header, metrics) if metrics else None
 
     def __overall_products_section(self) -> Optional[Section]:
         """ Return the products overall section. """
         metrics = self.__required_subject_metrics(self.__project, requirement.TrustedProductMaintainability)
         for document in self.__project.documents():
-            metrics.extend(self.__required_subject_metrics(document, requirement.TrackDocumentAge,
-                                                           requirement.TrackSecurityTestDate))
+            metrics.extend(self.__required_subject_metrics(document,
+                                                           *document.default_requirements(),
+                                                           *document.optional_requirements()))
         self.__metrics.extend(metrics)
         return Section(SectionHeader('PD', 'Productkwaliteit algemeen'), metrics) if metrics else None
 
@@ -237,12 +217,6 @@ class QualityReport(domain.DomainObject):
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(), product.name(), self.latest_product_version(product)),
                        metrics, product=product) if metrics else None
-
-    def __team_section(self, team: domain.Team) -> Optional[Section]:
-        """ Return a report section for the team. """
-        metrics = self.__required_subject_metrics(team, *(team.default_requirements() | team.optional_requirements()))
-        self.__metrics.extend(metrics)
-        return Section(SectionHeader(team.short_name(), 'Team ' + team.name()), metrics) if metrics else None
 
     def __create_meta_section(self, sections: Sequence[Section]) -> Section:
         """ Create and return the meta section. """

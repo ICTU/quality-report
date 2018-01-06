@@ -81,19 +81,19 @@ class RequirementSubjectTest(unittest.TestCase):
         self.__added = AddedRequirement()
         self.__removed = RemovedRequirement()
         self.__subject = RequirementSubjectUnderTest(
-            default_requirements={self.__requirement, self.__removed},
-            optional_requirements={self.__added},
+            default_requirements=(self.__requirement, self.__removed),
+            optional_requirements=(self.__added,),
             added_requirements=[self.__added],
             removed_requirements=[self.__removed])
 
     def test_actual_requirements(self):
         """ Test that requirements can be given to a requirement subject. """
-        expected = (self.__subject.default_requirements() | {self.__added}) - {self.__removed}
+        expected = (set(self.__subject.default_requirements()) | {self.__added}) - {self.__removed}
         self.assertEqual(expected, self.__subject.requirements())
 
     def test_optional_requirements(self):
         """ Test that the default optional requirements are empty. """
-        self.assertEqual({self.__added}, self.__subject.optional_requirements())
+        self.assertEqual((self.__added,), self.__subject.optional_requirements())
 
     def test_add_requirements_not_optional(self):
         """ Test that an exception is thrown when a requirement is added that is not an optional requirement. """
@@ -109,9 +109,9 @@ class RequirementSubjectTest(unittest.TestCase):
         self.assertFalse(self.__subject.should_be_measured_by('FakeMetricClass 3'))
 
     def test_default_default_requirements(self):
-        """ Test that the default requirements are an empty set by default. """
-        self.assertEqual(set(), domain.RequirementSubject.default_requirements())
+        """ Test that the default requirements are an empty tuple by default. """
+        self.assertEqual(tuple(), domain.RequirementSubject.default_requirements())
 
     def test_default_optional_requirements(self):
-        """ Test that the optiona requirements are an empty set by default. """
-        self.assertEqual(set(), domain.RequirementSubject.optional_requirements())
+        """ Test that the optiona requirements are an empty tuple by default. """
+        self.assertEqual(tuple(), domain.RequirementSubject.optional_requirements())

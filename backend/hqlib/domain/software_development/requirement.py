@@ -48,21 +48,21 @@ class RequirementSubject(domain.DomainObject):
         self.__requirements: Set[Type[Requirement]] = set(kwargs.pop('requirements', []))
         if not self.__requirements:
             added_requirements = set(kwargs.pop('added_requirements', []))
-            if not added_requirements.issubset(self.optional_requirements()):
+            if not added_requirements.issubset(set(self.optional_requirements())):
                 raise ValueError("Added requirements should be a subset of the optional requirements")
             removed_requirements = set(kwargs.pop('removed_requirements', []))
-            self.__requirements = (self.default_requirements() | added_requirements) - removed_requirements
+            self.__requirements = (set(self.default_requirements()) | added_requirements) - removed_requirements
         super().__init__(*args, **kwargs)
 
     @staticmethod
-    def default_requirements() -> Set[Type[Requirement]]:
+    def default_requirements() -> Sequence[Type[Requirement]]:
         """ Return the default requirements of the subject. """
-        return set()
+        return tuple()
 
     @staticmethod
-    def optional_requirements() -> Set[Type[Requirement]]:
+    def optional_requirements() -> Sequence[Type[Requirement]]:
         """ Return the optional requirements of the subject. """
-        return set()
+        return tuple()
 
     def requirements(self) -> Set[Type[Requirement]]:
         """ Return the actual requirements of the subject. """

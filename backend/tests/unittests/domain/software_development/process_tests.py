@@ -16,21 +16,20 @@ limitations under the License.
 
 import unittest
 
-from hqlib import domain, requirement
+from hqlib import domain
 
 
-class EnvironmentTest(unittest.TestCase):
-    """ Unit tests for the domain class software development environment. """
+class ProcessTest(unittest.TestCase):
+    """ Unit tests for the domain class software development process. """
 
     def test_name(self):
-        """ Test the environment name. """
-        self.assertEqual('Dev environment', domain.Environment('Dev environment').name())
+        """ Test the process name. """
+        self.assertEqual('Dev process', domain.Environment('Dev process').name())
 
     def test_short_name(self):
-        """ Test the environment short name. """
-        self.assertEqual('AC', domain.Environment('Acceptance environment', short_name='AC').short_name())
+        """ Test the process short name. """
+        self.assertEqual('DP', domain.Environment('Dev process', short_name='DP').short_name())
 
     def test_default_requirements(self):
-        """ Test that an environment can be created. """
-        self.assertEqual((requirement.TrackCIJobs, requirement.TrackSonarVersion),
-                         domain.Environment().default_requirements())
+        """ Test that a process has no default requirements. """
+        self.assertEqual(tuple(), domain.Process().default_requirements())

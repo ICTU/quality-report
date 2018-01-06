@@ -25,6 +25,9 @@ PROJECT.add_document(project_definition.DOC)
 # Development environment
 PROJECT.add_environment(project_definition.ENVIRONMENT)
 
+# Process of the project
+PROJECT.add_process(project_definition.PROCESS)
+
 # Teams of the project.
 PROJECT.add_team(project_definition.TEAM)
 

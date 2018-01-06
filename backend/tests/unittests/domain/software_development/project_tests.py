@@ -108,3 +108,19 @@ class ProjectTest(unittest.TestCase):
         project = domain.Project()
         project.add_environment(domain.Environment())
         self.assertEqual({domain.Environment}, project.domain_object_classes())
+
+    def test_add_process(self):
+        """ Test that a process can be added to the project ."""
+        process = domain.Process(name="Scrum")
+        self.__project.add_process(process)
+        self.assertEqual([process], self.__project.processes())
+
+    def test_get_process(self):
+        """ Test that a process can be retrieved by name. """
+        process = domain.Process(name="Scrum")
+        self.__project.add_process(process)
+        self.assertEqual(process, self.__project.get_process(process.name()))
+
+    def test_get_unknown_process(self):
+        """ Test getting an unknown process. """
+        self.assertEqual(None, self.__project.get_process("Unknown process"))
