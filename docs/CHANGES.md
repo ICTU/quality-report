@@ -1,3 +1,9 @@
+2018-01-07  Release 2.29.0
+
+  * Add a process domain object for measuring process metrics such as number of open bugs, overdue actions, and
+    number of ready user stories. See https://github.com/ICTU/quality-report/wiki/Processes.
+    
+    
 2018-01-04  Release 2.28.4
 
   * Bug fix: Don't mention the number of unit tests in the unit test coverage metrics since the coverage and the
