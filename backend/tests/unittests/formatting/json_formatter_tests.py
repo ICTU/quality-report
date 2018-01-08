@@ -80,14 +80,16 @@ class MetricsFormatterTest(unittest.TestCase):
 "2017-01-01 00:00:00"}}], "dashboard": \
 {{"headers": [{{"header": "ME", "colspan": 1}}], "rows": [[{{"section_id": "ID", "section_title": "Section title", \
 "bgcolor": "lightsteelblue", "colspan": 1, "rowspan": 1}}]]}}, "metrics": [{{"id_value": "id_string-01", \
-"id_format": "id_string-1", "section": "id_string", "status": "red", "sparkline": "<img src='img/id_string-1.png' \
-border='0' width='100' height='25' />", "status_value": "0", "status_format": "<img src='img/sad.png' alt=':-(' \
-width='48' height='48' title='Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)' border='0' />", \
+"id_format": "id_string-1", "name": "Metric Name", "section": "id_string", "status": "red", \
+"sparkline": "<img src='img/id_string-1.png' border='0' width='100' height='25' />", "status_value": "0", \
+"status_format": "<img src='img/sad.png' alt=':-(' width='48' height='48' \
+title='Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)' border='0' />", \
 "status_start_date": [2012, 1, 1, 12, 0, 0], "measurement": "report [label: <a href='http://url' \
 target='_blank'>anchor</a>]", "norm": "norm", "comment": "Comment with \\\\backslash"}}, {{"id_value": "id_string-01", \
-"id_format": "id_string-1", "section": "id_string", "status": "red", "sparkline": "<img src='img/id_string-1.png' \
-border='0' width='100' height='25' />", "status_value": "0", "status_format": "<img src='img/sad.png' alt=':-(' \
-width='48' height='48' title='Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)' border='0' />", \
+"id_format": "id_string-1", "name": "Metric Name", "section": "id_string", "status": "red", \
+"sparkline": "<img src='img/id_string-1.png' border='0' width='100' height='25' />", "status_value": "0", \
+"status_format": "<img src='img/sad.png' alt=':-(' width='48' height='48' \
+title='Direct actie vereist: norm niet gehaald (sinds 1 januari 2012)' border='0' />", \
 "status_start_date": [2012, 1, 1, 12, 0, 0], "measurement": "report [label: <a href='http://url' \
 target='_blank'>anchor</a>]", "norm": "norm", "comment": "Comment with \\\\backslash"}}]}}\n'''.format(VERSION),
                          self.__formatter.process(fake_report.Report()))

@@ -104,10 +104,10 @@ class MetricsFormatter(base_formatter.Formatter):
     """ Format the metrics as a JavaScript array. """
 
     sep = ', '
-    columns = '''{{"id_value": "{metric_number}", "id_format": "{metric_id}", "section": "{section}", \
-"status": "{status}", "sparkline": "<img src='img/{metric_id}.png' border='0' width='100' height='25' />", \
-"status_value": "{status_nr}", "status_format": "<img src='img/{image}.png' alt='{alt}' width='48' height='48' \
-title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measurement": "{text}", \
+    columns = '''{{"id_value": "{metric_number}", "id_format": "{metric_id}", "name": "{name}", "section": \
+"{section}", "status": "{status}", "sparkline": "<img src='img/{metric_id}.png' border='0' width='100' \
+height='25' />", "status_value": "{status_nr}", "status_format": "<img src='img/{image}.png' alt='{alt}' width='48' \
+height='48' title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measurement": "{text}", \
 "norm": "{norm}", "comment": "{comment}"}}'''
     kwargs_by_status: Dict[str, Any] = dict(
         red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
@@ -145,6 +145,7 @@ title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measu
         kwargs['status'] = status
         kwargs['status_start_date'] = self.__date_array(status_start_date) if status_start_date else []
         kwargs['metric_id'] = metric.id_string()
+        kwargs['name'] = metric.name
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['norm'] = metric.norm()
         kwargs['text'] = self.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)

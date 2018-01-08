@@ -18,6 +18,16 @@ import React from 'react';
 import ShallowRenderer from 'react-test-renderer/shallow';
 import {BootstrapTable, BootstrapTableHeader, BootstrapTableBody, Caret} from '../../js/widgets/bootstrap_table.js';
 
+import { shallow, mount } from 'enzyme';
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({ adapter: new Adapter() });
+
+import jsdom from 'jsdom'
+const doc = jsdom.jsdom('<!doctype html><html><head><script src=""></head><body></body></html>')
+global.document = doc
+global.window = doc.defaultView
 
 test('bootstrap table empty', function(t) {
     const renderer = new ShallowRenderer();
@@ -51,11 +61,37 @@ test('bootstrap table body', function(t) {
     t.end();
 });
 
-test('bootstrap table header thead', function(t) {
-    const renderer = new ShallowRenderer();
-    renderer.render(<BootstrapTableHeader headers={[["id", "title"]]} />);
-    const result = renderer.getRenderOutput();
-    t.equals(result.type, 'thead');
+test('bootstrap table header when first header empty', (t) => {
+    const wrapper = shallow(<BootstrapTableHeader headers={[["", ""],["id", "ID"]]} />);
+    t.equals(wrapper.find('tr th').first().children().exists(), false);
+    t.equals(wrapper.find('tr th').first().find('th[style]').exists(), false);
+    t.equals(wrapper.find('tr th').first().find('th[id]').exists(), false);
+    t.end();
+});
+
+test('bootstrap table header when first header not empty', (t) => {
+    const wrapper = shallow(<BootstrapTableHeader headers={[["x", "X"]]} />);
+    t.equals(wrapper.find('tr th[id="x"]').text(), "X");
+    t.end();
+});
+
+test('bootstrap table header second header width', (t) => {
+    const wrapper = shallow(<BootstrapTableHeader headers={[["", ""],["id", "ID"]]} table_sort_ascending='x' table_sort_column_name='id' />);
+    t.equals(wrapper.find('tr th[id="id"]').exists(), true);
+    t.equals(wrapper.find('tr th[id="id"]').children().first().text(), "ID");
+    t.equals(wrapper.find('tr th[id="id"]').children().at(1).find('Caret').length, 1);
+    t.equals(wrapper.find('tr th[id="id"]').prop('width'), "90px");
+    t.equals(wrapper.find('Caret').prop('show'), true);
+    t.equals(wrapper.find('Caret').prop('table_sort_ascending'), "x");
+    t.end();
+});
+
+test('bootstrap table header third header no width', (t) => {
+    const wrapper = shallow(<BootstrapTableHeader headers={[["", ""],["id", "ID"],["xx", "XXX"]]} />);
+    t.equals(wrapper.find('tr th[id="xx"]').exists(), true);
+    t.equals(wrapper.find('tr th[id="xx"]').children().first().text(), "XXX");
+    t.equals(wrapper.find('tr th[id="xx"]').children().at(1).find('Caret').length, 1);
+    t.equals(wrapper.find('tr th[id="xx"]').find('Caret').prop('show'), false);
     t.end();
 });
 
@@ -67,19 +103,21 @@ test('bootstrap table body tbody', function(t) {
     t.end();
 });
 
-test('bootstrap table body html', function(t) {
-    const renderer = new ShallowRenderer();
-    renderer.render(<BootstrapTableBody>{[{cells: [{__html: "<p>cell 1</p>"}], className: ''}]}</BootstrapTableBody>);
-    const result = renderer.getRenderOutput();
-    t.equals(result.props.children[0].props.children[0].props.dangerouslySetInnerHTML.__html, '<p>cell 1</p>');
+test('bootstrap table body html', (t) => {
+    const wrapper = shallow(<BootstrapTableBody>{[{cells: [{__html: "<p>cell 1</p>"}], className: ''}]}</BootstrapTableBody>)
+    t.equal(wrapper.find("td[dangerouslySetInnerHTML]").prop('dangerouslySetInnerHTML').__html, "<p>cell 1</p>");
     t.end();
 });
 
 test('bootstrap table header with caret', function(t) {
-    const renderer = new ShallowRenderer();
-    renderer.render(<BootstrapTableHeader table_sort_column_name="id" table_sort_ascending headers={[["id", "title"]]} />);
-    const result = renderer.getRenderOutput();
-    t.deepEquals(result.props.children.props.children[0].props.children[1], <Caret show table_sort_ascending />);
+    const wrapper = shallow(
+        <BootstrapTableHeader headers={[["", ""],["id", "ID"],["xx", "XXX"]]} 
+            table_sort_ascending='?' table_sort_column_name='xx'>
+                {[{cells: [{__html: "<p>cell 1</p>"}], className: ''}]}
+        </BootstrapTableHeader>)
+    t.equals(wrapper.find('tr th[id="xx"]').find('Caret').length, 1);
+    t.equals(wrapper.find('tr th[id="xx"]').find('Caret').prop('show'), true);
+    t.equals(wrapper.find('tr th[id="xx"]').find('Caret').prop('table_sort_ascending'), '?');
     t.end();
 });
 
@@ -105,5 +143,40 @@ test('bootstrap table caret descending', function(t) {
     renderer.render(<Caret show table_sort_ascending />);
     const result = renderer.getRenderOutput();
     t.equals(result.props.className, 'dropup');
+    t.end();
+});
+
+test('bootstrap table renders detail table', (t) => {
+    const wrapper = mount(<BootstrapTableBody>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', name: 'Metric Name', comment:'commentX'}]}</BootstrapTableBody>)
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"]').length, 1);
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane').length, 1);
+    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]').length, 1);
+    t.end();
+});
+
+test('bootstrap table does not render detail table if th comment is empty', (t) => {
+    const wrapper = shallow(<BootstrapTableBody>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:''}]}</BootstrapTableBody>)
+    t.equals(wrapper.find('tr.collapse').exists(), false);
+    t.equals(wrapper.find('button.disabled.btn.glyphicon.glyphicon-chevron-right').length, 1);
+    t.end();
+});
+
+test('bootstrap table does not render show detail button if th comment is undefined', (t) => {
+    const wrapper = shallow(<BootstrapTableBody>{[{cells: ["cell 1"], className: 'cls', id: 'IDx'}]}</BootstrapTableBody>)
+    t.equals(wrapper.find('tr td').text(), "cell 1");
+    t.equals(wrapper.find('button.btn.glyphicon').exists(), false);
+    t.equals(wrapper.find('DetailToggleButton').exists(), false);
+    t.end();
+});
+
+test('bootstrap table renders detail table CLICK', (t) => {
+    const wrapper = mount(<BootstrapTableBody>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'commentX'}]}</BootstrapTableBody>)
+    var x = wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]');
+    t.equals(x.length, 1);
+    x.simulate('click');
+    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-down[data-target="#IDx_details"]').length, 1);
+    x.simulate('click');
+    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-down[data-target="#IDx_details"]').exists(), false);
+    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]').length, 1);
     t.end();
 });

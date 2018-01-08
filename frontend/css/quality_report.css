@@ -87,3 +87,30 @@ div.meta_metrics_history_graph {
 .label_space {
     margin-left: 10px;
 }
+
+.report_cell {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+
+.table > tbody > tr > td.detail_pane {
+    border: 1px solid #ddd;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.panel {
+    background: transparent;
+}
+
+.panel .panel-heading {
+    background: transparent;
+    margin: 0;
+    padding: 5px;
+}
+
+.can_expand {
+    border: solid 1px black;
+}

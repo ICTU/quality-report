@@ -15,8 +15,6 @@
 
 import React from 'react';
 import {BootstrapTable} from 'widgets/bootstrap_table.js';
-import {Menu, MenuItem} from 'widgets/menu.js';
-
 
 
 class MetricsTable extends React.Component {
@@ -27,40 +25,21 @@ class MetricsTable extends React.Component {
     bgColorClassName(metric) {
         return metric["status"] + "_metric";
     }
-
+    
     id_format(metric) {
-        return (
-            <div className="btn-group">
-                 <button type="button" className={"btn btn-default dropdown-toggle " + this.bgColorClassName(metric)}
-                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                     {metric["id_format"]} <span className="caret"></span>
-                 </button>
-                 <ul className="dropdown-menu">
-                     <li><a id={metric["id_value"]} onClick={this.props.on_hide_metric} href="#">Verberg</a></li>
-                 </ul>
-             </div>
-        );
+        return (<div className="btn-group"><span className={this.bgColorClassName(metric)}>{metric["id_format"]}</span></div>);
     }
 
     render() {
-        const has_comments = this.props.metrics.some(function(metric) {
-            return metric["comment"];
-        });
         var table_rows = [];
         this.props.metrics.forEach(function(metric) {
             var cells = [this.id_format(metric), this.sparkline(metric),
                          {__html: metric["status_format"]}, {__html: metric["measurement"]},
                          {__html: metric["norm"]}];
-            if (has_comments) {
-                cells.push({__html: metric["comment"]});
-            }
-            table_rows.push({cells: cells, className: this.bgColorClassName(metric)});
+            table_rows.push({cells: cells, className: this.bgColorClassName(metric), id: metric["id_value"], name: metric['name'], comment: metric["comment"]});
         }, this);
-        var headers = [["id_format", "Id"], ["sparkline", "Trend"], ["status_format", "Status"],
+        var headers = [["",""], ["id_format", "Id"], ["sparkline", "Trend"], ["status_format", "Status"],
                        ["measurement", "Meting"], ["norm", "Norm"]];
-        if (has_comments) {
-            headers.push(["comment", "Comment"]);
-        }
         return (
             <BootstrapTable headers={headers} onSort={this.props.onSort}
                               table_sort_column_name={this.props.table_sort_column_name}

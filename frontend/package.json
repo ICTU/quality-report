@@ -1,6 +1,6 @@
 {
   "name": "HQ",
-  "version": "2.33.1",
+  "version": "2.34.0",
   "description": "Holistic Software Quality Reporting",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "chart.js": "^2.7.0",
     "chartjs-plugin-stacked100": "^0.4.0",
     "jquery": "^3.2.1",
-    "react": "^16.0.0",
+    "react": "^16.2.0",
     "react-chartjs-2": "^2.6.4",
     "react-dom": "^16.0.0",
     "react-timeago": "^3.4.3"

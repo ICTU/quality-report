@@ -1,3 +1,8 @@
+2018-01-16  Release 2.34.0
+
+  * Feature #209: detail metric information pane implemented.
+
+
 2018-01-16  Release 2.33.1
 
   * Bug fix: Don't log a HTTP 404 as error for SonarQube when it's expected to occur.
