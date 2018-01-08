@@ -113,13 +113,11 @@ class UrlOpener(object):
         """ Return an opened url, using the opener created earlier. """
         self.__time_out_tracker.raise_timeout_if_url_timed_out_before(url)
         try:
-            try:
-                with Timeout(15):
-                    return self.__opener(url)
-            except TimeoutError:
-                self.__time_out_tracker.register_url(url)
-                raise  # Outer exception handler handles the logging
+            with Timeout(15):
+                return self.__opener(url)
         except self.url_open_exceptions as reason:
+            if "Operation timed out after" in str(reason):
+                self.__time_out_tracker.register_url(url)
             if log_error:
                 logging.error("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception

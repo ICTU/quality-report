@@ -1,3 +1,8 @@
+2018-01-08  Release 2.30.1
+
+  * Bug fix: Don't try to reach timed-out URLs multiple times.
+  
+  
 2018-01-08  Release 2.30.0
 
   * Footer with report title and date added. Closes #214.
