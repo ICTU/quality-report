@@ -17,9 +17,12 @@ limitations under the License.
 
 class DomainObject(object):
     """ Base class for all domain objects. """
-    def __init__(self, name: str='<no name>', url: str='', short_name: str='', *args, **kwargs) -> None:
-        self.__name = name
-        self.__short_name = short_name
+    default_name = "<no name>"
+    default_short_name = "NN"
+
+    def __init__(self, name: str='', url: str='', short_name: str='', *args, **kwargs) -> None:
+        self.__name = name or self.default_name
+        self.__short_name = short_name or self.default_short_name
         self.__url = url
         super().__init__(*args, **kwargs)
 

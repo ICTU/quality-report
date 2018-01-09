@@ -22,6 +22,8 @@ from ..measurement.measurable import MeasurableObject
 
 class Environment(RequirementSubject, MeasurableObject):
     """ Class representing a software development environment. """
+    default_name = "Development environment"
+    default_short_name = "DE"
 
     @staticmethod
     def default_requirements() -> Sequence[Type[Requirement]]:

@@ -30,7 +30,7 @@ from .measurement.target import AdaptedTarget, TechnicalDebtTarget, DynamicTechn
 from .software_development.product import Product, Component, Application
 from .software_development.team import Team
 from .software_development.person import Person
-from .software_development.process import Process
+from .software_development.process import Process, ProjectManagement, IssueManagement, Scrum
 from .software_development.project import Project
 from .software_development.requirement import Requirement, RequirementSubject
 from .software_development.document import Document

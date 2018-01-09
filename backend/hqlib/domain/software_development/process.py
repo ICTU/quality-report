@@ -22,6 +22,8 @@ from ..measurement.measurable import MeasurableObject
 
 class Process(RequirementSubject, MeasurableObject):
     """ Class representing a software development process. """
+    default_name = "Process"
+    default_short_name = "PP"
 
     @staticmethod
     def optional_requirements() -> Sequence[Type[Requirement]]:
@@ -30,6 +32,56 @@ class Process(RequirementSubject, MeasurableObject):
                 requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
                 requirement.TrackSecurityTestDate, requirement.TrackQualityGate, requirement.TrackFindings,
                 requirement.TrackTechnicalDebt,
-                requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
                 requirement.TrackManualLTCs)
+
+
+class ProjectManagement(Process):
+    """ Class representing a project management process. """
+    default_name = "Project management"
+    default_short_name = "PM"
+
+    @staticmethod
+    def default_requirements() -> Sequence[Type[Requirement]]:
+        from ... import requirement
+        return requirement.TrackActions, requirement.TrackRisks
+
+    @staticmethod
+    def optional_requirements() -> Sequence[Type[Requirement]]:
+        from ... import requirement
+        return requirement.TrackSecurityTestDate,
+
+
+class IssueManagement(Process):
+    """ Class representing an issue management process. """
+    default_name = "Issue management"
+    default_short_name = "IM"
+
+    @staticmethod
+    def default_requirements() -> Sequence[Type[Requirement]]:
+        from ... import requirement
+        return requirement.TrackBugs,
+
+    @staticmethod
+    def optional_requirements() -> Sequence[Type[Requirement]]:
+        from ... import requirement
+        return (requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs, requirement.TrackFindings,
+                requirement.TrackTechnicalDebt)
+
+
+class Scrum(Process):
+    """ Class representing a Scrum process. """
+    default_name = "Scrum"
+    default_short_name = "SC"
+
+    @staticmethod
+    def default_requirements() -> Sequence[Type[Requirement]]:
+        from ... import requirement
+        return (requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.TrackManualLTCs)
+
+    @staticmethod
+    def optional_requirements() -> Sequence[Type[Requirement]]:
+        from ... import requirement
+        return requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories

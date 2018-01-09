@@ -1,3 +1,9 @@
+2018-01-09  Release 2.31.0
+
+  * Add three process types: Project management, Issue management, and Scrum. 
+    See https://github.com/ICTU/quality-report/wiki/Processes.
+  
+  
 2018-01-08  Release 2.30.1
 
   * Bug fix: Don't try to reach timed-out URLs multiple times.
