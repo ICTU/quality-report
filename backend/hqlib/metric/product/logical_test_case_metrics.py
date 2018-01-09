@@ -53,7 +53,7 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
 
     name = 'Reviewstatus van logische testgevallen'
     norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
+    template = 'Er zijn {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
     low_target_value = 15
 
@@ -69,7 +69,7 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
 
     name = 'Goedkeuring van logische testgevallen'
     norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
+    template = 'Er zijn {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
     low_target_value = 10
 
@@ -87,7 +87,7 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     name = 'Automatisering van logische testgevallen'
     norm_template = 'Maximaal {target} van de te automatiseren {unit} is niet geautomatiseerd. ' \
         'Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} nog te automatiseren {unit}, van in totaal {total} geautomatiseerde {unit}.'
+    template = 'Er zijn {value} nog te automatiseren {unit}, van in totaal {total} geautomatiseerde {unit}.'
     target_value = 9
     low_target_value = 15
 
@@ -105,10 +105,10 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     unit = 'handmatige logische testgevallen'
     norm_template = 'Alle {unit} zijn minder dan {target} dagen geleden uitgevoerd. ' \
         'Langer dan {low_target} dagen geleden is rood.'
-    template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} {unit} van {name} zijn ' \
+    template = '{nr_manual_ltcs_too_old} van de {nr_manual_ltcs} {unit} zijn ' \
         'te lang geleden (meest recente {value} dag(en)) uitgevoerd.'
-    never_template = 'De {nr_manual_ltcs} {unit} van {name} zijn nog niet allemaal uitgevoerd.'
-    no_manual_tests_template = '{name} heeft geen {unit}.'
+    never_template = 'De {nr_manual_ltcs} {unit} zijn nog niet allemaal uitgevoerd.'
+    no_manual_tests_template = 'Er zijn geen {unit}.'
     target_value = 21
     low_target_value = 28
     metric_source_class = metric_source.Birt

@@ -87,7 +87,7 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('FakeSubject heeft 2 niet gereviewde user stories van in totaal 25 user stories.',
+        self.assertEqual('Er zijn 2 niet gereviewde user stories van in totaal 25 user stories.',
                          self.__metric.report())
 
     def test_url(self):
@@ -109,7 +109,7 @@ class UserStoriesNotApprovedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('FakeSubject heeft 3 niet goedgekeurde user stories van in totaal 23 gereviewde user stories.',
+        self.assertEqual('Er zijn 3 niet goedgekeurde user stories van in totaal 23 gereviewde user stories.',
                          self.__metric.report())
 
     def test_url(self):

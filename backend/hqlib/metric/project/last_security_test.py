@@ -28,8 +28,8 @@ class LastSecurityTest(LowerIsBetterMetric):
     unit = 'dag(en)'
     norm_template = 'De beveiligingstest wordt minimaal een keer per {target} {unit} uitgevoerd. Als de test langer ' \
                     'dan {low_target} {unit} geleden is uitgevoerd is deze metriek rood.'
-    template = 'De beveiligingstest van {name} is {value} {unit} geleden uitgevoerd.'
-    missing_template = 'De datum van de laatste beveiligingstest van {name} is niet aangetroffen.'
+    template = 'De beveiligingstest is {value} {unit} geleden uitgevoerd.'
+    missing_template = 'De datum van de laatste beveiligingstest is niet aangetroffen.'
     target_value = 180
     low_target_value = 200
 

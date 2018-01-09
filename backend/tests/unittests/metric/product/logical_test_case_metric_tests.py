@@ -140,7 +140,7 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('FakeSubject heeft 10 niet gereviewde logische testgevallen van in totaal 120 '
+        self.assertEqual('Er zijn 10 niet gereviewde logische testgevallen van in totaal 120 '
                          'logische testgevallen.', self.__metric.report())
 
 
@@ -162,7 +162,7 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('FakeSubject heeft 10 niet goedgekeurde logische testgevallen van in totaal 110 gereviewde '
+        self.assertEqual('Er zijn 10 niet goedgekeurde logische testgevallen van in totaal 110 gereviewde '
                          'logische testgevallen.', self.__metric.report())
 
 
@@ -218,20 +218,20 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertTrue('5 van de 10 handmatige logische testgevallen van FakeSubject zijn te lang geleden '
+        self.assertTrue('5 van de 10 handmatige logische testgevallen zijn te lang geleden '
                         '(meest recente 5 dag(en))' in self.__metric.report())
 
     def test_report_with_untested(self):
         """ Test that the report mentions the number of test cases that have never been tested. """
         self.__birt.date_of_last_manual_tests = datetime.datetime.now() - datetime.timedelta(days=60)
         self.assertTrue(
-            self.__metric.report().startswith('5 van de 10 handmatige logische testgevallen van FakeSubject zijn '
+            self.__metric.report().startswith('5 van de 10 handmatige logische testgevallen zijn '
                                               'te lang geleden (meest recente 60 dag(en))'))
 
     def test_report_when_untested(self):
         """ Test that the report uses the correct template when the manual tests have not been executed at all. """
         self.__birt.date_of_last_manual_tests = datetime.datetime.min
-        self.assertEqual('De 10 handmatige logische testgevallen van FakeSubject zijn nog niet allemaal uitgevoerd.',
+        self.assertEqual('De 10 handmatige logische testgevallen zijn nog niet allemaal uitgevoerd.',
                          self.__metric.report())
 
     def test_report_without_manual_testcases(self):

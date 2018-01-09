@@ -51,7 +51,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
 
     name = 'Reviewstatus van user stories'
     norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet gereviewde {unit} van in totaal {total} {unit}.'
+    template = 'Er zijn {value} niet gereviewde {unit} van in totaal {total} {unit}.'
     target_value = 0
     low_target_value = 5
 
@@ -64,7 +64,7 @@ class UserStoriesNotApproved(UserStoryMetric):
 
     name = 'Goedgekeuring van user stories'
     norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
+    template = 'Er zijn {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
     target_value = 0
     low_target_value = 3
 
@@ -82,7 +82,7 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     name = 'Hoeveelheid logische testgevallen per user story'
     norm_template = 'Maximaal {target} van de {unit} heeft onvoldoende logische testgevallen. ' \
         'Meer dan {low_target} is rood.'
-    template = '{name} heeft {value} {unit} met een onvoldoende aantal logische testgevallen van ' \
+    template = 'Er zijn {value} {unit} met een onvoldoende aantal logische testgevallen van ' \
         'in totaal {total} {unit}.'
     target_value = 3
     low_target_value = 5

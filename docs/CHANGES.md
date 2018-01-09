@@ -1,3 +1,8 @@
+2018-01-09  Release 2.31.1
+
+  * Bug fix: Better metric report sentences for some process-related metrics.
+
+
 2018-01-09  Release 2.31.0
 
   * Add three process types: Project management, Issue management, and Scrum. 
