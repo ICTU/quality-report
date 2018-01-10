@@ -40,6 +40,9 @@ See docs/AUTHORS.txt for contact information.
 See docs/LICENSE.txt for license information.
 See docs/HOWTO.txt for information on how to configure quality reports.
 
+To be notified about HQ releases, you can subscribe to the releases atom feed via 
+[![Blogtrottr](https://blogtrottr.com/images/icons/blogtrottr-button-91x17px.gif)](https://blogtrottr.com/?subscribe=https://github.com/ICTU/quality-report/releases.atom)
+
 Screenshots
 -----------
 
