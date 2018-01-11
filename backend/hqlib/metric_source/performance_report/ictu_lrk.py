@@ -21,9 +21,9 @@ import logging
 import re
 from typing import List, Iterable
 
-from ..abstract import performance_report
 from hqlib.metric_source import url_opener, beautifulsoup
-from hqlib.typing import DateTime
+from hqlib.typing import DateTime, TimeDelta
+from ..abstract import performance_report
 
 
 class ICTULRKPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
@@ -64,6 +64,11 @@ class ICTULRKPerformanceReport(performance_report.PerformanceReport, beautifulso
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         return self.__datetime_from_soup(soup)
+
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        logging.warning("The %s metric source doesn't currently contain duration information.", self.metric_source_name)
+        return datetime.timedelta.max  # Information is not available in the report.
 
     @staticmethod
     def __datetime_from_soup(soup) -> DateTime:

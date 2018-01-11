@@ -15,8 +15,10 @@ limitations under the License.
 """
 
 import datetime
+import io
 import unittest
 import urllib.error
+from typing import cast, IO
 
 from hqlib import metric_source
 
@@ -89,12 +91,12 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
         '    </td>\n'
         '</tr>')
 
-    def url_read(self, url: str, encoding: str=''):  # pylint: disable=unused-argument
+    def url_read(self, url: str, encoding: str = 'utf-8', *args, **kwargs) -> str:  # pylint: disable=unused-argument
         """ Return the static contents. """
         return self.contents
 
-    def url_open(self, url: str):
-        return self.html
+    def url_open(self, url: str, log_error: bool=True) -> IO:  # pylint: disable=unused-argument
+        return cast(IO, io.StringIO(self.html))
 
     def _get_soup(self, url: str):
         """ Get a beautiful soup of the HTML at the url. """

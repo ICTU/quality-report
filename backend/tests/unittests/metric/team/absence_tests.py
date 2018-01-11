@@ -92,13 +92,13 @@ class TeamAbsenceTest(unittest.TestCase):
 
     def test_is_applicable(self):
         """ Test that the metric is applicable. """
-        self.assertTrue(metric.TeamAbsence.is_applicable(self.__team))
+        self.assertTrue(metric.TeamAbsence(subject=self.__team, project=self.__project).is_applicable())
 
     def test_is_not_applicable(self):
         """ Test that the metric can't be measured without more than one team member. """
         team = domain.Team(name='Team')
         team.add_member(domain.Person(name='Piet Programmer'))
-        self.assertFalse(metric.TeamAbsence.is_applicable(team))
+        self.assertFalse(metric.TeamAbsence(subject=team, project=self.__project).is_applicable())
 
     def test_default_norm(self):
         """ Test that the norm can be shown without instantiating the class. """

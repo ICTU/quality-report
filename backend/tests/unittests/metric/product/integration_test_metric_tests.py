@@ -94,13 +94,13 @@ class CommonIntegrationtestMetricTestsMixin(object):
 
     def test_is_applicable(self):
         """ Test that the metric is applicable. """
-        self.assertTrue(self.class_under_test.is_applicable(FakeSubject()))
+        self.assertTrue(self.class_under_test(subject=FakeSubject(), project=self.__project).is_applicable())
 
     def test_is_not_applicable_with_unittests(self):
         """ Test that the metric isn't applicable when the product also has unit tests since then the combined
             unit and integration test coverage will be measured instead. """
         product = FakeSubject(unittests=True)
-        self.assertFalse(self.class_under_test.is_applicable(product))
+        self.assertFalse(self.class_under_test(subject=product, project=self.__project).is_applicable())
 
 
 class IntegrationtestLineCoverageTest(CommonIntegrationtestMetricTestsMixin, unittest.TestCase):

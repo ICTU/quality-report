@@ -20,9 +20,9 @@ import logging
 import re
 from typing import List, Iterable
 
-from ..abstract import performance_report
-from hqlib.typing import DateTime
+from hqlib.typing import DateTime, TimeDelta
 from hqlib.metric_source import beautifulsoup, url_opener
+from ..abstract import performance_report
 
 
 class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
@@ -68,6 +68,14 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
             return datetime.datetime.min
         return self.__datetime_from_soup(soup)
 
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        try:
+            soup = self.soup(url)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return datetime.timedelta.max
+        return self.__duration_from_soup(soup)
+
     @staticmethod
     def __datetime_from_soup(soup) -> DateTime:
         """ Return the date when performance was last measured. """
@@ -75,10 +83,27 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
             table = soup('table', attrs={'class': ['config']})[0]
             date_string = table('tr')[2]('td')[1].string
         except IndexError:
-            logging.warning("Can't get date from performance report")
-            return datetime.datetime.today()
+            logging.error("Can't get date from performance report")
+            return datetime.datetime.min
         year, month, day, hour, minute, second = [int(part) for part in date_string.split('.')][:6]
         return datetime.datetime(year, month, day, hour, minute, second)
+
+    @staticmethod
+    def __duration_from_soup(soup) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        date_time_strings = []
+        try:
+            table = soup('table', attrs={'class': ['config']})[0]
+            for row_index in [2, 3]:
+                date_time_strings.append(table('tr')[row_index]('td')[1].string)
+        except IndexError:
+            logging.error("Can't get start and end dates from performance report")
+            return datetime.timedelta.max
+        date_times = []
+        for date_time_string in date_time_strings:
+            year, month, day, hour, minute, second = [int(part) for part in date_time_string.split('.')][:6]
+            date_times.append(datetime.datetime(year, month, day, hour, minute, second))
+        return max(date_times) - min(date_times)
 
     def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """

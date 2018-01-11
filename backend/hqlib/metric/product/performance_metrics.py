@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 from typing import List
 
 from ... import domain, metric_source
@@ -98,6 +99,63 @@ class PerformanceScalabilityTestAge(PerformanceTestAge):
     perfect_template = 'De performanceschaalbaarheidstest van {name} is vandaag gedraaid.'
     template = 'De performanceschaalbaarheidstest van {name} is {value} {unit} geleden gedraaid.'
     metric_source_class = metric_source.PerformanceScalabilityTestReport
+
+
+class PerformanceTestDuration(domain.HigherIsBetterMetric):
+    """ Metric for measuring the duration of the performance test. """
+
+    target_value = 60
+    low_target_value = 30
+    unit = "minuten"
+    applicable_metric_source_classes = []  # Subclass responsibility
+
+    def is_applicable(self) -> bool:  # pylint: disable=unused-argument
+        return self._metric_source.__class__ in self.applicable_metric_source_classes if self._metric_source else True
+
+    def value(self):
+        if not self._metric_source:
+            return -1
+        duration = self._metric_source.duration(self._metric_source_id)
+        return -1 if duration == datetime.timedelta.max else round(duration.seconds / 60.)
+
+    def _metric_source_urls(self) -> List[str]:
+        return self._metric_source.urls(self._metric_source_id) if self._metric_source and self._metric_source_id \
+            else []
+
+
+class PerformanceLoadTestDuration(PerformanceTestDuration):
+    """ Metric for measuring the duration of the performance load test. """
+
+    name = 'Performanceloadtestduur'
+    norm_template = 'De uitvoeringstijd van de performanceloadtest is meer dan {target} {unit}. ' \
+                    'Minder dan {low_target} {unit} is rood.'
+    template = 'De uitvoeringstijd van de performanceloadtest van {name} is {value} {unit}.'
+    metric_source_class = metric_source.PerformanceLoadTestReport
+    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceLoadTestReport]
+
+
+class PerformanceEnduranceTestDuration(PerformanceTestDuration):
+    """ Metric for measuring the duration of the performance endurance test. """
+
+    target_value = 60 * 6
+    low_target_value = 60 * 5
+    name = 'Performanceduurtestduur'
+    norm_template = 'De uitvoeringstijd van de performanceduurtest is meer dan {target} {unit}. ' \
+                    'Minder dan {low_target} {unit} is rood.'
+    template = 'De uitvoeringstijd van de performanceduurtest van {name} is {value} {unit}.'
+    metric_source_class = metric_source.PerformanceEnduranceTestReport
+    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceEnduranceTestReport]
+
+
+class PerformanceScalabilityTestDuration(PerformanceTestDuration):
+    """ Metric for measuring the duration of the performance scalability test. """
+
+    name = 'Performanceschaalbaarheidstestduur'
+    norm_template = 'De uitvoeringstijd van de performanceschaalbaarheidstest is meer dan {target} {unit}. ' \
+                    'Minder dan {low_target} {unit} is rood.'
+    template = 'De uitvoeringstijd van de performanceschaalbaarheidstest van {name} is {value} {unit}.'
+    metric_source_class = metric_source.PerformanceScalabilityTestReport
+    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceScalabilityTestReport]
 
 
 # We have different types of performance test metrics, organized along two dimensions: test type and severity.

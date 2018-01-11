@@ -1,3 +1,10 @@
+2018-01-11  Release 2.32.0
+
+   * Add metrics for measuring the duration of performance tests so HQ can check that performance tests run long enough.
+     This only works for the SilkPerformer reports because the other performance report types don't contain the needed 
+     information. 
+
+
 2018-01-11  Release 2.31.2
 
   * Bug fix: When trying multiple JaCoCo session urls, only log a failure if the last one can't be read.

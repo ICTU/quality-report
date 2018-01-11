@@ -19,9 +19,9 @@ import datetime
 import functools
 from typing import List, Iterable
 
+from hqlib.typing import DateTime, TimeDelta
 from ..url_opener import UrlOpener
 from ... import domain
-from hqlib.typing import DateTime
 
 
 class PerformanceReport(domain.MetricSource):
@@ -71,8 +71,21 @@ class PerformanceReport(domain.MetricSource):
         else:
             return datetime.datetime.min
 
+    def duration(self, product: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        urls = self.urls(product)
+        if urls:
+            url = list(urls)[0]  # Any url is fine
+            return self._duration_from_url(url)
+        else:
+            return datetime.timedelta.max
+
     def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured. """
+        raise NotImplementedError
+
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
         raise NotImplementedError
 
     def _query_rows(self, product: str) -> List:
@@ -102,6 +115,10 @@ class PerformanceLoadTestReport(PerformanceReport):
         """ Return the date when the performance was last measured based on the report at the url. """
         raise NotImplementedError
 
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        raise NotImplementedError
+
     def _has_query_color(self, row, color: str) -> bool:
         """ Return whether the row has a query has the specified color. """
         raise NotImplementedError
@@ -121,6 +138,10 @@ class PerformanceEnduranceTestReport(PerformanceReport):
         """ Return the date when the performance was last measured based on the report at the url. """
         raise NotImplementedError
 
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        raise NotImplementedError
+
     def _has_query_color(self, row, color: str) -> bool:
         """ Return whether the row has a query has the specified color. """
         raise NotImplementedError
@@ -138,6 +159,10 @@ class PerformanceScalabilityTestReport(PerformanceReport):
 
     def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured based on the report at the url. """
+        raise NotImplementedError
+
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
         raise NotImplementedError
 
     def _has_query_color(self, row, color: str) -> bool:

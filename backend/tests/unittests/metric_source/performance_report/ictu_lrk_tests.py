@@ -15,8 +15,10 @@ limitations under the License.
 """
 
 import datetime
+import io
 import unittest
 import urllib.error
+from typing import cast, IO
 
 from hqlib.metric_source import ICTULRKPerformanceLoadTestReport
 
@@ -93,12 +95,12 @@ HTML = r"""
 class ReportUnderTest(ICTULRKPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the Silk Performer performance report to return the url as report contents. """
 
-    def url_open(self, url):  # pylint: disable=no-self-use
+    def url_open(self, url: str, log_error: bool=True) -> IO:  # pylint: disable=no-self-use,unused-argument
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')
         else:
-            return HTML
+            return cast(IO, io.StringIO(HTML))
 
 
 class ICTULRKPerformanceReportTest(unittest.TestCase):

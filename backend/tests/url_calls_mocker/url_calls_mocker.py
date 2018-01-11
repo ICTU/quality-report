@@ -17,6 +17,7 @@ limitations under the License.
 import os
 from hqlib.metric_source.url_opener import UrlOpener
 
+
 class UrlOpenerMock(UrlOpener):
     """" The class is used to mock UrlOpener class, to avoid real http calls to the urls given in example
     project definition file and to provide example report with example metric sources data.
@@ -58,8 +59,10 @@ class UrlOpenerMock(UrlOpener):
         }
         super().__init__()
 
-    def url_read(self, url: str, encoding: str = 'utf-8') -> str:
-        return self._map[url] if url in self._map.keys() else None #super().
+    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
+        return self._map[url] if url in self._map.keys() else ""
 
-    def _get_file_content(self, file_name: str) -> str:
-        with open(file_name) as f: return f.read()
+    @staticmethod
+    def _get_file_content(file_name: str) -> str:
+        with open(file_name) as file:
+            return file.read()

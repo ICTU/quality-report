@@ -18,6 +18,7 @@ import datetime
 import io
 import unittest
 import urllib.error
+from typing import IO
 
 from hqlib.metric_source import SpiritSplunkCSVPerformanceLoadTestReport
 
@@ -79,7 +80,7 @@ Baseline Test (PT07)";;;"% Verbetering
 class ReportUnderTest(SpiritSplunkCSVPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the performance report to return the url as report contents. """
 
-    def url_open(self, url):  # pylint: disable=no-self-use
+    def url_open(self, url: str, log_error: bool=True) -> IO:  # pylint: disable=no-self-use,unused-argument
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')

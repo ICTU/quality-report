@@ -82,9 +82,9 @@ class CommonUnitAndIntegrationTestMetricTestsMixin(object):
     def setUp(self):  # pylint: disable=invalid-name
         """ Create the fixture for the unit tests. """
         self.__sonar = FakeSonar(line_coverage=self.expected_value, branch_coverage=self.expected_value)
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
+        self.__project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
         self.__product = FakeSubject()
-        self.__metric = self.class_under_test(subject=self.__product, project=project)
+        self.__metric = self.class_under_test(subject=self.__product, project=self.__project)
 
     def test_value(self):
         """ Test that the value of the metric equals the line coverage reported by Sonar. """
@@ -100,12 +100,12 @@ class CommonUnitAndIntegrationTestMetricTestsMixin(object):
 
     def test_is_applicable(self):
         """ Test that the metric is applicable when the product has both unit tests and integration tests. """
-        self.assertTrue(self.class_under_test.is_applicable(self.__product))
+        self.assertTrue(self.class_under_test(subject=self.__product, project=self.__project).is_applicable())
 
     def test_is_not_applicable(self):
         """ Test that the metric is not applicable if the product has only unit tests. """
         product = FakeSubject(integration_tests=False)
-        self.assertFalse(self.class_under_test.is_applicable(product))
+        self.assertFalse(self.class_under_test(subject=product, project=self.__project).is_applicable())
 
 
 class UnitAndIntegrationTestLineCoverageTest(CommonUnitAndIntegrationTestMetricTestsMixin, unittest.TestCase):

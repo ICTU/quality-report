@@ -21,7 +21,6 @@ import functools
 import logging
 
 from .metric_source import MetricSource
-from .measurable import MeasurableObject
 from .target import AdaptedTarget
 from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 if TYPE_CHECKING:  # pragma: no cover
@@ -55,11 +54,6 @@ class Metric(object):
     metric_source_class: Type[MetricSource] = None
 
     @classmethod
-    def is_applicable(cls, subject: MeasurableObject) -> bool:  # pylint: disable=unused-argument
-        """ Return whether this metric applies to the specified subject. """
-        return True
-
-    @classmethod
     def norm_template_default_values(cls) -> MetricParameters:
         """ Return the default values for parameters in the norm template. """
         return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
@@ -86,6 +80,10 @@ class Metric(object):
         from hqlib import metric_source
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
         self.__history = history_sources[0] if history_sources else None
+
+    def is_applicable(self) -> bool:  # pylint: disable=no-self-use
+        """ Return whether this metric applies to the specified subject. """
+        return True
 
     def stable_id(self) -> str:
         """ Return an id that doesn't depend on numbering/order of metrics. """

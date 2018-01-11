@@ -51,7 +51,7 @@ class CommonUnittestMetricTestsMixin(object):
 
     def test_is_applicable(self):
         """ Test that the metric is applicable. """
-        self.assertTrue(self.class_under_test.is_applicable(self.__subject))
+        self.assertTrue(self.class_under_test(subject=self.__subject, project=domain.Project()).is_applicable())
 
 
 class UnittestLineCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase):

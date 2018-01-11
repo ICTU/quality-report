@@ -31,7 +31,7 @@ class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
     contents = '{"jobs": []}'
 
-    def url_read(self, url: str, encoding: str='utf-8') -> str:
+    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
         """ Return the static content. """
         if 'raise' in url:
             raise urllib.error.URLError('some reason')

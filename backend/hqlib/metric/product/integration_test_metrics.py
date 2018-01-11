@@ -22,12 +22,11 @@ from ...domain import HigherIsBetterMetric
 class IntegrationtestMetricMixin(SonarDashboardMetric):  # pylint: disable=too-few-public-methods
     """ Mixin class for Sonar metrics about integration tests. """
 
-    @classmethod
-    def is_applicable(cls, product):
+    def is_applicable(self) -> bool:
         """ Return whether the integration test metric is applicable to the product. This is only the case if the
             product has integration tests, but no unit tests, because if it does, the combined unit and integration
             test metrics will be used. """
-        return product.has_integration_tests() and not product.has_unittests()
+        return self._subject.has_integration_tests() and not self._subject.has_unittests()
 
 
 class IntegrationtestCoverage(IntegrationtestMetricMixin, HigherIsBetterMetric):

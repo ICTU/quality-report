@@ -245,7 +245,9 @@ class QualityReport(domain.DomainObject):
         metrics: List[domain.Metric] = []
         for req in requirements:
             for metric_class in req.metric_classes():
-                if subject.should_be_measured_by(metric_class) and metric_class.is_applicable(subject):
-                    self.__requirements.add(req)
-                    metrics.append(metric_class(subject, project=self.__project))
+                if subject.should_be_measured_by(metric_class):
+                    metric_instance = metric_class(subject, project=self.__project)
+                    if metric_instance.is_applicable():
+                        self.__requirements.add(req)
+                        metrics.append(metric_instance)
         return metrics

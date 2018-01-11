@@ -22,9 +22,9 @@ from typing import List, Iterable
 
 import dateutil.parser
 
-from ..abstract import performance_report
 from hqlib.metric_source import url_opener
-from hqlib.typing import DateTime
+from hqlib.typing import DateTime, TimeDelta
+from ..abstract import performance_report
 
 
 class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url_opener.UrlOpener):
@@ -64,6 +64,11 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
         except (ValueError, IndexError, TypeError) as reason:
             logging.error("Couldn't parse report date time from %s, retrieved from %s: %s", rows, url, reason)
             return datetime.datetime.min
+
+    def _duration_from_url(self, url: str) -> TimeDelta:
+        """ Return the duration of the performance test. """
+        logging.warning("The %s metric source doesn't currently contain duration information.", self.metric_source_name)
+        return datetime.timedelta.max  # Information is not available in the report.
 
     def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """

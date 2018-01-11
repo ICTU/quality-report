@@ -24,7 +24,8 @@ from hqlib.metric_source import HolidayPlanner
 
 class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public-methods
     """ Override the class under test return static data. """
-    def url_read(self, url):  # pylint: disable=unused-argument,no-self-use
+    def url_read(self, url: str, encoding: str='utf-8',
+                 *args, **kwargs) -> str:  # pylint: disable=unused-argument,no-self-use
         """ Return the static data. """
         if 'raise' in url:
             raise urllib.error.URLError(None)
@@ -32,33 +33,33 @@ class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public
         year = next_month.year
         month = next_month.month
         template = '{{"afwezig":[' \
-                        '["3544","desmi","{year}-{month:02d}-12","3"],' \
-                        '["3545","desmi","{year}-{month:02d}-13","3"],' \
-                        '["3546","desmi","{year}-{month:02d}-14","3"],' \
-                        '["3547","desmi","{year}-{month:02d}-15","3"],' \
-                        '["3548","desmi","{year}-{month:02d}-16","3"],' \
-                        '["3549","desmi","{year}-{month:02d}-17","3"],' \
-                        '["3549","desmi","{year}-{month:02d}-18","3"],' \
-                        '["3549","desmi","{year}-{month:02d}-19","3"],' \
-                        '["3550","piepo","{year}-{month:02d}-11","3"],' \
-                        '["3551","piepo","{year}-{month:02d}-12","3"],' \
-                        '["3552","piepo","{year}-{month:02d}-13","3"],' \
-                        '["3553","piepo","{year}-{month:02d}-14","3"],' \
-                        '["3554","piepo","{year}-{month:02d}-15","3"],' \
-                        '["3555","piepo","{year}-{month:02d}-16","3"],' \
-                        '["3555","piepo","{year}-{month:02d}-17","3"],' \
-                        '["3555","piepo","{year}-{month:02d}-18","3"],' \
-                        '["3555","piepo","{year}-{month:02d}-19","3"],' \
-                        '["3550","alale","{year}-{month:02d}-20","3"],' \
-                        '["3550","alale","{year}-{month:02d}-20","3"],' \
-                        '["3556","desmi","{year}-{month:02d}-25","3"],' \
-                        '["3597","erkat","{year}-{month:02d}-27","3"],' \
-                        '["3598","erkat","{year}-{month:02d}-03","3"],' \
-                        '["3599","erkat","{year}-{month:02d}-10","3"],' \
-                        '["3601","erkat","{year}-{month:02d}-24","3"],' \
-                        '["3602","erkat","{year}-{month:02d}-01","3"],' \
-                        '["3603","piepo","{year}-{month:02d}-01","3"]'  \
-                    ']}}'
+                   '["3544","desmi","{year}-{month:02d}-12","3"],' \
+                   '["3545","desmi","{year}-{month:02d}-13","3"],' \
+                   '["3546","desmi","{year}-{month:02d}-14","3"],' \
+                   '["3547","desmi","{year}-{month:02d}-15","3"],' \
+                   '["3548","desmi","{year}-{month:02d}-16","3"],' \
+                   '["3549","desmi","{year}-{month:02d}-17","3"],' \
+                   '["3549","desmi","{year}-{month:02d}-18","3"],' \
+                   '["3549","desmi","{year}-{month:02d}-19","3"],' \
+                   '["3550","piepo","{year}-{month:02d}-11","3"],' \
+                   '["3551","piepo","{year}-{month:02d}-12","3"],' \
+                   '["3552","piepo","{year}-{month:02d}-13","3"],' \
+                   '["3553","piepo","{year}-{month:02d}-14","3"],' \
+                   '["3554","piepo","{year}-{month:02d}-15","3"],' \
+                   '["3555","piepo","{year}-{month:02d}-16","3"],' \
+                   '["3555","piepo","{year}-{month:02d}-17","3"],' \
+                   '["3555","piepo","{year}-{month:02d}-18","3"],' \
+                   '["3555","piepo","{year}-{month:02d}-19","3"],' \
+                   '["3550","alale","{year}-{month:02d}-20","3"],' \
+                   '["3550","alale","{year}-{month:02d}-20","3"],' \
+                   '["3556","desmi","{year}-{month:02d}-25","3"],' \
+                   '["3597","erkat","{year}-{month:02d}-27","3"],' \
+                   '["3598","erkat","{year}-{month:02d}-03","3"],' \
+                   '["3599","erkat","{year}-{month:02d}-10","3"],' \
+                   '["3601","erkat","{year}-{month:02d}-24","3"],' \
+                   '["3602","erkat","{year}-{month:02d}-01","3"],' \
+                   '["3603","piepo","{year}-{month:02d}-01","3"]'  \
+                   ']}}'
         return template.format(year=year, month=month)
 
 

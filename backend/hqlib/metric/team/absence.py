@@ -19,7 +19,7 @@ import datetime
 from typing import Optional
 
 from ... import metric_source
-from ...domain import LowerIsBetterMetric, Team
+from ...domain import LowerIsBetterMetric
 from hqlib.typing import MetricParameters, MetricValue, DateTime
 
 
@@ -38,10 +38,6 @@ class TeamAbsence(LowerIsBetterMetric):
     metric_source_class = metric_source.HolidayPlanner
 
     @classmethod
-    def is_applicable(cls, team: Team) -> bool:
-        return len(team.members()) > 1
-
-    @classmethod
     def norm_template_default_values(cls) -> MetricParameters:
         values = super(TeamAbsence, cls).norm_template_default_values()
         values['team'] = '(Lijst van teamleden)'
@@ -50,6 +46,9 @@ class TeamAbsence(LowerIsBetterMetric):
 
     def value(self) -> MetricValue:
         return self._metric_source.days(self._subject, start_date=self.__start_date())[0] if self._metric_source else -1
+
+    def is_applicable(self) -> bool:
+        return len(self._subject.members()) > 1
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
