@@ -65,13 +65,13 @@ class CoverageReport(domain.MetricSource):
     def datetime(self, *coverage_urls: str) -> DateTime:
         """ Return the date when the ART coverage for a specific product was last successfully measured. """
         coverage_date_urls = self._get_coverage_date_urls(coverage_urls[0])
-        for coverage_date_url in coverage_date_urls:
+        for index, coverage_date_url in enumerate(coverage_date_urls):
+            is_last_url = index + 1 == len(coverage_date_urls)
             try:
-                soup = self.__get_soup(coverage_date_url)
+                soup = self.__get_soup(coverage_date_url, log_error=is_last_url)
             except UrlOpener.url_open_exceptions:
                 continue
-            else:
-                return self._parse_coverage_date(soup)
+            return self._parse_coverage_date(soup)
         return datetime.datetime.min
 
     def _parse_coverage_date(self, soup) -> DateTime:
@@ -84,6 +84,6 @@ class CoverageReport(domain.MetricSource):
         return [coverage_url]
 
     @functools.lru_cache(maxsize=1024)
-    def __get_soup(self, url: str):
+    def __get_soup(self, url: str, log_error=True):
         """ Get a beautiful soup of the HTML at the url. """
-        return bs4.BeautifulSoup(self.__url_open(url), "lxml")
+        return bs4.BeautifulSoup(self.__url_open(url, log_error=log_error), "lxml")

@@ -42,7 +42,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     ncover.createDateTime = '1440425155042';
 </script>"""
 
-    def url_open(self, url):
+    def url_open(self, url, **kwargs):  # pylint: disable=unused-argument
         """ Open a url. """
         if 'raise' in url:
             raise urllib.error.HTTPError(url, None, None, None, None)

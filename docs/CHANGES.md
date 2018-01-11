@@ -1,3 +1,8 @@
+2018-01-11  Release 2.31.2
+
+  * Bug fix: When trying multiple JaCoCo session urls, only log a failure if the last one can't be read.
+
+
 2018-01-09  Release 2.31.1
 
   * Bug fix: Better metric report sentences for some process-related metrics.

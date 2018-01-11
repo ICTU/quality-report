@@ -36,7 +36,7 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
         '1f82fbab</span></td><td>Apr 4, 2013 4:43:39 PM</td><td>Apr 5, 2013 ' \
         '10:34:55 AM</td></tr></tbody>'
 
-    def url_open(self, url):
+    def url_open(self, url, **kwargs):  # pylint: disable=unused-argument
         """ Open a url. """
         if 'raise' in url:
             raise urllib.error.HTTPError(url, None, None, None, None)
