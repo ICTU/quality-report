@@ -205,6 +205,7 @@ class QualityReport(domain.DomainObject):
         """ Return the section for the product. """
         metrics = self.__required_subject_metrics(
             product, requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+            requirement.TrackSecurityTestDate,
             requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
             requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
             requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,

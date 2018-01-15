@@ -1,8 +1,13 @@
+2018-01-15  Release 2.32.1
+
+  * Bug fix: The time-since-last-security-test metric would not be added to product sections, even if required. 
+
+
 2018-01-11  Release 2.32.0
 
-   * Add metrics for measuring the duration of performance tests so HQ can check that performance tests run long enough.
-     This only works for the SilkPerformer reports because the other performance report types don't contain the needed 
-     information. 
+  * Add metrics for measuring the duration of performance tests so HQ can check that performance tests run long enough.
+    This only works for the SilkPerformer reports because the other performance report types don't contain the needed 
+    information. 
 
 
 2018-01-11  Release 2.31.2
