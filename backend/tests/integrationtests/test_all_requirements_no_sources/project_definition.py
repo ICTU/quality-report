@@ -37,9 +37,7 @@ PRODUCT = Product(
     short_name='PR', name='Product ABC',
     added_requirements=Product.optional_requirements(),
     art=Product(
-        name='Product ABC ART', added_requirements=[requirement.CodeQuality, requirement.TrackBranches]),
-    jsf=Product(
-        name='Product ABC JSF', added_requirements=[requirement.JSFCodeQuality]))
+        name='Product ABC ART', added_requirements=[requirement.CodeQuality, requirement.TrackBranches]))
 
 
 APPLICATION = Application(short_name='AP', name='Application FOO',

@@ -38,15 +38,6 @@ class ProductTest(unittest.TestCase):
         """ Test that products have no integration test component by default. """
         self.assertFalse(self.__product.has_integration_tests())
 
-    def test_default_jsf(self):
-        """ Test that products have no jsf component by default. """
-        self.assertFalse(self.__product.jsf())
-
-    def test_jsf(self):
-        """ Test that the jsf component can be retrieved. """
-        jsf = domain.Product()
-        self.assertEqual(jsf, domain.Product(jsf=jsf).jsf())
-
     def test_default_art(self):
         """ Test that products have no automated regression test by default. """
         self.assertFalse(self.__product.art())
@@ -54,7 +45,7 @@ class ProductTest(unittest.TestCase):
     def test_art(self):
         """ Test that the automated regression test can be retrieved. """
         art = domain.Product()
-        self.assertEqual(art, domain.Product(self.__project, art=art).art())
+        self.assertEqual(art, domain.Product(art=art).art())
 
     def test_is_main(self):
         """ Test that the product is part of the main system by default. """

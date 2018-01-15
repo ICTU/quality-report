@@ -18,8 +18,7 @@ limitations under the License.
 # Package for concrete requirements, not specific to a specific project.
 
 from .product_quality import TrustedProductMaintainability, OWASPDependencies, Checkmarx, OWASPZAP, UnitTests, ART, \
-    ARTCoverage, CodeQuality, JSFCodeQuality, PerformanceLoad, PerformanceEndurance, PerformanceScalability,\
-    TrackBranches
+    ARTCoverage, CodeQuality, PerformanceLoad, PerformanceEndurance, PerformanceScalability, TrackBranches
 from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScript
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, TrackSecurityBugs, \
     TrackStaticSecurityBugs, TrackFindings, TrackTechnicalDebt, TrackQualityGate, TrackActions, TrackRisks, \

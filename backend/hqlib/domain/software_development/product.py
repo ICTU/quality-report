@@ -25,12 +25,11 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, jsf: 'Product'=None, art: 'Product'=None, is_main: bool=True,
+    def __init__(self, art: 'Product'=None, is_main: bool=True,
                  has_unittests: bool=True, has_integration_tests: bool=False, **kwargs) -> None:
         super().__init__(**kwargs)
         self.__has_unittests = has_unittests
         self.__has_integration_tests = has_integration_tests
-        self.__jsf = jsf
         self.__art = art
         self.__is_main = is_main  # Is this product part of the main system or is it support code?
 
@@ -40,7 +39,7 @@ class Product(RequirementSubject, MeasurableObject):
         return (requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackUserStoriesInProgress,
                 requirement.TrackDurationOfUserStories, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.CodeQuality,
-                requirement.JSFCodeQuality, requirement.TrackBranches,
+                requirement.TrackBranches,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
                 requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
@@ -66,10 +65,6 @@ class Product(RequirementSubject, MeasurableObject):
     def has_integration_tests(self) -> bool:
         """ Return whether the product has integration tests. """
         return self.__has_integration_tests
-
-    def jsf(self) -> Optional['Product']:
-        """ Return a product that represents the JSF of this product. """
-        return self.__copy_component(self.__jsf)
 
     @staticmethod
     def __copy_component(component) -> Optional['Product']:

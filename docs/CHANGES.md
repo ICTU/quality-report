@@ -1,3 +1,9 @@
+2018-01-15  Release 2.33.0
+
+  * Remove the JSF-subcomponent and accompanying metrics since it's no longer needed to support separate analysis of
+    JSF-code in SonarQube.
+  
+  
 2018-01-15  Release 2.32.1
 
   * Bug fix: The time-since-last-security-test metric would not be added to product sections, even if required. 

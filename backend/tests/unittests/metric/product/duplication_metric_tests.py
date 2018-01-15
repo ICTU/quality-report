@@ -58,21 +58,3 @@ class DuplicationTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({FakeSonar.metric_source_name: FakeSonar.dashboard_url()}, self._metric.url())
-
-
-class JsfDuplicationTest(unittest.TestCase):
-    """ Unit tests for the duplication metric. """
-
-    def setUp(self):
-        sonar = FakeSonar()
-        self.__project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        self.__jsf = domain.Product(short_name='JS', metric_source_ids={sonar: 'sonar id'})
-        self._metric = metric.JsfDuplication(subject=self.__jsf, project=self.__project)
-
-    def test_value(self):
-        """ Test that the value of the metric equals the percentage of duplicated lines. """
-        self.assertEqual(10., self._metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().dashboard_url()}, self._metric.url())

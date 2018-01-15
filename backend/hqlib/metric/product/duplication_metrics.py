@@ -22,6 +22,9 @@ from ...domain import LowerPercentageIsBetterMetric
 class Duplication(SonarDashboardMetric, LowerPercentageIsBetterMetric):
     """ Metric for measuring the percentage of duplicated lines of code. """
 
+    name = 'Duplicatie van broncode'
+    target_value = 0
+    low_target_value = 4
     norm_template = 'Maximaal {target}% gedupliceerde regels code. Meer dan {low_target}% is rood.'
     template = '{name} heeft {value}% ({numerator} op {denominator}) duplicatie.'
 
@@ -34,15 +37,4 @@ class Duplication(SonarDashboardMetric, LowerPercentageIsBetterMetric):
 
 class JavaDuplication(Duplication):  # pylint: disable=too-many-ancestors
     """ Metric for measuring the percentage of duplicated lines of code in Java code. """
-
-    name = 'Duplicatie van Java broncode'
-    target_value = 0
-    low_target_value = 4
-
-
-class JsfDuplication(Duplication):  # pylint: disable=too-many-ancestors
-    """ Metric for measuring the percentage of duplicated lines of code in JSF code. """
-
-    name = 'Duplicatie van JSF broncode'
-    target_value = 10
-    low_target_value = 20
+    pass  # For backwards compatibility

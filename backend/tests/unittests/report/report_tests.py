@@ -219,7 +219,7 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
         if process_kwargs:
             project.add_process(ReportFactory.__create_process(process_kwargs))
         if product_kwargs:
-            project.add_product(ReportFactory.__create_product(project, product_kwargs))
+            project.add_product(ReportFactory.__create_product(product_kwargs))
         quality_report = report.QualityReport(project)
         quality_report.sections()  # Make sure the report is created
         return quality_report
@@ -230,13 +230,12 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
         return domain.Process(**process_kwargs)
 
     @staticmethod
-    def __create_product(project, product_kwargs):  # pylint: disable=unused-argument
+    def __create_product(product_kwargs):
         """ Create a product according to the provided arguments. """
-        for component_name in 'unittests', 'jsf', 'art':
-            component_kwargs = product_kwargs.pop(component_name, dict())
-            if component_kwargs:
-                component = domain.Product(**component_kwargs)
-                product_kwargs[component_name] = component
+        art_kwargs = product_kwargs.pop("art", dict())
+        if art_kwargs:
+            component = domain.Product(**art_kwargs)
+            product_kwargs["art"] = component
         return domain.Product(**product_kwargs)
 
     @staticmethod
@@ -310,12 +309,6 @@ class QualityReportMetricsTest(unittest.TestCase):
         for req in [requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches]:
             for metric_class in req.metric_classes():
                 self.__assert_metric(metric_class, product_kwargs=dict(art=dict(requirements=[req])))
-
-    def test_product_jsf_requirements(self):
-        """ Test that the product JSF metrics are added if required. """
-        for req in [requirement.JSFCodeQuality]:
-            for metric_class in req.metric_classes():
-                self.__assert_metric(metric_class, product_kwargs=dict(jsf=dict(requirements=[req])))
 
     def test_unittest_metrics(self):
         """ Test that the unit test metrics are added if required. """

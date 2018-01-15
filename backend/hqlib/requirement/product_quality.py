@@ -79,12 +79,6 @@ class CodeQuality(Requirement):
                        metric.SonarAnalysisAge)
 
 
-class JSFCodeQuality(Requirement):
-    """ Require the source code quality of the JSF component be tracked. """
-    _name = 'JSF code quality'
-    _metric_classes = (metric.JsfDuplication, metric.ProductLOC)
-
-
 class PerformanceLoad(Requirement):
     """ Require a performance load test. """
     _name = 'Performance load'

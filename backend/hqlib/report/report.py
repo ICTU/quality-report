@@ -35,18 +35,18 @@ class QualityReport(domain.DomainObject):
     def requirement_classes(cls) -> Sequence[Type[domain.Requirement]]:
         """ Return a list of all requirement classes that the report can report on. """
         return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-                requirement.CodeQuality, requirement.JSFCodeQuality, requirement.PerformanceLoad,
-                requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
-                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
-                requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackFindings,
-                requirement.TrackTechnicalDebt, requirement.TrackQualityGate, requirement.TrackManualLTCs,
-                requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
-                requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.TrackSpirit,
-                requirement.TrackAbsence, requirement.TrackUserStoriesInProgress,
-                requirement.TrackDurationOfUserStories, requirement.OWASPDependencies, requirement.OWASPZAP,
-                requirement.Checkmarx, requirement.OpenVAS, requirement.Java, requirement.CSharp,
-                requirement.JavaScript, requirement.Web, requirement.VisualBasic, requirement.Python,
-                requirement.TypeScript, requirement.TrustedProductMaintainability, requirement.TrackBranches)
+                requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
+                requirement.PerformanceScalability, requirement.TrackActions, requirement.TrackRisks,
+                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+                requirement.TrackSecurityTestDate, requirement.TrackFindings, requirement.TrackTechnicalDebt,
+                requirement.TrackQualityGate, requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
+                requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackSonarVersion,
+                requirement.TrackDocumentAge, requirement.TrackSpirit, requirement.TrackAbsence,
+                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
+                requirement.Java, requirement.CSharp, requirement.JavaScript, requirement.Web, requirement.VisualBasic,
+                requirement.Python, requirement.TypeScript, requirement.TrustedProductMaintainability,
+                requirement.TrackBranches)
 
     @classmethod
     def metric_classes(cls) -> Set[Type[domain.Metric]]:
@@ -213,7 +213,6 @@ class QualityReport(domain.DomainObject):
             requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
             requirement.Checkmarx, requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
         metrics.extend(self.__art_metrics(product.art()))
-        metrics.extend(self.__jsf_metrics(product.jsf()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
         self.__metrics.extend(metrics)
         return Section(SectionHeader(product.short_name(), product.name(), self.latest_product_version(product)),
@@ -235,10 +234,6 @@ class QualityReport(domain.DomainObject):
         """ Return a list of Automated Regression Test metrics for the (ART) product. """
         return self.__required_subject_metrics(art, requirement.CodeQuality, requirement.ARTCoverage,
                                                requirement.ART, requirement.TrackBranches) if art else []
-
-    def __jsf_metrics(self, jsf: domain.RequirementSubject) -> List[domain.Metric]:
-        """ Return a list of JSF metrics for the (JSF) product. """
-        return self.__required_subject_metrics(jsf, requirement.JSFCodeQuality) if jsf else []
 
     def __required_subject_metrics(self, subject: domain.RequirementSubject,
                                    *requirements: Type[domain.Requirement]) -> List[domain.Metric]:

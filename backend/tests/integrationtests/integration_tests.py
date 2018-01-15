@@ -22,6 +22,25 @@ import unittest
 
 import bs4
 
+from hqlib import domain, requirement
+
+
+def requirement_metric_classes(*requirements):
+    """ Return the metric classes of the requirements. """
+    metrics = []
+    for req in requirements:
+        metrics.extend(req.metric_classes())
+    return metrics
+
+
+def metric_classes(domain_classes):
+    """ Return the metric classes for the domain objects. """
+    metrics = []
+    for domain_class in domain_classes:
+        metrics.extend(requirement_metric_classes(*(domain_class.default_requirements() +
+                                                    domain_class.optional_requirements())))
+    return metrics
+
 
 class IntegrationTestCase(unittest.TestCase):
     """ Base class for integration test cases that examine a generated report. """
@@ -40,7 +59,12 @@ class IntegrationTestCase(unittest.TestCase):
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
     project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
-    expected_number_of_metrics = 269
+    nr_metrics = len(metric_classes([domain.Project, domain.Process, domain.Product, domain.Application,
+                                     domain.Component, domain.Environment, domain.Document, domain.Team]))
+    nr_meta_metrics = 5
+    nr_non_applicable_metrics = 12  # Integration test metrics and combined unit/integration test metrics
+    nr_art_metrics = len(requirement_metric_classes(requirement.CodeQuality, requirement.TrackBranches))
+    expected_number_of_metrics = nr_metrics + nr_art_metrics + nr_meta_metrics - nr_non_applicable_metrics
 
     def report(self):
         """ Read the report and return as beautiful soup. """
