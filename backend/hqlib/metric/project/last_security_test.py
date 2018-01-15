@@ -31,7 +31,7 @@ class LastSecurityTest(LowerIsBetterMetric):
     template = 'De beveiligingstest is {value} {unit} geleden uitgevoerd.'
     missing_template = 'De datum van de laatste beveiligingstest is niet aangetroffen.'
     target_value = 180
-    low_target_value = 200
+    low_target_value = 360
 
     metric_source_class = metric_source.FileWithDate
 
