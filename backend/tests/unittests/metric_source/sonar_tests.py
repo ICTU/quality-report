@@ -568,7 +568,7 @@ class SonarBranchParameterTest(unittest.TestCase):
 
         calls = [call(fake_url+'api/server/version'),
                  call(fake_url+'api/updatecenter/installed_plugins'),
-                 call(fake_url+'api/components/show?component={component}'.format(component=product))]
+                 call(fake_url+'api/components/show?component={component}'.format(component=product), log_error=False)]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
 
@@ -589,7 +589,8 @@ class SonarBranchParameterTest(unittest.TestCase):
 
         calls = [call(fake_url + 'api/server/version'),
                  call(fake_url + 'api/updatecenter/installed_plugins'),
-                 call(fake_url + 'api/components/show?component={component}'.format(component=product))]
+                 call(fake_url + 'api/components/show?component={component}'.format(component=product),
+                      log_error=False)]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
 
@@ -629,7 +630,8 @@ class SonarBranchParameterTest(unittest.TestCase):
 
         calls = [call(fake_url + 'api/server/version'),
                  call(fake_url + 'api/updatecenter/installed_plugins'),
-                 call(fake_url + 'api/components/show?component={component}'.format(component=product))]
+                 call(fake_url + 'api/components/show?component={component}'.format(component=product),
+                      log_error=False)]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, product, None)
 

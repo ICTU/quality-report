@@ -1,3 +1,8 @@
+2018-01-16  Release 2.33.1
+
+  * Bug fix: Don't log a HTTP 404 as error for SonarQube when it's expected to occur.
+  
+
 2018-01-15  Release 2.33.0
 
   * Remove the JSF-subcomponent and accompanying metrics since it's no longer needed to support separate analysis of

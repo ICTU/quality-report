@@ -160,13 +160,13 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         """" Checks if the component with complete name, including branch, is defined """
         url = self.__components_show_api_url.format(component=product)
         try:
-            if json.loads(self.url_read(url))["component"]:
+            if json.loads(self.url_read(url, log_error=False))["component"]:
                 logging.info("Component '%s' found. No branch is defined.", product)
                 return False
         except (ValueError, KeyError):
             pass
-        except self.url_open_exceptions as reason:
-            logging.error("Couldn't open %s: %s", url, reason)
+        except self.url_open_exceptions:
+            pass
         return True
 
     # Sonar projects
