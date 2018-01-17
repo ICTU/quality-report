@@ -114,3 +114,11 @@ div.meta_metrics_history_graph {
 .can_expand {
     border: solid 1px black;
 }
+
+.panel-body .table-striped th {
+    padding-bottom: 2px;
+}
+
+.panel-body .table-striped td {
+    padding: 4px 8px 4px 8px;
+}

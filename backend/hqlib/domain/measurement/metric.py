@@ -15,16 +15,31 @@ limitations under the License.
 """
 
 from typing import Dict, List, Type, Tuple, TYPE_CHECKING
+import json
 
 import datetime
 import functools
 import logging
 
+from hqlib import utils
 from .metric_source import MetricSource
 from .target import AdaptedTarget
 from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 if TYPE_CHECKING:  # pragma: no cover
     from ..software_development.project import Project  # pylint: disable=unused-import
+
+
+class ExtraInfo(object):
+    """ The class represents extra metric information structure, that is serialized to extra_info json tag."""
+    def __init__(self, **kwargs):
+        """ Class is initialized with column keys and header texts."""
+        self.headers = kwargs
+        self.title = None
+        self.data = []
+
+    def add_row(self, *args):
+        """ Adds data rows to the extra_info table, matching arguments by position to the column keys."""
+        self.data.append(dict(zip(self.headers.keys(), args)))
 
 
 class Metric(object):
@@ -53,11 +68,6 @@ class Metric(object):
 
     metric_source_class: Type[MetricSource] = None
 
-    @classmethod
-    def norm_template_default_values(cls) -> MetricParameters:
-        """ Return the default values for parameters in the norm template. """
-        return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
-
     def __init__(self, subject=None, project: 'Project'=None) -> None:
         self._subject = subject
         self._project = project
@@ -80,6 +90,25 @@ class Metric(object):
         from hqlib import metric_source
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
         self.__history = history_sources[0] if history_sources else None
+
+    def format_text_with_links(self, text: str, url_dict: Dict[str, str], url_label: str) -> str:
+        """ Format a text paragraph with optional urls and label for the urls. """
+        text = utils.html_escape(text).replace('\n', ' ')
+        links = ["<a href='{href}' target='_blank'>{anchor}</a>"
+                 .format(href=href, anchor=utils.html_escape(anchor)) for (anchor, href) in list(url_dict.items())]
+        if links:
+            if url_label:
+                url_label += ': '
+            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
+        return json.dumps(text)[1:-1]  # Strip quotation marks
+
+    format_comment_with_links = format_text_with_links
+    # format_comment_with_links can be overridden in the derived metric so that it provides different functionality.
+
+    @classmethod
+    def norm_template_default_values(cls) -> MetricParameters:
+        """ Return the default values for parameters in the norm template. """
+        return dict(unit=cls.unit, target=cls.target_value, low_target=cls.low_target_value)
 
     def is_applicable(self) -> bool:  # pylint: disable=no-self-use
         """ Return whether this metric applies to the specified subject. """
@@ -297,6 +326,10 @@ class Metric(object):
             return value
         else:
             raise NotImplementedError
+
+    def extra_info(self) -> ExtraInfo:
+        """ Function has to be overridden by concrete metrics that fill extra info. """
+        return None
 
     def __subject_name(self) -> str:
         """ Return the subject name, or a string representation if the subject has no name. """

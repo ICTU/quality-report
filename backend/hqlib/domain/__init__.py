@@ -19,7 +19,7 @@ limitations under the License.
 
 from .base import DomainObject
 
-from .measurement.metric import Metric
+from .measurement.metric import Metric, ExtraInfo
 from .measurement.directed_metric import HigherIsBetterMetric, LowerIsBetterMetric
 from .measurement.percentage_metric import PercentageMetric, HigherPercentageIsBetterMetric, \
     LowerPercentageIsBetterMetric

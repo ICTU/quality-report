@@ -36,11 +36,13 @@ class MetricsTable extends React.Component {
             var cells = [this.id_format(metric), this.sparkline(metric),
                          {__html: metric["status_format"]}, {__html: metric["measurement"]},
                          {__html: metric["norm"]}];
-            table_rows.push({cells: cells, className: this.bgColorClassName(metric), id: metric["id_value"], name: metric['name'], comment: metric["comment"]});
+            table_rows.push({cells: cells, 
+                className: this.bgColorClassName(metric), id: metric["id_value"], 
+                name: metric['name'], comment: metric["comment"], extra_info: metric["extra_info"]});
         }, this);
         var headers = [["",""], ["id_format", "Id"], ["sparkline", "Trend"], ["status_format", "Status"],
                        ["measurement", "Meting"], ["norm", "Norm"]];
-        return (
+    return (
             <BootstrapTable headers={headers} onSort={this.props.onSort}
                               table_sort_column_name={this.props.table_sort_column_name}
                               table_sort_ascending={this.props.table_sort_ascending}>

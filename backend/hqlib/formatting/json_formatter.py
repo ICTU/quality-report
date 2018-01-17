@@ -108,7 +108,7 @@ class MetricsFormatter(base_formatter.Formatter):
 "{section}", "status": "{status}", "sparkline": "<img src='img/{metric_id}.png' border='0' width='100' \
 height='25' />", "status_value": "{status_nr}", "status_format": "<img src='img/{image}.png' alt='{alt}' width='48' \
 height='48' title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measurement": "{text}", \
-"norm": "{norm}", "comment": "{comment}"}}'''
+"norm": "{norm}", "comment": "{comment}", "extra_info": {extra_info}}}'''
     kwargs_by_status: Dict[str, Any] = dict(
         red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
         yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
@@ -140,6 +140,7 @@ height='48' title='{hover}' border='0' />", "status_start_date": {status_start_d
         """ Return the metric data as a dictionary, so it can be used in string templates. """
         status = metric.status()
         status_start_date = metric.status_start_date()
+        extra_info = metric.extra_info()
         kwargs = self.kwargs_by_status[status].copy()
         kwargs['hover'] += ' (sinds {date})'.format(date=utils.format_date(status_start_date, year=True))
         kwargs['status'] = status
@@ -148,27 +149,11 @@ height='48' title='{hover}' border='0' />", "status_start_date": {status_start_d
         kwargs['name'] = metric.name
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['norm'] = metric.norm()
-        kwargs['text'] = self.__format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
-        kwargs['comment'] = self.__format_text_with_links(metric.comment(), metric.comment_urls(),
+        kwargs['text'] = metric.format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
+        kwargs['comment'] = metric.format_comment_with_links(metric.comment(), metric.comment_urls(),
                                                           metric.comment_url_label_text)
+        kwargs['extra_info'] = '{}' if extra_info is None else json.dumps(extra_info.__dict__)
         return kwargs
-
-    @classmethod
-    def __format_text_with_links(cls, text: str, url_dict: Dict[str, str], url_label: str) -> str:
-        """ Format a text paragraph with optional urls and label for the urls. """
-        text = utils.html_escape(text).replace('\n', ' ')
-        links = [cls.__format_url(anchor, href) for (anchor, href) in list(url_dict.items())]
-        if links:
-            if url_label:
-                url_label += ': '
-            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return json.dumps(text)[1:-1]  # Strip quotation marks
-
-    @staticmethod
-    def __format_url(anchor: str, href: str) -> str:
-        """ Return a HTML formatted url. """
-        template = "<a href='{href}' target='_blank'>{anchor}</a>"
-        return template.format(href=href, anchor=utils.html_escape(anchor))
 
     @classmethod
     def __report_date(cls, report: QualityReport) -> str:

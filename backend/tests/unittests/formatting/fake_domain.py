@@ -17,7 +17,8 @@ limitations under the License.
 # Fake domain classes for testing purposes.
 
 import datetime
-
+import hqlib
+from hqlib.domain import ExtraInfo
 
 class Metric(object):
     """ Fake a metric class. """
@@ -28,6 +29,9 @@ class Metric(object):
         self.__id_string = id_string
         self.name = "Metric Name"
         self.__status_start_date = status_start_date
+
+    format_text_with_links = hqlib.domain.Metric.format_text_with_links
+    format_comment_with_links = hqlib.domain.Metric.format_comment_with_links
 
     @staticmethod
     def stable_id():
@@ -71,6 +75,14 @@ class Metric(object):
     def comment():
         """ Return the comment for the metric. """
         return 'Comment with \\backslash'
+
+    @staticmethod
+    def extra_info() -> ExtraInfo:
+        """ Return the comment for the metric. """
+        extra = ExtraInfo(col1="C1", col2="C2")
+        extra.add_row("yes", {"href": "this", "text": "that"})
+        extra.title = "Fake title"
+        return extra
 
     @staticmethod
     def comment_urls():

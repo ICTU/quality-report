@@ -1,3 +1,8 @@
+2018-01-25  Release 2.38.0
+
+  * Feature #244: Unmerged branches are now listed in the details pane instead of the metric text.
+
+
 2018-01-24  Release 2.37.0
 
   * Feature #246: No longer use separate metrics for integration tests and unit tests, since SonarQube >= 6.2 

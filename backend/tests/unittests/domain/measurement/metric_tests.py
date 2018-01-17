@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 import datetime
 import unittest
 
@@ -53,6 +54,29 @@ class MetricTest(unittest.TestCase):
     def test_stable_id_mutable_subject(self):
         """ Test that the stable id doesn't include the subject if the subject is a list. """
         self.assertEqual('Metric', domain.Metric([], project=domain.Project()).stable_id())
+
+    def test_format_text_with_links(self):
+        """ Test that the formatted text is followed by a comma separated list of urls. """
+        self.assertEqual("Some text... [Label: <a href='http://url/br1' target='_blank'>branch_1</a>, "
+                         "<a href='http://url/br2' target='_blank'>branch_2</a>]",
+                         self.__metric.format_text_with_links(
+                             'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, "Label"))
+
+    def test_format_text_without_links(self):
+        """ Test that the formatted text is not followed by anything. """
+        self.assertEqual("Some text...",
+                         self.__metric.format_text_with_links('Some text...', {}, "Unimportant"))
+
+    def test_format_text_without_label(self):
+        """ Test that the formatted text is followed by a comma separated list of keys. """
+        self.assertEqual("Some text... [<a href='http://url/br1' target='_blank'>branch_1</a>, "
+                         "<a href='http://url/br2' target='_blank'>branch_2</a>]",
+                         self.__metric.format_text_with_links(
+                             'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, ""))
+
+    def test_format_comment_with_links(self):
+        """ Test that comment formatting function is the same as the text formatting one."""
+        self.assertEqual(self.__metric.format_comment_with_links, self.__metric.format_text_with_links)
 
     def test_set_id_string(self):
         """ Test that the id string can be changed. """
@@ -239,6 +263,10 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric gets the start date of the status from the history. """
         self.assertEqual(datetime.datetime(2013, 1, 1, 10, 0, 0), self.__metric.status_start_date())
 
+    def test_extra_info(self):
+        """ Test that extra_info, as a base class function, returns None. """
+        self.assertEqual(None, self.__metric.extra_info())
+
 
 class MetricStatusTest(unittest.TestCase):
     """ Test case for the Metric domain class status method. """
@@ -280,3 +308,28 @@ class MetricStatusTest(unittest.TestCase):
         """ Test that the status is perfect when the value equals the perfect target. """
         self.__metric.perfect_value = 0  # pylint: disable=attribute-defined-outside-init
         self.assert_status('perfect')
+
+
+class ExtraInfoTest(unittest.TestCase):
+    """ Test extra info functionality. """
+
+    def test_header_created(self):
+        """ Test that header dictionary is correctly created."""
+        extra_info = domain.ExtraInfo(col1="Col 1 Header", col2="Col 2 Header")
+        self.assertEqual({"col1": "Col 1 Header", "col2": "Col 2 Header"}, extra_info.headers)
+
+    def test_row_added(self):
+        """ Test that metric data is correctly created."""
+        extra_info = domain.ExtraInfo(col1="", col2="")
+        extra_info.add_row("val1", {"href": "http://url", "text": "Description"})
+        self.assertEqual([{"col1": "val1", "col2": {"href": "http://url", "text": "Description"}}], extra_info.data)
+
+    def test_serialization(self):
+        """ Test that metric data is correctly json serialized."""
+        extra_info = domain.ExtraInfo(col1="C1", col2="C2")
+        extra_info.add_row("val1", {"href": "http://url", "text": "Description"})
+        extra_info.title = "Title"
+
+        result = json.dumps(extra_info.__dict__)
+        self.assertEqual('{"headers": {"col1": "C1", "col2": "C2"}, "title": "Title", '
+                         '"data": [{"col1": "val1", "col2": {"href": "http://url", "text": "Description"}}]}', result)

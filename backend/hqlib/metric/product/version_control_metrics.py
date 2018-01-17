@@ -14,11 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 from typing import Dict, List, Optional
 
-from ...domain import LowerIsBetterMetric
-from ...metric_source import VersionControlSystem
+from hqlib import utils
 from hqlib.typing import MetricParameters
+from ...domain import LowerIsBetterMetric, ExtraInfo
+from ...metric_source import VersionControlSystem
 
 
 class UnmergedBranches(LowerIsBetterMetric):
@@ -41,8 +43,8 @@ class UnmergedBranches(LowerIsBetterMetric):
         return -1 if unmerged_branches is None else len(unmerged_branches)
 
     def url(self) -> Dict[str, str]:
-        unmerged_branches = self.__unmerged_branches()
-        return dict() if unmerged_branches is None else self.__branch_and_nr_revs_urls(unmerged_branches)
+        return dict() if self._metric_source is None \
+            else {self._metric_source.metric_source_name: self._metric_source.url()}
 
     def comment_urls(self) -> Dict[str, str]:
         return self.__branch_urls(self.__list_of_branches_to_ignore())
@@ -66,19 +68,44 @@ class UnmergedBranches(LowerIsBetterMetric):
                 comment = branch_comment
         return comment
 
+    def extra_info(self) -> ExtraInfo:
+        """ Returns a list with unmerged branches as an extra info object. """
+        extra_info = None
+        unmerged_branches = self.__unmerged_branches()
+        if unmerged_branches:
+            extra_info = ExtraInfo(link="Branch", comment="Aantal")
+            extra_info.title = self.url_label_text
+            for branch, nr_revisions in list(unmerged_branches.items()):
+                extra_info.add_row(
+                    {"href": self.__branch_folder_for_branch(self.__vcs_path(), branch), "text": branch},
+                    '{nr} ongemergde revisie(s)'.format(nr=nr_revisions))
+
+        return extra_info if extra_info is not None and extra_info.data else None
+
+    def format_text_with_links(self, text: str, url_dict: Dict[str, str] = None, url_label: str = None) -> str:
+        """ Format a text paragraph with additional url. """
+        if self._metric_source:
+            text = '{0} [{1}]'.format(utils.html_escape(text).replace('\n', ' '),
+                                      "<a href='{href}' target='_blank'>{anchor}</a>"
+                                      .format(href=self._metric_source.url(), anchor=utils
+                                              .html_escape(self._metric_source.metric_source_name)))
+        return json.dumps(text)[1:-1]  # Strip quotation marks
+
+    def format_comment_with_links(self, text: str, url_dict: Dict[str, str], url_label: str) -> str:
+        """ Format a text paragraph with optional urls and label for the urls. """
+        text = utils.html_escape(text).replace('\n', ' ')
+        links = [anchor for (anchor, href) in list(url_dict.items())]
+        if links:
+            if url_label:
+                url_label += ': '
+            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
+        return json.dumps(text)[1:-1]  # Strip quotation marks
+
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         branches = self.__branches()
         parameters['nr_branches'] = 'onbekend aantal' if branches is None else str(len(branches))
         return parameters
-
-    def __branch_and_nr_revs_urls(self, branches_and_revisions: Dict[str, int]) -> Dict[str, str]:
-        """ Return a list of branch urls. """
-        urls = dict()
-        for branch, nr_revisions in list(branches_and_revisions.items()):
-            label = '{branch}: {nr} ongemergde revisie(s)'.format(branch=branch, nr=nr_revisions)
-            urls[label] = self.__branch_folder_for_branch(self.__vcs_path(), branch)
-        return urls
 
     def __branch_urls(self, branches: List[str]) -> Dict[str, str]:
         """ Return a list of branch urls. """

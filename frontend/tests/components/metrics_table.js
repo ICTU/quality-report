@@ -47,7 +47,7 @@ test('metrics table rendered without metrics', (t) => {
 test('metrics table rendered correctly', (t) => {
     const wrapper = mount(<MetricsTable metrics={[{"id_value": "PD-01", "id_format": "PD-1", "section": "PD",
                 "sparkline": "<img src='img/PD-1.png' />;", "status_format": "status_format_html_str", "status": "missing_source",
-                "measurement": "Measurement result", "norm": "Norm message", "comment": "Comment!"}]} />)
+                "measurement": "Measurement result", "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]} />)
     
     t.equal(wrapper.find('BootstrapTable').children().length, 1);
 

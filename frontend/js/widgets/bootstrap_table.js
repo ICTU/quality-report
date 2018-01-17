@@ -86,7 +86,10 @@ class BootstrapTableBody extends React.Component {
     buildRowsOfReport(rows) {
        return rows.map((row, index) => 
             {
-                var hasDetailPane = !(!(this.props.children[index]['comment']));
+                var hasComment = !(!(this.props.children[index]['comment']));
+                var hasExtraInfo =  (this.props.children[index]['extra_info'] 
+                                        && !(Object.keys(this.props.children[index]['extra_info']).length === 0))
+                var hasDetailPane = hasComment || hasExtraInfo;
                 var chdId = this.props.children[index]['id'];
 
                 var toggleButton = hasDetailPane ?
@@ -100,7 +103,7 @@ class BootstrapTableBody extends React.Component {
                     </tr>]
 
                 if (hasDetailPane) {
-                    ret.push(<DetailPane key={chdId + 'p'} metric_detail={this.props.children[index]} />);
+                    ret.push(<DetailPane key={chdId + 'p'} has_comment={hasComment} has_extra_info={hasExtraInfo} metric_detail={this.props.children[index]} />);
                 }
                 return ret;
             });
@@ -132,17 +135,78 @@ class BootstrapTableBody extends React.Component {
 }
 
 class DetailPane extends React.Component {
+    renderCommentPanel(comment) {
+        return this.props.has_comment ? <CommentPanel comment_text={comment} /> : '';
+    }
+    renderExtraInfoPanel(extra_info) {
+        return this.props.has_extra_info ? <TablePanel extra_info={extra_info}/> : '';
+    }
     render() {
         var cls = this.props.metric_detail['className'];
         return (
             <tr id={this.props.metric_detail['id'] + '_details'} className={cls + " collapse"}>
                 <td className="detail_pane" colSpan="6">
-                    <div className="panel panel-default">
-                        <h4 className="panel-heading">Commentaar</h4>
-                        <div className="panel-body">{this.props.metric_detail['comment']}</div>
-                    </div>
+                    {this.renderCommentPanel(this.props.metric_detail['comment'])}
+                    {this.renderExtraInfoPanel(this.props.metric_detail['extra_info'])}
                 </td>
             </tr>
+        );
+    }
+}
+
+class CommentPanel  extends React.Component {
+    render() {
+        return (
+            <div className="panel panel-default">
+                <h4 className="panel-heading">Commentaar</h4>
+                <div className="panel-body">{this.props.comment_text}</div>
+            </div>
+        );
+    }
+}
+
+class TablePanel extends React.Component {
+    renderHeader(headers){
+        return (
+            <thead>
+                <tr>
+                    {Object.values(headers).map((col, index) => <th key={index}>{col}</th>)}
+                </tr>
+            </thead>)
+    }
+    formatCell(cell_content) {
+        if (cell_content.hasOwnProperty('href')) {
+            return <a href={cell_content.href}>{cell_content.text || cell_content.href}</a>
+        }
+        return cell_content;      
+    }
+    renderTableBody(extra_info){
+        var columns = Object.keys(extra_info.headers);
+        var rows;
+        if(extra_info && extra_info.data) {
+            rows = extra_info.data.map((row, index) => 
+                    <tr key={index}>
+                        {columns.map((col) => 
+                            <td key={col + "_" + index}>{this.formatCell(row[col])}</td>)}
+                    </tr>)
+        }
+        return (            
+            <tbody>
+                {rows}
+            </tbody>
+        );
+    }
+    render() {
+        return (
+            <div className="panel panel-default">
+                <h4 className="panel-heading">{this.props.extra_info["title"]}</h4>
+                <div className="panel-body">
+                    <table className="table-striped">
+                        {this.renderHeader(this.props.extra_info["headers"])}
+                        {this.renderTableBody(this.props.extra_info)}
+                    </table>
+                </div>
+            </div>
         );
     }
 }
@@ -181,4 +245,4 @@ class BootstrapTable extends React.Component {
     }
 }
 
-export {BootstrapTable, BootstrapTableHeader, BootstrapTableBody, Caret};
+export {BootstrapTable, BootstrapTableHeader, BootstrapTableBody};
