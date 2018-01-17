@@ -104,8 +104,8 @@ class PerformanceScalabilityTestAge(PerformanceTestAge):
 class PerformanceTestDuration(domain.HigherIsBetterMetric):
     """ Metric for measuring the duration of the performance test. """
 
-    target_value = 60
-    low_target_value = 30
+    target_value = 30
+    low_target_value = 20
     unit = "minuten"
     applicable_metric_source_classes = []  # Subclass responsibility
 
