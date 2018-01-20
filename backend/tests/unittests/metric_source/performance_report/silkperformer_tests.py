@@ -46,12 +46,15 @@ Reporting engine
 
 <h3>Test specification</h3>
 <table class="config">
-    <tr><td class="name">Comment</td><td>Gegenereerd vanuit de TestStraat</td></tr>
-    <tr><td class="name">Workload</td><td>Productie</td></tr>
-    <tr><td class="name">Report generated</td><td>2016.04.19.03.27.56</td></tr>
-    <tr><td class="name">Start of the test (GMT)</td><td>2016.04.19.02.44.48</td></tr>
-    <tr><td class="name">Baseline</td><td>2016.04.18.13.47.02</td></tr>
-    <tr><td class="name">Number of virtual users</td><td>12</td></tr>
+    <tbody><tr><td class="name">Comment</td><td>Gegenereerd vanuit de TestStraat</td></tr>
+        <tr><td class="name">Workload</td><td>Productie</td></tr>
+        <tr><td class="name">Loadgenerator</td><td>Silk Performer</td></tr>
+        <tr><td class="name">Report generated</td><td>2018.01.20.02.41.52</td></tr>
+        <tr><td class="name">Start of the test (GMT)</td><td>2018.01.20.02.03.33</td></tr>
+        <tr><td class="name">Baseline used</td><td>2017.09.27.16.08.00</td></tr>
+        <tr><td class="name">Baseline reason</td><td>specified</td></tr>
+        <tr><td class="name">Max trend items</td><td>10</td></tr>
+    </tbody>
 </table>
 
 <h3>Components</h3>
@@ -404,7 +407,7 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
-        self.assertEqual(datetime.datetime(2016, 4, 19, 3, 27, 56),
+        self.assertEqual(datetime.datetime(2018, 1, 20, 2, 41, 52),
                          self._performance_report.datetime(('.*[0-9][0-9].*', 'dummy')))
 
     def test_date_without_urls(self):
@@ -419,7 +422,7 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_duration(self):
         """ Test tha the duration of the test is correct. """
-        self.assertEqual(datetime.timedelta(minutes=43, seconds=8),
+        self.assertEqual(datetime.timedelta(minutes=38, seconds=19),
                          self._performance_report.duration(('.*[0-9][0-9].*', 'dummy')))
 
     def test_duration_without_urls(self):

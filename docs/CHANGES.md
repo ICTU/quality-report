@@ -1,3 +1,8 @@
+2018-01-20  Release 2.34.1
+
+  * Bug fix: Don't crash when reading new Silkperformer report.
+  
+
 2018-01-16  Release 2.34.0
 
   * Feature #209: detail metric information pane implemented.
