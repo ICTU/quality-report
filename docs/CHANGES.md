@@ -1,8 +1,14 @@
+2018-01-20  Release 2.35.0
+
+  * Feature #245: Allow for ignoring specific lists on action and risk boards. 
+    See https://github.com/ICTU/quality-report/wiki/Trello and https://github.com/ICTU/quality-report/wiki/Wekan.
+
+ 
 2018-01-20  Release 2.34.1
 
   * Bug fix: Don't crash when reading new Silkperformer report.
   
-
+  
 2018-01-16  Release 2.34.0
 
   * Feature #209: detail metric information pane implemented.

@@ -23,8 +23,21 @@ from hqlib.domain import LowerIsBetterMetric
 from hqlib.typing import MetricValue
 
 
-class ActivityMetric(LowerIsBetterMetric):
-    """ Metrics for tracking actuality using Trello. """
+class IssueLogMetric(LowerIsBetterMetric):
+    """ Metrics for tracking issue logs. """
+
+    def comment(self) -> str:
+        """ Add ignored lists to the comment, if any """
+        comments = []
+        if super().comment():
+            comments.append(super().comment())
+        if self._metric_source and self._metric_source.ignored_lists():
+            comments.append("Genegeerde lijsten: {}.".format(", ".join(self._metric_source.ignored_lists())))
+        return " ".join(comments)
+
+
+class ActivityMetric(IssueLogMetric):
+    """ Metrics for tracking actuality of the issue log. """
 
     unit = 'dagen'
 
@@ -61,7 +74,7 @@ class ActionActivity(ActivityMetric):
     metric_source_class = metric_source.ActionLog
 
 
-class OverDueActions(LowerIsBetterMetric):
+class OverDueActions(IssueLogMetric):
     """ Metric for measuring the number of over due actions. """
 
     name = 'Tijdigheid van de acties'
@@ -81,7 +94,7 @@ class OverDueActions(LowerIsBetterMetric):
         return self._metric_source.over_due_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}
 
 
-class StaleActions(LowerIsBetterMetric):
+class StaleActions(IssueLogMetric):
     """ Metric for measuring the staleness of actions . """
 
     name = 'Actualiteit van de acties'

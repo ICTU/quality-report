@@ -58,6 +58,8 @@ class FakeBoard(object):
 
 class FakeCardList(object):
     """ Fake a Wekan list of cards. """
+    title = "List"
+
     def __init__(self, cards=None):
         self.__cards = cards or []
         for card in self.__cards:
@@ -204,3 +206,12 @@ class WekanBoardTest(unittest.TestCase):
         """ Test the WekanBoard date and time without Wekan board. """
         self.assertEqual(datetime.datetime.min,
                          WekanBoard('', '', '', api=FakeWekanAPI([FakeBoard([FakeCardList()])])).datetime('id'))
+
+    def test_ignore_lists(self):
+        """ Test that lists can be ignored. """
+        api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(date_last_activity="2017-1-24T15:52:25.249Z")])])])
+        self.assertEqual(0, WekanBoard('', '', '', lists_to_ignore=["List"], api=api).nr_of_inactive_actions('id'))
+
+    def test_get_ignored_lists(self):
+        """ Test that the ignored lists can be retrieved. """
+        self.assertEqual(["List"], WekanBoard('', '', '', lists_to_ignore=["List"], api=FakeWekanAPI()).ignored_lists())

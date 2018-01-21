@@ -84,12 +84,23 @@ class TrelloObject(object):
         return datetime.datetime(year, month, day, hour, minute, second)
 
 
+class TrelloList(TrelloObject):
+    """ Class representing a Trello list. """
+    def name(self) -> str:
+        """ Return the name of the list. """
+        return self._json()["name"]
+
+
 class TrelloCard(TrelloObject):
     """ Class representing a Trello card. """
 
     def id(self) -> str:
         """ Return the id of this Trello object. """
         return self._json()['idShort']
+
+    def list_name(self) -> str:
+        """ Return the name of the list that the card belongs to. """
+        return TrelloList(self._appkey, self._token, self._json()["idList"]).name()
 
     def due_date_time(self) -> Optional[DateTime]:
         """ Return the date/time when this card is due or None when the card has no due date/time. """
@@ -125,7 +136,12 @@ class TrelloBoard(TrelloObject, MetricSource):
 
     def __init__(self, *args, **kwargs) -> None:
         self.__card_class = kwargs.pop('card_class', TrelloCard)
+        self.__lists_to_ignore = kwargs.pop('lists_to_ignore', [])
         super().__init__(*args, **kwargs)
+
+    def ignored_lists(self) -> List[str]:
+        """ Return the ignored lists. """
+        return self.__lists_to_ignore
 
     def nr_of_over_due_cards(self, *board_ids: str) -> int:
         """ Return the number of (non-archived) cards on this Trello board that are over due. """
@@ -186,7 +202,7 @@ class TrelloBoard(TrelloObject, MetricSource):
                               self._json(object_id=board_id, argument='/cards')])
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't get cards from Trello board: %s", reason)
-        return cards
+        return [card for card in cards if card.list_name() not in self.__lists_to_ignore]
 
     def __create_card(self, card_id: str) -> TrelloCard:
         """ Create a Trello card with the specified id. """

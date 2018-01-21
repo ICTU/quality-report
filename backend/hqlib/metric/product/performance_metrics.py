@@ -109,7 +109,7 @@ class PerformanceTestDuration(domain.HigherIsBetterMetric):
     unit = "minuten"
     applicable_metric_source_classes = []  # Subclass responsibility
 
-    def is_applicable(self) -> bool:  # pylint: disable=unused-argument
+    def is_applicable(self) -> bool:
         return self._metric_source.__class__ in self.applicable_metric_source_classes if self._metric_source else True
 
     def value(self):

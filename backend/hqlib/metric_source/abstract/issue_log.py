@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Dict
+from typing import Dict, List
 
 from ... import domain
 
@@ -24,15 +24,27 @@ class IssueLog(domain.MetricSource):
     """ Abstract based class for issues logs. """
     metric_source_name = 'Issue log'
 
+    def ignored_lists(self) -> List[str]:
+        """ Return the ignored lists. """
+        raise NotImplementedError
+
 
 class RiskLog(IssueLog):
     """ Abstract base class for risk logs. """
     metric_source_name = 'Risk log'
 
+    def ignored_lists(self) -> List[str]:
+        """ Return the ignored lists. """
+        raise NotImplementedError
+
 
 class ActionLog(IssueLog):
     """ Abstract base class for action logs. """
     metric_source_name = 'Action log'
+
+    def ignored_lists(self) -> List[str]:
+        """ Return the ignored lists. """
+        raise NotImplementedError
 
     def nr_of_over_due_actions(self, *metric_source_ids: str) -> int:
         """ Return the number of over due actions. """

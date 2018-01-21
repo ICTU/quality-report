@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import functools
 import logging
-from typing import Dict, Iterator, Sequence
+from typing import Dict, List, Iterator, Sequence
 
 import wekanapi
 
@@ -30,10 +30,11 @@ class WekanBoard(domain.MetricSource):
 
     metric_source_name = 'Wekan'
 
-    def __init__(self, url: str, username: str, password: str, api=wekanapi.WekanApi) -> None:
+    def __init__(self, url: str, username: str, password: str, lists_to_ignore=None, api=wekanapi.WekanApi) -> None:
         self.__url = url.strip('/')
         self.__username = username
         self.__password = password
+        self.__lists_to_ignore = lists_to_ignore or []
         self.__wekan_api = api
         super().__init__(url=self.__url)
 
@@ -49,6 +50,10 @@ class WekanBoard(domain.MetricSource):
         return self.__board_urls(*metric_source_ids)
 
     # metric_source.ActionLog interface:
+
+    def ignored_lists(self) -> List[str]:
+        """ Return the ignored lists. """
+        return self.__lists_to_ignore
 
     def nr_of_over_due_actions(self, *board_ids: str) -> int:
         """ Return the number of over due cards. """
@@ -150,6 +155,8 @@ class WekanBoard(domain.MetricSource):
         """ Return all cards on the boards. """
         for board in self.__boards(*board_ids):
             for cards_list in board.get_cardslists():
+                if cards_list.title in self.__lists_to_ignore:
+                    continue
                 for card in cards_list.get_cards():
                     yield card
 

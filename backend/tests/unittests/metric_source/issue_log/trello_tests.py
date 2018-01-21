@@ -16,14 +16,15 @@ limitations under the License.
 
 import datetime
 import io
-import unittest
 import urllib.error
+import unittest
 
-from hqlib.metric_source.issue_log.trello import TrelloCard, TrelloBoard
+from hqlib.metric_source.issue_log.trello import TrelloCard, TrelloList, TrelloBoard
 
 
 class FakeCard(object):
     """ Fake card class to use for testing the Trello board class. """
+
     def __init__(self, app_key, token, card_id, *args, **kwargs):  # pylint: disable=unused-argument
         self.__card_id = card_id
         # The card id determines the status of the fake card:
@@ -53,6 +54,11 @@ class FakeCard(object):
     def last_update_time_delta(self):
         """ Return the time since the last update. """
         return datetime.timedelta(days=4 if self.__inactive else 0)
+
+    @staticmethod
+    def list_name():
+        """ Return the list name of the card. """
+        return "List"
 
 
 class TrelloBoardTest(unittest.TestCase):
@@ -127,13 +133,24 @@ class TrelloBoardTest(unittest.TestCase):
         self.__raise = True
         self.assertEqual(0, self.__trello_board.nr_of_over_due_cards('board_id'))
 
+    def test_ignore_lists(self):
+        """ Test that cards on specific lists can be ignored. """
+        self.__cards_json = '[{"id": 2}]'
+        board = TrelloBoard('appkey', 'token', lists_to_ignore="List", urlopen=self.__urlopen, card_class=FakeCard)
+        self.assertEqual(0, board.nr_of_inactive_cards("board_id"))
+
+    def test_get_ignored_lists(self):
+        """ Test that the ignored lists can be retrieved. """
+        board = TrelloBoard('appkey', 'token', lists_to_ignore=["List"], urlopen=self.__urlopen)
+        self.assertEqual(["List"], board.ignored_lists())
+
 
 class TrelloCardTest(unittest.TestCase):
     """ Unit tests for the Trello card class. """
 
     def setUp(self):
         self.__raise = False
-        self.__json = '{}'
+        self.__json = '{"idShort": "id", "idList": "123"}'
         self.__trello_card = TrelloCard('object_id', 'appkey', 'token', urlopen=self.__urlopen)
 
     @staticmethod
@@ -149,6 +166,16 @@ class TrelloCardTest(unittest.TestCase):
     def __urlopen(self, url):  # pylint: disable=unused-argument
         """ Return a fake JSON string. """
         return io.StringIO(self.__json)
+
+    def test_id(self):
+        """ Test the card id. """
+        self.assertEqual("id", self.__trello_card.id())
+
+    @unittest.mock.patch.object(TrelloList, "name")
+    def test_list_name(self, trello_list_name):
+        """ Test the list name. """
+        trello_list_name.return_value = "List"
+        self.assertEqual("List", self.__trello_card.list_name())
 
     def test_no_due_date_time(self):
         """ Test that an empty card has no due date time. """
@@ -187,3 +214,19 @@ class TrelloCardTest(unittest.TestCase):
         """ Test that a card is not inactive when it has been updated recently. """
         self.__json = '[{"date": "2014-5-4T16:45:33.09Z"}]'
         self.assertFalse(self.__trello_card.is_inactive(15, now=self.__now))
+
+
+class TrelloListTest(unittest.TestCase):
+    """ Unit tests for the Trello list class. """
+    def setUp(self):
+        self.__raise = False
+        self.__json = '{"name": "List"}'
+        self.__trello_list = TrelloList('object_id', 'appkey', 'token', urlopen=self.__urlopen)
+
+    def __urlopen(self, url):  # pylint: disable=unused-argument
+        """ Return a fake JSON string. """
+        return io.StringIO(self.__json)
+
+    def test_name(self):
+        """ Test the name of the list. """
+        self.assertEqual("List", self.__trello_list.name())

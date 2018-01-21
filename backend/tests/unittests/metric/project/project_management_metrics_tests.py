@@ -16,12 +16,15 @@ limitations under the License.
 
 import datetime
 import unittest
+from typing import List
 
 from hqlib import metric, domain, metric_source
 
 
 class FakeBoard(metric_source.TrelloBoard):
     """ Fake a Trello board. """
+    ignored = []
+
     def __init__(self):
         super().__init__('board_id', 'appkey', 'token')
 
@@ -56,6 +59,10 @@ class FakeBoard(metric_source.TrelloBoard):
     def nr_of_inactive_cards(*args):
         """ Fake the number. """
         return 4
+
+    def ignored_lists(self) -> List[str]:
+        """ Return a fake list name. """
+        return self.ignored
 
 
 class UnreachableBoard(FakeBoard):
@@ -98,10 +105,10 @@ class RiskLogTest(unittest.TestCase):
     """ Unit tests for the risk log metric. """
 
     def setUp(self):
-        board = FakeBoard()
+        self.__board = FakeBoard()
         self.__project = domain.Project(
-            metric_sources={metric_source.RiskLog: board},
-            metric_source_ids={board: 'board_id'})
+            metric_sources={metric_source.RiskLog: self.__board},
+            metric_source_ids={self.__board: 'board_id'})
         self.__metric = metric.RiskLog(project=self.__project, subject=self.__project)
 
     def test_url(self):
@@ -115,6 +122,25 @@ class RiskLogTest(unittest.TestCase):
     def test_value_without_metric_source(self):
         """ Test that the value is -1 when the metric source hasn't been configured. """
         self.assertEqual(-1, metric.RiskLog(project=domain.Project()).value())
+
+    def test_comment_with_ignored_lists(self):
+        """ Test that ignored lists are mentioned. """
+        self.__board.ignored = ["Ignored list"]
+        self.assertEqual("Genegeerde lijsten: Ignored list.", self.__metric.comment())
+
+    def test_comment_without_ignored_lists(self):
+        """ Test that the comment is empty when there are no ignored lists. """
+        self.assertEqual("", self.__metric.comment())
+
+    def test_multiple_comments(self):
+        """ Test that comments are combined. """
+        self.__board.ignored = ["Ignored list"]
+        project = domain.Project(
+            metric_sources={metric_source.RiskLog: self.__board},
+            metric_source_ids={self.__board: 'board_id'},
+            metric_options={metric.RiskLog: dict(comment="Comment.")})
+        risk_log_metric = metric.RiskLog(project=project, subject=project)
+        self.assertEqual("Comment. Genegeerde lijsten: Ignored list.", risk_log_metric.comment())
 
 
 class UnreachableRiskLogTest(unittest.TestCase):
