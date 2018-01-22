@@ -14,30 +14,40 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import unittest
+import unittest.mock
 
 from hqlib import configuration
 
 
 class ConfigurationTest(unittest.TestCase):
-    def setUp(self):
-        self.module = None
+    """ Unit tests for the configuration class. """
 
-    def __import(self, *args, **kwargs):  # pylint: disable=unused-argument
-        """ Fake import function. """
-        if self.module:
-            return self.module
-        else:
-            raise ModuleNotFoundError
+    @unittest.mock.patch("builtins.__import__")
+    def test_get_project_from_py_file(self, import_function):
+        """ Test that a project definition can be loaded. """
+        project = unittest.mock.MagicMock()
+        project.PROJECT = "Project"
+        import_function.return_value = project
+        self.assertEqual("Project", configuration.Configuration.project("folder/definition.py"))
 
-    def test_missing_project_definition(self):
-        """ Test that the default project definition is returned if the actual one is missing. """
+    @unittest.mock.patch("builtins.__import__")
+    def test_get_project_from_folder(self, import_function):
+        """ Test that a project definition can be loaded. """
+        project = unittest.mock.MagicMock()
+        project.PROJECT = "Project"
+        import_function.return_value = project
+        self.assertEqual("Project", configuration.Configuration.project("folder"))
+
+    @unittest.mock.patch("builtins.__import__")
+    def test_missing_project_definition(self, import_function):
+        """ Test that an exception is thrown if the actual project definition is missing. """
+        import_function.side_effect = ModuleNotFoundError
         for filename in 'folder', 'folder/definition.py':
-            self.assertEqual('Default project', configuration.Configuration.project(filename, self.__import).name())
+            self.assertRaises(ModuleNotFoundError, configuration.Configuration.project, filename)
 
-    def test_missing_project_in_module(self):
+    @unittest.mock.patch("builtins.__import__")
+    def test_missing_project_in_module(self, import_function):
         """ Test that the default project definition is returned if the project is missing from the project
             definition. """
-        self.module = 'fake module without project'
-        self.assertEqual('Default project',
-                         configuration.Configuration.project('folder/definition.py', self.__import).name())
+        import_function.side_effect = AttributeError
+        self.assertRaises(AttributeError, configuration.Configuration.project, 'folder/definition.py')

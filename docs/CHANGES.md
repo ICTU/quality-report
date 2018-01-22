@@ -1,3 +1,9 @@
+2018-01-22  Release 2.36.0
+
+  * Feature #238: Remove the feature of using a default project definition when the actual project definition has
+    errors as this results in a working (but useless) report, hiding the problem with the incorrect project definition.
+    
+    
 2018-01-20  Release 2.35.0
 
   * Feature #245: Allow for ignoring specific lists on action and risk boards. 
