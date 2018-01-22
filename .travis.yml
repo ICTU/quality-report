@@ -27,7 +27,6 @@ script:
 - cd ../backend
 - coverage run --branch tests/run_unittests.py
 - coverage xml
-#- ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
@@ -37,6 +36,8 @@ script:
 - nosetests --with-xunit tests/unittests/
 - cd ..
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+after_script:
+- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 before_deploy:
 - cd backend
 - python setup.py bundle
