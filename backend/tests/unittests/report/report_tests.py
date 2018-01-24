@@ -241,9 +241,10 @@ class ReportFactory(object):  # pylint: disable=too-few-public-methods
     @staticmethod
     def __create_team(team_kwargs):
         """ Create a team according to the provided arguments. """
+        nr_members = team_kwargs.pop("nr_members", 2)
         team = domain.Team(name='Team', **team_kwargs)
-        team.add_member(domain.Person(name='Piet Programmer'))
-        team.add_member(domain.Person(name='Tara Tester'))
+        for index in range(nr_members):
+            team.add_member(domain.Person(name='Member {0}'.format(index)))
         return team
 
 
@@ -251,12 +252,15 @@ class QualityReportMetricsTest(unittest.TestCase):
     """ Unit tests for the quality report class that test whether the right metrics are added. """
 
     def __assert_metric(self, metric_class, project_kwargs=None, team_kwargs=None, process_kwargs=None,
-                        product_kwargs=None):
+                        product_kwargs=None, should_be_included=True):
         """ Check that the metric class is included in the report. """
         quality_report = ReportFactory.report(project_kwargs or dict(), team_kwargs or dict(),
                                               process_kwargs or dict(), product_kwargs or dict())
         included = metric_class in [each_metric.__class__ for each_metric in quality_report.metrics()]
-        self.assertTrue(included, '{0} should be included in the report but was not.'.format(metric_class))
+        if should_be_included:
+            self.assertTrue(included, '{0} should be included in the report but was not.'.format(metric_class))
+        else:
+            self.assertFalse(included, '{0} should not be included in the report but was.'.format(metric_class))
 
     def test_project_requirements(self):
         """ Test for each project requirement that its metrics are added if the project has the requirement. """
@@ -314,6 +318,12 @@ class QualityReportMetricsTest(unittest.TestCase):
         """ Test that the unit test metrics are added if required. """
         for metric_class in [metric.FailingUnittests, metric.UnittestLineCoverage, metric.UnittestBranchCoverage]:
             self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UnitTests]))
+
+    def test_non_applicable_metric(self):
+        """ Test that the team metric isn't added if the team has one member. """
+        self.__assert_metric(metric.TeamAbsence, team_kwargs=dict(short_name='TE', nr_members=1,
+                                                                  added_requirements=[requirement.TrackAbsence]),
+                             should_be_included=False)
 
     def test_document_age(self):
         """ Test that the document age metric is added if possible. """

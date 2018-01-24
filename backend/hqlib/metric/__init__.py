@@ -23,7 +23,6 @@ from .product.automated_regression_test_metrics import FailingRegressionTests, R
 from .product.automated_regression_test_coverage_metrics import (
     ARTStatementCoverage, ARTBranchCoverage, CoverageReportAge)
 from .product.duplication_metrics import JavaDuplication
-from .product.integration_test_metrics import IntegrationtestLineCoverage, IntegrationtestBranchCoverage
 from .product.logical_test_case_metrics import (
     LogicalTestCasesNotReviewed, LogicalTestCasesNotApproved, LogicalTestCasesNotAutomated,
     DurationOfManualLogicalTestCases, ManualLogicalTestCasesWithoutDuration, ManualLogicalTestCases,
@@ -37,8 +36,6 @@ from .product.performance_metrics import PerformanceLoadTestWarnings, Performanc
     PerformanceScalabilityTestDuration
 from .product.size_metrics import ProductLOC, TotalLOC
 from .product.source_code_metrics import CommentedLOC, CyclomaticComplexity, LongMethods, ManyParameters
-from .product.unit_and_integration_test_metrics import (
-    UnitAndIntegrationTestLineCoverage, UnitAndIntegrationTestBranchCoverage)
 from .product.unittest_metrics import FailingUnittests
 from .product.unittest_coverage_metrics import UnittestLineCoverage, UnittestBranchCoverage
 from .product.user_story_metrics import (

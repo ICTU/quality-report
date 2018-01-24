@@ -24,12 +24,6 @@ class UnittestCoverage(SonarDashboardMetric, HigherIsBetterMetric):  # pylint: d
     unit = '%'
     perfect_value = 100
 
-    def is_applicable(self) -> bool:
-        """ Return whether the unit test metric is applicable to the product. This is only the case if the product
-            has no integration tests, because if it does, the combined unit and integration test metrics should be
-            used. """
-        return not self._subject.has_integration_tests()
-
     def value(self):
         raise NotImplementedError
 

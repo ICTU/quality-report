@@ -123,7 +123,7 @@ class MetaDataFormatterTest(unittest.TestCase):
                          '"Track technical debt", "Track the duration of user stories", '
                          '"Track the last security test date", "Track user stories in progress", '
                          '"Track whether user stories have security and performance risks", '
-                         '"Unit and/or integration tests", "User stories and logical test cases"]}, {"included": true, '
+                         '"Unit tests", "User stories and logical test cases"]}, {"included": true, '
                          '"name": "Project", "id": "Project", "default_requirements": [], '
                          '"optional_requirements": ["Track actions", '
                          '"Track manual logical test cases", "Track open bug reports", "Track open findings", '

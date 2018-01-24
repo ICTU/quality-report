@@ -25,11 +25,8 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, art: 'Product'=None, is_main: bool=True,
-                 has_unittests: bool=True, has_integration_tests: bool=False, **kwargs) -> None:
+    def __init__(self, art: 'Product'=None, is_main: bool=True, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.__has_unittests = has_unittests
-        self.__has_integration_tests = has_integration_tests
         self.__art = art
         self.__is_main = is_main  # Is this product part of the main system or is it support code?
 
@@ -57,14 +54,6 @@ class Product(RequirementSubject, MeasurableObject):
     def art(self) -> Optional['Product']:
         """ Return a product that represents the ART of this product. """
         return self.__copy_component(self.__art)
-
-    def has_unittests(self) -> bool:
-        """ Return whether the product has unit tests. """
-        return self.__has_unittests
-
-    def has_integration_tests(self) -> bool:
-        """ Return whether the product has integration tests. """
-        return self.__has_integration_tests
 
     @staticmethod
     def __copy_component(component) -> Optional['Product']:

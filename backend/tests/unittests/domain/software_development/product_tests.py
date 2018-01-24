@@ -30,14 +30,6 @@ class ProductTest(unittest.TestCase):
         """ Test that the name of the product equals given name. """
         self.assertEqual('Product', self.__product.name())
 
-    def test_default_unittests(self):
-        """ Test that products have unit tests by default. """
-        self.assertTrue(self.__product.has_unittests())
-
-    def test_default_integration_tests(self):
-        """ Test that products have no integration test component by default. """
-        self.assertFalse(self.__product.has_integration_tests())
-
     def test_default_art(self):
         """ Test that products have no automated regression test by default. """
         self.assertFalse(self.__product.art())

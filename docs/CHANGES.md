@@ -1,3 +1,10 @@
+2018-01-24  Release 2.37.0
+
+  * Feature #246: No longer use separate metrics for integration tests and unit tests, since SonarQube >= 6.2 
+    doesn't support this anymore. The integration test metrics and combined unit and integration test metrics have
+    been removed.
+  
+  
 2018-01-22  Release 2.36.0
 
   * Feature #238: Remove the feature of using a default project definition when the actual project definition has

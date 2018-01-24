@@ -82,10 +82,6 @@ class FailingUnittestsTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual({self.__report.metric_source_name: 'http://report'}, self.__metric.url())
 
-    def test_is_applicable(self):
-        """ Test that the metric is applicable. """
-        self.assertTrue(metric.FailingUnittests.is_applicable(FakeSubject()))
-
     def test_status_with_zero_unittests(self):
         """ Test that the metric is red when there are no unit tests. """
         report = FakeUnitTestReport(unittests=0)

@@ -62,9 +62,8 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
     nr_metrics = len(metric_classes([domain.Project, domain.Process, domain.Product, domain.Application,
                                      domain.Component, domain.Environment, domain.Document, domain.Team]))
     nr_meta_metrics = 5
-    nr_non_applicable_metrics = 12  # Integration test metrics and combined unit/integration test metrics
     nr_art_metrics = len(requirement_metric_classes(requirement.CodeQuality, requirement.TrackBranches))
-    expected_number_of_metrics = nr_metrics + nr_art_metrics + nr_meta_metrics - nr_non_applicable_metrics
+    expected_number_of_metrics = nr_metrics + nr_art_metrics + nr_meta_metrics
 
     def report(self):
         """ Read the report and return as beautiful soup. """

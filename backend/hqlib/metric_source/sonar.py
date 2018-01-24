@@ -241,26 +241,6 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         return failures + errors if failures >= 0 and errors >= 0 else -1
 
     @extract_branch_decorator
-    def integration_test_line_coverage(self, product: str, branch: str) -> float:
-        """ Return the line coverage of the integration tests for the product. """
-        return float(self.__metric(product, 'it_line_coverage', branch))
-
-    @extract_branch_decorator
-    def integration_test_branch_coverage(self, product: str, branch: str) -> float:
-        """ Return the branch coverage of the integration tests for the product. """
-        return float(self.__metric(product, 'it_branch_coverage', branch))
-
-    @extract_branch_decorator
-    def overall_test_line_coverage(self, product: str, branch: str) -> float:
-        """ Return the overall line coverage of the tests for the product. """
-        return float(self.__metric(product, 'overall_line_coverage', branch))
-
-    @extract_branch_decorator
-    def overall_test_branch_coverage(self, product: str, branch: str) -> float:
-        """ Return the overall branch coverage of the tests for the product. """
-        return float(self.__metric(product, 'overall_branch_coverage', branch))
-
-    @extract_branch_decorator
     def methods(self, product: str, branch: str) -> int:
         """ Return the number of methods/functions in the product. """
         return int(self.__metric(product, 'functions', branch))

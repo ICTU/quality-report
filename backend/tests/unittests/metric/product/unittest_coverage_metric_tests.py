@@ -34,7 +34,6 @@ class CommonUnittestMetricTestsMixin(object):
         project = domain.Project(metric_sources={metric_source.Sonar: self.__report})
         self.__subject = unittest.mock.MagicMock()
         self.__subject.name.return_value = "FakeSubject"
-        self.__subject.has_integration_tests.return_value = False
         self.__metric = self.class_under_test(subject=self.__subject, project=project)
 
     def test_value(self):
@@ -48,10 +47,6 @@ class CommonUnittestMetricTestsMixin(object):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({self.__report.metric_source_name: self.__report.dashboard_url()}, self.__metric.url())
-
-    def test_is_applicable(self):
-        """ Test that the metric is applicable. """
-        self.assertTrue(self.class_under_test(subject=self.__subject, project=domain.Project()).is_applicable())
 
 
 class UnittestLineCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase):

@@ -18,6 +18,7 @@ import datetime
 import urllib.error
 import unittest
 from unittest.mock import patch, call, MagicMock
+
 from hqlib.metric_source import Sonar, url_opener, extract_branch_decorator
 
 
@@ -73,10 +74,6 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
                                     {"metric": "test_failures", "value": "100"},
                                     {"metric": "test_errors", "value": "100"},
                                     {"metric": "line_coverage", "value": "100"},
-                                    {"metric": "it_line_coverage", "value": "100"},
-                                    {"metric": "it_branch_coverage", "value": "100"},
-                                    {"metric": "overall_line_coverage", "value": "100"},
-                                    {"metric": "overall_branch_coverage", "value": "100"},
                                     {"metric": "lines", "value": "100"},
                                     {"metric": "ncloc", "value": "100"},
                                     {"metric": "functions", "value": "100"},
@@ -98,9 +95,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
   "issues": [
     {
       "key": "44ff1a9a-2151-42c1-9b55-3d7473b02337",
-      "component": "nl.overheid.bsnk:bsnk-common:src/main/java/nl/overheid/bsnk/association/model/Association.java",
+      "component": "nl.overheid:common:src/main/java/nl/overheid/model/Model.java",
       "componentId": 651,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "squid:MethodCyclomaticComplexity",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -114,9 +111,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "48fabb2c-6f0d-4475-99ac-72295697083a",
-      "component": "nl.overheid.bsnk:bsnkquery-service:src/main/java/nl/overheid/bsnk/bsnkquery/BSNKQueryService.java",
+      "component": "nl.overheid:query-service:src/main/java/nl/overheid/query/QueryService.java",
       "componentId": 280,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "pmd:AvoidCatchingGenericException",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -140,9 +137,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "099afed1-fb17-4a38-a8ba-803a1327793a",
-      "component": "nl.overheid.bsnk:bsnkregister-service:src/main/java/nl/overh.../AssociationService.java",
+      "component": "nl.overheid:register-service:src/main/java/nl/overh.../AssociationService.java",
       "componentId": 625,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "squid:MethodCyclomaticComplexity",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -156,9 +153,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "b0ca9b89-43cc-4339-9b1b-2a68b6fe089a",
-      "component": "nl.overheid.bsnk:bsnkregister-service:src/main/java/nl/overh.../AssociationService.java",
+      "component": "nl.overheid:register-service:src/main/java/nl/overh.../AssociationService.java",
       "componentId": 625,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -172,9 +169,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "e09759bb-192c-4b83-8353-0d8045bcdcd3",
-      "component": "nl.overheid.bsnk:bsnkregister-service:src/main/java/nl/overh.../ResultaatCodeValidator.java",
+      "component": "nl.overheid:register-service:src/main/java/nl/overh.../ResultaatCodeValidator.java",
       "componentId": 936,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "squid:MethodCyclomaticComplexity",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -188,9 +185,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "a7ffb03e-dfbd-4240-bbf5-5c2640d0ff98",
-      "component": "nl.overheid.bsnk:bsnk-metadata:src/main/java/nl/overheid/bsnk/metadata/MetadataTimerService.java",
+      "component": "nl.overheid:metadata:src/main/java/nl/overheid/metadata/MetadataTimerService.java",
       "componentId": 899,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "pmd:AvoidCatchingGenericException",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -204,9 +201,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "9d01f697-393b-471f-874b-d32cfb1a0c1b",
-      "component": "nl.overheid.bsnk:bsnk-metadata:src/main/java/nl/overh.../MetadataParser.java",
+      "component": "nl.overheid:metadata:src/main/java/nl/overh.../MetadataParser.java",
       "componentId": 944,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "squid:MethodCyclomaticComplexity",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -220,9 +217,9 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
     },
     {
       "key": "eaf9970e-9ef7-4c5e-974b-17f1957a4341",
-      "component": "nl.overheid.bsnk:bsnk-common:src/main/java/nl/overheid/bsnk/CFG.java",
+      "component": "nl.overheid:common:src/main/java/nl/overheid/ABC.java",
       "componentId": 678,
-      "project": "nl.overheid.bsnk:bsnkquery-parent",
+      "project": "nl.overheid:query-parent",
       "rule": "squid:S1192",
       "status": "RESOLVED",
       "resolution": "FALSE-POSITIVE",
@@ -238,7 +235,7 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 }
 """
 
-    def url_read(self, url: str,  encoding: str='utf-8', *args, **kwargs) -> str:
+    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
         """ Return the static contents. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
@@ -407,30 +404,6 @@ class SonarCoverage(SonarTestCase):
         """ Test that the number of failing unit tests equals the number of unit test failures plus the number of
             unit test errors returned by the dashboard. """
         self.assertEqual(200, self._sonar.failing_unittests('product'))
-
-    def test_integration_test_line_coverage(self):
-        """ Test that the integration test line coverage equals the line coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.integration_test_line_coverage('product'))
-
-    def test_integration_test_branch_coverage(self):
-        """ Test that the integration test branch coverage equals the branch coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.integration_test_branch_coverage('product'))
-
-    def test_overall_test_line_coverage(self):
-        """ Test that the overall test line coverage equals the line coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.overall_test_line_coverage('product'))
-
-    def test_overall_test_branch_coverage(self):
-        """ Test that the overall test branch coverage equals the branch coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.overall_test_branch_coverage('product'))
-
-    def test_overall_line_coverage(self):
-        """ Test that the overall test line coverage equals the line coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.overall_test_line_coverage('product'))
-
-    def test_overall_branch_coverage(self):
-        """ Test that the overall test branch coverage equals the branch coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.overall_test_branch_coverage('product'))
 
 
 class SonarViolationsTest(SonarTestCase):
@@ -1278,234 +1251,6 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
         url_read_mock.assert_called_with(
             fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
             .format(component=product, metric='branch_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_it_line_coverage_with_branch(self, url_read_mock):
-        """" Check that it_line_coverage function correctly splits the branch and adds it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        branch = "my-branch"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","it_line_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        it_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"it_line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_line_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.integration_test_line_coverage(product + ':' + branch)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='it_line_coverage', branch=branch), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_it_line_coverage_without_branch(self, url_read_mock):
-        """" Check that it_line_coverage correctly splits an empty branch and does not it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","it_line_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        it_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"it_line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_line_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.integration_test_line_coverage(product + ':')
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_line_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_it_line_coverage_with_branch_old(self, url_read_mock):
-        """" Check that it_line_coverage correctly handles product with branch, for sonar version before 6.7. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report:brnch"
-        server_version = '6.5.1234'
-        it_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"it_line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, it_line_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.integration_test_line_coverage(product)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_line_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_it_branch_coverage_with_branch(self, url_read_mock):
-        """" Check that it_branch_coverage correctly splits the branch and adds it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        branch = "my-branch"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","it_branch_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        it_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"it_branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_branch_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.integration_test_branch_coverage(product + ':' + branch)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='it_branch_coverage', branch=branch), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_it_branch_coverage_without_branch(self, url_read_mock):
-        """" Check that it_branch_coverage splits an empty branch and does not it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","it_branch_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        it_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"it_branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, it_branch_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.integration_test_branch_coverage(product + ':')
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_branch_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_it_branch_coverage_with_branch_old(self, url_read_mock):
-        """" Check that it_branch_coverage function handles product with branch, for sonar version before 6.7. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report:brnch"
-        server_version = '6.5.1234'
-        it_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"it_branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, it_branch_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.integration_test_branch_coverage(product)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='it_branch_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_overall_line_coverage_with_branch(self, url_read_mock):
-        """" Check that overall_line_coverage correctly splits the branch and adds it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        branch = "my-branch"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","overall_line_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        overall_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"overall_line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     overall_line_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.overall_test_line_coverage(product + ':' + branch)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='overall_line_coverage', branch=branch), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_overall_line_coverage_without_branch(self, url_read_mock):
-        """" Check that overall_line_coverage splits an empty branch and does not it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","overall_line_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        overall_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"overall_line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     overall_line_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.overall_test_line_coverage(product + ':')
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_line_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_overall_line_coverage_with_branch_old(self, url_read_mock):
-        """" Check that overall_line_coverage handles product with branch, for sonar version before 6.7. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report:brnch"
-        server_version = '6.5.1234'
-        overall_line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"overall_line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, overall_line_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.overall_test_line_coverage(product)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_line_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_overall_branch_coverage_with_branch(self, url_read_mock):
-        """" Check that overall_branch_coverage correctly splits the branch and adds it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        branch = "my-branch"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","overall_branch_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        overall_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"overall_branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     overall_branch_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.overall_test_branch_coverage(product + ':' + branch)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}&branch={branch}'
-            .format(component=product, metric='overall_branch_coverage', branch=branch), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_overall_branch_coverage_without_branch(self, url_read_mock):
-        """" Check that overall_branch_coverage splits an empty branch and does not it as a parameter to the url. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report"
-        server_version = '6.8.1234'
-        plugins_json = '[{"key":"branch","name":"Branch","overall_branch_coverage":"1.0.0.507"}]'
-        component_ret_val = '{"whatever": "not a component"}'
-        overall_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"overall_branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     overall_branch_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.overall_test_branch_coverage(product + ':')
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_branch_coverage'), log_error=False)
-        self.assertEqual(1192, result)
-
-    def test_overall_branch_coverage_with_branch_old(self, url_read_mock):
-        """" Check that overall_branch_coverage handles product with branch, for sonar version before 6.7. """
-        fake_url = "http://fake.url/"
-        product = "nl.ictu:quality_report:brnch"
-        server_version = '6.5.1234'
-        overall_branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
-        measures_json = '{"component":{"measures":[{"metric":"overall_branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, overall_branch_coverage, measures_json]
-        sonar = Sonar(fake_url)
-
-        result = sonar.overall_test_branch_coverage(product)
-
-        url_read_mock.assert_called_with(
-            fake_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
-            .format(component=product, metric='overall_branch_coverage'), log_error=False)
         self.assertEqual(1192, result)
 
 
