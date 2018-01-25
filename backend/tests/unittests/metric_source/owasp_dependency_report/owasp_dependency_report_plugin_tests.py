@@ -203,4 +203,4 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
 
     def test_datetime(self):
         """ Test that the age of the job is returned. """
-        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime(('job',)))
+        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime(*('job',)))

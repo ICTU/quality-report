@@ -32,7 +32,7 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.__report_url = self._last_successful_build_url + 'dependency-check-jenkins-pluginResult/'
+        self.__report_url = self.url() + "job/{job}/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/"
         self.__report_api_url = self.__report_url + self.api_postfix
 
         # URL for the partial OWASP dependency page listing individual files
@@ -61,7 +61,8 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
 
     def _report_datetime(self, job_name: str) -> DateTime:
         """ Return the date and time of one report. """
-        return self._job_datetime(dict(name=job_name), self._last_stable_build_url)
+        job_url = self.url() + "job/" + job_name
+        return self._job_datetime(dict(url=job_url), "lastStableBuild")
 
     @functools.lru_cache(maxsize=1024)
     def _get_soup(self, url: str):

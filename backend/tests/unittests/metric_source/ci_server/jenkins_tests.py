@@ -30,11 +30,14 @@ def to_jenkins_timestamp(date_time, epoch=datetime.datetime(1970, 1, 1)):
 class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
     contents = '{"jobs": []}'
+    pipeline_contents = '{}'
 
     def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
         """ Return the static content. """
         if 'raise' in url:
             raise urllib.error.URLError('some reason')
+        elif '/job/' in url and 'tree=jobs[name,description,color,url,buildable]' in url:
+            return self.pipeline_contents
         else:
             return self.contents
 
@@ -62,7 +65,7 @@ class JenkinsTest(unittest.TestCase):
         """ Test the failing jobs with one failing job. """
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(date_time))
         self.assertEqual(1, self.__jenkins.number_of_failing_jobs())
 
@@ -70,31 +73,41 @@ class JenkinsTest(unittest.TestCase):
         """ Test the failing jobs with one failing job. """
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
                          self.__jenkins.failing_jobs_url())
 
-    def test_ignore_disable_job(self):
+    def test_ignore_disabled_job(self):
         """ Test that disabled failing jobs are ignored. """
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url", "buildable": False}], "builds": [{}]}'
+                                  '"url": "http://jenkins/job/job1/", "buildable": False}], "builds": [{}]}'
         self.assertEqual({}, self.__jenkins.failing_jobs_url())
 
-    def test_ignore_pipeline_job(self):
-        """ Test that pipleine jobs without buildable flag are ignored. """
+    def test_ignore_pipelines(self):
+        """ Test that pipelines (jobs without buildable flag) are ignored. """
         self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url"}], "builds": [{}]}'
+                                  '"url": "http://jenkins/job/job1/"}], "builds": [{}]}'
         self.assertEqual({}, self.__jenkins.failing_jobs_url())
+
+    def test_include_pipeline_job(self):
+        """ Test that pipeline jobs are included. """
+        timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))
+        self.__jenkins.pipeline_contents = '{"jobs": [{"name": "master", "color": "red", "description": "", ' \
+                                           '"url": "http://jenkins/job/master/", "buildable": True}]}'
+        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
+                                  '"url": "http://jenkins/job/job1/"}}], "timestamp": "{}", ' \
+                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(timestamp)
+        self.assertEqual({'master (100 dagen)': 'http://jenkins/job/master/'}, self.__jenkins.failing_jobs_url())
 
     def test_failing_jobs_url(self):
         """ Test that the failing jobs url dictionary contains the url for the failing job. """
         timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(timestamp)
-        self.assertEqual({'job1 (100 dagen)': 'http://url'}, self.__jenkins.failing_jobs_url())
+        self.assertEqual({'job1 (100 dagen)': 'http://jenkins/job/job1/'}, self.__jenkins.failing_jobs_url())
 
     def test_failing_jobs_url_no_description(self):
         """ Test that the failing jobs url works if there are jobs without description. """
@@ -103,10 +116,10 @@ class JenkinsTest(unittest.TestCase):
         if now.month == now.day == 1:  # pragma: no branch
             jan_first = jan_first.replace(year=jan_first.year - 1)  # pragma: no cover
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": None, ' \
-                                  '"url": "http://url", "buildable":  True}}], "timestamp": "{}", ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable":  True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(jan_first))
         expected_days_ago = (datetime.datetime.utcnow() - jan_first).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
                          self.__jenkins.failing_jobs_url())
 
     def test_no_unused_jobs(self):
@@ -121,7 +134,7 @@ class JenkinsTest(unittest.TestCase):
         """ Test the unused jobs with one unused job. """
         date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url", "buildable": True}}], ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], ' \
                                   '"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
         self.assertEqual(1, self.__jenkins.number_of_unused_jobs())
 
@@ -129,17 +142,17 @@ class JenkinsTest(unittest.TestCase):
         """ Test the unused jobs with one unused job. """
         date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://url", "buildable": True}}], ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], ' \
                                   '"timestamp": "{}", "builds": [{{"result": "SUCCESS"}}]}}'.format(
                                       to_jenkins_timestamp(date_time))
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
                          self.__jenkins.unused_jobs_url())
 
     def test_unused_jobs_grace(self):
         """ Test the unused jobs with one unused job within grace time. """
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=400]", ' \
-                                  '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(
                                       to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))
         self.assertEqual({}, self.__jenkins.unused_jobs_url())
@@ -148,11 +161,11 @@ class JenkinsTest(unittest.TestCase):
         """ Test the unused jobs with one unused job within grace time. """
         last_year = datetime.datetime.utcnow().year - 1
         self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=200]", ' \
-                                  '"url": "http://url", "buildable": True}}], "timestamp": "{}", ' \
+                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
                                   '"builds": [{{"result": "SUCCESS"}}]}}'.format(
                                       to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://url'},
+        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
                          self.__jenkins.unused_jobs_url())
 
     def test_nr_of_active_jobs(self):

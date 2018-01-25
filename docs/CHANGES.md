@@ -1,7 +1,12 @@
+2018-01-24  Release 2.38.1
+
+  * Bug fix #51: Take Jenkins pipeline jobs into account when measuring inactive or failing jobs.
+
+
 2018-01-25  Release 2.38.0
 
   * Feature #244: Unmerged branches are now listed in the details pane instead of the metric text.
-
+  
 
 2018-01-24  Release 2.37.0
 
