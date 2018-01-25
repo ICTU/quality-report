@@ -66,6 +66,30 @@ class UserStoriesDurationTest(unittest.TestCase):
 
         self.assertEqual(2.3, duration_metric.value())
 
+    def test_extra_info(self):
+        """ Test that the extra info object is the one of metric source. """
+        expected_extra_info = object()
+        project = MagicMock()
+        mock_metric_source = MagicMock()
+        mock_metric_source.extra_info.return_value = expected_extra_info
+        project.metric_sources.return_value = [mock_metric_source]
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+
+        self.assertEqual(expected_extra_info, duration_metric.extra_info())
+
+    def test_extra_info_no_metric_source(self):
+        """ Test that the None is returned as extra info if there is no metric source. """
+
+        project = MagicMock()
+        project.metric_sources.return_value = [None]
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='src_id')
+        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+
+        self.assertEqual(None, duration_metric.extra_info())
+
     def test_value_empty_metric_source(self):
         """ Test that the value method returns -1 if the metric source is None. """
         project = MagicMock()

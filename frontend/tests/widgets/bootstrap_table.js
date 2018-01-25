@@ -123,6 +123,54 @@ test('bootstrap table renders headers of table panel with extra info', (t) => {
     t.end();
 });
 
+test('bootstrap table does not render headers of table panel beginning with underscore', (t) => {
+    const wrapper = shallow(<BootstrapTable>
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col1": "X", "col2": "_x"}}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').length, 1);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').text(), "X");
+    t.end();
+});
+
+test('bootstrap table does not render columns of the table panel if their header begins with underscore', (t) => {
+    const wrapper = shallow(<BootstrapTable>
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "_x", "num": "Number"}, 
+                "data":[{"str": "First Row", "num": "1"}, {"str": "Second Row", "num": "2"}]}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('td').length, 1);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().contains('First Row'), false);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().contains('1'), true);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().last().contains('Second Row'), false);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().contains('2'), true);
+    t.end();
+});
+
+test('bootstrap table renders rows of the table panel with <className> if the column with _<className> header text is "true"', (t) => {
+    const wrapper = shallow(<BootstrapTable>
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"}, 
+                "data":[{"str": "First Row", "format": "true"}, {"str": "Second Row", "format": "false"}]}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().text(), 'First Row');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('.italic').exists(), true);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().text(), 'Second Row');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().find('.italic').exists(), false);
+    
+    t.end();
+});
+
+test('bootstrap table renders rows of the table panel with <className> if the column with _<className> header text is true', (t) => {
+    const wrapper = shallow(<BootstrapTable>
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"}, 
+                "data":[{"str": "First Row", "format": true}, {"str": "Second Row", "format": false}]}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().text(), 'First Row');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('.italic').exists(), true);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().text(), 'Second Row');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().find('.italic').exists(), false);
+    
+    t.end();
+});
+
 test('bootstrap table renders rows of the table panel with extra info', (t) => {
     const wrapper = shallow(<BootstrapTable>
         {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "num": "Number"}, 
@@ -157,7 +205,6 @@ test('bootstrap table renders rows of the table panel with links in extra info, 
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr a[href="http://xxx"]').exists(), true);
     t.end();
 });
-
 
 test('bootstrap table renders toggle button', (t) => {
     const wrapper = shallow(
@@ -205,7 +252,7 @@ test('bootstrap table does render detail table if there is extra info', (t) => {
                                 <tr><th>y</th></tr>
                             </thead>
                             <tbody>
-                                <tr><td>extra data</td></tr>
+                                <tr className="detail-row-default"><td>extra data</td></tr>
                             </tbody>
                             </table>
                         </div>

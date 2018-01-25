@@ -37,9 +37,10 @@ class ExtraInfo(object):
         self.title = None
         self.data = []
 
-    def add_row(self, *args):
+    def __add__(self, *args):
         """ Adds data rows to the extra_info table, matching arguments by position to the column keys."""
-        self.data.append(dict(zip(self.headers.keys(), args)))
+        self.data.append(dict(zip(self.headers.keys(), *args)))
+        return self
 
 
 class Metric(object):

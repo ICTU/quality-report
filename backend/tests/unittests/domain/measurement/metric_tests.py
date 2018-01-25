@@ -321,13 +321,13 @@ class ExtraInfoTest(unittest.TestCase):
     def test_row_added(self):
         """ Test that metric data is correctly created."""
         extra_info = domain.ExtraInfo(col1="", col2="")
-        extra_info.add_row("val1", {"href": "http://url", "text": "Description"})
+        extra_info += "val1", {"href": "http://url", "text": "Description"}
         self.assertEqual([{"col1": "val1", "col2": {"href": "http://url", "text": "Description"}}], extra_info.data)
 
     def test_serialization(self):
         """ Test that metric data is correctly json serialized."""
         extra_info = domain.ExtraInfo(col1="C1", col2="C2")
-        extra_info.add_row("val1", {"href": "http://url", "text": "Description"})
+        extra_info += "val1", {"href": "http://url", "text": "Description"}
         extra_info.title = "Title"
 
         result = json.dumps(extra_info.__dict__)

@@ -1,12 +1,13 @@
 {
   "name": "HQ",
-  "version": "2.40.0",
+  "version": "2.41.0",
   "description": "Holistic Software Quality Reporting",
   "main": "index.js",
   "scripts": {
     "test": "NODE_PATH=js babel-node node_modules/tape/bin/tape -r ignore-styles './tests/**/*.js' | faucet",
     "cover": "NODE_PATH=js babel-node node_modules/.bin/babel-istanbul cover --root js --report lcov --report text --report html --include-all-sources -- node_modules/tape/bin/tape -r ignore-styles './tests/**/*.js'",
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "NODE_PATH=js tape-watch --require ignore-styles --require babel-register ./tests/**/*.js"
   },
   "repository": {
     "type": "git",

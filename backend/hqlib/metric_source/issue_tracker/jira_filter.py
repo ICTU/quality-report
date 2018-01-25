@@ -18,6 +18,7 @@ limitations under the License.
 from typing import List
 
 from ..abstract.issue_tracker import BugTracker
+from ...domain import ExtraInfo
 
 
 class JiraFilter(BugTracker):
@@ -42,6 +43,18 @@ class JiraFilter(BugTracker):
         if -1 in results:
             return -1
         return sum(results) / len(results) if results else 0
+
+    def extra_info(self) -> ExtraInfo:
+        """ Method concatenates extra information for different query ids. """
+        extra_infos = self.__jira.extra_info()
+        result = None
+        for inf in extra_infos:
+            if result:
+                for row in inf.data:
+                    result += row.values()
+            else:
+                result = inf
+        return result
 
     def nr_issues_with_field_empty(self, *metric_source_ids: str) -> int:
         """ Return the number of issues whose field has not been filled in. """

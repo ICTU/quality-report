@@ -15,9 +15,9 @@ limitations under the License.
 """
 
 import unittest
-import urllib.error
 
-from hqlib.metric_source import Jira, JiraFilter, url_opener
+from hqlib.metric_source import Jira, JiraFilter
+from hqlib.domain import ExtraInfo
 from unittest.mock import patch, call
 
 
@@ -53,6 +53,35 @@ class JiraFilterTest(unittest.TestCase):
 
         average_duration_of_issues_mock.assert_has_calls([call(123), call(567)])
         self.assertEqual(12.5, result)
+
+    @patch.object(Jira, 'extra_info')
+    def test_extra_info_one(self, extra_info_mock):
+        """ Test that the average duration is the average of the averages returned by different filters. """
+        ret_obj = ExtraInfo()
+        extra_info_mock.return_value = [ret_obj]
+
+        result = JiraFilter('', '', '').extra_info()
+
+        extra_info_mock.assert_called_once()
+        self.assertEqual(ret_obj, result)
+
+    @patch.object(Jira, 'extra_info')
+    def test_extra_info_more(self, extra_info_mock):
+        """ Test that the average duration is the average of the averages returned by different filters. """
+        ret_obj1 = ExtraInfo(col1="x", clo2="y")
+        ret_obj1 += 'a11', 'a12'
+        ret_obj2 = ExtraInfo(col1="x", clo2="y")
+        ret_obj2 += 'a21', 'a22'
+        extra_info_mock.return_value = [ret_obj1, ret_obj2]
+
+        expected = ExtraInfo(col1="x", clo2="y")
+        expected += 'a11', 'a12'
+        expected += 'a21', 'a22'
+
+        result = JiraFilter('', '', '').extra_info()
+
+        extra_info_mock.assert_called_once()
+        self.assertEqual(expected.data, result.data)
 
     @patch.object(Jira, 'average_duration_of_issues')
     def test_average_duration_of_issues_on_error(self, average_duration_of_issues_mock):

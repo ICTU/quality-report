@@ -122,3 +122,11 @@ div.meta_metrics_history_graph {
 .panel-body .table-striped td {
     padding: 4px 8px 4px 8px;
 }
+
+.detail-row-alter {
+    font-style: normal;
+}
+
+.detail-row-default {
+    font-style: italic;
+}

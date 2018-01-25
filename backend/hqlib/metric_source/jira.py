@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+import datetime
 from typing import Dict, Optional, Mapping, Union
 import urllib.parse
 import logging
@@ -22,6 +22,8 @@ import logging
 from . import url_opener
 from .. import utils
 import dateutil.parser
+
+from ..domain import ExtraInfo
 
 
 QueryId = Union[int, str]  # pylint: disable=invalid-name
@@ -33,6 +35,7 @@ class Jira(object):
     def __init__(self, url: str, username: str, password: str) -> None:
         self.__url = url + '/' if not url.endswith('/') else url
         self.__url_opener = url_opener.UrlOpener(username=username, password=password)
+        self._extra_info = dict()
 
     def query_total(self, query_id: QueryId) -> int:
         """ Return the number of results of the specified query. """
@@ -51,16 +54,31 @@ class Jira(object):
     def average_duration_of_issues(self, query_id: QueryId) -> int:
         """ Return the average duration in days the issues were in status 'In Progress'. """
         try:
-            tpl = self._sum_for_all_issues(query_id, self._get_days_in_progress, tuple())
-
-            days = sum(tpl[0::2])
-            stories = sum(tpl[1::2])
+            self._extra_info[query_id] = self._sum_for_all_issues(
+                query_id, self._get_days_in_progress, ExtraInfo(
+                    story="Story", day_in="Begin uitvoering", day_out="Einde uitvoering",
+                    days="Aantal dagen", is_counted="_detail-row-alter"))
+            self._extra_info[query_id].title = 'Gemiddelde looptijd van user stories'
+            days = self._sum_days_in_extra_info(self._extra_info[query_id])
+            stories = self._count_stories_in_extra_info(self._extra_info[query_id])
             return days/stories if stories > 0 else -1
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Error opening jira filter %s: %s.", query_id, reason)
         except ValueError:
             pass  # Error already logged in utils.eval_json
         return -1
+
+    @staticmethod
+    def _count_stories_in_extra_info(extra_info: ExtraInfo):
+        return sum(iss['is_counted'] for iss in extra_info.data)
+
+    @staticmethod
+    def _sum_days_in_extra_info(extra_info: ExtraInfo):
+        return sum(iss['days'] if iss['is_counted'] else 0 for iss in extra_info.data)
+
+    def extra_info(self):
+        """ Returns a list of extra infos per jira filter. """
+        return list(self._extra_info.values())
 
     @classmethod
     def _get_create_date_from_json(cls, json: Dict, to_str: bool):
@@ -77,25 +95,30 @@ class Jira(object):
                 dates.append(dateutil.parser.parse(history["created"]))
         return dates
 
-    def _get_days_in_progress(self, issue: Dict) -> (int, int):
+    def _get_days_in_progress(self, issue: Dict) -> (object, datetime.datetime, datetime.datetime, int, bool):
         """ Fetch the changelog of the given issue and get number of days between it is moved for the first time
             to the status "In Progress", till the last time it is moved out of it. """
+
+        issue_link = {"href": self.__url + 'browse/{key}'.format(key=issue['key']), "text": issue['fields']['summary']}
 
         url = self.__url + 'rest/api/2/issue/{issue_id}?expand=changelog&fields="*all,-comment"' \
             .format(issue_id=issue['key'])
         json_string = self.__url_opener.url_read(url)
         json = utils.eval_json(json_string)
+
         try:
             to_in_progress_date = min(self._get_create_date_from_json(json, True))
         except ValueError:
             logging.info("Invalid date, or issue %s never moved to status 'In Progress'", issue['key'])
-            return 0, 0
+            return issue_link, "geen", "geen", "n.v.t", False
         try:
             from_in_progress_date = max(self._get_create_date_from_json(json, False))
         except ValueError:
             logging.info("Invalid date, or issue %s still in status 'In Progress'", issue['key'])
-            return 0, 0
-        return (from_in_progress_date - to_in_progress_date).days, 1
+            return issue_link, utils.format_date(to_in_progress_date, year=True), "geen", "n.v.t", False
+        return issue_link, utils.format_date(to_in_progress_date, year=True), \
+            utils.format_date(from_in_progress_date, year=True), \
+            (from_in_progress_date - to_in_progress_date).days, True
 
     def query_sum(self, query_id: QueryId, field: str) -> float:
         """ Return the sum of the fields as returned by the query. """

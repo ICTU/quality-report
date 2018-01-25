@@ -80,7 +80,7 @@ class Metric(object):
     def extra_info() -> ExtraInfo:
         """ Return the comment for the metric. """
         extra = ExtraInfo(col1="C1", col2="C2")
-        extra.add_row("yes", {"href": "this", "text": "that"})
+        extra += "yes", {"href": "this", "text": "that"}
         extra.title = "Fake title"
         return extra
 

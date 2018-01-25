@@ -138,29 +138,72 @@ class CommentPanel  extends React.Component {
 }
 
 class TablePanel extends React.Component {
-    renderHeader(headers){
+    renderHeader(headers) {
         return (
             <thead>
                 <tr>
-                    {Object.values(headers).map((col, index) => <th key={index}>{col}</th>)}
+                    {Object.values(headers).map((col, index) => {
+                        return col[0] !== '_' ? <th key={index}>{col}</th> : null
+                    })}
                 </tr>
             </thead>)
     }
+
     formatCell(cell_content) {
-        if (cell_content.hasOwnProperty('href')) {
+        if (cell_content && cell_content.hasOwnProperty('href')) {
             return <a href={cell_content.href}>{cell_content.text || cell_content.href}</a>
         }
         return cell_content;      
     }
-    renderTableBody(extra_info){
-        var columns = Object.keys(extra_info.headers);
+
+    getFormatColumns(headers) {
+        var format_columns = [];
+
+        for (var k in headers)
+        {
+            if(headers[k][0] === '_')
+            {
+            	format_columns.push(k);
+            }
+        }
+        return format_columns;
+    }
+
+    applyClassNames(row, format_columns, headers) {
+        var classNames = [];
+
+        for(var h in format_columns)
+        {
+            if (row[format_columns[h]] === true || row[format_columns[h]] === "true") {
+                classNames.push(headers[format_columns[h]].substr(1));
+            }
+        }
+        return classNames;
+    }
+
+
+    renderTableBody(extra_info) {
+        const columns = Object.keys(extra_info.headers);
         var rows;
+        var format_columns = this.getFormatColumns(extra_info.headers);
+
         if(extra_info && extra_info.data) {
-            rows = extra_info.data.map((row, index) => 
-                    <tr key={index}>
-                        {columns.map((col) => 
-                            <td key={col + "_" + index}>{this.formatCell(row[col])}</td>)}
-                    </tr>)
+            rows = extra_info.data.map((row, index) => {
+
+                var classNames = this.applyClassNames(row, format_columns, extra_info.headers);
+                var clsName = 'detail-row-default';
+                if (classNames.length > 0) {
+                    clsName = classNames.join(' '); 
+                }
+
+                return (
+                <tr key={index} className={clsName}>
+                    {columns.map((col) => {
+                        return extra_info.headers[col][0] !== '_' ? <td key={col + "_" + index}>{this.formatCell(row[col])}</td> : null
+                    })}
+                </tr>
+                );
+            })
         }
         return (            
             <tbody>
@@ -168,6 +211,7 @@ class TablePanel extends React.Component {
             </tbody>
         );
     }
+
     render() {
         return (
             <div className="panel panel-default">

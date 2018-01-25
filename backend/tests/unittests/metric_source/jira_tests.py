@@ -119,7 +119,9 @@ class JiraTest(unittest.TestCase):
         issue2 = "ISSUE-2"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}, {"key": "' + issue2 + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + \
+                      issue + '", "fields": {"summary": "Issue Title"}}, {"key": "' + \
+                      issue2 + '", "fields": {"summary": "Issue2 Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
@@ -143,13 +145,124 @@ class JiraTest(unittest.TestCase):
             call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue2))])
         self.assertEqual(5, result)
 
+    def test_extra_info_duration_of_stories_ok(self, url_read_mock):
+        """ Test that the content of extra info for a story is correct. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-11-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]}, ' \
+                         '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_json, issues_json, changelog_json]
+
+        jira.average_duration_of_issues(12345)
+        result = jira.extra_info()
+
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual('15 december 2017', result[0].data[0]['day_in'])
+        self.assertEqual('25 december 2017', result[0].data[0]['day_out'])
+        self.assertEqual(True, result[0].data[0]['is_counted'])
+        self.assertEqual(9, result[0].data[0]['days'])
+
+    def test_extra_info_stories_still_in_progress(self, url_read_mock):
+        """ Test that the content of extra info for a story still in progress is correct. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}'
+        url_read_mock.side_effect = [search_json, issues_json, changelog_json]
+
+        jira.average_duration_of_issues(12345)
+        result = jira.extra_info()
+
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual('15 december 2017', result[0].data[0]['day_in'])
+        self.assertEqual('geen', result[0].data[0]['day_out'])
+        self.assertEqual(False, result[0].data[0]['is_counted'])
+        self.assertEqual('n.v.t', result[0].data[0]['days'])
+
+    def test_extra_info_stories_never_in_progress(self, url_read_mock):
+        """ Test that the content of extra info for a story that never got in progress contains no dates. """
+        issue = "ISSUE-1"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_json, issues_json, changelog_json]
+
+        jira.average_duration_of_issues(12345)
+        result = jira.extra_info()
+
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
+        self.assertEqual('geen', result[0].data[0]['day_in'])
+        self.assertEqual('geen', result[0].data[0]['day_out'])
+        self.assertEqual(False, result[0].data[0]['is_counted'])
+        self.assertEqual('n.v.t', result[0].data[0]['days'])
+
+    def test_extra_info_duration_of_stories_more_than_one(self, url_read_mock):
+        """ Test that the content of extra info for multiple stories is correct. """
+        issue = "ISSUE-1"
+        issue2 = "ISSUE-2"
+        jira = Jira('http://jira/', 'username', 'password')
+        search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + \
+                      issue + '", "fields": {"summary": "Issue Title"}}, {"key": "' + \
+                      issue2 + '", "fields": {"summary": "Issue2 Title"}}]}'
+        changelog_json = '{"id": "133274", "changelog": { "histories": [' \
+                         '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                         '{"created": "2017-11-15T23:54:15.000+0100", "items": [' \
+                         '{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]}, ' \
+                         '{"created": "2017-12-25T09:59:15.000+0100", "items": [' \
+                         '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        changelog_json2 = '{"id": "133274", "changelog": { "histories": [' \
+                          '{"created": "2017-11-15T08:54:15.000+0100", "items": [' \
+                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
+                          '{"created": "2017-11-16T09:59:15.000+0100", "items": [' \
+                          '{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}'
+        url_read_mock.side_effect = [search_json, issues_json, changelog_json, changelog_json2]
+
+        jira.average_duration_of_issues(12345)
+        result = jira.extra_info()
+
+        url_read_mock.assert_has_calls([
+            call('http://jira/rest/api/2/filter/12345'),
+            call('http://jira/search?'),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue)),
+            call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue2))])
+        self.assertEqual('15 december 2017', result[0].data[0]['day_in'])
+        self.assertEqual('25 december 2017', result[0].data[0]['day_out'])
+        self.assertEqual(9, result[0].data[0]['days'])
+        self.assertEqual('15 november 2017', result[0].data[1]['day_in'])
+        self.assertEqual('16 november 2017', result[0].data[1]['day_out'])
+        self.assertEqual(1, result[0].data[1]['days'])
+
     def test_get_duration_of_stories_multiple_state_changes(self, url_read_mock):
         """ Test that the number of days from the first enter in status 'In Progress' till the last exit of it
         is correct for multiple status changes. """
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "Op", "toString": "In Progress"}]}, ' \
@@ -175,7 +288,7 @@ class JiraTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "Open"}]}]}}'
@@ -198,7 +311,9 @@ class JiraTest(unittest.TestCase):
         issue2 = "ISSUE-2"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}, {"key": "' + issue2 + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + \
+                      issue + '", "fields": {"summary": "Issue Title"}}, {"key": "' + \
+                      issue2 + '", "fields": {"summary": "Issue2 Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "Open"}]}]}}'
@@ -226,7 +341,7 @@ class JiraTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}'
@@ -249,7 +364,9 @@ class JiraTest(unittest.TestCase):
         issue2 = "ISSUE-2"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}, {"key": "' + issue2 + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + \
+                      issue + '", "fields": {"summary": "Issue Title"}}, {"key": "' + \
+                      issue2 + '", "fields": {"summary": "Issue2 Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}'
@@ -277,7 +394,7 @@ class JiraTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-33-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
@@ -303,7 +420,7 @@ class JiraTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = '{"id": "133274", "changelog": { "histories": [' \
                          '{"created": "2017-12-15T23:54:15.000+0100", "items": [' \
                          '{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}, ' \
@@ -327,7 +444,7 @@ class JiraTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = urllib.error.HTTPError(None, None, None, None, None)
         query_id = '12345'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
@@ -348,7 +465,7 @@ class JiraTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira = Jira('http://jira/', 'username', 'password')
         search_json = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
-        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '"}]}'
+        issues_json = '{"total": "5", "issues": [{"key": "' + issue + '", "fields": {"summary": "Issue Title"}}]}'
         changelog_json = 'not a json'
         url_read_mock.side_effect = [search_json, issues_json, changelog_json]
 

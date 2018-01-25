@@ -16,7 +16,7 @@ limitations under the License.
 
 
 from ... import metric_source
-from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
+from ...domain import HigherIsBetterMetric, LowerIsBetterMetric, ExtraInfo
 
 
 class ReadyUserStoryPoints(HigherIsBetterMetric):
@@ -54,6 +54,9 @@ class UserStoriesDuration(LowerIsBetterMetric):
         parameters["total"] = self._metric_source.nr_issues(*self._get_metric_source_ids()) \
             if self._metric_source else "?"
         return parameters
+
+    def extra_info(self) -> ExtraInfo:
+        return self._metric_source.extra_info() if self._metric_source else None
 
 
 class UserStoriesInProgress(LowerIsBetterMetric):

@@ -1,3 +1,8 @@
+2018-02-07  Release 2.41.0
+
+  * Feature #210: In UserStoriesDuration metric a list of stories added in extra information pane.
+
+
 2018-02-04  Release 2.40.0
 
   * The Sonar metric source can now be used as unit test report, coverage report and Sonar, so that it's no longer
