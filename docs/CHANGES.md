@@ -1,4 +1,9 @@
-2018-01-24  Release 2.38.1
+2018-01-25  Release 2.38.2
+
+  * Bug fix #226: Round the average number of days that user stories are in progress to one decimal.
+
+
+2018-01-25  Release 2.38.1
 
   * Bug fix #51: Take Jenkins pipeline jobs into account when measuring inactive or failing jobs.
 

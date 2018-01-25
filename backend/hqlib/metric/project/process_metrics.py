@@ -46,7 +46,7 @@ class UserStoriesDuration(LowerIsBetterMetric):
     metric_source_class = metric_source.UserStoriesDurationTracker
 
     def value(self):
-        return self._metric_source.average_duration_of_issues(*self._get_metric_source_ids()) \
+        return round(self._metric_source.average_duration_of_issues(*self._get_metric_source_ids()), 1) \
             if self._metric_source else -1
 
     def _parameters(self):

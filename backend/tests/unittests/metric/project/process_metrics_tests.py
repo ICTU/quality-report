@@ -55,16 +55,16 @@ class UserStoriesDurationTest(unittest.TestCase):
     """ Unit tests for duration of user stories. """
 
     def test_value(self):
-        """ Test that the value is correct. """
+        """ Test that the value is correct and rounded. """
         project = MagicMock()
         mock_metric_source = MagicMock()
-        mock_metric_source.average_duration_of_issues.return_value = 2.33
+        mock_metric_source.average_duration_of_issues.return_value = 2.33145
         project.metric_sources.return_value = [mock_metric_source]
         subject = MagicMock()
         subject.metric_source_id = MagicMock(return_value='src_id')
         duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
 
-        self.assertEqual(2.33, duration_metric.value())
+        self.assertEqual(2.3, duration_metric.value())
 
     def test_value_empty_metric_source(self):
         """ Test that the value method returns -1 if the metric source is None. """
