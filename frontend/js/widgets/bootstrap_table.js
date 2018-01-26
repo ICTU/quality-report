@@ -45,24 +45,11 @@ class BootstrapTableHeader extends React.Component {
             ));
     }
 
-    buildHelpHeaders(headers) {
-        return headers.map((header, index) =>
-            <th id={header[0]} key={index}>
-                {header[1]}
-            </th>);
-    }
-
     render() {
-        var headers;
-        if (this.props.headers[0][0]==="") {
-            headers = this.buildReportHeaders(this.props.headers);
-        } else {
-            headers = this.buildHelpHeaders(this.props.headers)
-        }
         return (
             <thead>
                 <tr>
-                    {headers}
+                    {this.buildReportHeaders(this.props.headers)}
                 </tr>
             </thead>
         );
@@ -109,26 +96,11 @@ class BootstrapTableBody extends React.Component {
             });
     }
 
-    buildRowsOfHelp(rows) {
-        return rows.map((row, index) => 
-        <tr key={this.props.children[index]['id']}>
-            {row}
-        </tr>);
-    }
-
     render() {
         var rows = this.buildTdCells(this.props.children);
-
-        var table_rows;
-        if(this.props.children[0]['comment'] === undefined) {
-            table_rows = this.buildRowsOfHelp(rows)
-        } else {
-            table_rows = this.buildRowsOfReport(rows);
-        }
-
         return (
             <tbody>
-                {table_rows}
+                {this.buildRowsOfReport(rows)}
             </tbody>
         )
     }
@@ -245,4 +217,4 @@ class BootstrapTable extends React.Component {
     }
 }
 
-export {BootstrapTable, BootstrapTableHeader, BootstrapTableBody};
+export {BootstrapTable};

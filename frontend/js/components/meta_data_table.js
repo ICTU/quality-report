@@ -16,15 +16,15 @@
 import $ from 'jquery';
 import React from 'react';
 import {UrlList} from 'widgets/url_list.js';
-import {BootstrapTable} from 'widgets/bootstrap_table.js';
+import {HelpTable} from 'widgets/help_table.js';
 
 
 class MetaDataTable extends React.Component {
     render() {
         return (
-            <BootstrapTable headers={this.props.headers} className="table-striped first-col-centered">
+            <HelpTable headers={this.props.headers} className="table-striped first-col-centered">
                 {this.props.children}
-            </BootstrapTable>
+            </HelpTable>
         );
     }
 }
@@ -49,8 +49,7 @@ class DomainObjectsTable extends React.Component {
             var title = <NameWithIdentifier title={domain_object["name"]} identifier={domain_object["id"]}/>
             var default_requirements = domain_object['default_requirements'].sort().join(', ');
             var optional_requirements = domain_object['optional_requirements'].sort().join(', ');
-            table_rows.push({cells: [icon, title, default_requirements, optional_requirements],
-                             className: ""});
+            table_rows.push({cells: [icon, title, default_requirements, optional_requirements]});
         });
         return (
             <MetaDataTable headers={[["included", "In dit rapport?"],
@@ -70,7 +69,7 @@ class RequirementsTable extends React.Component {
             var icon = <CheckIcon check={requirement["included"]}/>;
             var title = <NameWithIdentifier title={requirement["name"]} identifier={requirement["id"]}/>;
             var metrics = requirement['metrics'].sort().join(', ');
-            table_rows.push({cells: [icon, title, metrics], className: ""});
+            table_rows.push({cells: [icon, title, metrics]});
         });
         return (
             <MetaDataTable headers={[["included", "In dit rapport?"],
@@ -88,7 +87,7 @@ class MetricClassesTable extends React.Component {
         this.props.metric_classes.forEach(function(metric_class) {
             var icon = <CheckIcon check={metric_class["included"]}/>;
             var title = <NameWithIdentifier title={metric_class["name"]} identifier={metric_class["id"]}/>;
-            table_rows.push({cells: [icon, title, metric_class['norm']], className: ""});
+            table_rows.push({cells: [icon, title, metric_class['norm']]});
         });
         return (
             <MetaDataTable headers={[["included", "In dit rapport?"],
@@ -107,7 +106,7 @@ class MetricSourcesTable extends React.Component {
             var icon = <CheckIcon check={metric_source["included"]}/>;
             var title = <NameWithIdentifier title={metric_source["name"]} identifier={metric_source["id"]}/>;
             var url_list = <UrlList>{metric_source['urls']}</UrlList>;
-            table_rows.push({cells: [icon, title, url_list], className: ""});
+            table_rows.push({cells: [icon, title, url_list]});
         });
         return (
             <MetaDataTable headers={[["included", "In dit rapport?"],

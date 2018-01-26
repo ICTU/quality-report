@@ -1,3 +1,8 @@
+2018-01-26  Release 2.38.3
+
+  * Bug #252: Type error 'cannot read comment' solved.
+
+
 2018-01-25  Release 2.38.2
 
   * Bug fix #226: Round the average number of days that user stories are in progress to one decimal.
