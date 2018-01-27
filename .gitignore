@@ -12,6 +12,7 @@ repos
 # Ignore build folders
 build
 backend/build
+backend/.mypy_cache
 dist
 quality_report.egg-info
 frontend/node_modules
