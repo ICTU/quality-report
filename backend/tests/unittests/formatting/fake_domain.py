@@ -24,6 +24,7 @@ class Metric(object):
     """ Fake a metric class. """
     url_label_text = 'label'
     comment_url_label_text = ''
+    tags = []
 
     def __init__(self, id_string='id_string-1', status_start_date=datetime.datetime(2012, 1, 1, 12, 0, 0)):
         self.__id_string = id_string

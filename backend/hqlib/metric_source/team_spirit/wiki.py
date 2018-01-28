@@ -20,6 +20,8 @@ import logging
 import re
 import time
 
+from typing import List
+
 from hqlib.metric_source import beautifulsoup
 from hqlib.metric_source.abstract import team_spirit
 from hqlib.metric_source.url_opener import UrlOpener
@@ -33,6 +35,12 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
 
     def __init__(self, wiki_url: str) -> None:
         super().__init__(url=wiki_url)
+
+    # Metric source API
+
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
+        """ Return the url(s) to the metric source for the metric source id. """
+        return [self.url()]
 
     # Team spirit
 

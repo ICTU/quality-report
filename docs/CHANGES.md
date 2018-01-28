@@ -1,6 +1,11 @@
+2018-01-28  Release 2.38.4
+
+  * Bug fix #233: Links to Wiki metric source were broken.
+  
+  
 2018-01-26  Release 2.38.3
 
-  * Bug #252: Type error 'cannot read comment' solved.
+  * Bug fix #252: Type error 'cannot read comment' solved.
 
 
 2018-01-25  Release 2.38.2

@@ -67,6 +67,7 @@ class Metric(object):
     comment_url_label_text: str = ''
 
     metric_source_class: Type[MetricSource] = None
+    tags: List[str] = []  # List of string tags that can be used to filter metrics in the frontend
 
     def __init__(self, subject=None, project: 'Project'=None) -> None:
         self._subject = subject

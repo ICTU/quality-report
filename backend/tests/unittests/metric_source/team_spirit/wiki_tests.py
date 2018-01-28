@@ -56,6 +56,10 @@ class WikiTest(unittest.TestCase):
         """ Test that the url is correct. """
         self.assertEqual('http://wiki', self.__wiki.url())
 
+    def test_metric_source_urls(self):
+        """ Test that the metric source urls are simply the Wiki url. """
+        self.assertEqual(["http://wiki"], self.__wiki.metric_source_urls("team1", "team2"))
+
     def test_team_spirit(self):
         """ Test the spirit of the team. """
         self.assertEqual(':-(', self.__wiki.team_spirit('team_2'))
