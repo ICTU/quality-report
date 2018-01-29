@@ -1,3 +1,9 @@
+2018-01-29  Release 2.38.5
+
+  * Bug fix: Reading the date and time of the OWASP dependency checker report would fail when using the Jenkins OWASP 
+    dependency checker plugin.
+  
+  
 2018-01-28  Release 2.38.4
 
   * Bug fix #233: Links to Wiki metric source were broken.

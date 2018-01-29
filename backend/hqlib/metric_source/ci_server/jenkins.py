@@ -154,7 +154,7 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
 
     def _job_datetime(self, job: Job, result_type: str) -> DateTime:
         """ Return the datetime of the last completed or stable build of the job. """
-        builds_url = job["url"] + result_type + "/" + self.api_postfix
+        builds_url = job["url"].strip("/") + "/" + result_type + "/" + self.api_postfix
         try:
             job = self._api(builds_url)
         except url_opener.UrlOpener.url_open_exceptions:
