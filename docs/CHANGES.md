@@ -1,7 +1,8 @@
-2018-01-30  Release 2.39.0
+2018-02-02  Release 2.39.0
 
   * Feature #262: Use coverage reports as source for unit test metrics so that different metric sources can be used as
-    source for coverage information.
+    source for coverage information. See https://github.com/ICTU/quality-report/wiki/Unit-test-coverage-metrics and
+    https://github.com/ICTU/quality-report/wiki/System-test-coverage-metrics.
     
     
 2018-01-29  Release 2.38.5
