@@ -49,7 +49,8 @@ class ComponentTest(unittest.TestCase):
 
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
-        self.assertEqual((requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches),
+        self.assertEqual((requirement.CodeQuality, requirement.UnitTests, requirement.UnitTestCoverage,
+                          requirement.TrackBranches),
                          domain.Component.default_requirements())
 
     def test_optional_requirements(self):

@@ -14,15 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from ..metric_source_mixin import SonarDashboardMetric
-from ...domain import HigherIsBetterMetric
+
+from ... import domain, metric_source
 
 
-class UnittestCoverage(SonarDashboardMetric, HigherIsBetterMetric):  # pylint: disable=too-few-public-methods
+class UnittestCoverage(domain.HigherIsBetterMetric):  # pylint: disable=too-few-public-methods
     """ Base class for metrics measuring coverage of unit tests for a product. """
 
     unit = '%'
     perfect_value = 100
+    metric_source_class = metric_source.UnittestCoverageReport
 
     def value(self):
         raise NotImplementedError
@@ -39,7 +40,7 @@ class UnittestLineCoverage(UnittestCoverage):
     low_target_value = 90
 
     def value(self):
-        return round(self._metric_source.unittest_line_coverage(self._sonar_id())) if self._metric_source else -1
+        return round(self._metric_source.statement_coverage(self._metric_source_id)) if self._metric_source else -1
 
 
 class UnittestBranchCoverage(UnittestCoverage):
@@ -53,4 +54,4 @@ class UnittestBranchCoverage(UnittestCoverage):
     low_target_value = 60
 
     def value(self):
-        return round(self._metric_source.unittest_branch_coverage(self._sonar_id())) if self._metric_source else -1
+        return round(self._metric_source.branch_coverage(self._metric_source_id)) if self._metric_source else -1

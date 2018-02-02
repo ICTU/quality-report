@@ -316,8 +316,13 @@ class QualityReportMetricsTest(unittest.TestCase):
 
     def test_unittest_metrics(self):
         """ Test that the unit test metrics are added if required. """
-        for metric_class in [metric.FailingUnittests, metric.UnittestLineCoverage, metric.UnittestBranchCoverage]:
+        for metric_class in [metric.FailingUnittests, metric.UnittestReportAge]:
             self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UnitTests]))
+
+    def test_unittest_coverage_metrics(self):
+        """ Test that the unit test coverage metrics are added if required. """
+        for metric_class in [metric.UnittestLineCoverage, metric.UnittestBranchCoverage]:
+            self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UnitTestCoverage]))
 
     def test_non_applicable_metric(self):
         """ Test that the team metric isn't added if the team has one member. """

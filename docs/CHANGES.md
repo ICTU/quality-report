@@ -1,3 +1,9 @@
+2018-01-30  Release 2.39.0
+
+  * Feature #262: Use coverage reports as source for unit test metrics so that different metric sources can be used as
+    source for coverage information.
+    
+    
 2018-01-29  Release 2.38.5
 
   * Bug fix: Reading the date and time of the OWASP dependency checker report would fail when using the Jenkins OWASP 

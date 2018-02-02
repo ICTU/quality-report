@@ -49,14 +49,14 @@ class JacocoTest(unittest.TestCase):
     """ Unit tests for the Jacoco class. """
 
     def setUp(self):
-        JaCoCo._CoverageReport__get_soup.cache_clear()
+        JaCoCo._HTMLCoverageReport__get_soup.cache_clear()
         self.__opener = FakeUrlOpener()
         self.__jacoco = JaCoCo(url_open=self.__opener.url_open)
 
     def test_statement_coverage(self):
         """ Test the statement coverage for a specific product. """
-        self.assertEqual(round(100 * (6293 - 1162) / 6293.),
-                         self.__jacoco.statement_coverage('http://jacoco/index.html'))
+        self.assertAlmostEqual(100 * (6293 - 1162) / 6293.,
+                               self.__jacoco.statement_coverage('http://jacoco/index.html'))
 
     def test_zero_statement_coverage(self):
         """ Test zero statement coverage. """
@@ -81,7 +81,7 @@ class JacocoTest(unittest.TestCase):
 
     def test_branch_coverage(self):
         """ Test the branch coverage for a specific product. """
-        self.assertEqual(round(100 * (422 - 161) / 422.), self.__jacoco.branch_coverage('http://jacoco/index.html'))
+        self.assertAlmostEqual(100 * (422 - 161) / 422., self.__jacoco.branch_coverage('http://jacoco/index.html'))
 
     def test_zero_branch_coverage(self):
         """ Test zero branch coverage. """
@@ -115,7 +115,7 @@ class JacocoTest(unittest.TestCase):
         self.assertEqual(expected, self.__jacoco.datetime('http://jacoco'))
 
     def test_coverage_date_on_error(self):
-        """ Test that the date is now when JaCoCo can't be reached. """
+        """ Test that the date is the minimum date when JaCoCo can't be reached. """
         self.assertEqual(datetime.datetime.min, self.__jacoco.datetime('raise/index.html'))
 
     def test_coverage_date_url(self):

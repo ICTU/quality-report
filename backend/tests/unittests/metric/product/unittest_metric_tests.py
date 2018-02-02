@@ -89,6 +89,11 @@ class FailingUnittestsTest(unittest.TestCase):
         failing_unittests = metric.FailingUnittests(subject=FakeSubject(), project=project)
         self.assertEqual('red', failing_unittests.status())
 
+    def test_status_without_metric_source(self):
+        """ Test that the metric is red when there is no metric source. """
+        failing_unittests = metric.FailingUnittests(subject=FakeSubject(), project=domain.Project())
+        self.assertEqual('red', failing_unittests.status())
+
     def test_report_with_zero_unittests(self):
         """ Test that the report is different when there are no unit tests. """
         report = FakeUnitTestReport(unittests=0)

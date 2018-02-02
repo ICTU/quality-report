@@ -19,12 +19,12 @@ import datetime
 import logging
 from typing import List
 
-from ..abstract import coverage_report
-from ... import utils
 from hqlib.typing import DateTime
+from .html_coverage_report import HTMLCoverageReport
+from ... import utils
 
 
-class JaCoCo(coverage_report.CoverageReport):
+class JaCoCo(HTMLCoverageReport):
     """ Class representing an JaCoCo coverage report. """
     metric_source_name = 'JaCoCo coverage rapport'
 
@@ -33,14 +33,14 @@ class JaCoCo(coverage_report.CoverageReport):
         base_url = coverage_url[:-len('index.html')]
         return [base_url + 'jacoco-sessions.html', base_url + '.sessions.html']
 
-    def _parse_statement_coverage_percentage(self, soup) -> int:
+    def _parse_statement_coverage_percentage(self, soup) -> float:
         return self.__parse_coverage_percentage(soup, 1)
 
-    def _parse_branch_coverage_percentage(self, soup) -> int:
+    def _parse_branch_coverage_percentage(self, soup) -> float:
         return self.__parse_coverage_percentage(soup, 3)
 
     @staticmethod
-    def __parse_coverage_percentage(soup, td_index: int) -> int:
+    def __parse_coverage_percentage(soup, td_index: int) -> float:
         """ Return the statement or branch coverage percentage. """
         try:
             coverage_text = soup('tfoot')[0]('td')[td_index].string
@@ -49,7 +49,7 @@ class JaCoCo(coverage_report.CoverageReport):
             raise
         coverage_text = coverage_text.replace(',', '').replace('.', '')
         missed, total = (int(text) for text in coverage_text.split(' of '))
-        return round(100 * (total - missed) / float(total)) if total > 0 else 0
+        return 100 * (total - missed) / float(total) if total > 0 else 0
 
     def _parse_coverage_date(self, soup) -> DateTime:
         coverage_date = datetime.datetime.min

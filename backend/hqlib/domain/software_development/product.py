@@ -35,8 +35,8 @@ class Product(RequirementSubject, MeasurableObject):
         from ... import requirement
         return (requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackUserStoriesInProgress,
                 requirement.TrackDurationOfUserStories, requirement.TrackSecurityAndPerformanceRisks,
-                requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.CodeQuality,
-                requirement.TrackBranches,
+                requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.UnitTestCoverage,
+                requirement.CodeQuality, requirement.TrackBranches,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
                 requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
@@ -66,7 +66,7 @@ class Component(Product):
     @staticmethod
     def default_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return requirement.CodeQuality, requirement.UnitTests, requirement.TrackBranches
+        return requirement.CodeQuality, requirement.UnitTests, requirement.UnitTestCoverage, requirement.TrackBranches
 
     @staticmethod
     def optional_requirements() -> Sequence[Type[Requirement]]:

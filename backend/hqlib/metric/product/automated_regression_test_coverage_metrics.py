@@ -26,7 +26,7 @@ class ARTCoverage(HigherIsBetterMetric):
                     'functionele tests. Minder dan {low_target}{unit} is rood.'
     template = '{name} ART {covered_item} coverage is {value}{unit}.'
     perfect_value = 100
-    metric_source_class = metric_source.CoverageReport
+    metric_source_class = metric_source.ARTCoverageReport
     covered_items = covered_item = 'Subclass responsibility'
 
     @classmethod
@@ -77,11 +77,11 @@ class ARTBranchCoverage(ARTCoverage):
         return self._metric_source.branch_coverage(self._metric_source_id)
 
 
-class CoverageReportAge(MetricSourceAgeMetric):
+class ARTCoverageReportAge(MetricSourceAgeMetric):
     """ Metric for measuring the number of days since the coverage report was last generated. """
     name = 'Coveragerapportageleeftijd'
     norm_template = 'De coveragerapportage is maximaal {target} {unit} geleden gemaakt. ' \
                     'Langer dan {low_target} {unit} geleden is rood.'
     perfect_template = 'De coveragerapportage van {name} is vandaag gemaakt.'
     template = 'De coveragerapportage van {name} is {value} {unit} geleden gemaakt.'
-    metric_source_class = metric_source.CoverageReport
+    metric_source_class = metric_source.ARTCoverageReport

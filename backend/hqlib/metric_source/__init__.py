@@ -17,7 +17,7 @@ limitations under the License.
 
 from .abstract.archive_system import ArchiveSystem
 from .abstract.ci_server import CIServer
-from .abstract.coverage_report import CoverageReport
+from .abstract.coverage_report import ARTCoverageReport, UnittestCoverageReport
 from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
@@ -33,6 +33,7 @@ from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
+from .coverage_report.sonar_coverage_report import SonarCoverageReport
 from .file.file_with_date import FileWithDate
 from .history import History, CompactHistory
 from .holiday_planner import HolidayPlanner

@@ -70,7 +70,7 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
     def setUp(self):
         self.__coverage_report = self.metric_source_class()
         self.__subject = FakeSubject(metric_source_ids={self.__coverage_report: self.metric_source_id})
-        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__coverage_report})
+        self.__project = domain.Project(metric_sources={metric_source.ARTCoverageReport: self.__coverage_report})
         self.__metric = self.metric_class(subject=self.__subject, project=self.__project)
 
     def test_value(self):
@@ -109,13 +109,13 @@ class ARTBranchCoverageNCoverTest(ARTStatementCoverageNCoverTest):
     metric_class = metric.ARTBranchCoverage
 
 
-class CoverageReportAgeTest(unittest.TestCase):
-    """ Unit tests for the coverage report age metric. """
+class ARTCoverageReportAgeTest(unittest.TestCase):
+    """ Unit tests for the ART coverage report age metric. """
     def setUp(self):
         self.__coverage_report = FakeJaCoCo()
         self.__subject = FakeSubject(metric_source_ids={self.__coverage_report: 'http://jacoco'})
-        self.__project = domain.Project(metric_sources={metric_source.CoverageReport: self.__coverage_report})
-        self.__metric = metric.CoverageReportAge(subject=self.__subject, project=self.__project)
+        self.__project = domain.Project(metric_sources={metric_source.ARTCoverageReport: self.__coverage_report})
+        self.__metric = metric.ARTCoverageReportAge(subject=self.__subject, project=self.__project)
 
     def test_value(self):
         """ Test that the value is the age of the coverage report. """
@@ -123,5 +123,5 @@ class CoverageReportAgeTest(unittest.TestCase):
 
     def test_missing_metric_source_id(self):
         """ Test that the value is -1 if the metric source id hasn't been configured. """
-        age = metric.CoverageReportAge(subject=FakeSubject(), project=self.__project)
+        age = metric.ARTCoverageReportAge(subject=FakeSubject(), project=self.__project)
         self.assertEqual(-1, age.value())

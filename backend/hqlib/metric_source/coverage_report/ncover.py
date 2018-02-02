@@ -18,23 +18,23 @@ limitations under the License.
 import datetime
 import re
 
-from ..abstract import coverage_report
-from ... import utils
 from hqlib.typing import DateTime
+from .html_coverage_report import HTMLCoverageReport
+from ... import utils
 
 
-class NCover(coverage_report.CoverageReport):
+class NCover(HTMLCoverageReport):
     """ Class representing a NCover coverage report. """
     metric_source_name = 'NCover coverage rapport'
 
-    def _parse_statement_coverage_percentage(self, soup) -> int:
+    def _parse_statement_coverage_percentage(self, soup) -> float:
         return self.__parse_coverage_percentage(soup, 'sequencePointCoverage')
 
-    def _parse_branch_coverage_percentage(self, soup) -> int:
+    def _parse_branch_coverage_percentage(self, soup) -> float:
         return self.__parse_coverage_percentage(soup, 'branchCoverage')
 
     @staticmethod
-    def __parse_coverage_percentage(soup, coverage_type: str) -> int:
+    def __parse_coverage_percentage(soup, coverage_type: str) -> float:
         """ Return the specified coverage percentage from the NCover soup. """
         scripts = soup('script', {'type': 'text/javascript'})
         for script in scripts:

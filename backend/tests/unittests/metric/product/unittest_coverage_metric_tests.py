@@ -29,9 +29,12 @@ class CommonUnittestMetricTestsMixin(object):
     def setUp(self):  # pylint: disable=invalid-name
         """ Set up the fixture for the unit tests. """
         self.__report = unittest.mock.MagicMock()
-        self.__report.unittest_line_coverage.return_value = 89
-        self.__report.unittest_branch_coverage.return_value = 87
-        project = domain.Project(metric_sources={metric_source.Sonar: self.__report})
+        self.__report.statement_coverage.return_value = 89
+        self.__report.branch_coverage.return_value = 87
+        self.__report.dashboard_url.return_value = "http://sonar/id"
+        self.__report.metric_source_name = "SonarQube coverage report"
+        self.__report.metric_source_urls.return_value = ["http://sonar/id"]
+        project = domain.Project(metric_sources={metric_source.UnittestCoverageReport: self.__report})
         self.__subject = unittest.mock.MagicMock()
         self.__subject.name.return_value = "FakeSubject"
         self.__metric = self.class_under_test(subject=self.__subject, project=project)

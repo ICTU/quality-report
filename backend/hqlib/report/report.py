@@ -34,19 +34,19 @@ class QualityReport(domain.DomainObject):
     @classmethod
     def requirement_classes(cls) -> Sequence[Type[domain.Requirement]]:
         """ Return a list of all requirement classes that the report can report on. """
-        return (requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-                requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
-                requirement.PerformanceScalability, requirement.TrackActions, requirement.TrackRisks,
-                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
-                requirement.TrackSecurityTestDate, requirement.TrackFindings, requirement.TrackTechnicalDebt,
-                requirement.TrackQualityGate, requirement.TrackManualLTCs, requirement.TrackSecurityAndPerformanceRisks,
-                requirement.TrackReadyUS, requirement.TrackCIJobs, requirement.TrackSonarVersion,
-                requirement.TrackDocumentAge, requirement.TrackSpirit, requirement.TrackAbsence,
-                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
-                requirement.Java, requirement.CSharp, requirement.JavaScript, requirement.Web, requirement.VisualBasic,
-                requirement.Python, requirement.TypeScript, requirement.TrustedProductMaintainability,
-                requirement.TrackBranches)
+        return (requirement.UnitTests, requirement.UnitTestCoverage, requirement.ART, requirement.ARTCoverage,
+                requirement.UserStoriesAndLTCs, requirement.CodeQuality, requirement.PerformanceLoad,
+                requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
+                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
+                requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackFindings,
+                requirement.TrackTechnicalDebt, requirement.TrackQualityGate, requirement.TrackManualLTCs,
+                requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
+                requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.TrackSpirit,
+                requirement.TrackAbsence, requirement.TrackUserStoriesInProgress,
+                requirement.TrackDurationOfUserStories, requirement.OWASPDependencies, requirement.OWASPZAP,
+                requirement.Checkmarx, requirement.OpenVAS, requirement.Java, requirement.CSharp,
+                requirement.JavaScript, requirement.Web, requirement.VisualBasic, requirement.Python,
+                requirement.TypeScript, requirement.TrustedProductMaintainability, requirement.TrackBranches)
 
     @classmethod
     def metric_classes(cls) -> Set[Type[domain.Metric]]:
@@ -207,8 +207,8 @@ class QualityReport(domain.DomainObject):
             product, requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
             requirement.TrackSecurityTestDate,
             requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
-            requirement.UnitTests, requirement.ART, requirement.ARTCoverage, requirement.UserStoriesAndLTCs,
-            requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
+            requirement.UnitTests, requirement.UnitTestCoverage, requirement.ART, requirement.ARTCoverage,
+            requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
             requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
             requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
             requirement.Checkmarx, requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
