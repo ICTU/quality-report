@@ -19,11 +19,11 @@ import datetime
 import functools
 import logging
 import json
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Sequence
 from distutils.version import LooseVersion
 
 from . import url_opener
-from .. import utils, domain
+from .. import utils, domain, metric_source
 from ..typing import DateTime, Number
 
 
@@ -47,8 +47,8 @@ def extract_branch_decorator(func):
     return _branch_param
 
 
-class Sonar(domain.MetricSource, url_opener.UrlOpener):
-    """ Class representing the Sonar instance. """
+class Sonar(metric_source.TestReport, url_opener.UrlOpener):
+    """ Class representing the Sonars instance. """
 
     metric_source_name = 'SonarQube'
 
@@ -70,6 +70,34 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
         self.__quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?language={language}&format=json'
         self.__old_quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}&format=json'
+
+    # Coverage report API
+
+    def statement_coverage(self, metric_source_id: str) -> float:
+        """ Return the statement coverage for a specific product. """
+        return self.unittest_line_coverage(metric_source_id)
+
+    def branch_coverage(self, metric_source_id: str) -> float:
+        """ Return the branch coverage for a specific product. """
+        return self.unittest_branch_coverage(metric_source_id)
+
+    # Test report API
+
+    def _passed_tests(self, sonar_id: str) -> int:
+        """ Return the number of passed tests as reported by the test report. """
+        return self.unittests(sonar_id) - self.failing_unittests(sonar_id)
+
+    def _failed_tests(self, sonar_id: str) -> int:
+        """ Return the number of failed tests as reported by the test report. """
+        return self.failing_unittests(sonar_id)
+
+    # Coverage report and test report API
+
+    def metric_source_urls(self, *metric_source_ids: str) -> Sequence[str]:
+        """ Return the metric source urls for human users. """
+        return [self.dashboard_url(metric_source_id) for metric_source_id in metric_source_ids]
+
+    # Sonar
 
     @classmethod
     def __add_branch_param_to_url(cls, url: str, branch: str) -> str:
@@ -350,6 +378,8 @@ class Sonar(domain.MetricSource, url_opener.UrlOpener):
 
     def datetime(self, *products: str) -> DateTime:
         """ Return the date and time of the last analysis of the product. """
+        if not products:
+            return datetime.datetime.min
 
         split_branch = extract_branch_decorator(lambda this, x, a: (x, a))
         product, branch = split_branch(self, products[0])

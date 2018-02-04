@@ -33,7 +33,6 @@ from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
-from .coverage_report.sonar_coverage_report import SonarCoverageReport
 from .file.file_with_date import FileWithDate
 from .history import History, CompactHistory
 from .holiday_planner import HolidayPlanner
@@ -58,7 +57,6 @@ from .test_report.junit_test_report import JunitTestReport
 from .test_report.robot_framework_test_report import RobotFrameworkTestReport
 from .test_report.testng_test_report import TestNGTestReport
 from .test_report.uft_test_report import UFTTestReport
-from .test_report.sonar_test_report import SonarTestReport
 from .issue_log.trello import TrelloBoard
 from .issue_log.wekan import WekanBoard
 from .url_opener import UrlOpener

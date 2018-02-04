@@ -1,3 +1,10 @@
+2018-02-04  Release 2.40.0
+
+  * The Sonar metric source can now be used as unit test report, coverage report and Sonar, so that it's no longer
+    needed to create different instances of the Sonar metric source when using Sonar as metric source for code quality,
+    unit tests and test coverage. See https://github.com/ICTU/quality-report/wiki/SonarQube.
+  
+  
 2018-02-02  Release 2.39.0
 
   * Feature #262: Use coverage reports as source for unit test metrics so that different metric sources can be used as
