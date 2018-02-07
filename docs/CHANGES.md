@@ -1,3 +1,8 @@
+2018-02-08  Release 2.42.0
+
+  * Feature #265: Comment column put back to the report table instead of detail pane.
+
+
 2018-02-07  Release 2.41.0
 
   * Feature #210: In UserStoriesDuration metric a list of stories added in extra information pane.

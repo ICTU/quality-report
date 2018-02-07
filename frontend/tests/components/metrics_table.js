@@ -44,6 +44,22 @@ test('metrics table rendered without metrics', (t) => {
     t.end();
 });
 
+test('metrics table rendered with comment header if there is at least one comment', (t) => {
+    const wrapper = shallow(<MetricsTable metrics={[{"comment": "Whatever"}]} />)
+    t.deepEqual(wrapper.find('BootstrapTable').prop('headers'),
+            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"], 
+             ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"], ["comment", "Comment"]]);
+    t.end();
+});
+
+test('metrics table rendered without comment header if there the comment is empty', (t) => {
+    const wrapper = shallow(<MetricsTable metrics={[{"comment": ""}]} />)
+    t.deepEqual(wrapper.find('BootstrapTable').prop('headers'),
+            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"], 
+             ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"]]);
+    t.end();
+});
+
 test('metrics table rendered correctly', (t) => {
     const wrapper = mount(<MetricsTable metrics={[{"id_value": "PD-01", "id_format": "PD-1", "section": "PD",
                 "sparkline": "<img src='img/PD-1.png' />;", "status_format": "status_format_html_str", "status": "missing_source",
@@ -57,6 +73,7 @@ test('metrics table rendered correctly', (t) => {
     t.equal(wrapper.find('thead th[id="status_format"]').text(), "Status");
     t.equal(wrapper.find('thead th[id="measurement"]').text(), "Meting");
     t.equal(wrapper.find('thead th[id="norm"]').text(), "Norm");
+    t.equal(wrapper.find('thead th[id="comment"]').text(), "Comment");
     
     // button and dropdown
     t.equal(wrapper.find('span.missing_source_metric').text().trim(), "PD-1");
@@ -69,6 +86,7 @@ test('metrics table rendered correctly', (t) => {
         .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Measurement result").exists(), true);
     t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
         .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Norm message").exists(), true);
-    t.equal(wrapper.find("div.panel-body").text(), "Comment!");
+    t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
+        .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Comment!").exists(), true);
     t.end();
 });

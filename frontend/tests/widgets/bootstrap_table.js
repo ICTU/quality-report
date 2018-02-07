@@ -209,7 +209,7 @@ test('bootstrap table renders rows of the table panel with links in extra info, 
 test('bootstrap table renders toggle button', (t) => {
     const wrapper = shallow(
         <BootstrapTable headers={[["", ""],["id", "ID"]]}>
-            {[{cells: ["cell 1"], className: 'cls', id: 'IDx', name: 'Metric Name', comment:'commentX'}]}
+            {[{cells: ["cell 1"], className: 'cls', id: 'IDx', name: 'Metric Name', extra_info: {title: "Extra!"}}]}
         </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').length, 1);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').prop('data_target'), '#IDx_details');
@@ -218,16 +218,16 @@ test('bootstrap table renders toggle button', (t) => {
     t.end();
 });
 
-test('bootstrap table renders disabled toggle button if there is no comment and no extra info', (t) => {
+test('bootstrap table renders disabled toggle button if there is no extra info', (t) => {
     const wrapper = shallow(
-        <BootstrapTable headers={[["", ""],["id", "ID"]]}>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {}}]}
+        <BootstrapTable headers={[["", ""],["id", "ID"]]}>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'Something', extra_info: {}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('button.disabled.btn.glyphicon.glyphicon-chevron-right').length, 1);
     t.end();
 });
 
-test('bootstrap table does not render detail table if there is no comment and no extra info', (t) => {
-    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]}>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {}}]}</BootstrapTable>)
+test('bootstrap table does not render detail table if there is no extra info', (t) => {
+    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]}>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'xxx', extra_info: {}}]}</BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('tr.collapse').exists(), false);
     t.end();
 });
@@ -237,7 +237,6 @@ test('bootstrap table does render detail table if there is extra info', (t) => {
         <BootstrapTable headers={[["", ""],["id", "ID"]]}>
             {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {title: "Extra!", headers: {"x": "y"}, data:[{"x":"extra data"}]}}]}
         </BootstrapTable>)
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').prop('has_comment'), false);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').prop('has_extra_info'), true);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane')
                                     .dive().find('tr.cls.collapse[id="IDx_details"] td.detail_pane').length, 1);
@@ -260,30 +259,10 @@ test('bootstrap table does render detail table if there is extra info', (t) => {
     t.end();
 });
 
-test('bootstrap table does render detail table if there is a comment and no extra info', (t) => {
-    const wrapper = shallow(
-        <BootstrapTable headers={[["", ""],["id", "ID"]]}>
-            {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'commentX', extra_info: {}}]}
-        </BootstrapTable>)
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').prop('has_comment'), true);
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').prop('has_extra_info'), false);
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane')
-                                    .dive().find('tr.cls.collapse[id="IDx_details"] td.detail_pane').length, 1);
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('CommentPanel').length, 1);
-
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('CommentPanel').dive()
-            .equals(<div className="panel panel-default">
-                        <h4 className="panel-heading">Commentaar</h4>
-                        <div className="panel-body">commentX</div>
-                    </div>), true);
-    
-    t.end();
-});
-
 test('bootstrap table toggle button click', (t) => {
     const wrapper = mount(
         <BootstrapTable headers={[["", ""],["id", "ID"]]}>
-            {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'commentX', extra_info: {}}]}
+            {[{cells: ["cell 1"], className: 'cls', id: 'IDx', extra_info: {title: "Extra!", headers: {"x": "y"}}}]}
         </BootstrapTable>)
     var x = wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]');
     t.equals(x.length, 1);

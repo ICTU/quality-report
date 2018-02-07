@@ -29,20 +29,36 @@ class MetricsTable extends React.Component {
     id_format(metric) {
         return (<div className="btn-group"><span className={this.bgColorClassName(metric)}>{metric["id_format"]}</span></div>);
     }
+    
+    stuffTableRows(has_comments) {
+        var table_rows = [];
+        this.props.metrics.forEach(function (metric) {
+            var cells = [this.id_format(metric), this.sparkline(metric),
+            { __html: metric["status_format"] }, { __html: metric["measurement"] },
+            { __html: metric["norm"] }];
+            if (has_comments) {
+                cells.push({ __html: metric["comment"] });
+            }
+            table_rows.push({
+            cells: cells,
+                className: this.bgColorClassName(metric), id: metric["id_value"],
+                name: metric['name'], extra_info: metric["extra_info"]
+            });
+        }, this);
+        return table_rows;
+    }
 
     render() {
-        var table_rows = [];
-        this.props.metrics.forEach(function(metric) {
-            var cells = [this.id_format(metric), this.sparkline(metric),
-                         {__html: metric["status_format"]}, {__html: metric["measurement"]},
-                         {__html: metric["norm"]}];
-            table_rows.push({cells: cells, 
-                className: this.bgColorClassName(metric), id: metric["id_value"], 
-                name: metric['name'], comment: metric["comment"], extra_info: metric["extra_info"]});
-        }, this);
+        const has_comments = this.props.metrics.some(function(metric) {
+            return metric["comment"];
+        });
+        var table_rows = this.stuffTableRows(has_comments);
         var headers = [["",""], ["id_format", "Id"], ["sparkline", "Trend"], ["status_format", "Status"],
                        ["measurement", "Meting"], ["norm", "Norm"]];
-    return (
+        if (has_comments) {
+            headers.push(["comment", "Comment"]);
+        }
+        return (
             <BootstrapTable headers={headers} onSort={this.props.onSort}
                               table_sort_column_name={this.props.table_sort_column_name}
                               table_sort_ascending={this.props.table_sort_ascending}>
