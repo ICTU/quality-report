@@ -20,9 +20,9 @@ import logging
 import os
 import re
 import subprocess
+from typing import Dict, Tuple, List
 
-from typing import Tuple, List
-
+from hqlib.typing import DateTime
 from . import archive_system
 
 
@@ -31,14 +31,14 @@ class VersionControlSystem(archive_system.ArchiveSystem):
 
     metric_source_name = 'Version control system'
 
-    def __init__(self, username: str='', password: str='', url: str=None,
+    def __init__(self, username: str = '', password: str = '', url: str = '',
                  run_shell_command=subprocess.check_output) -> None:
         self._username = username
         self._password = password
         self._shell_command = run_shell_command
         super().__init__(url=url)
 
-    def last_changed_date(self, url: str):
+    def last_changed_date(self, path: str) -> DateTime:
         """ Return the date when the url was last changed. """
         raise NotImplementedError
 
@@ -46,8 +46,9 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         """ Return a list of branch names for the specified path. """
         raise NotImplementedError
 
-    def unmerged_branches(self, path, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
-                          list_of_branches_to_include=None):
+    def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
+                          re_of_branches_to_ignore: str = '',
+                          list_of_branches_to_include: List[str] = None) -> Dict[str, int]:
         # pylint: disable=unused-argument
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
             unmerged revisions. Branches listed in the list of branches to ignore or that match the regular
@@ -55,8 +56,9 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         raise NotImplementedError
 
     @staticmethod
-    def _ignore_branch(branch_name, list_of_branches_to_ignore=None, re_of_branches_to_ignore='',
-                       list_of_branches_to_include=None) -> bool:
+    def _ignore_branch(branch_name: str, list_of_branches_to_ignore: List[str] = None,
+                       re_of_branches_to_ignore: str = '',
+                       list_of_branches_to_include: List[str] = None) -> bool:
         """ Return whether the branch should be ignored. """
         if list_of_branches_to_include and branch_name not in list_of_branches_to_include:
             return True
@@ -72,7 +74,8 @@ class VersionControlSystem(archive_system.ArchiveSystem):
         raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
-    def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str='', log_level: int=logging.WARNING) -> str:
+    def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str = '',
+                           log_level: int = logging.WARNING) -> str:
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         original_working_dir = os.getcwd()
         if folder:

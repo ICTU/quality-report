@@ -23,7 +23,7 @@ from typing import List, Dict, Optional, Union, Sequence
 from distutils.version import LooseVersion
 
 from . import url_opener
-from .. import utils, domain, metric_source
+from .. import utils, metric_source
 from ..typing import DateTime, Number
 
 
@@ -83,13 +83,13 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
 
     # Test report API
 
-    def _passed_tests(self, sonar_id: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
-        return self.unittests(sonar_id) - self.failing_unittests(sonar_id)
+        return self.unittests(metric_source_id) - self.failing_unittests(metric_source_id)
 
-    def _failed_tests(self, sonar_id: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
-        return self.failing_unittests(sonar_id)
+        return self.failing_unittests(metric_source_id)
 
     # Coverage report and test report API
 
@@ -109,7 +109,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         """ Return the version of the product. """
 
         url = self.__add_branch_param_to_url(
-            self.__analyses_api_url.format(project=product)+'&category=VERSION', branch)
+            self.__analyses_api_url.format(project=product) + '&category=VERSION', branch)
 
         try:
             analyses_json = self.__get_json(url, log_error=False)
@@ -171,6 +171,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
 
     @functools.lru_cache(maxsize=4096)
     def is_branch_plugin_installed(self) -> bool:
+        """ Return whether SonarQube has the branch plugin installed, which is needed for interpreting Sonar keys. """
         try:
             plugins = json.loads(self.url_read(self.__plugin_api_url))
             if "branch" in [item["key"] for item in plugins]:
@@ -184,7 +185,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         return False
 
     @functools.lru_cache(maxsize=4096)
-    def is_component_absent(self, product) -> bool:
+    def is_component_absent(self, product: str) -> bool:
         """" Checks if the component with complete name, including branch, is defined """
         url = self.__components_show_api_url.format(component=product)
         try:
@@ -456,7 +457,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         except self.url_open_exceptions:
             return -1
 
-    def __rule_violation(self, product: str, rule_name: str, default=0, branch: str=None) -> int:
+    def __rule_violation(self, product: str, rule_name: str, default: int = 0, branch: str = None) -> int:
         """ Return a specific violation value for the product. """
         if not self.__has_project(product, branch):
             return -1
@@ -467,7 +468,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
             return default
         return int(issues_json['paging']['total'])
 
-    def __false_positives(self, product: str, default=0, branch: str=None) -> int:
+    def __false_positives(self, product: str, default: int = 0, branch: str = None) -> int:
         """ Return the number of issues resolved as false positive. """
         if not self.__has_project(product, branch):
             return -1

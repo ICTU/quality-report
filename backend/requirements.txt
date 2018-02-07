@@ -1,9 +1,12 @@
 # Required Python packages
 beautifulsoup4==4.6.0
 lxml==4.1.1
-coverage==4.5
-xmlrunner==1.7.7
 python-dateutil==2.6.1
-setuptools==38.5.1
 pygal==2.4.0
 git+https://github.com/ICTU/wekan-python-api-client.git#egg=wekanapi&subdirectory=src
+
+# Development dependencies
+setuptools==38.5.1
+coverage==4.5
+xmlrunner==1.7.7
+pycodestyle==2.3.1

@@ -75,7 +75,7 @@ class UrlOpener(object):
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
                            http.client.BadStatusLine, TimeoutError)
 
-    def __init__(self, uri: str=None, username: str=None, password: str=None) -> None:
+    def __init__(self, uri: str = None, username: str = None, password: str = None) -> None:
         self.__username = username
         self.__password = password
         self.__opener = self.__create_url_opener(uri)
@@ -106,10 +106,9 @@ class UrlOpener(object):
                 return urllib.request.urlopen(request)
 
             return url_open_with_basic_auth
-        else:
-            return urllib.request.urlopen
+        return urllib.request.urlopen
 
-    def url_open(self, url: str, log_error: bool=True) -> IO:
+    def url_open(self, url: str, log_error: bool = True) -> IO:
         """ Return an opened url, using the opener created earlier. """
         self.__time_out_tracker.raise_timeout_if_url_timed_out_before(url)
         try:
@@ -123,7 +122,7 @@ class UrlOpener(object):
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)
-    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
+    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:
         """ Open and read a url, and transform the bytes to a string. """
         data = self.url_open(url, *args, **kwargs).read()
         return data.decode(encoding) if isinstance(data, bytes) else data

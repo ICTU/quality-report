@@ -28,75 +28,78 @@ class TestReport(domain.MetricSource):
     """ Abstract class representing a test report. """
     metric_source_name = 'Test report'
 
-    def __init__(self, url_read: Callable[[str], str]=None, *args, **kwargs) -> None:
+    def __init__(self, *args, url_read: Callable[[str], str] = None, **kwargs) -> None:
         self._url_read = url_read or url_opener.UrlOpener(
             uri=kwargs.pop('uri', ''), username=kwargs.pop('username', ''),
             password=kwargs.pop('password', '')).url_read
         super().__init__(*args, **kwargs)
 
     @functools.lru_cache(maxsize=1024)
-    def datetime(self, *report_urls: str) -> DateTime:
+    def datetime(self, *metric_source_ids: str) -> DateTime:
         """ Return the (oldest) date and time of the reports. """
-        return min([self._report_datetime(report_url) for report_url in report_urls]) if report_urls else \
-            datetime.datetime.min
+        return min([self._report_datetime(metric_source_id) for metric_source_id in metric_source_ids]) \
+            if metric_source_ids else datetime.datetime.min
 
     @functools.lru_cache(maxsize=1024)
-    def passed_tests(self, *report_urls: str) -> int:
+    def passed_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of passed tests. """
-        return sum([self._passed_tests(report_url) for report_url in report_urls]) if report_urls else -1
+        return sum([self._passed_tests(mertric_source_id) for mertric_source_id in metric_source_ids]) \
+            if metric_source_ids else -1
 
     @functools.lru_cache(maxsize=1024)
-    def failed_tests(self, *report_urls: str) -> int:
+    def failed_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of failed tests. """
-        return sum([self._failed_tests(report_url) for report_url in report_urls]) if report_urls else -1
+        return sum([self._failed_tests(metric_source_id) for metric_source_id in metric_source_ids]) \
+            if metric_source_ids else -1
 
     @functools.lru_cache(maxsize=1024)
-    def skipped_tests(self, *report_urls: str) -> int:
+    def skipped_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of skipped tests. """
-        return sum([self._skipped_tests(report_url) for report_url in report_urls]) if report_urls else -1
+        return sum([self._skipped_tests(metric_source_id) for metric_source_id in metric_source_ids]) \
+            if metric_source_ids else -1
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         raise NotImplementedError
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
         raise NotImplementedError
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
         raise NotImplementedError
 
-    def _skipped_tests(self, report_url: str) -> int:
+    def _skipped_tests(self, metric_source_id: str) -> int:  # pylint: disable=unused-argument,no-self-use
         """ Return the number of skipped tests as reported by the test report. """
         return 0
 
 
 class UnitTestReport(TestReport):
     """ Metric source for unit test reports. """
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         raise NotImplementedError
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
         raise NotImplementedError
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
         raise NotImplementedError
 
 
 class SystemTestReport(TestReport):
     """ Metric source for system test reports. """
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         raise NotImplementedError
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests as reported by the test report. """
         raise NotImplementedError
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests as reported by the test report. """
         raise NotImplementedError

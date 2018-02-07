@@ -28,7 +28,7 @@ from ..typing import DateTime, HistoryRecord, Number
 
 class CompactHistory(domain.MetricSource):
     """ Class for reading and writing history JSON files. """
-    def __init__(self, history_filename: str, recent_history: int=100, file_: Callable[[str], TextIO]=None) -> None:
+    def __init__(self, history_filename: str, recent_history: int = 100, file_: Callable[[str], TextIO] = None) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_ if file_ else open
@@ -51,7 +51,7 @@ class CompactHistory(domain.MetricSource):
         return values
 
     def status_start_date(self, metric_id: str, current_status: str,
-                          now: Callable[[], DateTime]=datetime.datetime.now) -> DateTime:
+                          now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:
         """ Return the start date of the current status of the metric. """
         history = self.__read_history()
         measurements = history['metrics'].get(metric_id, [])
@@ -59,8 +59,7 @@ class CompactHistory(domain.MetricSource):
             last_status, date_string = measurements[-1]['status'], measurements[-1]['start']
             start_date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
             return start_date if last_status == current_status else now()
-        else:
-            return now()
+        return now()
 
     def statuses(self) -> List[Dict[str, Union[str, int]]]:
         """ Return the statuses for each measurement. """
@@ -114,7 +113,7 @@ class History(domain.MetricSource):
     """ Class representing the history file. """
     metric_source_name = 'Measurement history file'
 
-    def __init__(self, history_filename: str, recent_history: int=100, file_: Callable[[str], TextIO]=None) -> None:
+    def __init__(self, history_filename: str, recent_history: int = 100, file_: Callable[[str], TextIO] = None) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_ if file_ else open
@@ -133,7 +132,7 @@ class History(domain.MetricSource):
         return values
 
     def status_start_date(self, metric_id: str, current_status: str,
-                          now: Callable[[], DateTime]=datetime.datetime.now) -> DateTime:
+                          now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:
         """ Return the start date of the current status of the metric. """
         last_status, date = self.__last_status(metric_id)
         return date if last_status == current_status else now()
@@ -168,11 +167,10 @@ class History(domain.MetricSource):
                 time_stamp_format += '.%f'
             date = datetime.datetime.strptime(time_stamp, time_stamp_format)
             return last_status, date
-        else:
-            return '', datetime.datetime.min
+        return '', datetime.datetime.min
 
     @functools.lru_cache(maxsize=1024)
-    def __historic_values(self, recent_only: bool=True) -> List[Dict[str, int]]:
+    def __historic_values(self, recent_only: bool = True) -> List[Dict[str, int]]:
         """ Return only the historic values from the history file, so without the status and status date. """
         measurements = self.__load_history(recent_only)
         value_only_measurements = []
@@ -184,7 +182,7 @@ class History(domain.MetricSource):
             value_only_measurements.append(values_only_measurement)
         return value_only_measurements
 
-    def __load_history(self, recent_only: bool=True) -> List[HistoryRecord]:
+    def __load_history(self, recent_only: bool = True) -> List[HistoryRecord]:
         """ Load measurements from the history file. """
         lines = self.__load_complete_history()
         return lines[-self.__recent_history:] if recent_only else lines

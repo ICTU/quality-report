@@ -15,14 +15,14 @@ limitations under the License.
 """
 
 
-from datetime import datetime
+import datetime
 import logging
 from typing import List, Dict
 
 import bs4
 
-from ..abstract import version_control_system
 from hqlib.typing import DateTime
+from ..abstract import version_control_system
 
 
 class Subversion(version_control_system.VersionControlSystem):
@@ -36,32 +36,32 @@ class Subversion(version_control_system.VersionControlSystem):
         return cls.__branches_folder(trunk_url) + branch + '/' + trunk_url.split('/trunk/')[1]
 
     @staticmethod
-    def normalize_path(svn_path: str) -> str:
+    def normalize_path(path: str) -> str:
         """ Return a normalized version of the path. """
-        if not svn_path.endswith('/'):
-            svn_path += '/'
-        if '/trunk/' not in svn_path:
-            svn_path += 'trunk/'
-        return svn_path
+        if not path.endswith('/'):
+            path += '/'
+        if '/trunk/' not in path:
+            path += 'trunk/'
+        return path
 
-    def last_changed_date(self, url: str) -> DateTime:
+    def last_changed_date(self, path: str) -> DateTime:
         """ Return the date when the url was last changed in Subversion. """
-        svn_info_xml = str(self._run_shell_command(('svn', 'info', '--xml', url)))
+        svn_info_xml = str(self._run_shell_command(('svn', 'info', '--xml', path)))
         try:
             date = bs4.BeautifulSoup(svn_info_xml, "lxml")('date')[0].string
         except IndexError:
-            return datetime.min
-        return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+            return datetime.datetime.min
+        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    def unmerged_branches(self, product_url: str, list_of_branches_to_ignore: List[str]=None,
-                          re_of_branches_to_ignore: str='',
-                          list_of_branches_to_include: List[str]=None) -> Dict[str, int]:
+    def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
+                          re_of_branches_to_ignore: str = '',
+                          list_of_branches_to_include: List[str] = None) -> Dict[str, int]:
         """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
             unmerged revisions. """
-        branches = [branch for branch in self.branches(product_url) if not
+        branches = [branch for branch in self.branches(path) if not
                     self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
                                         list_of_branches_to_include)]
-        branches_and_revs = [(branch, self.__nr_unmerged_revisions(product_url, branch)) for branch in branches]
+        branches_and_revs = [(branch, self.__nr_unmerged_revisions(path, branch)) for branch in branches]
         unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) in branches_and_revs if nr_revisions > 0]
         return dict(unmerged_branches)
 
@@ -89,9 +89,9 @@ class Subversion(version_control_system.VersionControlSystem):
         svn_info_xml = str(self._run_shell_command(('svn', 'info', branch_url, '--xml', '-r', revision_number)))
         return bs4.BeautifulSoup(svn_info_xml, "lxml")('url')[0].string
 
-    def branches(self, trunk_url: str) -> List[str]:
-        """ Return a list of branch names for the specified trunk url. """
-        return self.__svn_list(self.__branches_folder(trunk_url))
+    def branches(self, path: str) -> List[str]:
+        """ Return a list of branch names for the specified path (trunk url). """
+        return self.__svn_list(self.__branches_folder(path))
 
     @staticmethod
     def __branches_folder(trunk_url: str) -> str:

@@ -50,8 +50,9 @@ class UrlOpenerMock(UrlOpener):
                              'docs/examples/example_metric_sources/jira_filter_search_stories_duration.json')),
 
             'https://jira.myorg.nl/jira/rest/api/2/issue/ISS-1?expand=changelog&fields="*all,-comment"':
-                self._get_file_content(os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_changelog_stories_duration.json')),
+                self._get_file_content(
+                    os.path.join(self._dir_path,
+                                 'docs/examples/example_metric_sources/jira_changelog_stories_duration.json')),
             # end UserStoriesDuration
 
             'https://last_security_date_url': self._get_file_content(

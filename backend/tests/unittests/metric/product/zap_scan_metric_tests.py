@@ -52,7 +52,8 @@ class FakeZAPScanReport(domain.MetricSource):  # pylint: disable=too-few-public-
 class HighRiskZAPScanAlertsTest(unittest.TestCase):
     """ Unit tests for the high risk ZAP Scan alerts metric. """
 
-    class_under_test: Type[AlertsMetric] = metric.HighRiskZAPScanAlertsMetric  # May be overridden
+    class_under_test: Type[AlertsMetric] = metric.HighRiskZAPScanAlertsMetric  # noqa E701
+    #   May be overridden
 
     def setUp(self):
         self.__zap_scan_report = FakeZAPScanReport()

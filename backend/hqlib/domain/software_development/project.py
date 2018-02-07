@@ -32,7 +32,7 @@ from ...typing import Dashboard, DashboardColumns, DashboardRows
 class Project(RequirementSubject, measurable.MeasurableObject):
     """ Class representing a software development/maintenance project. """
 
-    def __init__(self, organization: str='Unnamed organization',*args, **kwargs) -> None:
+    def __init__(self, organization: str='Unnamed organization', *args, **kwargs) -> None:
         self.__short_section_names = {'MM', 'PC', 'PD'}  # Two letter abbreviations used, must be unique
         self.__organization = organization
         self.__processes: List[Process] = []

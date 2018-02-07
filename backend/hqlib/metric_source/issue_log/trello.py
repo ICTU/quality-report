@@ -32,7 +32,7 @@ class TrelloObject(object):
 
     url_template = 'https://api.trello.com/1/{object_type}/{object_id}{argument}?key={appkey}&token={token}{parameters}'
 
-    def __init__(self, appkey: str, token: str, object_id: str='', urlopen=None) -> None:
+    def __init__(self, appkey: str, token: str, object_id: str = '', urlopen=None) -> None:
         self._appkey = appkey
         self._token = token
         self.__object_id = object_id
@@ -41,7 +41,7 @@ class TrelloObject(object):
         super().__init__()
 
     @functools.lru_cache(maxsize=1024)
-    def _json(self, object_id: str='', argument: str='', extra_parameters: str='') -> Any:
+    def _json(self, object_id: str = '', argument: str = '', extra_parameters: str = '') -> Any:
         """ Return the JSON at url. """
         url = self.url_template.format(
             object_type=self.__object_type, object_id=object_id or self.__object_id,
@@ -49,7 +49,7 @@ class TrelloObject(object):
         json_string = self.__urlopen(url).read()
         return utils.eval_json(json_string)
 
-    def url(self, object_id: str='') -> str:
+    def url(self, object_id: str = '') -> str:
         """ Return the url of a Trello object, if object id is passed, or of trello.com. """
         if object_id or self.__object_id:
             try:
@@ -94,7 +94,7 @@ class TrelloList(TrelloObject):
 class TrelloCard(TrelloObject):
     """ Class representing a Trello card. """
 
-    def id(self) -> str:
+    def card_id(self) -> str:
         """ Return the id of this Trello object. """
         return self._json()['idShort']
 
@@ -111,23 +111,22 @@ class TrelloCard(TrelloObject):
                 return self.date_time_from_string(date_time_string)
         return None
 
-    def over_due_time_delta(self, now: Callable[[], DateTime]=datetime.datetime.now) -> TimeDelta:
+    def over_due_time_delta(self, now: Callable[[], DateTime] = datetime.datetime.now) -> TimeDelta:
         """ Return the amount of time the card is over due. """
         due_date_time = self.due_date_time()
         return now() - due_date_time if due_date_time else datetime.timedelta()
 
-    def is_over_due(self, now: Callable[[], DateTime]=datetime.datetime.now) -> bool:
+    def is_over_due(self, now: Callable[[], DateTime] = datetime.datetime.now) -> bool:
         """ Return whether the card is over due. """
         due_date_time = self.due_date_time()
         return due_date_time < now() if due_date_time else False
 
-    def is_inactive(self, days: int, now: Callable[[], DateTime]=datetime.datetime.now) -> bool:
+    def is_inactive(self, days: int, now: Callable[[], DateTime] = datetime.datetime.now) -> bool:
         """ Return whether the card has been inactive for the specified number of days. """
         if self.due_date_time() and self.due_date_time() > now():
             return False
-        else:
-            max_age = datetime.timedelta(days=days)
-            return now() - self.datetime() > max_age
+        max_age = datetime.timedelta(days=days)
+        return now() - self.datetime() > max_age
 
 
 class TrelloBoard(TrelloObject, MetricSource):
@@ -150,7 +149,7 @@ class TrelloBoard(TrelloObject, MetricSource):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def nr_of_inactive_cards(self, *board_ids: str, days: int=14) -> int:
+    def nr_of_inactive_cards(self, *board_ids: str, days: int = 14) -> int:
         """ Return the number of (non-archived) cards on this Trello board that haven't been updated for the
             specified number of days. """
         try:
@@ -162,7 +161,7 @@ class TrelloBoard(TrelloObject, MetricSource):
         """ Return the (non-archived) cards on this Trello board that are over due. """
         return [card for card in self.__cards(*board_ids) if card.is_over_due()]
 
-    def __inactive_cards(self, *board_ids: str, days: int=14) -> List[TrelloCard]:
+    def __inactive_cards(self, *board_ids: str, days: int = 14) -> List[TrelloCard]:
         """ Return the (non-archived) cards on this Trello board that are inactive. """
         return [card for card in self.__cards(*board_ids) if card.is_inactive(days)]
 
@@ -173,20 +172,20 @@ class TrelloBoard(TrelloObject, MetricSource):
             for card in self.__over_due_cards(*board_ids):
                 time_delta = utils.format_timedelta(card.over_due_time_delta())
                 remark = '{time_delta} te laat'.format(time_delta=time_delta)
-                label = '{card} ({remark})'.format(card=card.id(), remark=remark)
+                label = '{card} ({remark})'.format(card=card.card_id(), remark=remark)
                 urls[label] = card.url()
         except url_opener.UrlOpener.url_open_exceptions:
             return {self.metric_source_name: 'http://trello'}
         return urls
 
-    def inactive_cards_url(self, *board_ids: str, days: int=14) -> Dict[str, str]:
+    def inactive_cards_url(self, *board_ids: str, days: int = 14) -> Dict[str, str]:
         """ Return the urls for the (non-archived) cards on this Trello board that are inactive. """
         urls = dict()
         try:
             for card in self.__inactive_cards(*board_ids, days=days):
                 time_delta = utils.format_timedelta(card.last_update_time_delta())
                 remark = '{time_delta} niet bijgewerkt'.format(time_delta=time_delta)
-                label = '{card} ({remark})'.format(card=card.id(), remark=remark)
+                label = '{card} ({remark})'.format(card=card.card_id(), remark=remark)
                 urls[label] = card.url()
         except url_opener.UrlOpener.url_open_exceptions:
             return {self.metric_source_name: 'http://trello'}

@@ -21,8 +21,8 @@ import os
 import urllib.request
 from typing import Callable, List, Dict, Tuple
 
-from ..abstract.version_control_system import VersionControlSystem
 from hqlib.typing import DateTime
+from ..abstract.version_control_system import VersionControlSystem
 
 
 class Git(VersionControlSystem):
@@ -43,7 +43,8 @@ class Git(VersionControlSystem):
         return super().__eq__(other) and self.branch() == other.branch()
 
     @functools.lru_cache(maxsize=1024)
-    def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str='', log_level: int=logging.WARNING) -> str:
+    def _run_shell_command(self, shell_command: Tuple[str, ...], folder: str = '',
+                           log_level: int = logging.WARNING) -> str:
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         if not self.__repo_folder:
             self.__get_repo()
@@ -55,8 +56,7 @@ class Git(VersionControlSystem):
         timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', '--', path))
         if timestamp:
             return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
-        else:
-            return datetime.datetime.min
+        return datetime.datetime.min
 
     def branch(self) -> str:
         """ Return the checked out branch. """
@@ -66,8 +66,9 @@ class Git(VersionControlSystem):
         """ Return a list of branch names for the master branch. """
         return self.__get_branches()
 
-    def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str]=None, re_of_branches_to_ignore: str='',
-                          list_of_branches_to_include: List[str]=None) -> Dict[str, int]:
+    def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
+                          re_of_branches_to_ignore: str = '',
+                          list_of_branches_to_include: List[str] = None) -> Dict[str, int]:
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
             any unmerged commits. """
         unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not
@@ -81,7 +82,7 @@ class Git(VersionControlSystem):
         """ Return the branch folder for the specified branch. """
         return trunk_url + '/' + branch
 
-    def __get_branches(self, unmerged_only: bool=False) -> List[str]:
+    def __get_branches(self, unmerged_only: bool = False) -> List[str]:
         """ Get the (remote) branches for the repository. """
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
@@ -121,8 +122,7 @@ class Git(VersionControlSystem):
             prefix, postfix = self.url().split(sep)
             url = prefix + sep + '{username}:{password}@' + postfix
             return url.format(username=self._username, password=urllib.request.pathname2url(self._password))
-        else:
-            return self.url()
+        return self.url()
 
     def __determine_repo_folder_name(self) -> str:
         url_parts = [part for part in self.url().split('/') if part]
@@ -132,7 +132,7 @@ class Git(VersionControlSystem):
         return os.path.join(os.getcwd(), 'repos', folder)
 
     @staticmethod
-    def __valid_names(text: str, is_valid: Callable[[str], bool]=bool) -> List[str]:
+    def __valid_names(text: str, is_valid: Callable[[str], bool] = bool) -> List[str]:
         """ Return the names in the text that are valid. """
         names = [name.strip() for name in text.strip().split('\n')]
         return [name for name in names if is_valid(name)]

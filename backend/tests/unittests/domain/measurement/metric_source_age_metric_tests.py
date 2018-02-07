@@ -20,9 +20,11 @@ from unittest.mock import patch
 from unittest.mock import MagicMock
 from hqlib import domain
 
+
 class MetricSourceAgeMetricUnderTest(domain.MetricSourceAgeMetric):
     """ Implement abstract methods. """
     metric_source_class = domain.MetricSource
+
 
 class MetricSourceAgeMetricTest(unittest.TestCase):
     """ Test case for the metric source age metric. """

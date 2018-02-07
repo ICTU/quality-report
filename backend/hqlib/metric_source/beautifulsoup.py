@@ -15,9 +15,9 @@ limitations under the License.
 """
 
 import functools
+from typing import Callable, Any
 
 from bs4 import BeautifulSoup
-from typing import Callable, Any
 
 from . import url_opener
 

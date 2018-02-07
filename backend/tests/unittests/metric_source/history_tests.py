@@ -148,10 +148,12 @@ class CompactHistoryTest(unittest.TestCase):
             def numerical_value():
                 """ Return the value. """
                 return 10
+
             @staticmethod
             def stable_id():
                 """ Return the stable metric id. """
                 return 'FakeMetric'
+
             @staticmethod
             def status():
                 """ Return the metric status. """

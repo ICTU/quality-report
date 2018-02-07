@@ -60,22 +60,20 @@ class ZAPScanReport(domain.MetricSource):
         # First try the new table format
         # Find the row where the first td contains the specified risk level and get the number of alerts from
         # the second td.
-        if len(summary_table) > 0:
+        if summary_table:
             for row in summary_table[0]('tr'):
-                if len(row('td')) > 0 and row('td')[0].text == risk_level.capitalize():
+                if row('td') and row('td')[0].text == risk_level.capitalize():
                     return int(row('td')[1].text)
             logging.error("Risk level %s could not be found in ZAP Scan report.", risk_level)
             return -1
-        else:
-            table_list = soup('table')
-            # Prevent IndexError in case of empty table
-            if len(table_list) > 0:
-                summary_table = table_list[0]
-                # Find the row where the first td contains the specified risk level and get the number of alerts from
-                # the second td. We use item(text=True)[0] to skip font and anchor tags and get the inner text node.
-                alert = [row('td')[1](text=True)[0] for row in summary_table('tr')
-                         if row('td')[0](text=True)[0] == risk_level.capitalize()][0]
-                return int(alert)
-            else:
-                logging.error("Summary table could not be found in ZAP Scan report.")
-                return -1
+        table_list = soup('table')
+        # Prevent IndexError in case of empty table
+        if table_list:
+            summary_table = table_list[0]
+            # Find the row where the first td contains the specified risk level and get the number of alerts from
+            # the second td. We use item(text=True)[0] to skip font and anchor tags and get the inner text node.
+            alert = [row('td')[1](text=True)[0] for row in summary_table('tr')
+                     if row('td')[0](text=True)[0] == risk_level.capitalize()][0]
+            return int(alert)
+        logging.error("Summary table could not be found in ZAP Scan report.")
+        return -1

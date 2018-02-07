@@ -30,49 +30,49 @@ class UFTTestReport(test_report.TestReport):
 
     metric_source_name = 'UFT test report'
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """
-        return self.__test_count(report_url, 'passed')
+        return self.__test_count(metric_source_id, 'passed')
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests. """
-        return self.__test_count(report_url, 'failed')
+        return self.__test_count(metric_source_id, 'failed')
 
-    def _skipped_tests(self, report_url: str) -> int:
+    def _skipped_tests(self, metric_source_id: str) -> int:
         """ Return the number of skipped tests. The UFT xml does not contain this information by default, but
             it can be computed from the total amount of tests if it is added as extra data of a step. """
-        passed_tests, failed_tests = self._passed_tests(report_url), self._failed_tests(report_url)
+        passed_tests, failed_tests = self._passed_tests(metric_source_id), self._failed_tests(metric_source_id)
         if -1 in (passed_tests, failed_tests):
             return -1
         try:
-            root = self.__element_tree(report_url)
+            root = self.__element_tree(metric_source_id)
         except UrlOpener.url_open_exceptions:  # pragma: no cover
             return -1
         except xml.etree.cElementTree.ParseError:  # pragma: no cover
             return -1
         steps = [step for step in root.findall(".//Step[Obj]") if "Stappenreferentie" in (step.find("Obj").text or '')]
         if not steps:
-            logging.warning("No 'Stappenreferentie' found in %s at %s", self.metric_source_name, report_url)
+            logging.warning("No 'Stappenreferentie' found in %s at %s", self.metric_source_name, metric_source_id)
             return 0  # No "Stappenreferentie" found, assume no tests were skipped
         try:
             total = int(steps[0].find("Details").text)
         except (AttributeError, TypeError, ValueError) as reason:
             logging.error("Can't parse 'Stappenreferentie' from %s at %s: %s",
-                          self.metric_source_name, report_url, reason)
+                          self.metric_source_name, metric_source_id, reason)
             return -1
         skipped = total - (passed_tests + failed_tests)
         if skipped < 0:
             logging.warning(
                 "'Stappenreferentie' (%d) from %s at %s is smaller than the number of passed tests (%d) plus the "
                 "number of failed tests (%d): can't calculate number of skipped tests, assuming no tests were skipped",
-                total, self.metric_source_name, report_url, passed_tests, failed_tests)
+                total, self.metric_source_name, metric_source_id, passed_tests, failed_tests)
             return 0
         return skipped
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
-            summary = self.__summary(report_url)
+            summary = self.__summary(metric_source_id)
         except UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         except xml.etree.cElementTree.ParseError:
@@ -80,7 +80,7 @@ class UFTTestReport(test_report.TestReport):
         try:
             date_string, time_string = summary.get('eTime').split(' - ')
         except AttributeError as reason:
-            logging.error("UFT report summary at %s has no e(nd)Time attribute: %s", report_url, reason)
+            logging.error("UFT report summary at %s has no e(nd)Time attribute: %s", metric_source_id, reason)
             return datetime.datetime.min
         day, month, year = date_string.split('-')
         hour, minute, second = time_string.split(':')

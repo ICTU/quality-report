@@ -87,7 +87,7 @@ class NCoverTest(unittest.TestCase):
 
     def test_coverage_date(self):
         """ Test the date of the coverage report. """
-        expected = datetime.datetime.fromtimestamp(1440425155042/1000.)
+        expected = datetime.datetime.fromtimestamp(1440425155042 / 1000.)
         self.assertEqual(expected, self.__ncover.datetime('http://ncover'))
 
     def test_coverage_date_on_error(self):

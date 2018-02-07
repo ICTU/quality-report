@@ -76,8 +76,8 @@ class UnmergedBranches(LowerIsBetterMetric):
             extra_info = ExtraInfo(link="Branch", comment="Aantal")
             extra_info.title = self.url_label_text
             for branch, nr_revisions in list(unmerged_branches.items()):
-                extra_info += {"href": self.__branch_folder_for_branch(self.__vcs_path(), branch), "text": branch}, \
-                              '{nr} ongemergde revisie(s)'.format(nr=nr_revisions)
+                extra_info += {"href": self.__branch_folder_for_branch(self.__vcs_path(), branch),
+                               "text": branch}, "{nr} ongemergde revisie(s)".format(nr=nr_revisions)
 
         return extra_info if extra_info is not None and extra_info.data else None
 
@@ -90,7 +90,8 @@ class UnmergedBranches(LowerIsBetterMetric):
                                               .html_escape(self._metric_source.metric_source_name)))
         return json.dumps(text)[1:-1]  # Strip quotation marks
 
-    def format_comment_with_links(self, text: str, url_dict: Dict[str, str], url_label: str) -> str:
+    @staticmethod
+    def format_comment_with_links(text: str, url_dict: Dict[str, str], url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text).replace('\n', ' ')
         links = [anchor for (anchor, href) in list(url_dict.items())]

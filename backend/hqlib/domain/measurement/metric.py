@@ -151,7 +151,7 @@ class Metric(object):
         except AttributeError:
             return None
 
-    @functools.lru_cache(maxsize=8*1024)
+    @functools.lru_cache(maxsize=8 * 1024)
     def status(self) -> str:
         """ Return the status/color of the metric. """
         for status_string, has_status in [('missing_source', self.__missing_source_configuration),
@@ -215,7 +215,7 @@ class Metric(object):
         """ Return whether the actual value of the metric is better than the specified target value. """
         raise NotImplementedError
 
-    def report(self, max_subject_length: int=200) -> str:
+    def report(self, max_subject_length: int = 200) -> str:
         """ Return the actual value of the metric in the form of a short, mostly one sentence, report. """
         name = self.__subject_name()
         if len(name) > max_subject_length:
@@ -239,7 +239,7 @@ class Metric(object):
     def _parameters(self) -> MetricParameters:
         """ Return the parameters for the metric report template and for the metric norm template. """
         return dict(name=self.__subject_name(),
-                    metric=self.name[0].lower()+self.name[1:],
+                    metric=self.name[0].lower() + self.name[1:],
                     unit=self.unit,
                     target=self.target(),
                     low_target=self.low_target(),

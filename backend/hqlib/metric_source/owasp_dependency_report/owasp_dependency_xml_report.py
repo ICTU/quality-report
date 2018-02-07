@@ -32,21 +32,24 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
         super().__init__()
 
-    def _nr_warnings(self, report_url: str, priority: str) -> int:
+    def _nr_warnings(self, metric_source_id: str, priority: str) -> int:
         """ Return the number of warnings for the specified priority in the report. """
         if priority == 'normal':
             priority = 'medium'
         try:
-            root, namespace = self.__report_root(report_url)
+            root, namespace = self.__report_root(metric_source_id)
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-        # Construct XPaths for dependencies, their filePath and severity child nodes:
+        dependencies = root.findall(".//{{{ns}}}dependency".format(ns=namespace))
+        return len(self.__vulnerable_dependencies(dependencies, priority, namespace))
+
+    @staticmethod
+    def __vulnerable_dependencies(dependencies, priority, namespace):
+        """ Return the vulnerable dependencies. """
         severity_xpath = ".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace)
-        dependencies_xpath = ".//{{{ns}}}dependency".format(ns=namespace)
         file_path_xpath = "./{{{ns}}}filePath".format(ns=namespace)
 
-        dependencies = root.findall(dependencies_xpath)
         vulnerable_dependencies: List = []
 
         for node in dependencies:
@@ -66,15 +69,15 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
                     if file_path not in vulnerable_dependencies:
                         vulnerable_dependencies.append(file_path)
 
-        return len(vulnerable_dependencies)
+        return vulnerable_dependencies
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:
         return [re.sub(r'xml$', 'html', report_url) for report_url in report_urls]
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the report date and time. """
         try:
-            root, namespace = self.__report_root(report_url)
+            root, namespace = self.__report_root(metric_source_id)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         datetime_node = root.find(".//{{{ns}}}projectInfo/{{{ns}}}reportDate".format(ns=namespace))

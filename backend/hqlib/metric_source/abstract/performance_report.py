@@ -68,8 +68,7 @@ class PerformanceReport(domain.MetricSource):
         if urls:
             url = list(urls)[0]  # Any url is fine
             return self._datetime_from_url(url)
-        else:
-            return datetime.datetime.min
+        return datetime.datetime.min
 
     def duration(self, product: str) -> TimeDelta:
         """ Return the duration of the performance test. """
@@ -77,8 +76,7 @@ class PerformanceReport(domain.MetricSource):
         if urls:
             url = list(urls)[0]  # Any url is fine
             return self._duration_from_url(url)
-        else:
-            return datetime.timedelta.max
+        return datetime.timedelta.max
 
     def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured. """

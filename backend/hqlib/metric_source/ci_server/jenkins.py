@@ -26,8 +26,8 @@ from hqlib.typing import DateTime, TimeDelta
 from .. import url_opener
 from ..abstract import ci_server
 
-Job = Dict[str, str]
-Jobs = List[Job]
+Job = Dict[str, str]  # pylint: disable=invalid-name
+Jobs = List[Job]  # pylint: disable=invalid-name
 
 
 class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
@@ -38,7 +38,7 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
     jobs_api_postfix = api_postfix + "?tree=jobs[name,description,color,url,buildable]"
     builds_api_postfix = api_postfix + "?tree=builds[result]&depth=1"
 
-    def __init__(self, url: str, username: str='', password: str='', job_re: str='') -> None:
+    def __init__(self, url: str, username: str = '', password: str = '', job_re: str = '') -> None:
         super().__init__(url=url, username=username, password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = url + 'job/{job}/'
@@ -106,7 +106,7 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
 
     def __unused_jobs(self) -> Jobs:
         """ Return the active Jenkins jobs that are unused. """
-        def grace_time(job: Job, default: int=180) -> TimeDelta:
+        def grace_time(job: Job, default: int = 180) -> TimeDelta:
             """ Return the grace time for the job. """
             # Don't consider projects to be old until their last successful build was longer ago than the grace time.
             description = job['description'] or ''

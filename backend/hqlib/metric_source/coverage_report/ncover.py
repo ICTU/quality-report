@@ -49,5 +49,5 @@ class NCover(HTMLCoverageReport):
         for script in scripts:
             if 'ncover.createDateTime' in script.string:
                 match = re.search(r"ncover\.createDateTime = '(\d+)'", script.string)
-                return datetime.datetime.fromtimestamp(float(match.group(1))/1000)
+                return datetime.datetime.fromtimestamp(float(match.group(1)) / 1000)
         return datetime.datetime.now()

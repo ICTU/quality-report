@@ -21,6 +21,8 @@ from typing import Dict, Union, Tuple, Sequence, Optional
 from .domain.base import DomainObject
 
 
+# pylint: disable=invalid-name
+
 Number = Union[float, int]
 DateTime = datetime.datetime
 TimeDelta = datetime.timedelta

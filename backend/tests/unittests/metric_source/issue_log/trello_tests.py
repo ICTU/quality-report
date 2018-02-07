@@ -31,13 +31,13 @@ class FakeCard(object):
         self.__over_due = card_id in (1, 3)
         self.__inactive = card_id in (2, 3)
 
-    def id(self):
+    def card_id(self):
         """ Return the card id. """
         return self.__card_id
 
     def url(self):
         """ Return the card url. """
-        return 'http://trello.com/api/card/{0}'.format(self.id())
+        return 'http://trello.com/api/card/{0}'.format(self.card_id())
 
     def is_over_due(self):
         """ Return whether this card is over due. """
@@ -169,7 +169,7 @@ class TrelloCardTest(unittest.TestCase):
 
     def test_id(self):
         """ Test the card id. """
-        self.assertEqual("id", self.__trello_card.id())
+        self.assertEqual("id", self.__trello_card.card_id())
 
     @unittest.mock.patch.object(TrelloList, "name")
     def test_list_name(self, trello_list_name):

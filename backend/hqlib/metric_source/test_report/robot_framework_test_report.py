@@ -34,18 +34,18 @@ class RobotFrameworkTestReport(test_report.TestReport):
 
     metric_source_name = "Robot Framework test report"
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """
-        return self.__test_count(report_url, "pass")
+        return self.__test_count(metric_source_id, "pass")
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests. """
-        return self.__test_count(report_url, "fail")
+        return self.__test_count(metric_source_id, "fail")
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
-            root = self.__element_tree(report_url)
+            root = self.__element_tree(metric_source_id)
         except UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         except xml.etree.cElementTree.ParseError:
@@ -53,7 +53,7 @@ class RobotFrameworkTestReport(test_report.TestReport):
         try:
             return dateutil.parser.parse(root.get("generated"))
         except TypeError as reason:
-            logging.error("Couldn't parse report date and time from %s: %s", report_url, reason)
+            logging.error("Couldn't parse report date and time from %s: %s", metric_source_id, reason)
             return datetime.datetime.min
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:  # pylint: disable=no-self-use

@@ -31,7 +31,7 @@ class Happiness(team_spirit.TeamSpirit):
 
     metric_source_name = 'Happiness'
 
-    def __init__(self, url: str, url_read: Callable[[str], str]=None) -> None:
+    def __init__(self, url: str, url_read: Callable[[str], str] = None) -> None:
         self.__url_read = url_read or UrlOpener().url_read
         super().__init__(url=url)
 

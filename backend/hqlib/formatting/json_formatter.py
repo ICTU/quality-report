@@ -151,7 +151,7 @@ height='48' title='{hover}' border='0' />", "status_start_date": {status_start_d
         kwargs['norm'] = metric.norm()
         kwargs['text'] = metric.format_text_with_links(metric.report(), metric.url(), metric.url_label_text)
         kwargs['comment'] = metric.format_comment_with_links(metric.comment(), metric.comment_urls(),
-                                                          metric.comment_url_label_text)
+                                                             metric.comment_url_label_text)
         kwargs['extra_info'] = '{}' if extra_info is None else json.dumps(extra_info.__dict__)
         return kwargs
 

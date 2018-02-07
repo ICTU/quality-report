@@ -20,6 +20,7 @@ import datetime
 import hqlib
 from hqlib.domain import ExtraInfo
 
+
 class Metric(object):
     """ Fake a metric class. """
     url_label_text = 'label'

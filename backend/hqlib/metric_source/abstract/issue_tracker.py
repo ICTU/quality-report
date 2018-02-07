@@ -90,7 +90,7 @@ class UserStoryWithoutPerformanceRiskAssessmentTracker(domain.MetricSource):
         raise NotImplementedError
 
 
-class UserStoriesInProgressTracker (domain.MetricSource):
+class UserStoriesInProgressTracker(domain.MetricSource):
     """ Abstract base class for ready user story points trackers, such as Jira. """
     metric_source_name = 'User stories in progress tracker'
 
@@ -99,7 +99,7 @@ class UserStoriesInProgressTracker (domain.MetricSource):
         raise NotImplementedError
 
 
-class UserStoriesDurationTracker (domain.MetricSource):
+class UserStoriesDurationTracker(domain.MetricSource):
     """ Abstract base class for ready user story points trackers, such as Jira. """
     metric_source_name = 'User stories duration tracker'
     needs_metric_source_id = True

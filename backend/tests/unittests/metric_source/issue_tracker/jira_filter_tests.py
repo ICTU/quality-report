@@ -100,7 +100,7 @@ class JiraFilterTest(unittest.TestCase):
 
         result = JiraFilter('', '', '', field_name='customfield_1').sum_field('123', '567')
 
-        query_sum_mock.assert_has_calls([call(123,'customfield_1'), call(567, 'customfield_1')])
+        query_sum_mock.assert_has_calls([call(123, 'customfield_1'), call(567, 'customfield_1')])
         self.assertAlmostEqual(25.3, result)
 
     @patch.object(Jira, 'query_sum')

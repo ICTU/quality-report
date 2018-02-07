@@ -311,7 +311,7 @@ Reporting engine
     </tr>
 </table>
 
-<hr align="left" width="100%" size="1"/>	
+<hr align="left" width="100%" size="1"/>
 
     <h2>Trend (ms)</h2>
 <table cellspacing="2" cellpadding="5" border="0" class="details">

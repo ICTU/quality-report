@@ -29,7 +29,7 @@ from ..url_opener import UrlOpener
 class HTMLCoverageReport(CoverageReport):
     """ Abstract class representing a HTML coverage report. """
 
-    def __init__(self, url_open: Callable[[str], bytes]=None, **kwargs) -> None:
+    def __init__(self, url_open: Callable[[str], bytes] = None, **kwargs) -> None:
         self.__url_open = url_open or UrlOpener(**kwargs).url_open
         super().__init__()
 
@@ -84,6 +84,6 @@ class HTMLCoverageReport(CoverageReport):
         return [coverage_url]
 
     @functools.lru_cache(maxsize=1024)
-    def __get_soup(self, url: str, log_error=True):
+    def __get_soup(self, url: str, log_error: bool = True):
         """ Get a beautiful soup of the HTML at the url. """
         return bs4.BeautifulSoup(self.__url_open(url, log_error=log_error), "lxml")

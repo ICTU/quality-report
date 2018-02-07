@@ -32,8 +32,8 @@ class HolidayPlanner(domain.MetricSource, url_opener.UrlOpener):
         self.__api_url = kwargs.pop('api_url')
         super().__init__(*args, **kwargs)
 
-    def days(self, team: domain.Team, start_date: datetime.date=None) -> Tuple[int, datetime.date, datetime.date,
-                                                                               List[domain.Person]]:
+    def days(self, team: domain.Team, start_date: datetime.date = None) -> Tuple[int, datetime.date, datetime.date,
+                                                                                 List[domain.Person]]:
         """ Return the number of consecutive days that multiple team members are absent. """
         try:
             absence_days = self.__absence_days(team)

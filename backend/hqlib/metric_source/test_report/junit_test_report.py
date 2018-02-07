@@ -36,29 +36,29 @@ class JunitTestReport(test_report.TestReport):
     def metric_source_urls(self, *report_urls: str) -> List[str]:
         return [re.sub(r'junit/junit\.xml$', 'html/htmlReport.html', report_url) for report_url in report_urls]
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """
-        failed = self._failed_tests(report_url)
-        skipped = self._skipped_tests(report_url)
-        total = self.__test_count(report_url, 'tests')
+        failed = self._failed_tests(metric_source_id)
+        skipped = self._skipped_tests(metric_source_id)
+        total = self.__test_count(metric_source_id, 'tests')
         return -1 if -1 in (failed, skipped, total) else total - (skipped + failed)
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests. """
-        failed = self.__failure_count(report_url)
-        errors = self.__test_count(report_url, 'errors')
+        failed = self.__failure_count(metric_source_id)
+        errors = self.__test_count(metric_source_id, 'errors')
         return -1 if -1 in (failed, errors) else failed + errors
 
-    def _skipped_tests(self, report_url: str) -> int:
+    def _skipped_tests(self, metric_source_id: str) -> int:
         """ Return the number of skipped tests. """
-        skipped = self.__test_count(report_url, 'skipped')
-        disabled = self.__test_count(report_url, 'disabled')
+        skipped = self.__test_count(metric_source_id, 'skipped')
+        disabled = self.__test_count(metric_source_id, 'disabled')
         return -1 if -1 in (skipped, disabled) else skipped + disabled
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
-            test_suites = self.__test_suites(report_url)
+            test_suites = self.__test_suites(metric_source_id)
         except UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         except xml.etree.cElementTree.ParseError:
@@ -68,12 +68,10 @@ class JunitTestReport(test_report.TestReport):
             date_times = [utils.parse_iso_datetime(timestamp + 'Z') for timestamp in timestamps if timestamp]
             if date_times:
                 return min(date_times)
-            else:
-                logging.warning("Couldn't find timestamps in test suites in: %s", report_url)
-                return datetime.datetime.min
-        else:
-            logging.warning("Couldn't find test suites in: %s", report_url)
+            logging.warning("Couldn't find timestamps in test suites in: %s", metric_source_id)
             return datetime.datetime.min
+        logging.warning("Couldn't find test suites in: %s", metric_source_id)
+        return datetime.datetime.min
 
     def __test_count(self, report_url: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """
@@ -85,9 +83,8 @@ class JunitTestReport(test_report.TestReport):
             return -1
         if test_suites:
             return sum(int(test_suite.get(result_type, 0)) for test_suite in test_suites)
-        else:
-            logging.warning("Couldn't find test suites in: %s", report_url)
-            return -1
+        logging.warning("Couldn't find test suites in: %s", report_url)
+        return -1
 
     def __failure_count(self, report_url: str) -> int:
         """ Return the number of test cases that have failures (failed assertions). """

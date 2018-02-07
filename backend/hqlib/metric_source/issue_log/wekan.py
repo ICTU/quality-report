@@ -59,7 +59,7 @@ class WekanBoard(domain.MetricSource):
         """ Return the number of over due cards. """
         return len(list(self.__over_due_cards(*board_ids))) if self.__boards(*board_ids) else -1
 
-    def over_due_actions_url(self, *board_ids: str, now: DateTime=None) -> Dict[str, str]:
+    def over_due_actions_url(self, *board_ids: str, now: DateTime = None) -> Dict[str, str]:
         """ Return the urls to the over due cards. """
         if not self.__boards(*board_ids):
             return {self.metric_source_name: self.__url}
@@ -75,11 +75,11 @@ class WekanBoard(domain.MetricSource):
             urls[label] = self.__card_url(card)
         return urls
 
-    def nr_of_inactive_actions(self, *board_ids: str, days: int=14) -> int:
+    def nr_of_inactive_actions(self, *board_ids: str, days: int = 14) -> int:
         """ Return the number of inactive cards. """
         return len(list(self.__inactive_cards(*board_ids, days=days))) if self.__boards(*board_ids) else -1
 
-    def inactive_actions_url(self, *board_ids: str, days: int=14, now: DateTime=None) -> Dict[str, str]:
+    def inactive_actions_url(self, *board_ids: str, days: int = 14, now: DateTime = None) -> Dict[str, str]:
         """ Return the urls for the inactive cards. """
         if not self.__boards(*board_ids):
             return {self.metric_source_name: self.__url}
@@ -160,13 +160,13 @@ class WekanBoard(domain.MetricSource):
                 for card in cards_list.get_cards():
                     yield card
 
-    def __inactive_cards(self, *board_ids: str, days: int=14, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
+    def __inactive_cards(self, *board_ids: str, days: int = 14, now: DateTime = None) -> Iterator[wekanapi.models.Card]:
         """ Return all inactive cards on the boards. """
         for card in self.__cards(*board_ids):
             if self.__is_inactive(card, days, now):
                 yield card
 
-    def __is_inactive(self, card: wekanapi.models.Card, days: int=14, now: DateTime=None) -> bool:
+    def __is_inactive(self, card: wekanapi.models.Card, days: int = 14, now: DateTime = None) -> bool:
         """ Return whether the card is inactive. """
         now = now or datetime.datetime.now()
         info = card.get_card_info()
@@ -176,7 +176,7 @@ class WekanBoard(domain.MetricSource):
             return False  # Card has a start date in the future, never consider it inactive
         return (now - self.__last_activity(info)).days > days
 
-    def __over_due_cards(self, *board_ids: str, now: DateTime=None) -> Iterator[wekanapi.models.Card]:
+    def __over_due_cards(self, *board_ids: str, now: DateTime = None) -> Iterator[wekanapi.models.Card]:
         """ Return all over due cards on the boards. """
         now = now or datetime.datetime.now()
         for card in self.__cards(*board_ids):

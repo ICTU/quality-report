@@ -23,7 +23,7 @@ class ArchiveSystem(domain.MetricSource):
     """ Abstract base class for systems that archive files, such as Nexus, and version control systems. """
     metric_source_name = 'Archive system'
 
-    def last_changed_date(self, url: str) -> datetime:
+    def last_changed_date(self, path: str) -> datetime:
         """ Return the date when the url was last changed. """
         raise NotImplementedError
 

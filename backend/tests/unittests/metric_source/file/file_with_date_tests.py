@@ -107,5 +107,5 @@ class FileWithDateTestCase(unittest.TestCase):
         url_read_mock.side_effect = Exception()
         file_with_date = FileWithDate()
 
-        self.assertRaises( Exception, lambda: file_with_date.get_datetime_from_content(fake_url))
+        self.assertRaises(Exception, lambda: file_with_date.get_datetime_from_content(fake_url))
         url_read_mock.assert_called_once_with(fake_url)

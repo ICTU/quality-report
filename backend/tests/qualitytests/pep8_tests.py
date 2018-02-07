@@ -15,17 +15,14 @@ limitations under the License.
 """
 
 
-from .. import metric
-from ..domain import Requirement
+import unittest
+import pycodestyle
 
 
-class TrackSpirit(Requirement):
-    """ Track the team spirit. """
-    _name = 'Track spirit'
-    _metric_classes = (metric.TeamSpirit, metric.TeamSpiritAge)
-
-
-class TrackAbsence(Requirement):
-    """ Track the absence of team members. """
-    _name = 'Track absence'
-    _metric_classes = (metric.TeamAbsence,)
+class TestCodeFormat(unittest.TestCase):
+    """ Code format tests. """
+    def test_pep8_conformance(self):
+        """Test that we conform to PEP-8."""
+        style = pycodestyle.StyleGuide(quiet=True, config_file="setup.cfg")
+        result = style.check_files(['.'])
+        self.assertEqual(result.total_errors, 0, "Found code style errors (and warnings).")

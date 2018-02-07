@@ -14,15 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import datetime
-from typing import Dict, Optional, Mapping, Union
 import urllib.parse
 import logging
+from typing import Dict, Optional, Mapping, Tuple, Union
+
+import dateutil.parser
 
 from . import url_opener
 from .. import utils
-import dateutil.parser
-
 from ..domain import ExtraInfo
 
 
@@ -61,7 +60,7 @@ class Jira(object):
             self._extra_info[query_id].title = 'Gemiddelde looptijd van user stories'
             days = self._sum_days_in_extra_info(self._extra_info[query_id])
             stories = self._count_stories_in_extra_info(self._extra_info[query_id])
-            return days/stories if stories > 0 else -1
+            return days / stories if stories > 0 else -1
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.error("Error opening jira filter %s: %s.", query_id, reason)
         except ValueError:
@@ -95,7 +94,7 @@ class Jira(object):
                 dates.append(dateutil.parser.parse(history["created"]))
         return dates
 
-    def _get_days_in_progress(self, issue: Dict) -> (object, datetime.datetime, datetime.datetime, int, bool):
+    def _get_days_in_progress(self, issue: Dict) -> Tuple[object, str, str, Union[str, int], bool]:
         """ Fetch the changelog of the given issue and get number of days between it is moved for the first time
             to the status "In Progress", till the last time it is moved out of it. """
 
@@ -162,7 +161,7 @@ class Jira(object):
         except url_opener.UrlOpener.url_open_exceptions:
             return None
 
-    def get_query_url(self, query_id: QueryId, search: bool=True) -> Optional[str]:
+    def get_query_url(self, query_id: QueryId, search: bool = True) -> Optional[str]:
         """ Get the query url based on the query id. """
         if not query_id:
             return None

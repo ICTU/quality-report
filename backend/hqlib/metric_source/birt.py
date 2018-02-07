@@ -19,9 +19,9 @@ import datetime
 import logging
 from typing import List
 
+from hqlib.typing import DateTime
 from . import beautifulsoup, url_opener
 from .. import utils, domain
-from hqlib.typing import DateTime
 
 
 class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
@@ -48,7 +48,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the url for the Birt test design report. """
         return self.__test_design_url
 
-    def manual_test_execution_url(self, version: str='trunk') -> str:
+    def manual_test_execution_url(self, version: str = 'trunk') -> str:
         """ Return the url for the Birt manual test execution report. """
         return self.__manual_test_execution_url.format(ver=version)
 
@@ -63,16 +63,14 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         nr_user_stories = self.nr_user_stories()
         if nr_user_stories == -1:
             return -1
-        else:
-            return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs())
+        return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs())
 
     def nr_automated_ltcs(self) -> int:
         """ Return the number of logical test cases that have been implemented as automated tests. """
         nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated()
         if nr_ltcs_to_be_automated == -1:
             return -1
-        else:
-            return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs())
+        return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs())
 
     # Metrics available directly in Birt:
 
@@ -116,7 +114,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the number of logical test cases for the product that have to be automated. """
         return self.__test_design_metric(row_nr=10)
 
-    def nr_manual_ltcs(self, version: str='trunk') -> int:
+    def nr_manual_ltcs(self, version: str = 'trunk') -> int:
         """ Return the number of logical test cases for the product that are executed manually. """
         try:
             test_dates = self.__manual_test_dates(version)
@@ -138,7 +136,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the number of logical test cases for the product that should be automated but have not. """
         return self.__test_design_metric(row_nr=13)
 
-    def date_of_last_manual_test(self, version: str='trunk') -> DateTime:
+    def date_of_last_manual_test(self, version: str = 'trunk') -> DateTime:
         """ Return the date when the product/version was last tested manually. """
         try:
             test_dates = self.__manual_test_dates(version)

@@ -16,10 +16,11 @@ limitations under the License.
 
 
 import datetime
-import dateutil
 import logging
 import re
 from typing import List, Iterable
+
+import dateutil
 
 from hqlib.metric_source import url_opener, beautifulsoup
 from hqlib.typing import DateTime, TimeDelta

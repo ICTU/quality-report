@@ -71,7 +71,7 @@ class JenkinsTestReportTest(unittest.TestCase):
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
         self.__opener.contents = '{"timestamp":1467929105000}'
-        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000/1000.), self.__jenkins.datetime('job'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
 
     def test_missing_report_datetime(self):
         """ Test that the minimum datetime is returned when the date and time of the test suite is missing. """

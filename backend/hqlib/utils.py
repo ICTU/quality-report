@@ -42,15 +42,15 @@ MONTHS = {
 }
 
 ABBREVIATED_MONTHS = {
-    'jan':  1,
-    'feb':  2,
-    'mar':  3, 'mrt': 3,
-    'apr':  4,
-    'may':  5, 'mei':  5,
-    'jun':  6,
-    'jul':  7,
-    'aug':  8,
-    'sep':  9,
+    'jan': 1,
+    'feb': 2,
+    'mar': 3, 'mrt': 3,
+    'apr': 4,
+    'may': 5, 'mei': 5,
+    'jun': 6,
+    'jul': 7,
+    'aug': 8,
+    'sep': 9,
     'oct': 10, 'okt': 10,
     'nov': 11,
     'dec': 12
@@ -124,15 +124,14 @@ def parse_iso_datetime(datetime_string: str) -> DateTime:
     return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
-def percentage(numerator: Number, denominator: Number, zero_divided_by_zero_is_zero: bool=False) -> int:
+def percentage(numerator: Number, denominator: Number, zero_divided_by_zero_is_zero: bool = False) -> int:
     """ Return numerator / denominator * 100. """
     if float(denominator) == 0.0:
         return 0 if float(numerator) == 0.0 and zero_divided_by_zero_is_zero else 100
-    else:
-        return int(round((float(numerator) / float(denominator)) * 100))
+    return int(round((float(numerator) / float(denominator)) * 100))
 
 
-def format_date(date_time: DateTime, year: int=None) -> str:
+def format_date(date_time: DateTime, year: int = None) -> str:
     """ Return a (Dutch) formatted version of the datetime. """
     if date_time:
         formatted_date = '{day} {month}'.format(day=date_time.day, month=MONTHS[date_time.month])

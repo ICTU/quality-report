@@ -32,22 +32,22 @@ class TestNGTestReport(test_report.TestReport):
 
     metric_source_name = 'TestNG test report'
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """
-        return self.__test_count(report_url, 'passed')
+        return self.__test_count(metric_source_id, 'passed')
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests. """
-        return self.__test_count(report_url, 'failed')
+        return self.__test_count(metric_source_id, 'failed')
 
-    def _skipped_tests(self, report_url: str) -> int:
+    def _skipped_tests(self, metric_source_id: str) -> int:
         """ Return the number of skipped tests. """
-        return self.__test_count(report_url, 'skipped')
+        return self.__test_count(metric_source_id, 'skipped')
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
-            test_suites = self.__test_suites(report_url)
+            test_suites = self.__test_suites(metric_source_id)
         except UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         except xml.etree.cElementTree.ParseError:
@@ -57,12 +57,10 @@ class TestNGTestReport(test_report.TestReport):
             date_times = [utils.parse_iso_datetime(timestamp) for timestamp in timestamps if timestamp]
             if date_times:
                 return min(date_times)
-            else:
-                logging.warning("Couldn't find timestamps in test suites in: %s", report_url)
-                return datetime.datetime.min
-        else:
-            logging.warning("Couldn't find test suites in: %s", report_url)
+            logging.warning("Couldn't find timestamps in test suites in: %s", metric_source_id)
             return datetime.datetime.min
+        logging.warning("Couldn't find test suites in: %s", metric_source_id)
+        return datetime.datetime.min
 
     def __test_count(self, report_url: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """

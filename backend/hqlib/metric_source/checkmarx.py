@@ -23,16 +23,16 @@ from typing import Dict, List, Iterable
 
 import dateutil.parser
 
+from hqlib.typing import DateTime
 from . import url_opener
 from .. import utils, domain
-from hqlib.typing import DateTime
 
 
 class Checkmarx(domain.MetricSource):
     """ Class representing the Checkmarx API. """
     metric_source_name = 'Checkmarx'
 
-    def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener=None,
+    def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener = None,
                  *args, **kwargs) -> None:
         self._url_open = url_open or url_opener.UrlOpener("", username, password)
         super().__init__(url=url, *args, **kwargs)
@@ -64,7 +64,7 @@ class Checkmarx(domain.MetricSource):
                 return -1
             try:
                 nr_alerts += self.__parse_alerts(json, priority)
-            except Exception as reason:
+            except KeyError as reason:
                 logging.error("Couldn't parse alerts for project %s with %s risk level from %s: %s",
                               project_name, priority, self.url(), reason)
                 return -1
@@ -80,7 +80,7 @@ class Checkmarx(domain.MetricSource):
                 return datetime.datetime.min
             try:
                 dates.append(self.__parse_datetime(json))
-            except Exception as reason:
+            except KeyError as reason:
                 logging.error("Couldn't parse date and time for project %s from %s: %s",
                               project_name, self.url(), reason)
                 logging.error("JSON: %s", json)

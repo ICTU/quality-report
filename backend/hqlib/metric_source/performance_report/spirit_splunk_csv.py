@@ -48,12 +48,10 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
 
     def _has_query_color(self, row, color) -> bool:
         """ Return whether the query has the specified color. """
-        if color in ('yellow', 'red'):
-            return row[self.PASS_FAIL_COLUMN] == 'Failed'
-        else:
-            return row[self.PASS_FAIL_COLUMN] != 'Failed'
+        status = row[self.PASS_FAIL_COLUMN]
+        return status == 'Failed' if color in ('yellow', 'red') else status != 'Failed'
 
-    def _datetime_from_url(self, url) -> DateTime:
+    def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when performance was last measured. """
         try:
             rows = self.__rows(url)
@@ -74,7 +72,7 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
         """ Return the url(s) of the performance report for the specified product and version. """
         return self.__report_urls or [self.url()]
 
-    def __rows(self, url):
+    def __rows(self, url: str):
         """ Return the rows from the CSV file. """
         data = self.url_read(url, encoding='iso-8859-1')
         return csv.reader(data.split('\n'), delimiter=';')

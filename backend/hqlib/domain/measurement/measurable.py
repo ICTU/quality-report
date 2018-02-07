@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING
 
 from ..base import DomainObject
 from hqlib.typing import MetricValue

@@ -69,9 +69,9 @@ class JaCoCo(HTMLCoverageReport):
 
     @staticmethod
     def __parse_non_us_date_time(date_time_string: str) -> DateTime:
-        date_string, time_string = date_time_string.split(' ')
-        day_string, month_string, year_string = date_string.split('-')
-        hour_string, minute_string, second_string = time_string.split(':')
-        year, month, day = int(year_string), utils.ABBREVIATED_MONTHS[month_string], int(day_string)
-        hour, minute, second = int(hour_string), int(minute_string), int(second_string)
-        return datetime.datetime(year, month, day, hour, minute, second)
+        """ Parse the date and time string. """
+        date, time = date_time_string.split(' ')
+        day, month, year = date.split('-')
+        hour, minute, second = time.split(':')
+        return datetime.datetime(int(year), utils.ABBREVIATED_MONTHS[month], int(day),
+                                 int(hour), int(minute), int(second))

@@ -14,18 +14,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-from .. import metric
-from ..domain import Requirement
-
-
-class TrackSpirit(Requirement):
-    """ Track the team spirit. """
-    _name = 'Track spirit'
-    _metric_classes = (metric.TeamSpirit, metric.TeamSpiritAge)
-
-
-class TrackAbsence(Requirement):
-    """ Track the absence of team members. """
-    _name = 'Track absence'
-    _metric_classes = (metric.TeamAbsence,)
+# Package for quality tests.

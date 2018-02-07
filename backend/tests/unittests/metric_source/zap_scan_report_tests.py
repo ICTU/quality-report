@@ -26,8 +26,8 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     <body>
     <table width="45%" class="summary">
     <tr bgcolor="#666666">
-    <th width="45%" height="24">Risk 
-          Level</th><th width="55%" align="center">Number 
+    <th width="45%" height="24">Risk
+          Level</th><th width="55%" align="center">Number
           of Alerts</th>
     </tr>
     <tr bgcolor="#e8e8e8">

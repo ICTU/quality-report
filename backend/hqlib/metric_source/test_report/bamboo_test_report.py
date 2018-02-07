@@ -32,22 +32,22 @@ class BambooTestReport(test_report.TestReport):
 
     metric_source_name = 'Bamboo test report'
 
-    def _passed_tests(self, report_url: str) -> int:
+    def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """
-        return self.__test_count(report_url, 'successfulTestCount')
+        return self.__test_count(metric_source_id, 'successfulTestCount')
 
-    def _failed_tests(self, report_url: str) -> int:
+    def _failed_tests(self, metric_source_id: str) -> int:
         """ Return the number of failed tests. """
-        return self.__test_count(report_url, 'failedTestCount')
+        return self.__test_count(metric_source_id, 'failedTestCount')
 
-    def _skipped_tests(self, report_url: str) -> int:
+    def _skipped_tests(self, metric_source_id: str) -> int:
         """ Return the number of skipped tests. """
-        return self.__test_count(report_url, 'skippedTestCount')
+        return self.__test_count(metric_source_id, 'skippedTestCount')
 
-    def _report_datetime(self, report_url: str) -> DateTime:
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """
         try:
-            root = self.__element_tree(report_url)
+            root = self.__element_tree(metric_source_id)
         except UrlOpener.url_open_exceptions + (xml.etree.cElementTree.ParseError,):
             return datetime.datetime.min
         try:
@@ -56,7 +56,8 @@ class BambooTestReport(test_report.TestReport):
             # use naive date times internally:
             return dateutil.parser.parse(date_time_string, ignoretz=False).astimezone().replace(tzinfo=None)
         except (AttributeError, ValueError, TypeError) as reason:
-            logging.error("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, report_url, reason)
+            logging.error("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, metric_source_id,
+                          reason)
             return datetime.datetime.min
 
     def __test_count(self, report_url: str, result_type: str) -> int:
