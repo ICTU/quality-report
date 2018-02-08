@@ -25,7 +25,7 @@ script:
 - cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
 - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 - cd ../backend
-- coverage run --branch tests/run_unittests.py
+- coverage run --branch --source=hqlib,tests tests/run_unittests.py
 - coverage xml
 - python-codacy-coverage -r coverage.xml
 - coveralls
