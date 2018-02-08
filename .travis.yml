@@ -30,10 +30,11 @@ script:
 - python-codacy-coverage -r coverage.xml
 - coveralls
 - codecov
+- python tests/run_qualitytests.py  # Check code quality (pep8)
 - coverage run --parallel-mode --branch tests/run_integrationtests.py
 - coverage combine
 - coverage xml --ignore-errors -o it-coverage.xml
-- nosetests --with-xunit tests/unittests/
+- nosetests --with-xunit tests/unittests/  # For SonarQube, see https://docs.sonarqube.org/display/PLUG/Python+Unit+Tests+Execution+Reports+Import
 - cd ..
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 after_script:
