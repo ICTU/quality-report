@@ -1,0 +1,6 @@
+# Ignore problems with these dependencies, because they're indirect dependencies
+platform:
+  npm:
+    nomnom:
+      tests:
+        unmaintained: skip
