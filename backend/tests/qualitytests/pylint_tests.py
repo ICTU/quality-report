@@ -27,10 +27,6 @@ class TestCodeFormat(unittest.TestCase):
         score = float(re.search(r"Your code has been rated at ([-+]?\d*\.\d+|\d+)/10", pylint_stdout.read()).group(1))
         self.failUnless(score >= target, score)
 
-    def test_pylint_score_hqlib(self):
-        """Test that our score is high enough."""
-        self.assert_pylint_score("hqlib", 9.86)
-
     def test_pylint_score_main_script(self):
         """Test that our score is high enough."""
         self.assert_pylint_score("quality_report.py", 10.0)

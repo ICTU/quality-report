@@ -30,7 +30,7 @@ Job = Dict[str, str]  # pylint: disable=invalid-name
 Jobs = List[Job]  # pylint: disable=invalid-name
 
 
-class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
+class Jenkins(ci_server.CIServer):
     """ Class representing the Jenkins instance. """
 
     metric_source_name = "Jenkins build server"
@@ -39,7 +39,8 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
     builds_api_postfix = api_postfix + "?tree=builds[result]&depth=1"
 
     def __init__(self, url: str, username: str = '', password: str = '', job_re: str = '') -> None:
-        super().__init__(url=url, username=username, password=password)
+        super().__init__(url=url)
+        self.__url_opener = url_opener.UrlOpener(username=username, password=password)
         self.__job_re = re.compile(job_re)
         self.__job_url = url + 'job/{job}/'
         self.__last_completed_build_url = self.__job_url + 'lastCompletedBuild/'
@@ -68,28 +69,28 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def failing_jobs_url(self) -> Dict[str, str]:
+    def failing_jobs_url(self) -> list((str, str, str)):
         """ Return the urls for the failing Jenkins jobs. """
         try:
             return self.__job_urls(self.__failing_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return dict()
 
-    def unused_jobs_url(self) -> Dict[str, str]:
+    def unused_jobs_url(self) -> list((str, str, str)):
         """ Return the urls for the unused Jenkins jobs. """
         try:
             return self.__job_urls(self.__unused_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
             return dict()
 
-    def __job_urls(self, jobs: Jobs) -> Dict[str, str]:
+    def __job_urls(self, jobs: Jobs) -> list((str, str, str)):
         """ Return the urls for the Jenkins jobs. """
         def days(job: Job) -> str:
             """ Return the age of the last stable build. """
             age = self.__age_of_last_stable_build(job)
             return '?' if age == datetime.timedelta.max else str(age.days)
 
-        return {'{0} ({1} dagen)'.format(job['name'], days(job)): job['url'] for job in jobs}
+        return [(job['name'], job['url'], days(job)) for job in jobs]
 
     def __failing_jobs(self) -> Jobs:
         """ Return the active Jenkins jobs that are failing. """
@@ -173,7 +174,7 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
     @functools.lru_cache(maxsize=1024)
     def _api(self, url: str) -> Dict:
         """ Return the result of the API call at the url. """
-        data = self.url_read(url)
+        data = self.__url_opener.url_read(url)
         if isinstance(data, bytes):
             data = data.decode('utf-8')
         try:
@@ -184,4 +185,4 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
 
     def url_open(self, url: str, log_error: bool = True) -> IO:
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
-        return super().url_open(urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]"), log_error=log_error)
+        return self.__url_opener.url_open(urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]"), log_error=log_error)

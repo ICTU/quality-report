@@ -16,6 +16,7 @@ from hqlib.domain import Project, Environment, Application, Team, Document, Tech
 
 BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
                                      job_re='-metrics')
+JENKINS = metric_source.Jenkins(url='http://www.jenkins.proj.org:8080/')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
 SONAR = metric_source.Sonar('https://sonarqube.com/')
 HISTORY = metric_source.History('docs/examples/quality_report/history.json')
@@ -40,6 +41,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
+                      metric_source.CIServer: JENKINS,
                       metric_source.UserStoriesInProgressTracker: USER_STORIES_IN_PROGRESS_TRACKER,
                       metric_source.UserStoriesDurationTracker: USER_STORIES_DURATION_TRACKER,
                       metric_source.FileWithDate: SECURITY_REPORT_PROXY
@@ -64,7 +66,7 @@ PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
                               metric_source_ids={GIT: QUALITY_PLAN_URL}))
 
 # Development environment of the project
-ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements())
+ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements(), metric_source_ids={JENKINS: 'dummy'})
 PROJECT.add_environment(ENVIRONMENT)
 
 # Products the project develop(s).

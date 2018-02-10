@@ -1,3 +1,8 @@
+2018-02-19  Release 2.43.0
+
+  * Feature #276: Jenkins jobs' detail info available.
+
+
 2018-02-16  Release 2.42.3
 
   * Bug fix #264: The description of the norm of user stories in progress metric was incorrect.

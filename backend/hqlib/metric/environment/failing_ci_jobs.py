@@ -14,14 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict
-
-from hqlib import metric_source
-from hqlib.domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters
+from . import CIJobs
 
 
-class FailingCIJobs(LowerIsBetterMetric):
+class FailingCIJobs(CIJobs):
     """ Metric for measuring the number of continuous integration jobs that fail. """
 
     name = 'Hoeveelheid falende CI-jobs'
@@ -34,15 +30,10 @@ class FailingCIJobs(LowerIsBetterMetric):
     url_label_text = 'Falende jobs'
     target_value = 0
     low_target_value = 2
-    metric_source_class = metric_source.CIServer
-
-    def _parameters(self) -> MetricParameters:
-        parameters = super()._parameters()
-        parameters['number_of_jobs'] = str(self._metric_source.number_of_active_jobs()) if self._metric_source else '?'
-        return parameters
+    _qualifier = 'falen'
 
     def value(self):
         return self._metric_source.number_of_failing_jobs() if self._metric_source else -1
 
-    def url(self) -> Dict[str, str]:
-        return self._metric_source.failing_jobs_url() if self._metric_source else dict()
+    def _jobs_url(self) -> list((str, str, str)):
+        return self._metric_source.failing_jobs_url()

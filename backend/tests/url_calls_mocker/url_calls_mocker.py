@@ -55,6 +55,42 @@ class UrlOpenerMock(UrlOpener):
                                  'docs/examples/example_metric_sources/jira_changelog_stories_duration.json')),
             # end UserStoriesDuration
 
+            # begin FailingCIJobs and UnusedCIJobs
+
+            'http://www.jenkins.proj.org:8080/api/python?tree=jobs[name,description,color,url,buildable]':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/jenkins_get_jobs_1.json')),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/api/python?tree=jobs'
+            '[name,description,color,url,buildable]': self._get_file_content(
+                os.path.join(self._dir_path, 'docs/examples/example_metric_sources/jenkins_ci_jobs.json')),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
+            'api/python?tree=builds[result]&depth=1': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jenkins_build_result.json')),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/api/python?tree=builds[result]'
+            '&depth=1': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jenkins_build_result.json')),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
+            'lastStableBuild/api/python': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jenkins_unused_job_1029_last_stable.json')),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
+            'lastCompletedBuild/api/python': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jenkins_unused_job_1029_last_complete.json')),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/lastCompletedBuild/api/python':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'jenkins_failing_job_5553_last_complete.json')),
+            # begin FailingCIJobs and UnusedCIJobs
+
             'https://last_security_date_url': self._get_file_content(
                 os.path.join(self._dir_path, 'docs/examples/example_metric_sources/file_with_date.json'))
         }

@@ -1,0 +1,1 @@
+{"_class":"hudson.model.Hudson","jobs":[{"_class":"org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject","description":"","name":"proj-pipeline","url":"http://www.jenkins.proj.org:8080/job/proj-pipeline/"}]}

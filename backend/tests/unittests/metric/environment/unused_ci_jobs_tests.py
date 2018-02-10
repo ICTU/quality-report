@@ -15,28 +15,8 @@ limitations under the License.
 """
 
 import unittest
-
+from unittest.mock import MagicMock
 from hqlib import metric, domain, metric_source
-
-
-class FakeJenkins(object):
-    """ Fake Jenkins instance for testing purposes. """
-    # pylint: disable=unused-argument
-
-    @staticmethod
-    def number_of_active_jobs(*args):
-        """ Return the total number of active CI jobs. """
-        return 2
-
-    @staticmethod
-    def number_of_unused_jobs(*args):
-        """ Return the number of unused CI jobs. """
-        return 1
-
-    @classmethod
-    def unused_jobs_url(cls, *args):
-        """ Return the url(s) of the unused job(s). """
-        return {'job_name (300 dagen)': 'http://jenkins/job_name'}
 
 
 class UnusedCIJobsTests(unittest.TestCase):
@@ -46,9 +26,9 @@ class UnusedCIJobsTests(unittest.TestCase):
 
     def setUp(self):
         """ Create the text fixture. """
-        jenkins = FakeJenkins()
-        self._project = domain.Project(metric_sources={metric_source.CIServer: jenkins},
-                                       metric_source_ids={jenkins: "dummy"})
+        self._jenkins = MagicMock()
+        self._project = domain.Project(metric_sources={metric_source.CIServer: self._jenkins},
+                                       metric_source_ids={self._jenkins: "dummy"})
         self._metric = metric.UnusedCIJobs(subject=self._project, project=self._project)
 
     def test_norm_template_default_values(self):
@@ -57,16 +37,24 @@ class UnusedCIJobsTests(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value equals the number of failing jobs. """
+        self._jenkins.number_of_unused_jobs.return_value = 1
         self.assertEqual(1, self._metric.value())
-
-    def test_url(self):
-        """ Test that the url of the metric equals the url of Jenkins. """
-        self.assertEqual(FakeJenkins().unused_jobs_url(), self._metric.url())
 
     def test_report(self):
         """ Test the metric report. """
+        self._jenkins.number_of_unused_jobs.return_value = 1
+        self._jenkins.number_of_active_jobs.return_value = 2
         self.assertEqual(self.expected_report, self._metric.report())
 
     def test_label(self):
         """ Test that the label to use in the HTML report is correct. """
         self.assertEqual('Ongebruikte jobs', self._metric.url_label_text)
+
+    def test_jobs_url(self):
+        """ Test that the metric source method is called. """
+        self._jenkins.unused_jobs_url.return_value = [('1', '2', '3')]
+
+        result = self._metric._jobs_url()
+
+        self.assertEqual([('1', '2', '3')], result)
+        self._jenkins.unused_jobs_url.assert_called_once()

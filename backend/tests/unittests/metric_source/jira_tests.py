@@ -169,7 +169,7 @@ class JiraTest(unittest.TestCase):
             call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
         self.assertEqual('15 december 2017', result[0].data[0]['day_in'])
         self.assertEqual('25 december 2017', result[0].data[0]['day_out'])
-        self.assertEqual(True, result[0].data[0]['is_counted'])
+        self.assertEqual(False, result[0].data[0]['is_omitted'])
         self.assertEqual(9, result[0].data[0]['days'])
 
     def test_extra_info_stories_still_in_progress(self, url_read_mock):
@@ -192,7 +192,7 @@ class JiraTest(unittest.TestCase):
             call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
         self.assertEqual('15 december 2017', result[0].data[0]['day_in'])
         self.assertEqual('geen', result[0].data[0]['day_out'])
-        self.assertEqual(False, result[0].data[0]['is_counted'])
+        self.assertEqual(True, result[0].data[0]['is_omitted'])
         self.assertEqual('n.v.t', result[0].data[0]['days'])
 
     def test_extra_info_stories_never_in_progress(self, url_read_mock):
@@ -215,7 +215,7 @@ class JiraTest(unittest.TestCase):
             call('http://jira/rest/api/2/issue/{issue}?expand=changelog&fields="*all,-comment"'.format(issue=issue))])
         self.assertEqual('geen', result[0].data[0]['day_in'])
         self.assertEqual('geen', result[0].data[0]['day_out'])
-        self.assertEqual(False, result[0].data[0]['is_counted'])
+        self.assertEqual(True, result[0].data[0]['is_omitted'])
         self.assertEqual('n.v.t', result[0].data[0]['days'])
 
     def test_extra_info_duration_of_stories_more_than_one(self, url_read_mock):

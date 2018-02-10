@@ -17,8 +17,8 @@ limitations under the License.
 import datetime
 import urllib.error
 import unittest
-
-from hqlib.metric_source import Jenkins
+from unittest.mock import patch
+from hqlib.metric_source import Jenkins, url_opener
 from hqlib.typing import DateTime
 
 
@@ -28,159 +28,189 @@ def to_jenkins_timestamp(date_time: DateTime, epoch: DateTime = datetime.datetim
     return (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6) / 1000
 
 
-class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
-    """ Override the url_open method to return a fixed HTML fragment. """
-    contents = '{"jobs": []}'
-    pipeline_contents = '{}'
-
-    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
-        """ Return the static content. """
-        if 'raise' in url:
-            raise urllib.error.URLError('some reason')
-        elif '/job/' in url and 'tree=jobs[name,description,color,url,buildable]' in url:
-            return self.pipeline_contents
-        else:
-            return self.contents
-
-
+@patch.object(url_opener.UrlOpener, 'url_read')
 class JenkinsTest(unittest.TestCase):
     """ Unit tests for the Jenkins class. """
 
     def setUp(self):
-        JenkinsUnderTest._api.cache_clear()
-        self.__jenkins = JenkinsUnderTest('http://jenkins/', 'username', 'password')
+        self.__jenkins = Jenkins('http://jenkins/', 'username', 'password')
 
-    def test_url(self):
-        """ Test the Jenkins url. """
-        self.assertEqual('http://jenkins/', self.__jenkins.url())
-
-    def test_no_failing_jobs(self):
+    def test_no_failing_jobs(self, mock_url_read):
         """ Test the number of failing jobs when there are no failing jobs. """
+        mock_url_read.side_effect = ['{"jobs":[{"_class":"cls", "name":"_", "url":"http://?", "color":"blue"}]}',
+                                     '{"jobs":[{"_class":"", "name":"_", "url":"http://?", "color":"blue"}]}']
         self.assertEqual(0, self.__jenkins.number_of_failing_jobs())
+        self.assertEqual(mock_url_read.call_count, 2)
 
-    def test_no_failing_jobs_url(self):
+    def test_no_failing_jobs_url(self, mock_url_read):
         """ Test the number of failing jobs when there are no failing jobs. """
-        self.assertEqual({}, self.__jenkins.failing_jobs_url())
+        mock_url_read.side_effect = ['{"jobs":[{"_class":"cls", "name":"_", "url":"http://?", "color":"blue"}]}',
+                                     '{"jobs":[{"_class":"", "name":"_", "url":"http://?", "color":"blue"}]}']
+        self.assertEqual([], self.__jenkins.failing_jobs_url())
 
-    def test_one_failing_job(self):
+    def test_one_failing_job(self, mock_url_read):
         """ Test the failing jobs with one failing job. """
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(date_time))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"proj-pipeline","url":"http://jenkins.proj/job/proj-pipeline/"}]}',
+            '{"jobs":[{"description":None,"name":"_","url":"http://jenkins.proj/","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
+
         self.assertEqual(1, self.__jenkins.number_of_failing_jobs())
 
-    def test_one_failing_job_url(self):
+    def test_one_failing_job_url(self, mock_url_read):
         """ Test the failing jobs with one failing job. """
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(date_time))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
+
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
+        self.assertEqual([('job1', 'http://jenkins/job/job1/', '{0:d}'.format(expected_days_ago))],
                          self.__jenkins.failing_jobs_url())
 
-    def test_ignore_disabled_job(self):
+    def test_ignore_disabled_job(self, mock_url_read):
         """ Test that disabled failing jobs are ignored. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": False}], "builds": [{}]}'
-        self.assertEqual({}, self.__jenkins.failing_jobs_url())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","buildable":False,"color":"red"}]}']
+        self.assertEqual([], self.__jenkins.failing_jobs_url())
 
-    def test_ignore_pipelines(self):
+    def test_ignore_pipelines(self, mock_url_read):
         """ Test that pipelines (jobs without buildable flag) are ignored. """
-        self.__jenkins.contents = '{"jobs": [{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/"}], "builds": [{}]}'
-        self.assertEqual({}, self.__jenkins.failing_jobs_url())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","color":"red"}]}']
 
-    def test_include_pipeline_job(self):
+        self.assertEqual([], self.__jenkins.failing_jobs_url())
+
+    def test_include_pipeline_job(self, mock_url_read):
         """ Test that pipeline jobs are included. """
         timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))
-        self.__jenkins.pipeline_contents = '{"jobs": [{"name": "master", "color": "red", "description": "", ' \
-                                           '"url": "http://jenkins/job/master/", "buildable": True}]}'
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/"}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(timestamp)
-        self.assertEqual({'master (100 dagen)': 'http://jenkins/job/master/'}, self.__jenkins.failing_jobs_url())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"master","url":"http://jenkins/job/master/","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(timestamp)) + '}']
 
-    def test_failing_jobs_url(self):
+        self.assertEqual([('master', 'http://jenkins/job/master/', '100')], self.__jenkins.failing_jobs_url())
+
+    def test_failing_jobs_url(self, mock_url_read):
         """ Test that the failing jobs url dictionary contains the url for the failing job. """
         timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(timestamp)
-        self.assertEqual({'job1 (100 dagen)': 'http://jenkins/job/job1/'}, self.__jenkins.failing_jobs_url())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(timestamp)) + '}']
+        self.assertEqual([('job1', 'http://jenkins/job/job1/', '100')], self.__jenkins.failing_jobs_url())
 
-    def test_failing_jobs_url_no_description(self):
+    def test_failing_jobs_url_no_description(self, mock_url_read):
         """ Test that the failing jobs url works if there are jobs without description. """
         now = datetime.datetime.utcnow()
         jan_first = now.replace(month=1, day=1, hour=0, minute=0, second=0)
         if now.month == now.day == 1:  # pragma: no branch
             jan_first = jan_first.replace(year=jan_first.year - 1)  # pragma: no cover
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": None, ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable":  True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(to_jenkins_timestamp(jan_first))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":None,"name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","buildable":True, "color":"red", '
+            '"description": None}]}', '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(jan_first))) + '}']
         expected_days_ago = (datetime.datetime.utcnow() - jan_first).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
+        self.assertEqual([('job1', 'http://jenkins/job/job1/', '{0:d}'.format(expected_days_ago))],
                          self.__jenkins.failing_jobs_url())
 
-    def test_no_unused_jobs(self):
+    def test_no_unused_jobs(self, mock_url_read):
         """ Test the number of unused jobs when there are no unused jobs. """
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","color":"red"}]}']
         self.assertEqual(0, self.__jenkins.number_of_unused_jobs())
 
-    def test_no_unused_jobs_url(self):
+    def test_no_unused_jobs_url(self, mock_url_read):
         """ Test the number of unused jobs when there are no unused jobs. """
-        self.assertEqual({}, self.__jenkins.unused_jobs_url())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","color":"red"}]}']
+        self.assertEqual([], self.__jenkins.unused_jobs_url())
 
-    def test_one_unused_job(self):
+    def test_one_unused_job(self, mock_url_read):
         """ Test the unused jobs with one unused job. """
         date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], ' \
-                                  '"timestamp": "{}"}}'.format(to_jenkins_timestamp(date_time))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","description":"","url":"http://jenkins/job/job1/","buildable":True}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
         self.assertEqual(1, self.__jenkins.number_of_unused_jobs())
 
-    def test_one_unused_job_url(self):
+    def test_one_unused_job_url(self, mock_url_read):
         """ Test the unused jobs with one unused job. """
         date_time = datetime.datetime(2000, 4, 1, 12, 0, 0)
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], ' \
-                                  '"timestamp": "{}", "builds": [{{"result": "SUCCESS"}}]}}'.format(
-                                      to_jenkins_timestamp(date_time))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","description":"","url":"http://jenkins/job/job1/","buildable":True}]}',
+            '{"builds":[{"result":"SUCCESS"}]}', '{"building":False,"result":"SUCCESS","timestamp":10000}',
+            '{"building":"False","result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
+        self.assertEqual([('job1', 'http://jenkins/job/job1/', '{0:d}'.format(expected_days_ago))],
                          self.__jenkins.unused_jobs_url())
 
-    def test_unused_jobs_grace(self):
+    def test_unused_jobs_grace(self, mock_url_read):
         """ Test the unused jobs with one unused job within grace time. """
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=400]", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(
-                                      to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))
-        self.assertEqual({}, self.__jenkins.unused_jobs_url())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","description":"[gracedays=200]","url":"http://xx/job1/","buildable":True}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' +
+            str(int(to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))) + '}']
 
-    def test_unused_jobs_after_grace(self):
+        self.assertEqual([], self.__jenkins.unused_jobs_url())
+
+    def test_unused_jobs_after_grace(self, mock_url_read):
         """ Test the unused jobs with one unused job within grace time. """
         last_year = datetime.datetime.utcnow().year - 1
-        self.__jenkins.contents = '{{"jobs": [{{"name": "job1", "color": "red", "description": "[gracedays=200]", ' \
-                                  '"url": "http://jenkins/job/job1/", "buildable": True}}], "timestamp": "{}", ' \
-                                  '"builds": [{{"result": "SUCCESS"}}]}}'.format(
-                                      to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","description":"[gracedays=200]","url":"http://xx/job1/","buildable":True}]}',
+            '{"builds":[{"result":"SUCCESS"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' +
+            str(int(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))) + '}',
+            '{"building":False,"result":"SUCCESS","timestamp":' +
+            str(int(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))) + '}']
+
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
-        self.assertEqual({'job1 ({0:d} dagen)'.format(expected_days_ago): 'http://jenkins/job/job1/'},
+        self.assertEqual([('job1', 'http://xx/job1/', '{0:d}'.format(expected_days_ago))],
                          self.__jenkins.unused_jobs_url())
 
-    def test_nr_of_active_jobs(self):
+    def test_nr_of_active_jobs(self, mock_url_read):
         """ Test the number of active jobs. """
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","color":"red"}]}']
         self.assertEqual(0, self.__jenkins.number_of_active_jobs())
 
-    def test_nr_of_active_jobs_on_error(self):
+    def test_nr_of_active_jobs_on_error(self, mock_url_read):
         """ Test that the number of active jobs is -1 when an URL error is thrown. """
-        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_active_jobs())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            urllib.error.URLError('some reason')]
 
-    def test_nr_of_failing_jobs_on_error(self):
+        self.assertEqual(-1, self.__jenkins.number_of_active_jobs())
+
+    def test_nr_of_failing_jobs_on_error(self, mock_url_read):
         """ Test that the number of failing jobs is -1 when an URL error is thrown. """
-        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_failing_jobs())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            urllib.error.URLError('some reason')]
+        self.assertEqual(-1, self.__jenkins.number_of_failing_jobs())
 
-    def test_nr_of_unused_jobs_on_error(self):
+    def test_nr_of_unused_jobs_on_error(self, mock_url_read):
         """ Test that the number of unused jobs is -1 when an URL error is thrown. """
-        self.assertEqual(-1, JenkinsUnderTest('http://raise').number_of_unused_jobs())
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            urllib.error.URLError('some reason')]
+        self.assertEqual(-1, self.__jenkins.number_of_unused_jobs())

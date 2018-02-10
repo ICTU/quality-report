@@ -56,7 +56,7 @@ class Jira(object):
             self._extra_info[query_id] = self._sum_for_all_issues(
                 query_id, self._get_days_in_progress, ExtraInfo(
                     story="Story", day_in="Begin uitvoering", day_out="Einde uitvoering",
-                    days="Aantal dagen", is_counted="_detail-row-alter"))
+                    days="Aantal dagen", is_omitted="_detail-row-alter"))
             self._extra_info[query_id].title = 'Gemiddelde looptijd van user stories'
             days = self._sum_days_in_extra_info(self._extra_info[query_id])
             stories = self._count_stories_in_extra_info(self._extra_info[query_id])
@@ -69,11 +69,11 @@ class Jira(object):
 
     @staticmethod
     def _count_stories_in_extra_info(extra_info: ExtraInfo):
-        return sum(iss['is_counted'] for iss in extra_info.data)
+        return sum(not iss['is_omitted'] for iss in extra_info.data)
 
     @staticmethod
     def _sum_days_in_extra_info(extra_info: ExtraInfo):
-        return sum(iss['days'] if iss['is_counted'] else 0 for iss in extra_info.data)
+        return sum(iss['days'] if not iss['is_omitted'] else 0 for iss in extra_info.data)
 
     def extra_info(self):
         """ Returns a list of extra infos per jira filter. """
@@ -109,15 +109,15 @@ class Jira(object):
             to_in_progress_date = min(self._get_create_date_from_json(json, True))
         except ValueError:
             logging.info("Invalid date, or issue %s never moved to status 'In Progress'", issue['key'])
-            return issue_link, "geen", "geen", "n.v.t", False
+            return issue_link, "geen", "geen", "n.v.t", True
         try:
             from_in_progress_date = max(self._get_create_date_from_json(json, False))
         except ValueError:
             logging.info("Invalid date, or issue %s still in status 'In Progress'", issue['key'])
-            return issue_link, utils.format_date(to_in_progress_date, year=True), "geen", "n.v.t", False
+            return issue_link, utils.format_date(to_in_progress_date, year=True), "geen", "n.v.t", True
         return issue_link, utils.format_date(to_in_progress_date, year=True), \
             utils.format_date(from_in_progress_date, year=True), \
-            (from_in_progress_date - to_in_progress_date).days, True
+            (from_in_progress_date - to_in_progress_date).days, False
 
     def query_sum(self, query_id: QueryId, field: str) -> float:
         """ Return the sum of the fields as returned by the query. """

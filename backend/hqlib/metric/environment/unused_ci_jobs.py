@@ -14,14 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict
-
-from hqlib import metric_source
-from hqlib.domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters
+from . import CIJobs
 
 
-class UnusedCIJobs(LowerIsBetterMetric):
+class UnusedCIJobs(CIJobs):
     """ Metric for measuring the number of continuous integration jobs that are not used. """
 
     name = 'Hoeveelheid ongebruikte CI-jobs'
@@ -33,18 +29,12 @@ class UnusedCIJobs(LowerIsBetterMetric):
     url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2
-    metric_source_class = metric_source.CIServer
 
-    def _parameters(self) -> MetricParameters:
-        # pylint: disable=protected-access
-        parameters = super()._parameters()
-        parameters['number_of_jobs'] = str(self._metric_source.number_of_active_jobs()) if self._metric_source else '?'
-        return parameters
+    _qualifier = 'ongebruikt'
 
     def value(self):
         """ Return the number of unused jobs. """
         return self._metric_source.number_of_unused_jobs() if self._metric_source else -1
 
-    def url(self) -> Dict[str, str]:
-        """ Return the urls for the unused jobs. """
-        return self._metric_source.unused_jobs_url() if self._metric_source else dict()
+    def _jobs_url(self) -> list((str, str, str)):
+        return self._metric_source.unused_jobs_url()

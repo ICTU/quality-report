@@ -124,9 +124,9 @@ div.meta_metrics_history_graph {
 }
 
 .detail-row-alter {
-    font-style: normal;
+    font-style: italic;
 }
 
 .detail-row-default {
-    font-style: italic;
+    font-style: normal;
 }
