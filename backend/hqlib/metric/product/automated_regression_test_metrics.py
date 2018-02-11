@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
+from hqlib.typing import MetricParameters
 from ... import metric_source
 from ...domain import LowerIsBetterMetric, MetricSourceAgeMetric
-from hqlib.typing import MetricParameters
 
 
 class FailingRegressionTests(LowerIsBetterMetric):
@@ -34,9 +35,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
     def value(self):
         if self._missing():
             return -1
-        else:
-            urls = self._get_metric_source_ids()
-            return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
+        urls = self._get_metric_source_ids()
+        return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
 
     def _missing(self) -> bool:
         if not self._metric_source:

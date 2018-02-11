@@ -147,8 +147,7 @@ class QualityReport(domain.DomainObject):
         """ Return whether any of the metrics in the report are red so that direct action is needed. """
         if self.__metrics:
             return any(each_metric.status() in ('red', 'missing', 'missing_source') for each_metric in self.__metrics)
-        else:
-            return True  # No metrics, so direct action is needed to add metrics
+        return True  # No metrics, so direct action is needed to add metrics
 
     def latest_product_version(self, product: domain.Product) -> str:
         """ Return the most recent version of the product. """
@@ -180,8 +179,8 @@ class QualityReport(domain.DomainObject):
         return None, ''
 
     def __create_section(self, subject: domain.RequirementSubject,
-                         short_name: str='', name: str='', name_prefix: str='',
-                         requirements_to_ignore: List[Type[domain.Requirement]]=None) -> Optional[Section]:
+                         short_name: str = '', name: str = '', name_prefix: str = '',
+                         requirements_to_ignore: List[Type[domain.Requirement]] = None) -> Optional[Section]:
         """ Return a section for the subject. """
         requirements_to_ignore = requirements_to_ignore or []
         requirements = [r for r in subject.default_requirements() if r not in requirements_to_ignore]

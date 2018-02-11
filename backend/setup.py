@@ -16,11 +16,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
+from distutils import core, dir_util
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
-from distutils import core, dir_util
-import os
 
 from hqlib import VERSION
 

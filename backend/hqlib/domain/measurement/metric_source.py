@@ -16,11 +16,10 @@ limitations under the License.
 
 
 import datetime
-
 from typing import List
 
-from ..base import DomainObject
 from hqlib.typing import DateTime
+from ..base import DomainObject
 
 
 class MetricSource(DomainObject):  # pylint: disable=too-few-public-methods

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict, List, Type, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Type, Tuple, TYPE_CHECKING
 import json
 
 import datetime
@@ -22,9 +22,9 @@ import functools
 import logging
 
 from hqlib import utils
+from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 from .metric_source import MetricSource
 from .target import AdaptedTarget
-from hqlib.typing import MetricParameters, MetricValue, DateTime, Number
 if TYPE_CHECKING:  # pragma: no cover
     from ..software_development.project import Project  # pylint: disable=unused-import
 
@@ -69,7 +69,7 @@ class Metric(object):
 
     metric_source_class: Type[MetricSource] = None
 
-    def __init__(self, subject=None, project: 'Project'=None) -> None:
+    def __init__(self, subject=None, project: 'Project' = None) -> None:
         self._subject = subject
         self._project = project
         for source in self._project.metric_sources(self.metric_source_class):
@@ -92,7 +92,8 @@ class Metric(object):
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
         self.__history = history_sources[0] if history_sources else None
 
-    def format_text_with_links(self, text: str, url_dict: Dict[str, str], url_label: str) -> str:
+    def format_text_with_links(self, text: str, url_dict: Dict[str, str],  # pylint: disable=no-self-use
+                               url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text).replace('\n', ' ')
         links = ["<a href='{href}' target='_blank'>{anchor}</a>"
@@ -174,8 +175,7 @@ class Metric(object):
         technical_debt_target = self.__technical_debt_target()
         if technical_debt_target:
             return self._is_below_target() and self._is_value_better_than(technical_debt_target.target_value())
-        else:
-            return False
+        return False
 
     def _missing(self) -> bool:
         """ Return whether the metric source is missing. """
@@ -229,12 +229,11 @@ class Metric(object):
             return self.missing_source_template
         if self.__missing_source_ids():
             return self.missing_source_id_template
-        elif self._missing():
+        if self._missing():
             return self.missing_template
-        elif self.__is_perfect() and self.perfect_template:
+        if self.__is_perfect() and self.perfect_template:
             return self.perfect_template
-        else:
-            return self.template
+        return self.template
 
     def _parameters(self) -> MetricParameters:
         """ Return the parameters for the metric report template and for the metric norm template. """
@@ -261,17 +260,15 @@ class Metric(object):
         urls = [url for url in self._metric_source_urls() if url]  # Weed out urls that are empty or None
         if len(urls) == 1:
             return {label: urls[0]}
-        else:
-            return {'{label} ({index}/{count})'.format(label=label, index=index, count=len(urls)): url
-                    for index, url in enumerate(urls, start=1)}
+        return {'{label} ({index}/{count})'.format(label=label, index=index, count=len(urls)): url
+                for index, url in enumerate(urls, start=1)}
 
     def _metric_source_urls(self) -> List[str]:
         """ Return a list of metric source urls to be used to create the url dict. """
         if self._metric_source:
             if self._get_metric_source_ids():
                 return self._metric_source.metric_source_urls(*self._get_metric_source_ids())
-            else:
-                return [self._metric_source.url()]
+            return [self._metric_source.url()]
         return []
 
     def _get_metric_source_ids(self) -> List[str]:
@@ -325,11 +322,10 @@ class Metric(object):
         value = self.value()
         if isinstance(value, (int, float)):
             return value
-        else:
-            raise NotImplementedError
+        raise NotImplementedError
 
-    def extra_info(self) -> ExtraInfo:
-        """ Function has to be overridden by concrete metrics that fill extra info. """
+    def extra_info(self) -> Optional[ExtraInfo]:  # pylint: disable=no-self-use
+        """ Function can be overridden by concrete metrics that fill extra info. """
         return None
 
     def __subject_name(self) -> str:

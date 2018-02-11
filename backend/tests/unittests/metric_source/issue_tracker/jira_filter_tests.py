@@ -15,10 +15,10 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import patch, call
 
 from hqlib.metric_source import Jira, JiraFilter
 from hqlib.domain import ExtraInfo
-from unittest.mock import patch, call
 
 
 class JiraFilterTest(unittest.TestCase):

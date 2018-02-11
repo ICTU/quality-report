@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from ...domain import LowerIsBetterMetric
 from hqlib.typing import MetricParameters
+from ...domain import LowerIsBetterMetric
 
 
 class AlertsMetric(LowerIsBetterMetric):

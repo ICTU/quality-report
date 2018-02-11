@@ -18,9 +18,9 @@ limitations under the License.
 import datetime
 from typing import List
 
+from hqlib.typing import DateTime
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
-from hqlib.typing import DateTime
 
 
 class DocumentAge(LowerIsBetterMetric):
@@ -48,8 +48,7 @@ class DocumentAge(LowerIsBetterMetric):
         """ Return the date that the document was last changed. """
         if self._metric_source and self._metric_source_id:
             return self._metric_source.last_changed_date(self._metric_source.normalize_path(self._metric_source_id))
-        else:
-            return datetime.datetime.min
+        return datetime.datetime.min
 
     def _missing(self) -> bool:
         """ Return whether the age of the document could be established. """

@@ -18,9 +18,9 @@ limitations under the License.
 import datetime
 from typing import Optional
 
+from hqlib.typing import MetricParameters, MetricValue, DateTime
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters, MetricValue, DateTime
 
 
 class TeamAbsence(LowerIsBetterMetric):

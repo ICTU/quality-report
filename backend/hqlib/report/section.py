@@ -24,7 +24,7 @@ from ..domain import Metric, Product
 class SectionHeader(object):
     """ Header for a section, consisting of two-letter prefix, title and an optional subtitle. """
 
-    def __init__(self, id_prefix: str, title: str, subtitle: str='') -> None:
+    def __init__(self, id_prefix: str, title: str, subtitle: str = '') -> None:
         self.__id_prefix = id_prefix
         self.__title = title
         self.__subtitle = subtitle
@@ -47,7 +47,7 @@ class SectionHeader(object):
 class Section(collections.abc.Iterable):
     """ Section within a report. """
 
-    def __init__(self, header: SectionHeader, metrics: Sequence[Metric], product: Product=None) -> None:
+    def __init__(self, header: SectionHeader, metrics: Sequence[Metric], product: Product = None) -> None:
         self.__header = header
         self.__metrics = metrics
         self.__product = product

@@ -32,8 +32,7 @@ class FakeMetricSource(object):
         """ Return a fake analysis date time. """
         if self.age == -1:
             return datetime.datetime.min
-        else:
-            return datetime.datetime.now() - datetime.timedelta(days=self.age, hours=12)
+        return datetime.datetime.now() - datetime.timedelta(days=self.age, hours=12)
 
     @staticmethod
     def url(*args):

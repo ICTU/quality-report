@@ -18,9 +18,9 @@ limitations under the License.
 import datetime
 from typing import Dict, Tuple
 
+from hqlib.typing import MetricValue
 from ... import metric_source
 from ...domain import Metric, LowerIsBetterMetric
-from hqlib.typing import MetricValue
 
 
 class TeamSpirit(Metric):

@@ -24,8 +24,8 @@ from hqlib.metric_source import HolidayPlanner
 
 class HolidayPlannerUnderTest(HolidayPlanner):  # pylint: disable=too-few-public-methods
     """ Override the class under test return static data. """
-    def url_read(self, url: str, encoding: str='utf-8',
-                 *args, **kwargs) -> str:  # pylint: disable=unused-argument,no-self-use
+    def url_read(self, url: str, *args, encoding: str = 'utf-8',  # pylint: disable=unused-argument
+                 **kwargs) -> str:  # pylint: disable=no-self-use
         """ Return the static data. """
         if 'raise' in url:
             raise urllib.error.URLError(None)

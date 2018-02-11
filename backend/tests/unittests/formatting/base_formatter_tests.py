@@ -17,19 +17,18 @@ limitations under the License.
 import unittest
 
 from hqlib.formatting import Formatter
-from hqlib.domain import Product
+from hqlib.domain import Product, Metric
+from hqlib.report import QualityReport
 from . import fake_report
 
 
 class FormatterUnderTest(Formatter):
     """ Implement abstract methods. """
-    @staticmethod
-    def prefix(*args, **kwargs):  # pylint: disable=unused-argument
+    def prefix(self, report: QualityReport) -> str:  # pylint: disable=unused-argument
         """ Return the prefix of the formatted report. """
         return '<prefix>'
 
-    @staticmethod
-    def metric(*args, **kwargs):  # pylint: disable=unused-argument
+    def metric(self, metric: Metric) -> str:   # pylint: disable=unused-argument
         """ Return a formatted metric. """
         return '<metric>'
 

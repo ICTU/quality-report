@@ -16,8 +16,8 @@ limitations under the License.
 
 import functools
 
-from . import metric
 from hqlib.typing import MetricValue
+from . import metric
 
 
 class LowerIsBetterMetric(metric.Metric):

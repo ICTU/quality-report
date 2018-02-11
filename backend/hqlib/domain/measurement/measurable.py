@@ -17,8 +17,8 @@ limitations under the License.
 
 from typing import Any, Dict, List, Set, Type, Optional, TYPE_CHECKING
 
-from ..base import DomainObject
 from hqlib.typing import MetricValue
+from ..base import DomainObject
 if TYPE_CHECKING:  # pragma: no cover
     # pylint: disable=unused-import
     from .metric import Metric

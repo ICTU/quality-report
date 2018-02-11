@@ -23,7 +23,7 @@ from typing import Dict, Any, Tuple
 from . import base_formatter
 from .. import metric_source, utils, VERSION
 from ..report import QualityReport
-from ..domain import Metric, DomainObject
+from ..domain import Metric, DomainObject, MetricSource
 
 
 class JSONFormatter(base_formatter.Formatter):
@@ -284,11 +284,11 @@ class MetaDataJSONFormatter(object):
         return ', '.join([cls.__format_metric_source(report, metric_source) for metric_source in metric_sources])
 
     @classmethod
-    def __format_metric_source(cls, report: QualityReport, metric_source) -> str:
+    def __format_metric_source(cls, report: QualityReport, source: MetricSource) -> str:
         """ Return the metric source as JSON. """
-        included = 'true' if metric_source in report.included_metric_source_classes() else 'false'
-        name = metric_source.metric_source_name
-        id_ = metric_source.__name__
-        instances = report.project().metric_sources(metric_source)
+        included = 'true' if source in report.included_metric_source_classes() else 'false'
+        name = source.metric_source_name
+        id_ = source.__name__
+        instances = report.project().metric_sources(source)
         urls = ', '.join(sorted(['"{0}"'.format(instance.url()) for instance in instances if instance.url()]))
         return '{{"included": {0}, "name": "{1}", "id": "{2}", "urls": [{3}]}}'.format(included, name, id_, urls)

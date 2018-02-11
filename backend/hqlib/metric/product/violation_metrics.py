@@ -17,9 +17,9 @@ limitations under the License.
 
 from typing import List
 
+from hqlib.typing import MetricParameters
 from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters
 
 
 class Violations(SonarDashboardMetric, LowerIsBetterMetric):

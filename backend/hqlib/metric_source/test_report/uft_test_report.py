@@ -66,7 +66,7 @@ class UFTTestReport(test_report.TestReport):
                 "'Stappenreferentie' (%d) from %s at %s is smaller than the number of passed tests (%d) plus the "
                 "number of failed tests (%d): can't calculate number of skipped tests, assuming no tests were skipped",
                 total, self.metric_source_name, metric_source_id, passed_tests, failed_tests)
-            return 0
+            skipped = 0
         return skipped
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:

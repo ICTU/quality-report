@@ -17,10 +17,10 @@ limitations under the License.
 import functools
 from typing import Tuple
 
+from hqlib.typing import MetricParameters, MetricValue
 from . import directed_metric
 from . import metric
 from ... import utils
-from hqlib.typing import MetricParameters, MetricValue
 
 
 class PercentageMetric(metric.Metric):
@@ -36,11 +36,12 @@ class PercentageMetric(metric.Metric):
         numerator, denominator = self._numerator(), self._denominator()
         if -1 in (numerator, denominator) or None in (numerator, denominator):
             return -1
-        else:
-            return utils.percentage(numerator, denominator, self.zero_divided_by_zero_is_zero)
+        return utils.percentage(numerator, denominator, self.zero_divided_by_zero_is_zero)
 
-    def _is_value_better_than(self, target: MetricValue) -> bool:
+    def _is_value_better_than(self, target: MetricValue) -> bool:  # pylint: disable=useless-super-delegation
         """ Return whether the actual value of the metric is better than the specified target value. """
+        # PercentageMetric is meant to be combined with HigherIsBetterMetric or LowerIsBetterMetric so the following
+        # super call is not useless.
         return super()._is_value_better_than(target)
 
     def _parameters(self) -> MetricParameters:

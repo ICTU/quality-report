@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import unittest
 import logging
+import unittest
 import urllib.error
-
 from json import JSONDecodeError
 from unittest.mock import patch, call
+
 from hqlib.metric_source import Jira, url_opener
 
 

@@ -34,6 +34,7 @@ class SubversionUnderTest(Subversion):
             return self.mergeinfo
         elif command[1] == 'list' and 'path' not in command[3]:
             return '<name>folder</name>'
+        return ''
 
 
 class SubversionTests(unittest.TestCase):

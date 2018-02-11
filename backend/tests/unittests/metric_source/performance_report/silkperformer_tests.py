@@ -370,7 +370,7 @@ Reporting engine
 class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the Silk Performer performance report to return the url as report contents. """
 
-    def url_open(self, url: str, log_error: bool=True) -> IO:  # pylint: disable=no-self-use,unused-argument
+    def url_open(self, url: str, log_error: bool = True) -> IO:  # pylint: disable=no-self-use,unused-argument
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')

@@ -235,20 +235,20 @@ class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
 }
 """
 
-    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
+    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
         """ Return the static contents. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
         if 'server/version' in url:
             return self.sonar_version
         if 'api/components/show' in url:
-            return self.api_components_show_json
-        if 'analyses' in url:
+            json = self.api_components_show_json
+        elif 'analyses' in url:
             if 'empty' in url:
-                return '{"analyses": []}'
+                json = '{"analyses": []}'
             else:
-                return '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
-        if 'projects/index' in url:
+                json = '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
+        elif 'projects/index' in url:
             json = self.project_json
         elif 'metricKeys' in url:
             json = self.metrics_json
@@ -523,6 +523,8 @@ class SonarVersionsTest(SonarTestCase):
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarBranchParameterTest(unittest.TestCase):
     """" Unit tests for branch functionality """
+
+    # pylint: disable=no-self-use
 
     def test_branch_param(self, url_read_mock):
         """" Test that the correct branch name is returned, when server version is >= 6.7 """

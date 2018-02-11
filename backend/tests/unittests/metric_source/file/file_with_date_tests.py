@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 import datetime
-import unittest
 import json
+import unittest
 import urllib
 from unittest.mock import patch
+
 from hqlib.metric_source import url_opener, FileWithDate
 
 

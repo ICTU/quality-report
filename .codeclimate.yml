@@ -27,4 +27,5 @@ exclude_paths:
 - "docs/examples/"
 - "backend/tests/unittests/"
 - "backend/tests/integrationtests/"
+- "backend/tests/qualitytests/"
 - ".pylintrc"

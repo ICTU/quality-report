@@ -16,9 +16,9 @@ limitations under the License.
 
 from typing import List
 
+from hqlib.typing import MetricParameters, MetricValue
 from ..metric_source_mixin import SonarMetric, SonarDashboardMetric
 from ...domain import LowerIsBetterMetric, Product
-from hqlib.typing import MetricParameters
 
 
 class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
@@ -31,7 +31,7 @@ class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
     target_value = 50000
     low_target_value = 100000
 
-    def value(self):
+    def value(self) -> MetricValue:
         return self._metric_source.ncloc(self._sonar_id()) if self._metric_source else -1
 
 
@@ -54,7 +54,7 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
         parameters['products'] = ', '.join([product.name() for product in products])
         return parameters
 
-    def value(self):
+    def value(self) -> MetricValue:
         if not self._metric_source:
             return -1
         total = 0
@@ -67,7 +67,7 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
                 total += product_size
         return total
 
-    def recent_history(self):
+    def recent_history(self) -> List[int]:
         """ Subtract the minimum value from all values so that we can send more data to the Google Chart API. """
         historic_values = super().recent_history()
         minimum_value = min(historic_values) if historic_values else 0

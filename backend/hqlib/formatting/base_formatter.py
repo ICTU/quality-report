@@ -17,8 +17,8 @@ limitations under the License.
 
 import logging
 
-from ..report import Section, QualityReport
 from hqlib.domain import Metric
+from ..report import Section, QualityReport
 
 
 class Formatter(object):
@@ -35,7 +35,7 @@ class Formatter(object):
         self.__log_report(report, done=True)
         return result
 
-    def prefix(self, report: QualityReport) -> str:  # pylint: disable=W0613
+    def prefix(self, report: QualityReport) -> str:
         """ Override to return a prefix for the report. """
         raise NotImplementedError
 
@@ -47,14 +47,14 @@ class Formatter(object):
             sections.append(self.section(section))
         return self.sep.join(sections)
 
-    def section(self, section: Section) -> str:  # pylint: disable=W0613
+    def section(self, section: Section) -> str:
         """ Return a formatted version of the section. """
         metrics = []
         for metric in section:
             metrics.append(self.metric(metric))
         return self.sep.join(metrics)
 
-    def metric(self, metric: Metric) -> str:  # pylint: disable=W0613
+    def metric(self, metric: Metric) -> str:
         """ Return a formatted version of the metric. """
         raise NotImplementedError
 
@@ -64,7 +64,7 @@ class Formatter(object):
         return ''
 
     @classmethod
-    def __log_report(cls, report: QualityReport, done: bool=False) -> None:
+    def __log_report(cls, report: QualityReport, done: bool = False) -> None:
         """ Report progress on formatting the report. """
         done_string = 'done ' if done else ''
         logging.info('%s %sformatting report "%s"', cls.__name__, done_string, report)

@@ -26,9 +26,9 @@ class SuppressRepeatMessagesTest(unittest.TestCase):
         self.__suppressor = log.SuppressRepeatMessages()
 
     @staticmethod
-    def log_message(nr=0):
+    def log_message(number=0):
         """ Create a log message. """
-        return logging.LogRecord('name', 'level', 'pathname', 1, 'msg {0}'.format(nr), [], 'exc_info')
+        return logging.LogRecord('name', 'level', 'pathname', 1, 'msg {0}'.format(number), [], 'exc_info')
 
     def test_filter_one_message(self):
         """Test one message. """

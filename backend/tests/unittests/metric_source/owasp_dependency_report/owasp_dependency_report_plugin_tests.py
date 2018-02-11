@@ -91,11 +91,11 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
         '    </td>\n'
         '</tr>')
 
-    def url_read(self, url: str, encoding: str = 'utf-8', *args, **kwargs) -> str:  # pylint: disable=unused-argument
+    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
         """ Return the static contents. """
         return self.contents
 
-    def url_open(self, url: str, log_error: bool=True) -> IO:  # pylint: disable=unused-argument
+    def url_open(self, url: str, log_error: bool = True) -> IO:  # pylint: disable=unused-argument
         return cast(IO, io.StringIO(self.html))
 
     def _get_soup(self, url: str):

@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
+from hqlib.typing import MetricParameters
 from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric
 from ...domain import LowerPercentageIsBetterMetric
-from hqlib.typing import MetricParameters
 
 
 class CommentedLOC(SonarDashboardMetric, LowerPercentageIsBetterMetric):

@@ -16,16 +16,8 @@ limitations under the License.
 
 import unittest
 
+from hqlib import domain
 from hqlib.report.section import Section, SectionHeader
-
-
-class FakeMetric(object):
-    """ Fake metric to use in the tests below. """
-
-    @staticmethod
-    def set_id_string(id_string):
-        """ Ignore. """
-        pass
 
 
 class SectionHeaderTest(unittest.TestCase):
@@ -52,7 +44,7 @@ class SectionTest(unittest.TestCase):
 
     def setUp(self):
         self.__header = SectionHeader('TE', 'title', 'subtitle')
-        self.__metrics = [FakeMetric(), FakeMetric()]
+        self.__metrics = [unittest.mock.Mock(), unittest.mock.Mock()]
         self.__section = Section(self.__header, self.__metrics)
 
     def test_title(self):
@@ -81,5 +73,5 @@ class SectionTest(unittest.TestCase):
 
     def test_product(self):
         """ Test that the section returns the product. """
-        section = Section(None, [], product='Product')
-        self.assertEqual('Product', section.product())
+        section = Section(SectionHeader('TE', 'title', 'subtitle'), [], product=domain.Product(name="Product"))
+        self.assertEqual("Product", section.product().name())

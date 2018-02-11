@@ -17,8 +17,8 @@ limitations under the License.
 import datetime
 from typing import List
 
-from ... import domain, metric_source
 from hqlib.typing import MetricParameters
+from ... import domain, metric_source
 
 
 class PerformanceMetric(domain.LowerIsBetterMetric):

@@ -19,9 +19,9 @@ import re
 from distutils.version import LooseVersion
 from typing import List
 
+from hqlib.typing import MetricParameters, Number
 from ... import metric_source, utils
 from ...domain import HigherIsBetterMetric
-from hqlib.typing import MetricParameters, Number
 
 
 class SonarVersion(HigherIsBetterMetric):
@@ -68,18 +68,16 @@ class SonarQualityProfileVersion(HigherIsBetterMetric):
     def numerical_value(self) -> Number:
         if self._missing():
             return -1
-        else:
-            numerical_parts = tuple([part for part in self.value().version if isinstance(part, int) and part < 999])
-            return utils.version_number_to_numerical(numerical_parts)
+        numerical_parts = tuple([part for part in self.value().version if isinstance(part, int) and part < 999])
+        return utils.version_number_to_numerical(numerical_parts)
 
     def value(self):
         if self._missing():
             return LooseVersion('0.0')
-        else:
-            profile_name = self._metric_source.default_quality_profile(self.language_key)
-            match = re.search(r"v\d+(\.\d+){1,2}", profile_name)
-            profile_version = match.group()[1:] if match else '0.0'
-            return LooseVersion(profile_version)
+        profile_name = self._metric_source.default_quality_profile(self.language_key)
+        match = re.search(r"v\d+(\.\d+){1,2}", profile_name)
+        profile_version = match.group()[1:] if match else '0.0'
+        return LooseVersion(profile_version)
 
     def _metric_source_urls(self) -> List[str]:
         return [self._metric_source.quality_profiles_url()] if self._metric_source else []

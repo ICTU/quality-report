@@ -29,10 +29,10 @@ class SonarMetric(domain.Metric):
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
-        return super().value()
+        return super().value()  # pylint: disable=useless-super-delegation
 
     def _is_value_better_than(self, target) -> bool:
-        return super()._is_value_better_than(target)
+        return super()._is_value_better_than(target)  # pylint: disable=useless-super-delegation
 
     def _metric_source_urls(self) -> List[str]:
         """ Return the url to Sonar. """
@@ -65,10 +65,10 @@ class BirtTestDesignMetric(domain.Metric):
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
-        return super().value()
+        return super().value()  # pylint: disable=useless-super-delegation
 
     def _is_value_better_than(self, target) -> bool:
-        return super()._is_value_better_than(target)
+        return super()._is_value_better_than(target)  # pylint: disable=useless-super-delegation
 
     def _metric_source_urls(self) -> List[str]:
         """ Return the url for the What's Missing report instead of the Birt test design report since the

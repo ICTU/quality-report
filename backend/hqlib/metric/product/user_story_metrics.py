@@ -15,9 +15,9 @@ limitations under the License.
 """
 
 
+from hqlib.typing import MetricParameters
 from ..metric_source_mixin import BirtTestDesignMetric
 from ...domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters
 
 
 class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
@@ -26,10 +26,7 @@ class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
 
     def value(self):
         nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()
-        if -1 in [nr_user_stories, nr_user_stories_ok]:
-            return -1
-        else:
-            return nr_user_stories - nr_user_stories_ok
+        return -1 if -1 in (nr_user_stories, nr_user_stories_ok) else nr_user_stories - nr_user_stories_ok
 
     def _nr_user_stories_ok(self) -> int:
         """ Return the number of user stories whose quality is good. """

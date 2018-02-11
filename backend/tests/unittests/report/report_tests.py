@@ -168,6 +168,7 @@ class QualityReportTest(unittest.TestCase):
             """ Fake VCS metric source with a fixed changed date. """
             @staticmethod
             def last_changed_date(vcs_id):  # pylint: disable=unused-argument
+                """ Return the date the product was last changed. """
                 return datetime.datetime(2017, 1, 1)
 
         vcs = FakeVCS()

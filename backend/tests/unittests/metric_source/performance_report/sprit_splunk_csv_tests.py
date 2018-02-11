@@ -30,7 +30,7 @@ CSV = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "spirit_splu
 class ReportUnderTest(SpiritSplunkCSVPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the performance report to return the url as report contents. """
 
-    def url_open(self, url: str, log_error: bool=True) -> IO:  # pylint: disable=no-self-use,unused-argument
+    def url_open(self, url: str, log_error: bool = True) -> IO:  # pylint: disable=no-self-use,unused-argument
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')

@@ -182,6 +182,6 @@ class Jenkins(ci_server.CIServer, url_opener.UrlOpener):
             logging.error("Couldn't evaluate %s from %s: %s", data, url, reason)
             raise
 
-    def url_open(self, url: str, log_error=True) -> IO:
+    def url_open(self, url: str, log_error: bool = True) -> IO:
         """ Override to safely quote the url, needed because Jenkins may return unquoted urls. """
         return super().url_open(urllib.parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]"), log_error=log_error)

@@ -19,9 +19,10 @@ import urllib.error
 import unittest
 
 from hqlib.metric_source import Jenkins
+from hqlib.typing import DateTime
 
 
-def to_jenkins_timestamp(date_time, epoch=datetime.datetime(1970, 1, 1)):
+def to_jenkins_timestamp(date_time: DateTime, epoch: DateTime = datetime.datetime(1970, 1, 1)) -> int:
     """ Convert datetime instance to *milli*seconds since epoch. """
     delta = date_time - epoch
     return (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6) / 1000
@@ -32,7 +33,7 @@ class JenkinsUnderTest(Jenkins):  # pylint: disable=too-few-public-methods
     contents = '{"jobs": []}'
     pipeline_contents = '{}'
 
-    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
+    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
         """ Return the static content. """
         if 'raise' in url:
             raise urllib.error.URLError('some reason')

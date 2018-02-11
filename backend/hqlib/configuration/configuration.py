@@ -19,33 +19,28 @@ import sys
 import logging
 
 
-class Configuration(object):
-    """ Project configuration. """
-    PROJECT_DEFINITION_FILENAME = 'project_definition.py'
+def project(project_folder_or_filename):
+    """ Import the project from the project definition file in the project folder. """
+    if project_folder_or_filename.endswith('.py'):
+        project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)
+    else:
+        project_folder, project_definition_filename = project_folder_or_filename, 'project_definition.py'
 
-    @classmethod
-    def project(cls, project_folder_or_filename):
-        """ Import the project from the project definition file in the project folder. """
-        if project_folder_or_filename.endswith('.py'):
-            project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)
-        else:
-            project_folder, project_definition_filename = project_folder_or_filename, cls.PROJECT_DEFINITION_FILENAME
+    # Add the parent folder of the project folder to the python path so the
+    # project definition can import shared resources from other folders.
+    sys.path.insert(0, os.path.abspath(os.path.join(project_folder, '..')))
 
-        # Add the parent folder of the project folder to the python path so the
-        # project definition can import shared resources from other folders.
-        sys.path.insert(0, os.path.abspath(os.path.join(project_folder, '..')))
+    # Add the project folder itself to the python path so that we can import the project definition itself.
+    sys.path.insert(0, project_folder)
 
-        # Add the project folder itself to the python path so that we can import the project definition itself.
-        sys.path.insert(0, project_folder)
-
-        # Import the project definition and get the project from it.
-        # Use the default project definition if it doesn't exist.
-        module_name = project_definition_filename[:-len('.py')]
-        try:
-            return __import__(module_name).PROJECT
-        except ModuleNotFoundError as reason:
-            logging.error("Couldn't open %s: %s.", module_name, reason)
-            raise
-        except AttributeError as reason:
-            logging.error("Couldn't get PROJECT from %s: %s.", module_name, reason)
-            raise
+    # Import the project definition and get the project from it.
+    # Use the default project definition if it doesn't exist.
+    module_name = project_definition_filename[:-len('.py')]
+    try:
+        return __import__(module_name).PROJECT
+    except ModuleNotFoundError as reason:
+        logging.error("Couldn't open %s: %s.", module_name, reason)
+        raise
+    except AttributeError as reason:
+        logging.error("Couldn't get PROJECT from %s: %s.", module_name, reason)
+        raise

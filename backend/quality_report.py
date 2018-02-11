@@ -31,7 +31,7 @@ from hqlib import app, formatting, commandlineargs, report, metric_source, log, 
 class Reporter(object):  # pylint: disable=too-few-public-methods
     """ Class for creating the quality report for a specific project. """
     def __init__(self, project_folder_or_filename):
-        self.__project = configuration.Configuration.project(project_folder_or_filename)
+        self.__project = configuration.project(project_folder_or_filename)
 
     def create_report(self, report_folder):
         """ Create, format, and write the quality report. """

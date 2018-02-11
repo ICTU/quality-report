@@ -20,7 +20,7 @@ from hqlib import configuration
 
 
 class ConfigurationTest(unittest.TestCase):
-    """ Unit tests for the configuration class. """
+    """ Unit tests for the configuration module. """
 
     @unittest.mock.patch("builtins.__import__")
     def test_get_project_from_py_file(self, import_function):
@@ -28,7 +28,7 @@ class ConfigurationTest(unittest.TestCase):
         project = unittest.mock.MagicMock()
         project.PROJECT = "Project"
         import_function.return_value = project
-        self.assertEqual("Project", configuration.Configuration.project("folder/definition.py"))
+        self.assertEqual("Project", configuration.project("folder/definition.py"))
 
     @unittest.mock.patch("builtins.__import__")
     def test_get_project_from_folder(self, import_function):
@@ -36,18 +36,18 @@ class ConfigurationTest(unittest.TestCase):
         project = unittest.mock.MagicMock()
         project.PROJECT = "Project"
         import_function.return_value = project
-        self.assertEqual("Project", configuration.Configuration.project("folder"))
+        self.assertEqual("Project", configuration.project("folder"))
 
     @unittest.mock.patch("builtins.__import__")
     def test_missing_project_definition(self, import_function):
         """ Test that an exception is thrown if the actual project definition is missing. """
         import_function.side_effect = ModuleNotFoundError
         for filename in 'folder', 'folder/definition.py':
-            self.assertRaises(ModuleNotFoundError, configuration.Configuration.project, filename)
+            self.assertRaises(ModuleNotFoundError, configuration.project, filename)
 
     @unittest.mock.patch("builtins.__import__")
     def test_missing_project_in_module(self, import_function):
         """ Test that the default project definition is returned if the project is missing from the project
             definition. """
         import_function.side_effect = AttributeError
-        self.assertRaises(AttributeError, configuration.Configuration.project, 'folder/definition.py')
+        self.assertRaises(AttributeError, configuration.project, 'folder/definition.py')

@@ -17,10 +17,10 @@ limitations under the License.
 
 import datetime
 
+from hqlib.typing import MetricParameters
 from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
-from hqlib.typing import MetricParameters
 
 
 class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
@@ -29,10 +29,7 @@ class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
 
     def value(self):
         nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
-        if -1 in (nr_ltcs_ok, nr_ltcs):
-            return -1
-        else:
-            return nr_ltcs - nr_ltcs_ok
+        return -1 if -1 in (nr_ltcs_ok, nr_ltcs) else nr_ltcs - nr_ltcs_ok
 
     def _nr_ltcs_ok(self) -> int:
         """ Return the number of logical test cases whose quality is good. """
@@ -116,10 +113,9 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     def value(self):
         if self._missing():
             return -1
-        elif self._metric_source.nr_manual_ltcs() == 0:
+        if self._metric_source.nr_manual_ltcs() == 0:
             return 0
-        else:
-            return (datetime.datetime.now() - self._metric_source.date_of_last_manual_test()).days
+        return (datetime.datetime.now() - self._metric_source.date_of_last_manual_test()).days
 
     def _metric_source_urls(self):
         return [self._metric_source.manual_test_execution_url()] if self._metric_source else []

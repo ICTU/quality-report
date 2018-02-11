@@ -25,7 +25,7 @@ from ..measurement.measurable import MeasurableObject
 class Product(RequirementSubject, MeasurableObject):
     """ Class representing a software product that is developed or maintained. """
 
-    def __init__(self, art: 'Product'=None, is_main: bool=True, **kwargs) -> None:
+    def __init__(self, art: 'Product' = None, is_main: bool = True, **kwargs) -> None:
         super().__init__(**kwargs)
         self.__art = art
         self.__is_main = is_main  # Is this product part of the main system or is it support code?

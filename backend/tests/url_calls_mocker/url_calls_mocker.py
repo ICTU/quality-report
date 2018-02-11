@@ -27,7 +27,7 @@ class UrlOpenerMock(UrlOpener):
             hqlib.metric_source.url_opener.UrlOpener = UrlOpenerMock
     """
 
-    def __init__(self, uri: str=None, username: str=None, password: str=None) -> None:
+    def __init__(self, uri: str = None, username: str = None, password: str = None) -> None:
         self._dir_path = os.getcwd()
         self._map = {
             # begin UserStoriesInProgress
@@ -60,7 +60,7 @@ class UrlOpenerMock(UrlOpener):
         }
         super().__init__()
 
-    def url_read(self, url: str, encoding: str='utf-8', *args, **kwargs) -> str:
+    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
         return self._map[url] if url in self._map.keys() else ""
 
     @staticmethod

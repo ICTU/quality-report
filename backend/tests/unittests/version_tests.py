@@ -16,10 +16,15 @@ limitations under the License.
 
 import unittest
 
-from hqlib import VERSION
+from hqlib import NAME, VERSION
 
 
 class VersionTest(unittest.TestCase):
+    """ Unit tests for the HQ version. """
+    def test_name(self):
+        """ Test that the name is correct. """
+        self.assertEqual("HQ", NAME)
+
     def test_parts(self):
         """ Test that the version number string consists of three integers. """
         self.assertEqual([int, int, int], [type(int(part)) for part in VERSION.split('.')])
