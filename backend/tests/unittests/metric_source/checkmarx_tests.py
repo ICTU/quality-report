@@ -103,7 +103,17 @@ class CheckmarxTest(unittest.TestCase):
                              'detected;  No code changes were detected No code changes were detected"}}]}'
         self.assertEqual(datetime.datetime(2017, 2, 13, 20, 0, 6), self.__report.datetime('id'))
 
-    def test_missing_value(self):
+    def test_nr_warnings_on_missing_values(self):
         """ Test dealing with empty list of values. """
         self.__opener.json = '{"value": []}'
         self.assertEqual(-1, self.__report.nr_warnings(['id'], 'medium'))
+
+    def test_datetime_on_missing_values(self):
+        """ Test dealing with empty list of values. """
+        self.__opener.json = '{"value": []}'
+        self.assertEqual(datetime.datetime.min, self.__report.datetime('id'))
+
+    def test_datetime_on_url_exception(self):
+        """ Test dealing with empty list of values. """
+        self.__opener.json = '{"value": []}'
+        self.assertEqual(datetime.datetime.min, self.__report.datetime('raise'))

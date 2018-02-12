@@ -42,11 +42,9 @@ class Checkmarx(domain.MetricSource):
 
         for project_name in report_urls:
             try:
-                json = self.__fetch_report(project_name)
+                json = self.__fetch_last_scan(project_name)
                 checkmarx_report_urls.append("{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}".format(
-                    self.url(),
-                    str(json["value"][0]["LastScan"]["Id"]),
-                    str(json["value"][0]["LastScan"]["ProjectId"])))
+                    self.url(), str(json["Id"]), str(json["ProjectId"])))
             except (IndexError, KeyError, TypeError) as reason:
                 logging.warning("Couldn't load values from json: %s - %s", project_name, reason)
             except url_opener.UrlOpener.url_open_exceptions:
@@ -59,11 +57,10 @@ class Checkmarx(domain.MetricSource):
         nr_alerts = 0
         for project_name in metric_source_ids:
             try:
-                json = self.__fetch_report(project_name)
+                json = self.__fetch_last_scan(project_name)
+                nr_alerts += json[priority.title()]
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
-            try:
-                nr_alerts += self.__parse_alerts(json, priority)
             except (KeyError, IndexError) as reason:
                 logging.error("Couldn't parse alerts for project %s with %s risk level from %s: %s",
                               project_name, priority, self.url(), reason)
@@ -75,31 +72,23 @@ class Checkmarx(domain.MetricSource):
         dates = []
         for project_name in metric_source_ids:
             try:
-                json = self.__fetch_report(project_name)
+                json = self.__fetch_last_scan(project_name)
+                dates.append(self.__parse_datetime(json))
             except url_opener.UrlOpener.url_open_exceptions:
                 return datetime.datetime.min
-            try:
-                dates.append(self.__parse_datetime(json))
-            except KeyError as reason:
+            except (KeyError, IndexError) as reason:
                 logging.error("Couldn't parse date and time for project %s from %s: %s",
                               project_name, self.url(), reason)
-                logging.error("JSON: %s", json)
                 return datetime.datetime.min
         return min(dates, default=datetime.datetime.min)
-
-    @staticmethod
-    def __parse_alerts(json: Dict[str, List[Dict[str, Dict[str, int]]]], risk_level: str) -> int:
-        """ Parse the JSON to get the number of alerts for the risk_level """
-        return json["value"][0]["LastScan"][risk_level.title()]
 
     @staticmethod
     def __parse_datetime(json: Dict) -> DateTime:
         """ Parse the JSON to get the date and time of the last scan. """
         datetimes = []
-        last_scan = json["value"][0]["LastScan"]
-        datetime_string = last_scan["ScanCompletedOn"].split('.')[0]
+        datetime_string = json["ScanCompletedOn"].split('.')[0]
         datetimes.append(datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S'))
-        comment = last_scan.get("Comment", "")
+        comment = json.get("Comment", "")
         comment_sep, prefix, postfix = '; ', 'Attempt to perform scan on ', ' - No code changes were detected'
         if comment_sep in comment:
             for check in comment.strip(comment_sep).split(comment_sep):
@@ -109,11 +98,11 @@ class Checkmarx(domain.MetricSource):
         return max(datetimes, default=datetime.datetime.min)
 
     @functools.lru_cache(maxsize=1024)
-    def __fetch_report(self, project_name: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
+    def __fetch_last_scan(self, project_name: str) -> Dict[str, int]:
         """ Create the api URL and fetch the report from it. """
         api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27{}%27".format(
             self.url(), urllib.parse.quote(project_name))
-        return self.__get_json(api_url)
+        return self.__get_json(api_url)["value"][0]["LastScan"]
 
     def __get_json(self, api_url: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
         """ Return and evaluate the JSON at the url using Basic Authentication. """

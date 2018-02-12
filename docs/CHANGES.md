@@ -1,3 +1,8 @@
+2018-02-12  Release 2.42.2
+
+  * Bug fix: Don't crash when Checkmarx report is missing.
+  
+
 2018-02-12  Release 2.42.1
 
   * Bug fix: Don't crash when Checkmarx report is missing.
