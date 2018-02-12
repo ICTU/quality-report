@@ -1,3 +1,8 @@
+2018-02-12  Release 2.42.1
+
+  * Bug fix: Don't crash when Checkmarx report is missing.
+  
+
 2018-02-08  Release 2.42.0
 
   * Feature #265: Comment column put back to the report table instead of detail pane.

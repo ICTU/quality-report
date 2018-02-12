@@ -64,7 +64,7 @@ class Checkmarx(domain.MetricSource):
                 return -1
             try:
                 nr_alerts += self.__parse_alerts(json, priority)
-            except KeyError as reason:
+            except (KeyError, IndexError) as reason:
                 logging.error("Couldn't parse alerts for project %s with %s risk level from %s: %s",
                               project_name, priority, self.url(), reason)
                 return -1

@@ -102,3 +102,8 @@ class CheckmarxTest(unittest.TestCase):
                              '"Comment": "Attempt to perform scan on 2/13/2017 8:00:06 PM - No code changes were ' \
                              'detected;  No code changes were detected No code changes were detected"}}]}'
         self.assertEqual(datetime.datetime(2017, 2, 13, 20, 0, 6), self.__report.datetime('id'))
+
+    def test_missing_value(self):
+        """ Test dealing with empty list of values. """
+        self.__opener.json = '{"value": []}'
+        self.assertEqual(-1, self.__report.nr_warnings(['id'], 'medium'))
