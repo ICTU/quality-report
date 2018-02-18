@@ -47,8 +47,8 @@ class UserStoriesNotReviewed(UserStoryMetric):
     """ Metric for measuring the percentage of user stories that not have been reviewed. """
 
     name = 'Reviewstatus van user stories'
-    norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
-    template = 'Er zijn {value} niet gereviewde {unit} van in totaal {total} {unit}.'
+    unit = "niet gereviewde " + UserStoryMetric.unit
+    template = 'Er zijn {value} {unit}, van in totaal {total} user stories.'
     target_value = 0
     low_target_value = 5
 
@@ -60,8 +60,8 @@ class UserStoriesNotApproved(UserStoryMetric):
     """ Metric for measuring the number of user stories that not have been approved. """
 
     name = 'Goedgekeuring van user stories'
-    norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = 'Er zijn {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
+    unit = "niet goedgekeurde " + UserStoryMetric.unit
+    template = 'Er zijn {value} {unit}, van in totaal {total} gereviewde user stories.'
     target_value = 0
     low_target_value = 3
 
@@ -77,10 +77,8 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     """ Metric for measuring the number of user stories that has too few logical test cases. """
 
     name = 'Hoeveelheid logische testgevallen per user story'
-    norm_template = 'Maximaal {target} van de {unit} heeft onvoldoende logische testgevallen. ' \
-        'Meer dan {low_target} is rood.'
-    template = 'Er zijn {value} {unit} met een onvoldoende aantal logische testgevallen van ' \
-        'in totaal {total} {unit}.'
+    unit = UserStoryMetric.unit + " met onvoldoende logische testgevallen"
+    template = 'Er zijn {value} {unit}, van in totaal {total} user stories.'
     target_value = 3
     low_target_value = 5
 

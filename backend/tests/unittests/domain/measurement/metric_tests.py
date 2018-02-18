@@ -113,11 +113,11 @@ class MetricTest(unittest.TestCase):
 
     def test_default_report(self):
         """ Test the default report. """
-        self.assertEqual('Subclass responsibility', self.__metric.report())
+        self.assertEqual('FakeSubject heeft 0 foo.', self.__metric.report())
 
     def test_report_with_long_subject(self):
         """ Test that the subject is abbreviated when long. """
-        self.assertEqual('Subclass responsibility', self.__metric.report(max_subject_length=1))
+        self.assertEqual('FakeSubject heeft 0 foo.', self.__metric.report(max_subject_length=1))
 
     def test_missing_metric_source_report(self):
         """ Test that the metric report explains which metric source needs to be configured. """

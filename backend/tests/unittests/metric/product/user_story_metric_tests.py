@@ -76,6 +76,11 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
         self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.UserStoriesNotReviewed(subject=self.__subject, project=self.__project)
 
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 0 niet gereviewde user stories. Meer dan 5 niet gereviewde user stories is rood.",
+                         self.__metric.norm())
+
     def test_value(self):
         """ Test that the value of the metric is the number of not reviewed user stories as reported by Birt. """
         self.assertEqual(2, self.__metric.value())
@@ -87,7 +92,7 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Er zijn 2 niet gereviewde user stories van in totaal 25 user stories.',
+        self.assertEqual('Er zijn 2 niet gereviewde user stories, van in totaal 25 user stories.',
                          self.__metric.report())
 
     def test_url(self):
@@ -103,13 +108,18 @@ class UserStoriesNotApprovedTest(unittest.TestCase):
         self.__project = domain.Project(metric_sources={metric_source.Birt: birt})
         self.__metric = metric.UserStoriesNotApproved(subject=self.__subject, project=self.__project)
 
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 0 niet goedgekeurde user stories. "
+                         "Meer dan 3 niet goedgekeurde user stories is rood.", self.__metric.norm())
+
     def test_value(self):
         """ Test that the value of the metric is the number of not approved user stories as reported by Birt. """
         self.assertEqual(3, self.__metric.value())
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Er zijn 3 niet goedgekeurde user stories van in totaal 23 gereviewde user stories.',
+        self.assertEqual('Er zijn 3 niet goedgekeurde user stories, van in totaal 23 gereviewde user stories.',
                          self.__metric.report())
 
     def test_url(self):
@@ -125,10 +135,20 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
         self.__project = domain.Project(metric_sources={metric_source.Birt: self.__birt})
         self.__metric = metric.UserStoriesWithTooFewLogicalTestCases(subject=self.__subject, project=self.__project)
 
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 3 user stories met onvoldoende logische testgevallen. "
+                         "Meer dan 5 user stories met onvoldoende logische testgevallen is rood.", self.__metric.norm())
+
     def test_value(self):
         """ Test that the value of the metric is the number of user stories that has too few logical test cases
             as reported by Birt. """
         self.assertEqual(2, self.__metric.value())
+
+    def test_report(self):
+        """ Test that the report is correct. """
+        self.assertEqual("Er zijn 2 user stories met onvoldoende logische testgevallen, "
+                         "van in totaal 25 user stories.", self.__metric.report())
 
     def test_url(self):
         """ Test the url is correct. """

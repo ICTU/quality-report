@@ -49,8 +49,8 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     """ Metric for measuring the number of logical test cases that has not been reviewed. """
 
     name = 'Reviewstatus van logische testgevallen'
-    norm_template = 'Maximaal {target} van de {unit} is niet gereviewd. Meer dan {low_target} is rood.'
-    template = 'Er zijn {value} niet gereviewde {unit} van in totaal {total} {unit}.'
+    unit = "niet gereviewde " + LogicalTestCaseMetric.unit
+    template = 'Er zijn {value} {unit}, van in totaal {total} logische testgevallen.'
     target_value = 0
     low_target_value = 15
 
@@ -65,8 +65,8 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     """ Metric for measuring the number of logical test cases that has not been approved. """
 
     name = 'Goedkeuring van logische testgevallen'
-    norm_template = 'Maximaal {target} van de gereviewde {unit} is niet goedgekeurd. Meer dan {low_target} is rood.'
-    template = 'Er zijn {value} niet goedgekeurde {unit} van in totaal {total} gereviewde {unit}.'
+    unit = "niet goedgekeurde " + LogicalTestCaseMetric.unit
+    template = 'Er zijn {value} {unit}, van in totaal {total} gereviewde logische testgevallen.'
     target_value = 0
     low_target_value = 10
 
@@ -82,9 +82,8 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
         automated. """
 
     name = 'Automatisering van logische testgevallen'
-    norm_template = 'Maximaal {target} van de te automatiseren {unit} is niet geautomatiseerd. ' \
-        'Meer dan {low_target} is rood.'
-    template = 'Er zijn {value} nog te automatiseren {unit}, van in totaal {total} geautomatiseerde {unit}.'
+    unit = "nog te automatiseren " + LogicalTestCaseMetric.unit
+    template = 'Er zijn {value} {unit}, van in totaal {total} geautomatiseerde logische testgevallen.'
     target_value = 9
     low_target_value = 15
 
@@ -146,8 +145,8 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     """ Metric for measuring the number of manual logical test cases. """
 
     name = 'Hoeveelheid handmatige logische testgevallen'
-    norm_template = 'Maximaal {target} van de {unit} is handmatig. Meer dan {low_target} is rood.'
-    template = '{value} van de {total} {unit} zijn handmatig.'
+    unit = "handmatige " + LogicalTestCaseMetric.unit
+    template = 'Er zijn {value} {unit}, van in totaal {total} logische testgevallen.'
     target_value = 10
     low_target_value = 50
 
@@ -169,7 +168,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     name = 'Uitvoeringstijd van handmatige logische testgevallen'
     unit = 'minuten'
     norm_template = 'De uitvoering van de handmatige logische testgevallen kost maximaal {target} {unit}. ' \
-                    'Meer dan {low_target} is rood.'
+                    'Meer dan {low_target} {unit} is rood.'
     template = 'De uitvoering van {measured} van de {total} handmatige logische testgevallen kost {value} {unit}.'
     target_value = 120
     low_target_value = 240

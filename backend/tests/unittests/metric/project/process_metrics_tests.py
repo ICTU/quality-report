@@ -37,118 +37,160 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
     """ Unit tests for the number of ready user story points metric. """
 
     def setUp(self):
-        jira = FakeJiraFilter()
-        project = domain.Project(metric_sources={metric_source.ReadyUserStoryPointsTracker: jira},
-                                 metric_source_ids={jira: '12345'})
-        self.__metric = metric.ReadyUserStoryPoints(project=project, subject=project)
+        self.__project = unittest.mock.create_autospec(domain.Project, instance=True)
+        self.__subject = MagicMock()
+        self.__subject.metric_source_id.return_value = "src_id"
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.__subject.target.return_value = 20
+        self.__subject.low_target.return_value = 10
+        duration_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
+
+        self.assertEqual("Minimaal 20 ready user story punten. "
+                         "Minder dan 10 ready user story punten is rood.", duration_metric.norm())
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(120, self.__metric.value())
+        mock_metric_source = MagicMock()
+        mock_metric_source.sum_field.return_value = 120
+        self.__project.metric_sources.return_value = [mock_metric_source]
+        ready_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
+
+        self.assertEqual(120, ready_metric.value())
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ['http://filter/']
+        mock_metric_source.metric_source_name = 'Jira filter'
+        self.__project.metric_sources.return_value = [mock_metric_source]
+        ready_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
+
+        self.assertEqual({'Jira filter': 'http://filter/'}, ready_metric.url())
 
 
 class UserStoriesDurationTest(unittest.TestCase):
     """ Unit tests for duration of user stories. """
 
+    def setUp(self):
+        self.__project = unittest.mock.create_autospec(domain.Project, instance=True)
+        self.__subject = MagicMock()
+        self.__subject.metric_source_id.return_value = "src_id"
+
     def test_value(self):
         """ Test that the value is correct and rounded. """
-        project = MagicMock()
         mock_metric_source = MagicMock()
         mock_metric_source.average_duration_of_issues.return_value = 2.33145
-        project.metric_sources.return_value = [mock_metric_source]
-        subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
-        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+        self.__project.metric_sources.return_value = [mock_metric_source]
+        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
         self.assertEqual(2.3, duration_metric.value())
+
+    def test_report(self):
+        """ Test that the report is correct. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.average_duration_of_issues.return_value = 2.33145
+        mock_metric_source.nr_issues.return_value = 10
+        self.__project.metric_sources.return_value = [mock_metric_source]
+        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
+
+        self.assertEqual("10 user stories waren 2.3 dagen gemiddeld in progress.", duration_metric.report())
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.__subject.target.return_value = 5
+        self.__subject.low_target.return_value = 7
+        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
+
+        self.assertEqual("User stories zijn maximaal 5 dagen gemiddeld in progress. "
+                         "Meer dan 7 dagen gemiddeld in progress is rood.", duration_metric.norm())
 
     def test_extra_info(self):
         """ Test that the extra info object is the one of metric source. """
         expected_extra_info = object()
-        project = MagicMock()
         mock_metric_source = MagicMock()
         mock_metric_source.extra_info.return_value = expected_extra_info
-        project.metric_sources.return_value = [mock_metric_source]
-        subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
-        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+        self.__project.metric_sources.return_value = [mock_metric_source]
+        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
         self.assertEqual(expected_extra_info, duration_metric.extra_info())
 
     def test_extra_info_no_metric_source(self):
         """ Test that the None is returned as extra info if there is no metric source. """
-
-        project = MagicMock()
-        project.metric_sources.return_value = [None]
-        subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
-        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+        self.__project.metric_sources.return_value = []
+        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
         self.assertEqual(None, duration_metric.extra_info())
 
     def test_value_empty_metric_source(self):
         """ Test that the value method returns -1 if the metric source is None. """
-        project = MagicMock()
-        project.metric_sources.return_value = []
-        subject = MagicMock()
-        subject.metric_source_id.return_value = 'src_id'
-        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
+        self.__project.metric_sources.return_value = [None]
+        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
         self.assertEqual(-1, duration_metric.value())
-
-    def test_report(self):
-        """ Test that the report includes the total number of issues in the filter. """
-        project = MagicMock()
-        mock_metric_source = MagicMock()
-        mock_metric_source.average_duration_of_issues.return_value = 2.5
-        mock_metric_source.nr_issues.return_value = 10
-        project.metric_sources.return_value = [mock_metric_source]
-        subject = MagicMock()
-        subject.metric_source_id.return_value = 'src_id'
-        duration_metric = metric.UserStoriesDuration(project=project, subject=subject)
-
-        self.assertEqual("10 user stories waren gemiddeld 2.5 dagen in progress.", duration_metric.report())
 
 
 class UserStoriesInProgressTest(unittest.TestCase):
     """ Unit tests for the number of user stories in progress metric. """
 
+    def setUp(self):
+        self.__project = unittest.mock.create_autospec(domain.Project, instance=True)
+        self.__subject = MagicMock()
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.__subject.target.return_value = 5
+        self.__subject.low_target.return_value = 7
+        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
+
+        self.assertEqual("Maximaal 5 stories in progress. Meer dan 7 stories in progress is rood.",
+                         progress_metric.norm())
+
     def test_value(self):
         """ Test that the value is correct. """
-        project = MagicMock()
         mock_metric_source = MagicMock()
         mock_metric_source.nr_issues.return_value = 12
-        project.metric_sources = MagicMock(return_value=[mock_metric_source])
-        subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
-        progress_metric = metric.UserStoriesInProgress(project=project, subject=subject)
+        self.__project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
 
         self.assertEqual(12, progress_metric.value())
 
+    def test_report(self):
+        """ Test that the report is correct. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.nr_issues.return_value = 12
+        self.__project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        self.__subject.name.return_value = "Foo"
+        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
+
+        self.assertEqual("Foo heeft 12 stories in progress.", progress_metric.report())
+
+    def test_status(self):
+        """ Test that the status is correct. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.nr_issues.return_value = 3
+        self.__project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        self.__subject.target.return_value = None
+        self.__subject.low_target.return_value = None
+        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
+
+        self.assertEqual("green", progress_metric.status())
+
     def test_value_empty_metric_source(self):
         """ Test that the value method returns -1 if the metric source is None. """
-        project = MagicMock()
-        project.metric_sources = MagicMock(return_value=[None])
-        subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
-        progress_metric = metric.UserStoriesInProgress(project=project, subject=subject)
+        self.__project.metric_sources = MagicMock(return_value=[None])
+        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
 
         self.assertEqual(-1, progress_metric.value())
 
     def test_url(self):
         """ Test that the url is correct. """
-        project = MagicMock()
         mock_metric_source = MagicMock()
         mock_metric_source.metric_source_urls.return_value = ['http://filter/']
         mock_metric_source.metric_source_name = 'Jira filter'
-        project.metric_sources = MagicMock(return_value=[mock_metric_source])
-        subject = MagicMock()
-        subject.metric_source_id = MagicMock(return_value='src_id')
-        progress_metric = metric.UserStoriesInProgress(project=project, subject=subject)
+        self.__project.metric_sources = MagicMock(return_value=[mock_metric_source])
+        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
 
         self.assertEqual({'Jira filter': 'http://filter/'}, progress_metric.url())
 
@@ -163,9 +205,27 @@ class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
             metric_source_ids={jira: '12345'})
         self.__metric = metric.UserStoriesWithoutSecurityRiskAssessment(project=self.__project, subject=self.__project)
 
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 1 ready user stories zonder security risk beoordeling. "
+                         "Meer dan 3 ready user stories zonder security risk beoordeling is rood.",
+                         self.__metric.norm())
+
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(12, self.__metric.value())
+
+    def test_report(self):
+        """ Test that the report of the metric is correct. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.nr_issues.return_value = 5
+        project = unittest.mock.create_autospec(domain.Project, instance=True)
+        project.metric_sources.return_value = [mock_metric_source]
+        subject = MagicMock()
+        assessment_metric = metric.UserStoriesWithoutSecurityRiskAssessment(project=project, subject=subject)
+
+        self.assertEqual("Het aantal ready user stories zonder security risk beoordeling is 5.",
+                         assessment_metric.report())
 
     def test_url(self):
         """ Test that the url is correct. """
@@ -182,6 +242,12 @@ class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
             metric_source_ids={jira: '12345'})
         self.__metric = metric.UserStoriesWithoutPerformanceRiskAssessment(project=self.__project,
                                                                            subject=self.__project)
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 1 ready user stories zonder performance risk beoordeling. "
+                         "Meer dan 3 ready user stories zonder performance risk beoordeling is rood.",
+                         self.__metric.norm())
 
     def test_value(self):
         """ Test that the value is correct. """

@@ -24,8 +24,7 @@ class OpenBugs(LowerIsBetterMetric):
 
     name = 'Hoeveelheid open bugreports'
     unit = 'open bugreports'
-    norm_template = 'Het aantal {unit} is niet meer dan {target}. Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
+    template = "Er zijn {value} {unit}."
     target_value = 50
     low_target_value = 100
     metric_source_class = metric_source.BugTracker

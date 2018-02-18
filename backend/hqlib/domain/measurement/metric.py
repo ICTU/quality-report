@@ -47,9 +47,9 @@ class Metric(object):
     """ Base class for metrics. """
 
     name: str = 'Subclass responsibility'
-    template: str = 'Subclass responsibility'
+    template = '{name} heeft {value} {unit}.'
     norm_template: str = 'Subclass responsibility'
-    unit: str = 'Subclass responsibility'
+    unit: str = 'Subclass responsibility'  # Unit in plural, e.g. "lines of code"
 
     target_value: MetricValue = 'Subclass responsibility'
     low_target_value: MetricValue = 'Subclass responsibility'

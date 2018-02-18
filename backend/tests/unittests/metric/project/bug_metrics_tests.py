@@ -57,9 +57,17 @@ class OpenBugsTest(unittest.TestCase):
                                         requirements=[requirement.TrackBugs])
         self.__metric = metric.OpenBugs(project=self.__project, subject=self.__project)
 
+    def test_norm(self):
+        """ Test that the norm is correct """
+        self.assertEqual("Maximaal 50 open bugreports. Meer dan 100 open bugreports is rood.", self.__metric.norm())
+
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
+
+    def test_report(self):
+        """ Test that the report is correct. """
+        self.assertEqual("Er zijn 12 open bugreports.", self.__metric.report())
 
     def test_url(self):
         """ Test that the url is correct. """

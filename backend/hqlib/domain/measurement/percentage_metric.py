@@ -27,6 +27,7 @@ class PercentageMetric(metric.Metric):
     """ Base class for metrics that are calculated as the percentage of a numerator and a denominator. """
 
     unit = '%'
+    template = 'Subclass responsibility'
     zero_divided_by_zero_is_zero = False
 
     @functools.lru_cache(maxsize=1024)

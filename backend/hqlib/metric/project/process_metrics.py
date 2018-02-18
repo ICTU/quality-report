@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 
+from hqlib.typing import MetricParameters, MetricValue
 from ... import metric_source
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric, ExtraInfo
 
@@ -24,13 +25,11 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
 
     name = 'Hoeveelheid ready user story punten'
     unit = 'ready user story punten'
-    norm_template = 'Het aantal {unit} is meer dan {target}. Minder dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
     target_value = 30
     low_target_value = 15
     metric_source_class = metric_source.ReadyUserStoryPointsTracker
 
-    def value(self):
+    def value(self) -> MetricValue:
         return self._metric_source.sum_field(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
@@ -38,18 +37,19 @@ class UserStoriesDuration(LowerIsBetterMetric):
     """ Metric for measuring the duration of user stories. """
 
     name = 'Gemiddelde looptijd van user stories'
-    unit = 'gemiddeld aantal dagen'
-    norm_template = 'Het {unit} is minder dan {target}. Een {unit} van meer dan {low_target} is rood.'
-    template = '{total} user stories waren gemiddeld {value} dagen in progress.'
+    unit = 'dagen gemiddeld in progress'
+    norm_template = "User stories zijn " +\
+                    LowerIsBetterMetric.norm_template[0].lower() + LowerIsBetterMetric.norm_template[1:]
+    template = '{total} user stories waren {value} {unit}.'
     target_value = 7
     low_target_value = 14
     metric_source_class = metric_source.UserStoriesDurationTracker
 
-    def value(self):
+    def value(self) -> MetricValue:
         return round(self._metric_source.average_duration_of_issues(*self._get_metric_source_ids()), 1) \
             if self._metric_source else -1
 
-    def _parameters(self):
+    def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters["total"] = self._metric_source.nr_issues(*self._get_metric_source_ids()) \
             if self._metric_source else "?"
@@ -64,25 +64,23 @@ class UserStoriesInProgress(LowerIsBetterMetric):
 
     name = 'Hoeveelheid user stories in progress'
     unit = 'stories in progress'
-    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
-    template = 'Het aantal {unit} is {value}.'
     target_value = 3
     low_target_value = 5
     metric_source_class = metric_source.UserStoriesInProgressTracker
 
-    def value(self):
+    def value(self) -> MetricValue:
         return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
 class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
     """ Metric for measuring the number of user stories without the proper assessment. """
-    norm_template = 'Het aantal {unit} is minder dan {target}. Meer dan {low_target} {unit} is rood.'
+
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3
-    nr_user_stories_without_risk_assessment = 'subclass responsibility'
+    nr_user_stories_without_risk_assessment = 'Subclass responsibility'
 
-    def value(self):
+    def value(self) -> MetricValue:
         return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
 
 

@@ -1,3 +1,8 @@
+2018-02-16  Release 2.42.3
+
+  * Bug fix #264: The description of the norm of user stories in progress metric was incorrect.
+  
+
 2018-02-12  Release 2.42.2
 
   * Bug fix: Don't crash when Checkmarx report is missing.

@@ -121,8 +121,8 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
 
     def test_report(self):
         """ Test the metric report. """
-        self.assertEqual('Subclass responsibility', self.__metric.report())
+        self.assertEqual('Product heeft 0 dagen.', self.__metric.report())
 
     def test_norm(self):
         """ Test that the norm is correct. """
-        self.assertEqual('Subclass responsibility', self.__metric.norm())
+        self.assertEqual("Maximaal 3 dagen. Meer dan 7 dagen is rood.", self.__metric.norm())

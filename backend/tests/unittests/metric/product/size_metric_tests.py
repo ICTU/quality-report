@@ -55,9 +55,17 @@ class ProductLOCTest(unittest.TestCase):
         subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: 'sonar id'})
         self._metric = metric.ProductLOC(subject=subject, project=project)
 
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 50000 regels code. Meer dan 100000 regels code is rood.", self._metric.norm())
+
     def test_value(self):
         """ Test that the value of the metric equals the NCLOC returned by Sonar. """
         self.assertEqual(FakeSonar().ncloc(), self._metric.value())
+
+    def test_report(self):
+        """ Test that the metric report is correct. """
+        self.assertEqual("FakeSubject heeft 123 regels code.", self._metric.report())
 
     def test_url(self):
         """ Test that the url is correct. """
@@ -83,6 +91,11 @@ class TotalLOCTest(unittest.TestCase):
         project.add_product(product_without_sonar_id)
         project.add_product(test_product)
         self.__metric = metric.TotalLOC(subject=project, project=project)
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 1000000 regels code. Meer dan 2000000 regels code is rood.",
+                         self.__metric.norm())
 
     def test_value(self):
         """ Test that the value of the metric equals the sum of the NCLOC returned by Sonar. """

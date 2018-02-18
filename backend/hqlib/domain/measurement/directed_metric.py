@@ -24,6 +24,7 @@ class LowerIsBetterMetric(metric.Metric):
     """ Metric for which a lower value means the metric is scoring better. """
 
     perfect_value = 0
+    norm_template = "Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood."
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
@@ -35,6 +36,8 @@ class LowerIsBetterMetric(metric.Metric):
 
 class HigherIsBetterMetric(metric.Metric):
     """ Metric for which a higher value means the metric is scoring better. """
+
+    norm_template = "Minimaal {target} {unit}. Minder dan {low_target} {unit} is rood."
 
     @functools.lru_cache(maxsize=1024)
     def value(self):

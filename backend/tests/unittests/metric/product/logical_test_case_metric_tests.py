@@ -121,6 +121,16 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
         """ Test the url is correct. """
         self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
+    def test_report(self):
+        """ Test that the report is correct. """
+        self.assertEqual('Er zijn 5 nog te automatiseren logische testgevallen, van in totaal 25 '
+                         'geautomatiseerde logische testgevallen.', self.__metric.report())
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 9 nog te automatiseren logische testgevallen. "
+                         "Meer dan 15 nog te automatiseren logische testgevallen is rood.", self.__metric.norm())
+
 
 class LogicalTestCasesNotReviewedTest(unittest.TestCase):
     """ Unit tests for the unreviewed logical test cases metric. """
@@ -140,8 +150,13 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Er zijn 10 niet gereviewde logische testgevallen van in totaal 120 '
+        self.assertEqual('Er zijn 10 niet gereviewde logische testgevallen, van in totaal 120 '
                          'logische testgevallen.', self.__metric.report())
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 0 niet gereviewde logische testgevallen. "
+                         "Meer dan 15 niet gereviewde logische testgevallen is rood.", self.__metric.norm())
 
 
 class LogicalTestCasesNotApprovedTest(unittest.TestCase):
@@ -162,8 +177,13 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('Er zijn 10 niet goedgekeurde logische testgevallen van in totaal 110 gereviewde '
+        self.assertEqual('Er zijn 10 niet goedgekeurde logische testgevallen, van in totaal 110 gereviewde '
                          'logische testgevallen.', self.__metric.report())
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        self.assertEqual("Maximaal 0 niet goedgekeurde logische testgevallen. "
+                         "Meer dan 10 niet goedgekeurde logische testgevallen is rood.", self.__metric.norm())
 
 
 class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
@@ -185,12 +205,13 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
 
     def test_report(self):
         """ Test the metric report. """
-        self.assertEqual('10 van de 120 logische testgevallen zijn handmatig.', self.__metric.report())
+        self.assertEqual('Er zijn 10 handmatige logische testgevallen, van in totaal 120 logische testgevallen.',
+                         self.__metric.report())
 
     def test_norm(self):
         """ Test the norm text. """
-        self.assertEqual('Maximaal 10 van de logische testgevallen is handmatig. Meer dan 50 is rood.',
-                         self.__metric.norm())
+        self.assertEqual("Maximaal 10 handmatige logische testgevallen. "
+                         "Meer dan 50 handmatige logische testgevallen is rood.", self.__metric.norm())
 
     def test_url(self):
         """ Test the url is correct. """
@@ -276,7 +297,7 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
     def test_norm(self):
         """ Test the norm text. """
         self.assertEqual('De uitvoering van de handmatige logische testgevallen kost maximaal 120 minuten. '
-                         'Meer dan 240 is rood.', self.__metric.norm())
+                         'Meer dan 240 minuten is rood.', self.__metric.norm())
 
     def test_url(self):
         """ Test the url is correct. """

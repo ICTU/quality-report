@@ -26,8 +26,6 @@ class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
 
     name = 'Component omvang'
     unit = 'regels code'
-    norm_template = 'Maximaal {target} {unit}.'
-    template = '{name} heeft {value} {unit}.'
     target_value = 50000
     low_target_value = 100000
 
@@ -40,7 +38,6 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
 
     name = 'Totale omvang'
     unit = 'regels code'
-    norm_template = 'Maximaal {target} {unit}. Meer dan {low_target} {unit} (herbouwtijd 30 jaar) is rood.'
     template = 'Het totaal aantal {unit} voor de producten {products} is {value} {unit}.'
     target_value = 160000
     # Maximum number of LOC Java to be eligible for 4 stars, see
