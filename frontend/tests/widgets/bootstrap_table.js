@@ -29,7 +29,7 @@ global.document = doc
 global.window = doc.defaultView
 
 test('bootstrap table empty', function(t) {
-    const wrapper = shallow(<BootstrapTable/>);
+    const wrapper = shallow(<BootstrapTable headers={[]}/>);
     t.equals(wrapper.find('table.table').exists(), true);
     t.end();
 });
@@ -88,6 +88,18 @@ test('bootstrap table caret descending', function(t) {
     t.end();
 });
 
+test('bootstrap table body header count', (t) => {
+    const wrapper = shallow(<BootstrapTable headers={[["x", "X"]]} />);
+    t.equals(wrapper.find('BootstrapTableBody').prop('col_span'), 1);
+    t.end();
+});
+
+test('bootstrap table body empty header count', (t) => {
+    const wrapper = shallow(<BootstrapTable />);
+    t.equals(wrapper.find('BootstrapTableBody').prop('col_span'), 0);
+    t.end();
+});
+
 test('bootstrap table body', (t) => {
     const wrapper = shallow(<BootstrapTable headers={[["x", "X"]]}><tr id="x1" /></BootstrapTable>);
     t.equals(wrapper.find('BootstrapTableBody').exists(), true);
@@ -118,8 +130,24 @@ test('bootstrap table renders headers of table panel with extra info', (t) => {
         {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"link": "Branch"}, "title":"Extra Info Title"}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').exists(), true);
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').text(), "Branch");
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').text(), "Branch ");
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('h4').text(), "Extra Info Title");
+    t.end();
+});
+
+test('bootstrap table renders detail pane with col span information', (t) => {
+    const wrapper = shallow(<BootstrapTable headers={[["x", "X"],["id", "ID"]]}>
+        {[{cells: ["cell 1"], extra_info: {"x":"x"}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').prop('col_span'), 2);
+    t.end();
+});
+
+test('bootstrap table renders detail pane with col span information', (t) => {
+    const wrapper = mount(<BootstrapTable headers={[["x", "X"],["id", "ID"]]}>
+        {[{cells: ["cell 1"], id: 'IDx', extra_info: {"headers": {"col1": "X", "col2": "_x"}}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('td.detail_pane').prop('colSpan'), 2);
     t.end();
 });
 
@@ -128,7 +156,7 @@ test('bootstrap table does not render headers of table panel beginning with unde
         {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col1": "X", "col2": "_x"}}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').length, 1);
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').text(), "X");
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th').text(), "X ");
     t.end();
 });
 
@@ -248,7 +276,7 @@ test('bootstrap table does render detail table if there is extra info', (t) => {
                         <div className="panel-body">
                             <table className="table-striped">
                             <thead>
-                                <tr><th>y</th></tr>
+                                <tr><th>y </th></tr>
                             </thead>
                             <tbody>
                                 <tr className="detail-row-default"><td>extra data</td></tr>

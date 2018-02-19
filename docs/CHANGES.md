@@ -1,3 +1,8 @@
+2018-02-20  Release 2.43.1
+
+  * Bug #282: Detail table layout problem solved.
+
+
 2018-02-19  Release 2.43.0
 
   * Feature #276: Jenkins jobs' detail info available.

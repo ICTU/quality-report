@@ -89,7 +89,7 @@ class BootstrapTableBody extends React.Component {
                     </tr>]
 
                 if (hasDetailPane) {
-                    ret.push(<DetailPane key={chdId + 'p'} has_extra_info={hasExtraInfo} metric_detail={this.props.children[index]} />);
+                    ret.push(<DetailPane key={chdId + 'p'} col_span={this.props.col_span} has_extra_info={hasExtraInfo} metric_detail={this.props.children[index]} />);
                 }
                 return ret;
             });
@@ -113,7 +113,7 @@ class DetailPane extends React.Component {
         var cls = this.props.metric_detail['className'];
         return (
             <tr id={this.props.metric_detail['id'] + '_details'} className={cls + " collapse"}>
-                <td className="detail_pane" colSpan="6">
+                <td className="detail_pane" colSpan={this.props.col_span}>
                     {this.renderExtraInfoPanel(this.props.metric_detail['extra_info'])}
                 </td>
             </tr>
@@ -127,7 +127,7 @@ class TablePanel extends React.Component {
             <thead>
                 <tr>
                     {Object.values(headers).map((col, index) => {
-                        return col[0] !== '_' ? <th key={index}>{col}</th> : null
+                        return col[0] !== '_' ? <th key={index}>{col}&nbsp;</th> : null
                     })}
                 </tr>
             </thead>)
@@ -236,7 +236,7 @@ class BootstrapTable extends React.Component {
         return (
             <table className={"table" + (this.props.className ? " " + this.props.className : "")}>
                 <BootstrapTableHeader {...this.props} />
-                <BootstrapTableBody>
+                <BootstrapTableBody col_span={this.props.headers ? this.props.headers.length : 0}>
                     {this.props.children}
                 </BootstrapTableBody>
             </table>
