@@ -59,48 +59,37 @@ class WekanBoard(domain.MetricSource):
         """ Return the number of over due cards. """
         return len(list(self.__over_due_cards(*board_ids))) if self.__boards(*board_ids) else -1
 
-    def over_due_actions_url(self, *board_ids: str, now: DateTime = None) -> Dict[str, str]:
+    def over_due_actions_url(self, *board_ids: str, now: DateTime = None) -> List:
         """ Return the urls to the over due cards. """
         if not self.__boards(*board_ids):
-            return {self.metric_source_name: self.__url}
+            return list()
         now = now or datetime.datetime.now()
         over_due_cards = list(self.__over_due_cards(*board_ids, now=now))
         if not over_due_cards:
-            return self.__board_urls_dict(*board_ids)
-        urls = {}
+            return list()
+        urls = list()
         for card in over_due_cards:
             time_delta = utils.format_timedelta(now - self.__due_date(card.get_card_info()))
-            remark = '{time_delta} te laat'.format(time_delta=time_delta)
-            label = '{card} ({remark})'.format(card=card.id, remark=remark)
-            urls[label] = self.__card_url(card)
+            urls.append((self.__card_url(card), card.id, time_delta))
         return urls
 
     def nr_of_inactive_actions(self, *board_ids: str, days: int = 14) -> int:
         """ Return the number of inactive cards. """
         return len(list(self.__inactive_cards(*board_ids, days=days))) if self.__boards(*board_ids) else -1
 
-    def inactive_actions_url(self, *board_ids: str, days: int = 14, now: DateTime = None) -> Dict[str, str]:
+    def inactive_actions_url(self, *board_ids: str, days: int = 14, now: DateTime = None) -> List:
         """ Return the urls for the inactive cards. """
         if not self.__boards(*board_ids):
-            return {self.metric_source_name: self.__url}
+            return list()
         now = now or datetime.datetime.now()
         inactive_cards = list(self.__inactive_cards(*board_ids, days=days, now=now))
         if not inactive_cards:
-            return self.__board_urls_dict(*board_ids)
-        urls = {}
+            return list()
+        urls = list()
         for card in inactive_cards:
             time_delta = utils.format_timedelta(now - self.__last_activity(card.get_card_info()))
-            remark = '{time_delta} niet bijgewerkt'.format(time_delta=time_delta)
-            label = '{card} ({remark})'.format(card=card.id, remark=remark)
-            urls[label] = self.__card_url(card)
+            urls.append((self.__card_url(card), card.id, time_delta))
         return urls
-
-    def __board_urls_dict(self, *board_ids) -> Dict[str, str]:
-        """ Create a url dict where the keys are the anchors and the values are the urls. """
-        urls = self.__board_urls(*board_ids)
-        template = '{label}' if len(urls) == 1 else '{label} ({index}/{count})'
-        return {template.format(label=self.metric_source_name, index=index, count=len(urls)): url
-                for index, url in enumerate(urls, start=1)}
 
     def __board_urls(self, *board_ids: str) -> Sequence[str]:
         """ Return the urls of the boards. """

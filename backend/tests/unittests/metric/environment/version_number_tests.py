@@ -50,16 +50,6 @@ class FakeSonar(object):
         """ Return the urls for the metric source ids. """
         return [self.url() for _ in metric_source_ids]
 
-    @staticmethod
-    def quality_profiles_url():
-        """ Return the quality profiles url. """
-        return 'http://sonar/profiles/'
-
-    @staticmethod
-    def plugins_url():
-        """ Return the plugins url. """
-        return 'http://sonar/updatecenter/'
-
 
 class SonarVersionTest(unittest.TestCase):
     """ Unit tests for the SonarVersion metric. """
@@ -132,10 +122,6 @@ class SonarQualityProfileVersionTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertEqual("Sonar Java quality profile is versie 1.6.", self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().quality_profiles_url()}, self.__metric.url())
-
     def test_status(self):
         """ Test that the metric is red. """
         self.assertEqual('red', self.__metric.status())
@@ -175,10 +161,6 @@ class SonarPluginVersionTest(unittest.TestCase):
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual("Sonar plugin Java is versie 11.4.", self.__metric.report())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().plugins_url()}, self.__metric.url())
 
     def test_status(self):
         """ Test that the metric is green. """

@@ -19,7 +19,7 @@ import functools
 import logging
 import time
 
-from typing import Dict, Any, Optional, Callable, List
+from typing import Any, Optional, Callable, List
 
 from ... import utils
 from ...domain import MetricSource
@@ -165,30 +165,26 @@ class TrelloBoard(TrelloObject, MetricSource):
         """ Return the (non-archived) cards on this Trello board that are inactive. """
         return [card for card in self.__cards(*board_ids) if card.is_inactive(days)]
 
-    def over_due_cards_url(self, *board_ids: str) -> Dict[str, str]:
+    def over_due_cards_url(self, *board_ids: str) -> List:
         """ Return the urls for the (non-archived) cards on the Trello boards that are over due. """
-        urls = dict()
+        urls = list()
         try:
             for card in self.__over_due_cards(*board_ids):
                 time_delta = utils.format_timedelta(card.over_due_time_delta())
-                remark = '{time_delta} te laat'.format(time_delta=time_delta)
-                label = '{card} ({remark})'.format(card=card.card_id(), remark=remark)
-                urls[label] = card.url()
+                urls.append((card.url(), card.card_id(), time_delta))
         except url_opener.UrlOpener.url_open_exceptions:
-            return {self.metric_source_name: 'http://trello'}
+            return list()
         return urls
 
-    def inactive_cards_url(self, *board_ids: str, days: int = 14) -> Dict[str, str]:
+    def inactive_cards_url(self, *board_ids: str, days: int = 14) -> List:
         """ Return the urls for the (non-archived) cards on this Trello board that are inactive. """
-        urls = dict()
+        urls = list()
         try:
             for card in self.__inactive_cards(*board_ids, days=days):
                 time_delta = utils.format_timedelta(card.last_update_time_delta())
-                remark = '{time_delta} niet bijgewerkt'.format(time_delta=time_delta)
-                label = '{card} ({remark})'.format(card=card.card_id(), remark=remark)
-                urls[label] = card.url()
+                urls.append((card.url(), card.card_id(), time_delta))
         except url_opener.UrlOpener.url_open_exceptions:
-            return {self.metric_source_name: 'http://trello'}
+            return list()
         return urls
 
     @functools.lru_cache(maxsize=1024)
@@ -219,7 +215,7 @@ class TrelloBoard(TrelloObject, MetricSource):
         """ Return the number of over due cards. """
         return self.nr_of_over_due_cards(*metric_source_ids)
 
-    def over_due_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
+    def over_due_actions_url(self, *metric_source_ids: str) -> List:
         """ Return the urls to the over due cards. """
         return self.over_due_cards_url(*metric_source_ids)
 
@@ -227,6 +223,6 @@ class TrelloBoard(TrelloObject, MetricSource):
         """ Return the number of inactive cards. """
         return self.nr_of_inactive_cards(*metric_source_ids)
 
-    def inactive_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
+    def inactive_actions_url(self, *metric_source_ids: str) -> List:
         """ Return the urls for the inactive cards. """
         return self.inactive_cards_url(*metric_source_ids)

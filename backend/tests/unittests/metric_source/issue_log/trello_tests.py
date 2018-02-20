@@ -19,6 +19,8 @@ import io
 import urllib.error
 import unittest
 
+from unittest.mock import patch
+
 from hqlib.metric_source.issue_log.trello import TrelloCard, TrelloList, TrelloBoard
 
 
@@ -89,13 +91,39 @@ class TrelloBoardTest(unittest.TestCase):
     def test_over_due_cards_url(self):
         """ Test the urls for the over due cards. """
         self.__cards_json = '[{"id": 1}]'
-        self.assertEqual({'1 (3 dagen te laat)': 'http://trello.com/api/card/1'},
+        self.assertEqual([('http://trello.com/api/card/1', 1, '3 dagen')],
                          self.__trello_board.over_due_cards_url('board_id'))
+
+    @patch.object(TrelloBoard, 'over_due_cards_url')
+    def test_over_due_actions_url(self, mock_over_due_cards_url):
+        """ Test the urls for the over due cards. """
+        self.__trello_board.over_due_actions_url('board_id')
+        self.assertTrue(mock_over_due_cards_url.assert_called_once)
+
+    @patch.object(FakeCard, 'url')
+    def test_over_due_cards_url_when_http_error(self, mock_url_open):
+        """ Test the urls for the over due cards. """
+        self.__cards_json = '[{"id": 1}]'
+        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        self.assertEqual([], self.__trello_board.over_due_cards_url('board_id'))
+
+    @patch.object(FakeCard, 'url')
+    def test_inactive_cards_url_when_http_error(self, mock_url_open):
+        """ Test the urls for the inactive cards. """
+        self.__cards_json = '[{"id": 2}]'
+        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        self.assertEqual([], self.__trello_board.inactive_cards_url('board_id'))
+
+    @patch.object(TrelloBoard, 'inactive_cards_url')
+    def test_inactive_actions_url(self, mock_inactive_cards_url):
+        """ Test the urls for the inactive cards. """
+        self.__trello_board.inactive_actions_url('board_id')
+        self.assertTrue(mock_inactive_cards_url.assert_called_once)
 
     def test_inactive_cards_url(self):
         """ Test the urls for the inactive cards. """
         self.__cards_json = '[{"id": 2}]'
-        self.assertEqual({'2 (4 dagen niet bijgewerkt)': 'http://trello.com/api/card/2'},
+        self.assertEqual([('http://trello.com/api/card/2', 2, '4 dagen')],
                          self.__trello_board.inactive_cards_url('board_id'))
 
     def test_last_update_delta(self):
@@ -171,7 +199,7 @@ class TrelloCardTest(unittest.TestCase):
         """ Test the card id. """
         self.assertEqual("id", self.__trello_card.card_id())
 
-    @unittest.mock.patch.object(TrelloList, "name")
+    @patch.object(TrelloList, "name")
     def test_list_name(self, trello_list_name):
         """ Test the list name. """
         trello_list_name.return_value = "List"

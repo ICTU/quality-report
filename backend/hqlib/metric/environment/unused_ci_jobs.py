@@ -29,12 +29,11 @@ class UnusedCIJobs(CIJobs):
     url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2
-
-    _qualifier = 'ongebruikt'
+    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen ongebruikt"}
 
     def value(self):
         """ Return the number of unused jobs. """
         return self._metric_source.number_of_unused_jobs() if self._metric_source else -1
 
-    def _jobs_url(self) -> list((str, str, str)):
+    def extra_info_urls(self) -> list((str, str, str)):
         return self._metric_source.unused_jobs_url()

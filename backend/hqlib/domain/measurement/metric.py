@@ -68,6 +68,7 @@ class Metric(object):
     comment_url_label_text: str = ''
 
     metric_source_class: Type[MetricSource] = None
+    extra_info_headers: Dict[str, str] = None
 
     def __init__(self, subject=None, project: 'Project' = None) -> None:
         self._subject = subject
@@ -92,8 +93,12 @@ class Metric(object):
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
         self.__history = history_sources[0] if history_sources else None
 
-    def format_text_with_links(self, text: str, url_dict: Dict[str, str],  # pylint: disable=no-self-use
-                               url_label: str) -> str:
+    def format_text_with_links(self, text: str) -> str:
+        """ Format a text paragraph with additional url. """
+        return self.format_comment_with_links(text, self.url(), '')
+
+    def format_comment_with_links(self, text: str, url_dict: Dict[str, str],  # pylint: disable=no-self-use
+                                  url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
         text = utils.html_escape(text).replace('\n', ' ')
         links = ["<a href='{href}' target='_blank'>{anchor}</a>"
@@ -103,9 +108,6 @@ class Metric(object):
                 url_label += ': '
             text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
         return json.dumps(text)[1:-1]  # Strip quotation marks
-
-    format_comment_with_links = format_text_with_links
-    # format_comment_with_links can be overridden in the derived metric so that it provides different functionality.
 
     @classmethod
     def norm_template_default_values(cls) -> MetricParameters:
@@ -254,6 +256,11 @@ class Metric(object):
             logging.error('Key missing in parameters of %s: %s', self.__class__.__name__, self._parameters())
             raise
 
+    @staticmethod
+    def extra_info_urls() -> List:
+        """ Default returns no extra info links. Should be overridden. """
+        return list()
+
     def url(self) -> Dict[str, str]:
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
         label = self._metric_source.metric_source_name if self._metric_source else 'Unknown metric source'
@@ -325,8 +332,22 @@ class Metric(object):
         raise NotImplementedError
 
     def extra_info(self) -> Optional[ExtraInfo]:  # pylint: disable=no-self-use
-        """ Function can be overridden by concrete metrics that fill extra info. """
-        return None
+        """ Method can be overridden by concrete metrics that fill extra info. """
+        extra_info = None
+        if self._metric_source and self.extra_info_headers:
+            url_list = self.extra_info_urls()
+            if url_list:
+                extra_info = ExtraInfo(**self.extra_info_headers)
+                extra_info.title = self.url_label_text
+                for item in url_list:
+                    extra_info += self.convert_item_to_extra_info(item)
+
+        return extra_info if extra_info is not None and extra_info.data else None
+
+    @staticmethod
+    def convert_item_to_extra_info(item):
+        """ Method should transform an item to the form used in extra info. Should be overridden. """
+        return item
 
     def __subject_name(self) -> str:
         """ Return the subject name, or a string representation if the subject has no name. """

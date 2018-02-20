@@ -24,20 +24,13 @@ class FakeSonar(object):
 
     metric_source_name = metric_source.Sonar.metric_source_name
 
-    # pylint: disable=unused-argument
-
     @staticmethod
-    def dashboard_url(*args):
-        """ Return a fake dashboard url. """
-        return 'http://sonar'
-
-    @staticmethod
-    def duplicated_lines(*args):
+    def duplicated_lines(*args):  # pylint: disable=unused-argument
         """ Return the number of duplicated lines. """
         return 15
 
     @staticmethod
-    def lines(*args):
+    def lines(*args):  # pylint: disable=unused-argument
         """ Return the number of lines. """
         return 150
 
@@ -54,7 +47,3 @@ class DuplicationTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value of the metric equals the percentage of duplicated lines. """
         self.assertEqual(10., self._metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar.dashboard_url()}, self._metric.url())

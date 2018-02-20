@@ -45,11 +45,6 @@ class FakeBirt(object):
         """ Return the number of user stories with enough logical test cases. """
         return 23
 
-    @staticmethod
-    def whats_missing_url():
-        """ Return the url for the what's missing report. """
-        return 'http://whats_missing'
-
 
 class FakeSubject(object):
     """ Provide for a fake subject. """
@@ -95,10 +90,6 @@ class UserStoriesNotReviewedTest(unittest.TestCase):
         self.assertEqual('Er zijn 2 niet gereviewde user stories, van in totaal 25 user stories.',
                          self.__metric.report())
 
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({FakeBirt.metric_source_name: FakeBirt.whats_missing_url()}, self.__metric.url())
-
 
 class UserStoriesNotApprovedTest(unittest.TestCase):
     """ Unit tests for the user stories that are not approved. """
@@ -121,10 +112,6 @@ class UserStoriesNotApprovedTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertEqual('Er zijn 3 niet goedgekeurde user stories, van in totaal 23 gereviewde user stories.',
                          self.__metric.report())
-
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({FakeBirt.metric_source_name: FakeBirt.whats_missing_url()}, self.__metric.url())
 
 
 class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
@@ -149,7 +136,3 @@ class UserStoriesWithEnoughLTCsTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertEqual("Er zijn 2 user stories met onvoldoende logische testgevallen, "
                          "van in totaal 25 user stories.", self.__metric.report())
-
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({FakeBirt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())

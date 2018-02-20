@@ -1,3 +1,8 @@
+2018-02-23  Release 2.44.0
+
+  * Feature #288: Action activity metrics got detail panes.
+
+
 2018-02-21  Release 2.43.2
 
   * Bug fix: Don't crash when the performance report is invalid.

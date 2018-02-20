@@ -93,16 +93,6 @@ class HighRiskCheckmarxAlertsTest(unittest.TestCase):
         self.assertEqual(expected_norm,
                          self.__metric.norm_template.format(**self.__metric.norm_template_default_values()))
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'Checkmarx': 'url'}, self.__metric.url())
-
-    def test_multiple_urls(self):
-        """ Test that multiple urls works. """
-        subject = FakeSubject(metric_source_ids={self.__checkmarx_report: ['a', 'b']})
-        alerts = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual({'Checkmarx (1/2)': 'a', 'Checkmarx (2/2)': 'b'}, alerts.url())
-
     def test_is_missing_without_zap_scan_report(self):
         """ Test that metric is missing when the Checkmarx report is not available. """
         alerts = self.class_under_test(self.__subject, domain.Project())

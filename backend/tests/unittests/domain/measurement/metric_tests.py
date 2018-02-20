@@ -18,6 +18,7 @@ import json
 import datetime
 import unittest
 
+from unittest.mock import MagicMock, patch
 from hqlib import domain, metric_source
 from tests.unittests.domain.measurement.fake import FakeHistory, FakeSubject
 
@@ -55,28 +56,47 @@ class MetricTest(unittest.TestCase):
         """ Test that the stable id doesn't include the subject if the subject is a list. """
         self.assertEqual('Metric', domain.Metric([], project=domain.Project()).stable_id())
 
-    def test_format_text_with_links(self):
-        """ Test that the formatted text is followed by a comma separated list of urls. """
-        self.assertEqual("Some text... [Label: <a href='http://url/br1' target='_blank'>branch_1</a>, "
-                         "<a href='http://url/br2' target='_blank'>branch_2</a>]",
-                         self.__metric.format_text_with_links(
-                             'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, "Label"))
-
     def test_format_text_without_links(self):
         """ Test that the formatted text is not followed by anything. """
-        self.assertEqual("Some text...",
-                         self.__metric.format_text_with_links('Some text...', {}, "Unimportant"))
+        self.assertEqual("Some text...", self.__metric.format_text_with_links('Some text...'))
 
-    def test_format_text_without_label(self):
+    def test_format_comment_with_links(self):
         """ Test that the formatted text is followed by a comma separated list of keys. """
         self.assertEqual("Some text... [<a href='http://url/br1' target='_blank'>branch_1</a>, "
                          "<a href='http://url/br2' target='_blank'>branch_2</a>]",
-                         self.__metric.format_text_with_links(
+                         self.__metric.format_comment_with_links(
                              'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, ""))
 
-    def test_format_comment_with_links(self):
+    def test_format_comment_with_links_with_label(self):
+        """ Test that the formatted text is followed by a comma separated list of keys. """
+        self.assertEqual("Some text... [Label: <a href='http://url/br1' target='_blank'>branch_1</a>, "
+                         "<a href='http://url/br2' target='_blank'>branch_2</a>]",
+                         self.__metric.format_comment_with_links(
+                             'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, "Label"))
+
+    @patch.object(domain.Metric, '_metric_source_urls')
+    def test_format_text_with_links(self, mock_metric_source_urls):
         """ Test that comment formatting function is the same as the text formatting one."""
-        self.assertEqual(self.__metric.format_comment_with_links, self.__metric.format_text_with_links)
+        mock_metric_source_urls.return_value = ['http://url1']
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_name = "Text"
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        test_metric = domain.Metric(subject=MagicMock(), project=project)
+
+        self.assertEqual("Some text... [<a href='http://url1' target='_blank'>Text</a>]",
+                         test_metric.format_text_with_links('Some text...'))
+
+    @patch.object(domain.Metric, '_metric_source_urls')
+    def test_format_text_with_links_unknown_source(self, mock_metric_source_urls):
+        """ Test that comment formatting function is the same as the text formatting one."""
+        mock_metric_source_urls.return_value = ['http://url1']
+        project = MagicMock()
+        project.metric_sources.return_value = []
+        test_metric = domain.Metric(subject=MagicMock(), project=project)
+
+        self.assertEqual("Some text... [<a href='http://url1' target='_blank'>Unknown metric source</a>]",
+                         test_metric.format_text_with_links('Some text...'))
 
     def test_set_id_string(self):
         """ Test that the id string can be changed. """
@@ -150,6 +170,47 @@ class MetricTest(unittest.TestCase):
             are supplied. """
         self.__metric.norm_template += '{missing_parameter}'  # pylint: disable=no-member
         self.assertRaises(KeyError, self.__metric.norm)
+
+    def test_url(self):
+        """ Test that the metric has no default url. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ['http:/url1']
+        mock_metric_source.metric_source_name = "Text"
+        subject = MagicMock()
+        subject.metric_source_id.return_value = "MsId"
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        test_metric = domain.Metric(subject=subject, project=project)
+
+        self.assertEqual({"Text": "http:/url1"}, test_metric.url())
+
+    def test_url_two_sources(self):
+        """ Test that the metric has no default url. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ['http:/url1', 'http:/url2']
+        mock_metric_source.metric_source_name = "Text"
+        subject = MagicMock()
+        subject.metric_source_id.return_value = "MsId"
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        test_metric = domain.Metric(subject=subject, project=project)
+
+        self.assertEqual({"Text (1/2)": "http:/url1", "Text (2/2)": "http:/url2"}, test_metric.url())
+
+    @patch.object(domain.Metric, '_get_metric_source_ids')
+    def test_url_from_metric_source_urls(self, mock_get_metric_source_ids):
+        """ Test metric source url when there is no source id. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.url.return_value = 'http://url!'
+        mock_metric_source.metric_source_name = "Text"
+        subject = MagicMock()
+        subject.metric_source_id.return_value = "MsId"
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        mock_get_metric_source_ids.return_value = None
+        test_metric = domain.Metric(subject=subject, project=project)
+
+        self.assertEqual({"Text": 'http://url!'}, test_metric.url())
 
     def test_default_url(self):
         """ Test that the metric has no default url. """
@@ -263,9 +324,35 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric gets the start date of the status from the history. """
         self.assertEqual(datetime.datetime(2013, 1, 1, 10, 0, 0), self.__metric.status_start_date())
 
-    def test_extra_info(self):
+    def test_convert_item_to_extra_info_none(self):
+        """ Test that method returns the same item it got. """
+        item = object()
+        self.assertEqual(item, self.__metric.convert_item_to_extra_info(item))
+
+    @patch.object(domain.Metric, 'extra_info_urls')
+    def test_extra_info(self, mock_extra_info_urls):
         """ Test that extra_info, as a base class function, returns None. """
+        mock_extra_info_urls.return_value = [('VAL1', 'VAL2')]
+        project = MagicMock()
+        project.metric_sources.return_value = [MagicMock()]
+        metric = domain.Metric(subject=MagicMock(), project=project)
+        metric.extra_info_headers = {"col1": "Col 1", "col2": "Col 2"}
+
+        result = metric.extra_info()
+
+        self.assertEqual(domain.ExtraInfo(col1="Col 1", col2="Col 2").headers, result.headers)
+        self.assertEqual([{"col1": "VAL1", "col2": "VAL2"}], result.data)
+
+    @patch.object(domain.Metric, 'extra_info_urls')
+    def test_extra_info_for_no_urls(self, mock_extra_info_urls):
+        """ Test that extra info is None when there are no jobs' urls. """
+        mock_extra_info_urls.return_value = []
+
         self.assertEqual(None, self.__metric.extra_info())
+
+    def test_extra_info_urls(self):
+        """ Test that the default list of urls is empty. """
+        self.assertEqual(list(), self.__metric.extra_info_urls())
 
 
 class MetricStatusTest(unittest.TestCase):

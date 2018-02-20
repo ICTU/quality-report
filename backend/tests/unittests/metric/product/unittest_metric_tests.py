@@ -78,10 +78,6 @@ class FailingUnittestsTest(unittest.TestCase):
         self.assertEqual('5 van de 10 unittesten falen. 2 van de 10 unittesten zijn overgeslagen.',
                          self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({self.__report.metric_source_name: 'http://report'}, self.__metric.url())
-
     def test_status_with_zero_unittests(self):
         """ Test that the metric is red when there are no unit tests. """
         report = FakeUnitTestReport(unittests=0)

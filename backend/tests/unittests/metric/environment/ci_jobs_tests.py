@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 from hqlib import domain, metric_source
 from hqlib.metric.environment import CIJobs
 
@@ -30,45 +30,21 @@ class CIJobsTest(unittest.TestCase):
                                        metric_source_ids={self._jenkins: 'dummy'})
         self._metric = CIJobs(subject=self._project, project=self._project)
 
-    def test_format_text_with_links(self):
-        """ Function returns unchanged text. """
-        self.assertEqual("Some text... ", self._metric.format_text_with_links(text="Some text... "))
-
-    def test_format_text_with_links_escape(self):
-        """ Function returns text with html escaped characters. """
-        self.assertEqual("Some &amp;text... ", self._metric.format_text_with_links(text="Some &text... "))
-
-    def test_format_text_with_links_escape_(self):
-        """ Function returns text with html escaped characters. """
-        self.assertEqual("Some &amp;text... ", self._metric.format_text_with_links(text="Some &text... "))
-
-    def test_url(self):
-        """ Test that the url of the metric equals the url of Jenkins. """
-        self.assertEqual(dict(), self._metric.url())
-
     def test_label(self):
         """ Test that the label to use in the HTML report is correct. """
         self.assertEqual('', self._metric.url_label_text)
 
-    def test_extra_info_is_none(self):
-        """ Test that extra info is None when there is no metric source """
-        self._metric._metric_source = None
-        self.assertEqual(None, self._metric.extra_info())
+    def test_convert_item_to_extra_info(self):
+        """ Test if ci job item is correctly converted to extra info record. """
+        expected = ({'href': 'http://xx.xl', 'text': 'Link Text'}, '42')
 
-    @patch.object(CIJobs, '_jobs_url')
-    def test_extra_info(self, mock_jobs_url):
-        """ Test that extra info is correct. """
-        mock_jobs_url.return_value = [('name', 'http://url', '7')]
-        expected_extra_info = domain.ExtraInfo(link="Job naam", comment="Aantal dagen ")
-        expected_extra_info += {'href': 'http://url', 'text': 'name'}, '7'
+        result = self._metric.convert_item_to_extra_info(('Link Text', 'http://xx.xl', '42'))
 
-        result = self._metric.extra_info()
-        self.assertEqual(expected_extra_info.headers, result.headers)
-        self.assertEqual(expected_extra_info.data, result.data)
+        self.assertEqual(expected, result)
 
-    @patch.object(CIJobs, '_jobs_url')
-    def test_extra_info_for_no_urls(self, mock_jobs_url):
-        """ Test that extra info is None when there are no jobs' urls. """
-        mock_jobs_url.return_value = []
+    def test_convert_item_to_extra_info_none(self):
+        """ Test if ci job item is correctly converted to extra info record. """
 
-        self.assertEqual(None, self._metric.extra_info())
+        result = self._metric.convert_item_to_extra_info(())
+
+        self.assertEqual(None, result)

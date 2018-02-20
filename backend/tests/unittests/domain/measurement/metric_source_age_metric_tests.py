@@ -112,13 +112,6 @@ class MetricSourceAgeMetricTest(unittest.TestCase):
         self.assertTrue(MetricSourceAgeMetricUnderTest.norm_template %
                         MetricSourceAgeMetricUnderTest.norm_template_default_values())
 
-    @patch.object(domain.Metric, '_metric_source_urls')
-    def test_url(self, metric_source_urls_mock):
-        """ Test that the url of the metric equals the metric source id. """
-
-        metric_source_urls_mock.return_value = ['http://url']
-        self.assertEqual({domain.MetricSource.metric_source_name: 'http://url'}, self.__metric.url())
-
     def test_report(self):
         """ Test the metric report. """
         self.assertEqual('Product heeft 0 dagen.', self.__metric.report())

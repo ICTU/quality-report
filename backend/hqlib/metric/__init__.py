@@ -51,7 +51,7 @@ from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityA
 from .project.last_security_test import LastSecurityTest
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
     UserStoriesWithoutPerformanceRiskAssessment, UserStoriesInProgress, UserStoriesDuration
-from .project.project_management_metrics import RiskLog, ActionActivity, OverDueActions, StaleActions
+from .project.project_management_metrics import RiskLog, ActionActivity, IssueLogMetric, OverDueActions, StaleActions
 
 # Team metrics
 from .team.absence import TeamAbsence

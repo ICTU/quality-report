@@ -82,10 +82,6 @@ class UnmergedBranchesTest(unittest.TestCase):
                          'VersionControlSystem niet is geconfigureerd.',
                          metric.UnmergedBranches(subject=domain.Product(), project=domain.Project()).report())
 
-    def test_url(self):
-        """ Test that the unmerged branches are listed. """
-        self.assertEqual({'Subversion': 'http://fake_subversion.com'}, self.__metric.url())
-
     def test_url_label(self):
         """ Test that the label for the urls is correct. """
         self.assertEqual('Niet gemergde branches', self.__metric.url_label_text)

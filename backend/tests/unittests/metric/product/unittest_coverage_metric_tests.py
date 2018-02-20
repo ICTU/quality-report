@@ -47,10 +47,6 @@ class CommonUnittestMetricTestsMixin(object):
         """ Test that the report is correct. """
         self.assertEqual(self.expected_report, self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({self.__report.metric_source_name: self.__report.dashboard_url()}, self.__metric.url())
-
 
 class UnittestLineCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCase):
     """ Unit tests for the unit test line coverage metric. """

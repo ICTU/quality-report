@@ -16,8 +16,9 @@ limitations under the License.
 
 import datetime
 import unittest
-from typing import List
 
+from unittest.mock import patch, MagicMock
+from typing import List
 from hqlib import metric, domain, metric_source
 
 
@@ -39,16 +40,6 @@ class FakeBoard(metric_source.TrelloBoard):
     def datetime(*args):
         """ Fake the date of the last update. """
         return datetime.datetime.now() - datetime.timedelta(minutes=1)
-
-    @staticmethod
-    def over_due_cards_url(*args):
-        """ Fake the url. """
-        return {'Some card': 'http://trello/some_card', 'Some other card': 'http://trello/other_card'}
-
-    @staticmethod
-    def inactive_cards_url(*args):
-        """ Fake the url. """
-        return {'One card': 'http://trello/some_card', 'Two card': 'http://trello/other_card'}
 
     @staticmethod
     def nr_of_over_due_cards(*args):
@@ -79,16 +70,6 @@ class UnreachableBoard(FakeBoard):
     def datetime(*args):
         """ Fake that Trello is down. """
         return datetime.datetime.min
-
-    @staticmethod
-    def over_due_cards_url(*args):
-        """ Fake the url. """
-        return {UnreachableBoard.metric_source_name: 'http://trello.com'}
-
-    @staticmethod
-    def inactive_cards_url(*args):
-        """ Fake the url. """
-        return {UnreachableBoard.metric_source_name: 'http://trello.com'}
 
     @staticmethod
     def nr_of_over_due_cards(*args):
@@ -161,6 +142,20 @@ class UnreachableRiskLogTest(unittest.TestCase):
         self.assertEqual(-1, self.__metric.value())
 
 
+@patch('hqlib.domain.Project')
+class IssueLogMetricTest(unittest.TestCase):
+    """ Unit tests for the action activity metric. """
+
+    def test_convert_item_to_extra_info(self, project_mock):
+        """ Test if arguments for extra info are comming in correct order. """
+        project_mock.metric_sources.return_value = MagicMock()
+        item = ("http://xx", "Description", "42")
+        issue_log_metric = metric.IssueLogMetric(project=project_mock)
+        expected_result = {"href": "http://xx", "text": "Description"}, "42"
+
+        self.assertEqual(expected_result, issue_log_metric.convert_item_to_extra_info(item))
+
+
 class ActionActivityTest(unittest.TestCase):
     """ Unit tests for the action activity metric. """
 
@@ -210,10 +205,6 @@ class OldActionsTest(unittest.TestCase):
         """ Test that the metric value equals the number of over due or inactive cards. """
         self.assertEqual(FakeBoard().nr_of_inactive_cards(), self.__metric.value())
 
-    def test_url(self):
-        """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(FakeBoard().inactive_cards_url(), self.__metric.url())
-
     def test_url_label(self):
         """ Test that the metric has a url label. """
         self.assertTrue(self.__metric.url_label_text)
@@ -252,7 +243,7 @@ class OverDueActionsTest(unittest.TestCase):
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """
-        self.assertEqual(FakeBoard().over_due_cards_url(), self.__metric.url())
+        self.assertEqual({'Trello': 'http://trello/board'}, self.__metric.url())
 
     def test_url_label(self):
         """ Test that the metric has a url label. """

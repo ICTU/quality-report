@@ -47,16 +47,6 @@ class FakeSonar(object):
         """ Return the number of issues marked as false positive. """
         return 3
 
-    @staticmethod
-    def dashboard_url(*args):
-        """ Return a fake dashboard url. """
-        return 'http://sonar'
-
-    @staticmethod
-    def false_positives_url(*args):
-        """ Return a fake url to the false positives. """
-        return 'http://sonar/false_positives'
-
 
 class ViolationsTestMixin(object):
     """ Unit tests for the Violations metric classes. """
@@ -102,10 +92,6 @@ class ViolationsTestMixin(object):
         violations = self.metric_class(subject=product, project=project)
         self.assertEqual('perfect', violations.status())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().dashboard_url()}, self._metric.url())
-
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(self.metric_class.norm_template % self.metric_class.norm_template_default_values())
@@ -144,7 +130,3 @@ class FalsePositivesTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is equal to the number of false positives as reported by Sonar. """
         self.assertEqual(3, self.__metric.value())
-
-    def test_url(self):
-        """ Test that the false positives url of Sonar is used. """
-        self.assertEqual({FakeSonar.metric_source_name: FakeSonar().false_positives_url()}, self.__metric.url())

@@ -50,11 +50,11 @@ class UnusedCIJobsTests(unittest.TestCase):
         """ Test that the label to use in the HTML report is correct. """
         self.assertEqual('Ongebruikte jobs', self._metric.url_label_text)
 
-    def test_jobs_url(self):
+    def test_extra_info_urls(self):
         """ Test that the metric source method is called. """
         self._jenkins.unused_jobs_url.return_value = [('1', '2', '3')]
 
-        result = self._metric._jobs_url()
+        result = self._metric.extra_info_urls()
 
         self.assertEqual([('1', '2', '3')], result)
         self._jenkins.unused_jobs_url.assert_called_once()

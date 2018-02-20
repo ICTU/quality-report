@@ -17,6 +17,8 @@ limitations under the License.
 # Fake domain classes for testing purposes.
 
 import datetime
+from unittest.mock import MagicMock
+
 import hqlib
 from hqlib.domain import ExtraInfo
 
@@ -30,6 +32,9 @@ class Metric(object):
         self.__id_string = id_string
         self.name = "Metric Name"
         self.__status_start_date = status_start_date
+        self._metric_source = MagicMock()
+        self._metric_source.metric_source_name = 'Fake metric'
+        self._metric_source_urls = MagicMock(return_value=['http://url'])
 
     format_text_with_links = hqlib.domain.Metric.format_text_with_links
     format_comment_with_links = hqlib.domain.Metric.format_comment_with_links

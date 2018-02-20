@@ -41,11 +41,6 @@ class FakeJiraFilter(object):
         """ Return a fake number of manual test cases without duration filled in. """
         return 4
 
-    @staticmethod
-    def metric_source_urls(*metric_source_ids):
-        """ Return a fake url for each query. """
-        return ['http://filter/']
-
 
 class OpenBugsTest(unittest.TestCase):
     """ Unit tests for the number of open bugs metric. """
@@ -69,11 +64,6 @@ class OpenBugsTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertEqual("Er zijn 12 open bugreports.", self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeJiraFilter.metric_source_name: FakeJiraFilter.metric_source_urls()[0]},
-                         self.__metric.url())
-
 
 class OpenBugsWithProductTest(unittest.TestCase):
     """ Unit tests for the number of open bugs metric applied to products. """
@@ -89,11 +79,6 @@ class OpenBugsWithProductTest(unittest.TestCase):
         """ Test that the value is correct. """
         self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeJiraFilter.metric_source_name: FakeJiraFilter.metric_source_urls()[0]},
-                         self.__metric.url())
-
 
 class OpenSecurityBugsTest(unittest.TestCase):
     """ Unit tests for the number of open security bugs metric. """
@@ -108,11 +93,6 @@ class OpenSecurityBugsTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeJiraFilter.metric_source_name: FakeJiraFilter.metric_source_urls()[0]},
-                         self.__metric.url())
 
 
 class OpenSecurityBugsWithProductTest(unittest.TestCase):
@@ -131,11 +111,6 @@ class OpenSecurityBugsWithProductTest(unittest.TestCase):
         """ Test that the value is correct. """
         self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeJiraFilter.metric_source_name: FakeJiraFilter.metric_source_urls()[0]},
-                         self.__metric.url())
-
 
 class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
     """ Unit tests for the number of open static security analysis bugs metric. """
@@ -151,11 +126,6 @@ class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
         """ Test that the value is correct. """
         self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({FakeJiraFilter.metric_source_name: FakeJiraFilter.metric_source_urls()[0]},
-                         self.__metric.url())
-
 
 class TechnicalDebtIssuesTest(unittest.TestCase):
     """ Unit tests for the number of technical debt issues metric. """
@@ -170,7 +140,3 @@ class TechnicalDebtIssuesTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(FakeJiraFilter().nr_issues(), self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'Jira filter': FakeJiraFilter.metric_source_urls()[0]}, self.__metric.url())

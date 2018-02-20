@@ -17,7 +17,6 @@ limitations under the License.
 import datetime
 import unittest
 
-
 from hqlib.metric_source.issue_log.wekan import WekanBoard
 
 # pylint: disable=too-few-public-methods
@@ -154,37 +153,35 @@ class WekanBoardTest(unittest.TestCase):
         """ Test the over due actions url. """
         api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(due_at="2017-1-1T12:00:00.000Z")])])])
         board = WekanBoard('http://wekan', '', '', api=api)
-        self.assertEqual({'card_id (365 dagen te laat)': 'http://wekan/b/id/title/card_id'},
+        self.assertEqual([('http://wekan/b/id/title/card_id', 'card_id', '365 dagen')],
                          board.over_due_actions_url('id', now=datetime.datetime(2018, 1, 1, 12, 0, 0)))
 
     def test_over_due_actions_url_without_over_due_cards(self):
         """ Test the over due actions url without over due cards. """
-        api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(due_at="3000-1-1T12:00:00.000Z")])])])
+        api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(due_at="3017-1-1T12:00:00.000Z")])])])
         board = WekanBoard('http://wekan', '', '', api=api)
-        self.assertEqual({WekanBoard.metric_source_name: 'http://wekan/b/id/title'}, board.over_due_actions_url('id'))
+        self.assertEqual([], board.over_due_actions_url('id', now=datetime.datetime(2018, 1, 1, 12, 0, 0)))
 
     def test_over_due_actions_url_without_board(self):
         """ Test the over due actions url. """
-        self.assertEqual({WekanBoard.metric_source_name: 'http://wekan'},
-                         WekanBoard('http://wekan', '', '', api=FakeWekanAPI()).over_due_actions_url('id'))
+        self.assertEqual([], WekanBoard('http://wekan', '', '', api=FakeWekanAPI()).over_due_actions_url('id'))
 
     def test_inactive_actions_url(self):
         """ Test the inactive actions url. """
         api = FakeWekanAPI([FakeBoard([FakeCardList([FakeCard(date_last_activity="2017-1-1T12:00:00.000Z")])])])
         board = WekanBoard('http://wekan', '', '', api=api)
-        self.assertEqual({'card_id (365 dagen niet bijgewerkt)': 'http://wekan/b/id/title/card_id'},
+
+        self.assertEqual([('http://wekan/b/id/title/card_id', 'card_id', '365 dagen')],
                          board.inactive_actions_url('id', now=datetime.datetime(2018, 1, 1, 12, 0, 0)))
 
     def test_inactive_actions_url_without_inactive_cards(self):
         """ Test the inactive actions url without inactive cards. """
-        self.assertEqual({WekanBoard.metric_source_name: 'http://wekan/b/id/title'},
-                         WekanBoard('http://wekan', '', '',
-                                    api=FakeWekanAPI([FakeBoard()])).inactive_actions_url('id'))
+        self.assertEqual([], WekanBoard('http://wekan', '', '',
+                                        api=FakeWekanAPI([FakeBoard()])).inactive_actions_url('id'))
 
     def test_inactive_actions_url_without_board(self):
         """ Test the inactive actions url. """
-        self.assertEqual({WekanBoard.metric_source_name: 'http://wekan'},
-                         WekanBoard('http://wekan', '', '', api=FakeWekanAPI()).inactive_actions_url('id'))
+        self.assertEqual([], WekanBoard('http://wekan', '', '', api=FakeWekanAPI()).inactive_actions_url('id'))
 
     def test_api_exception(self):
         """ Test that WekanBoard keeps working when the Wekan API throws an exception. """

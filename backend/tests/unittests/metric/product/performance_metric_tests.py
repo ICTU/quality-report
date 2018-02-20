@@ -47,13 +47,6 @@ class FakePerformanceReport(object):
         return self.__queries_violating_wished_responsetime
 
     @staticmethod
-    def urls(*args):
-        """ Return a list of urls for the JMeter reports. """
-        return ['http://report1', 'http://report2']
-
-    metric_source_urls = urls
-
-    @staticmethod
     def datetime(*args):
         """ Return the date and time of the report. """
         return datetime.datetime(2017, 1, 1)
@@ -96,11 +89,6 @@ class PerformanceLoadTestWarningsTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is correcrt. """
         self.assertEqual(self.expected_violations, self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url contains both reports. """
-        self.assertEqual({'Performancerapport (1/2)': 'http://report1',
-                          'Performancerapport (2/2)': 'http://report2'}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -206,11 +194,6 @@ class PerformanceLoadTestAgeTest(unittest.TestCase):
         self.assertEqual('De {0} van FakeSubject is {1} dagen geleden gedraaid.'.format(self.test_type, days),
                          self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url points to the performance reports. """
-        self.assertEqual({'Performancerapport (1/2)': 'http://report1',
-                          'Performancerapport (2/2)': 'http://report2'}, self.__metric.url())
-
 
 class PerformanceEnduranceTestAge(PerformanceLoadTestAgeTest):
     """ Unit tests for the performance endurance test age metric. """
@@ -265,11 +248,6 @@ class PerformanceLoadTestDurationTest(unittest.TestCase):
         """ Test that the report for the metric is correct. """
         self.assertEqual("De uitvoeringstijd van de {type} van FakeSubject is 90 minuten.".format(type=self.test_type),
                          self.__metric.report())
-
-    def test_url(self):
-        """ Test that the url points to the performance reports. """
-        self.assertEqual({'Performancerapport (1/2)': 'http://report1',
-                          'Performancerapport (2/2)': 'http://report2'}, self.__metric.url())
 
     def test_is_applicable(self):
         """ Test that the metric is applicable if the metric source can deliver the required information. """

@@ -16,7 +16,7 @@ limitations under the License.
 
 
 import datetime
-from typing import Dict
+from typing import List
 
 from hqlib import metric_source
 from hqlib.domain import LowerIsBetterMetric
@@ -35,11 +35,17 @@ class IssueLogMetric(LowerIsBetterMetric):
             comments.append("Genegeerde lijsten: {}.".format(", ".join(self._metric_source.ignored_lists())))
         return " ".join(comments)
 
+    @staticmethod
+    def convert_item_to_extra_info(item):
+        """ Item arguments url, text, nr_of_inactive_days convey as a link and a number  """
+        return {"href": item[0], "text": item[1]}, item[2] if item else None
+
 
 class ActivityMetric(IssueLogMetric):
     """ Metrics for tracking actuality of the issue log. """
 
     unit = 'dagen'
+    extra_info_headers = {"url": "Actie naam", "message": "Aantal"}
 
     def value(self) -> MetricValue:
         return -1 if self._missing() else \
@@ -86,11 +92,12 @@ class OverDueActions(IssueLogMetric):
     target_value = 0
     low_target_value = 3
     metric_source_class = metric_source.ActionLog
+    extra_info_headers = {"url": "Actie naam", "message": "Te laat"}
 
     def value(self) -> MetricValue:
         return self._metric_source.nr_of_over_due_actions(*self._get_metric_source_ids()) if self._metric_source else -1
 
-    def url(self) -> Dict[str, str]:
+    def extra_info_urls(self) -> List:
         return self._metric_source.over_due_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}
 
 
@@ -106,9 +113,11 @@ class StaleActions(IssueLogMetric):
     target_value = 0
     low_target_value = 3
     metric_source_class = metric_source.ActionLog
+    extra_info_headers = {"url": "Actie naam", "message": "Niet bijgewerkt"}
 
     def value(self) -> MetricValue:
         return self._metric_source.nr_of_inactive_actions(*self._get_metric_source_ids()) if self._metric_source else -1
 
-    def url(self) -> Dict[str, str]:
+    def extra_info_urls(self) -> List:
+        """ Returns inactive action urls as a list of triplets: url, text, nr_of_inactive_days """
         return self._metric_source.inactive_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}

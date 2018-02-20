@@ -42,10 +42,6 @@ class UnmergedBranches(LowerIsBetterMetric):
         unmerged_branches = self.__unmerged_branches()
         return -1 if unmerged_branches is None else len(unmerged_branches)
 
-    def url(self) -> Dict[str, str]:
-        return dict() if self._metric_source is None \
-            else {self._metric_source.metric_source_name: self._metric_source.url()}
-
     def comment_urls(self) -> Dict[str, str]:
         return self.__branch_urls(self.__list_of_branches_to_ignore())
 
@@ -81,7 +77,7 @@ class UnmergedBranches(LowerIsBetterMetric):
 
         return extra_info if extra_info is not None and extra_info.data else None
 
-    def format_text_with_links(self, text: str, url_dict: Dict[str, str] = None, url_label: str = None) -> str:
+    def format_text_with_links(self, text: str) -> str:
         """ Format a text paragraph with additional url. """
         if self._metric_source:
             text = '{0} [{1}]'.format(utils.html_escape(text).replace('\n', ' '),

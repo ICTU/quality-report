@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Dict, List
+from typing import List
 
 from ... import domain
 
@@ -50,7 +50,7 @@ class ActionLog(IssueLog):
         """ Return the number of over due actions. """
         raise NotImplementedError
 
-    def over_due_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
+    def over_due_actions_url(self, *metric_source_ids: str) -> List:
         """ Return the urls to the over due actions. """
         raise NotImplementedError
 
@@ -58,6 +58,6 @@ class ActionLog(IssueLog):
         """ Return the number of inactive actions. """
         raise NotImplementedError
 
-    def inactive_actions_url(self, *metric_source_ids: str) -> Dict[str, str]:
+    def inactive_actions_url(self, *metric_source_ids: str) -> List:
         """ Return the urls for the inactive actions. """
         raise NotImplementedError

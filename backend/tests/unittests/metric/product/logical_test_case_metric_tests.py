@@ -46,11 +46,6 @@ class FakeBirt(object):
         """ Return the number of reviewed logical test cases. """
         return 110
 
-    @staticmethod
-    def whats_missing_url():
-        """ Return the url for the what's missing report. """
-        return 'http://whats_missing'
-
     def date_of_last_manual_test(self, *args):
         """ Return the date that the manual test cases were last executed. """
         return self.date_of_last_manual_tests
@@ -72,11 +67,6 @@ class FakeBirt(object):
     def nr_ltcs_to_be_automated(self):
         """ Return the number of logical test cases that should be automated. """
         return -1 if self.down else 25
-
-    @staticmethod
-    def manual_test_execution_url(*args):
-        """ Return the url for the manual test execution report. """
-        return 'http://manual_tests'
 
 
 class FakeSubject(object):
@@ -117,10 +107,6 @@ class LogicalTestCasesNotAutomatedTest(unittest.TestCase):
         self.__birt.down = True
         self.assertEqual(-1, self.__metric.value())
 
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
-
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual('Er zijn 5 nog te automatiseren logische testgevallen, van in totaal 25 '
@@ -144,10 +130,6 @@ class LogicalTestCasesNotReviewedTest(unittest.TestCase):
         """ Test that the value of the metric is the number of not reviewed logical test cases as reported by Birt. """
         self.assertEqual(10, self.__metric.value())
 
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
-
     def test_report(self):
         """ Test that the report is correct. """
         self.assertEqual('Er zijn 10 niet gereviewde logische testgevallen, van in totaal 120 '
@@ -170,10 +152,6 @@ class LogicalTestCasesNotApprovedTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value of the metric is the number of not approved logical test cases as reported by Birt. """
         self.assertEqual(10, self.__metric.value())
-
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({self.__birt.metric_source_name: self.__birt.whats_missing_url()}, self.__metric.url())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -212,10 +190,6 @@ class NumberOfManualLogicalTestCasesTest(unittest.TestCase):
         """ Test the norm text. """
         self.assertEqual("Maximaal 10 handmatige logische testgevallen. "
                          "Meer dan 50 handmatige logische testgevallen is rood.", self.__metric.norm())
-
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({self.__birt.metric_source_name: self.__birt.manual_test_execution_url()}, self.__metric.url())
 
 
 class ManualLogicalTestCasesTest(unittest.TestCase):
@@ -266,10 +240,6 @@ class ManualLogicalTestCasesTest(unittest.TestCase):
         self.__birt.nr_manual_tests = 0
         self.assertEqual('perfect', self.__metric.status())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'Birt reports': self.__birt.manual_test_execution_url()}, self.__metric.url())
-
 
 class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
     """ Unit tests for the DurationOfManualLogicalTestCases metric. """
@@ -298,10 +268,6 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
         """ Test the norm text. """
         self.assertEqual('De uitvoering van de handmatige logische testgevallen kost maximaal 120 minuten. '
                          'Meer dan 240 minuten is rood.', self.__metric.norm())
-
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
 
 
 class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
@@ -332,7 +298,3 @@ class ManualLogicalTestCasesWithoutDurationTest(unittest.TestCase):
         self.assertEqual('Van alle handmatige logische testgevallen is de uitvoeringstijd ingevuld. '
                          'Meer dan 5 handmatige logische testgevallen niet ingevuld is rood.',
                          self.__metric.norm())
-
-    def test_url(self):
-        """ Test the url is correct. """
-        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())

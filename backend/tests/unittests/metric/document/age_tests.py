@@ -53,10 +53,6 @@ class DocumentAgeTest(unittest.TestCase):
         """ Test that the report is correct. """
         self.assertEqual('Het document "Title" is 2 dag(en) geleden bijgewerkt.', self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url of the metric is the url of the document. """
-        self.assertEqual(dict(Subversion='http://doc'), self.__metric.url())
-
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(metric.DocumentAge.norm_template % metric.DocumentAge.norm_template_default_values())

@@ -101,16 +101,6 @@ class FailingRegressionTestsTest(unittest.TestCase):
         self.assertEqual('6 van de 20 regressietesten van FakeSubject slagen niet. '
                          '2 van de 20 regressietesten zijn overgeslagen.', self.__metric.report())
 
-    def test_url(self):
-        """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Jenkins testreport': 'jenkins_job'}, self.__metric.url())
-
-    def test_url_multiple_jobs(self):
-        """ Test that the url points to the Jenkins jobs. """
-        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
-        failing_tests = metric.FailingRegressionTests(subject=subject, project=self.__project)
-        self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())
-
     def test_missing_metric_source(self):
         """ Test the metric without a metric source. """
         failing_tests = metric.FailingRegressionTests(subject=domain.Product(), project=self.__project)
@@ -148,13 +138,3 @@ class RegressionTestAgeTest(unittest.TestCase):
         days = (datetime.datetime.now() - self.__jenkins.datetime()).days
         self.assertEqual('De regressietest van FakeSubject is {0} dagen geleden gedraaid.'.format(days),
                          self.__metric.report())
-
-    def test_url(self):
-        """ Test that the url points to the Jenkins job. """
-        self.assertEqual({'Jenkins testreport': 'jenkins_job'}, self.__metric.url())
-
-    def test_url_multiple_jobs(self):
-        """ Test that the url points to the Jenkins jobs. """
-        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
-        failing_tests = metric.RegressionTestAge(subject=subject, project=self.__project)
-        self.assertEqual({'Jenkins testreport (1/2)': 'a', 'Jenkins testreport (2/2)': 'b'}, failing_tests.url())

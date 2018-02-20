@@ -59,16 +59,6 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
 
         self.assertEqual(120, ready_metric.value())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        mock_metric_source = MagicMock()
-        mock_metric_source.metric_source_urls.return_value = ['http://filter/']
-        mock_metric_source.metric_source_name = 'Jira filter'
-        self.__project.metric_sources.return_value = [mock_metric_source]
-        ready_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
-
-        self.assertEqual({'Jira filter': 'http://filter/'}, ready_metric.url())
-
 
 class UserStoriesDurationTest(unittest.TestCase):
     """ Unit tests for duration of user stories. """
@@ -184,16 +174,6 @@ class UserStoriesInProgressTest(unittest.TestCase):
 
         self.assertEqual(-1, progress_metric.value())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        mock_metric_source = MagicMock()
-        mock_metric_source.metric_source_urls.return_value = ['http://filter/']
-        mock_metric_source.metric_source_name = 'Jira filter'
-        self.__project.metric_sources = MagicMock(return_value=[mock_metric_source])
-        progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
-
-        self.assertEqual({'Jira filter': 'http://filter/'}, progress_metric.url())
-
 
 class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
     """ Unit tests for the number of user stories without security risk assessment metric. """
@@ -227,10 +207,6 @@ class UserStoriesWithoutSecurityRiskTest(unittest.TestCase):
         self.assertEqual("Het aantal ready user stories zonder security risk beoordeling is 5.",
                          assessment_metric.report())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())
-
 
 class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
     """ Unit tests for the number of user stories without performance risk assessment metric. """
@@ -252,7 +228,3 @@ class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(12, self.__metric.value())
-
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({'Jira filter': 'http://filter/'}, self.__metric.url())

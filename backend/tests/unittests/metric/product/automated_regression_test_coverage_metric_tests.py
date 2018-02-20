@@ -77,10 +77,6 @@ class ARTStatementCoverageJacocoTest(unittest.TestCase):
         """ Test that value of the metric equals the coverage as reported by Jacoco. """
         self.assertEqual(self.__coverage_report.statement_coverage(None), self.__metric.value())
 
-    def test_url(self):
-        """ Test that the url is correct. """
-        self.assertEqual({self.metric_source_class.metric_source_name: self.metric_source_id}, self.__metric.url())
-
     def test_report(self):
         """ Test that the report is correct. """
         self.assertTrue(self.__metric.report().startswith(
