@@ -1,3 +1,8 @@
+2018-02-21  Release 2.43.2
+
+  * Bug fix: Don't crash when the performance report is invalid.
+  
+  
 2018-02-20  Release 2.43.1
 
   * Bug #282: Detail table layout problem solved.
