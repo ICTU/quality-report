@@ -136,12 +136,23 @@ class ActionPanel extends React.Component {
 }
 
 class TablePanel extends React.Component {
+    renderHeaderCell(header_text, index) {
+        if(header_text[0] !== '_') {
+            var header = header_text.split('__');
+            if (header.length>1) {
+                return <th key={index} className={header[1]}>{header[0]}&nbsp;</th>
+            }
+            return <th key={index}>{header[0]}&nbsp;</th>
+        }
+        return null;
+    }
+
     renderHeader(headers) {
         return (
             <thead>
                 <tr>
                     {Object.values(headers).map((col, index) => {
-                        return col[0] !== '_' ? <th key={index}>{col}&nbsp;</th> : null
+                        return this.renderHeaderCell(col, index);
                     })}
                 </tr>
             </thead>)
@@ -179,6 +190,17 @@ class TablePanel extends React.Component {
         return classNames;
     }
 
+    renderRowCell(header_text, val, index) {
+        if(header_text[0] !== '_') {
+            var header = header_text.split('__');
+            if (header.length>1) {
+                return <td key={header[0] + "_" + index} className={header[1]}>{this.formatCell(val)}</td>;
+            }
+            return <td key={header[0] + "_" + index}>{this.formatCell(val)}</td>;
+        }
+        return null;
+    }
+
     renderTableBody(extra_info) {
         const columns = Object.keys(extra_info.headers);
         var rows;
@@ -196,7 +218,7 @@ class TablePanel extends React.Component {
                 return (
                 <tr key={index} className={clsName}>
                     {columns.map((col) => {
-                        return extra_info.headers[col][0] !== '_' ? <td key={col + "_" + index}>{this.formatCell(row[col])}</td> : null
+                        return this.renderRowCell(extra_info.headers[col], row[col], index);
                     })}
                 </tr>
                 );

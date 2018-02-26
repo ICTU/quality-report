@@ -29,7 +29,7 @@ class UnusedCIJobs(CIJobs):
     url_label_text = 'Ongebruikte jobs'
     target_value = 0
     low_target_value = 2
-    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen ongebruikt"}
+    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen ongebruikt__detail-column-number"}
 
     def value(self):
         """ Return the number of unused jobs. """

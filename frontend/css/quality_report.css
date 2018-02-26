@@ -132,6 +132,9 @@ div.meta_metrics_history_graph {
     font-style: normal;
 }
 
+.detail-column-number {
+    text-align: right;
+}
 .tooltip {
     min-width:300px;
 }

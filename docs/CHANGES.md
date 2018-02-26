@@ -1,6 +1,12 @@
+2018-02-27  Release 2.45.1
+
+  * Bug #294: Alignment of numeric columns fixed.
+
+
 2018-02-27  Release 2.45.0
 
   * Feature #250: Action Panel implemented.
+
 
 2018-02-23  Release 2.44.0
 

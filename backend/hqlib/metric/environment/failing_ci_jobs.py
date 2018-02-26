@@ -30,7 +30,7 @@ class FailingCIJobs(CIJobs):
     url_label_text = 'Falende jobs'
     target_value = 0
     low_target_value = 2
-    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen falen"}
+    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen falen__detail-column-number"}
 
     def value(self):
         return self._metric_source.number_of_failing_jobs() if self._metric_source else -1

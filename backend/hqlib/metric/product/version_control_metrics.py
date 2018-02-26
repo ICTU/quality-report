@@ -69,7 +69,7 @@ class UnmergedBranches(LowerIsBetterMetric):
         extra_info = None
         unmerged_branches = self.__unmerged_branches()
         if unmerged_branches:
-            extra_info = ExtraInfo(link="Branch", comment="Aantal")
+            extra_info = ExtraInfo(link="Branch", comment="Aantal__detail-column-number")
             extra_info.title = self.url_label_text
             for branch, nr_revisions in list(unmerged_branches.items()):
                 extra_info += {"href": self.__branch_folder_for_branch(self.__vcs_path(), branch),

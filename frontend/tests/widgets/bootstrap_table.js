@@ -174,6 +174,17 @@ test('bootstrap table does not render columns of the table panel if their header
     t.end();
 });
 
+test('bootstrap table renders with css classes in header names', (t) => {
+    const wrapper = shallow(<BootstrapTable>
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "FirstHeader__css_class"}, 
+                "data":[{"str": "First Row"}]}}]}
+    </BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('td').length, 1);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr td.css_class').contains('First Row'), true);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('th.css_class').text(), "FirstHeader ");
+    t.end();
+});
+
 test('bootstrap table renders rows of the table panel with <className> if the column with _<className> header text is "true"', (t) => {
     const wrapper = shallow(<BootstrapTable>
         {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"}, 
@@ -292,7 +303,6 @@ test('bootstrap table does render detail table if there is extra info', (t) => {
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane')
                                     .dive().find('tr.cls.collapse[id="IDx_details"] td.detail_pane').length, 1);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').length, 1);
-    
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive()
             .equals(<div className="panel panel-default">
                         <h4 className="panel-heading">Extra!</h4>

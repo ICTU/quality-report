@@ -56,7 +56,7 @@ class Jira(object):
             self._extra_info[query_id] = self._sum_for_all_issues(
                 query_id, self._get_days_in_progress, ExtraInfo(
                     story="Story", day_in="Begin uitvoering", day_out="Einde uitvoering",
-                    days="Aantal dagen", is_omitted="_detail-row-alter"))
+                    days="Aantal dagen__detail-column-number", is_omitted="_detail-row-alter"))
             self._extra_info[query_id].title = 'Gemiddelde looptijd van user stories'
             days = self._sum_days_in_extra_info(self._extra_info[query_id])
             stories = self._count_stories_in_extra_info(self._extra_info[query_id])
