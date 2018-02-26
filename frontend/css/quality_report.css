@@ -103,6 +103,7 @@ div.meta_metrics_history_graph {
 
 .panel {
     background: transparent;
+    margin-top: 5px;
 }
 
 .panel .panel-heading {
@@ -129,4 +130,8 @@ div.meta_metrics_history_graph {
 
 .detail-row-default {
     font-style: normal;
+}
+
+.tooltip {
+    min-width:300px;
 }

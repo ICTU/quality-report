@@ -75,22 +75,17 @@ class BootstrapTableBody extends React.Component {
             {
                 var hasExtraInfo =  (this.props.children[index]['extra_info'] 
                                         && !(Object.keys(this.props.children[index]['extra_info']).length === 0))
-                var hasDetailPane = hasExtraInfo;
-                var chdId = this.props.children[index]['id'];
 
-                var toggleButton = hasDetailPane ?
-                    <DetailToggleButton key={chdId} data_target={'#' + chdId + '_details'} /> :
-                    <button type="button" key={chdId} className="btn glyphicon glyphicon-chevron-right disabled" />
+                var chdId = this.props.children[index]['id'];
                 
                 var ret = [
                     <tr key={chdId} className={this.props.children[index]['className']}>
-                        <td>{toggleButton}</td>
+                        <td><DetailToggleButton key={chdId} data_target={'#' + chdId + '_details'} /></td>
                         {row}
                     </tr>]
 
-                if (hasDetailPane) {
-                    ret.push(<DetailPane key={chdId + 'p'} col_span={this.props.col_span} has_extra_info={hasExtraInfo} metric_detail={this.props.children[index]} />);
-                }
+                ret.push(<DetailPane key={chdId + 'p'} col_span={this.props.col_span} has_extra_info={hasExtraInfo} 
+                                     on_hide_metric={this.props.on_hide_metric} metric_detail={this.props.children[index]} />);
                 return ret;
             });
     }
@@ -114,9 +109,28 @@ class DetailPane extends React.Component {
         return (
             <tr id={this.props.metric_detail['id'] + '_details'} className={cls + " collapse"}>
                 <td className="detail_pane" colSpan={this.props.col_span}>
+                    <ActionPanel metric_id={this.props.metric_detail['id']} onClick={this.props.on_hide_metric} /> 
                     {this.renderExtraInfoPanel(this.props.metric_detail['extra_info'])}
                 </td>
             </tr>
+        );
+    }
+}
+
+class ActionPanel extends React.Component {
+    componentDidMount() {
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    }
+    render() {
+        return (
+            <div className="btn-group" role="group" aria-label="Action Panel">
+                <button type="button" id={this.props.metric_id} className="btn btn-default" data-toggle="tooltip" data-placement="right"
+                        title="Gebruik het Toon-menu om verborgen metrieken weer zichtbaar te maken." onClick={this.props.onClick}>
+                        Verberg deze metriek
+                </button>
+            </div>
         );
     }
 }
@@ -236,7 +250,7 @@ class BootstrapTable extends React.Component {
         return (
             <table className={"table" + (this.props.className ? " " + this.props.className : "")}>
                 <BootstrapTableHeader {...this.props} />
-                <BootstrapTableBody col_span={this.props.headers ? this.props.headers.length : 0}>
+                <BootstrapTableBody col_span={this.props.headers ? this.props.headers.length : 0} on_hide_metric={this.props.on_hide_metric}>
                     {this.props.children}
                 </BootstrapTableBody>
             </table>

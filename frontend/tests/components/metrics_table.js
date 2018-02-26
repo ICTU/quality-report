@@ -22,6 +22,7 @@ import {MetricsTable} from '../../js/components/metrics_table.js';
 import { shallow, mount } from 'enzyme';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import jQuery from 'jquery';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -29,14 +30,16 @@ import jsdom from 'jsdom'
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.document = doc
 global.window = doc.defaultView
-
+global.$ = require('jquery')(global.window);
 
 test('metrics table rendered without metrics', (t) => {
-    const wrapper = shallow(<MetricsTable metrics={[]} onSort="onSrt" table_sort_column_name="tscn" table_sort_ascending="tsc" />)
+    const wrapper = shallow(<MetricsTable metrics={[]} onSort="onSrt" table_sort_column_name="tscn" table_sort_ascending="tsc" on_hide_metric='onHideMetricFn'/>)
     t.equal(wrapper.find('BootstrapTable').length, 1);
     t.equal(wrapper.find('BootstrapTable').prop('onSort'), "onSrt");
     t.equal(wrapper.find('BootstrapTable').prop('table_sort_column_name'), "tscn");
     t.equal(wrapper.find('BootstrapTable').prop('table_sort_ascending'), "tsc");
+    t.equal(wrapper.find('BootstrapTable').prop('table_sort_ascending'), "tsc");
+    t.equal(wrapper.find('BootstrapTable').prop('on_hide_metric'), "onHideMetricFn");
     t.deepEqual(wrapper.find('BootstrapTable')
         .prop('headers'), [["", ""], ["id_format", "Id"], ["sparkline", "Trend"], 
                             ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"]]);

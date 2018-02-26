@@ -61,7 +61,8 @@ class MetricsTable extends React.Component {
         return (
             <BootstrapTable headers={headers} onSort={this.props.onSort}
                               table_sort_column_name={this.props.table_sort_column_name}
-                              table_sort_ascending={this.props.table_sort_ascending}>
+                              table_sort_ascending={this.props.table_sort_ascending}
+                              on_hide_metric={this.props.on_hide_metric}>
                 {table_rows}
             </BootstrapTable>
         );

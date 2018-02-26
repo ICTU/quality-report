@@ -1,3 +1,7 @@
+2018-02-27  Release 2.45.0
+
+  * Feature #250: Action Panel implemented.
+
 2018-02-23  Release 2.44.0
 
   * Feature #288: Action activity metrics got detail panes.

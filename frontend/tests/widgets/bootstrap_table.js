@@ -19,6 +19,7 @@ import {BootstrapTable} from '../../js/widgets/bootstrap_table.js';
 
 import { shallow, mount } from 'enzyme';
 import Enzyme from 'enzyme';
+import sinon from 'sinon';
 import Adapter from 'enzyme-adapter-react-16';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -223,6 +224,36 @@ test('bootstrap table renders rows of the table panel with links in extra info',
     t.end();
 });
 
+test('bootstrap table renders action panel', (t) => {
+    const wrapper = shallow(<BootstrapTable on_hide_metric='onClickFunction'>{[{cells: [], id: 'IDx'}]}</BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').exists(), true);
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').prop('onClick'), 'onClickFunction');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').prop('metric_id'), 'IDx');
+    t.end();
+});
+
+test('bootstrap table renders hide metric button', (t) => {
+    const wrapper = shallow(<BootstrapTable on_hide_metric='onClickFunction'>{[{cells: [], id: 'IDx'}]}</BootstrapTable>)
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().text(), 'Verberg deze metriek');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('id'), 'IDx');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('onClick'), 'onClickFunction');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('data-toggle'), 'tooltip');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('data-placement'), 'right');
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('title'), 
+            'Gebruik het Toon-menu om verborgen metrieken weer zichtbaar te maken.');
+    t.end();
+});
+
+test('bootstrap table renders hides metric when hide button clicked', (t) => {
+    const onButtonClick = sinon.spy();
+    const wrapper = shallow(<BootstrapTable on_hide_metric={onButtonClick}>{[{cells: [], id: 'IDx'}]}</BootstrapTable>)
+    var button = wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button');
+    t.equals(button.first().text(), 'Verberg deze metriek');
+    button.simulate('click');
+    t.equals(onButtonClick.callCount, 1);
+    t.end();
+});
+
 test('bootstrap table renders rows of the table panel with links in extra info, with link as the text', (t) => {
     const wrapper = shallow(<BootstrapTable>
         {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"}, 
@@ -243,14 +274,6 @@ test('bootstrap table renders toggle button', (t) => {
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').prop('data_target'), '#IDx_details');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').dive()
                 .find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]').length, 1);
-    t.end();
-});
-
-test('bootstrap table renders disabled toggle button if there is no extra info', (t) => {
-    const wrapper = shallow(
-        <BootstrapTable headers={[["", ""],["id", "ID"]]}>{[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'Something', extra_info: {}}]}
-    </BootstrapTable>)
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('button.disabled.btn.glyphicon.glyphicon-chevron-right').length, 1);
     t.end();
 });
 
