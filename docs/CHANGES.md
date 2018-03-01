@@ -1,3 +1,8 @@
+2018-03-01  Release 2.46.0
+
+  * Feature: Allow for authenticating with SonarQube using a token.
+
+
 2018-02-27  Release 2.45.1
 
   * Bug #294: Alignment of numeric columns fixed.

@@ -22,469 +22,242 @@ from unittest.mock import patch, call, MagicMock
 from hqlib.metric_source import Sonar, url_opener, extract_branch_decorator
 
 
-class SonarUnderTest(Sonar):  # pylint: disable=too-few-public-methods
-    """ Override the url open method to be able to return test data. """
-
-    sonar_version = '5.6'
-
-    api_components_show_json = '{"component": {"analysisDate": "2017-04-07T16:27:27+0000"}}'
-
-    project_json = """[{"k": "product"}]"""
-
-    json = violations_json = """
-[
-    {"lang": "java",
-     "k": "product",
-     "msr":
-         [
-            {"val": 100, "rule_name": "", "rule_key": ""},
-            {"val": 50, "rule_name": "Cyclomatic complexity",
-             "rule_key": "squid:MethodCyclomaticComplexity"},
-            {"val": 50, "rule_name": "JavaNCSS",
-             "rule_key": "checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck"},
-            {"val": 50, "rule_name": "Parameter Number", "rule_key": "squid:S00107"},
-            {"val": 40, "rule_name": "Avoid commented-out lines of code",
-             "rule_key": "squid:CommentedOutCodeLine"}
-        ]
-    }
-]"""
-
-    no_violations_json = """
-[
-    {"lang": "java",
-     "k": "product",
-     "msr":
-         []
-    }
-]"""
-
-    metrics_json = """{
-                "component": {
-                    "id": "AVxecPLIOLHGO__A5L2R",
-                    "key": "product",
-                    "name": "product",
-                    "qualifier": "TRK",
-                    "measures": [
-                                    {"metric": "critical_violations", "value": "100"},
-                                    {"metric": "blocker_violations", "value": "100"},
-                                    {"metric": "major_violations", "value": "100"},
-                                    {"metric": "branch_coverage", "value": "100"},
-                                    {"metric": "commented_loc", "value": "100"},
-                                    {"metric": "duplicated_lines", "value": "100"},
-                                    {"metric": "test_failures", "value": "100"},
-                                    {"metric": "test_errors", "value": "100"},
-                                    {"metric": "line_coverage", "value": "100"},
-                                    {"metric": "lines", "value": "100"},
-                                    {"metric": "ncloc", "value": "100"},
-                                    {"metric": "functions", "value": "100"},
-                                    {"metric": "tests", "value": "100"}
-                    ]
-                }
-        }"""
-
-    false_positives_json = """
-{
-  "maxResultsReached": false,
-  "paging": {
-    "pageIndex": 1,
-    "pageSize": 100,
-    "total": 8,
-    "fTotal": "8",
-    "pages": 1
-  },
-  "issues": [
-    {
-      "key": "44ff1a9a-2151-42c1-9b55-3d7473b02337",
-      "component": "nl.overheid:common:src/main/java/nl/overheid/model/Model.java",
-      "componentId": 651,
-      "project": "nl.overheid:query-parent",
-      "rule": "squid:MethodCyclomaticComplexity",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "The Cyclomatic Complexity of this method \\"equals\\" is 15 which is greater than 10 authorized.",
-      "line": 98,
-      "debt": "15min",
-      "creationDate": "2015-09-16T14:18:24+0000",
-      "updateDate": "2015-10-15T09:52:51+0000",
-      "fUpdateAge": "7 days"
-    },
-    {
-      "key": "48fabb2c-6f0d-4475-99ac-72295697083a",
-      "component": "nl.overheid:query-service:src/main/java/nl/overheid/query/QueryService.java",
-      "componentId": 280,
-      "project": "nl.overheid:query-parent",
-      "rule": "pmd:AvoidCatchingGenericException",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "Avoid catching generic exceptions in try-catch block",
-      "line": 124,
-      "debt": "15min",
-      "creationDate": "2015-09-16T14:18:24+0000",
-      "updateDate": "2015-10-15T11:36:21+0000",
-      "fUpdateAge": "7 days",
-      "comments": [
-        {
-          "key": "3d87ec0a-bf29-439d-a864-d5a848a19087",
-          "login": "admin",
-          "userName": "Administrator",
-          "htmlText": "Deze catch-all is er om te voorkomen dat ...",
-          "updatable": false,
-          "createdAt": "2015-10-15T11:36:21+0000"
-        }
-      ]
-    },
-    {
-      "key": "099afed1-fb17-4a38-a8ba-803a1327793a",
-      "component": "nl.overheid:register-service:src/main/java/nl/overh.../AssociationService.java",
-      "componentId": 625,
-      "project": "nl.overheid:query-parent",
-      "rule": "squid:MethodCyclomaticComplexity",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "The Cyclomatic Complexity of this method is 17 which is greater than 10 authorized.",
-      "line": 613,
-      "debt": "17min",
-      "creationDate": "2015-09-16T14:18:24+0000",
-      "updateDate": "2015-10-15T09:51:30+0000",
-      "fUpdateAge": "7 days"
-    },
-    {
-      "key": "b0ca9b89-43cc-4339-9b1b-2a68b6fe089a",
-      "component": "nl.overheid:register-service:src/main/java/nl/overh.../AssociationService.java",
-      "componentId": 625,
-      "project": "nl.overheid:query-parent",
-      "rule": "checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "NCSS for this method is 26 (max allowed is 20).",
-      "line": 613,
-      "debt": "3h",
-      "creationDate": "2015-09-21T16:05:07+0000",
-      "updateDate": "2015-10-15T09:52:14+0000",
-      "fUpdateAge": "7 days"
-    },
-    {
-      "key": "e09759bb-192c-4b83-8353-0d8045bcdcd3",
-      "component": "nl.overheid:register-service:src/main/java/nl/overh.../ResultaatCodeValidator.java",
-      "componentId": 936,
-      "project": "nl.overheid:query-parent",
-      "rule": "squid:MethodCyclomaticComplexity",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "The Cyclomatic Complexity of this method \\"fail\\" is 12 which is greater than 10 authorized.",
-      "line": 42,
-      "debt": "12min",
-      "creationDate": "2015-09-28T18:08:15+0000",
-      "updateDate": "2015-10-15T09:51:53+0000",
-      "fUpdateAge": "7 days"
-    },
-    {
-      "key": "a7ffb03e-dfbd-4240-bbf5-5c2640d0ff98",
-      "component": "nl.overheid:metadata:src/main/java/nl/overheid/metadata/MetadataTimerService.java",
-      "componentId": 899,
-      "project": "nl.overheid:query-parent",
-      "rule": "pmd:AvoidCatchingGenericException",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "Avoid catching generic exceptions in try-catch block",
-      "line": 75,
-      "debt": "15min",
-      "creationDate": "2015-09-28T19:39:39+0000",
-      "updateDate": "2015-10-15T09:54:40+0000",
-      "fUpdateAge": "7 days"
-    },
-    {
-      "key": "9d01f697-393b-471f-874b-d32cfb1a0c1b",
-      "component": "nl.overheid:metadata:src/main/java/nl/overh.../MetadataParser.java",
-      "componentId": 944,
-      "project": "nl.overheid:query-parent",
-      "rule": "squid:MethodCyclomaticComplexity",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "The Cyclomatic Complexity of this method is 11 which is greater than 10 authorized.",
-      "line": 550,
-      "debt": "11min",
-      "creationDate": "2015-09-28T19:39:39+0000",
-      "updateDate": "2015-10-15T09:53:50+0000",
-      "fUpdateAge": "7 days"
-    },
-    {
-      "key": "eaf9970e-9ef7-4c5e-974b-17f1957a4341",
-      "component": "nl.overheid:common:src/main/java/nl/overheid/ABC.java",
-      "componentId": 678,
-      "project": "nl.overheid:query-parent",
-      "rule": "squid:S1192",
-      "status": "RESOLVED",
-      "resolution": "FALSE-POSITIVE",
-      "severity": "MAJOR",
-      "message": "Define a constant instead of duplicating this literal \\"password\\" 4 times.",
-      "line": 139,
-      "debt": "10min",
-      "creationDate": "2015-10-13T07:33:45+0000",
-      "updateDate": "2015-10-15T09:53:00+0000",
-      "fUpdateAge": "7 days"
-    }
-  ]
-}
-"""
-
-    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
-        """ Return the static contents. """
-        if 'raise' in url:
-            raise urllib.error.HTTPError(None, None, None, None, None)
-        if 'server/version' in url:
-            return self.sonar_version
-        if 'api/components/show' in url:
-            json = self.api_components_show_json
-        elif 'analyses' in url:
-            if 'empty' in url:
-                json = '{"analyses": []}'
-            else:
-                json = '{"analyses": [{"events": [{"name": "4.2"}], "date": "2016-04-07T16:27:27+0000"}]}'
-        elif 'projects/index' in url:
-            json = self.project_json
-        elif 'metricKeys' in url:
-            json = self.metrics_json
-        elif 'FALSE-POSITIVE' in url:
-            json = self.false_positives_json
-        else:
-            json = self.json
-        return json
-
-
 class SonarTestCase(unittest.TestCase):
     """ Base class for Sonar unit tests. """
     def setUp(self):
-        SonarUnderTest._Sonar__get_json.cache_clear()
-        SonarUnderTest._Sonar__metric.cache_clear()
-        self._sonar = SonarUnderTest('http://sonar/')
+        Sonar._Sonar__get_json.cache_clear()
+        Sonar._Sonar__metric.cache_clear()
+        self._sonar = Sonar('http://sonar/')
 
 
+@patch.object(url_opener.UrlOpener, 'url_read')
 class SonarTest(SonarTestCase):
     """ Unit tests for the Sonar class. """
 
-    def test_url(self):
-        """ Test the url. """
-        self.assertEqual('http://sonar/', self._sonar.url())
-
-    def test_dashboard_url(self):
-        """ Test the url of a dashboard for a specific product. """
-        self.assertEqual('http://sonar/dashboard?id=product', self._sonar.dashboard_url('product'))
-
-    def test_violations_url(self):
-        """ Test the url of a violations page for a specific product. """
-        self.assertEqual('http://sonar/issues/search#resolved=false|componentRoots=product',
-                         self._sonar.violations_url('product'))
-
-    def test_version(self):
+    def test_version(self, mock_url_read):
         """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
+        mock_url_read.side_effect = ["5.6", '{"analyses": [{"events": [{"name": "4.2"}]}]}']
         self.assertEqual('4.2', self._sonar.version('product'))
 
-    def test_version_without_analyses(self):
+    def test_version_without_analyses(self, mock_url_read):
         """ Test that the version is unknowm if Sonar has no analyses for the product. """
+        mock_url_read.side_effect = ["5.6", '{"analyses": [{"events": []}]}']
         self.assertEqual('?', self._sonar.version('empty'))
 
-    def test_ncloc(self):
+    def test_ncloc(self, mock_url_read):
         """ Test that the number of non-commented lines of code equals the ncloc returned by the dashboard. """
-        self.assertEqual(100, self._sonar.ncloc('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "ncloc", "value": "8554"}]}}']
+        self.assertEqual(8554, self._sonar.ncloc('product'))
 
-    def test_lines(self):
+    def test_lines(self, mock_url_read):
         """ Test that the number of lines of code equals the number of lines returned by the dashboard. """
-        self.assertEqual(100, self._sonar.lines('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "lines", "value": "9554"}]}}']
+        self.assertEqual(9554, self._sonar.lines('product'))
 
-    def test_duplicated_lines(self):
+    def test_duplicated_lines(self, mock_url_read):
         """ Test that the number of duplicated lines equals the number of duplicated lines returned by the
             dashboard. """
-        self.assertEqual(100, self._sonar.duplicated_lines('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "duplicated_lines", "value": "124"}]}}']
+        self.assertEqual(124, self._sonar.duplicated_lines('product'))
 
-    def test_methods(self):
+    def test_methods(self, mock_url_read):
         """ Test that the number of methods equals the number of methods returned by the dashboard. """
-        self.assertEqual(100, self._sonar.methods('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "functions", "value": "54"}]}}']
+        self.assertEqual(54, self._sonar.methods('product'))
 
-    def test_commented_loc(self):
+    def test_commented_loc(self, mock_url_read):
         """ Test that the number of commented loc equals the number of commented loc returned by the dashboard. """
-        self._sonar.json = """{"paging": {"total": 40}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "40"}}']
         self.assertEqual(40, self._sonar.commented_loc('product'))
 
-    def test_commented_loc_missing(self):
+    def test_commented_loc_missing(self, mock_url_read):
         """ Test that the number of commented loc is zero when none of the rules return a result. """
-        self._sonar.json = """{"paging": {"total": 0}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
         self.assertEqual(0, self._sonar.commented_loc('product'))
 
-    def test_complex_methods(self):
+    def test_complex_methods(self, mock_url_read):
         """ Test that the number of complex methods equals the number of complex methods returned by the
             violations page. """
-        self._sonar.json = """{"paging": {"total": 50}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "50"}}']
         self.assertEqual(50, self._sonar.complex_methods('product'))
 
-    def test_complex_methods_missing(self):
+    def test_complex_methods_missing(self, mock_url_read):
         """ Test that the number of complex methods is zero when none of the rules return a result. """
-        self._sonar.json = """{"paging": {"total": 0}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
         self.assertEqual(0, self._sonar.commented_loc('product'))
 
-    def test_long_methods(self):
+    def test_long_methods(self, mock_url_read):
         """ Test that the number of long methods equals the number of long methods returned by the violations page. """
-        self._sonar.json = """{"paging": {"total": 50}}"""
-        self.assertEqual(50, self._sonar.long_methods('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "30"}}']
+        self.assertEqual(30, self._sonar.long_methods('product'))
 
-    def test_many_parameters_methods(self):
+    def test_many_parameters_methods(self, mock_url_read):
         """ Test that the number of methods with many parameters equals the number of methods with many parameters
             returned by the violations page. """
-        self._sonar.json = """{"paging": {"total": 50}}"""
-        self.assertEqual(50, self._sonar.many_parameters_methods('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "25"}}']
+        self.assertEqual(25, self._sonar.many_parameters_methods('product'))
 
-    def test_many_parameters_methods_missing(self):
+    def test_many_parameters_methods_missing(self, mock_url_read):
         """ Test that the number of methods with many parameters is zero when none of the rules return a result. """
-        self._sonar.json = """{"paging": {"total": 0}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
         self.assertEqual(0, self._sonar.many_parameters_methods('product'))
 
-    def test_missing_metric_value(self):
+    def test_missing_metric_value(self, mock_url_read):
         """ Test that -1 is returned for missing values. """
-        self._sonar.metrics_json = '{"component": {"measures":[]}}'
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"component": {"measures": []}}']
         self.assertEqual(-1, self._sonar.unittests('product'))
 
-    def test_missing_violation_value(self):
+    def test_missing_violation_value(self, mock_url_read):
         """ Test that the default value is returned for missing violations. """
-        self._sonar.json = """{"paging": {"total": 0}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
         self.assertEqual(0, self._sonar.long_methods('product'))
 
-    def test_analysis_datetime(self):
+    def test_analysis_datetime(self, mock_url_read):
         """ Test that the analysis date and time is correct. """
+        mock_url_read.side_effect = ["5.6", '{"analyses": [{"date": "2016-04-07T16:27:27+0000"}]}']
         self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
 
-    def test_analysis_datetime_without_version(self):
+    def test_analysis_datetime_without_version(self, mock_url_read):
         """ Test that the analysis date and time is correct even if Sonar has no version number. """
-        self._sonar.sonar_version = None
+        mock_url_read.side_effect = ["", '{"analyses": [{"date": "2016-04-07T16:27:27+0000"}]}']
         self.assertEqual(datetime.datetime(2016, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
 
-    def test_analysis_datetime_without_analyses(self):
+    def test_analysis_datetime_without_analyses(self, mock_url_read):
         """ Test that the analysis date and time is the minimum date and time if Sonar has no analyses. """
-        self.assertEqual(datetime.datetime.min, self._sonar.datetime('empty'))
+        mock_url_read.side_effect = ["5.6", '{"analyses": []}']
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
 
-    def test_analysis_datetime_6_4(self):
+    def test_analysis_datetime_6_4(self, mock_url_read):
         """ Test the analysis date and time using SonarQube >= 6.4. """
-        self._sonar.sonar_version = '6.4'
+        mock_url_read.side_effect = ["6.4", '{"component": {"analysisDate": "2017-04-07T16:27:27+0000"}}']
         self.assertEqual(datetime.datetime(2017, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
 
-    def test_analysis_datetime_6_4_url_exception(self):
+    def test_analysis_datetime_6_4_url_exception(self, mock_url_read):
         """ Test the analysis date and time using SonarQube >= 6.4. """
-        self._sonar.sonar_version = '6.4'
-        self.assertEqual(datetime.datetime.min, self._sonar.datetime('raise'))
+        mock_url_read.side_effect = ["6.4", urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
 
-    def test_analysis_datetime_6_4_missing_data(self):
+    def test_analysis_datetime_6_4_missing_data(self, mock_url_read):
         """ Test the analysis date and time using SonarQube >= 6.4. """
-        self._sonar.sonar_version = '6.4'
-        self._sonar.api_components_show_json = '{}'
+        mock_url_read.side_effect = ["6.4", '{"component": {}}']
         self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
 
 
+@patch.object(url_opener.UrlOpener, 'url_read')
 class SonarCoverage(SonarTestCase):
     """ Unit tests for unit test, integration test, and coverage metrics. """
 
-    def test_unittest_line_coverage(self):
+    def test_unittest_line_coverage(self, mock_url_read):
         """ Test that the line coverage equals the line coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.unittest_line_coverage('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "line_coverage", "value": "95"}]}}']
+        self.assertEqual(95, self._sonar.unittest_line_coverage('product'))
 
-    def test_unittest_branch_coverage(self):
+    def test_unittest_branch_coverage(self, mock_url_read):
         """ Test that the branch coverage equals the branch coverage returned by the dashboard. """
-        self.assertEqual(100, self._sonar.unittest_branch_coverage('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "branch_coverage", "value": "85"}]}}']
+        self.assertEqual(85, self._sonar.unittest_branch_coverage('product'))
 
-    def test_unittests(self):
+    def test_unittests(self, mock_url_read):
         """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
-        self.assertEqual(100, self._sonar.unittests('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "tests", "value": "1111"}]}}']
+        self.assertEqual(1111, self._sonar.unittests('product'))
 
-    def test_failing_unittests(self):
+    def test_failing_unittests(self, mock_url_read):
         """ Test that the number of failing unit tests equals the number of unit test failures plus the number of
             unit test errors returned by the dashboard. """
-        self.assertEqual(200, self._sonar.failing_unittests('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "test_failures", "value": "100"}]}}',
+                                     '{"component": {"measures": [{"metric": "test_errors", "value": "50"}]}}']
+        self.assertEqual(150, self._sonar.failing_unittests('product'))
 
 
+@patch.object(url_opener.UrlOpener, 'url_read')
 class SonarViolationsTest(SonarTestCase):
     """ Unit tests for violations. """
 
-    def test_major_violations(self):
+    def test_major_violations(self, mock_url_read):
         """ Test that the number of major violations equals the number of major violations returned by the
             dashboard. """
-        self.assertEqual(100, self._sonar.major_violations('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "major_violations", "value": "26"}]}}']
+        self.assertEqual(26, self._sonar.major_violations('product'))
 
-    def test_major_violation_for_missing_product(self):
+    def test_major_violation_for_missing_product(self, mock_url_read):
         """ Test that the number of violations for a missing product is -1. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "major_violations", "value": "26"}]}}']
         self.assertEqual(-1, self._sonar.major_violations('missing'))
 
-    def test_critical_violations(self):
+    def test_critical_violations(self, mock_url_read):
         """ Test that the number of critical violations equals the number of critical violations returned by the
             dashboard. """
-        self.assertEqual(100, self._sonar.critical_violations('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "critical_violations", "value": "6"}]}}']
+        self.assertEqual(6, self._sonar.critical_violations('product'))
 
-    def test_blocker_violations(self):
+    def test_blocker_violations(self, mock_url_read):
         """ Test that the number of blocker violations equals the number of blocker violations returned by the
             dashboard. """
-        self.assertEqual(100, self._sonar.blocker_violations('product'))
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     '{"component": {"measures": [{"metric": "blocker_violations", "value": "1"}]}}']
+        self.assertEqual(1, self._sonar.blocker_violations('product'))
 
 
+@patch.object(url_opener.UrlOpener, 'url_read')
 class SonarSuppressionTest(SonarTestCase):
     """ Unit tests for suppression metrics. """
 
-    def test_no_sonar(self):
+    def test_no_sonar(self, mock_url_read):
         """ Test that by default the number of no sonar violations is zero. """
-        self._sonar.json = """{"paging": {"total": 0}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
         self.assertEqual(0, self._sonar.no_sonar('product'))
 
-    def test_no_sonar_found(self):
+    def test_no_sonar_found(self, mock_url_read):
         """ Test that no sonar violations. """
         self._sonar.json = """{"paging": {"total": 10}}"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "10"}}']
         self.assertEqual(10, self._sonar.no_sonar('product'))
 
-    def test_false_positives(self):
+    def test_false_positives(self, mock_url_read):
         """ Test the number of false positives. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"issues": [{}, {}, {}, {}, {}, {}, {}, {}]}']
         self.assertEqual(8, self._sonar.false_positives('product'))
 
-    def test_no_false_positives(self):
+    def test_no_false_positives(self, mock_url_read):
         """ Test that the number of false positives is zero. """
-        self._sonar.false_positives_json = """
-        {
-            "issues": []
-        }"""
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"issues": []}']
         self.assertEqual(0, self._sonar.false_positives('product'))
 
 
+@patch.object(url_opener.UrlOpener, 'url_read')
 class SonarVersionsTest(SonarTestCase):
     """ Unit tests for Sonar meta data. """
 
-    def test_version_number(self):
+    def test_version_number(self, mock_url_read):
         """ Test that the version number is correct. """
+        mock_url_read.return_value = "5.6"
         self.assertEqual('5.6', self._sonar.version_number())
 
-    def test_plugin_version(self):
+    def test_plugin_version(self, mock_url_read):
         """ Test that the plugins can be retrieved. """
-        self._sonar.json = """
-        [{
-            "key": "pmd",
-            "name": "PMD",
-            "version": "1.1"
-        }]"""
+        mock_url_read.return_value = '[{"key": "pmd", "name": "PMD", "version": "1.1"}]'
         self.assertEqual('1.1', self._sonar.plugin_version('pmd'))
 
-    def test_missing_plugin(self):
+    def test_missing_plugin(self, mock_url_read):
         """ Test that the version number of a missing plugin is 0.0. """
-        self._sonar.json = """
-        [{
-            "key": "pmd",
-            "name": "PMD",
-            "version": "1.1"
-        }]"""
+        mock_url_read.return_value = '[{"key": "pmd", "name": "PMD", "version": "1.1"}]'
         self.assertEqual('0.0', self._sonar.plugin_version('checkstyle'))
 
-    def test_default_quality_profile(self):
+    def test_default_quality_profile(self, mock_url_read):
         """ Test that the name of the quality profile is returned. """
-        self._sonar.json = """{"profiles":
+        mock_url_read.return_value = """{"profiles":
         [{
             "key": "java-findbugs-94130",
             "name": "FindBugs",
@@ -510,6 +283,23 @@ class SonarVersionsTest(SonarTestCase):
             "isDefault": false
         }]}"""
         self.assertEqual("Java profile v1.8-20151111", self._sonar.default_quality_profile('java'))
+
+
+class SonarUrlsTest(SonarTestCase):
+    """ Unit tests for the Sonar methods that return urls. """
+
+    def test_url(self):
+        """ Test the url. """
+        self.assertEqual('http://sonar/', self._sonar.url())
+
+    def test_dashboard_url(self):
+        """ Test the url of a dashboard for a specific product. """
+        self.assertEqual('http://sonar/dashboard?id=product', self._sonar.dashboard_url('product'))
+
+    def test_violations_url(self):
+        """ Test the url of a violations page for a specific product. """
+        self.assertEqual('http://sonar/issues/search#resolved=false|componentRoots=product',
+                         self._sonar.violations_url('product'))
 
     def test_quality_profiles_url(self):
         """ Test that the url to the quality profiles page is correct. """

@@ -91,12 +91,12 @@ class UrlOpener(object):
 
     def __create_url_opener(self, uri: str) -> Callable[[str], IO]:
         """ Return a url opener method. If credentials are supplied, create an opener with authentication handler. """
-        if uri and self.__username and self.__password:
+        if uri and self.__username:
             password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             password_manager.add_password(realm=None, uri=uri, user=self.__username, passwd=self.__password)
             auth_handler = urllib.request.HTTPBasicAuthHandler(cast(urllib.request.HTTPPasswordMgr, password_manager))
             return urllib.request.build_opener(auth_handler).open
-        elif self.__username and self.__password:
+        elif self.__username:
             credentials = base64.b64encode(bytes(':'.join([self.__username, self.__password]), 'utf-8')).decode('ascii')
 
             def url_open_with_basic_auth(url: str):

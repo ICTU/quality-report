@@ -43,7 +43,7 @@ class TestReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def passed_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of passed tests. """
-        return sum([self._passed_tests(mertric_source_id) for mertric_source_id in metric_source_ids]) \
+        return sum([self._passed_tests(metric_source_id) for metric_source_id in metric_source_ids]) \
             if metric_source_ids else -1
 
     @functools.lru_cache(maxsize=1024)

@@ -47,12 +47,14 @@ def extract_branch_decorator(func):
     return _branch_param
 
 
-class Sonar(metric_source.TestReport, url_opener.UrlOpener):
+class Sonar(metric_source.TestReport):
     """ Class representing the Sonars instance. """
 
     metric_source_name = 'SonarQube'
 
     def __init__(self, sonar_url: str, *args, **kwargs) -> None:
+        self.__url_opener = url_opener.UrlOpener(username=kwargs.get("username", ""),
+                                                 password=kwargs.get("password", ""))
         super().__init__(url=sonar_url, *args, **kwargs)
 
         self.__version_number_url = sonar_url + 'api/server/version'
@@ -119,12 +121,12 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
                 logging.warning("Couldn't get version number of %s from JSON %s (retrieved from %s): %s",
                                 product, analyses_json, url, reason)
                 return '?'
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             # Try older API:
             url = self.__add_branch_param_to_url(self.__resource_api_url.format(resource=product), branch)
             try:
                 analyses_json = self.__get_json(url)
-            except self.url_open_exceptions:
+            except self.__url_opener.url_open_exceptions:
                 return '?'
             try:
                 return analyses_json[0]['version']
@@ -137,7 +139,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         """ Return the version of the SonarQube plugin. """
         try:
             plugins = self.__get_json(self.__plugin_api_url)
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             return '0.0'
         mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
         return mapping.get(plugin, '0.0')
@@ -151,12 +153,12 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         url = self.__quality_profiles_api_url.format(language=language)
         try:
             profiles = self.__get_json(url)['profiles']
-        except self.url_open_exceptions + (KeyError, TypeError):
+        except self.__url_opener.url_open_exceptions + (KeyError, TypeError):
             # Try old API
             url = self.__old_quality_profiles_api_url.format(language=language)
             try:
                 profiles = self.__get_json(url)
-            except self.url_open_exceptions:
+            except self.__url_opener.url_open_exceptions:
                 return ''  # Give up
         for profile in profiles:
             for keyword in ('isDefault', 'default'):
@@ -173,11 +175,11 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
     def is_branch_plugin_installed(self) -> bool:
         """ Return whether SonarQube has the branch plugin installed, which is needed for interpreting Sonar keys. """
         try:
-            plugins = json.loads(self.url_read(self.__plugin_api_url))
+            plugins = json.loads(self.__url_opener.url_read(self.__plugin_api_url))
             if "branch" in [item["key"] for item in plugins]:
                 return True
             logging.info("Branch plugin not installed.")
-        except self.url_open_exceptions as reason:
+        except self.__url_opener.url_open_exceptions as reason:
             logging.error("Couldn't open %s: %s", self.__plugin_api_url, reason)
         except ValueError as reason:
             logging.error("Error parsing response from %s: '%s'. "
@@ -189,12 +191,12 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         """" Checks if the component with complete name, including branch, is defined """
         url = self.__components_show_api_url.format(component=product)
         try:
-            if json.loads(self.url_read(url, log_error=False))["component"]:
+            if json.loads(self.__url_opener.url_read(url, log_error=False))["component"]:
                 logging.info("Component '%s' found. No branch is defined.", product)
                 return False
         except (ValueError, KeyError):
             pass
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             pass
         return True
 
@@ -212,7 +214,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         try:
             projects_json = self.__get_json(self.__add_branch_param_to_url(self.__projects_api_url, branch))
             return [project['k'] for project in projects_json]
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             return []
 
     # Metrics
@@ -373,8 +375,8 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
     def version_number(self) -> Optional[str]:
         """ Return the version number of Sonar. """
         try:
-            return self.url_read(self.__version_number_url)
-        except self.url_open_exceptions:
+            return self.__url_opener.url_read(self.__version_number_url)
+        except self.__url_opener.url_open_exceptions:
             return None
 
     def datetime(self, *products: str) -> DateTime:
@@ -398,19 +400,19 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
                 except (TypeError, KeyError, IndexError) as reason:
                     logging.error("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
                                   product, components_json, url, reason)
-            except self.url_open_exceptions:
+            except self.__url_opener.url_open_exceptions:
                 pass
             return datetime.datetime.min
         # Use analyses API:
         url = self.__add_branch_param_to_url(self.__analyses_api_url.format(project=product), branch)
         try:
             components_json = self.__get_json(url, log_error=False)['analyses']
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             # Try older API:
             url = self.__add_branch_param_to_url(self.__resource_api_url.format(resource=product), branch)
             try:
                 components_json = self.__get_json(url)
-            except self.url_open_exceptions:
+            except self.__url_opener.url_open_exceptions:
                 return datetime.datetime.min
         try:
             datetime_string = components_json[0]['date']
@@ -442,7 +444,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
             logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                             measures_json, url, reason)
             return -1
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             pass  # Keep going, and try the old API
         url = self.__add_branch_param_to_url(
             self.__resource_api_url.format(resource=product) + '&metrics=' + metric_name, branch)
@@ -454,7 +456,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
                 logging.warning("Can't get %s value for %s from %s (retrieved from %s): %s", metric_name, product,
                                 measures_json, url, reason)
                 return -1
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             return -1
 
     def __rule_violation(self, product: str, rule_name: str, default: int = 0, branch: str = None) -> int:
@@ -464,7 +466,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         try:
             issues_json = self.__get_json(
                 self.__add_branch_param_to_url(self.__issues_api_url.format(component=product, rule=rule_name), branch))
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             return default
         return int(issues_json['paging']['total'])
 
@@ -475,7 +477,7 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
         try:
             false_positives_json = self.__get_json(
                 self.__add_branch_param_to_url(self.__false_positives_api_url.format(resource=product), branch))
-        except self.url_open_exceptions:
+        except self.__url_opener.url_open_exceptions:
             return default
         return len(false_positives_json['issues'])
 
@@ -483,5 +485,5 @@ class Sonar(metric_source.TestReport, url_opener.UrlOpener):
     def __get_json(self, url: str, *args, **kwargs) -> Union[Dict[str, Dict],
                                                              List[Dict[str, Union[str, List[Dict[str, str]]]]]]:
         """ Get and evaluate the json from the url. """
-        json_string = self.url_read(url, *args, **kwargs)
+        json_string = self.__url_opener.url_read(url, *args, **kwargs)
         return utils.eval_json(json_string)
