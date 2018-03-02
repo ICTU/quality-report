@@ -16,7 +16,6 @@ limitations under the License.
 
 import datetime
 import xml.etree.cElementTree
-from typing import Callable, TextIO
 
 from hqlib.typing import DateTime
 from .. import url_opener
@@ -27,13 +26,13 @@ class Nexus(ArchiveSystem):
     """ Class representing a Nexus archive system. """
     metric_source_name = 'Nexus'
 
-    def __init__(self, url_open: Callable[[str], TextIO] = None, **kwargs) -> None:
-        self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_read
+    def __init__(self, **kwargs) -> None:
+        self.__url_opener = url_opener.UrlOpener(**kwargs)
         super().__init__()
 
     def last_changed_date(self, path: str) -> DateTime:
         try:
-            contents = self._url_open(path).read()
+            contents = self.__url_opener.url_read(path)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
         root = xml.etree.cElementTree.fromstring(contents)

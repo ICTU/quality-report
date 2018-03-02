@@ -1,4 +1,9 @@
-2018-02-27  Release 2.46.1
+2018-03-02  Release 2.46.2
+
+  * Bug #298: Problem with reading url content solved.
+
+
+2018-03-02  Release 2.46.1
 
   * Bug: Reading Checkmarx scan dates with an explicit time zone would fail.
   
