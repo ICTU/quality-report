@@ -87,7 +87,7 @@ class Checkmarx(domain.MetricSource):
         """ Parse the JSON to get the date and time of the last scan. """
         datetimes = []
         datetime_string = json["ScanCompletedOn"].split('.')[0]
-        datetimes.append(datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S'))
+        datetimes.append(dateutil.parser.parse(datetime_string, ignoretz=True))
         comment = json.get("Comment", "")
         comment_sep, prefix, postfix = '; ', 'Attempt to perform scan on ', ' - No code changes were detected'
         if comment_sep in comment:
