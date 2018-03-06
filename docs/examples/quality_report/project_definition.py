@@ -18,7 +18,7 @@ BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user',
                                      job_re='-metrics')
 JENKINS = metric_source.Jenkins(url='http://www.jenkins.proj.org:8080/')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
-SONAR = metric_source.Sonar('https://sonarqube.com/')
+SONAR = metric_source.Sonar('https://my.sonarqube.com/')
 HISTORY = metric_source.History('docs/examples/quality_report/history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
@@ -31,6 +31,8 @@ USER_STORIES_IN_PROGRESS_TRACKER = \
 USER_STORIES_DURATION_TRACKER =  \
     metric_source.JiraFilter('https://jira.myorg.nl/jira', username="jira_user", password="jira_password")
 
+TRELLO_BOARD = metric_source.TrelloBoard(appkey='2d3', token='57b')
+
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
@@ -42,14 +44,19 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
                       metric_source.CIServer: JENKINS,
+                      metric_source.ActionLog: TRELLO_BOARD,
+                      metric_source.RiskLog: TRELLO_BOARD,
                       metric_source.UserStoriesInProgressTracker: USER_STORIES_IN_PROGRESS_TRACKER,
                       metric_source.UserStoriesDurationTracker: USER_STORIES_DURATION_TRACKER,
                       metric_source.FileWithDate: SECURITY_REPORT_PROXY
                   },
+                  metric_source_ids={
+                      TRELLO_BOARD: '5fe',
+                  },
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TrustedProductMaintainability])
+                  requirements=[requirement.TrustedProductMaintainability, requirement.TrackSecurityAndPerformanceRisks, requirement.TrackActions])
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', short_name='QU',
@@ -66,14 +73,15 @@ PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
                               metric_source_ids={GIT: QUALITY_PLAN_URL}))
 
 # Development environment of the project
-ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements(), metric_source_ids={JENKINS: 'dummy'})
+ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements(),
+                          metric_source_ids={JENKINS: 'dummy'})
 PROJECT.add_environment(ENVIRONMENT)
 
 # Products the project develop(s).
 QUALITY_REPORT = Application(
     short_name='QR', name='Example product',
     metric_source_ids={
-        SONAR: 'nl.ictu:quality_report:',
+        SONAR: 'nl.comp:my_project',
         JACOCO: 'quality-report-coverage-report',
         GIT: '.',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},

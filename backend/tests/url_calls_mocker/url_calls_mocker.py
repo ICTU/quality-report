@@ -89,7 +89,43 @@ class UrlOpenerMock(UrlOpener):
                 self._get_file_content(os.path.join(self._dir_path,
                                                     'docs/examples/example_metric_sources/'
                                                     'jenkins_failing_job_5553_last_complete.json')),
-            # begin FailingCIJobs and UnusedCIJobs
+            # end FailingCIJobs and UnusedCIJobs
+
+            # begin Sonar
+            'https://my.sonarqube.com/api/server/version':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'sonar_version.txt')),
+
+            'https://my.sonarqube.com/api/updatecenter/installed_plugins':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'sonar_plugins.json')),
+
+            'https://my.sonarqube.com/api/project_analyses/search?'
+            'project=nl.comp:my_project&format=json&category=VERSION':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'sonar_search.json')),
+
+            'https://my.sonarqube.com/api/projects/index?subprojects=true':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'sonar_projects.json')),
+
+            'https://my.sonarqube.com/api/components/show?component=nl.comp:my_project':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'sonar_component.json')),
+            # end Sonar
+
+            # begin trello
+            'https://api.trello.com/1/boards/5fe/?fields=id,url&lists=open&list_fields=name'
+            '&cards=visible&card_fields=shortUrl,dateLastActivity,due,idList,name&key=2d3&token=57b':
+                self._get_file_content(os.path.join(self._dir_path,
+                                                    'docs/examples/example_metric_sources/'
+                                                    'trello_board.json')),
+            # end trello
 
             'https://last_security_date_url': self._get_file_content(
                 os.path.join(self._dir_path, 'docs/examples/example_metric_sources/file_with_date.json'))

@@ -27,7 +27,7 @@ class FakeBoard(metric_source.TrelloBoard):
     ignored = []
 
     def __init__(self):
-        super().__init__('board_id', 'appkey', 'token')
+        super().__init__('appkey', 'token')
 
     # pylint: disable=unused-argument
 

@@ -15,246 +15,444 @@ limitations under the License.
 """
 
 import datetime
-import io
 import urllib.error
 import unittest
 
 from unittest.mock import patch
 
-from hqlib.metric_source.issue_log.trello import TrelloCard, TrelloList, TrelloBoard
-
-
-class FakeCard(object):
-    """ Fake card class to use for testing the Trello board class. """
-
-    def __init__(self, app_key, token, card_id, *args, **kwargs):  # pylint: disable=unused-argument
-        self.__card_id = card_id
-        # The card id determines the status of the fake card:
-        self.__over_due = card_id in (1, 3)
-        self.__inactive = card_id in (2, 3)
-
-    def card_id(self):
-        """ Return the card id. """
-        return self.__card_id
-
-    def url(self):
-        """ Return the card url. """
-        return 'http://trello.com/api/card/{0}'.format(self.card_id())
-
-    def is_over_due(self):
-        """ Return whether this card is over due. """
-        return self.__over_due
-
-    def over_due_time_delta(self):
-        """ Return how much over due the card is. """
-        return datetime.timedelta(days=3 if self.__over_due else 0)
-
-    def is_inactive(self, days):  # pylint: disable=unused-argument
-        """ Return whether this card has been inactive for the specified number of days. """
-        return self.__inactive
-
-    def last_update_time_delta(self):
-        """ Return the time since the last update. """
-        return datetime.timedelta(days=4 if self.__inactive else 0)
-
-    @staticmethod
-    def list_name():
-        """ Return the list name of the card. """
-        return "List"
+from hqlib.metric_source import url_opener
+from hqlib.metric_source.issue_log.trello import TrelloBoard
 
 
 class TrelloBoardTest(unittest.TestCase):
     """ Unit tests for the Trello board class. """
 
-    def setUp(self):
-        self.__raise = False
-        self.__cards_json = ''
-        self.__trello_board = TrelloBoard('appkey', 'token', urlopen=self.__urlopen, card_class=FakeCard)
+    def test_ignored_lists(self):
+        """ Test the ignored lists are initialised correctly. """
+        ignored_lists = ['A list name']
+        trello_board = TrelloBoard('unimportant', 'unimportant', lists_to_ignore=ignored_lists)
 
-    def __urlopen(self, url):
-        """ Return a fake JSON string. """
-        if self.__raise:
-            raise urllib.error.URLError(url)
-        if 'cards' in url:
-            json = self.__cards_json
-        elif 'actions' in url:
-            json = '[{"date": "2015-1-1T10:0:0"}]'
-        else:
-            json = '{{"shortUrl": "{0}", "name": "name"}}'.format(url)
-        return io.StringIO(json)
+        self.assertEqual(ignored_lists, trello_board.ignored_lists())
 
-    def test_url(self):
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_url(self, mock_url_read):
         """ Test the url of the Trello board. """
-        self.assertEqual('https://api.trello.com/1/board/board_id?key=appkey&token=token',
-                         self.__trello_board.url('board_id'))
+        mock_url_read.return_value = '{"id": "board_id", "url": "https://xxx", "lists": [], "cards": []}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+        trello_board.over_due_cards_url('board_id')
 
-    def test_over_due_cards_url(self):
+        self.assertEqual('https://xxx', trello_board.url('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_url_empty_board_id(self, mock_url_read):
+        """ Test the Trello board returns the default url, when empty board id is provided. """
+        mock_url_read.return_value = '{"id": "board_id", "url": "https://xxx", "lists": [], "cards": []}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+        trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual('http://trello.com', trello_board.url(''))
+
+    def test_url_not_retrieved(self):
+        """ Test the Trello board returns the default url, when no card retrieval is done. """
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertEqual('http://trello.com', trello_board.url('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_nr_of_over_due_cards(self, mock_url_read):
+        """ Test the card with the due in the past is considered as overdue. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+                                         '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"due": "2018-03-05T11:00:00.000Z"}]}'
+            self.trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = self.trello_board.nr_of_over_due_cards('board_id')
+
+        self.assertEqual(1, result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_nr_of_over_due_cards_when_http_error(self, mock_url_open):
+        """ Test that when there is an HTTP error during retrieval, it returns an empty list as overdue cards. """
+        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertEqual(-1, trello_board.nr_of_over_due_cards('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url(self, mock_url_read):
+        """ Test the card with the due in the past is considered as overdue. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+                                         '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"due": "2018-03-05T11:00:00.000Z"}]}'
+            self.trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = self.trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual([('http://shortUrl', "Test card!", '3 dagen')], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_fetches_only_once(self, mock_url_read):
+        """ Test the calls on trello board are repeatable without retrieving data again. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+                                         '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"due": "2018-03-05T11:00:00.000Z"}]}'
+            self.trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result1 = self.trello_board.over_due_cards_url('board_id')
+            result2 = self.trello_board.over_due_cards_url('board_id')
+
+        mock_url_read.assert_called_once()
+        self.assertEqual([('http://shortUrl', "Test card!", '3 dagen')], result1)
+        self.assertEqual(result1, result2)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url_when_due_null(self, mock_url_read):
+        """ Test the card with a null due date is not considered as overdue. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+                                         '"name": "Test card!", "shortUrl": "http://shortUrl", "due": null}]}'
+            self.trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = self.trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url_when_not_overdue(self, mock_url_read):
+        """ Test the card with the due in the future is not considered as overdue. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+                                         '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"due": "2018-03-10T11:00:00.000Z"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url_without_due_date(self, mock_url_read):
+        """ Test the card without a due date is not considered as overdue. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+                                         '"name": "Test card!", "shortUrl": "http://shortUrl"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url_when_empty(self, mock_url_read):
+        """ Test that when there are no cards at all it returns an empty list as overdue. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": []}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url_when_list_excluded(self, mock_url_read):
+        """ Test excludes cards belonging to the ignored lists. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [{"id": "list_id", "name": "Excluded"}], ' \
+                                         '"cards": [{"idList": "list_id", "name": "Test card!", ' \
+                                         '"shortUrl": "http://shortUrl", "due": "2018-03-05T11:00:00.000Z"}]}'
+            self.trello_board = TrelloBoard('appkeyX', 'tokenX', lists_to_ignore=['Excluded'])
+
+            result = self.trello_board.over_due_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_over_due_cards_url_when_http_error(self, mock_url_open):
+        """ Test that when there is an HTTP error during retrieval, it returns an empty list as overdue cards. """
+        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertEqual([], trello_board.over_due_cards_url('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_nr_of_inactive_cards(self, mock_url_read):
+        """ Test the inactive card for exactly 14 days. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-06T11:00:00.000Z", "due": null}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.nr_of_inactive_cards('board_id')
+
+        self.assertEqual(1, result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_nr_of_inactive_cards_when_http_error(self, mock_url_open):
+        """ Test that when there is an HTTP error during retrieval, it returns an empty list as overdue cards. """
+        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertEqual(-1, trello_board.nr_of_inactive_cards('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_when_http_error(self, mock_url_open):
+        """ Test that when there is an HTTP error during retrieval, it returns an empty list as inactive cards. """
+        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertEqual([], trello_board.inactive_cards_url('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_when_empty(self, mock_url_read):
+        """ Test that when there are no cards at all it returns an empty list as inactive. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 9)
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": []}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url(self, mock_url_read):
+        """ Test the inactive card for exactly 14 days. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-06T11:00:00.000Z", "due": null}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([('http://shortUrl', "Test card!", '14 dagen')], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_with_last_activity_null(self, mock_url_read):
+        """ Test that the card with dateLastActivity equal to null is not counted as inactive. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.max = datetime.max
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": null, "due": null}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_without_last_activity(self, mock_url_read):
+        """ Test that it raises key error exception when there is no dateLastActivity. """
+
+        mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                     '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", "due": null}]}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertRaises(KeyError, lambda: trello_board.inactive_cards_url('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_custom_term(self, mock_url_read):
+        """ Test the card is considered active or inactive according to the custom interval. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-06T11:00:00.000Z", "due": null}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id', days=15)
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_more_boards(self, mock_url_read):
+        """ Test the inactive cards of more than one board are returned together. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.side_effect = ['{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": '
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", '
+                                         '"dateLastActivity": "2018-03-05T11:00:00.000Z"}]}',
+                                         '{"id": "x2", "url": "", "lists": [], "cards": [{"id": "card_2", "idList": '
+                                         '"l2", "name": "Card 2", "shortUrl": "http://shortUrl2", '
+                                         '"dateLastActivity": "2018-03-01T11:00:00.000Z"}]}']
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('x', 'x2')
+
+        self.assertEqual([('http://shortUrl', "Test card!", '15 dagen'),
+                          ('http://shortUrl2', "Card 2", '19 dagen')], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_less_than_14_days(self, mock_url_read):
+        """ Test that the cards inactive for less than default 14 days are not considered inactive. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-15T11:00:00.000Z", "due": null}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_invalid_due_date(self, mock_url_read):
+        """ Test the cards with invalid due date are not considered inactive. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.max = datetime.max
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-05T11:00:00.000Z", ' \
+                                         '"due": "2018-99-77T11:00:00.000Z"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_invalid_last_activity_date(self, mock_url_read):
+        """ Test the cards without due date and invalid last activity date are not considered inactive. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.max = datetime.max
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-99-88T11:00:00.000Z"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_less_without_due_date(self, mock_url_read):
         """ Test the urls for the over due cards. """
-        self.__cards_json = '[{"id": 1}]'
-        self.assertEqual([('http://trello.com/api/card/1', 1, '3 dagen')],
-                         self.__trello_board.over_due_cards_url('board_id'))
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-15T11:00:00.000Z"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_still_not_due(self, mock_url_read):
+        """ Test that the card that is still not due is not considered inactive, regardless of last activity date. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-05T11:00:00.000Z", ' \
+                                         '"due": "2018-03-22T11:00:00.000Z"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_inactive_cards_url_already_due(self, mock_url_read):
+        """ Test the card already due and with last activity before (default) 14 days is considered as inactive. """
+        from datetime import datetime
+        with patch(__name__ + '.datetime.datetime') as mock_date:
+            mock_date.now.return_value = datetime(2018, 3, 21)
+            mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+                                         '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
+                                         '"dateLastActivity": "2018-03-05T11:00:00.000Z", ' \
+                                         '"due": "2018-03-20T11:00:00.000Z"}]}'
+            trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+            result = trello_board.inactive_cards_url('board_id')
+
+        self.assertEqual([('http://shortUrl', "Test card!", '15 dagen')], result)
 
     @patch.object(TrelloBoard, 'over_due_cards_url')
     def test_over_due_actions_url(self, mock_over_due_cards_url):
-        """ Test the urls for the over due cards. """
-        self.__trello_board.over_due_actions_url('board_id')
+        """ Test the over_due_actions_url is alias for over_due_cards_url. """
+        TrelloBoard('appkeyX', 'tokenX').over_due_actions_url('board_id')
         self.assertTrue(mock_over_due_cards_url.assert_called_once)
-
-    @patch.object(FakeCard, 'url')
-    def test_over_due_cards_url_when_http_error(self, mock_url_open):
-        """ Test the urls for the over due cards. """
-        self.__cards_json = '[{"id": 1}]'
-        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
-        self.assertEqual([], self.__trello_board.over_due_cards_url('board_id'))
-
-    @patch.object(FakeCard, 'url')
-    def test_inactive_cards_url_when_http_error(self, mock_url_open):
-        """ Test the urls for the inactive cards. """
-        self.__cards_json = '[{"id": 2}]'
-        mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
-        self.assertEqual([], self.__trello_board.inactive_cards_url('board_id'))
 
     @patch.object(TrelloBoard, 'inactive_cards_url')
     def test_inactive_actions_url(self, mock_inactive_cards_url):
-        """ Test the urls for the inactive cards. """
-        self.__trello_board.inactive_actions_url('board_id')
+        """ Test the inactive_actions_url is alias for inactive_cards_url. """
+        TrelloBoard('appkeyX', 'tokenX').inactive_actions_url('board_id')
         self.assertTrue(mock_inactive_cards_url.assert_called_once)
 
-    def test_inactive_cards_url(self):
-        """ Test the urls for the inactive cards. """
-        self.__cards_json = '[{"id": 2}]'
-        self.assertEqual([('http://trello.com/api/card/2', 2, '4 dagen')],
-                         self.__trello_board.inactive_cards_url('board_id'))
+    @patch.object(TrelloBoard, 'nr_of_over_due_cards')
+    def test_nr_of_over_due_actions(self, mock_over_due_cards_url):
+        """ Test the nr_of_over_due_actions is alias for nr_of_over_due_cards. """
+        TrelloBoard('appkeyX', 'tokenX').nr_of_over_due_actions('board_id')
+        self.assertTrue(mock_over_due_cards_url.assert_called_once)
 
-    def test_last_update_delta(self):
-        """ Test the time delta since last update. """
-        expected = datetime.datetime.now() - datetime.datetime(2015, 1, 1, 10, 0, 0)
-        actual = self.__trello_board.last_update_time_delta('board_id')
-        self.assertAlmostEqual(expected.total_seconds(), actual.total_seconds(), places=2)
-
-    def test_one_over_due(self):
-        """ Test the count with one over due card. """
-        self.__cards_json = '[{"id": 1}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards('board_id'))
-        self.assertEqual(0, self.__trello_board.nr_of_inactive_cards('board_id'))
-
-    def test_one_inactive(self):
-        """Test the count with one inactive card. """
-        self.__cards_json = '[{"id": 2}]'
-        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards('board_id'))
-        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards('board_id'))
-
-    def test_one_over_due_and_inactive(self):
-        """ Test the count with one over due card. """
-        self.__cards_json = '[{"id": 3}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards('board_id'))
-        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards('board_id'))
-
-    def test_one_inactive_and_one_over_due(self):
-        """ Test the count with one inactive and one over due card. """
-        self.__cards_json = '[{"id": 1}, {"id": 2}]'
-        self.assertEqual(1, self.__trello_board.nr_of_over_due_cards('board_id'))
-        self.assertEqual(1, self.__trello_board.nr_of_inactive_cards('board_id'))
-
-    def test_http_error(self):
-        """ Test dealing with http errors when retrieving the JSON. """
-        self.__raise = True
-        self.assertEqual(0, self.__trello_board.nr_of_over_due_cards('board_id'))
-
-    def test_ignore_lists(self):
-        """ Test that cards on specific lists can be ignored. """
-        self.__cards_json = '[{"id": 2}]'
-        board = TrelloBoard('appkey', 'token', lists_to_ignore="List", urlopen=self.__urlopen, card_class=FakeCard)
-        self.assertEqual(0, board.nr_of_inactive_cards("board_id"))
-
-    def test_get_ignored_lists(self):
-        """ Test that the ignored lists can be retrieved. """
-        board = TrelloBoard('appkey', 'token', lists_to_ignore=["List"], urlopen=self.__urlopen)
-        self.assertEqual(["List"], board.ignored_lists())
-
-
-class TrelloCardTest(unittest.TestCase):
-    """ Unit tests for the Trello card class. """
-
-    def setUp(self):
-        self.__raise = False
-        self.__json = '{"idShort": "id", "idList": "123"}'
-        self.__trello_card = TrelloCard('object_id', 'appkey', 'token', urlopen=self.__urlopen)
-
-    @staticmethod
-    def __now():
-        """ Return a fake current date time. """
-        return datetime.datetime(2014, 5, 4, 17, 45, 33)
-
-    @staticmethod
-    def __earlier_now():
-        """ Return a fake current date time earlier than __now(). """
-        return datetime.datetime(2013, 5, 4, 17, 45, 33)
-
-    def __urlopen(self, url):  # pylint: disable=unused-argument
-        """ Return a fake JSON string. """
-        return io.StringIO(self.__json)
-
-    def test_id(self):
-        """ Test the card id. """
-        self.assertEqual("id", self.__trello_card.card_id())
-
-    @patch.object(TrelloList, "name")
-    def test_list_name(self, trello_list_name):
-        """ Test the list name. """
-        trello_list_name.return_value = "List"
-        self.assertEqual("List", self.__trello_card.list_name())
-
-    def test_no_due_date_time(self):
-        """ Test that an empty card has no due date time. """
-        self.assertEqual(None, self.__trello_card.due_date_time())
-
-    def test_due_date_time(self):
-        """ Test the due date time. """
-        self.__json = '{"due": "2013-5-4T16:45:33.09Z"}'
-        self.assertEqual(datetime.datetime(2013, 5, 4, 16, 45, 33), self.__trello_card.due_date_time())
-
-    def test_over_due_time_delta(self):
-        """ Test the age of an over due card. """
-        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
-        self.assertEqual(datetime.timedelta(hours=1), self.__trello_card.over_due_time_delta(now=self.__now))
-
-    def test_no_over_due_time_delta(self):
-        """ Test the age of a card without due date. """
-        self.assertEqual(datetime.timedelta(), self.__trello_card.over_due_time_delta())
-
-    def test_is_over_due(self):
-        """ Test that an over due card is over due. """
-        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
-        self.assertTrue(self.__trello_card.is_over_due(now=self.__now))
-
-    def test_is_not_over_due(self):
-        """ Test that a card with a due date in the future is not over due. """
-        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
-        self.assertFalse(self.__trello_card.is_over_due(now=self.__earlier_now))
-
-    def test_not_inactive_when_future_due_date(self):
-        """ Test that a card with a due date in the future is not inactive. """
-        self.__json = '{"due": "2014-5-4T16:45:33.09Z"}'
-        self.assertFalse(self.__trello_card.is_inactive(15, now=self.__earlier_now))
-
-    def test_not_inactive_when_recently_updated(self):
-        """ Test that a card is not inactive when it has been updated recently. """
-        self.__json = '[{"date": "2014-5-4T16:45:33.09Z"}]'
-        self.assertFalse(self.__trello_card.is_inactive(15, now=self.__now))
-
-
-class TrelloListTest(unittest.TestCase):
-    """ Unit tests for the Trello list class. """
-    def setUp(self):
-        self.__raise = False
-        self.__json = '{"name": "List"}'
-        self.__trello_list = TrelloList('object_id', 'appkey', 'token', urlopen=self.__urlopen)
-
-    def __urlopen(self, url):  # pylint: disable=unused-argument
-        """ Return a fake JSON string. """
-        return io.StringIO(self.__json)
-
-    def test_name(self):
-        """ Test the name of the list. """
-        self.assertEqual("List", self.__trello_list.name())
+    @patch.object(TrelloBoard, 'nr_of_inactive_cards')
+    def test_nr_of_inactive_actions(self, mock_inactive_cards_url):
+        """ Test the nr_of_inactive_actions is alias for nr_of_inactive_cards. """
+        TrelloBoard('appkeyX', 'tokenX').nr_of_inactive_actions('board_id')
+        self.assertTrue(mock_inactive_cards_url.assert_called_once)

@@ -1,3 +1,8 @@
+2018-03-09  Release 2.46.5
+
+  * Bug #296: A problem of exceeding Trello api call limits solved.
+
+
 2018-03-08  Release 2.46.4
 
   * Feature: Add metric class to internal metrics JSON file for use in meta reports.
