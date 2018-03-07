@@ -1,3 +1,8 @@
+2018-03-07  Release 2.46.3
+
+  * Bug fix: Improve the readability of the norms and measurements of the meta metrics.
+  
+
 2018-03-02  Release 2.46.2
 
   * Bug #298: Problem with reading url content solved.
@@ -5,7 +10,7 @@
 
 2018-03-02  Release 2.46.1
 
-  * Bug: Reading Checkmarx scan dates with an explicit time zone would fail.
+  * Bug fix: Reading Checkmarx scan dates with an explicit time zone would fail.
   
   
 2018-03-01  Release 2.46.0
