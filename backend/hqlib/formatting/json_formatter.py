@@ -108,7 +108,7 @@ class MetricsFormatter(base_formatter.Formatter):
 "{section}", "status": "{status}", "sparkline": "<img src='img/{metric_id}.png' border='0' width='100' \
 height='25' />", "status_value": "{status_nr}", "status_format": "<img src='img/{image}.png' alt='{alt}' width='48' \
 height='48' title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measurement": "{text}", \
-"norm": "{norm}", "comment": "{comment}", "extra_info": {extra_info}}}'''
+"norm": "{norm}", "comment": "{comment}", "metric_class": "{class}", "extra_info": {extra_info}}}'''
     kwargs_by_status: Dict[str, Any] = dict(
         red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
         yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
@@ -152,6 +152,7 @@ height='48' title='{hover}' border='0' />", "status_start_date": {status_start_d
         kwargs['text'] = metric.format_text_with_links(metric.report())
         kwargs['comment'] = metric.format_comment_with_links(metric.comment(), metric.comment_urls(),
                                                              metric.comment_url_label_text)
+        kwargs["class"] = metric.__class__.__name__
         kwargs['extra_info'] = '{}' if extra_info is None else json.dumps(extra_info.__dict__)
         return kwargs
 
