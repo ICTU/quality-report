@@ -1,3 +1,8 @@
+2018-03-08  Release 2.46.4
+
+  * Feature: Add metric class to internal metrics JSON file for use in meta reports.
+  
+  
 2018-03-07  Release 2.46.3
 
   * Bug fix: Improve the readability of the norms and measurements of the meta metrics.
