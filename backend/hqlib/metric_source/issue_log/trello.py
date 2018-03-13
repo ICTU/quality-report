@@ -30,17 +30,19 @@ from ...typing import DateTime, TimeDelta
 class TrelloBoard(MetricSource):
     """ Class representing a Trello board. """
     metric_source_name = 'Trello'
-    board_data_url = 'https://api.trello.com/1/boards/{object_id}/?fields=id,url&lists=open&list_fields=name' \
-                     '&cards=visible&card_fields=shortUrl,dateLastActivity,due,idList,name&key={appkey}&token={token}'
+    board_data_url = 'https://api.trello.com/1/boards/{object_id}/?fields=id,url,dateLastActivity&' \
+                     'lists=open&list_fields=name&cards=visible&' \
+                     'card_fields=shortUrl,dateLastActivity,due,idList,name&key={appkey}&token={token}'
 
     def __init__(self, appkey: str, token: str, *args, **kwargs) -> None:
-        self.__lists_to_ignore = kwargs.pop('lists_to_ignore', [])
+        self._lists_to_ignore = kwargs.pop('lists_to_ignore', [])
         self.__urlopener = url_opener.UrlOpener()
-        self._appkey = appkey
+        self.__appkey = appkey
+        self.__token = token
         self._cards = []
         self._lists = []
-        self._token = token
-        self._board_urls = dict()
+        self._urls = dict()
+        self._last_activity = dict()
         super().__init__(*args, **kwargs)
 
     def _list_ids_to_ignore(self, lists_names_to_ignore) -> List[str]:
@@ -48,7 +50,25 @@ class TrelloBoard(MetricSource):
 
     def ignored_lists(self) -> List[str]:
         """ Return the ignored lists. """
-        return self.__lists_to_ignore
+        return self._lists_to_ignore
+
+    def datetime(self, *metric_source_ids: str) -> DateTime:
+        """ Return the date of the last action at this Trello board. """
+        try:
+            if not self._last_activity:
+                self.__cards(*metric_source_ids)
+            object_ids = metric_source_ids or self._urls.keys()
+            last_board_activity_date = self.__last_board_activity_dates(object_ids)
+            return max(last_board_activity_date) if last_board_activity_date else datetime.datetime.min
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.warning("Couldn't get data from Trello board: %s", reason)
+            return datetime.datetime.min
+
+    def __last_board_activity_dates(self, object_ids):
+        last_board_activity_date = {
+            board_id: self._last_activity[board_id] for board_id in object_ids if board_id in self._last_activity
+        }.values()
+        return last_board_activity_date
 
     def nr_of_over_due_cards(self, *board_ids: str) -> int:
         """ Return the number of (non-archived) cards on this Trello board that are over due. """
@@ -125,12 +145,13 @@ class TrelloBoard(MetricSource):
     @functools.lru_cache(maxsize=1024)
     def _json_composite(self, object_id: str = ''):
         """ Return the JSON at url. """
-        url = self.board_data_url.format(object_id=object_id, appkey=self._appkey, token=self._token)
+        url = self.board_data_url.format(object_id=object_id, appkey=self.__appkey, token=self.__token)
         json_string = self.__urlopener.url_read(url)
         board = utils.eval_json(json_string)
         self._cards.extend(board['cards'])
         self._lists.extend(board['lists'])
-        self._board_urls[board['id']] = board['url']
+        self._urls[board['id']] = board['url']
+        self._last_activity[board['id']] = self.__str_to_datetime(board['dateLastActivity'])
         return
 
     @functools.lru_cache(maxsize=1024)
@@ -139,14 +160,14 @@ class TrelloBoard(MetricSource):
         if not self._cards:
             for board_id in board_ids:
                 self._json_composite(object_id=board_id)
-        return [card for card in self._cards if card['idList'] not in self._list_ids_to_ignore(self.__lists_to_ignore)]
+        return [card for card in self._cards if card['idList'] not in self._list_ids_to_ignore(self._lists_to_ignore)]
 
     # metric_source.MetricSource interface:
 
     def url(self, object_id: str = '') -> str:
         """ Return the url of a Trello object, if object id is passed, or of trello.com. """
-        if object_id and object_id in self._board_urls:
-            return self._board_urls[object_id]
+        if object_id and object_id in self._urls:
+            return self._urls[object_id]
         return 'http://trello.com'
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:

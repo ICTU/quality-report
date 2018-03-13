@@ -45,7 +45,7 @@ class ActivityMetric(IssueLogMetric):
     """ Metrics for tracking actuality of the issue log. """
 
     unit = 'dagen'
-    extra_info_headers = {"url": "Actie naam", "message": "Aantal"}
+    extra_info_headers = {"url": "Actie naam", "message": "Aantal__detail-column-number"}
 
     def value(self) -> MetricValue:
         return -1 if self._missing() else \
@@ -92,7 +92,7 @@ class OverDueActions(IssueLogMetric):
     target_value = 0
     low_target_value = 3
     metric_source_class = metric_source.ActionLog
-    extra_info_headers = {"url": "Actie naam", "message": "Te laat"}
+    extra_info_headers = {"url": "Actie naam", "message": "Te laat__detail-column-number"}
 
     def value(self) -> MetricValue:
         return self._metric_source.nr_of_over_due_actions(*self._get_metric_source_ids()) if self._metric_source else -1
@@ -113,7 +113,7 @@ class StaleActions(IssueLogMetric):
     target_value = 0
     low_target_value = 3
     metric_source_class = metric_source.ActionLog
-    extra_info_headers = {"url": "Actie naam", "message": "Niet bijgewerkt"}
+    extra_info_headers = {"url": "Actie naam", "message": "Niet bijgewerkt__detail-column-number"}
 
     def value(self) -> MetricValue:
         return self._metric_source.nr_of_inactive_actions(*self._get_metric_source_ids()) if self._metric_source else -1

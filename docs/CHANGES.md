@@ -1,3 +1,8 @@
+2018-03-09  Release 2.46.6
+
+  * Bug #310: A problem where Action Activity metric showed -1 days solved.
+
+
 2018-03-09  Release 2.46.5
 
   * Bug #296: A problem of exceeding Trello api call limits solved.

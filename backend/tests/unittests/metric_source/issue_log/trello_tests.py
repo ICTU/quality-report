@@ -35,9 +35,77 @@ class TrelloBoardTest(unittest.TestCase):
         self.assertEqual(ignored_lists, trello_board.ignored_lists())
 
     @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_no_board_date_last_activity(self, mock_url_read):
+        """ Test the board datetime is correctly filled and returned. """
+        mock_url_read.return_value = '{"id": "board_id", "url": "https://xxx", "lists": [], "cards": []}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        self.assertRaises(KeyError, lambda: trello_board.datetime('board_id'))
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime(self, mock_url_read):
+        """ Test the board datetime is correctly filled and returned. """
+        mock_url_read.return_value = '{"id": "board_id", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                     '"url": "https://xxx", "lists": [], "cards": []}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        result = trello_board.datetime('board_id')
+
+        self.assertEqual(datetime.datetime(2018, 3, 5, 11), result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_(self, mock_url_read):
+        """ Test the board datetime when incorrect board id is given. """
+        mock_url_read.return_value = '{"id": "board_id", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                     '"url": "https://xxx", "lists": [], "cards": []}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+        trello_board.over_due_cards_url('board_id')
+
+        result = trello_board.datetime('id_of_not_retrieved_board')
+
+        self.assertEqual(datetime.datetime.min, result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_already_filled(self, mock_url_read):
+        """ Test the board datetime is correctly returned when it is pre-filled by other action."""
+        mock_url_read.return_value = '{"id": "board_id", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                     '"url": "https://xxx", "lists": [], "cards": []}'
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+        trello_board.over_due_cards_url('board_id')
+
+        result = trello_board.datetime()
+
+        mock_url_read.asses_called_once()
+        self.assertEqual(datetime.datetime(2018, 3, 5, 11), result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_two_boards(self, mock_url_read):
+        """ Test the datetime returns the last day of activity of all retrieved boards. """
+        mock_url_read.side_effect = ['{"id": "board_id", "dateLastActivity":"2018-03-05T11:00:00.000Z", '
+                                     '"url": "https://xxx", "lists": [], "cards": []}',
+                                     '{"id": "b2_id", "dateLastActivity":"2018-03-06T11:00:00.000Z", '
+                                     '"url": "https://xxx", "lists": [], "cards": []}']
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        result = trello_board.datetime('board_id', 'b2_id')
+
+        self.assertEqual(datetime.datetime(2018, 3, 6, 11), result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_http_error(self, mock_url_read):
+        """ Test the datetime returns the last day of activity of all retrieved boards. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        trello_board = TrelloBoard('appkeyX', 'tokenX')
+
+        result = trello_board.datetime('board_id', 'b2_id')
+
+        self.assertEqual(datetime.datetime.min, result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
     def test_url(self, mock_url_read):
         """ Test the url of the Trello board. """
-        mock_url_read.return_value = '{"id": "board_id", "url": "https://xxx", "lists": [], "cards": []}'
+        mock_url_read.return_value = '{"id": "board_id", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                     '"url": "https://xxx", "lists": [], "cards": []}'
         trello_board = TrelloBoard('appkeyX', 'tokenX')
         trello_board.over_due_cards_url('board_id')
 
@@ -46,7 +114,8 @@ class TrelloBoardTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_read')
     def test_url_empty_board_id(self, mock_url_read):
         """ Test the Trello board returns the default url, when empty board id is provided. """
-        mock_url_read.return_value = '{"id": "board_id", "url": "https://xxx", "lists": [], "cards": []}'
+        mock_url_read.return_value = '{"id": "board_id", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                     '"url": "https://xxx", "lists": [], "cards": []}'
         trello_board = TrelloBoard('appkeyX', 'tokenX')
         trello_board.over_due_cards_url('board_id')
 
@@ -66,7 +135,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 9)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"idList": "xx", ' \
                                          '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"due": "2018-03-05T11:00:00.000Z"}]}'
             self.trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -91,7 +161,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 9)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"idList": "xx", ' \
                                          '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"due": "2018-03-05T11:00:00.000Z"}]}'
             self.trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -108,7 +179,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 9)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"idList": "xx", ' \
                                          '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"due": "2018-03-05T11:00:00.000Z"}]}'
             self.trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -126,7 +198,8 @@ class TrelloBoardTest(unittest.TestCase):
         from datetime import datetime
         with patch(__name__ + '.datetime.datetime') as mock_date:
             mock_date.now.return_value = datetime(2018, 3, 9)
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"idList": "xx", ' \
                                          '"name": "Test card!", "shortUrl": "http://shortUrl", "due": null}]}'
             self.trello_board = TrelloBoard('appkeyX', 'tokenX')
 
@@ -141,7 +214,8 @@ class TrelloBoardTest(unittest.TestCase):
         with patch(__name__ + '.datetime.datetime') as mock_date:
             mock_date.now.return_value = datetime(2018, 3, 9)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"idList": "xx", ' \
                                          '"name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"due": "2018-03-10T11:00:00.000Z"}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -156,7 +230,8 @@ class TrelloBoardTest(unittest.TestCase):
         from datetime import datetime
         with patch(__name__ + '.datetime.datetime') as mock_date:
             mock_date.now.return_value = datetime(2018, 3, 9)
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"idList": "xx", ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"idList": "xx", ' \
                                          '"name": "Test card!", "shortUrl": "http://shortUrl"}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
 
@@ -170,7 +245,8 @@ class TrelloBoardTest(unittest.TestCase):
         from datetime import datetime
         with patch(__name__ + '.datetime.datetime') as mock_date:
             mock_date.now.return_value = datetime(2018, 3, 9)
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": []}'
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": []}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
 
             result = trello_board.over_due_cards_url('board_id')
@@ -183,7 +259,8 @@ class TrelloBoardTest(unittest.TestCase):
         from datetime import datetime
         with patch(__name__ + '.datetime.datetime') as mock_date:
             mock_date.now.return_value = datetime(2018, 3, 9)
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [{"id": "list_id", "name": "Excluded"}], ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [{"id": "list_id", "name": "Excluded"}], ' \
                                          '"cards": [{"idList": "list_id", "name": "Test card!", ' \
                                          '"shortUrl": "http://shortUrl", "due": "2018-03-05T11:00:00.000Z"}]}'
             self.trello_board = TrelloBoard('appkeyX', 'tokenX', lists_to_ignore=['Excluded'])
@@ -208,7 +285,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-06T11:00:00.000Z", "due": null}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -239,7 +317,8 @@ class TrelloBoardTest(unittest.TestCase):
         from datetime import datetime
         with patch(__name__ + '.datetime.datetime') as mock_date:
             mock_date.now.return_value = datetime(2018, 3, 9)
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": []}'
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": []}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
 
             result = trello_board.inactive_cards_url('board_id')
@@ -254,7 +333,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-06T11:00:00.000Z", "due": null}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -271,7 +351,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.max = datetime.max
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": null, "due": null}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -284,7 +365,8 @@ class TrelloBoardTest(unittest.TestCase):
     def test_inactive_cards_url_without_last_activity(self, mock_url_read):
         """ Test that it raises key error exception when there is no dateLastActivity. """
 
-        mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+        mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                     '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                      '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", "due": null}]}'
         trello_board = TrelloBoard('appkeyX', 'tokenX')
 
@@ -298,7 +380,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-06T11:00:00.000Z", "due": null}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -315,10 +398,12 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.side_effect = ['{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": '
+            mock_url_read.side_effect = ['{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", '
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": '
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", '
                                          '"dateLastActivity": "2018-03-05T11:00:00.000Z"}]}',
-                                         '{"id": "x2", "url": "", "lists": [], "cards": [{"id": "card_2", "idList": '
+                                         '{"id": "x2", "dateLastActivity":"2018-03-05T11:00:00.000Z", '
+                                         '"url": "", "lists": [], "cards": [{"id": "card_2", "idList": '
                                          '"l2", "name": "Card 2", "shortUrl": "http://shortUrl2", '
                                          '"dateLastActivity": "2018-03-01T11:00:00.000Z"}]}']
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -336,7 +421,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-15T11:00:00.000Z", "due": null}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -353,7 +439,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.max = datetime.max
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-05T11:00:00.000Z", ' \
                                          '"due": "2018-99-77T11:00:00.000Z"}]}'
@@ -371,7 +458,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.max = datetime.max
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-99-88T11:00:00.000Z"}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -388,7 +476,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-15T11:00:00.000Z"}]}'
             trello_board = TrelloBoard('appkeyX', 'tokenX')
@@ -405,7 +494,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-05T11:00:00.000Z", ' \
                                          '"due": "2018-03-22T11:00:00.000Z"}]}'
@@ -423,7 +513,8 @@ class TrelloBoardTest(unittest.TestCase):
             mock_date.now.return_value = datetime(2018, 3, 21)
             mock_date.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            mock_url_read.return_value = '{"id": "x", "url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
+            mock_url_read.return_value = '{"id": "x", "dateLastActivity":"2018-03-05T11:00:00.000Z", ' \
+                                         '"url": "", "lists": [], "cards": [{"id": "card_id", "idList": ' \
                                          '"xx", "name": "Test card!", "shortUrl": "http://shortUrl", ' \
                                          '"dateLastActivity": "2018-03-05T11:00:00.000Z", ' \
                                          '"due": "2018-03-20T11:00:00.000Z"}]}'

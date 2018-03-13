@@ -120,7 +120,7 @@ class UrlOpenerMock(UrlOpener):
             # end Sonar
 
             # begin trello
-            'https://api.trello.com/1/boards/5fe/?fields=id,url&lists=open&list_fields=name'
+            'https://api.trello.com/1/boards/5fe/?fields=id,url,dateLastActivity&lists=open&list_fields=name'
             '&cards=visible&card_fields=shortUrl,dateLastActivity,due,idList,name&key=2d3&token=57b':
                 self._get_file_content(os.path.join(self._dir_path,
                                                     'docs/examples/example_metric_sources/'
