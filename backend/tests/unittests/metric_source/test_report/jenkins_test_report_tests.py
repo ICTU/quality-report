@@ -29,8 +29,9 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
         """ Fake opening the url or raise an exception. """
         if 'raise' in url:
             raise urllib.error.HTTPError(None, None, None, None, None)
-        else:
-            return self.contents
+        if isinstance(self.contents, list):
+            return self.contents.pop(0)
+        return self.contents
 
 
 class JenkinsTestReportTest(unittest.TestCase):
@@ -44,7 +45,9 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_testreport(self):
         """ Test retrieving a Jenkins test report. """
-        self.__opener.contents = '{"failCount":2, "passCount":9, "skipCount":1}'
+        self.__opener.contents = '{"timestamp":1467929105000, ' \
+                                 '"actions":[{"_class":"hudson.tasks.junit.TestResultAction", ' \
+                                 '"failCount":2, "passCount":9, "skipCount":1}]}'
         self.assertEqual(2, self.__jenkins.failed_tests('job'))
         self.assertEqual(9, self.__jenkins.passed_tests('job'))
         self.assertEqual(1, self.__jenkins.skipped_tests('job/'))
@@ -52,10 +55,20 @@ class JenkinsTestReportTest(unittest.TestCase):
     def test_testreport_without_pass_count(self):
         """ Test retrieving a Jenkins test report that has no pass count. Apparently that field is not present when
             there are no tests. """
-        self.__opener.contents = '{"failCount":0, "skipCount":0, "totalCount":8}'
+        self.__opener.contents = '{"timestamp":1467929105000, ' \
+                                 '"actions":[{"_class":"hudson.tasks.junit.TestResultAction", ' \
+                                 '"failCount":0, "skipCount":0, "totalCount":8}]}'
         self.assertEqual(0, self.__jenkins.failed_tests('job/'))
         self.assertEqual(8, self.__jenkins.passed_tests('job'))
         self.assertEqual(0, self.__jenkins.skipped_tests('job'))
+
+    def test_last_completed_build_without_results(self):
+        """ Test retrieving a Jenkins test report that was completed but has no test results, e.g. because it was
+            aborted. """
+        self.__opener.contents = ['{"timestamp":1467929105000, "actions":{}}',
+                                  '{"timestamp": 1467929105000, '
+                                  '"actions":[{}, {"_class": "hudson.tasks.junit.TestResultAction", "failCount":1}]}']
+        self.assertEqual(1, self.__jenkins.failed_tests('job/'))
 
     def test_http_error(self):
         """ Test that the default is returned when a HTTP error occurs. """
@@ -70,7 +83,16 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
-        self.__opener.contents = '{"timestamp":1467929105000}'
+        self.__opener.contents = '{"timestamp":1467929105000, ' \
+                                 '"actions":[{"_class":"hudson.tasks.junit.TestResultAction"}]}'
+        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
+
+    def test_report_datetime_on_missing_results(self):
+        """ Test that the date and time of the test suite is returned, even when the last completed build has no
+            test results. """
+        self.__opener.contents = ['{"timestamp":"this build should be ignored"}',
+                                  '{"actions":[{"_class":"hudson.tasks.junit.TestResultAction"}], '
+                                  '"timestamp":1467929105000}']
         self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
 
     def test_missing_report_datetime(self):

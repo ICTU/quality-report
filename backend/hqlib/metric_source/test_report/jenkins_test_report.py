@@ -50,25 +50,40 @@ class JenkinsTestReport(test_report.TestReport):
 
     def __test_count(self, report_url: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """
-        json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/testReport/api/python'))
+        json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/api/python'))
+        if not json:
+            # Last completed build doesn't have the requested information, e.g. because it's aborted.
+            # Fall back to last successful build.
+            json = self.__read_json(self.__join_url(report_url, 'lastSuccessfulBuild/api/python'))
         return int(json[result_type]) if json else -1
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the specified report. """
         json = self.__read_json(self.__join_url(metric_source_id, 'lastCompletedBuild/api/python'))
+        if not json:
+            # Last completed build doesn't have the requested information, e.g. because it's aborted.
+            # Fall back to last successful build.
+            json = self.__read_json(self.__join_url(metric_source_id, 'lastSuccessfulBuild/api/python'))
         return datetime.datetime.fromtimestamp(float(json["timestamp"]) / 1000.) if json else datetime.datetime.min
 
     def __read_json(self, api_url: str) -> Optional[Dict[str, int]]:
-        """ Return the json from the url, or the default when something goes wrong. """
+        """ Return the test results and the timestamp from the url, or None when something goes wrong. """
         try:
             contents = self._url_read(api_url)
         except UrlOpener.url_open_exceptions:
             return None
         try:
-            return ast.literal_eval(contents)
+            build = ast.literal_eval(contents)
         except (SyntaxError, NameError, TypeError) as reason:
             logging.warning("Couldn't eval %s: %s\nData received: %s", api_url, reason, contents)
             return None
+        actions = build.get("actions", [])
+        for action in actions:
+            if action.get("_class") == "hudson.tasks.junit.TestResultAction":
+                action["timestamp"] = build["timestamp"]
+                return action
+        logging.warning("Couldn't find test results in %s\nData received: %s", api_url, contents)
+        return None
 
     @staticmethod
     def __join_url(*parts: str) -> str:

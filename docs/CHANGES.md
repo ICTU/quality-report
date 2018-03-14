@@ -1,3 +1,9 @@
+2018-03-14  Release 2.46.7
+
+  * Bug fix: When reading the latest test results from a Jenkins test report, try both last completed build and the 
+    last successful build to find the results.
+    
+    
 2018-03-09  Release 2.46.6
 
   * Bug #310: A problem where Action Activity metric showed -1 days solved.
