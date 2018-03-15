@@ -197,8 +197,9 @@ class QualityReportMetaDataTest(unittest.TestCase):
 
     def test_get_domain_object_classes(self):
         """ Test the set of all domain objects. """
-        self.assertEqual({domain.Project, domain.Environment, domain.Process, domain.Product, domain.Component,
-                          domain.Application, domain.Team, domain.Document}, self.__report.domain_object_classes())
+        self.assertEqual({domain.Project, domain.Environment, domain.Process, domain.Scrum, domain.ProjectManagement,
+                          domain.IssueManagement, domain.Product, domain.Component, domain.Application, domain.Team,
+                          domain.Document}, self.__report.domain_object_classes())
 
     def test_get_included_domain_object_classes(self):
         """ Test the set of included domain objects. """

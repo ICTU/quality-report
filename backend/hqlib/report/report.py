@@ -28,8 +28,9 @@ class QualityReport(domain.DomainObject):
     @staticmethod
     def domain_object_classes() -> Set[Type[domain.RequirementSubject]]:
         """ Return a set of all domain object classes that the report can report on. """
-        return {domain.Project, domain.Environment, domain.Process, domain.Product, domain.Component,
-                domain.Application, domain.Document, domain.Team}
+        return {domain.Project, domain.Environment, domain.Process, domain.Scrum, domain.ProjectManagement,
+                domain.IssueManagement, domain.Product, domain.Component, domain.Application, domain.Document,
+                domain.Team}
 
     @classmethod
     def requirement_classes(cls) -> Sequence[Type[domain.Requirement]]:

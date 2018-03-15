@@ -1,3 +1,8 @@
+2018-03-15  Release 2.46.8
+
+  * Bug fix: Mention the domain objects Scrum, IssueManagement and ProjectManagement on the help page.
+  
+  
 2018-03-14  Release 2.46.7
 
   * Bug fix: When reading the latest test results from a Jenkins test report, try both last completed build and the 
