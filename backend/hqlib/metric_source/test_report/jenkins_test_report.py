@@ -79,7 +79,7 @@ class JenkinsTestReport(test_report.TestReport):
             return None
         actions = build.get("actions", [])
         for action in actions:
-            if action.get("_class") == "hudson.tasks.junit.TestResultAction":
+            if action.get("urlName") == "testReport":
                 action["timestamp"] = build["timestamp"]
                 return action
         logging.warning("Couldn't find test results in %s\nData received: %s", api_url, contents)
