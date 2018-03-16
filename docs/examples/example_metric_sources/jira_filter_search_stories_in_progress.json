@@ -1,1 +1,1 @@
-{"expand":"schema,names","startAt":0,"maxResults":50,"total":3,"issues":[]}
+{"expand":"schema,names","startAt":0,"maxResults":50,"total":3,"issues":[{"key": "ISS-1", "fields": {"summary": "First Issue"}},{"key": "ISS-2", "fields": {"summary": "2nd Issue Title"}},{"key": "ISS-3", "fields": {"summary": "Issue etc."}}]}

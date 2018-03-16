@@ -52,7 +52,7 @@ class FailingCIJobsTest(unittest.TestCase):
         """ Test that the metric source method is called. """
         self._jenkins.failing_jobs_url.return_value = [('1', '2', '3')]
 
-        result = self._metric.extra_info_urls()
+        result = self._metric.extra_info_rows()
 
         self.assertEqual([('1', '2', '3')], result)
         self._jenkins.failing_jobs_url.assert_called_once()

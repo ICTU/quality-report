@@ -40,6 +40,16 @@ class UrlOpenerMock(UrlOpener):
                              'docs/examples/example_metric_sources/jira_filter_search_stories_in_progress.json')),
             # end UserStoriesInProgress
 
+            # begin DurationOfManualLogicalTestCases
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15999': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jira_filter_manual_tests.json')),
+
+            'https://jira.myorg.nl/jira/rest/api/2/search?filter_manual_tests': self._get_file_content(
+                os.path.join(self._dir_path,
+                             'docs/examples/example_metric_sources/jira_filter_search_manual_tests.json')),
+            # end DurationOfManualLogicalTestCases
+
             # begin UserStoriesDuration
             'https://jira.myorg.nl/jira/rest/api/2/filter/15225': self._get_file_content(
                 os.path.join(self._dir_path,

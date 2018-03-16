@@ -239,7 +239,7 @@ class OverDueActionsTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the metric value equals the number of over due or inactive cards. """
-        self.assertEqual(FakeBoard().nr_of_over_due_cards(), self.__metric.value())
+        self.assertEqual(5, self.__metric.value())
 
     def test_url(self):
         """ Test that url of the metric is equal to the url of the board. """

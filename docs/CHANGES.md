@@ -1,3 +1,8 @@
+2018-03-22  Release 2.48.0
+
+  * Feature #292: Generic detail pane implemented for all metrics with Jira filter as a source.
+
+
 2018-03-19  Release 2.47.1
 
   * Bug fix: When reading test results from a Jenkins test report, don't rely on plugin specific information to 
@@ -35,7 +40,7 @@
     last successful build to find the results.
     
     
-2018-03-09  Release 2.46.6
+2018-03-13  Release 2.46.6
 
   * Bug #310: A problem where Action Activity metric showed -1 days solved.
 

@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
+from unittest.mock import patch
 
 from hqlib import metric, domain, metric_source
 from ..project.bug_metrics_tests import FakeJiraFilter
@@ -249,8 +250,16 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
                                         metric_source_ids={jira: '12345'})
         self.__metric = metric.DurationOfManualLogicalTestCases(subject=self.__project, project=self.__project)
 
-    def test_value(self):
+    @patch.object(metric_source.JiraFilter, 'sum_field')
+    def test_value(self, sum_field_mock):
         """ Test that the value of the metric is the duration of the manual logical test cases. """
+        jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
+        sum_field_mock.return_value = (120, [])
+        self.__project = domain.Project(metric_sources={metric_source.ManualLogicalTestCaseTracker: jira_filter},
+                                        metric_source_ids={jira_filter: '12345'})
+        self.__metric = metric.DurationOfManualLogicalTestCases(subject=self.__project, project=self.__project)
+
+        sum_field_mock.asses_called_once()
         self.assertEqual(120, self.__metric.value())
 
     def test_report(self):

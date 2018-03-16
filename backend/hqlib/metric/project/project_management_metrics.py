@@ -97,7 +97,7 @@ class OverDueActions(IssueLogMetric):
     def value(self) -> MetricValue:
         return self._metric_source.nr_of_over_due_actions(*self._get_metric_source_ids()) if self._metric_source else -1
 
-    def extra_info_urls(self) -> List:
+    def extra_info_rows(self) -> List:
         return self._metric_source.over_due_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}
 
 
@@ -118,6 +118,6 @@ class StaleActions(IssueLogMetric):
     def value(self) -> MetricValue:
         return self._metric_source.nr_of_inactive_actions(*self._get_metric_source_ids()) if self._metric_source else -1
 
-    def extra_info_urls(self) -> List:
+    def extra_info_rows(self) -> List:
         """ Returns inactive action urls as a list of triplets: url, text, nr_of_inactive_days """
         return self._metric_source.inactive_actions_url(*self._get_metric_source_ids()) if self._metric_source else {}

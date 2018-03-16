@@ -29,17 +29,17 @@ class FakeJiraFilter(object):
     @staticmethod
     def nr_issues(*metric_source_ids):
         """ Return a fake number of issues. """
-        return 12
+        return 12, []
 
     @staticmethod
     def sum_field(*metric_source_ids):
         """ Return a fake duration. """
-        return 120
+        return 120, []
 
     @staticmethod
     def nr_issues_with_field_empty(*metric_source_ids):
         """ Return a fake number of manual test cases without duration filled in. """
-        return 4
+        return 4, []
 
 
 class OpenBugsTest(unittest.TestCase):
@@ -58,7 +58,7 @@ class OpenBugsTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
+        self.assertEqual(12, self.__metric.value())
 
     def test_report(self):
         """ Test that the report is correct. """
@@ -77,7 +77,7 @@ class OpenBugsWithProductTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
+        self.assertEqual(12, self.__metric.value())
 
 
 class OpenSecurityBugsTest(unittest.TestCase):
@@ -92,7 +92,7 @@ class OpenSecurityBugsTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
+        self.assertEqual(12, self.__metric.value())
 
 
 class OpenSecurityBugsWithProductTest(unittest.TestCase):
@@ -109,7 +109,7 @@ class OpenSecurityBugsWithProductTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
+        self.assertEqual(12, self.__metric.value())
 
 
 class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
@@ -124,7 +124,7 @@ class OpenStaticSecurityAnalysisBugsTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(FakeJiraFilter.nr_issues(), self.__metric.value())
+        self.assertEqual(12, self.__metric.value())
 
 
 class TechnicalDebtIssuesTest(unittest.TestCase):
@@ -139,4 +139,4 @@ class TechnicalDebtIssuesTest(unittest.TestCase):
 
     def test_value(self):
         """ Test that the value is correct. """
-        self.assertEqual(FakeJiraFilter().nr_issues(), self.__metric.value())
+        self.assertEqual(12, self.__metric.value())

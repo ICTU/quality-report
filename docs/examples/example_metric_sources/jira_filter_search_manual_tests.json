@@ -1,0 +1,1 @@
+{"expand":"schema,names","startAt":0,"maxResults":50,"total":2,"issues":[{"key": "ISS-1", "fields": {"summary": "1st Issue", "customfield_11700": null}},{"key": "ISS-2", "fields": {"summary": "Last Issue", "customfield_11700": 12}}]}

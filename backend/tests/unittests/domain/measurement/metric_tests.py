@@ -318,7 +318,19 @@ class MetricTest(unittest.TestCase):
 
     def test_numerical_value(self):
         """ Test that the numerical value is the value by default. """
-        self.assertEqual(self.__metric.numerical_value(), self.__metric.value())
+        self.assertEqual(self.__metric.numerical_value(), 0)
+
+    @patch.object(MetricUnderTest, 'value')
+    def test_numerical_value_when_returns_tuple(self, value_mock):
+        """ Test that the numerical value is the value by default. """
+        value_mock.return_value = (3, {})
+        self.assertEqual(self.__metric.numerical_value(), 3)
+
+    @patch.object(MetricUnderTest, 'value')
+    def test_numerical_value_when_returns_dict(self, value_mock):
+        """ Test that the numerical value is the value by default. """
+        value_mock.return_value = ({}, {})
+        self.assertRaises(NotImplementedError, self.__metric.numerical_value)
 
     def test_status_start_date(self):
         """ Test that the metric gets the start date of the status from the history. """
@@ -329,10 +341,10 @@ class MetricTest(unittest.TestCase):
         item = object()
         self.assertEqual(item, self.__metric.convert_item_to_extra_info(item))
 
-    @patch.object(domain.Metric, 'extra_info_urls')
-    def test_extra_info(self, mock_extra_info_urls):
+    @patch.object(domain.Metric, 'extra_info_rows')
+    def test_extra_info(self, mock_extra_info_rows):
         """ Test that extra_info, as a base class function, returns None. """
-        mock_extra_info_urls.return_value = [('VAL1', 'VAL2')]
+        mock_extra_info_rows.return_value = [('VAL1', 'VAL2')]
         project = MagicMock()
         project.metric_sources.return_value = [MagicMock()]
         metric = domain.Metric(subject=MagicMock(), project=project)
@@ -343,16 +355,16 @@ class MetricTest(unittest.TestCase):
         self.assertEqual(domain.ExtraInfo(col1="Col 1", col2="Col 2").headers, result.headers)
         self.assertEqual([{"col1": "VAL1", "col2": "VAL2"}], result.data)
 
-    @patch.object(domain.Metric, 'extra_info_urls')
-    def test_extra_info_for_no_urls(self, mock_extra_info_urls):
+    @patch.object(domain.Metric, 'extra_info_rows')
+    def test_extra_info_for_no_urls(self, mock_extra_info_rows):
         """ Test that extra info is None when there are no jobs' urls. """
-        mock_extra_info_urls.return_value = []
+        mock_extra_info_rows.return_value = []
 
         self.assertEqual(None, self.__metric.extra_info())
 
-    def test_extra_info_urls(self):
+    def test_extra_info_rows(self):
         """ Test that the default list of urls is empty. """
-        self.assertEqual(list(), self.__metric.extra_info_urls())
+        self.assertEqual(list(), self.__metric.extra_info_rows())
 
 
 class MetricStatusTest(unittest.TestCase):
@@ -410,6 +422,20 @@ class ExtraInfoTest(unittest.TestCase):
         extra_info = domain.ExtraInfo(col1="", col2="")
         extra_info += "val1", {"href": "http://url", "text": "Description"}
         self.assertEqual([{"col1": "val1", "col2": {"href": "http://url", "text": "Description"}}], extra_info.data)
+
+    def test_row_of_single_elment_added(self):
+        """ Test that metric data is correctly created."""
+        extra_info = domain.ExtraInfo(col2="")
+        extra_info += {"href": "http://url", "text": "Description"}
+        self.assertEqual([{"col2": {"href": "http://url", "text": "Description"}}], extra_info.data)
+
+    def test_rows_added(self):
+        """ Test that metric data is correctly created."""
+        extra_info = domain.ExtraInfo(col1="", col2="")
+        extra_info += "val1", {"href": "http://url", "text": "Description"}, \
+                      "val3", {"href": "http://url3", "text": "Description3"}
+        self.assertEqual([{"col1": "val1", "col2": {"href": "http://url", "text": "Description"}},
+                          {"col1": "val3", "col2": {"href": "http://url3", "text": "Description3"}}], extra_info.data)
 
     def test_serialization(self):
         """ Test that metric data is correctly json serialized."""

@@ -39,8 +39,16 @@ class ExtraInfo(object):
 
     def __add__(self, *args):
         """ Adds data rows to the extra_info table, matching arguments by position to the column keys."""
-        self.data.append(dict(zip(self.headers.keys(), *args)))
+        item = args[0] if isinstance(args[0], tuple) else args
+        dictionary_length = len(self.headers)
+        for i in range(len(item) // dictionary_length):
+            self.data.append(dict(zip(self.headers.keys(), item[dictionary_length * i:dictionary_length * (i + 1)])))
         return self
+
+    @staticmethod
+    def format_extra_info_link(url: str, text: str):
+        """ Formats extra info link dictionary. """
+        return {"href": url, "text": text}
 
 
 class Metric(object):
@@ -89,6 +97,7 @@ class Metric(object):
             self._metric_source = None
             self._metric_source_id = None
         self.__id_string = self.stable_id()
+        self._extra_info_data = list()
         from hqlib import metric_source
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
         self.__history = history_sources[0] if history_sources else None
@@ -256,10 +265,9 @@ class Metric(object):
             logging.error('Key missing in parameters of %s: %s', self.__class__.__name__, self._parameters())
             raise
 
-    @staticmethod
-    def extra_info_urls() -> List:
-        """ Default returns no extra info links. Should be overridden. """
-        return list()
+    def extra_info_rows(self) -> List:
+        """ Returns rows of extra info table. """
+        return self._extra_info_data
 
     def url(self) -> Dict[str, str]:
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
@@ -327,6 +335,8 @@ class Metric(object):
             regular value, assuming it is already numerical. Metrics that don't have a numerical value by default
             can override this method to convert the non-numerical value into a numerical value. """
         value = self.value()
+        if isinstance(value, tuple):
+            value = value[0]
         if isinstance(value, (int, float)):
             return value
         raise NotImplementedError
@@ -335,14 +345,17 @@ class Metric(object):
         """ Method can be overridden by concrete metrics that fill extra info. """
         extra_info = None
         if self._metric_source and self.extra_info_headers:
-            url_list = self.extra_info_urls()
+            url_list = self.extra_info_rows()
             if url_list:
-                extra_info = ExtraInfo(**self.extra_info_headers)
-                extra_info.title = self.url_label_text
-                for item in url_list:
-                    extra_info += self.convert_item_to_extra_info(item)
-
+                extra_info = self.__create_extra_info(url_list)
         return extra_info if extra_info is not None and extra_info.data else None
+
+    def __create_extra_info(self, url_list):
+        extra_info = ExtraInfo(**self.extra_info_headers)
+        extra_info.title = self.url_label_text
+        for item in url_list:
+            extra_info += self.convert_item_to_extra_info(item)
+        return extra_info
 
     @staticmethod
     def convert_item_to_extra_info(item):

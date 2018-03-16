@@ -29,8 +29,15 @@ class OpenBugs(LowerIsBetterMetric):
     low_target_value = 100
     metric_source_class = metric_source.BugTracker
 
+    extra_info_headers = {"issue": "Issue"}
+    url_label_text = "Lijst van bugs"
+
     def value(self):
-        return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
+        result = -1
+        if self._metric_source:
+            result, self._extra_info_data = self._metric_source.nr_issues(
+                *self._get_metric_source_ids())
+        return result
 
 
 class OpenSecurityBugs(OpenBugs):

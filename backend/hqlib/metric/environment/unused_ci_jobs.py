@@ -35,5 +35,5 @@ class UnusedCIJobs(CIJobs):
         """ Return the number of unused jobs. """
         return self._metric_source.number_of_unused_jobs() if self._metric_source else -1
 
-    def extra_info_urls(self) -> list((str, str, str)):
+    def extra_info_rows(self) -> list((str, str, str)):
         return self._metric_source.unused_jobs_url()

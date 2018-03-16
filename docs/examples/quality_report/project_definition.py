@@ -31,6 +31,9 @@ USER_STORIES_IN_PROGRESS_TRACKER = \
 USER_STORIES_DURATION_TRACKER =  \
     metric_source.JiraFilter('https://jira.myorg.nl/jira', username="jira_user", password="jira_password")
 
+DURATION_MANUAL_TEST_CASES =  \
+    metric_source.JiraFilter('https://jira.myorg.nl/jira', username="x", password="y", field_name="customfield_11700")
+
 TRELLO_BOARD = metric_source.TrelloBoard(appkey='2d3', token='57b')
 
 # The project
@@ -48,21 +51,28 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.RiskLog: TRELLO_BOARD,
                       metric_source.UserStoriesInProgressTracker: USER_STORIES_IN_PROGRESS_TRACKER,
                       metric_source.UserStoriesDurationTracker: USER_STORIES_DURATION_TRACKER,
+                      metric_source.ManualLogicalTestCaseTracker: DURATION_MANUAL_TEST_CASES,
+                      metric_source.UserStoryWithoutSecurityRiskAssessmentTracker: USER_STORIES_IN_PROGRESS_TRACKER,
+                      metric_source.UserStoryWithoutPerformanceRiskAssessmentTracker: USER_STORIES_IN_PROGRESS_TRACKER,
                       metric_source.FileWithDate: SECURITY_REPORT_PROXY
                   },
                   metric_source_ids={
                       TRELLO_BOARD: '5fe',
+                      DURATION_MANUAL_TEST_CASES: '15999',
+                      USER_STORIES_IN_PROGRESS_TRACKER: '15208'
                   },
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TrustedProductMaintainability, requirement.TrackSecurityAndPerformanceRisks, requirement.TrackActions])
+                  requirements=[requirement.TrustedProductMaintainability,
+                                requirement.TrackManualLTCs,
+                                requirement.TrackSecurityAndPerformanceRisks, requirement.TrackActions])
 
 # Teams of the project.
 QUALITY_TEAM = Team(name='Quality team', short_name='QU',
                   metric_source_ids={
                       USER_STORIES_IN_PROGRESS_TRACKER: '15208',
-                      USER_STORIES_DURATION_TRACKER: '15225'
+                      USER_STORIES_DURATION_TRACKER: '15225',
                   },
                   added_requirements=[requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories])
 PROJECT.add_team(QUALITY_TEAM)

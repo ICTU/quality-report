@@ -15,8 +15,11 @@ limitations under the License.
 """
 
 
+import functools
+from typing import List, Dict, Tuple, Union
 from hqlib.typing import MetricParameters, MetricValue
 from ... import metric_source
+from ... import utils
 from ...domain import HigherIsBetterMetric, LowerIsBetterMetric, ExtraInfo
 
 
@@ -28,9 +31,15 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     target_value = 30
     low_target_value = 15
     metric_source_class = metric_source.ReadyUserStoryPointsTracker
+    extra_info_headers = {"issue": "Issue"}
+    url_label_text = "Lijst van issues"
 
     def value(self) -> MetricValue:
-        return self._metric_source.sum_field(*self._get_metric_source_ids()) if self._metric_source else -1
+        result = -1
+        if self._metric_source:
+            result, self._extra_info_data = self._metric_source.sum_field(
+                *self._get_metric_source_ids())
+        return result
 
 
 class UserStoriesDuration(LowerIsBetterMetric):
@@ -44,22 +53,68 @@ class UserStoriesDuration(LowerIsBetterMetric):
     target_value = 7
     low_target_value = 14
     metric_source_class = metric_source.UserStoriesDurationTracker
+    url_label_text = 'Gemiddelde looptijd van user stories'
+    extra_info_headers = {"story": "Story", "day_in": "Begin uitvoering", "day_out": "Einde uitvoering",
+                          "days": "Aantal dagen__detail-column-number", "is_omitted": "_detail-row-alter"}
 
+    @functools.lru_cache(maxsize=1024)
     def value(self) -> MetricValue:
-        return round(self._metric_source.average_duration_of_issues(*self._get_metric_source_ids()), 1) \
+        return round(self._average_duration_of_issues(*self._get_metric_source_ids()), 1) \
             if self._metric_source else -1
+
+    def _average_duration_of_issues(self, *metric_source_ids: str) -> int:
+        """ Return the average duration in days the issues were in status 'In Progress'. """
+        for query_id in metric_source_ids:
+            try:
+                self._metric_source.sum_for_all_issues(query_id, self._get_days_in_progress, self._extra_info_data)
+            except ValueError:
+                return -1  # Error already logged in utils.eval_json
+        days = self.__sum_days(self._extra_info_data)
+        stories = self.__count_stories(self._extra_info_data)
+        return days / stories if stories > 0 else -1
+
+    def _get_days_in_progress(self, issue: Dict) -> Tuple[object, str, str, Union[str, int], bool]:
+        """ Fetch the changelog of the given issue and get number of days between it is moved for the first time
+            to the status "In Progress", till the last time it is moved out of it. """
+        issue_link = ExtraInfo.format_extra_info_link(
+            self._metric_source.get_issue_url(issue['key']), issue['fields']['summary'])
+        to_in_progress_date, from_in_progress_date = self._metric_source.get_start_and_end_progress_date(issue)
+        to_date_str = utils.format_date(to_in_progress_date, year=True) if to_in_progress_date else 'geen'
+        from_date_str = utils.format_date(from_in_progress_date, year=True) if from_in_progress_date else 'geen'
+        both_dates_ok = from_in_progress_date and to_in_progress_date
+        days = (from_in_progress_date - to_in_progress_date).days if both_dates_ok else "n.v.t"
+        yield issue_link, to_date_str, from_date_str, days, not both_dates_ok
+
+    @staticmethod
+    def __count_stories(extra_info: List[Tuple]):
+        return sum(not t[4] for t in extra_info)
+
+    @staticmethod
+    def __sum_days(extra_info: List[Tuple]):
+        return sum(t[3] if not t[4] else 0 for t in extra_info)
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
-        parameters["total"] = self._metric_source.nr_issues(*self._get_metric_source_ids()) \
+        parameters["total"] = self._metric_source.nr_issues(*self._get_metric_source_ids())[0] \
             if self._metric_source else "?"
         return parameters
 
-    def extra_info(self) -> ExtraInfo:
-        return self._metric_source.extra_info() if self._metric_source else None
+
+class UserStoriesWithNumberOfIssues(LowerIsBetterMetric):
+    """ Base class for all metrics that are counting issues. """
+    extra_info_headers = {"issue": "Issue"}
+    url_label_text = "Lijst van issues"
+
+    @functools.lru_cache(maxsize=1024)
+    def value(self) -> MetricValue:
+        result = -1
+        if self._metric_source:
+            result, self._extra_info_data = self._metric_source.nr_issues(
+                *self._get_metric_source_ids())
+        return result
 
 
-class UserStoriesInProgress(LowerIsBetterMetric):
+class UserStoriesInProgress(UserStoriesWithNumberOfIssues):
     """ Metric for measuring the number of user stories in progress in current sprint . """
 
     name = 'Hoeveelheid user stories in progress'
@@ -68,20 +123,14 @@ class UserStoriesInProgress(LowerIsBetterMetric):
     low_target_value = 5
     metric_source_class = metric_source.UserStoriesInProgressTracker
 
-    def value(self) -> MetricValue:
-        return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
 
-
-class UserStoriesWithoutAssessmentMetric(LowerIsBetterMetric):
+class UserStoriesWithoutAssessmentMetric(UserStoriesWithNumberOfIssues):
     """ Metric for measuring the number of user stories without the proper assessment. """
 
     template = 'Het aantal {unit} is {value}.'
     target_value = 1
     low_target_value = 3
     nr_user_stories_without_risk_assessment = 'Subclass responsibility'
-
-    def value(self) -> MetricValue:
-        return self._metric_source.nr_issues(*self._get_metric_source_ids()) if self._metric_source else -1
 
 
 class UserStoriesWithoutSecurityRiskAssessment(UserStoriesWithoutAssessmentMetric):

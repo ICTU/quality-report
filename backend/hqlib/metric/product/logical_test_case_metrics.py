@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 
+import functools
 import datetime
 
 from hqlib.typing import MetricParameters
@@ -27,6 +28,7 @@ class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of logical test cases. """
     unit = 'logische testgevallen'
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
         nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
         return -1 if -1 in (nr_ltcs_ok, nr_ltcs) else nr_ltcs - nr_ltcs_ok
@@ -109,6 +111,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     low_target_value = 28
     metric_source_class = metric_source.Birt
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
         if self._missing():
             return -1
@@ -173,16 +176,23 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     target_value = 120
     low_target_value = 240
     metric_source_class = metric_source.ManualLogicalTestCaseTracker
+    extra_info_headers = {"issue": "Handmatige logische testgevallen"}
+    url_label_text = "Lijst van handmatige logische testgevallen zonder uitvoeringstijd"
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
-        return self._metric_source.sum_field(*self._get_metric_source_ids()) \
-            if self._metric_source else -1
+        """ Returns the sum of the issues and sets caches issue list for extra info"""
+        result = -1
+        if self._metric_source:
+            result, self._extra_info_data = self._metric_source.sum_field(
+                *self._get_metric_source_ids())
+        return result
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         if not self._missing():
-            parameters['total'] = total = self._metric_source.nr_issues(*self._get_metric_source_ids())
-            not_measured = self._metric_source.nr_issues_with_field_empty(*self._get_metric_source_ids())
+            parameters['total'] = total = self._metric_source.nr_issues(*self._get_metric_source_ids())[0]
+            not_measured = self._metric_source.nr_issues_with_field_empty(*self._get_metric_source_ids())[0]
             parameters['measured'] = total - not_measured
         return parameters
 
@@ -198,13 +208,19 @@ class ManualLogicalTestCasesWithoutDuration(LowerIsBetterMetric):
     target_value = 0
     low_target_value = 5
     metric_source_class = metric_source.ManualLogicalTestCaseTracker
+    extra_info_headers = {"issue": "Issue"}
+    url_label_text = "Lijst van issues"
 
+    @functools.lru_cache(maxsize=1024)
     def value(self):
-        return self._metric_source.nr_issues_with_field_empty(*self._get_metric_source_ids()) \
-            if self._metric_source else -1
+        count = -1
+        if self._metric_source:
+            count, self._extra_info_data = \
+                self._metric_source.nr_issues_with_field_empty(*self._get_metric_source_ids())
+        return count
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
-        parameters['total'] = str(self._metric_source.nr_issues(*self._get_metric_source_ids())) \
+        parameters['total'] = str(self._metric_source.nr_issues(*self._get_metric_source_ids())[0]) \
             if self._metric_source else '?'
         return parameters
