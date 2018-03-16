@@ -82,7 +82,6 @@ class JenkinsTestReport(test_report.TestReport):
             if action.get("urlName") == "testReport":
                 action["timestamp"] = build["timestamp"]
                 return action
-        logging.warning("Couldn't find test results in %s\nData received: %s", api_url, contents)
         return None
 
     @staticmethod
