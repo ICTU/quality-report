@@ -1,3 +1,8 @@
+2018-03-16  Release 2.46.11
+
+  * Bug fix: Dockerfile referenced a Github repository that was removed, causing the release to fail.
+  
+  
 2018-03-16  Release 2.46.10
 
   * Bug fix: Release build failed, retry. 
