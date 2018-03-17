@@ -26,7 +26,7 @@ from hqlib import metric_source
 class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependencyReport):
     # pylint: disable=too-few-public-methods
     """ Override the url_open method to return a fixed HTML fragment. """
-    contents = '{"jobs": []}'
+    contents = ""
     html = (
         '<tr>\n'
         '<tr>\n'
@@ -90,10 +90,6 @@ class JenkinsOWASPDependencyReportUnderTest(metric_source.JenkinsOWASPDependency
         '        </table>\n'
         '    </td>\n'
         '</tr>')
-
-    def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
-        """ Return the static contents. """
-        return self.contents
 
     def url_open(self, url: str, log_error: bool = True) -> IO:  # pylint: disable=unused-argument
         return cast(IO, io.StringIO(self.html))

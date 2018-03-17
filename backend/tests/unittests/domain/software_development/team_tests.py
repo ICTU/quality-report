@@ -44,13 +44,3 @@ class TeamTest(unittest.TestCase):
     def test_str(self):
         """ Test that the string formatting of a team equals the team name. """
         self.assertEqual(self.__team.name(), str(self.__team))
-
-    def test_default_team_members(self):
-        """ Test that the team has no team members by default. """
-        self.assertFalse(self.__team.members())
-
-    def test_add_team_member(self):
-        """ Test that a person can be added as team member. """
-        piet = domain.Person(name='Piet Programmer')
-        self.__team.add_member(piet)
-        self.assertTrue(piet in self.__team.members())

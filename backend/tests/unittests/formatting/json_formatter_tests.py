@@ -136,7 +136,7 @@ class MetaDataFormatterTest(unittest.TestCase):
                          '"Track user stories in progress", '
                          '"Track whether user stories have security and performance risks", '
                          '"Trusted Product Maintainability, version 6.1"]}, {"included": true, "name": "Team", "id": '
-                         '"Team", "default_requirements": ["Track spirit"], "optional_requirements": ["Track absence", '
+                         '"Team", "default_requirements": ["Track spirit"], "optional_requirements": ['
                          '"Track the duration of user stories", "Track user stories in progress"]}], '
                          '"requirements": [{"included": true, "name": "Automated regression test coverage", '
                          '"id": "ARTCoverage", "metrics": ["Automatic regression test branch coverage", '

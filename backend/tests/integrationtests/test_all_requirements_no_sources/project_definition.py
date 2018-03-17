@@ -1,7 +1,7 @@
 """ Project definition for testing a project with all requirements but no sources. """
 
 from hqlib import metric_source, requirement
-from hqlib.domain import Project, Product, Team, Document, Person, Application, Component, Environment, Process
+from hqlib.domain import Project, Product, Team, Document, Application, Component, Environment, Process
 
 # Sources
 HISTORY = metric_source.CompactHistory('tests/integrationtests/test_all_requirements_no_sources/history.json')
@@ -18,8 +18,6 @@ PROJECT.add_document(DOC)
 
 # Teams of the project.
 TEAM = Team(name='Team 123', short_name='TE', added_requirements=Team.optional_requirements())
-TEAM.add_member(Person(name='Person 1'))
-TEAM.add_member(Person(name='Person 2'))
 PROJECT.add_team(TEAM)
 
 # Environment of the project

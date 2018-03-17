@@ -54,7 +54,6 @@ from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSec
 from .project.project_management_metrics import RiskLog, ActionActivity, IssueLogMetric, OverDueActions, StaleActions
 
 # Team metrics
-from .team.absence import TeamAbsence
 from .team.spirit import TeamSpirit, TeamSpiritAge
 
 # Document metrics

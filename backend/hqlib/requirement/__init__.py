@@ -26,5 +26,5 @@ from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, Tra
     TrackReadyUS, TrackUserStoriesInProgress, TrackDurationOfUserStories, TrackSecurityAndPerformanceRisks, \
     TrackSecurityTestDate
 from .environment import TrackCIJobs, TrackSonarVersion, OpenVAS
-from .team import TrackSpirit, TrackAbsence
+from .team import TrackSpirit
 from .document import TrackDocumentAge

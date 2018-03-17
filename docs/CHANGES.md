@@ -1,3 +1,8 @@
+2018-03-17  Release 2.47.0
+
+  * Remove feature: Measuring absence of team members is no longer supported.
+  
+  
 2018-03-16  Release 2.46.11
 
   * Bug fix: Dockerfile referenced a Github repository that was removed, causing the release to fail.

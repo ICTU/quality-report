@@ -43,11 +43,11 @@ class QualityReport(domain.DomainObject):
                 requirement.TrackTechnicalDebt, requirement.TrackQualityGate, requirement.TrackManualLTCs,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
                 requirement.TrackSonarVersion, requirement.TrackDocumentAge, requirement.TrackSpirit,
-                requirement.TrackAbsence, requirement.TrackUserStoriesInProgress,
-                requirement.TrackDurationOfUserStories, requirement.OWASPDependencies, requirement.OWASPZAP,
-                requirement.Checkmarx, requirement.OpenVAS, requirement.Java, requirement.CSharp,
-                requirement.JavaScript, requirement.Web, requirement.VisualBasic, requirement.Python,
-                requirement.TypeScript, requirement.TrustedProductMaintainability, requirement.TrackBranches)
+                requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
+                requirement.Java, requirement.CSharp, requirement.JavaScript, requirement.Web, requirement.VisualBasic,
+                requirement.Python, requirement.TypeScript, requirement.TrustedProductMaintainability,
+                requirement.TrackBranches)
 
     @classmethod
     def metric_classes(cls) -> Set[Type[domain.Metric]]:

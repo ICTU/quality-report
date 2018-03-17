@@ -35,7 +35,6 @@ from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
 from .file.file_with_date import FileWithDate
 from .history import History, CompactHistory
-from .holiday_planner import HolidayPlanner
 from .ci_server.jenkins import Jenkins
 from .issue_tracker.jira_filter import JiraFilter
 from .jira import Jira
