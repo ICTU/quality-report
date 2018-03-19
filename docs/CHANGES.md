@@ -1,3 +1,9 @@
+2018-03-19  Release 2.47.1
+
+  * Bug fix: When reading test results from a Jenkins test report, don't rely on plugin specific information to 
+    find the test results.
+  
+
 2018-03-17  Release 2.47.0
 
   * Remove feature: Measuring absence of team members is no longer supported.

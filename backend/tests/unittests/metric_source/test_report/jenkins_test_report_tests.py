@@ -45,8 +45,8 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_testreport(self):
         """ Test retrieving a Jenkins test report. """
-        self.__opener.contents = '{"timestamp":1467929105000, ' \
-                                 '"actions":[{"urlName":"testReport", "failCount":2, "passCount":9, "skipCount":1}]}'
+        self.__opener.contents = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
+                                 '"passCount":9, "skipCount":1, "totalCount":12}]}'
         self.assertEqual(2, self.__jenkins.failed_tests('job'))
         self.assertEqual(9, self.__jenkins.passed_tests('job'))
         self.assertEqual(1, self.__jenkins.skipped_tests('job/'))
@@ -65,7 +65,7 @@ class JenkinsTestReportTest(unittest.TestCase):
             aborted. """
         self.__opener.contents = [
             '{"timestamp": 1467929105000, "actions":[]}',
-            '{"timestamp": 1467929105000, "actions":[{}, {"urlName": "testReport", "failCount":1}]}']
+            '{"timestamp": 1467929105000, "actions":[{}, {"totalCount":10, "failCount":1}]}']
         self.assertEqual(1, self.__jenkins.failed_tests('job/'))
 
     def test_http_error(self):
@@ -81,14 +81,14 @@ class JenkinsTestReportTest(unittest.TestCase):
 
     def test_report_datetime(self):
         """ Test that the date and time of the test suite is returned. """
-        self.__opener.contents = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport"}]}'
+        self.__opener.contents = '{"timestamp":1467929105000, "actions":[{"totalCount":10,"failCount":0}]}'
         self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
 
     def test_report_datetime_on_missing_results(self):
         """ Test that the date and time of the test suite is returned, even when the last completed build has no
             test results. """
         self.__opener.contents = ['{"timestamp":"this build should be ignored"}',
-                                  '{"actions":[{"urlName":"testReport"}], "timestamp":1467929105000}']
+                                  '{"actions":[{"totalCount":10,"failCount":0}], "timestamp":1467929105000}']
         self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
 
     def test_missing_report_datetime(self):

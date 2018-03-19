@@ -18,7 +18,7 @@ limitations under the License.
 import ast
 import datetime
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from ..abstract import test_report
 from ..url_opener import UrlOpener
@@ -66,7 +66,7 @@ class JenkinsTestReport(test_report.TestReport):
             json = self.__read_json(self.__join_url(metric_source_id, 'lastSuccessfulBuild/api/python'))
         return datetime.datetime.fromtimestamp(float(json["timestamp"]) / 1000.) if json else datetime.datetime.min
 
-    def __read_json(self, api_url: str) -> Optional[Dict[str, int]]:
+    def __read_json(self, api_url: str) -> Optional[Dict[str, Union[int, str]]]:
         """ Return the test results and the timestamp from the url, or None when something goes wrong. """
         try:
             contents = self._url_read(api_url)
@@ -77,9 +77,15 @@ class JenkinsTestReport(test_report.TestReport):
         except (SyntaxError, NameError, TypeError) as reason:
             logging.warning("Couldn't eval %s: %s\nData received: %s", api_url, reason, contents)
             return None
+        return self.__test_data(build)
+
+    @staticmethod
+    def __test_data(build: Dict) -> Optional[Dict[str, Union[int, str]]]:
+        """ Return the test data from the build json. """
         actions = build.get("actions", [])
         for action in actions:
-            if action.get("urlName") == "testReport":
+            if "totalCount" in action and "failCount" in action:
+                # Assume this is the test action dictionary. Include the timestamp of the build in the dictionary.
                 action["timestamp"] = build["timestamp"]
                 return action
         return None
