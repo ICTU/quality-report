@@ -1,3 +1,9 @@
+2018-03-23  Release 2.49.0
+
+  * Remove feature: The ICTU specific performance report for the LRK-project is no longer used, so the accompanying
+    metric source has been removed from HQ.
+  
+  
 2018-03-22  Release 2.48.0
 
   * Feature #292: Generic detail pane implemented for all metrics with Jira filter as a source.

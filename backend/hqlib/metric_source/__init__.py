@@ -43,8 +43,6 @@ from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWAS
 from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport
 from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
     SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
-from .performance_report.ictu_lrk import ICTULRKPerformanceLoadTestReport, ICTULRKPerformanceEnduranceTestReport, \
-    ICTULRKPerformanceScalabilityTestReport
 from .performance_report.spirit_splunk_csv import SpiritSplunkCSVPerformanceLoadTestReport, \
     SpiritSplunkCSVPerformanceEnduranceTestReport, SpiritSplunkCSVPerformanceScalabilityTestReport
 from .sonar import Sonar, extract_branch_decorator
