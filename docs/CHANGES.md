@@ -1,3 +1,9 @@
+2018-03-28  Release 2.49.3
+
+  * Refactoring: When querying SonarQube for available quality profiles, download all information at once instead of
+    language by language.
+  
+  
 2018-03-28  Release 2.49.2
 
   * Bug #335 fix: browser caching of json files disabled.

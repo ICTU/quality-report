@@ -70,8 +70,8 @@ class Sonar(metric_source.TestReport):
             'api/issues/search?resolutions=FALSE-POSITIVE&componentRoots={resource}'
         self.__false_positives_url = sonar_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
         self.__plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'  # Deprecated API
-        self.__quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?language={language}&format=json'
-        self.__old_quality_profiles_api_url = sonar_url + 'api/profiles/list?language={language}&format=json'
+        self.__quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?format=json'
+        self.__old_quality_profiles_api_url = sonar_url + 'api/profiles/list?format=json'
 
     # Coverage report API
 
@@ -150,21 +150,23 @@ class Sonar(metric_source.TestReport):
 
     def default_quality_profile(self, language: str) -> str:
         """ Return the default quality profile for the language. """
-        url = self.__quality_profiles_api_url.format(language=language)
+        url = self.__quality_profiles_api_url
         try:
             profiles = self.__get_json(url)['profiles']
         except self.__url_opener.url_open_exceptions + (KeyError, TypeError):
             # Try old API
-            url = self.__old_quality_profiles_api_url.format(language=language)
+            url = self.__old_quality_profiles_api_url
             try:
                 profiles = self.__get_json(url)
             except self.__url_opener.url_open_exceptions:
                 return ''  # Give up
         for profile in profiles:
-            for keyword in ('isDefault', 'default'):
-                if keyword in profile and profile[keyword]:
-                    return profile['name']
-        logging.warning("Couldn't find a default quality profile in %s, retrieved from %s", profiles, url)
+            if profile.get("language") == language:
+                for keyword in ('isDefault', 'default'):
+                    if profile.get(keyword):
+                        return profile['name']
+        logging.warning("Couldn't find a default quality profile for %s in %s, retrieved from %s", language, profiles,
+                        url)
         return ''
 
     def quality_profiles_url(self) -> str:
