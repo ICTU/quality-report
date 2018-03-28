@@ -1,3 +1,8 @@
+2018-03-28  Release 2.49.1
+
+  * Bug fix: Ignore running builds when asking Jenkins for builds as Jenkins considers running builds successful.
+  
+  
 2018-03-23  Release 2.49.0
 
   * Remove feature: The ICTU specific performance report for the LRK-project is no longer used, so the accompanying

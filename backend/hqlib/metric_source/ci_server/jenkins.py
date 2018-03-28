@@ -36,7 +36,7 @@ class Jenkins(ci_server.CIServer):
     metric_source_name = "Jenkins build server"
     api_postfix = "api/python"
     jobs_api_postfix = api_postfix + "?tree=jobs[name,description,color,url,buildable]"
-    builds_api_postfix = api_postfix + "?tree=builds[result]&depth=1"
+    builds_api_postfix = api_postfix + "?tree=builds[result,building]&depth=1"
 
     def __init__(self, url: str, username: str = '', password: str = '', job_re: str = '') -> None:
         super().__init__(url=url)
@@ -169,6 +169,7 @@ class Jenkins(ci_server.CIServer):
     def __builds(self, job: Job, *results: str) -> List[Dict]:
         """" Return the builds of the job with the given status, if any. """
         builds = self._api(job["url"] + self.builds_api_postfix).get("builds", [])
+        builds = [build for build in builds if not build.get("building")]
         return [build for build in builds if build.get("result") in results] if results else builds
 
     @functools.lru_cache(maxsize=1024)
