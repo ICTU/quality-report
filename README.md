@@ -1,6 +1,6 @@
 [![PyPI](https://img.shields.io/pypi/v/quality_report.svg)](https://pypi.python.org/pypi/quality_report)
 [![Build Status](https://travis-ci.org/ICTU/quality-report.png?branch=master)](https://travis-ci.org/ICTU/quality-report)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=nl.ictu%3Ahq&metric=alert_status)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=nl.ictu%3Ahq&metric=alert_status)](https://sonarcloud.io/dashboard?id=nl.ictu%3Ahq)
 [![BCH compliance](https://bettercodehub.com/edge/badge/ICTU/quality-report?branch=master)](https://bettercodehub.com/)
 [![Test Coverage](https://codeclimate.com/github/ICTU/quality-report/badges/coverage.svg)](https://codeclimate.com/github/ICTU/quality-report/coverage)
 [![Coverage Status](https://coveralls.io/repos/github/ICTU/quality-report/badge.png?branch=master)](https://coveralls.io/github/ICTU/quality-report?branch=master)
