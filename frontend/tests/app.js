@@ -20,6 +20,20 @@ import {App} from '../js/app.js';
 import {Loader} from '../js/widgets/loader.js';
 import {EmptyStorage} from './stubs/storage.js';
 
+import jQuery from 'jquery';
+import {shallow, mount} from 'enzyme';
+import Enzyme from 'enzyme';
+import sinon from 'sinon';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({ adapter: new Adapter() });
+
+import jsdom from 'jsdom'
+const doc = jsdom.jsdom('<!doctype html><html><head><script src=""></head><body></body></html>')
+global.document = doc
+global.window = doc.defaultView
+global.$ = require('jquery')(global.window);
+
 
 test('app', function(t) {
     const renderer = new ShallowRenderer();
@@ -35,6 +49,22 @@ test('app starts loading', function(t) {
     const result = renderer.getRenderOutput();
     t.comment(Object.keys(result.props));
     t.deepEquals(result.props.children.props.children.props.children, <Loader/>);
+    t.end();
+});
+
+test('xapp filter without metrics', function(t) {
+    var getJsonMock = sinon.spy($, "getJSON");
+    
+    mount(<App storage={new EmptyStorage()}/>)
+    mount(<App storage={new EmptyStorage()}/>)
+
+    var callArgs1 = getJsonMock.firstCall.args[0].split("?v=")
+    var callArgs2 = getJsonMock.secondCall.args[0].split("?v=")
+
+    t.equals(getJsonMock.calledTwice, true);
+    t.equals(callArgs1[0], 'json/metrics.json')
+    t.equals(callArgs2[0], 'json/metrics.json')
+    t.notEquals(callArgs1[1], callArgs2[1])
     t.end();
 });
 

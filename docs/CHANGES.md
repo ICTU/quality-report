@@ -1,3 +1,8 @@
+2018-03-28  Release 2.49.2
+
+  * Bug #335 fix: browser caching of json files disabled.
+  
+
 2018-03-28  Release 2.49.1
 
   * Bug fix: Ignore running builds when asking Jenkins for builds as Jenkins considers running builds successful.

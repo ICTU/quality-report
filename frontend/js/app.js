@@ -66,7 +66,7 @@ class App extends React.Component {
 
     componentDidMount() {
         let self = this;
-        $.getJSON("json/metrics.json", "", function(metrics_data) {
+        $.getJSON("json/metrics.json?v=" + Math.random(), "", function(metrics_data) {
             self.setState({
                 metrics_data: metrics_data,
                 metrics: self.filter(metrics_data, self.state.filter)
