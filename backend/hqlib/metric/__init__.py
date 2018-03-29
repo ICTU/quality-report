@@ -63,10 +63,8 @@ from .document.age import DocumentAge
 from .environment.failing_ci_jobs import FailingCIJobs
 from .environment.unused_ci_jobs import UnusedCIJobs
 from .environment.version_number import (
-    SonarVersion,
-    SonarPluginVersionCheckStyle, SonarPluginVersionCSharp, SonarPluginVersionFindBugs, SonarPluginVersionJava,
-    SonarPluginVersionJS, SonarPluginVersionPMD, SonarPluginVersionWeb, SonarPluginVersionVisualBasic,
-    SonarPluginVersionPython, SonarPluginVersionTypeScript,
+    SonarVersion, SonarPluginVersionCSharp, SonarPluginVersionJava, SonarPluginVersionJS, SonarPluginVersionWeb,
+    SonarPluginVersionVisualBasic, SonarPluginVersionPython, SonarPluginVersionTypeScript,
     SonarQualityProfileVersionCSharp, SonarQualityProfileVersionJava, SonarQualityProfileVersionJS,
     SonarQualityProfileVersionWeb, SonarQualityProfileVersionVisualBasic, SonarQualityProfileVersionPython,
     SonarQualityProfileVersionTypeScript)

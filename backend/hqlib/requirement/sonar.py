@@ -22,8 +22,7 @@ from ..domain import Requirement
 class Java(Requirement):
     """ Require Sonar to be ready for analyzing Java code. """
     _name = 'Java'
-    _metric_classes = (metric.SonarPluginVersionJava, metric.SonarPluginVersionCheckStyle, metric.SonarPluginVersionPMD,
-                       metric.SonarPluginVersionFindBugs, metric.SonarQualityProfileVersionJava)
+    _metric_classes = (metric.SonarPluginVersionJava, metric.SonarQualityProfileVersionJava)
 
 
 class CSharp(Requirement):

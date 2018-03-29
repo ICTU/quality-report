@@ -201,33 +201,6 @@ class SonarPluginVersionJava(SonarPluginVersion):
     low_target_value = LooseVersion('3.13.1')
 
 
-class SonarPluginVersionCheckStyle(SonarPluginVersion):
-    """ Measure the version number of the CheckStyle Sonar plugin. """
-    name = 'Versie van de Sonar CheckStyle plugin'
-    plugin_key = 'checkstyle'
-    plugin_name = 'CheckStyle'
-    target_value = LooseVersion('2.4')
-    low_target_value = LooseVersion('2.3')
-
-
-class SonarPluginVersionPMD(SonarPluginVersion):
-    """ Measure the version number of the PMD Sonar plugin. """
-    name = 'Versie van de Sonar PMD plugin'
-    plugin_key = 'pmd'
-    plugin_name = 'PMD'
-    target_value = LooseVersion('2.5')
-    low_target_value = LooseVersion('2.4.1')
-
-
-class SonarPluginVersionFindBugs(SonarPluginVersion):
-    """ Measure the version number of the FindBugs Sonar plugin. """
-    name = 'Versie van de Sonar FindBugs plugin'
-    plugin_key = 'findbugs'
-    plugin_name = 'FindBugs'
-    target_value = LooseVersion('3.3')
-    low_target_value = LooseVersion('3.2')
-
-
 class SonarPluginVersionCSharp(SonarPluginVersion):
     """ Measure the version number of the C# Sonar plugin. """
     name = 'Versie van de Sonar C# plugin'

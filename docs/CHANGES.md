@@ -1,3 +1,8 @@
+2018-03-29  Release 2.50.0
+
+  * Remove feature: HQ no longer tracks the versions of the PMD, Checkstyle, and Findbugs SonarQube plugins.
+  
+  
 2018-03-28  Release 2.49.3
 
   * Refactoring: When querying SonarQube for available quality profiles, download all information at once instead of
