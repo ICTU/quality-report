@@ -1,6 +1,6 @@
 {
   "name": "HQ",
-  "version": "2.50.0",
+  "version": "2.51.0",
   "description": "Holistic Software Quality Reporting",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,7 @@
     "jquery": "^3.3.1",
     "react": "^16.2.0",
     "react-chartjs-2": "^2.7.0",
+    "react-delay-input": "^4.0.4",
     "react-dom": "^16.2.0",
     "react-timeago": "^3.4.3",
     "sinon": "^4.4.2"

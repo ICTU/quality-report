@@ -25,11 +25,11 @@ class MetricsTable extends React.Component {
     bgColorClassName(metric) {
         return metric["status"] + "_metric";
     }
-    
+
     id_format(metric) {
         return (<div className="btn-group"><span className={this.bgColorClassName(metric)}>{metric["id_format"]}</span></div>);
     }
-    
+
     stuffTableRows(has_comments) {
         var table_rows = [];
         this.props.metrics.forEach(function (metric) {

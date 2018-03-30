@@ -21,7 +21,7 @@ import {Loader} from '../js/widgets/loader.js';
 import {EmptyStorage} from './stubs/storage.js';
 
 import jQuery from 'jquery';
-import {shallow, mount} from 'enzyme';
+import {mount} from 'enzyme';
 import Enzyme from 'enzyme';
 import sinon from 'sinon';
 import Adapter from 'enzyme-adapter-react-16';
@@ -54,7 +54,7 @@ test('app starts loading', function(t) {
 
 test('xapp filter without metrics', function(t) {
     var getJsonMock = sinon.spy($, "getJSON");
-    
+
     mount(<App storage={new EmptyStorage()}/>)
     mount(<App storage={new EmptyStorage()}/>)
 
@@ -70,7 +70,7 @@ test('xapp filter without metrics', function(t) {
 
 test('app filter without metrics', function(t) {
     let app = new App({storage: new EmptyStorage()});
-    t.deepEqual(app.filter({metrics: []}), []);
+    t.deepEqual(app.filter({metrics: []}, {search_string: ""}), []);
     t.end();
 });
 
@@ -78,10 +78,10 @@ test('app filter without filter', function(t) {
     let app = new App({storage: new EmptyStorage()});
     t.deepEqual(
         app.filter(
-            {metrics: [{status: 'green'}]},
-            {hidden_metrics: '', filter_status_week: true, filter_color_green: true}
+            {metrics: [{status: 'green', id_format: '', measurement: '', norm: '', comment: ''}]},
+            {hidden_metrics: '', filter_status_week: true, filter_color_green: true, search_string: ''}
         ),
-        [{status: 'green'}]
+        [{status: 'green', id_format: '', measurement: '', norm: '', comment: ''}]
     );
     t.end();
 });
@@ -90,8 +90,8 @@ test('app filter by status', function(t) {
     let app = new App({storage: new EmptyStorage()});
     t.deepEqual(
         app.filter(
-            {metrics: [{status: 'green'}]},
-            {hidden_metrics: '', filter_status_week: true, filter_color_green: false}
+            {metrics: [{status: 'green', id_format: '', measurement: '', norm: '', comment: ''}]},
+            {hidden_metrics: '', filter_status_week: true, filter_color_green: false, search_string: ''}
         ),
         []
     );
@@ -102,8 +102,8 @@ test('app filter hidden metric', function(t) {
     let app = new App({storage: new EmptyStorage()});
     t.deepEqual(
         app.filter(
-            {metrics: [{status: 'green', id_value: 'id'}]},
-            {hidden_metrics: 'id', filter_status_week: true, filter_color_green: true}
+            {metrics: [{status: 'green', id_value: 'id', id_format: '', measurement: '', norm: '', comment: ''}]},
+            {hidden_metrics: 'id', filter_status_week: true, filter_color_green: true, search_string: ''}
         ),
         []
     );
@@ -114,8 +114,9 @@ test('app filter by status start date, without status start', function(t) {
     let app = new App({storage: new EmptyStorage()});
     t.deepEqual(
         app.filter(
-            {metrics: [{status: 'green', status_start_date: []}]},
-            {hidden_metrics: '', filter_status_week: false, filter_color_green: true}
+            {metrics: [{status: 'green', status_start_date: [], id_format: '', measurement: '', norm: '',
+                        comment: ''}]},
+            {hidden_metrics: '', filter_status_week: false, filter_color_green: true, search_string: ''}
         ),
         []
     );

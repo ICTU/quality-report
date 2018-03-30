@@ -81,14 +81,16 @@ class MetricsSections extends React.Component {
                         section_metrics.push(metric);
                     }
                 });
-                metrics_sections.push(
-                    <MetricsSection key={section["id"]} section={section["id"]}
-                                    latest_change_date = {section["latest_change_date"]}
-                                    class_name="metric_section" title={section["title"]} metrics={section_metrics}
-                                    table_sort_column_name={this.state.table_sort_column_name}
-                                    table_sort_ascending={this.state.table_sort_ascending}
-                                    onSort={this.onSort} on_hide_metric={this.props.on_hide_metric} />
-                );
+                if (section_metrics.length > 0) {
+                    metrics_sections.push(
+                        <MetricsSection key={section["id"]} section={section["id"]}
+                                        latest_change_date = {section["latest_change_date"]}
+                                        class_name="metric_section" title={section["title"]} metrics={section_metrics}
+                                        table_sort_column_name={this.state.table_sort_column_name}
+                                        table_sort_ascending={this.state.table_sort_ascending}
+                                        onSort={this.onSort} on_hide_metric={this.props.on_hide_metric} />
+                    );
+                }
             }, this);
         }
         return (

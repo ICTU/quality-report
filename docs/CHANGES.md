@@ -1,3 +1,8 @@
+2018-03-30  Release 2.51.0
+
+  * Feature #336: Add text-based metric filtering capability via search field in the navigation bar.
+  
+  
 2018-03-29  Release 2.50.0
 
   * Remove feature: HQ no longer tracks the versions of the PMD, Checkstyle, and Findbugs SonarQube plugins.

@@ -47,6 +47,8 @@ class App extends React.Component {
         this.onTab = this.onTab.bind(this);
         this.onFilter = this.onFilter.bind(this);
         this.onHideMetric = this.onHideMetric.bind(this);
+        this.onSearch = this.onSearch.bind(this);
+        this.onSearchReset = this.onSearchReset.bind(this);
     }
 
     filter_all(state, hidden_metrics) {
@@ -60,7 +62,8 @@ class App extends React.Component {
             filter_color_grey: state,
             filter_color_missing_source: state,
             filter_color_missing: state,
-            hidden_metrics: hidden_metrics
+            hidden_metrics: hidden_metrics,
+            search_string: ''
         };
     }
 
@@ -123,6 +126,26 @@ class App extends React.Component {
         });
     }
 
+    onSearchReset(event) {
+        event.preventDefault();
+        this.search("");
+    }
+
+    onSearch(event) {
+        event.preventDefault();
+        this.search(event.target.value.toLowerCase());
+    }
+
+    search(search_string) {
+        let self = this;
+        this.setState(function(previous_state, props) {
+            let filter = Object.assign({}, previous_state.filter);  // Copy filter
+            filter['search_string'] = search_string;
+            self.storage.setItem('filter', JSON.stringify({filter: filter}));
+            return {filter: filter, metrics: self.filter(previous_state.metrics_data, filter)};
+        });
+    }
+
     onHideMetric(event) {
         event.preventDefault();
         let self = this;
@@ -138,7 +161,16 @@ class App extends React.Component {
     filter(metrics_data, filter) {
         var metrics = [];
         const now = new Date();
+        const searchable_fields = ["id_format", "measurement", "norm", "comment"];
+        const search_string = filter['search_string'];
         metrics_data['metrics'].forEach(function(metric) {
+            let matches = searchable_fields.filter(function(searchable_field) {
+                return (metric[searchable_field].toLowerCase().indexOf(search_string) !== -1)
+            });
+            if (matches.length === 0) {
+                return;
+            }
+
             if (filter['hidden_metrics'].indexOf(metric["id_value"]) > -1) {
                 return;
             }
@@ -180,6 +212,7 @@ class App extends React.Component {
                             on_toggle_one_table={this.onToggleOneTable}
                             tab={this.state.tab} on_tab={this.onTab}
                             filter={this.state.filter}
+                            on_search={this.onSearch} on_search_reset={this.onSearchReset}
                             on_filter={this.onFilter} />
                     <MainContainer metrics_data={this.state.metrics_data}
                                    metrics={this.state.metrics}

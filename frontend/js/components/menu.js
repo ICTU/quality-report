@@ -15,6 +15,7 @@
 
 import React from 'react';
 import {Menu, MenuItem} from 'widgets/menu.js';
+import {DelayInput} from 'react-delay-input';
 
 
 class MetricsMenu extends React.Component {
@@ -59,7 +60,7 @@ class FilterMenu extends React.Component {
                 <MenuItem id="filter_color_green" title="Goed"
                           check={this.props.filter.filter_color_green}
                           onClick={this.props.on_filter} />
-                 <MenuItem id="filter_color_perfect" title="Perfect"
+                <MenuItem id="filter_color_perfect" title="Perfect"
                           check={this.props.filter.filter_color_perfect}
                           onClick={this.props.on_filter} />
                 <MenuItem id="filter_color_grey" title="Technische schuld"
@@ -109,6 +110,37 @@ class HelpMenu extends React.Component {
     }
 }
 
+class Search extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+            <form className="navbar-form navbar-left" onSubmit={this.handleSubmit} role="search">
+                <div className="form-group">
+                    <div className="input-group">
+                        <DelayInput placeholder="Filter metrieken..." type="search" value={this.props.filter.search_string}
+                                    disabled={this.props.tab !== 'metrics_tab'} className="form-control"
+                                    onChange={this.props.on_search} delayTimeout={400} minLength={0} />
+                        <span className="input-group-btn">
+                            <button className="btn btn-default" type="button" onClick={this.props.on_search_reset}
+                                    disabled={this.props.filter.search_string === ""}>
+                               <span className="glyphicon glyphicon-remove" area-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        );
+    }
+}
+
 class Menus extends React.Component {
     render() {
         return (
@@ -116,6 +148,7 @@ class Menus extends React.Component {
                 <MenuItem id="metrics_tab" onClick={this.props.on_tab} title="Metrieken"
                           hide={this.props.tab === 'metrics_tab'} />
                 <MetricsMenu {...this.props} />
+                <Search {...this.props} />
                 <MenuItem title="Toon" hide={this.props.tab === 'metrics_tab'} disabled={true} />
                 <FilterMenu {...this.props} />
                 <MenuItem id="trend_tab" onClick={this.props.on_tab} title="Trend"
