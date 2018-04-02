@@ -21,7 +21,7 @@ import re
 from typing import Dict, Any, Tuple
 
 from . import base_formatter
-from .. import metric_source, utils, VERSION
+from .. import metric_source, VERSION
 from ..report import QualityReport
 from ..domain import Metric, DomainObject, MetricSource
 
@@ -105,19 +105,12 @@ class MetricsFormatter(base_formatter.Formatter):
 
     sep = ', '
     columns = '''{{"id_value": "{metric_number}", "id_format": "{metric_id}", "name": "{name}", "section": \
-"{section}", "status": "{status}", "sparkline": "<img src='img/{metric_id}.png' border='0' width='100' \
-height='25' />", "status_value": "{status_nr}", "status_format": "<img src='img/{image}.png' alt='{alt}' width='48' \
-height='48' title='{hover}' border='0' />", "status_start_date": {status_start_date}, "measurement": "{text}", \
-"norm": "{norm}", "comment": "{comment}", "metric_class": "{class}", "extra_info": {extra_info}}}'''
-    kwargs_by_status: Dict[str, Any] = dict(
-        red=dict(image='sad', alt=':-(', status_nr=0, hover='Direct actie vereist: norm niet gehaald'),
-        yellow=dict(image='plain', alt=':-|', status_nr=1, hover='Bijna goed: norm net niet gehaald'),
-        green=dict(image='smile', alt=':-)', status_nr=2, hover='Goed: norm gehaald'),
-        perfect=dict(image='biggrin', alt=':-D', status_nr=3, hover='Perfect: score kan niet beter'),
-        grey=dict(image='ashamed', alt=':-o', status_nr=4, hover='Technische schuld: lossen we later op'),
-        missing=dict(image='missing', alt='x', status_nr=5, hover='Ontbrekend: metriek kan niet gemeten worden'),
-        missing_source=dict(image='missing_source', alt='%', status_nr=6,
-                            hover='Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'))
+"{section}", "status": "{status}", "status_value": "{status_nr}", "status_start_date": {status_start_date}, \
+"measurement": "{text}", "norm": "{norm}", "comment": "{comment}", "metric_class": "{class}", "extra_info": \
+{extra_info}}}'''
+    kwargs_by_status: Dict[str, Any] = dict(red=dict(status_nr=0), yellow=dict(status_nr=1), green=dict(status_nr=2),
+                                            perfect=dict(status_nr=3), grey=dict(status_nr=4),
+                                            missing=dict(status_nr=5), missing_source=dict(status_nr=6))
 
     def prefix(self, report: QualityReport) -> str:
         return '{{"report_date": {report_date}, "report_title": "{report_title}", ' \
@@ -142,7 +135,6 @@ height='48' title='{hover}' border='0' />", "status_start_date": {status_start_d
         status_start_date = metric.status_start_date()
         extra_info = metric.extra_info()
         kwargs = self.kwargs_by_status[status].copy()
-        kwargs['hover'] += ' (sinds {date})'.format(date=utils.format_date(status_start_date, year=True))
         kwargs['status'] = status
         kwargs['status_start_date'] = self.__date_array(status_start_date) if status_start_date else []
         kwargs['metric_id'] = metric.id_string()

@@ -16,7 +16,6 @@
 
 import test from 'tape';
 import React from 'react';
-import { MenuItem } from '../../js/widgets/menu';
 import {MetricsTable} from '../../js/components/metrics_table.js';
 
 import { shallow, mount } from 'enzyme';
@@ -33,7 +32,8 @@ global.window = doc.defaultView
 global.$ = require('jquery')(global.window);
 
 test('metrics table rendered without metrics', (t) => {
-    const wrapper = shallow(<MetricsTable metrics={[]} onSort="onSrt" table_sort_column_name="tscn" table_sort_ascending="tsc" on_hide_metric='onHideMetricFn'/>)
+    const wrapper = shallow(<MetricsTable metrics={[]} onSort="onSrt" table_sort_column_name="tscn"
+                                          table_sort_ascending="tsc" on_hide_metric='onHideMetricFn'/>)
     t.equal(wrapper.find('BootstrapTable').length, 1);
     t.equal(wrapper.find('BootstrapTable').prop('onSort'), "onSrt");
     t.equal(wrapper.find('BootstrapTable').prop('table_sort_column_name'), "tscn");
@@ -41,33 +41,35 @@ test('metrics table rendered without metrics', (t) => {
     t.equal(wrapper.find('BootstrapTable').prop('table_sort_ascending'), "tsc");
     t.equal(wrapper.find('BootstrapTable').prop('on_hide_metric'), "onHideMetricFn");
     t.deepEqual(wrapper.find('BootstrapTable')
-        .prop('headers'), [["", ""], ["id_format", "Id"], ["sparkline", "Trend"], 
+        .prop('headers'), [["", ""], ["id_format", "Id"], ["sparkline", "Trend"],
                             ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"]]);
     t.equal(wrapper.find('BootstrapTable').children().exists(), false);
     t.end();
 });
 
 test('metrics table rendered with comment header if there is at least one comment', (t) => {
-    const wrapper = shallow(<MetricsTable metrics={[{"comment": "Whatever"}]} />)
+    const wrapper = shallow(<MetricsTable metrics={[{"comment": "Whatever",
+                                                     "status_start_date": [2018, 1, 1, 12, 0, 0]}]} />)
     t.deepEqual(wrapper.find('BootstrapTable').prop('headers'),
-            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"], 
+            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"],
              ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"], ["comment", "Comment"]]);
     t.end();
 });
 
-test('metrics table rendered without comment header if there the comment is empty', (t) => {
-    const wrapper = shallow(<MetricsTable metrics={[{"comment": ""}]} />)
+test('metrics table rendered without comment header if the comment is empty', (t) => {
+    const wrapper = shallow(<MetricsTable metrics={[{"comment": "", "status_start_date": [2018, 1, 1, 12, 0, 0]}]} />)
     t.deepEqual(wrapper.find('BootstrapTable').prop('headers'),
-            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"], 
+            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"],
              ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"]]);
     t.end();
 });
 
 test('metrics table rendered correctly', (t) => {
     const wrapper = mount(<MetricsTable metrics={[{"id_value": "PD-01", "id_format": "PD-1", "section": "PD",
-                "sparkline": "<img src='img/PD-1.png' />;", "status_format": "status_format_html_str", "status": "missing_source",
-                "measurement": "Measurement result", "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]} />)
-    
+        "status_start_date": [2018, 1, 1, 12, 0, 0], "sparkline": "<img src='img/PD-1.png' />;",
+        "status": "missing_source",
+        "measurement": "Measurement result", "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]} />)
+
     t.equal(wrapper.find('BootstrapTable').children().length, 1);
 
     // columns' headers
@@ -77,14 +79,13 @@ test('metrics table rendered correctly', (t) => {
     t.equal(wrapper.find('thead th[id="measurement"]').text(), "Meting");
     t.equal(wrapper.find('thead th[id="norm"]').text(), "Norm");
     t.equal(wrapper.find('thead th[id="comment"]').text(), "Comment");
-    
+
     // button and dropdown
     t.equal(wrapper.find('span.missing_source_metric').text().trim(), "PD-1");
-    
+
     // metric data
     t.equal(wrapper.find('img[src="img/PD-1.svg"]').exists(), true);
-    t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
-        .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "status_format_html_str").exists(), true);
+    t.equal(wrapper.find("td span[title]").text(), "🛠");
     t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
         .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Measurement result").exists(), true);
     t.equal(wrapper.find("td[dangerouslySetInnerHTML]")

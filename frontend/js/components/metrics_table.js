@@ -15,6 +15,7 @@
 
 import React from 'react';
 import {BootstrapTable} from 'widgets/bootstrap_table.js';
+import {EMOJI} from 'emoji.js';
 
 
 class MetricsTable extends React.Component {
@@ -30,11 +31,25 @@ class MetricsTable extends React.Component {
         return (<div className="btn-group"><span className={this.bgColorClassName(metric)}>{metric["id_format"]}</span></div>);
     }
 
+    status(metric) {
+        var tooltip = {perfect: 'Perfect: score kan niet beter', red: 'Direct actie vereist: norm niet gehaald',
+                       yellow: 'Bijna goed: norm net niet gehaald', green: 'Goed: norm gehaald',
+                       grey: 'Technische schuld: lossen we later op',
+                       missing: 'Ontbrekend: metriek kan niet gemeten worden',
+                       missing_source: 'Ontbrekend: niet alle benodigde bronnen zijn geconfigureerd'}[metric['status']];
+        const date = metric['status_start_date'];
+        const year = date[0];
+        if (year !== 1) {
+            tooltip += ' (sinds ' + date[2] + '-' + date[1] + '-' + year + ')';
+        }
+        return (<span title={tooltip} style={{fontSize: 40 + 'px'}}>{EMOJI[metric['status']]}</span>);
+    }
+
     stuffTableRows(has_comments) {
         var table_rows = [];
         this.props.metrics.forEach(function (metric) {
-            var cells = [this.id_format(metric), this.sparkline(metric),
-            { __html: metric["status_format"] }, { __html: metric["measurement"] },
+            var cells = [this.id_format(metric), this.sparkline(metric), this.status(metric),
+            { __html: metric["measurement"] },
             { __html: metric["norm"] }];
             if (has_comments) {
                 cells.push({ __html: metric["comment"] });

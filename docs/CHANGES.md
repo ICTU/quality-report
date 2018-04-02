@@ -1,35 +1,40 @@
+2018-04-02  Release 2.51.1
+
+  * Refactoring: Replace icons with emoji.
+
+
 2018-03-30  Release 2.51.0
 
   * Feature #336: Add text-based metric filtering capability via search field in the navigation bar.
-  
-  
+
+
 2018-03-29  Release 2.50.0
 
   * Remove feature: HQ no longer tracks the versions of the PMD, Checkstyle, and Findbugs SonarQube plugins.
-  
-  
+
+
 2018-03-28  Release 2.49.3
 
   * Refactoring: When querying SonarQube for available quality profiles, download all information at once instead of
     language by language.
-  
-  
+
+
 2018-03-28  Release 2.49.2
 
   * Bug #335 fix: browser caching of json files disabled.
-  
+
 
 2018-03-28  Release 2.49.1
 
   * Bug fix: Ignore running builds when asking Jenkins for builds as Jenkins considers running builds successful.
-  
-  
+
+
 2018-03-23  Release 2.49.0
 
   * Remove feature: The ICTU specific performance report for the LRK-project is no longer used, so the accompanying
     metric source has been removed from HQ.
-  
-  
+
+
 2018-03-22  Release 2.48.0
 
   * Feature #292: Generic detail pane implemented for all metrics with Jira filter as a source.
@@ -37,41 +42,41 @@
 
 2018-03-19  Release 2.47.1
 
-  * Bug fix: When reading test results from a Jenkins test report, don't rely on plugin specific information to 
+  * Bug fix: When reading test results from a Jenkins test report, don't rely on plugin specific information to
     find the test results.
-  
+
 
 2018-03-17  Release 2.47.0
 
   * Remove feature: Measuring absence of team members is no longer supported.
-  
-  
+
+
 2018-03-16  Release 2.46.11
 
   * Bug fix: Dockerfile referenced a Github repository that was removed, causing the release to fail.
-  
-  
+
+
 2018-03-16  Release 2.46.10
 
-  * Bug fix: Release build failed, retry. 
-  
-  
+  * Bug fix: Release build failed, retry.
+
+
 2018-03-16  Release 2.46.9
 
   * Bug fix: Fix a regression in reading test results from a Jenkins test report.
-  
-   
+
+
 2018-03-15  Release 2.46.8
 
   * Bug fix: Mention the domain objects Scrum, IssueManagement and ProjectManagement on the help page.
-  
-  
+
+
 2018-03-14  Release 2.46.7
 
-  * Bug fix: When reading the latest test results from a Jenkins test report, try both last completed build and the 
+  * Bug fix: When reading the latest test results from a Jenkins test report, try both last completed build and the
     last successful build to find the results.
-    
-    
+
+
 2018-03-13  Release 2.46.6
 
   * Bug #310: A problem where Action Activity metric showed -1 days solved.
@@ -85,12 +90,12 @@
 2018-03-08  Release 2.46.4
 
   * Feature: Add metric class to internal metrics JSON file for use in meta reports.
-  
-  
+
+
 2018-03-07  Release 2.46.3
 
   * Bug fix: Improve the readability of the norms and measurements of the meta metrics.
-  
+
 
 2018-03-02  Release 2.46.2
 
@@ -100,8 +105,8 @@
 2018-03-02  Release 2.46.1
 
   * Bug fix: Reading Checkmarx scan dates with an explicit time zone would fail.
-  
-  
+
+
 2018-03-01  Release 2.46.0
 
   * Feature: Allow for authenticating with SonarQube using a token.
@@ -125,8 +130,8 @@
 2018-02-21  Release 2.43.2
 
   * Bug fix: Don't crash when the performance report is invalid.
-  
-  
+
+
 2018-02-20  Release 2.43.1
 
   * Bug #282: Detail table layout problem solved.
@@ -140,17 +145,17 @@
 2018-02-16  Release 2.42.3
 
   * Bug fix #264: The description of the norm of user stories in progress metric was incorrect.
-  
+
 
 2018-02-12  Release 2.42.2
 
   * Bug fix: Don't crash when Checkmarx report is missing.
-  
+
 
 2018-02-12  Release 2.42.1
 
   * Bug fix: Don't crash when Checkmarx report is missing.
-  
+
 
 2018-02-08  Release 2.42.0
 
@@ -167,26 +172,26 @@
   * The Sonar metric source can now be used as unit test report, coverage report and Sonar, so that it's no longer
     needed to create different instances of the Sonar metric source when using Sonar as metric source for code quality,
     unit tests and test coverage. See https://github.com/ICTU/quality-report/wiki/SonarQube.
-  
-  
+
+
 2018-02-02  Release 2.39.0
 
   * Feature #262: Use coverage reports as source for unit test metrics so that different metric sources can be used as
     source for coverage information. See https://github.com/ICTU/quality-report/wiki/Unit-test-coverage-metrics and
     https://github.com/ICTU/quality-report/wiki/System-test-coverage-metrics.
-    
-    
+
+
 2018-01-29  Release 2.38.5
 
-  * Bug fix: Reading the date and time of the OWASP dependency checker report would fail when using the Jenkins OWASP 
+  * Bug fix: Reading the date and time of the OWASP dependency checker report would fail when using the Jenkins OWASP
     dependency checker plugin.
-  
-  
+
+
 2018-01-28  Release 2.38.4
 
   * Bug fix #233: Links to Wiki metric source were broken.
-  
-  
+
+
 2018-01-26  Release 2.38.3
 
   * Bug fix #252: Type error 'cannot read comment' solved.
@@ -205,32 +210,32 @@
 2018-01-25  Release 2.38.0
 
   * Feature #244: Unmerged branches are now listed in the details pane instead of the metric text.
-  
+
 
 2018-01-24  Release 2.37.0
 
-  * Feature #246: No longer use separate metrics for integration tests and unit tests, since SonarQube >= 6.2 
+  * Feature #246: No longer use separate metrics for integration tests and unit tests, since SonarQube >= 6.2
     doesn't support this anymore. The integration test metrics and combined unit and integration test metrics have
     been removed.
-  
-  
+
+
 2018-01-22  Release 2.36.0
 
   * Feature #238: Remove the feature of using a default project definition when the actual project definition has
     errors as this results in a working (but useless) report, hiding the problem with the incorrect project definition.
-    
-    
+
+
 2018-01-20  Release 2.35.0
 
-  * Feature #245: Allow for ignoring specific lists on action and risk boards. 
+  * Feature #245: Allow for ignoring specific lists on action and risk boards.
     See https://github.com/ICTU/quality-report/wiki/Trello and https://github.com/ICTU/quality-report/wiki/Wekan.
 
- 
+
 2018-01-20  Release 2.34.1
 
   * Bug fix: Don't crash when reading new Silkperformer report.
-  
-  
+
+
 2018-01-16  Release 2.34.0
 
   * Feature #209: detail metric information pane implemented.
@@ -239,24 +244,24 @@
 2018-01-16  Release 2.33.1
 
   * Bug fix: Don't log a HTTP 404 as error for SonarQube when it's expected to occur.
-  
+
 
 2018-01-15  Release 2.33.0
 
   * Remove the JSF-subcomponent and accompanying metrics since it's no longer needed to support separate analysis of
     JSF-code in SonarQube.
-  
-  
+
+
 2018-01-15  Release 2.32.1
 
-  * Bug fix: The time-since-last-security-test metric would not be added to product sections, even if required. 
+  * Bug fix: The time-since-last-security-test metric would not be added to product sections, even if required.
 
 
 2018-01-11  Release 2.32.0
 
   * Add metrics for measuring the duration of performance tests so HQ can check that performance tests run long enough.
-    This only works for the SilkPerformer reports because the other performance report types don't contain the needed 
-    information. 
+    This only works for the SilkPerformer reports because the other performance report types don't contain the needed
+    information.
 
 
 2018-01-11  Release 2.31.2
@@ -271,15 +276,15 @@
 
 2018-01-09  Release 2.31.0
 
-  * Add three process types: Project management, Issue management, and Scrum. 
+  * Add three process types: Project management, Issue management, and Scrum.
     See https://github.com/ICTU/quality-report/wiki/Processes.
-  
-  
+
+
 2018-01-08  Release 2.30.1
 
   * Bug fix: Don't try to reach timed-out URLs multiple times.
-  
-  
+
+
 2018-01-08  Release 2.30.0
 
   * Footer with report title and date added. Closes #214.
@@ -289,31 +294,31 @@
 
   * Add a process domain object for measuring process metrics such as number of open bugs, overdue actions, and
     number of ready user stories. See https://github.com/ICTU/quality-report/wiki/Processes.
-    
-    
+
+
 2018-01-04  Release 2.28.4
 
   * Bug fix: Don't mention the number of unit tests in the unit test coverage metrics since the coverage and the
     number of tests may come from different sources.
-     
-  
+
+
 2018-01-04  Release 2.28.3
 
   * Bug fix: Don't complain in the log when one version of the SonarQube API doesn't work, but an older one does.
     Closes #174.
-  
-  
+
+
 2018-01-03  Release 2.28.2
 
   * Bug fix: Don't complain in the log about the meta metrics not having a metric source.
   * Bug fix: Don't complain in the log about Jenkins jobs not having a last stable or completed build.
-  
+
 
 2018-01-03  Release 2.28.1
 
-  * Show the total number of stories in the user story duration metric. 
-  
-  
+  * Show the total number of stories in the user story duration metric.
+
+
 2018-01-02  Release 2.28.0
 
   * Feature #206: TeamProgress metric removed.
@@ -322,12 +327,12 @@
 2018-01-02  Release 2.27.2
 
   * Bug fix: Don't mark Jira filters as unavailable when they return no issues.
-  
+
 
 2018-01-02  Release 2.27.1
 
   * Bug fix: Don't report that the last security test was just now when the date provided is in the future.
-  
+
 
 2017-01-02  Release 2.27.0
 
@@ -337,24 +342,24 @@
 2017-12-28  Release 2.26.2
 
   * Bug fix: Don't crash if Jenkins is unreachable.
-  
+
 
 2017-12-28  Release 2.26.1
 
   * Bug fix: Don't crash if Jenkins is unreachable.
-  
-  
+
+
 2017-12-28  Release 2.26.0
 
-  * All metric sources need a metric source id. See for example 
+  * All metric sources need a metric source id. See for example
     https://github.com/ICTU/quality-report/wiki/CI-server-metrics.
-  
-  
+
+
 2017-12-21  Release 2.25.3
 
-  * Bug fix: Instead of reporting an UFT test report as broken, assume no tests were skipped if the total number of 
+  * Bug fix: Instead of reporting an UFT test report as broken, assume no tests were skipped if the total number of
     tests can't be read from the UFT test report.
-  
+
 
 2017-12-20  Release 2.25.2
 
@@ -363,7 +368,7 @@
 
 2017-12-20  Release 2.25.1
 
-  * Add information about skipped tests to the failing unit/regression test metrics. (#196) 
+  * Add information about skipped tests to the failing unit/regression test metrics. (#196)
 
 
 2017-12-20  Release 2.25.0
@@ -374,14 +379,14 @@
 2017-12-19  Release 2.24.1
 
   * Read the step count in the UFT test report to calculate the skipped number of tests.
-  
+
 
 2017-12-15  Release 2.24.0
 
   * Make the board id of Trello and Wekan instance the metric source id in project definitions for consistency with
     other metric sources.
-  
-  
+
+
 2017-12-13  Release 2.23.0
 
   * Feature #185: Add metric for the number of user stories In Progress
@@ -389,9 +394,9 @@
 
 2017-12-09  Release 2.22.0
 
-  * Add Robot Framework test report as metric source for regression test and unit test metrics. 
+  * Add Robot Framework test report as metric source for regression test and unit test metrics.
     See https://github.com/ICTU/quality-report/wiki/Robot-Framework-test-report. Closes #182.
-  
+
 
 2017-12-07  Release 2.21.0
 
@@ -406,14 +411,14 @@
 2017-12-02  Release 2.20.1
 
   * Bug fix: Show a link to Checkmarx in the Checkmarx metrics, even if Checkmarx is not reachable. Closes #81.
-  
+
 
 2017-12-01  Release 2.20.0
 
-  * Show adapted metric targets in the report, in the metric comment. Closes #172. 
+  * Show adapted metric targets in the report, in the metric comment. Closes #172.
     See https://github.com/ICTU/quality-report/wiki/Metric-options.
-  
-  
+
+
 2017-11-29  Release 2.19.0
 
   * Add metric for time last security test.
@@ -422,7 +427,7 @@
 2017-11-23  Release 2.18.1
 
   * Bug fix: Jira filter metric source didn't work.
-  
+
 
 2017-11-23  Release 2.18.0
 
@@ -438,17 +443,17 @@
 2017-11-18  Release 2.17.3
 
   * Don't keep contacting hosts that are known to be unavailable. Closes #142.
-  
+
 
 2017-11-16  Release 2.17.2
 
   * Bug fix: Don't crash when multiple Sonar instances have been configured but no metric source id.
-  
+
 
 2017-11-16  Release 2.17.1
 
   * Bug fix: Don't crash when multiple Sonar instances have been configured but no metric source id.
-  
+
 
 2017-11-14  Release 2.17.0
 
@@ -458,39 +463,39 @@
 2017-11-13  Release 2.16.0
 
   * Add a Quality gate metric. See https://github.com/ICTU/quality-report/wiki/Bug-tracker-metrics.
-  
-  
+
+
 2017-11-13  Release 2.15.0
 
-  * Add the Track findings and Track technical debt requirement as optional requirement to the Product, Application, 
-    and Component domain objects. 
-    
-    
+  * Add the Track findings and Track technical debt requirement as optional requirement to the Product, Application,
+    and Component domain objects.
+
+
 2017-11-12  Release 2.14.2
 
   * Bug fix: Look at the most recently changed card when reporting the last activity of a Wekan board instead of at the
     oldest card.
   * Bug fix: Don't consider Wekan cards inactive if their start date is in the future.
-  
-  
+
+
 2017-11-12  Release 2.14.1
 
   * Bug fix: Don't crash when parsing the date and time of Bamboo test reports.
-  
-  
+
+
 2017-11-12  Release 2.14.0
 
-  * Add Jira filter metric source for bug tracker metrics. 
+  * Add Jira filter metric source for bug tracker metrics.
     https://github.com/ICTU/quality-report/wiki/Issue-tracker-metrics.
   * Bug fix: Don't count the rows in the trend table of Silkperformer performance reports as transactions.
-  
-  
+
+
 2017-10-29  Release 2.13.2
 
-  * Bug fix: Reports are not loading in Internet Explorer 11. 
+  * Bug fix: Reports are not loading in Internet Explorer 11.
     Attempted fix for https://github.com/ICTU/quality-report/issues/130
-  
-  
+
+
 2017-10-28  Release 2.13.1
 
   * Bug fix: Docker image wouldn't build correctly.
@@ -499,15 +504,15 @@
 2017-10-28  Release 2.13.0
 
   * Add WekanBoard metric source which can be used as RiskLog and ActionLog, in addition to TrelloBoard.
-    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics, 
+    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics,
     https://github.com/ICTU/quality-report/wiki/Risk-log-metrics and
     https://github.com/ICTU/quality-report/wiki/Wekan.
-  
-  
+
+
 2017-10-23  Release 2.12.0
 
-  * Introduce abstract RiskLog and ActionLog metric sources. The only concrete implemention is TrelloBoard. 
-    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics, 
+  * Introduce abstract RiskLog and ActionLog metric sources. The only concrete implemention is TrelloBoard.
+    See https://github.com/ICTU/quality-report/wiki/Action-log-metrics,
     https://github.com/ICTU/quality-report/wiki/Risk-log-metrics and
     https://github.com/ICTU/quality-report/wiki/Trello.
 
@@ -520,52 +525,52 @@
 2017-10-22  Release 2.11.1
 
   * Bug fix: Don't crash when the OpenVAS report date and time can't be parsed.
-  
-  
+
+
 2017-10-22  Release 2.11.0
 
   * Introduce an abstract CIServer metric source. The only concrete implementation is Jenkins. Note that Jenkins need
-    to be added to the project using the CIServer key. See 
+    to be added to the project using the CIServer key. See
     https://github.com/ICTU/quality-report/wiki/CI-server-metrics and
     https://github.com/ICTU/quality-report/wiki/Jenkins.
-  
-  
+
+
 2017-10-20  Release 2.10.5
 
-  * Bug fix: The SonarQube API for retrieving the date and time of the last analysis only works for projects, not for 
+  * Bug fix: The SonarQube API for retrieving the date and time of the last analysis only works for projects, not for
     components. As of SonarQube 6.4, the components API returns the date and time of the last analysis date for both
-    projects and components. So, HQ now uses the components API for retrieving the date and time of the last analysis 
+    projects and components. So, HQ now uses the components API for retrieving the date and time of the last analysis
     if SonarQube is version 6.4 or newer.
-    
+
 
 2017-10-19  Release 2.10.4
 
   * Allow for using regular expressions in the Splunk performance report metric source id.
     See https://github.com/ICTU/quality-report/wiki/Performance-test-metrics.
-      
+
 
 2017-10-19  Release 2.10.3
 
   * Bug fix: Don't crash when Checkmarx data can't be read.
-  
-  
+
+
 2017-10-19  Release 2.10.2
 
   * Add BambooTestReport metric source that can retrieve tests and test failures using the Bamboo API.
     See https://github.com/ICTU/quality-report/wiki/Bamboo-test-report.
-  
+
 
 2017-10-17  Release 2.10.1
 
   * Bug fix: SonarTestReport didn't correctly implement the TestReport interface.
-  
+
 
 2017-10-17  Release 2.10.0
 
-  * Introduce new abstract class for unit test reports: metric_source.UnitTestReport. Note that metric_source.Sonar 
-    is no longer used as metric source for unit test metrics. You need to add a SonarTestReport as metric source to the 
+  * Introduce new abstract class for unit test reports: metric_source.UnitTestReport. Note that metric_source.Sonar
+    is no longer used as metric source for unit test metrics. You need to add a SonarTestReport as metric source to the
     project. See https://github.com/ICTU/quality-report/wiki/Unit-test-metrics.
-  
+
 
 2017-10-16  Release 2.9.9
 
@@ -574,51 +579,51 @@
 
 2017-10-11  Release 2.9.8
 
-  * Bug fix: Use a default project definition if the project definition file can't be read, but don't write it to disk 
+  * Bug fix: Use a default project definition if the project definition file can't be read, but don't write it to disk
     to prevent overwriting the (faulty) project definition file.
-  
-  
+
+
 2017-10-09  Release 2.9.7
 
   * New release identical to release 2.9.6 for testing purposes.
-  
-  
+
+
 2017-10-09  Release 2.9.6
 
   * Allow for querying measurable objects for the metrics that have options. This is useful for meta reports.
-  
-  
+
+
 2017-10-04  Release 2.9.5
 
   * Bug fix: Don't crash due to missing logging parameters.
-  
-  
+
+
 2017-10-04  Release 2.9.4
 
   * Add HQ version to logging.
-  
+
 
 2017-10-04  Release 2.9.3
 
   * Bug fix: Don't crash when Jenkins hasn't been configured.
-  
+
 
 2017-10-04  Release 2.9.2
 
   * Bug fix: Don't crash when Jenkins hasn't been configured.
-  
+
 
 2017-10-04  Release 2.9.1
 
   * Bug fix: When determining last Checkmarx run, be prepared for checks without date and time.
-  
+
 
 2017-09-29  Release 2.9.0
 
-  * metric_source.TestReport has been renamed to metric_source.SystemTestReport in preparation for multiple test 
-    report types. Search project definitions for usage of metric_source.TestReport and replace them with 
+  * metric_source.TestReport has been renamed to metric_source.SystemTestReport in preparation for multiple test
+    report types. Search project definitions for usage of metric_source.TestReport and replace them with
     metric_source.SystemTestReport.
-    
+
 
 2017-09-27  Release 2.8.1
 
@@ -628,58 +633,58 @@
 2017-09-26  Release 2.8.0
 
   * Add an UFT test report metric source.
-  
+
 
 2017-09-25  Release 2.7.0
 
   * Add a Checkmarx report age metric.
-  
-  
+
+
 2017-09-25  Release 2.6.8
 
   * Bug fix: Don't crash when the JaCoCo session HTML file does not contain session information.
-  
-  
+
+
 2017-09-25  Release 2.6.7
 
   * Bug fix: Don't count ignored TestNG tests as skipped, but ignore them completely.
-  
+
 
 2017-09-21  Release 2.6.6
 
   * Bug fix: Force day-first for for the dates in Splunk performance reports.
-  
+
 
 2017-09-21  Release 2.6.5
 
   * Bug fix: Use correct date from the Splunk performance report.
-  
-  
+
+
 2017-09-21  Release 2.6.4
 
   * Bug fix: Better template for open findings metrics.
-  
-  
+
+
 2017-09-21  Release 2.6.3
 
   * Slightly longer time-out to cater for slow Jira queries.
-  
-  
+
+
 2017-09-20  Release 2.6.2
 
   * Bug fix: Support subprojects in Sonar.
-  
-  
+
+
 2017-09-20  Release 2.6.1
 
   * Bug fix: Metrics for open findings were missing in the set of optional project requirements.
-  
+
 
 2017-09-18  Release 2.6.0
 
   * Add Jira metrics for the number of open findings in different environments.
-  
-  
+
+
 2017-09-18  Release 2.5.5
 
   * Bug fix: The target and low target values of the ready user stories metric were reversed.
@@ -693,60 +698,60 @@
 2017-09-15  Release 2.5.3
 
   * Bug fix: Don't mark the manual test cases metric red when there are no manual test cases.
-  
-  
+
+
 2017-09-15  Release 2.5.2
 
   * Bug fix: Total LOC metric would report size as number of products times -1 if Sonar is unavailable.
   * Bug fix: Rename Visual Basic to VB.NET
-  
-  
+
+
 2017-09-11  Release 2.5.1
-   
+
   * Bug fix: Prevent really long time outs when opening URLs.
-  
-  
+
+
 2017-09-11  Release 2.5.0
 
   * Allow for putting strings in dashboard table cells and use them as labels.
-  
-  
+
+
 2017-09-08  Release 2.4.2
 
   * Bug fix: Don't crash when SonarQube doesn't respond to the old measures API.
-  
-  
+
+
 2017-09-06  Release 2.4.1
 
   * Bug fix: Don't crash when SonarQube doesn't respond to the new measures API.
-  
-  
+
+
 2017-09-06  Release 2.4.0
 
   * Add a TestNG test report metric source.
-  
+
 
 2017-09-05  Release 2.3.0
 
   * Add a CompactHistory metric source that stores the history in a real JSON format and requires less disk space.
   * Bug fix: Menu items with a check mark didn't work.
-  
-  
+
+
 2017-08-28  Release 2.2.10
 
   * Bug fix: The Splunk performance report CSV is encoded in ANSI.
- 
- 
+
+
 2017-08-28  Release 2.2.9
 
   * More logging when Splunk performance report can't be parsed.
- 
- 
+
+
 2017-08-28  Release 2.2.8
 
   * More logging when Splunk performance report can't be parsed.
-  
-  
+
+
 2017-08-28  Release 2.2.7
 
   * Fix Travis release build.
@@ -770,24 +775,24 @@
 2017-07-20  Release 2.2.3
 
   * Bug fix: The comment column would sometimes disappear.
-  
-  
+
+
 2017-07-19  Release 2.2.2
 
   * Bug fix: Don't show legends in the dashboard.
-  
-  
+
+
 2017-07-19  Release 2.2.1
 
   * Use Travis to push the Docker image to Docker Hub.
-  
-  
+
+
 2017-07-19  Release 2.2.0
 
   * Add a filter for hiding metrics that haven't had a status change for more than a week.
   * Bug fix: Product size metric was shown twice in the help information.
-  
-  
+
+
 2017-07-13  Release 2.1.2
 
   * Bug fix: Don't include related dependencies in the number of dependencies with warnings (OWASP Dependency Check).
@@ -796,7 +801,7 @@
 2017-07-13  Release 2.1.1
 
   * Bug fix: Don't let Travis clean the workspace before creating the source distribution.
-  
+
 
 2017-07-13  Release 2.1.0
 
@@ -806,7 +811,7 @@
 
 2017-07-12  Release 2.0.0
 
-  * Remove Google Chart dependencies from frontend and replace with Chart.js so that no internet access is 
+  * Remove Google Chart dependencies from frontend and replace with Chart.js so that no internet access is
     needed for creating quality reports.
   * Use React for the front-end.
   * Use Pygal on the back-end to create SVGs of sparkline charts.
@@ -818,25 +823,25 @@
 
   * Bug fix: Don't crash when a Checkmarx analysis can't be found.
   * Bug fix: Open CSV files in text mode.
-  
-  
+
+
 2017-06-30  Release 1.83.0
 
   * Add metric source for the CSV performance report exported from Splunk by Spirit.
-  
-  
+
+
 2017-06-28  Release 1.82.9
 
   * Bug fix: Allow for multiple SonarQube instances as metric source.
-  
-  
+
+
 2017-06-22  Release 1.82.8
 
   * Bug fix: Don't crash when a metric can't be retrieved from SonarQube v4.5.7.
-  
+
 
 2017-06-21  Release 1.82.7
- 
+
   * Bug fix: Frontend was missing in the Python package.
 
 
@@ -844,20 +849,20 @@
 
   * Bug fix: Don't crash when a metric can't be retrieved from SonarQube.
   * Bug fix: Bring back support for SonarQube v4.5.7.
-  
-  
+
+
 2017-06-20  Release 1.82.5
 
   * Bug fix: Update deprecated SonarQube API for fetching a component.
-  * Bug fix: New API for fetching component version number and last analyse date and time doesn't work 
+  * Bug fix: New API for fetching component version number and last analyse date and time doesn't work
     before SonarQube v6.3, fallback on older API if necessary.
 
 
 2017-06-16  Release 1.82.4
 
   * Bug fix: Don't crash when SonarQube has no analyses for a project yet.
-  
-  
+
+
 2017-06-16  Release 1.82.3
 
   * Bug fix: Update deprecated SonarQube API for fetching the SonarQube version number.
@@ -870,13 +875,13 @@
 2017-06-08  Release 1.82.2
 
   * Bug fix: Required version numbers for C# quality profile and plugin were mixed up.
-  
+
 
 2017-06-07  Release 1.82.1
 
   * Bug fix: Use a fluid container for better layout.
-  
-  
+
+
 2017-06-07  Release 1.82.0
 
   * Add metric source for a performance report format that is specific to ICTU.
@@ -887,20 +892,20 @@
   * Bug fix: Don't crash when the OpenVAS scan report is invalid or empty.
   * Bug fix: Don't push a canvas in empty dashboard table cells.
   * Remove animation from charts, it's too slow.
-  
+
 
 2017-06-06  Release 1.81.16
 
   * Add animation to charts.
   * Make dashboard with pie charts responsive.
   * Add navigation menu to the trends tab.
-  
-  
+
+
 2017-06-03  Release 1.81.15
 
   * Bug fix: Don't crash when there are no Checkmarx reports for a specific project.
-  
-  
+
+
 2017-06-03  Release 1.81.14
 
   * Make Checkmarx a default requirement for Application domain objects.
@@ -910,25 +915,25 @@
 2017-05-26  Release 1.81.13
 
   * Use Webpack to bundle the web application.
-  
+
 
 2017-05-23  Release 1.81.12
 
   * Bug fix: Show Checkmarx url in the metric sources help menu.
-  
-  
+
+
 2017-05-18  Release 1.81.11
 
   * Bug fix: Add missing requirements (VisualBasic, TypeScript, Python) to help information.
   * Move trend graphs to a separate tab so the trend data can be loaded on demand.
-  
-  
+
+
 2017-05-16  Release 1.81.10
 
   * Show loading message while loading data.
   * JaCoCo sessions URL changed from .sessions.html to jacoco-session.html. Try both the old and the new one.
-  
-  
+
+
 2017-05-07  Release 1.81.9
 
   * Bug fix: Ignore line breaks in Wiki table cells.
@@ -938,64 +943,64 @@
 2017-05-07  Release 1.81.8
 
   * Bug fix: Basic authentication was not working.
-  
+
 
 2017-05-06  Release 1.81.7
 
-  * Bug fix: Don't crash when the project has a test report, but a product doesn't have a metric source id for the test 
+  * Bug fix: Don't crash when the project has a test report, but a product doesn't have a metric source id for the test
     report.
-    
-    
+
+
 2017-05-06  Release 1.81.6
 
   * Bug fix: Don't try to use a metric source that needs a metric source id without one.
-  
+
 
 2017-05-06  Release 1.81.5
 
   * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.
   * Bug fix: Don't crash when the Wiki is not formatted correctly.
   * Processed latest SIG/TUV evaluation criteria: duplication norm lowered from 5% to 4%.
-  
-  
+
+
 2017-04-18  Release 1.81.4
 
   * Bug fix: Escape backslashes in branch names when generating the metrics JSON file.
-  
-  
+
+
 2017-04-18  Release 1.81.3
 
   * Bug fix: Don't crash when measuring team progress.
-  
+
 
 2017-04-18  Release 1.81.2
 
-  * Bug fix: Link to the manual tests Birt report for the number of manual test cases instead of to the what's missing 
+  * Bug fix: Link to the manual tests Birt report for the number of manual test cases instead of to the what's missing
     report.
   * Bug fix: Quote project names before passing them to Checkmarx.
-  
-  
+
+
 2017-04-14  Release 1.81.1
 
   * Bug fix: Don't use card titles of Trello cards to prevent leaking information.
-  
+
 
 2017-04-13  Release 1.81.0
 
   * New metric and metric source for reporting on number of Checkmarx warnings.
-  
+
 
 2017-04-05  Release 1.80.3
 
   * Bug fix: HTML report would be invalid when metric comments contain new lines.
   * Bug fix: Use correct language codes when querying SonarQube for Python and TypeScript quality profiles.
   * Bug fix: Don't crash when users enter invalid dates in the Wiki.
-  
+
 
 2017-03-19  Release 1.80.2
 
   * Bug fix: Don't assume ASCII when decoding JSON.
-  
+
 
 2017-03-19  Release 1.80.1
 
@@ -1005,30 +1010,30 @@
 2017-03-19  Release 1.80.0
 
   * Upgrade to Python 3 (tested with Python 3.4 and 3.5).
-  * Remove metric and metric source for measuring consistency of Java versions across environments as it's no longer 
+  * Remove metric and metric source for measuring consistency of Java versions across environments as it's no longer
     used.
 
 
 2017-03-07  Release 1.79.3
 
   * Bug fix: Manifest file was incomplete.
-  
-  
+
+
 2017-03-07  Release 1.79.2
 
   * Load meta metric history data asynchronously from a JSON file.
   * Update rule names to try when fetching metrics from SonarQube.
-  
+
 
 2017-03-02  Release 1.79.1
 
   * Performance improvement.
-  
+
 
 2017-03-01  Release 1.79.0
 
   * Introduce an environment domain class.
-  
+
 
 2017-02-26  Release 1.78.0
 
@@ -1038,24 +1043,24 @@
 2017-02-22  Release 1.77.10
 
   * Bug fix: Allow for spaces in Git paths.
-  
-  
+
+
 2017-02-21  Release 1.77.9
 
   * Remove the metric for the SonarQube StyleCop plugin as the StyleCop plugin is obsolete.
   * Bug fix: Don't crash when Jenkins hostname can't be resolved.
-  
-  
+
+
 2017-02-16  Release 1.77.8
 
   * Add metric for measuring the age of Open VAS Scan reports.
-  
+
 
 2017-02-15  Release 1.77.7
 
   * Add metric for measuring the age of OWASP dependency checker reports.
-  
-  
+
+
 2017-02-12  Release 1.77.6
 
   * Bug fix: Don't crash when no history file is defined.
@@ -1069,136 +1074,136 @@
 2017-02-12  Release 1.77.4
 
   * Bug fix: Don't crash when no history file is defined.
-  
-  
+
+
 2017-02-12  Release 1.77.3
 
- * The --project argument can be a filename or a folder. This allows for having multiple project definitions in the 
+ * The --project argument can be a filename or a folder. This allows for having multiple project definitions in the
    same folder.
-   
-   
+
+
 2017-02-12  Release 1.77.2
 
   * Return exit status 2 if any metric is red or missing and the --failure-exit-code command line option is passed.
-  
-  
+
+
 2017-02-10  Release 1.77.1
 
   * Color the report date yellow or red, depending on the age of the report.
   * Bug fix: Don't crash when the coverage percentage in a NCover report is missing.
-  
+
 
 2017-02-09  Release 1.77.0
 
   * It's no longer necessary to specify unittests and integration tests as a sub component.
   * Return exit status 2 if not all metrics are green and the --failure-exit-code command line option is passed.
-  
+
 
 2017-02-04  Release 1.76.4
 
   * Bug fix: Don't crash when JMeter report or Ansible report are unavailable.
-  
+
 
 2017-02-04  Release 1.76.3
 
   * Bug fix: Don't crash when the holiday planner is unavailable.
-  
+
 
 2017-02-04  Release 1.76.2
 
   * Bug fix: Don't crash when Jira is unavailable.
-  
+
 
 2017-02-02  Release 1.76.1
 
   * Bug fix: Don't crash when Jenkins is unavailable.
-  
+
 
 2017-02-02  Release 1.76.0
 
-  * Add metrics for measuring the version of Visual Basic, TypeScript, and Python SonarQube plugins and quality 
+  * Add metrics for measuring the version of Visual Basic, TypeScript, and Python SonarQube plugins and quality
     profiles.
-  
+
 
 2017-02-01  Release 1.75.6
 
   * Bug fix: Don't crash when the team spirit wiki is missing a date in the last column.
-  
+
 
 2017-02-01  Release 1.75.5
 
   * Bug fix: Don't crash when a Junit report is empty.
-  
+
 
 2017-01-30  Release 1.75.4
 
   * Bug fix: Add measurements with missing source to the history graph.
-  
-  
+
+
 2017-01-30  Release 1.75.3
 
   * Bug fix: Add perfect measurements to the history graphs.
-  
-  
+
+
 2017-01-30  Release 1.75.2
 
   * Bug fix: Don't show missing history in the graphs.
-  
-  
+
+
 2017-01-30  Release 1.75.1
 
   * Bug fix: Don't crash with division by zero error when the history contains empty records.
-  
-  
+
+
 2017-01-30  Release 1.75.0
 
   * Add a trend graph that shows the absolute number of metrics over time.
   * Bug fix: Don't crash when trying to measure the age of a performance test report that hasn't been configured.
-  
-  
+
+
 2017-01-22  Release 1.74.3
- 
+
   * Bug fix: Don't crash when doing a git pull.
- 
- 
+
+
 2017-01-22  Release 1.74.2
- 
-  * Bug fix: Don't crash when reporting on risk or action log age. 
-  
-  
+
+  * Bug fix: Don't crash when reporting on risk or action log age.
+
+
 2017-01-22  Release 1.74.1
- 
+
   * Bug fix: Don't crash when reporting on team spirit.
-   
- 
+
+
 2017-01-21  Release 1.74.0
 
   * Add a metric for the number of days since regression test coverage reports were last generated.
   * Add a metric for the number of days since the team spirit was last edited.
   * Bug fix: Don't crash when an alert metric doesn't have a metric source configured.
   * Don't clone Git repos when reading the project definition, but only when needed.
-  
-  
+
+
 2017-01-06  Release 1.73.1
 
   * Bug fix: Url of performance test age metrics didn't work.
-   
-   
+
+
 2017-01-05  Release 1.73.0
 
   * Add metrics for the number of days since performance tests were last run.
-  
+
 
 2017-01-02  Release 1.72.2
 
   * Bug fix: Encode passwords in Git URLs.
-  
-  
+
+
 2016-12-15  Release 1.72.1
 
   * Bug fix: The JSF code quality requirement was missing from the help menu.
-  
-  
+
+
 2016-12-06  Release 1.72.0
 
   * Split `requirement.Performance` into separate requirements for load, endurance, and scalability:
@@ -1209,44 +1214,44 @@
 
 2016-12-05  Release 1.71.4
 
-  * Don't remove details and repeated measurements from old measurements in the history file to make it easier to use 
+  * Don't remove details and repeated measurements from old measurements in the history file to make it easier to use
     the history for research purposes.
-    
-    
+
+
 2016-11-29  Release 1.71.3
 
   * Bug fix: Resolve name conflict between library and script. The library is now called `hqlib`. The script is
     still called `quality_report.py`.
-  
-  
+
+
 2016-11-29  Release 1.71.2
 
   * Bug fix: Use creation date of manual test cases as last execution date as long as the test hasn't been executed yet.
   * Refactoring of source code layout.
-  
+
 
 2016-11-25  Release 1.71.1
 
   * Better metric report for metric.TeamAbsence.
-  
-  
+
+
 2016-11-25  Release 1.71.0
 
   * Allow for ignoring known future overlapping absences by passing a start_date option to the team absence metric:
     `Team(..., metric_options={metric.TeamAbsence: dict(start_date=datetime.date(2016, 4, 1))})`
-    
-    
+
+
 2016-11-24  Release 1.70.0
 
   * Give the software a proper name: HQ - Holistic Quality.
   * Rename doc folders to docs to prepare for Github Pages.
-  
+
 
 2016-11-21  Release 1.69.1
 
   * Bug fix: Add `requirement.OpenVAS` to optional project requirements.
-  
-  
+
+
 2016-11-21  Release 1.69.0
 
   * Remove the ability to remove Sonar analyses, which isn't needed anymore since the quality report software doesn't create
@@ -1254,59 +1259,59 @@
   * Move the OpenVAS metrics to the environment quality section, because the OpenVAS scan primarily scans the application hosts
     and not so much the software itself. This means `requirement.OpenVAS` should be passed to the project to have the OpenVAS
     metrics added.
-  
-  
+
+
 2016-11-14  Release 1.68.0
 
   * Remove the latest release, dependency and branch feature: this means that the quality report only contains trunk versions of
     software products.
-  
+
 
 2016-11-12  Release 1.67.0
 
   * Remove the release candidate feature.
-  
-  
+
+
 2016-11-11  Release 1.66.2
 
   * Bug fix: Remove links to dependencies from the HTML report.
-  
-  
+
+
 2016-11-11  Release 1.66.1
 
   * Bug fix: Don't crash when a product has a `requirement.Performance`, but hasn't got a metric source id for the performance report.
-  
-  
+
+
 2016-11-09  Release 1.66.0
 
   * Remove the dependency graph feature.
-  
-  
+
+
 2016-10-30  Release 1.65.5
 
   * Bug fix: Don't crash when Jenkins isn't available.
-  
-  
+
+
 2016-10-30  Release 1.65.4
 
   * Update dependencies to latest versions.
-  
+
 
 2016-10-26  Release 1.65.3
 
   * Bug fix: Don't crash when a property in a pom file can't be resolved.
-  
+
 
 2016-10-24  Release 1.65.2
 
   * Bug fix: Don't crash when `requirement.ART` is required, but no test reports are provided as metric source.
-  
-  
+
+
 2016-10-24  Release 1.65.1
 
   * Bug fix: The metrics that report on individual SonarQube violations, such as cyclomatic complexity, included resolved
     issues in their count.
-    
+
 
 2016-10-23  Release 1.65.0
 
@@ -1315,19 +1320,19 @@
     `myJira = metric_source.Jira('http://jira/', 'username', 'password', open_static_security_analysis_bug_query_id=567)`
     The `metric.OpenStaticSecurityAnalysisBugs` will be added to the project provided the project has the
     `requirement.TrackBugs`.
- 
-  
+
+
 2016-10-18  Release 1.64.2
 
-  * Remove ReSharper SonarQube plugin version measurement from C# requirements because the ReSharper plugin has been 
+  * Remove ReSharper SonarQube plugin version measurement from C# requirements because the ReSharper plugin has been
     deprecated.
-  
-  
+
+
 2016-10-09  Release 1.64.1
- 
+
   * Add component and application domain objects.
-  
-  
+
+
 2016-10-09  Release 1.64.0
 
   * Give domain objects default requirements. See the help menu domain objects for the default and optional requirements
@@ -1337,7 +1342,7 @@
 2016-10-03  Release 1.63.2
 
   * Bug fix: The happiness metric source wouldn't correctly read the JSON.
-  
+
 
 2016-10-03  Release 1.63.1
 
@@ -1347,124 +1352,124 @@
 2016-10-02  Release 1.63.0
 
   * Prepare for multiple metric source types for the team spirit measurement.
-  
-  
+
+
 2016-09-29  Release 1.62.5
 
   * Better norm explanation for the metric measuring the amount of logical test cases without duration filled in.
   * Support multiple Silk Performer reports for the performance scalability metric.
-  
-  
+
+
 2016-09-20  Release 1.62.4
 
   * Support SonarQube API changes starting with SonarQube 5.4.
-  
+
 
 2016-09-19  Release 1.62.3
 
   * Bug fix: Add missing import statement.
-  
-  
+
+
 2016-09-19  Release 1.62.2
 
   * Bug fix: Links to Trello boards were missing.
-  
+
 
 2016-09-19  Release 1.62.1
 
   * Bug fix: Don't crash when Trello reports there are no cards.
-  
+
 
 2016-09-13  Release 1.62.0
 
   * Add performance scalability test metrics.
-  
-  
+
+
 2016-09-12  Release 1.61.2
 
   * Remove resources tab as most of the information is now also in the help menu.
   * Reorganize help menu.
-  
+
 
 2016-09-11  Release 1.61.1
 
   * Bug fix: Don't crash when Birt has no sprint progress report.
-  
-  
+
+
 2016-09-11  Release 1.61.0
 
   * Add metrics for performance endurance testing.
-  
+
 
 2016-09-09  Release 1.60.1
 
   * Bug fix: Don't crash when reporting the new performance test metrics.
-  
-  
+
+
 2016-09-09  Release 1.60.0
 
   * Rename `metric_source.Ymor` to `metric_source.SilkPerformer`.
-  * Split the response times metric into two separate metrics: one for performance test warnings and one for 
+  * Split the response times metric into two separate metrics: one for performance test warnings and one for
     performance test errors. Performance test warnings are performance test queries that take longer than the
     desirable response time. Performance test errors are performance test queries that take longer than the
     maximum response time.
-  
-  
+
+
 2016-09-07  Release 1.59.0
 
   * Added a new possible location for documents: Nexus.
-  
-  
+
+
 2016-09-06  Release 1.58.4
 
   * Bug fix: Don't crash when Trello isn't configured.
-  
+
 
 2016-09-06  Release 1.58.3
 
   * Bug fix: Uncommitted changes were included in the previous release.
-  
+
 
 2016-09-06  Release 1.58.2
 
   * Bug fix: The Trello urls to overdue cards wouldn't be correct, making the quality report appear empty.
-  
+
 
 2016-09-05  Release 1.58.1
 
   * Bug fix: The test report metrics, when using a JUnit test report as source, would try to read the HTML
     Junit report to get the data instead of the XML JUnit report.
-    
-    
+
+
 2016-09-05  Release 1.58.0
 
   * Roll back overriding the url of a metric (release 1.57.0).
   * The OWASP dependency warnings metrics now link to the HTML report when using the XML report as source.
-  * The test report metrics, when using a JUnit test report as source, now links to the HTML JUnit report 
+  * The test report metrics, when using a JUnit test report as source, now links to the HTML JUnit report
     instead of the XML JUnit report.
-  
-  
+
+
 2016-09-01  Release 1.57.3
 
   * Roll back dashboard change.
-  
-  
+
+
 2016-09-01  Release 1.57.2
 
   * Bug fix: Better report for the metrics that count user stories without security and performance risk assessment.
   * More consistent dashboard layout.
-  
-  
+
+
 2016-08-31  Release 1.57.1
 
   * Bug fix: Don't crash when a Document has no version control system.
-  
+
 
 2016-08-31  Release 1.57.0
 
   * Allow for overriding the url of a metric by passing a url via the metric options:
     `Product(..., metric_options={metric.FailingRegressionTests: dict(url='http://path/to/html/test/report/')})`
-  
+
 
 2016-08-30  Release 1.56.2
 
@@ -1474,7 +1479,7 @@
 2016-08-30  Release 1.56.1
 
   * Previous version didn't install correctly.
-  
+
 
 2016-08-30  Release 1.56.0
 
@@ -1485,10 +1490,10 @@
 2016-08-30  Release 1.55.1
 
   * Junit reports would be reported as missing when the number of failures is higher than the number of test cases.
-  
-  
+
+
 2016-08-28  Release 1.55.0
-  
+
   * Use CamelCase requirement names for consistency with metric and metric source names.
 
 
@@ -1500,8 +1505,8 @@
 2016-08-26  Release 1.54.0
 
   * Remove support for the "old" BIRT reports (ICTU specific).
-  
-  
+
+
 2016-08-24  Release 1.53.4
 
   * Bug fix: The Open VAS requirement contained a ZAP Scan metric.
@@ -1520,61 +1525,61 @@
 2016-08-24  Release 1.53.1
 
   * Bug fix: Don't crash when a performance report metric source hasn't been configured.
-  
-  
+
+
 2016-08-24  Release 1.53.0
 
   * Add a metric for the Open VAS Scan report.
-  
-  
+
+
 2016-08-20  Release 1.52.0
 
   * Remove the quality attributes and ability to filter on it.
   * Read and parse each OWASP dependency XML report just once to improve performance.
-  
-  
+
+
 2016-08-18  Release 1.51.2
 
-  * Have `metric.FailingUnittests` report there are no unit tests rather than say that 0 of 0 unit tests fail, 
+  * Have `metric.FailingUnittests` report there are no unit tests rather than say that 0 of 0 unit tests fail,
     if there are no unit tests.
-    
-    
+
+
 2016-08-17  Release 1.51.1
 
   * Bug fix: Don't crash on credentials passed to the OWASP dependency XML report.
-  
-  
+
+
 2016-08-17  Release 1.51.0
 
   * Support OWASP dependency XML reports as metric source for the OWASP dependency metric:
     `OWASP_REPORT = metric_source.OWASPDependencyXMLReport('http://url/report.xml')`
     `PROJECT = Project(..., metric_sources={metric_source.OWASPDependencyReport: OWASP_REPORT})`
-  
+
 
 2016-08-16  Release 1.50.0
 
-  * Prepare for multiple implementations of the OWASP dependency report metric source. This means that adding the 
+  * Prepare for multiple implementations of the OWASP dependency report metric source. This means that adding the
     `metric_source.JenkinsOWASPDependencyReport` to the project now needs to use `metric_source.OWASPDependencyReport`
     as key:
     `OWASP_REPORT = metric_source.JenkinsOWASPDependencyReport('http://jenkins')`
     `PROJECT = Project(..., metric_sources={metric_source.OWASPDependencyReport: OWASP_REPORT})`
-  
+
 
 2016-08-15  Release 1.49.2
 
   * Bug fix: Don't crash when a product should have a coverage report, but the coverage URL isn't supplied.
-  
-  
+
+
 2016-08-15  Release 1.49.1
 
   * Bug fix: Don't crash when a product should have a coverage report, but the coverage URL isn't supplied.
-  
+
 
 2016-08-14  Release 1.49.0
 
   * List all requirements in the help menu and indicate which are included in the current report.
-  
-  
+
+
 2016-08-13  Release 1.48.0
 
   * Consistent requirement names.
@@ -1583,51 +1588,51 @@
 2016-08-12  Release 1.47.0
 
   * Remove the `domain.Team` parameter `is_scrum_team` because it is no longer needed.
-  
-  
+
+
 2016-08-11  Release 1.46.0
 
   * Remove `metric.ARTStability` and `domain.Street` because the stability of automated regression tests is also
     measured via the regression test reports.
-    
+
 
 2016-08-11  Release 1.45.4
 
   * Rollback 1.45.3 because the problem was not that Jenkins needed to retry but that the credentials weren't entered
     correctly.
-    
+
 
 2016-08-11  Release 1.45.3
 
   * When receiving a 403 forbidden (e.g. from Jenkins), retry with basic authentication.
-  
-  
+
+
 2016-08-09  Release 1.45.2
 
   * Add `requirement.TRACK_BRANCHES` to enable deciding whether branches should be tracked.
-  
-  
+
+
 2016-08-08  Release 1.45.1
 
   * Split `requirement.ART` into two different requirements: `requirement.ART` for the regression test success and age
     and `requirement.ART_COVERAGE` for the coverage metrics.
-    
-    
+
+
 2016-08-08  Release 1.45.0
 
   * Include metrics in the report based on requirements, not on whether they can be measured or not.
-  
+
 
 2016-07-15  Release 1.44.3
 
   * Don't crash when no Sonar or Birt instances are configured.
-  
-  
+
+
 2016-07-13  Release 1.44.2
 
   * Remove incomplete help information.
   * Better reporting on metric sources that have not been configured completely.
-  
+
 
 2016-07-11  Release 1.44.1
 
@@ -1637,20 +1642,20 @@
 2016-07-11  Release 1.44.0
 
   * Remove the `metric.DependencyQuality` as it wasn't really used.
-  
-  
+
+
 2016-07-11  Release 1.43.1
 
-  * Bug fix: Give the metrics that are missing due to missing configuration the same background color as metrics 
+  * Bug fix: Give the metrics that are missing due to missing configuration the same background color as metrics
     that are missing due to sources being unreachable.
-    
-    
+
+
 2016-07-11  Release 1.43.0
 
   * Distinguish between metrics that can't be measured because the source hasn't been configured and that can't be measured
     because the source isn't available or because the metric source id (e.g. url, Sonar key) isn't configured.
-    
-    
+
+
 2016-07-09  Release 1.42.2
 
   * Bug fix: Don't crash when a Jenkins test report can't be reached.
@@ -1659,31 +1664,31 @@
 2016-07-08  Release 1.42.1
 
   * Bug fix: Mention product name in regression test age metric.
-  
+
 
 2016-07-08  Release 1.42.0
 
   * Remove support for Jasmine HTML test reports.
   * Add `metric.RegressionTestAge` for measuring how many days since regression tests last ran.
-  
-  
+
+
 2016-07-06  Release 1.41.1
 
   * Bug fix: Show the OWASP dependency metrics when filtering security metrics.
-  
-  
+
+
 2016-07-05  Release 1.41.0
 
   * Removed the additional_resources option to add extra urls to projects.
-  
-  
+
+
 2016-07-05  Release 1.40.1
 
   * Better norm description for the ZAP Scan alerts metrics.
   * Create separate requirement for the ZAP Scan alerts metrics to ease introduction: `requirement.OWASP_ZAP`.
-  
 
-2016-07-05  Release 1.40.0 
+
+2016-07-05  Release 1.40.0
 
   * Support for the ZAP Scan report. To use it, in the project definition, create the metric source:
     `ZAP_SCAN_REPORT = metric_source.ZAPScanReport()`
@@ -1697,30 +1702,30 @@
 
 2016-07-01  Release 1.39.0
 
-  * Split the OWASP dependency warning metric into two metrics, one for high priority warnings and one for normal 
-    priority warnings. 
-  
+  * Split the OWASP dependency warning metric into two metrics, one for high priority warnings and one for normal
+    priority warnings.
+
 
 2016-06-29  Release 1.38.2
 
   * Bug fix: Two metrics had no proper name in the help information.
-  
+
 
 2016-06-29  Release 1.38.1
 
   * Use condensed-table style for the dashboard so it takes a little bit less space.
-  
-  
+
+
 2016-06-29  Release 1.38.0
 
   * Add URLs of configured metric sources to the help menu.
-  
-  
+
+
 2016-06-28  Release 1.37.4
 
   * Bug fix: Use target=_blank for the link to the change history.
-  
-  
+
+
 2016-06-28  Release 1.37.3
 
   * Rename "Filter metrieken" menu to "Filter" menu for consistency.

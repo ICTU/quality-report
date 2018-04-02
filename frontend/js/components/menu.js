@@ -130,9 +130,7 @@ class Search extends React.Component {
                                     onChange={this.props.on_search} delayTimeout={400} minLength={0} />
                         <span className="input-group-btn">
                             <button className="btn btn-default" type="button" onClick={this.props.on_search_reset}
-                                    disabled={this.props.filter.search_string === ""}>
-                               <span className="glyphicon glyphicon-remove" area-hidden="true"></span>
-                            </button>
+                                    disabled={this.props.filter.search_string === ""}>✖</button>
                         </span>
                     </div>
                 </div>

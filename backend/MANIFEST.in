@@ -1,5 +1,4 @@
 include requirements.txt
 include hqlib/app/dist/*
 include hqlib/app/html/*
-include hqlib/app/img/*.png
 include hqlib/app/img/*.ico
