@@ -15,7 +15,7 @@
 
 import React from 'react';
 import {BootstrapTable} from 'widgets/bootstrap_table.js';
-import {EMOJI} from 'emoji.js';
+import {EMOJI_CHARS, EMOJI_IMAGES} from 'emoji.js';
 
 
 class MetricsTable extends React.Component {
@@ -42,7 +42,12 @@ class MetricsTable extends React.Component {
         if (year !== 1) {
             tooltip += ' (sinds ' + date[2] + '-' + date[1] + '-' + year + ')';
         }
-        return (<span title={tooltip} style={{fontSize: 40 + 'px'}}>{EMOJI[metric['status']]}</span>);
+        return (
+            <span title={tooltip} style={{fontSize: 40 + 'px'}}>
+                <img width="48" height="48" border="0" alt={EMOJI_CHARS[metric['status']]}
+                     src={"img/" + EMOJI_IMAGES[metric['status']] + ".png"}/>
+            </span>
+        );
     }
 
     stuffTableRows(has_comments) {

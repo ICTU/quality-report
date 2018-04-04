@@ -1,3 +1,8 @@
+2018-04-04  Release 2.51.2
+
+  * Refactoring: Emoji look nice on macOS but are rather ugly on Windows and Linux; roll-back.
+
+
 2018-04-02  Release 2.51.1
 
   * Refactoring: Replace icons with emoji.

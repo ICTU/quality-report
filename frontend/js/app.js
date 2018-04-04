@@ -18,7 +18,7 @@ import React from 'react';
 import {NavBar} from 'components/navbar.js';
 import {MainContainer} from 'components/main_container.js';
 import {Loader} from 'widgets/loader.js';
-import {EMOJI} from 'emoji.js';
+import {EMOJI_CHARS} from 'emoji.js';
 
 
 class App extends React.Component {
@@ -168,7 +168,7 @@ class App extends React.Component {
             let matches = searchable_fields.filter(function(searchable_field) {
                 return (metric[searchable_field].toLowerCase().indexOf(search_string) !== -1)
             });
-            if (EMOJI[metric['status']] === search_string) {
+            if (EMOJI_CHARS[metric['status']] === search_string) {
                 matches.push(true);
             }
             if (matches.length === 0) {

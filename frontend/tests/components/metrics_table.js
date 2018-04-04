@@ -85,7 +85,7 @@ test('metrics table rendered correctly', (t) => {
 
     // metric data
     t.equal(wrapper.find('img[src="img/PD-1.svg"]').exists(), true);
-    t.equal(wrapper.find("td span[title]").text(), "🛠");
+    t.equal(wrapper.find('img[alt="🛠"]').exists(), true);
     t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
         .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Measurement result").exists(), true);
     t.equal(wrapper.find("td[dangerouslySetInnerHTML]")

@@ -14,8 +14,13 @@
  */
 
 
-const EMOJI = {
+const EMOJI_CHARS = {
     perfect: '😄️', red: '🙁️', yellow: '😐', green: '🙂', grey: '😬', missing: '❌', missing_source: '🛠'
 }
 
-export {EMOJI};
+const EMOJI_IMAGES = {
+    perfect: 'biggrin', red: 'sad', yellow: 'plain', green: 'smile', grey: 'ashamed', missing: 'missing',
+    missing_source: 'missing_source'
+}
+
+export {EMOJI_CHARS, EMOJI_IMAGES};

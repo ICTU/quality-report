@@ -15,4 +15,4 @@ limitations under the License.
 """
 
 NAME = "HQ"
-VERSION = "2.51.1"
+VERSION = "2.51.2"
