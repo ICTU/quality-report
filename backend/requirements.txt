@@ -10,4 +10,4 @@ setuptools==39.0.1
 coverage==4.5.1
 xmlrunner==1.7.7
 pycodestyle==2.3.1
-pylint==1.8.3
+pylint==1.8.4
