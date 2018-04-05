@@ -50,12 +50,10 @@ class JenkinsTest(unittest.TestCase):
 
     def test_one_failing_job(self, mock_url_read):
         """ Test the failing jobs with one failing job. """
-        date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         mock_url_read.side_effect = [
             '{"jobs":[{"description":"","name":"proj-pipeline","url":"http://jenkins.proj/job/proj-pipeline/"}]}',
             '{"jobs":[{"description":None,"name":"_","url":"http://jenkins.proj/","buildable":True,"color":"red"}]}',
-            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
-            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
+            '{"builds":[{"result":"FAILURE"}]}']
 
         self.assertEqual(1, self.__jenkins.number_of_failing_jobs())
 
@@ -123,6 +121,15 @@ class JenkinsTest(unittest.TestCase):
         self.assertEqual([('job1', 'http://jenkins/job/job1/', '{0:d}'.format(expected_days_ago))],
                          self.__jenkins.failing_jobs_url())
 
+    def test_building_job_not_failing_jobs(self, mock_url_read):
+        """ Test that the currently building jobs are not considered. """
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"proj-pipeline","url":"http://jenkins.proj/job/proj-pipeline/"}]}',
+            '{"jobs":[{"description":None,"name":"_","url":"http://jenkins.proj/","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS", "building":True}]}']
+
+        self.assertEqual(0, self.__jenkins.number_of_failing_jobs())
+
     def test_no_unused_jobs(self, mock_url_read):
         """ Test the number of unused jobs when there are no unused jobs. """
         mock_url_read.side_effect = [
@@ -143,7 +150,7 @@ class JenkinsTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
             '{"jobs":[{"name":"job1","description":"","url":"http://jenkins/job/job1/","buildable":True}]}',
-            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"builds":[{"result":"SUCCESS"}]}',
             '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
         self.assertEqual(1, self.__jenkins.number_of_unused_jobs())
 

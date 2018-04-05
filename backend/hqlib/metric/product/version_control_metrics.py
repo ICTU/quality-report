@@ -89,13 +89,13 @@ class UnmergedBranches(LowerIsBetterMetric):
     @staticmethod
     def format_comment_with_links(text: str, url_dict: Dict[str, str], url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
-        text = utils.html_escape(text).replace('\n', ' ')
+        comment_text = LowerIsBetterMetric._format_links_in_comment_text(text)
         links = [anchor for (anchor, href) in list(url_dict.items())]
         if links:
             if url_label:
                 url_label += ': '
-            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return json.dumps(text)[1:-1]  # Strip quotation marks
+            comment_text = '{0} [{1}{2}]'.format(comment_text, url_label, ', '.join(sorted(links)))
+        return json.dumps(comment_text)[1:-1]  # Strip quotation marks
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()

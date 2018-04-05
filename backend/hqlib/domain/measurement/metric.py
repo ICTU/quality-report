@@ -16,6 +16,7 @@ limitations under the License.
 
 from typing import Dict, List, Optional, Type, Tuple, TYPE_CHECKING
 import json
+import re
 
 import datetime
 import functools
@@ -104,19 +105,27 @@ class Metric(object):
 
     def format_text_with_links(self, text: str) -> str:
         """ Format a text paragraph with additional url. """
-        return self.format_comment_with_links(text, self.url(), '')
+        return Metric.format_comment_with_links(text, self.url(), '')
 
-    def format_comment_with_links(self, text: str, url_dict: Dict[str, str],  # pylint: disable=no-self-use
+    @staticmethod
+    def format_comment_with_links(text: str, url_dict: Dict[str, str],  # pylint: disable=no-self-use
                                   url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
-        text = utils.html_escape(text).replace('\n', ' ')
+        comment_text = Metric._format_links_in_comment_text(text)
         links = ["<a href='{href}' target='_blank'>{anchor}</a>"
                  .format(href=href, anchor=utils.html_escape(anchor)) for (anchor, href) in list(url_dict.items())]
         if links:
             if url_label:
                 url_label += ': '
-            text = '{0} [{1}{2}]'.format(text, url_label, ', '.join(sorted(links)))
-        return json.dumps(text)[1:-1]  # Strip quotation marks
+            comment_text = '{0} [{1}{2}]'.format(comment_text, url_label, ', '.join(sorted(links)))
+        return json.dumps(comment_text)[1:-1]  # Strip quotation marks
+
+    @staticmethod
+    def _format_links_in_comment_text(text: str) -> str:
+        return re.sub(
+            r'(https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+)', r"<a href='\1' target='_blank'>\1</a>",
+            utils.html_escape(text).replace('\n', ' ')
+        )
 
     @classmethod
     def norm_template_default_values(cls) -> MetricParameters:

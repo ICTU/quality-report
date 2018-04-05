@@ -76,12 +76,12 @@ class UrlOpenerMock(UrlOpener):
                 os.path.join(self._dir_path, 'docs/examples/example_metric_sources/jenkins_ci_jobs.json')),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
-            'api/python?tree=builds[result]&depth=1': self._get_file_content(
+            'api/python?tree=builds[result,building]&depth=1': self._get_file_content(
                 os.path.join(self._dir_path,
                              'docs/examples/example_metric_sources/jenkins_build_result.json')),
 
-            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/api/python?tree=builds[result]'
-            '&depth=1': self._get_file_content(
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/api/python?tree='
+            'builds[result,building]&depth=1': self._get_file_content(
                 os.path.join(self._dir_path,
                              'docs/examples/example_metric_sources/jenkins_build_result.json')),
 

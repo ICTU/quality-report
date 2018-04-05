@@ -1,3 +1,8 @@
+2018-04-05  Release 2.52.0
+
+  * Feature #302: URLs in the comment text are automaticaly converted to link references.
+
+
 2018-04-04  Release 2.51.2
 
   * Refactoring: Emoji look nice on macOS but are rather ugly on Windows and Linux; roll-back.

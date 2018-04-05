@@ -142,7 +142,7 @@ class MetricsFormatter(base_formatter.Formatter):
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['norm'] = metric.norm()
         kwargs['text'] = metric.format_text_with_links(metric.report())
-        kwargs['comment'] = metric.format_comment_with_links(metric.comment(), metric.comment_urls(),
+        kwargs['comment'] = Metric.format_comment_with_links(metric.comment(), metric.comment_urls(),
                                                              metric.comment_url_label_text)
         kwargs["class"] = metric.__class__.__name__
         kwargs['extra_info'] = '{}' if extra_info is None else json.dumps(extra_info.__dict__)
