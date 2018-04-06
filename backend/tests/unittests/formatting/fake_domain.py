@@ -31,6 +31,7 @@ class Metric(object):
     def __init__(self, id_string='id_string-1', status_start_date=datetime.datetime(2012, 1, 1, 12, 0, 0)):
         self.__id_string = id_string
         self.name = "Metric Name"
+        self.unit = "unit of measure"
         self.__status_start_date = status_start_date
         self._metric_source = MagicMock()
         self._metric_source.metric_source_name = 'Fake metric'

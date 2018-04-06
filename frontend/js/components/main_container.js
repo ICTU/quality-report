@@ -18,11 +18,28 @@ import React from 'react';
 import {DashboardTable} from 'components/dashboard_table.js';
 import {MetricsSections} from 'components/metrics_sections.js';
 import {TrendGraphs} from 'components/trend_graphs.js';
+import {Loader} from 'widgets/loader.js';
 import {Help} from 'components/help.js';
 import {format_date_time} from 'utils.js';
 
 
 class Metrics extends React.Component {
+    constructor(props) {
+        super(props);
+        let state = { report_dates: null };
+        this.state = state;
+    }
+
+    dataRetrievedCallback = (report_dates) => {
+        this.setState((state) => ({
+            report_dates: report_dates
+        }));
+    }
+
+    componentDidMount() {
+        let self = this;
+        $.get("json/dates.txt?v=" + Math.random(), "", self.dataRetrievedCallback);
+    }
     render() {
         return (
             <div>
@@ -31,9 +48,10 @@ class Metrics extends React.Component {
                                     metrics={this.props.metrics} />
                 }
                 <MetricsSections metrics_data={this.props.metrics_data}
-                                 metrics={this.props.metrics}
-                                 show_one_table={this.props.show_one_table}
-                                 on_hide_metric={this.props.on_hide_metric} />
+                                report_dates={this.state.report_dates}
+                                metrics={this.props.metrics}
+                                show_one_table={this.props.show_one_table}
+                                on_hide_metric={this.props.on_hide_metric} />
             </div>
         )
     }

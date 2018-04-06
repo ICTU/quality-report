@@ -21,7 +21,7 @@ import {Loader} from '../js/widgets/loader.js';
 import {EmptyStorage} from './stubs/storage.js';
 
 import jQuery from 'jquery';
-import {mount} from 'enzyme';
+import {shallow, mount} from 'enzyme';
 import Enzyme from 'enzyme';
 import sinon from 'sinon';
 import Adapter from 'enzyme-adapter-react-16';
@@ -52,7 +52,7 @@ test('app starts loading', function(t) {
     t.end();
 });
 
-test('xapp filter without metrics', function(t) {
+test('app retrievs data with random version number ', function(t) {
     var getJsonMock = sinon.spy($, "getJSON");
 
     mount(<App storage={new EmptyStorage()}/>)
@@ -65,6 +65,32 @@ test('xapp filter without metrics', function(t) {
     t.equals(callArgs1[0], 'json/metrics.json')
     t.equals(callArgs2[0], 'json/metrics.json')
     t.notEquals(callArgs1[1], callArgs2[1])
+
+    $.getJSON.restore();
+    t.end();
+});
+
+test('help component rendered loading', (t) => {
+    const wrapper = shallow(<App storage={new EmptyStorage()}/>);
+    t.equals(wrapper.state().metrics_data, 'loading');
+    t.equals(wrapper.state().tab, 'metrics_tab');
+    t.equals(wrapper.find('Loader').exists(), true);
+    t.end();
+});
+
+test('help component rendered loaded', (t) => {
+    const wrapper = shallow(<App storage={new EmptyStorage()}/>);
+
+    wrapper.setState({metrics_data: {sections: 'x', report_title: 'title', report_date: 'r_date'}});
+
+    t.equals(wrapper.find('NavBar').exists(), true);
+    t.equals(wrapper.find('NavBar').prop('sections'), 'x');
+    t.equals(wrapper.find('NavBar').prop('report_title'), 'title');
+    t.equals(wrapper.find('NavBar').prop('report_date_time'), 'r_date');
+
+    t.equals(wrapper.find('MainContainer').exists(), true);
+    t.deepEqual(wrapper.find('MainContainer').prop('metrics_data'), {sections: 'x', report_title: 'title', report_date: 'r_date'});
+    t.equals(wrapper.find('MainContainer').prop('tab'), 'metrics_tab');
     t.end();
 });
 

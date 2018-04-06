@@ -1,3 +1,8 @@
+2018-04-24  Release 2.55.0
+
+  * Feature #128: history chart in detail pane
+
+
 2018-04-22  Release 2.54.0
 
   * Feature: Add user story point prediction metric, based on the "Grip op Software" (GROS) research project

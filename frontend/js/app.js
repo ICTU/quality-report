@@ -71,10 +71,10 @@ class App extends React.Component {
     componentDidMount() {
         let self = this;
         $.getJSON("json/metrics.json?v=" + Math.random(), "", function(metrics_data) {
-            self.setState({
+            self.setState((state) => ({
                 metrics_data: metrics_data,
-                metrics: self.filter(metrics_data, self.state.filter)
-            });
+                metrics: self.filter(metrics_data, state.filter)
+            }));
             document.title = metrics_data["report_title"]
         });
     }
@@ -98,8 +98,13 @@ class App extends React.Component {
     }
 
     onTab(event) {
+
+        function setTab(tabId) {
+            return {tab: tabId};
+        }
+
         event.preventDefault();
-        this.setState({tab: event.target.id});
+        this.setState(setTab(event.target.id));
     }
 
     onFilter(event) {

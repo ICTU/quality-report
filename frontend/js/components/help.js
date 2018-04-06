@@ -29,7 +29,7 @@ class Help extends React.Component {
     componentDidMount() {
         var self = this;
         $.getJSON("json/meta_data.json", "", function(meta_data) {
-            self.setState({meta_data: meta_data});
+            self.setState((state) => ({meta_data: meta_data}));
         });
     }
 

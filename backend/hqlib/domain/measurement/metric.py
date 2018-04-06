@@ -326,14 +326,29 @@ class Metric(object):
         """ Return the source for the comment on the metric. """
         return dict()
 
+    def __history_records(self, method: callable) -> List[int]:
+        history = method(self.stable_id()) if self.__history else []
+        return [int(round(float(value))) if value is not None else None for value in history]
+
     def recent_history(self) -> List[int]:
         """ Return a list of recent values of the metric, to be used in e.g. a spark line graph. """
-        history = self.__history.recent_history(self.stable_id()) if self.__history else []
-        return [int(round(float(value))) for value in history]
+        return self.__history_records(self.__history.recent_history)
+
+    def long_history(self) -> List[int]:
+        """ Return a long list of values of the metric, to be used in e.g. a spark line graph. """
+        return self.__history_records(self.__history.long_history)
+
+    def get_recent_history_dates(self):
+        """ Return a list of recent dates when report was generated. """
+        return self.__history.get_dates()
+
+    def get_long_history_dates(self):
+        """ Return a long list of dates when report was generated. """
+        return self.__history.get_dates(long_history=True)
 
     def y_axis_range(self) -> Tuple[int, int]:
         """ Return a two-tuple (min, max) for use in graphs. """
-        history = self.recent_history()
+        history = [d for d in self.recent_history() if d is not None]
         if not history:
             return 0, 100
         minimum, maximum = min(history), max(history)

@@ -65,9 +65,14 @@ class TrendGraphs extends React.Component {
 
     componentDidMount() {
         var self = this;
-        $.getJSON("json/meta_history.json", "", function(history_data) {
-            self.setState({history_data: self.line_data(TrendGraphs.parse_history_json(history_data))});
-        });
+        $.getJSON("json/meta_history.json", "", self.dataRetrievedCallback);
+    }
+
+    dataRetrievedCallback = (history_data) => {
+        var self = this;
+        self.setState((state) => ({
+            history_data: self.line_data(TrendGraphs.parse_history_json(history_data))
+        }));
     }
 
     static parse_history_json(history_json) {

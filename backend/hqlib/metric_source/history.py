@@ -28,6 +28,8 @@ from ..typing import DateTime, HistoryRecord, Number
 
 class CompactHistory(domain.MetricSource):
     """ Class for reading and writing history JSON files. """
+    __long_history_count = 2000
+
     def __init__(self, history_filename: str, recent_history: int = 100, file_: Callable[[str], TextIO] = None) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
@@ -40,15 +42,29 @@ class CompactHistory(domain.MetricSource):
 
     def recent_history(self, metric_id: str) -> List[Number]:
         """ Retrieve the recent history for the metric_ids. """
+        return self.__history_records(metric_id, self.__recent_history)
+
+    def long_history(self, metric_id) -> List[Number]:
+        """ Retrieve longer history for the metric_ids. """
+        return self.__history_records(metric_id, self.__long_history_count)
+
+    def __history_records(self, metric_id: str, number_of_records: int) -> List[Number]:
+        """ Retrieve the given number of history records for the metric_id. """
         history = self.__read_history()
         measurements = history['metrics'].get(metric_id, [])
         values = []
-        for date in history['dates'][-self.__recent_history:]:
+        for date in history['dates'][-number_of_records:]:
             for measurement in reversed(measurements):
                 if measurement['start'] <= date <= measurement['end']:
-                    values.append(measurement.get('value', -1))
+                    values.append(measurement.get('value', None))
                     break  # Next date
         return values
+
+    def get_dates(self, long_history: bool = False) -> str:
+        """ Retrieve the list of report dates concatenated in comma separated string.. """
+        history = self.__read_history()
+        number_of_records = self.__long_history_count if long_history else self.__recent_history
+        return ','.join(history['dates'][-number_of_records:])
 
     def status_start_date(self, metric_id: str, current_status: str,
                           now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:

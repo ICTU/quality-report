@@ -20,6 +20,7 @@ import {MainContainer} from '../../js/components/main_container.js';
 
 import { shallow, mount } from 'enzyme';
 import Enzyme from 'enzyme';
+import sinon from 'sinon';
 import Adapter from 'enzyme-adapter-react-16';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -90,5 +91,32 @@ test('help is rendered with correct version number', (t) => {
     const wrapper = shallow(<MainContainer tab="help_tab" metrics_data={{"hq_version": "version_number"}} />)
     t.equal(wrapper.find('Help').length, 1);
     t.equal(wrapper.find('Help').prop('hq_version'), "version_number");
+    t.end();
+});
+
+test('metrics component retrieves reporting dates when rendered', (t) => {
+    const wrapper = shallow(<MainContainer tab="metrics_tab" show_dashboard="has_some_value" metrics_data={{"hq_version": "v"}} metrics="mtrcs" />)
+
+    var getMock = sinon.spy($, "get");
+    t.equals(getMock.notCalled, true);
+    wrapper.find('Metrics').dive();
+    
+    t.equals(getMock.calledOnce, true);
+    var callArgs = getMock.firstCall.args[0].split("?v=")
+    t.equals(callArgs[0], "json/dates.txt");
+    t.equals(wrapper.find('Metrics').shallow().instance().dataRetrievedCallback.toString(), getMock.firstCall.args[2].toString());
+
+    $.get.restore();
+    t.end();
+});
+
+test('metrics component sets report dates whan retrieved', (t) => {
+    const wrapper = shallow(<MainContainer tab="metrics_tab" show_dashboard="has_some_value" metrics_data={{"hq_version": "v"}} metrics="mtrcs" />)
+    var metrics = wrapper.find('Metrics').shallow()
+    
+    metrics.instance().dataRetrievedCallback('some retrieved report dates');
+    
+    t.equals(metrics.state().report_dates, 'some retrieved report dates');
+
     t.end();
 });

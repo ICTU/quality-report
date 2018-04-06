@@ -105,10 +105,10 @@ class MetricsFormatter(base_formatter.Formatter):
     """ Format the metrics as a JavaScript array. """
 
     sep = ', '
-    columns = '''{{"id_value": "{metric_number}", "id_format": "{metric_id}", "name": "{name}", "section": \
-"{section}", "status": "{status}", "status_value": "{status_nr}", "status_start_date": {status_start_date}, \
-"measurement": "{text}", "norm": "{norm}", "comment": "{comment}", "metric_class": "{class}", "extra_info": \
-{extra_info}}}'''
+    columns = '''{{"id_value": "{metric_number}", "id_format": "{metric_id}", "stable_metric_id": "{stable_id}", \
+"name": "{name}", "unit": "{unit}", "section": "{section}", "status": "{status}", "status_value": "{status_nr}", \
+"status_start_date": {status_start_date}, "measurement": "{text}", "norm": "{norm}", "comment": "{comment}", \
+"metric_class": "{class}", "extra_info": {extra_info}}}'''
     kwargs_by_status: Dict[str, Any] = dict(red=dict(status_nr=0), yellow=dict(status_nr=1), green=dict(status_nr=2),
                                             perfect=dict(status_nr=3), grey=dict(status_nr=4),
                                             missing=dict(status_nr=5), missing_source=dict(status_nr=6))
@@ -139,7 +139,9 @@ class MetricsFormatter(base_formatter.Formatter):
         kwargs['status'] = status
         kwargs['status_start_date'] = self.__date_array(status_start_date) if status_start_date else []
         kwargs['metric_id'] = metric.id_string()
+        kwargs['stable_id'] = metric.stable_id()
         kwargs['name'] = metric.name
+        kwargs['unit'] = metric.unit
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['norm'] = metric.norm()
         kwargs['text'] = metric.format_text_with_links(metric.report())

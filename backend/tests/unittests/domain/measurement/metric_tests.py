@@ -225,9 +225,56 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric has no default url label. """
         self.assertFalse(self.__metric.url_label_text)
 
-    def test_recent_history(self):
+    def test_recent_history_with_nones(self):
         """ Test that the metric has no history by default. """
-        self.assertFalse(self.__metric.recent_history())
+        FakeHistory.values = [1.76, None, 2.02]
+        self.assertEqual([2, None, 2], self.__metric.recent_history())
+
+    @patch.object(metric_source.CompactHistory, 'get_dates')
+    def test_get_recent_history_dates(self, mock_get_dates):
+        """ Test that the metric calls appropriate function on history object and passes the result. """
+        mock_get_dates.return_value = "whatever"
+        project = MagicMock()
+        project.metric_sources.return_value = [metric_source.CompactHistory]
+        test_metric = domain.Metric(subject=MagicMock(), project=project)
+
+        result = test_metric.get_recent_history_dates()
+
+        mock_get_dates.assert_called_once()
+        self.assertEqual("whatever", result)
+
+    @patch.object(metric_source.CompactHistory, 'get_dates')
+    def test_get_long_history_dates(self, mock_get_dates):
+        """ Test that the metric calls appropriate function on history object and passes the result. """
+        mock_get_dates.return_value = "whatever"
+        project = MagicMock()
+        project.metric_sources.return_value = [metric_source.CompactHistory]
+        test_metric = domain.Metric(subject=MagicMock(), project=project)
+
+        result = test_metric.get_long_history_dates()
+
+        mock_get_dates.assert_called_once_with(long_history=True)
+        self.assertEqual("whatever", result)
+
+    @patch.object(metric_source.CompactHistory, 'recent_history')
+    def test_recent_history(self, recent_history_mock):
+        """ Test that the metric has no history by default. """
+        recent_history_mock.return_value = [2.9]
+        project = MagicMock()
+        project.metric_sources.return_value = [metric_source.CompactHistory]
+        test_metric = domain.Metric(subject=MagicMock(), project=project)
+
+        self.assertEqual([3], test_metric.recent_history())
+
+    @patch.object(metric_source.CompactHistory, 'long_history')
+    def test_long_history(self, long_history_mock):
+        """ Test that the metric has no history by default. """
+        long_history_mock.return_value = [2.9]
+        project = MagicMock()
+        project.metric_sources.return_value = [metric_source.CompactHistory]
+        test_metric = domain.Metric(subject=MagicMock(), project=project)
+
+        self.assertEqual([3], test_metric.long_history())
 
     def test_default_y_axis_range(self):
         """ Test that the default y axis range is 0-100. """

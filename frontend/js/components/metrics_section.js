@@ -32,6 +32,7 @@ class MetricsSection extends React.Component {
                 </div>
                 <div className="metric_table" id={"table_" + this.props.section}>
                     <MetricsTable key={this.props.section} metrics={this.props.metrics}
+                                  report_dates={this.props.report_dates}
                                   table_sort_column_name={this.props.table_sort_column_name}
                                   table_sort_ascending={this.props.table_sort_ascending}
                                   on_hide_metric={this.props.on_hide_metric}

@@ -64,6 +64,10 @@ class EmptyCompactHistoryTestCase(unittest.TestCase):
         """ Test that the empty history file has no recent history. """
         self.assertEqual([], self.__history.recent_history('metric id'))
 
+    def test_long_history(self):
+        """ Test that the empty history file has no long history. """
+        self.assertEqual([], self.__history.long_history('metric id'))
+
 
 class FailingFile(FakeFile):  # pylint: disable=too-few-public-methods
     """ Fake a file that raises an exception. """
@@ -113,6 +117,51 @@ class CompactHistoryTest(unittest.TestCase):
     def test_recent_history(self):
         """ Test the recent history of a specific metric. """
         self.assertEqual([10, 38, 38], self.__history.recent_history('OpenBugsNone'))
+
+    def test_get_dates(self):
+        """ Test the reporting dates. """
+        self.assertEqual(
+            '2013-02-28 17:01:45,2013-02-28 17:16:45,2013-03-05 17:16:45', self.__history.get_dates())
+
+    def test_get_dates_recent_limit(self):
+        """ Test he reporting dates are limited to 100 for recent history. """
+        FakeFile.initial_content = \
+            ['{"dates": [' + ','.join(['"2013-02-28 17:01:45"'] * 101) + '], "metrics": {}, "statuses": []}']
+
+        self.assertEqual(','.join(['2013-02-28 17:01:45'] * 100), self.__history.get_dates())
+
+    def test_get_dates_long_limit(self):
+        """ Test he reporting dates are limited to 2000 for long history. """
+        FakeFile.initial_content = \
+            ['{"dates": [' + ','.join(['"2013-02-28 17:01:45"'] * 2001) + '], "metrics": {}, "statuses": []}']
+
+        self.assertEqual(','.join(['2013-02-28 17:01:45'] * 2000), self.__history.get_dates(long_history=True))
+
+    def test_recent_history_length(self):
+        """ Test the recent history of a specific metric. """
+        FakeFile.initial_content = \
+            ['{"dates": [' + ','.join(['"2013-02-28 17:01:45"'] * 101) + '], '
+             '"metrics": {"OpenBugsNone": [{"value": 10, "start": "2013-02-28 17:01:45", '
+             '"end": "2013-02-28 17:01:45", "status": "yellow" }, {"value": 38, "start": "2013-02-28 17:16:45", '
+             '"end": "2013-03-05 17:16:45", "status": "red"}]}, '
+             '"statuses": [{"yellow": 1}, {"red": 1}, {"red": 1}]}\r\n']
+
+        self.assertEqual(100, len(self.__history.recent_history('OpenBugsNone')))
+
+    def test_long_history_length(self):
+        """ Test the recent history of a specific metric. """
+        FakeFile.initial_content = \
+            ['{"dates": [' + ','.join(['"2013-02-28 17:01:45"'] * 2001) + '], '
+             '"metrics": {"OpenBugsNone": [{"value": 10, "start": "2013-02-28 17:01:45", '
+             '"end": "2013-02-28 17:01:45", "status": "yellow" }, {"value": 38, "start": "2013-02-28 17:16:45", '
+             '"end": "2013-03-05 17:16:45", "status": "red"}]}, '
+             '"statuses": [{"yellow": 1}, {"red": 1}, {"red": 1}]}\r\n']
+
+        self.assertEqual(2000, len(self.__history.long_history('OpenBugsNone')))
+
+    def test_long_history(self):
+        """ Test the long history of a specific metric. """
+        self.assertEqual([10, 38, 38], self.__history.long_history('OpenBugsNone'))
 
     def test_missing_recent_history(self):
         """ Test the recent history of a non-existing metric. """

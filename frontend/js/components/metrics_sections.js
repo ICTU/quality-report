@@ -69,6 +69,7 @@ class MetricsSections extends React.Component {
         if (this.props.show_one_table) {
             metrics_sections.push(
                 <MetricsSection key="all" section="all" class_name="" title="Alle metrieken"
+                            report_dates={this.props.report_dates}
                             metrics={metrics} onSort={this.onSort}
                             table_sort_column_name={this.state.table_sort_column_name}
                             table_sort_ascending={this.state.table_sort_ascending}
@@ -84,6 +85,7 @@ class MetricsSections extends React.Component {
                 if (section_metrics.length > 0) {
                     metrics_sections.push(
                         <MetricsSection key={section["id"]} section={section["id"]}
+                                        report_dates={this.props.report_dates}
                                         latest_change_date = {section["latest_change_date"]}
                                         class_name="metric_section" title={section["title"]} metrics={section_metrics}
                                         table_sort_column_name={this.state.table_sort_column_name}

@@ -28,7 +28,7 @@ class MetricsTable extends React.Component {
     }
 
     id_format(metric) {
-        return (<div className="btn-group"><span className={this.bgColorClassName(metric)}>{metric["id_format"]}</span></div>);
+        return (<span className={"text-nowrap " + this.bgColorClassName(metric)}>{metric["id_format"]}</span>);
     }
 
     status(metric) {
@@ -61,8 +61,8 @@ class MetricsTable extends React.Component {
             }
             table_rows.push({
             cells: cells,
-                className: this.bgColorClassName(metric), id: metric["id_value"],
-                name: metric['name'], extra_info: metric["extra_info"]
+                className: this.bgColorClassName(metric), id: metric["id_value"], stable_id: metric["stable_metric_id"],
+                name: metric['name'], unit: metric['unit'], extra_info: metric["extra_info"]
             });
         }, this);
         return table_rows;
@@ -80,9 +80,10 @@ class MetricsTable extends React.Component {
         }
         return (
             <BootstrapTable headers={headers} onSort={this.props.onSort}
-                              table_sort_column_name={this.props.table_sort_column_name}
-                              table_sort_ascending={this.props.table_sort_ascending}
-                              on_hide_metric={this.props.on_hide_metric}>
+                            report_dates={this.props.report_dates}
+                            table_sort_column_name={this.props.table_sort_column_name}
+                            table_sort_ascending={this.props.table_sort_ascending}
+                            on_hide_metric={this.props.on_hide_metric}>
                 {table_rows}
             </BootstrapTable>
         );

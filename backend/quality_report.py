@@ -82,12 +82,26 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __create_trend_images(cls, quality_report, report_dir):
         """ Retrieve and write the trend images. """
         style = pygal.style.Style(background='transparent', plot_background='transparent')
+        dates = ''
         for metric in quality_report.metrics():
             line_chart = pygal.Line(style=style, range=metric.y_axis_range())
             line_chart.add('', metric.recent_history(), stroke_style={'width': 2})
             image = line_chart.render_sparkline()
             filename = os.path.join(report_dir, 'img', '{0!s}.svg'.format(metric.id_string()))
             filesystem.write_file(image, filename, mode='wb', encoding=None)
+            cls.__save_metric_long_history(metric, report_dir)
+            if not dates:
+                dates = metric.get_long_history_dates()
+
+        filename = os.path.join(report_dir, 'json', 'dates.txt')
+        filesystem.write_file(dates, filename, mode='w', encoding=None)
+
+    @classmethod
+    def __save_metric_long_history(cls, metric, report_dir):
+        filename = os.path.join(report_dir, 'json', '{stable_id}.txt'
+                                .format(stable_id=metric.stable_id().replace(" ", "_")))
+        filesystem.write_file(",".join(str(i) if i is not None else '' for i in metric.long_history()),
+                              filename, mode='w', encoding=None)
 
     @staticmethod
     def __format_and_write_report(quality_report, report_formatter, filename, mode, encoding, **kwargs):

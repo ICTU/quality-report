@@ -66,7 +66,7 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
 
     def recent_history(self) -> List[int]:
         """ Subtract the minimum value from all values so that we can send more data to the Google Chart API. """
-        historic_values = super().recent_history()
+        historic_values = [h for h in super().recent_history() if h is not None]
         minimum_value = min(historic_values) if historic_values else 0
         return [value - minimum_value for value in historic_values]
 
