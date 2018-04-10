@@ -1,3 +1,8 @@
+2018-04-10  Release 2.52.1
+
+  * Refactoring: Upgrade to Bootstrap version 4.
+
+
 2018-04-05  Release 2.52.0
 
   * Feature #302: URLs in the comment text are automaticaly converted to link references.
