@@ -16,7 +16,7 @@ install:
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build --debug
+- ./cc-test-reporter before-build
 script:
 - cd frontend
 - npm install
@@ -37,7 +37,9 @@ script:
 - cd ..
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 after_script:
+- cd backend
 - ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
+- cd ..
 before_deploy:
 - cd backend
 - python setup.py bundle
