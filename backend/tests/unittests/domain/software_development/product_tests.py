@@ -70,5 +70,5 @@ class ApplicationTest(unittest.TestCase):
 
     def test_optional_requirements(self):
         """ Test that the optional requirements don't contain the default requirements. """
-        self.assertFalse(set(domain.Application.default_requirements()) &
-                         set(domain.Application.optional_requirements()))
+        self.assertFalse(
+            set(domain.Application.default_requirements()) & set(domain.Application.optional_requirements()))

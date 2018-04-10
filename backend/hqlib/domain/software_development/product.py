@@ -72,9 +72,9 @@ class Component(Product):
     def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
         return tuple([r for r in super(Component, Component).optional_requirements()
-                      if r not in Component.default_requirements() and
-                      r not in (requirement.PerformanceLoad, requirement.PerformanceEndurance,
-                                requirement.PerformanceScalability)])
+                      if r not in Component.default_requirements() and r not in (requirement.PerformanceLoad,
+                                                                                 requirement.PerformanceEndurance,
+                                                                                 requirement.PerformanceScalability)])
 
 
 class Application(Product):

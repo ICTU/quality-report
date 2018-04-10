@@ -562,12 +562,10 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
         result = sonar.version(product + ':' + branch)
 
-        calls = [call(fake_url +
-                      'api/project_analyses/search?project={project}&format=json&category=VERSION&branch={branch}'
-                      .format(project=product, branch=branch), log_error=False),
-                 call(fake_url +
-                      'api/resources?resource={project}&format=json&branch={branch}'
-                      .format(project=product, branch=branch))]
+        calls = [call(fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION&'
+                                 'branch={branch}'.format(project=product, branch=branch), log_error=False),
+                 call(fake_url + 'api/resources?resource={project}&format=json&'
+                                 'branch={branch}'.format(project=product, branch=branch))]
         url_read_mock.assert_has_calls(calls)
         self.assertEqual("?", result)
 

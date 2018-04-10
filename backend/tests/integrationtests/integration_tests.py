@@ -37,8 +37,8 @@ def metric_classes(domain_classes):
     """ Return the metric classes for the domain objects. """
     metrics = []
     for domain_class in domain_classes:
-        metrics.extend(requirement_metric_classes(*(domain_class.default_requirements() +
-                                                    domain_class.optional_requirements())))
+        metrics.extend(
+            requirement_metric_classes(*(domain_class.default_requirements() + domain_class.optional_requirements())))
     return metrics
 
 

@@ -172,8 +172,8 @@ class JenkinsTest(unittest.TestCase):
             '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
             '{"jobs":[{"name":"job1","description":"[gracedays=200]","url":"http://xx/job1/","buildable":True}]}',
             '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
-            '{"building":False,"result":"SUCCESS","timestamp":' +
-            str(int(to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))) + '}']
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(
+                int(to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100)))) + '}']
 
         self.assertEqual([], self.__jenkins.unused_jobs_url())
 
@@ -184,10 +184,10 @@ class JenkinsTest(unittest.TestCase):
             '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
             '{"jobs":[{"name":"job1","description":"[gracedays=200]","url":"http://xx/job1/","buildable":True}]}',
             '{"builds":[{"result":"SUCCESS"}]}',
-            '{"building":False,"result":"SUCCESS","timestamp":' +
-            str(int(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))) + '}',
-            '{"building":False,"result":"SUCCESS","timestamp":' +
-            str(int(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))) + '}']
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(
+                int(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))) + '}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(
+                int(to_jenkins_timestamp(datetime.datetime(last_year, 1, 1, 12, 0, 0)))) + '}']
 
         expected_days_ago = (datetime.datetime.utcnow() - datetime.datetime(last_year, 1, 1, 12, 0, 0)).days
         self.assertEqual([('job1', 'http://xx/job1/', '{0:d}'.format(expected_days_ago))],

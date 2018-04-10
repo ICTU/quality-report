@@ -41,8 +41,8 @@ class ProcessTest(unittest.TestCase):
             return result
 
         self.assertEqual(all_requirements(domain.Process),
-                         all_requirements(domain.ProjectManagement, domain.IssueManagement, domain.Scrum) |
-                         {requirement.TrackQualityGate})
+                         all_requirements(domain.ProjectManagement, domain.IssueManagement,
+                                          domain.Scrum) | {requirement.TrackQualityGate})
 
     def test_default_name(self):
         """ Test that the process has a default name. """
