@@ -20,17 +20,15 @@ class Caret extends React.Component {
         if (!this.props.show) {
             return null;
         }
-        var caret = <span className="caret"></span>;
-        if (this.props.table_sort_ascending) {
-            caret = <span className="dropup">{caret}</span>;
-        }
-        return caret;
+        return (
+            <span> {this.props.table_sort_ascending ? "▴" : "▾"}</span>
+        );
     }
 }
 
 class BootstrapTableHeader extends React.Component {
     buildReportHeaders(headers) {
-        return [<th key={0} />, 
+        return [<th key={0} />,
                 <th id={headers[1][0]} key={1} width="90px" onClick={this.props.onSort} style={{cursor: "pointer"}}>
                     {headers[1][1]}<Caret show={headers[1][0] === this.props.table_sort_column_name}
                             table_sort_ascending={this.props.table_sort_ascending}/>
@@ -38,9 +36,10 @@ class BootstrapTableHeader extends React.Component {
             ].concat(
                 headers.slice(2).map(
                     (header, index) =>
-                        <th id={header[0]} key={index+2} onClick={this.props.onSort} style={{cursor: "pointer"}}>
+                        <th id={header[0]} key={index+2} onClick={this.props.onSort}
+                            style={{cursor: "pointer", minWidth: "90px"}}>
                             {header[1]}<Caret show={header[0] === this.props.table_sort_column_name}
-                                            table_sort_ascending={this.props.table_sort_ascending}/>
+                                              table_sort_ascending={this.props.table_sort_ascending}/>
                         </th>
             ));
     }
@@ -61,9 +60,9 @@ class BootstrapTableBody extends React.Component {
     buildTdCells(children) {
         var rows = [];
         children.forEach(function(row) {
-            rows.push(row['cells'].map((cell, index) => 
+            rows.push(row['cells'].map((cell, index) =>
                 cell.hasOwnProperty('__html') ?
-                    <td className="report_cell" key={index} dangerouslySetInnerHTML={cell}></td> : 
+                    <td className="report_cell" key={index} dangerouslySetInnerHTML={cell}></td> :
                     <td className="report_cell" key={index}>{cell}</td>
             ));
         });
@@ -71,20 +70,20 @@ class BootstrapTableBody extends React.Component {
     }
 
     buildRowsOfReport(rows) {
-       return rows.map((row, index) => 
+       return rows.map((row, index) =>
             {
-                var hasExtraInfo =  (this.props.children[index]['extra_info'] 
+                var hasExtraInfo =  (this.props.children[index]['extra_info']
                                         && !(Object.keys(this.props.children[index]['extra_info']).length === 0))
 
                 var chdId = this.props.children[index]['id'];
-                
+
                 var ret = [
-                    <tr key={chdId} className={this.props.children[index]['className']}>
+                    <tr key={chdId} className={this.props.children[index]['className']} style={{verticalAlign: "top"}}>
                         <td><DetailToggleButton key={chdId} data_target={'#' + chdId + '_details'} /></td>
                         {row}
                     </tr>]
 
-                ret.push(<DetailPane key={chdId + 'p'} col_span={this.props.col_span} has_extra_info={hasExtraInfo} 
+                ret.push(<DetailPane key={chdId + 'p'} col_span={this.props.col_span} has_extra_info={hasExtraInfo}
                                      on_hide_metric={this.props.on_hide_metric} metric_detail={this.props.children[index]} />);
                 return ret;
             });
@@ -109,7 +108,7 @@ class DetailPane extends React.Component {
         return (
             <tr id={this.props.metric_detail['id'] + '_details'} className={cls + " collapse"}>
                 <td className="detail_pane" colSpan={this.props.col_span}>
-                    <ActionPanel metric_id={this.props.metric_detail['id']} onClick={this.props.on_hide_metric} /> 
+                    <ActionPanel metric_id={this.props.metric_detail['id']} onClick={this.props.on_hide_metric} />
                     {this.renderExtraInfoPanel(this.props.metric_detail['extra_info'])}
                 </td>
             </tr>
@@ -162,7 +161,7 @@ class TablePanel extends React.Component {
         if (cell_content && cell_content.hasOwnProperty('href')) {
             return <a href={cell_content.href}>{cell_content.text || cell_content.href}</a>
         }
-        return cell_content;      
+        return cell_content;
     }
 
     getFormatColumns(headers) {
@@ -212,7 +211,7 @@ class TablePanel extends React.Component {
                 var classNames = this.applyClassNames(row, format_columns, extra_info.headers);
                 var clsName = 'detail-row-default';
                 if (classNames.length > 0) {
-                    clsName = classNames.join(' '); 
+                    clsName = classNames.join(' ');
                 }
 
                 return (
@@ -224,7 +223,7 @@ class TablePanel extends React.Component {
                 );
             })
         }
-        return (            
+        return (
             <tbody>
                 {rows}
             </tbody>
@@ -250,19 +249,14 @@ class DetailToggleButton extends React.Component {
     state = {
         isExpanded: false
     }
-    
-    handleClick = () => this.setState({ isExpanded: !this.state.isExpanded});
-    
-    render() {
-        return (
-            <button type="button" 
-                className={"btn glyphicon can_expand" + 
-                        (this.state.isExpanded ? " glyphicon-chevron-down" : " glyphicon-chevron-right")}
 
-                onClick={this.handleClick} 
-                data-toggle="collapse" 
-                data-target={this.props.data_target}>
-            </button>
+    handleClick = () => this.setState({ isExpanded: !this.state.isExpanded});
+
+    render() {
+        let icon = this.state.isExpanded ? "➖" : "➕";
+        return (
+            <button type="button" className="btn can_expand" onClick={this.handleClick} data-toggle="collapse"
+                    data-target={this.props.data_target}>{icon}</button>
         );
     }
 }
@@ -272,7 +266,8 @@ class BootstrapTable extends React.Component {
         return (
             <table className={"table" + (this.props.className ? " " + this.props.className : "")}>
                 <BootstrapTableHeader {...this.props} />
-                <BootstrapTableBody col_span={this.props.headers ? this.props.headers.length : 0} on_hide_metric={this.props.on_hide_metric}>
+                <BootstrapTableBody col_span={this.props.headers ? this.props.headers.length : 0}
+                                    on_hide_metric={this.props.on_hide_metric}>
                     {this.props.children}
                 </BootstrapTableBody>
             </table>

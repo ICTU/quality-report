@@ -36,7 +36,7 @@ class MetricsSections extends React.Component {
 
     onSort(event) {
         event.preventDefault();
-        const column_name = event.target.id;
+        const column_name = event.currentTarget.id;
         const state = {
             table_sort_column_name: column_name,
             table_sort_key: {id_format: "id_value", sparkline: "status_value", status_format: "status_value",

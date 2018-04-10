@@ -22,14 +22,14 @@ class Menu extends React.Component {
             return null;
         }
         return (
-            <li className="dropdown">
-                <a id={this.props.id} className="dropdown-toggle" role="button"
+            <li className="nav-item dropdown mr-2">
+                <a id={this.props.id} className="nav-link dropdown-toggle" role="button"
                    data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">
-                    {this.props.title}<span className="caret"></span>
+                    {this.props.title}
                 </a>
-                <ul className="dropdown-menu" aria-labelledby={this.props.id}>
+                <div className="dropdown-menu" aria-labelledby={this.props.id}>
                     {this.props.children}
-                </ul>
+                </div>
             </li>
         )
     }
@@ -40,23 +40,34 @@ class MenuItem extends React.Component {
         if (this.props.hide) {
             return null;
         }
-        var icon;
-        if (this.props.icon) {
-            icon = 'glyphicon glyphicon-' + this.props.icon;
-        } else {
-            icon = this.props.check ? 'glyphicon glyphicon-ok' : '';
-        }
-        var disabled = this.props.disabled ? 'disabled' : '';
+        var icon = this.props.check ? "✔ " : ""
+        var disabled = this.props.disabled ? " disabled" : "";
+        var propsClassName = this.props.className ? " " + this.props.className : "";
+        var className = "dropdown-item" + disabled + propsClassName;
         return (
-            <li className={disabled}>
-                <a className={this.props.className} id={this.props.id} href={"#" + this.props.href}
-                   onClick={this.props.onClick} data-toggle={this.props.data_toggle}>
-                    <span aria-hidden="true" className={icon}></span> {this.props.title}
-                </a>
-            </li>
+            <a className={className} id={this.props.id} href={"#" + this.props.href} onClick={this.props.onClick}
+               data-toggle={this.props.data_toggle}>
+                {icon + this.props.title}
+            </a>
         );
     }
 }
 
 
-export {Menu, MenuItem};
+class NavItem extends React.Component {
+    render () {
+        if (this.props.hide) {
+            return null;
+        }
+        var disabled = this.props.disabled ? " disabled" : "";
+        var propsClassName = this.props.className ? " " + this.props.className : "";
+        return (
+            <li className="nav-item mr-2">
+                <a className={"nav-link" + disabled + propsClassName} id={this.props.id}
+                   href="#" onClick={this.props.onClick}>{this.props.title}</a>
+            </li>
+        );
+    }
+}
+
+export {Menu, MenuItem, NavItem};

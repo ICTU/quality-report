@@ -35,17 +35,11 @@ class NameWithIdentifier extends React.Component {
     }
 }
 
-class CheckIcon extends React.Component {
-    render() {
-        return this.props.check ? <span aria-hidden="true" className="glyphicon glyphicon-ok"></span> : null;
-    }
-}
-
 class DomainObjectsTable extends React.Component {
     render() {
         var table_rows = [];
         this.props.domain_objects.forEach(function(domain_object) {
-            var icon = <CheckIcon check={domain_object["included"]}/>;
+            var icon = domain_object["included"] ? "✔️" : "";
             var title = <NameWithIdentifier title={domain_object["name"]} identifier={domain_object["id"]}/>
             var default_requirements = domain_object['default_requirements'].sort().join(', ');
             var optional_requirements = domain_object['optional_requirements'].sort().join(', ');
@@ -66,7 +60,7 @@ class RequirementsTable extends React.Component {
     render() {
         var table_rows = [];
         this.props.requirements.forEach(function(requirement) {
-            var icon = <CheckIcon check={requirement["included"]}/>;
+            var icon = requirement["included"] ? "✔️" : "";
             var title = <NameWithIdentifier title={requirement["name"]} identifier={requirement["id"]}/>;
             var metrics = requirement['metrics'].sort().join(', ');
             table_rows.push({cells: [icon, title, metrics]});
@@ -85,7 +79,7 @@ class MetricClassesTable extends React.Component {
     render() {
         var table_rows = [];
         this.props.metric_classes.forEach(function(metric_class) {
-            var icon = <CheckIcon check={metric_class["included"]}/>;
+            var icon = metric_class["included"] ? "✔️" : "";
             var title = <NameWithIdentifier title={metric_class["name"]} identifier={metric_class["id"]}/>;
             table_rows.push({cells: [icon, title, metric_class['norm']]});
         });
@@ -103,7 +97,7 @@ class MetricSourcesTable extends React.Component {
     render() {
         var table_rows = [];
         this.props.metric_sources.forEach(function(metric_source) {
-            var icon = <CheckIcon check={metric_source["included"]}/>;
+            var icon = metric_source["included"] ? "✔️" : "";
             var title = <NameWithIdentifier title={metric_source["name"]} identifier={metric_source["id"]}/>;
             var url_list = <UrlList>{metric_source['urls']}</UrlList>;
             table_rows.push({cells: [icon, title, url_list]});

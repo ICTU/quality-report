@@ -15,16 +15,29 @@
 
 import test from 'tape';
 import React from 'react';
-import ReactTestUtils from 'react-dom/test-utils';
-import ShallowRenderer from 'react-test-renderer/shallow';
+
+import { shallow } from 'enzyme';
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({ adapter: new Adapter() });
+
 import {MetricsSections} from '../../js/components/metrics_sections.js';
 import {EmptyStorage} from '../stubs/storage.js';
 
 
 test('metrics sections show one table', function(t) {
-    const renderer = new ShallowRenderer();
-    renderer.render(<MetricsSections show_one_table storage={new EmptyStorage()} metrics={[]} />);
-    const result = renderer.getRenderOutput();
-    t.equal(result.type, 'div');
+    const wrapper = shallow(<MetricsSections show_one_table storage={new EmptyStorage()} metrics={[]} />);
+    t.equal(wrapper.find("MetricsSection").length, 1);
+    t.end();
+});
+
+test('metrics sections show multible tables', function(t) {
+    const wrapper = shallow(
+        <MetricsSections storage={new EmptyStorage()}
+                         metrics={[{section: "section1"}, {section: "section2"}]}
+                         metrics_data={{sections: [{id: "section1"}, {id: "section2"}]}}/>
+    );
+    t.equal(wrapper.find("MetricsSection").length, 2);
     t.end();
 });

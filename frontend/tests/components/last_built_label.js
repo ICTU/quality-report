@@ -28,7 +28,7 @@ test('when last change date is later than 2000 last built element is correctly r
     const result = renderer.getRenderOutput();
 
     t.equal(result.type, 'span');
-    t.equal(result.props.className, 'label label-default label_space');
+    t.equal(result.props.className, 'badge badge-secondary label_space');
     t.equal(result.props.children[0].trim(), 'gewijzigd')
     t.equal(result.props.children[1].type.Function : 'TimeAgo')
     t.equal(result.props.children[1].props.date, lastChangeDate)

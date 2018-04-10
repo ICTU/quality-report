@@ -16,7 +16,7 @@
 import test from 'tape';
 import React from 'react';
 import ShallowRenderer from 'react-test-renderer/shallow';
-import {Menu, MenuItem} from '../../js/widgets/menu.js';
+import {Menu, MenuItem, NavItem} from '../../js/widgets/menu.js';
 
 
 test('menu without menu items', function(t) {
@@ -26,9 +26,9 @@ test('menu without menu items', function(t) {
     t.deepEquals(
         result.props.children,
         [
-            <a id="id" className="dropdown-toggle" role="button" data-toggle="dropdown"
-               href="#" aria-haspopup="true" aria-expanded="false">Menu<span className="caret"></span></a>,
-            <ul className="dropdown-menu" aria-labelledby="id">{undefined}</ul>
+            <a id="id" className="nav-link dropdown-toggle" role="button" data-toggle="dropdown"
+               href="#" aria-haspopup="true" aria-expanded="false">Menu</a>,
+            <div className="dropdown-menu" aria-labelledby="id">{undefined}</div>
         ]
     );
     t.end();
@@ -40,9 +40,9 @@ test('menu with menu item', function(t) {
     const result = renderer.getRenderOutput();
     t.deepEquals(
         result.props.children[1],
-        <ul className="dropdown-menu" aria-labelledby="id">
+        <div className="dropdown-menu" aria-labelledby="id">
             <MenuItem title="Menu item" />
-        </ul>
+        </div>
     );
     t.end();
 });
@@ -59,7 +59,7 @@ test('menu item title', function(t) {
     const renderer = new ShallowRenderer();
     renderer.render(<MenuItem title="title" />);
     const result = renderer.getRenderOutput();
-    t.equals(result.props.children.props.children[2], "title");
+    t.equals(result.props.children, "title");
     t.end();
 });
 
@@ -71,19 +71,11 @@ test('menu item hidden', function(t) {
     t.end();
 });
 
-test('menu item icon', function(t) {
-    const renderer = new ShallowRenderer();
-    renderer.render(<MenuItem icon="foo" />);
-    const result = renderer.getRenderOutput();
-    t.equals(result.props.children.props.children[0].props.className, "glyphicon glyphicon-foo");
-    t.end();
-});
-
 test('menu item check icon', function(t) {
     const renderer = new ShallowRenderer();
-    renderer.render(<MenuItem check />);
+    renderer.render(<MenuItem check title="Title"/>);
     const result = renderer.getRenderOutput();
-    t.equals(result.props.children.props.children[0].props.className, "glyphicon glyphicon-ok");
+    t.equals(result.props.children, "✔ Title");
     t.end();
 });
 
@@ -91,6 +83,38 @@ test('menu item disabled', function(t) {
     const renderer = new ShallowRenderer();
     renderer.render(<MenuItem disabled />);
     const result = renderer.getRenderOutput();
-    t.equals(result.props.className, "disabled");
+    t.equals(result.props.className, "dropdown-item disabled");
+    t.end();
+});
+
+test('navitem title', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<NavItem title="title" />);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.children.props.children, "title");
+    t.end();
+});
+
+test('navitem disabled', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<NavItem disabled />);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.children.props.className, "nav-link disabled");
+    t.end();
+});
+
+test('navitem hidden', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<NavItem hide />);
+    const result = renderer.getRenderOutput();
+    t.equals(result, null);
+    t.end();
+});
+
+test('navitem disabled', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<NavItem disabled />);
+    const result = renderer.getRenderOutput();
+    t.equals(result.props.children.props.className, "nav-link disabled");
     t.end();
 });

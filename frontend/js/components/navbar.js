@@ -34,24 +34,20 @@ class NavBar extends React.Component {
 
     render() {
         const report_date_time = format_date_time(...this.props.report_date_time)
+        let title = this.props.report_title;
+        title = title.length > 40 ? title.substr(0, 40) + "..." : title;
         return (
-            <nav className="navbar navbar-default navbar-fixed-top">
-                <div className="container-fluid">
-                    <div className="navbar-header">
-                        <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                            <span className="sr-only">Toggle navigation</span>
-                            <span className="icon-bar"></span>
-                            <span className="icon-bar"></span>
-                            <span className="icon-bar"></span>
-                        </button>
-                        <a className="navbar-brand" href="#">{this.props.report_title}</a>
-                    </div>
-                    <div className="collapse navbar-collapse">
-                        <Menus {...this.props} />
-                        <p className="navbar-text pull-right">
-                            Rapportage van <span className={this.report_date_time_class()}>{report_date_time}</span>
-                        </p>
-                    </div>
+            <nav className="navbar navbar-expand-sm navbar-light bg-light fixed-top">
+                <a className="navbar-brand" href="#">{title}</a>
+                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                     <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarNav">
+                    <Menus {...this.props} />
+                    <span className="navbar-text">
+                        Rapportage van <span className={this.report_date_time_class()}>{report_date_time}</span>
+                    </span>
                 </div>
             </nav>
         );

@@ -14,7 +14,7 @@
  */
 
 import React from 'react';
-import {Menu, MenuItem} from 'widgets/menu.js';
+import {Menu, MenuItem, NavItem} from 'widgets/menu.js';
 import {DelayInput} from 'react-delay-input';
 
 
@@ -29,8 +29,7 @@ class MetricsMenu extends React.Component {
         });
         return (
             <Menu id="navigation_menu" title="Metrieken" hide={this.props.tab !== 'metrics_tab'}>
-                <MenuItem href="section_dashboard" icon="dashboard" title="Dashboard"
-                          hide={!this.props.show_dashboard} />
+                <MenuItem href="section_dashboard" title="Dashboard" hide={!this.props.show_dashboard} />
                 {section_menu_items}
             </Menu>
         );
@@ -47,7 +46,7 @@ class FilterMenu extends React.Component {
                 <MenuItem id="show_multiple_tables" title="Tabel per product/team"
                           check={!this.props.show_one_table}
                           onClick={this.props.on_toggle_one_table} />
-                <li role="separator" className="divider"></li>
+                <div className="dropdown-divider"></div>
                 <MenuItem id="filter_all" title="Alle statussen"
                           check={this.props.filter.filter_all}
                           onClick={this.props.on_filter} />
@@ -75,7 +74,7 @@ class FilterMenu extends React.Component {
                 <MenuItem id="filter_status_week" title="Langer dan een week dezelfde status"
                           check={this.props.filter.filter_status_week}
                           onClick={this.props.on_filter} />
-                <li role="separator" className="divider"></li>
+                <div className="dropdown-divider"></div>
                 <MenuItem id="hidden_metrics" title="Verborgen metrieken"
                           disabled={this.props.filter.hidden_metrics.length === 0}
                           onClick={this.props.on_filter} />
@@ -99,12 +98,12 @@ class HelpMenu extends React.Component {
     render() {
         return (
             <Menu id="help_tab_menu" title="Help" hide={this.props.tab !== 'help_tab'}>
-                <MenuItem href="help_about" title="Over HQ" icon="info-sign" />
-                <MenuItem href="help_on_metrics" title="Metrieken" icon="tasks" />
-                <MenuItem href="help_on_metric_sources" title="Metriekbronnen" icon="open" />
-                <MenuItem href="help_on_requirements" title="Eisen" icon="check" />
-                <MenuItem href="help_on_domain_objects" title="Domeinobjecten" icon="file" />
-                <MenuItem href="help_on_configuration" title="Configuratie" icon="wrench" />
+                <MenuItem href="help_about" title="Over HQ" />
+                <MenuItem href="help_on_domain_objects" title="Domeinobjecten" />
+                <MenuItem href="help_on_requirements" title="Eisen" />
+                <MenuItem href="help_on_metrics" title="Metrieken" />
+                <MenuItem href="help_on_metric_sources" title="Metriekbronnen" />
+                <MenuItem href="help_on_configuration" title="Configuratie" />
             </Menu>
         );
     }
@@ -122,16 +121,14 @@ class Search extends React.Component {
 
     render() {
         return (
-            <form className="navbar-form navbar-left" onSubmit={this.handleSubmit} role="search">
-                <div className="form-group">
-                    <div className="input-group">
-                        <DelayInput placeholder="Filter metrieken..." type="search" value={this.props.filter.search_string}
-                                    disabled={this.props.tab !== 'metrics_tab'} className="form-control"
-                                    onChange={this.props.on_search} delayTimeout={400} minLength={0} />
-                        <span className="input-group-btn">
-                            <button className="btn btn-default" type="button" onClick={this.props.on_search_reset}
-                                    disabled={this.props.filter.search_string === ""}>✖</button>
-                        </span>
+            <form className="form-inline mr-2" onSubmit={this.handleSubmit} role="search">
+                <div className="input-group">
+                    <DelayInput placeholder="Filter metrieken..." type="search" value={this.props.filter.search_string}
+                                disabled={this.props.tab !== 'metrics_tab'} className="form-control" width="20"
+                                onChange={this.props.on_search} delayTimeout={400} minLength={0} />
+                    <div className="input-group-append">
+                        <button className="btn btn-outline-secondary" type="button" onClick={this.props.on_search_reset}
+                                disabled={this.props.filter.search_string === ""}>✖</button>
                     </div>
                 </div>
             </form>
@@ -142,22 +139,22 @@ class Search extends React.Component {
 class Menus extends React.Component {
     render() {
         return (
-            <ul className="nav navbar-nav">
-                <MenuItem id="metrics_tab" onClick={this.props.on_tab} title="Metrieken"
+            <div className="navbar-nav mr-auto">
+                <NavItem id="metrics_tab" onClick={this.props.on_tab} title="Metrieken"
                           hide={this.props.tab === 'metrics_tab'} />
                 <MetricsMenu {...this.props} />
                 <Search {...this.props} />
-                <MenuItem title="Toon" hide={this.props.tab === 'metrics_tab'} disabled={true} />
+                <NavItem title="Toon" hide={this.props.tab === 'metrics_tab'} disabled={true} />
                 <FilterMenu {...this.props} />
-                <MenuItem id="trend_tab" onClick={this.props.on_tab} title="Trend"
+                <NavItem id="trend_tab" onClick={this.props.on_tab} title="Trend"
                           hide={this.props.tab === 'trend_tab'} />
                 <TrendMenu tab={this.props.tab} />
-                <MenuItem id="help_tab" onClick={this.props.on_tab} title="Help"
+                <NavItem id="help_tab" onClick={this.props.on_tab} title="Help"
                           hide={this.props.tab === 'help_tab'} />
                 <HelpMenu tab={this.props.tab} />
-            </ul>
+            </div>
         );
     }
 }
 
-export {Menus, MetricsMenu, FilterMenu, TrendMenu, HelpMenu};
+export {Menus, MetricsMenu, FilterMenu, TrendMenu, HelpMenu, Search};

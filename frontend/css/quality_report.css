@@ -24,6 +24,11 @@ limitations under the License. */
     .navbar { visibility: hidden; }
 }
 
+/* Default font-size in Bootstrap 4 is 16px, revert to 14px. */
+html {
+    font-size: 14px;
+}
+
 body {
     padding-top: 70px;
     padding-bottom: 40px;
@@ -135,6 +140,13 @@ div.meta_metrics_history_graph {
 .detail-column-number {
     text-align: right;
 }
+
 .tooltip {
     min-width:300px;
+}
+
+/* Make all items in a drop down menu reachable when the menu is longer than the viewport by overflowing. */
+.dropdown-menu{
+    max-height: calc(100vh - 50px);
+    overflow-y: auto;
 }

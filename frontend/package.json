@@ -24,10 +24,11 @@
   },
   "homepage": "https://github.com/ICTU/quality-report#readme",
   "dependencies": {
-    "bootstrap": "^3.3.6",
+    "bootstrap": "^4.0.0",
     "chart.js": "^2.7.2",
     "chartjs-plugin-stacked100": "^0.4.4",
     "jquery": "^3.3.1",
+    "popper.js": "^1.14.3",
     "react": "^16.2.0",
     "react-chartjs-2": "^2.7.0",
     "react-delay-input": "^4.0.4",
@@ -61,6 +62,7 @@
     "react-test-renderer": "^16.2.0",
     "style-loader": "^0.19.1",
     "tape": "^4.9.0",
+    "tape-watch": "^2.3.0",
     "webpack": "^3.11.0"
   }
 }

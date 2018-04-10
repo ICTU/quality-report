@@ -28,8 +28,7 @@ class LastBuiltLabel extends React.Component {
 
         if (year > 2000) {
             return (
-
-                <span className="label label-default label_space">
+                <span className="badge badge-secondary label_space">
                     gewijzigd <TimeAgo date={this.props.latest_change_date} formatter={formatter} />
                 </span>
             );

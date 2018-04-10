@@ -16,7 +16,7 @@
 import test from 'tape';
 import React from 'react';
 import ShallowRenderer from 'react-test-renderer/shallow';
-import {Menus, MetricsMenu, FilterMenu, TrendMenu, HelpMenu} from '../../js/components/menu.js';
+import {Menus, MetricsMenu, FilterMenu, TrendMenu, HelpMenu, Search} from '../../js/components/menu.js';
 import {Menu} from '../../js/widgets/menu.js';
 
 
@@ -24,7 +24,7 @@ test('menus', function(t) {
     const renderer = new ShallowRenderer();
     renderer.render(<Menus />);
     const result = renderer.getRenderOutput();
-    t.equal(result.type, 'ul');
+    t.equal(result.type, 'div');
     t.end();
 });
 
@@ -41,6 +41,14 @@ test('filter menu', function(t) {
     renderer.render(<FilterMenu filter={{hidden_metrics: []}} />);
     const result = renderer.getRenderOutput();
     t.equal(result.type, <Menu/>.type);
+    t.end();
+});
+
+test('filter input', function(t) {
+    const renderer = new ShallowRenderer();
+    renderer.render(<Search filter={{search_string: ""}} />);
+    const result = renderer.getRenderOutput();
+    t.equal(result.type, 'form');
     t.end();
 });
 

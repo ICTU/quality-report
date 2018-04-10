@@ -76,16 +76,21 @@ test('bootstrap table caret is hidden when sort column name does not match', fun
     t.end();
 });
 
+test('bootstrap table caret is shown when sort column name does match', function(t) {
+    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]} table_sort_column_name='id' />);
+    t.equals(wrapper.find('BootstrapTableHeader').dive().find('Caret').prop('show'), true);
+    t.end();
+});
+
 test('bootstrap table caret ascending', function(t) {
-    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]} table_sort_column_name='id' table_sort_ascending='?' />);
-    t.equals(wrapper.find('BootstrapTableHeader').dive().find('Caret').prop('table_sort_ascending'), '?');
-    t.equals(wrapper.find('BootstrapTableHeader').dive().find('Caret').dive().find('span.caret').exists(), true);
+    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]} table_sort_column_name='id' table_sort_ascending={true} />);
+    t.equals(wrapper.find('BootstrapTableHeader').dive().find('Caret').dive().find("span").text(), " ▴");
     t.end();
 });
 
 test('bootstrap table caret descending', function(t) {
-    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]} table_sort_column_name='id' table_sort_ascending />);
-    t.equals(wrapper.find('BootstrapTableHeader').dive().find('Caret').dive().find('span.dropup').exists(), true);
+    const wrapper = shallow(<BootstrapTable headers={[["", ""],["id", "ID"]]} table_sort_column_name='id' table_sort_ascending={false} />);
+    t.equals(wrapper.find('BootstrapTableHeader').dive().find('Caret').dive().find("span").text(), " ▾");
     t.end();
 });
 
@@ -163,7 +168,7 @@ test('bootstrap table does not render headers of table panel beginning with unde
 
 test('bootstrap table does not render columns of the table panel if their header begins with underscore', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "_x", "num": "Number"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "_x", "num": "Number"},
                 "data":[{"str": "First Row", "num": "1"}, {"str": "Second Row", "num": "2"}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('td').length, 1);
@@ -176,7 +181,7 @@ test('bootstrap table does not render columns of the table panel if their header
 
 test('bootstrap table renders with css classes in header names', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "FirstHeader__css_class"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "FirstHeader__css_class"},
                 "data":[{"str": "First Row"}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('td').length, 1);
@@ -187,33 +192,33 @@ test('bootstrap table renders with css classes in header names', (t) => {
 
 test('bootstrap table renders rows of the table panel with <className> if the column with _<className> header text is "true"', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"},
                 "data":[{"str": "First Row", "format": "true"}, {"str": "Second Row", "format": "false"}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().text(), 'First Row');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('.italic').exists(), true);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().text(), 'Second Row');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().find('.italic').exists(), false);
-    
+
     t.end();
 });
 
 test('bootstrap table renders rows of the table panel with <className> if the column with _<className> header text is true', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"},
                 "data":[{"str": "First Row", "format": true}, {"str": "Second Row", "format": false}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().text(), 'First Row');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').first().find('.italic').exists(), true);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().text(), 'Second Row');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr').last().find('.italic').exists(), false);
-    
+
     t.end();
 });
 
 test('bootstrap table renders rows of the table panel with extra info', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "num": "Number"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "num": "Number"},
                 "data":[{"str": "First Row", "num": "1"}, {"str": "Second Row", "num": "2"}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').exists(), true);
@@ -226,12 +231,12 @@ test('bootstrap table renders rows of the table panel with extra info', (t) => {
 
 test('bootstrap table renders rows of the table panel with links in extra info', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"},
                 "data":[{"col": {"href":"http://xxx", "text": "Description"}}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').exists(), true);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr a').text(), "Description");
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr a[href="http://xxx"]').exists(), true);    
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').dive().find('tbody tr a[href="http://xxx"]').exists(), true);
     t.end();
 });
 
@@ -250,7 +255,7 @@ test('bootstrap table renders hide metric button', (t) => {
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('onClick'), 'onClickFunction');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('data-toggle'), 'tooltip');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('data-placement'), 'right');
-    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('title'), 
+    t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('ActionPanel').dive().find('button').first().prop('title'),
             'Gebruik het Toon-menu om verborgen metrieken weer zichtbaar te maken.');
     t.end();
 });
@@ -267,7 +272,7 @@ test('bootstrap table renders hides metric when hide button clicked', (t) => {
 
 test('bootstrap table renders rows of the table panel with links in extra info, with link as the text', (t) => {
     const wrapper = shallow(<BootstrapTable>
-        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"}, 
+        {[{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"},
                 "data":[{"col": {"href":"http://xxx", "text": ""}}]}}]}
     </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailPane').dive().find('TablePanel').exists(), true);
@@ -284,7 +289,7 @@ test('bootstrap table renders toggle button', (t) => {
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').length, 1);
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').prop('data_target'), '#IDx_details');
     t.equals(wrapper.find('BootstrapTableBody').dive().find('DetailToggleButton').dive()
-                .find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]').length, 1);
+                .find('button.can_expand[data-target="#IDx_details"]').length, 1);
     t.end();
 });
 
@@ -325,13 +330,12 @@ test('bootstrap table toggle button click', (t) => {
         <BootstrapTable headers={[["", ""],["id", "ID"]]}>
             {[{cells: ["cell 1"], className: 'cls', id: 'IDx', extra_info: {title: "Extra!", headers: {"x": "y"}}}]}
         </BootstrapTable>)
-    var x = wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]');
-    t.equals(x.length, 1);
-    x.simulate('click');
-    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-down[data-target="#IDx_details"]').length, 1);
-    x.simulate('click');
-    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-down[data-target="#IDx_details"]').exists(), false);
-    t.equals(wrapper.find('button.can_expand.btn.glyphicon.glyphicon-chevron-right[data-target="#IDx_details"]').length, 1);
+    var button = wrapper.find('button.can_expand[data-target="#IDx_details"]');
+    t.equals(button.text(), "➕")
+    button.simulate('click');
+    t.equals(button.text(), "➖")
+    button.simulate('click');
+    t.equals(button.text(), "➕")
     t.end();
 });
 
