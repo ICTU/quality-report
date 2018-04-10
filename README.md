@@ -9,7 +9,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/90b2d74043284cdda06aecc442182946)](https://www.codacy.com/app/frank_10/quality-report?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ICTU/quality-report&amp;utm_campaign=Badge_Grade)
 [![codebeat badge](https://codebeat.co/badges/cbffeefc-5efb-41c4-88e1-30a0fc7dd249)](https://codebeat.co/projects/github-com-ictu-quality-report)
 [![CodeFactor](https://www.codefactor.io/repository/github/ictu/quality-report/badge)](https://www.codefactor.io/repository/github/ictu/quality-report)
-[![Dependency Status](https://dependencyci.com/github/ICTU/quality-report/badge)](https://dependencyci.com/github/ICTU/quality-report)
 [![Requirements Status](https://requires.io/github/ICTU/quality-report/requirements.svg?branch=master)](https://requires.io/github/ICTU/quality-report/requirements/?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/ictu/quality-report/badge.svg?targetFile=backend%2Frequirements.txt)](https://snyk.io/test/github/ictu/quality-report?targetFile=backend%2Frequirements.txt)
 [![Updates](https://pyup.io/repos/github/ICTU/quality-report/shield.svg)](https://pyup.io/repos/github/ICTU/quality-report/)
@@ -22,7 +21,7 @@ Application  to generate quality reports for software development projects.
 Holistic because HQ attempts to measure as many aspects of software development as
 possible, seeing how software development can go off the rails in so many ways.
 
-HQ itself is developed in Python (backend) and JavaScript (frontend), but can report on the quality of software 
+HQ itself is developed in Python (backend) and JavaScript (frontend), but can report on the quality of software
 developed in any language as it doesn't measure the quality itself, but instead
 relies on other tools to feed it information. Metric sources include SonarQube, Jenkins,
 Jira, Jacoco, JMeter, OWASP dependency checker, and more.
@@ -31,7 +30,7 @@ The user interface is currently available in Dutch only.
 
 An example report is available via http://ictu.github.io/quality-report/.
 
-This software was developed by ICTU (http://www.ictu.nl) to support the 
+This software was developed by ICTU (http://www.ictu.nl) to support the
 development of the Landelijk Register Kinderopvang for the Ministerie van
 Sociale Zaken en Werkgelegenheid.
 
@@ -39,7 +38,7 @@ See docs/AUTHORS.txt for contact information.
 See docs/LICENSE.txt for license information.
 See docs/HOWTO.txt for information on how to configure quality reports.
 
-To be notified about HQ releases, you can subscribe to the releases atom feed via 
+To be notified about HQ releases, you can subscribe to the releases atom feed via
 [![Blogtrottr](https://blogtrottr.com/images/icons/blogtrottr-button-91x17px.gif)](https://blogtrottr.com/?subscribe=https://github.com/ICTU/quality-report/releases.atom)
 
 Screenshots
@@ -59,7 +58,7 @@ Clicking a component (pie chart) in the dashboard navigates to the metrics of th
 
 ### Trend
 
-Recent changes in individual metrics are displayed using spark line graphs. 
+Recent changes in individual metrics are displayed using spark line graphs.
 Long term changes are visible in the trend graphs.
 
 ![Screenshot](docs/screenshot3.png)
@@ -81,14 +80,14 @@ We recommend using virtualenv:
     if [ -d $HQ_VIRTUAL_ENV ]; then
         rm -rf $HQ_VIRTUAL_ENV
     fi
-    
+
     # Create the virtualenv and activate it
     virtualenv $HQ_VIRTUAL_ENV
     . $HQ_VIRTUAL_ENV/bin/activate
-    
+
     # Install HQ
     pip install quality_report
-    
+
 HQ can now be started from the command line:
 
     $PROJECT=/path/to/project_definition_folder
