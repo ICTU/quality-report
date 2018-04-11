@@ -157,4 +157,4 @@ class TrendGraphs extends React.Component {
     }
 }
 
-export {TrendGraphs};
+export {TrendGraph, TrendGraphs};

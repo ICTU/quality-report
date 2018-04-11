@@ -26,7 +26,14 @@ import Chart from 'chart.js';
 
       var yAxes = chartInstance.options.scales.yAxes;
 
-      yAxes.forEach(function(hash) { hash.stacked = true; hash.ticks.min = 0; hash.ticks.max = 100 });
+      yAxes.forEach(function(yAxis) {
+        yAxis.stacked = true;
+        yAxis.ticks.min = 0;
+        yAxis.ticks.max = 100;
+        yAxis.ticks.callback = function(value, index, values) {
+          return value + '%';
+        };
+      });
 
       chartInstance.options.tooltips.callbacks.label = function(tooltipItem, data) {
         var datasetIndex = tooltipItem.datasetIndex,

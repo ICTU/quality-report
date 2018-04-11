@@ -1,3 +1,8 @@
+2018-04-11  Release 2.52.2
+
+  * Bug fix: Add percentage signs to y-axis labels of the relative trend graph.
+
+
 2018-04-10  Release 2.52.1
 
   * Refactoring: Upgrade to Bootstrap version 4.
