@@ -45,42 +45,6 @@ class PercentageTest(unittest.TestCase):
         self.assertEqual(0, utils.percentage(0, 0, zero_divided_by_zero_is_zero=True))
 
 
-class WorkdaysInPeriodTest(unittest.TestCase):
-    """ Unit tests of the workdays in period method. """
-    def assert_period(self, period_length, period_start, period_end):
-        """ Helper method for checking the length of a period. """
-        self.assertEqual(period_length,
-                         utils.workdays_in_period(datetime.date(*period_start), datetime.date(*period_end)))
-
-    def test_monday_wednesday(self):
-        """ Test that a period from Monday to Wednesday is 3 work days. """
-        self.assert_period(3, (2012, 12, 17), (2012, 12, 19))
-
-    def test_one_day(self):
-        """ Test that a period with start date equal to end date is 1 work
-            day. """
-        self.assert_period(1, (2012, 12, 17), (2012, 12, 17))
-
-    def test_weekend_in_period(self):
-        """ Test that a weekend inside the period is not counted. """
-        self.assert_period(2, (2012, 12, 14), (2012, 12, 17))
-
-    def test_period_in_weekend(self):
-        """ Test that the number of work days is zero when the period starts
-            and ends in the same weekend. """
-        self.assert_period(0, (2012, 12, 15), (2012, 12, 16))
-
-    def test_start_in_weekend(self):
-        """ Test that a weekend is not counted when the start is in the
-            weekend. """
-        self.assert_period(1, (2012, 12, 16), (2012, 12, 17))
-
-    def test_end_in_weekend(self):
-        """ Test that a weekend is not counted when the start is in the
-            weekend. """
-        self.assert_period(5, (2012, 12, 17), (2012, 12, 23))
-
-
 class FormatDateTest(unittest.TestCase):
     """ Unit tests of the format date method. """
     def test_some_date(self):

@@ -35,8 +35,4 @@ class Document(RequirementSubject, MeasurableObject):
 
     def __str__(self) -> str:
         """ Return the id string of the document. """
-        return self.id_string()
-
-    def id_string(self) -> str:
-        """ Return an id string for the document. """
         return self.name().lower().replace(' ', '_')

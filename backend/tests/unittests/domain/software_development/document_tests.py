@@ -31,11 +31,7 @@ class DocumentTest(unittest.TestCase):
 
     def test_str(self):
         """ Test that the string formatting of a document equals the document name. """
-        self.assertEqual(self.__document.id_string(), str(self.__document))
-
-    def test_id_string(self):
-        """ Test that the id string for the document does not contain spaces. """
-        self.assertEqual('document_name', self.__document.id_string())
+        self.assertEqual('document_name', str(self.__document))
 
     def test_optional_requirements(self):
         """ Test optional requirements. """

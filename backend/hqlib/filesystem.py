@@ -48,4 +48,3 @@ class FileSystem(object):
 # pylint: disable=invalid-name
 write_file = FileSystem.write_file
 create_dir = FileSystem.create_dir
-make_file_readable = FileSystem.make_file_readable

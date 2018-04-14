@@ -24,10 +24,6 @@ class TeamTest(unittest.TestCase):
     def setUp(self):
         self.__team = domain.Team(name='The A-team')
 
-    def test_id_string(self):
-        """ Test that the id string is the team name as identifier. """
-        self.assertEqual('the_a-team', self.__team.id_string())
-
     def test_eq(self):
         """ Test that teams are equal when their names are. """
         self.assertEqual(self.__team, domain.Team(name='The A-team'))

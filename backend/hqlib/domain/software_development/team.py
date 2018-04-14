@@ -35,7 +35,3 @@ class Team(RequirementSubject, MeasurableObject):
 
     def __str__(self) -> str:
         return self.name()
-
-    def id_string(self) -> str:
-        """ Return an id string for the team. """
-        return self.name().lower().replace(' ', '_')

@@ -61,17 +61,11 @@ _YEAR_RE = "(?P<year>[0-9]{4})"
 _MONTHNAME_RE = "(?P<monthname>[A-Z][a-z][a-z])"
 _MONTH_RE = "(?P<month>[0-9]{1,2})"
 _DAY_RE = "(?P<day>[0-9]{1,2})"
-_DAYNAME_RE = "(?P<dayname>[A-Z][a-z]*)"
 _TIME_RE = "(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{2}):(?P<second>[0-9]{2})"
 _AM_PM_RE = "(?P<am_pm>[AP]M)"
-_TIMEZONE_RE = "(?P<tzname>[A-Z]{3,4})"
 
 # US format: 'Apr 5, 2013 10:04:10 AM'
 _US_DATE_TIME_RE = _MONTHNAME_RE + r"\s+" + _DAY_RE + r",\s+" + _YEAR_RE + r"\s+" + _TIME_RE + r"\s+" + _AM_PM_RE
-# UK format: 'Tue Apr 5 2013 22:10:10 CEST'
-_UK_DATE_TIME_RE = r"\s+".join([_DAYNAME_RE, _MONTHNAME_RE, _DAY_RE, _YEAR_RE, _TIME_RE, _TIMEZONE_RE])
-# UK format, year last: 'Tue Apr 5 22:10:10 CEST 2013'
-_UK_DATE_TIME_YEAR_LAST_RE = r"\s+".join([_DAYNAME_RE, _MONTHNAME_RE, _DAY_RE, _TIME_RE, _TIMEZONE_RE, _YEAR_RE])
 # ISO date: '2013-11-05'
 _ISO_DATE_RE = "-".join([_YEAR_RE, _MONTH_RE, _DAY_RE])
 
@@ -154,13 +148,6 @@ def format_timedelta(timedelta: TimeDelta) -> str:
         if unit:
             return '{0} {1}'.format(unit, unit_plural) if unit > 1 else 'een {0}'.format(unit_singular)
     return 'minder dan een minuut'
-
-
-def workdays_in_period(start_date: datetime.date, end_date: datetime.date) -> int:
-    """ Return the number of work days in the period. All days between start date and end date are considered,
-        including the start date and end date themselves. """
-    return sum(1 for ordinal in range(start_date.toordinal(), end_date.toordinal() + 1)
-               if datetime.date.fromordinal(ordinal).isoweekday() <= 5)
 
 
 def html_escape(text: str) -> str:
