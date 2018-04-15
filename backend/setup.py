@@ -18,8 +18,6 @@ limitations under the License.
 
 import os
 from distutils import core, dir_util
-from pip.download import PipSession
-from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
 from hqlib import VERSION
@@ -59,8 +57,13 @@ possible, seeing how software development can go off the rails in so many ways.'
       scripts=['quality_report.py'],
       include_package_data=True,
       cmdclass={"bundle": Bundle},
-      install_requires=[str(requirement.req) for requirement in parse_requirements('requirements.txt',
-                                                                                   session=PipSession())],
+      install_requires=[
+          "beautifulsoup4>=4.6.0",
+          "lxml>=4.2.1",
+          "python-dateutil>=2.7.2",
+          "pygal>=2.4.0",
+          "wekanapi>=0.0.1"
+      ],
       test_suite='tests',
       classifiers=[
           'Development Status :: 5 - Production/Stable',
