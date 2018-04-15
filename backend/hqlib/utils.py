@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
 import datetime
 import json
 import logging
@@ -157,7 +157,7 @@ def html_escape(text: str) -> str:
     return text
 
 
-def eval_json(json_string: str) -> Any:
+def eval_json(json_string: Union[str, bytes]) -> Any:
     """ Return an evaluated version of the json string. """
     if isinstance(json_string, bytes):
         try:

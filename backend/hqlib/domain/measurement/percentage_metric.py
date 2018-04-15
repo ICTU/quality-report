@@ -31,7 +31,7 @@ class PercentageMetric(metric.Metric):
     zero_divided_by_zero_is_zero = False
 
     @functools.lru_cache(maxsize=1024)
-    def value(self):
+    def value(self) -> MetricValue:
         """ Return the actual value of the metric as a percentage calculated from the numerator and denominator
             of the metric. """
         numerator, denominator = self._numerator(), self._denominator()

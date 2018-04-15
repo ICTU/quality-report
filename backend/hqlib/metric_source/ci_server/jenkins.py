@@ -20,7 +20,7 @@ import functools
 import logging
 import re
 import urllib.parse
-from typing import Dict, IO, List
+from typing import Dict, IO, List, Tuple
 
 from hqlib.typing import DateTime, TimeDelta
 from .. import url_opener
@@ -69,21 +69,21 @@ class Jenkins(ci_server.CIServer):
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
 
-    def failing_jobs_url(self) -> list((str, str, str)):
+    def failing_jobs_url(self) -> List[Tuple[str, str, str]]:
         """ Return the urls for the failing Jenkins jobs. """
         try:
             return self.__job_urls(self.__failing_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
-            return dict()
+            return []
 
-    def unused_jobs_url(self) -> list((str, str, str)):
+    def unused_jobs_url(self) -> List[Tuple[str, str, str]]:
         """ Return the urls for the unused Jenkins jobs. """
         try:
             return self.__job_urls(self.__unused_jobs())
         except url_opener.UrlOpener.url_open_exceptions:
-            return dict()
+            return []
 
-    def __job_urls(self, jobs: Jobs) -> list((str, str, str)):
+    def __job_urls(self, jobs: Jobs) -> List[Tuple[str, str, str]]:
         """ Return the urls for the Jenkins jobs. """
         def days(job: Job) -> str:
             """ Return the age of the last stable build. """
@@ -123,7 +123,7 @@ class Jenkins(ci_server.CIServer):
 
     def __jobs(self) -> Jobs:
         """ Return all Jenkins jobs that match our job regular expression. """
-        all_jobs = []
+        all_jobs: Jobs = []
         jobs = self._api(self.__jobs_api_url)['jobs']
         all_jobs.extend(jobs)
         for job in jobs:

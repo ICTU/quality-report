@@ -27,7 +27,7 @@ class LowerIsBetterMetric(metric.Metric):
     norm_template = "Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood."
 
     @functools.lru_cache(maxsize=1024)
-    def value(self):
+    def value(self) -> MetricValue:
         return super().value()  # pragma: no cover
 
     def _is_value_better_than(self, target: MetricValue) -> bool:
@@ -40,7 +40,7 @@ class HigherIsBetterMetric(metric.Metric):
     norm_template = "Minimaal {target} {unit}. Minder dan {low_target} {unit} is rood."
 
     @functools.lru_cache(maxsize=1024)
-    def value(self):
+    def value(self) -> MetricValue:
         return super().value()  # pragma: no cover
 
     def _is_value_better_than(self, target: MetricValue) -> bool:

@@ -107,7 +107,7 @@ class PerformanceTestDuration(domain.HigherIsBetterMetric):
     target_value = 30
     low_target_value = 20
     unit = "minuten"
-    applicable_metric_source_classes = []  # Subclass responsibility
+    applicable_metric_source_classes: List[domain.MetricSource] = []  # Subclass responsibility
 
     def is_applicable(self) -> bool:
         return self._metric_source.__class__ in self.applicable_metric_source_classes if self._metric_source else True

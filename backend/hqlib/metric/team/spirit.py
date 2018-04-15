@@ -50,7 +50,7 @@ class TeamSpirit(Metric):
     def _needs_immediate_action(self) -> bool:
         return self.value() == self.low_target()
 
-    def _is_value_better_than(self, target) -> bool:
+    def _is_value_better_than(self, target: MetricValue) -> bool:
         return self.numerical_value() > self.numerical_value_map.get(target, -1)
 
     def _is_below_target(self) -> bool:
@@ -73,7 +73,7 @@ class TeamSpiritAge(LowerIsBetterMetric):
     low_target_value = 42
     metric_source_class = metric_source.TeamSpirit
 
-    def value(self):
+    def value(self) -> MetricValue:
         return -1 if self._missing() else \
             (datetime.datetime.now() - self._metric_source.datetime(self._metric_source_id)).days
 

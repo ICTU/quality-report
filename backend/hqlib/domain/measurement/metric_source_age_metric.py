@@ -18,6 +18,7 @@ limitations under the License.
 import datetime
 import functools
 
+from hqlib.typing import MetricValue
 from . import directed_metric
 
 
@@ -28,7 +29,7 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
     low_target_value = 7
 
     @functools.lru_cache(maxsize=1024)
-    def value(self):
+    def value(self) -> MetricValue:
         if self._missing():
             return -1
 
@@ -36,7 +37,7 @@ class MetricSourceAgeMetric(directed_metric.LowerIsBetterMetric):
         return 0 if days < 0 else days
 
     @functools.lru_cache(maxsize=1024)
-    def _missing(self):
+    def _missing(self) -> bool:
         if not self._metric_source:
             return True
         metric_source_ids = self._get_metric_source_ids()

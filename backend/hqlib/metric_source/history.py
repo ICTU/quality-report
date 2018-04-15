@@ -38,7 +38,7 @@ class CompactHistory(domain.MetricSource):
         """ Return the history filename """
         return self.__history_filename
 
-    def recent_history(self, metric_id) -> List[Number]:
+    def recent_history(self, metric_id: str) -> List[Number]:
         """ Retrieve the recent history for the metric_ids. """
         history = self.__read_history()
         measurements = history['metrics'].get(metric_id, [])

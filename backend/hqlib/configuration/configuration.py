@@ -18,8 +18,10 @@ import os
 import sys
 import logging
 
+from ..domain import Project
 
-def project(project_folder_or_filename):
+
+def project(project_folder_or_filename: str) -> Project:
     """ Import the project from the project definition file in the project folder. """
     if project_folder_or_filename.endswith('.py'):
         project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)

@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import functools
 import logging
-from typing import Dict, List, Iterator, Sequence
+from typing import Dict, Iterator, List, Sequence, Tuple
 
 import wekanapi
 
@@ -45,7 +45,7 @@ class WekanBoard(domain.MetricSource):
         date_times = [self.__last_activity(card.get_card_info()) for card in self.__cards(*board_ids)]
         return max(date_times, default=datetime.datetime.min)
 
-    def metric_source_urls(self, *metric_source_ids: str):
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
         """ Convert board ids to urls. """
         return self.__board_urls(*metric_source_ids)
 
@@ -59,7 +59,7 @@ class WekanBoard(domain.MetricSource):
         """ Return the number of over due cards. """
         return len(list(self.__over_due_cards(*board_ids))) if self.__boards(*board_ids) else -1
 
-    def over_due_actions_url(self, *board_ids: str, now: DateTime = None) -> List:
+    def over_due_actions_url(self, *board_ids: str, now: DateTime = None) -> List[Tuple[str, str, str]]:
         """ Return the urls to the over due cards. """
         if not self.__boards(*board_ids):
             return list()
@@ -77,7 +77,7 @@ class WekanBoard(domain.MetricSource):
         """ Return the number of inactive cards. """
         return len(list(self.__inactive_cards(*board_ids, days=days))) if self.__boards(*board_ids) else -1
 
-    def inactive_actions_url(self, *board_ids: str, days: int = 14, now: DateTime = None) -> List:
+    def inactive_actions_url(self, *board_ids: str, days: int = 14, now: DateTime = None) -> List[Tuple[str, str, str]]:
         """ Return the urls for the inactive cards. """
         if not self.__boards(*board_ids):
             return list()

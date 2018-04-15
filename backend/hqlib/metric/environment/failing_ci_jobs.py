@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import List, Tuple
+
 from . import CIJobs
 
 
@@ -35,5 +37,5 @@ class FailingCIJobs(CIJobs):
     def value(self):
         return self._metric_source.number_of_failing_jobs() if self._metric_source else -1
 
-    def extra_info_rows(self) -> list((str, str, str)):
+    def extra_info_rows(self) -> List[Tuple[str, str, str]]:
         return self._metric_source.failing_jobs_url()

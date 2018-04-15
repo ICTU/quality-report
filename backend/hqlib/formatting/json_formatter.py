@@ -18,7 +18,7 @@ limitations under the License.
 import json
 import logging
 import re
-from typing import Dict, Any, Tuple
+from typing import cast, Dict, Any, Tuple, Type
 
 from . import base_formatter
 from .. import metric_source, VERSION
@@ -78,6 +78,7 @@ class MetaMetricsHistoryFormatter(base_formatter.Formatter):
         """ Return a JSON array of dates and status counts. """
         history_table = []
         for history in report.project().metric_sources(metric_source.History):
+            history = cast(metric_source.History, history)
             for status_record in history.statuses():
                 date_and_time = '[{0}, {1}, {2}, {3}, {4}, {5}]'.format(*self.__date_and_time(status_record))
                 counts = '[{0}, {1}, {2}, {3}, {4}, {5}, {6}]'.format(*self.__status_record_counts(status_record))
@@ -193,7 +194,7 @@ class MetricsFormatter(base_formatter.Formatter):
                     section_title = section.title()
                 else:  # No section found, use the text in the cell as header.
                     section_id = ''
-                    section_title = cell[0]
+                    section_title = cast(str, cell[0])
                 bgcolor = cell[1]
                 colspan, rowspan = cell[2] if len(cell) == 3 else (1, 1)
                 cells.append('{{"section_id": "{0}", "section_title": "{1}", "bgcolor": "{2}", "colspan": {3}, '
@@ -274,14 +275,15 @@ class MetaDataJSONFormatter(object):
     def __format_metric_sources(cls, report: QualityReport) -> str:
         """ Return the metric sources as JSON list. """
         metric_sources = sorted(report.metric_source_classes(), key=lambda klass: klass.metric_source_name)
-        return ', '.join([cls.__format_metric_source(report, metric_source) for metric_source in metric_sources])
+        return ', '.join([cls.__format_metric_source(report, metric_source_class)
+                          for metric_source_class in metric_sources])
 
     @classmethod
-    def __format_metric_source(cls, report: QualityReport, source: MetricSource) -> str:
+    def __format_metric_source(cls, report: QualityReport, metric_source_class: Type[MetricSource]) -> str:
         """ Return the metric source as JSON. """
-        included = 'true' if source in report.included_metric_source_classes() else 'false'
-        name = source.metric_source_name
-        id_ = source.__name__
-        instances = report.project().metric_sources(source)
+        included = 'true' if metric_source_class in report.included_metric_source_classes() else 'false'
+        name = metric_source_class.metric_source_name
+        id_ = metric_source_class.__name__
+        instances = report.project().metric_sources(metric_source_class)
         urls = ', '.join(sorted(['"{0}"'.format(instance.url()) for instance in instances if instance.url()]))
         return '{{"included": {0}, "name": "{1}", "id": "{2}", "urls": [{3}]}}'.format(included, name, id_, urls)

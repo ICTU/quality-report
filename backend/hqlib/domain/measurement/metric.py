@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import Dict, List, Optional, Type, Tuple, TYPE_CHECKING
+from typing import cast, Dict, List, Optional, Type, Tuple, TYPE_CHECKING
 import json
 import re
 
@@ -101,7 +101,7 @@ class Metric(object):
         self._extra_info_data = list()
         from hqlib import metric_source
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
-        self.__history = history_sources[0] if history_sources else None
+        self.__history = cast(metric_source.History, history_sources[0]) if history_sources else None
 
     def format_text_with_links(self, text: str) -> str:
         """ Format a text paragraph with additional url. """

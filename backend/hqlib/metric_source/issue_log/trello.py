@@ -19,7 +19,7 @@ import functools
 import logging
 import time
 
-from typing import Optional, List
+from typing import List, Optional, Tuple
 
 from ... import utils
 from ...domain import MetricSource
@@ -93,10 +93,10 @@ class TrelloBoard(MetricSource):
         """ Return the (non-archived) cards on this Trello board that are inactive. """
         return [card for card in self.__cards(*board_ids) if self.__is_card_inactive(card, days)]
 
-    def __is_card_overdue(self, card: object) -> bool:
+    def __is_card_overdue(self, card) -> bool:
         return self.__str_to_datetime(card['due']) < datetime.datetime.now() if 'due' in card and card['due'] else False
 
-    def __is_card_inactive(self, card: object, days: int) -> bool:
+    def __is_card_inactive(self, card, days: int) -> bool:
         if 'due' in card and card['due'] and self.__str_to_datetime(card['due']) > datetime.datetime.now():
             return False
         return self.__card_last_update_time_delta(card['id']) > datetime.timedelta(days=days)
@@ -105,7 +105,7 @@ class TrelloBoard(MetricSource):
         due_date_time = self.__str_to_datetime(due_date_time_str)
         return datetime.datetime.now() - due_date_time if due_date_time else datetime.timedelta()
 
-    def over_due_cards_url(self, *board_ids: str) -> List:
+    def over_due_cards_url(self, *board_ids: str) -> List[Tuple[str, str, str]]:
         """ Return the urls for the (non-archived) cards on the Trello boards that are over due. """
         urls = list()
         try:
@@ -131,7 +131,7 @@ class TrelloBoard(MetricSource):
         last_time_str = max(last_activity_date_strs) if last_activity_date_strs else ''
         return datetime.datetime.now() - self.__str_to_datetime(last_time_str if last_time_str else '')
 
-    def inactive_cards_url(self, *board_ids: str, days: int = 14) -> List:
+    def inactive_cards_url(self, *board_ids: str, days: int = 14) -> List[Tuple[str, str, str]]:
         """ Return the urls for the (non-archived) cards on this Trello board that are inactive. """
         urls = list()
         try:
@@ -143,7 +143,7 @@ class TrelloBoard(MetricSource):
         return urls
 
     @functools.lru_cache(maxsize=1024)
-    def _json_composite(self, object_id: str = ''):
+    def _json_composite(self, object_id: str = '') -> None:
         """ Return the JSON at url. """
         url = self.board_data_url.format(object_id=object_id, appkey=self.__appkey, token=self.__token)
         json_string = self.__urlopener.url_read(url)
@@ -152,7 +152,6 @@ class TrelloBoard(MetricSource):
         self._lists.extend(board['lists'])
         self._urls[board['id']] = board['url']
         self._last_activity[board['id']] = self.__str_to_datetime(board['dateLastActivity'])
-        return
 
     @functools.lru_cache(maxsize=1024)
     def __cards(self, *board_ids: str) -> List:
@@ -180,7 +179,7 @@ class TrelloBoard(MetricSource):
         """ Return the number of over due cards. """
         return self.nr_of_over_due_cards(*metric_source_ids)
 
-    def over_due_actions_url(self, *metric_source_ids: str) -> List:
+    def over_due_actions_url(self, *metric_source_ids: str) -> List[Tuple[str, str, str]]:
         """ Return the urls to the over due cards. """
         return self.over_due_cards_url(*metric_source_ids)
 
@@ -188,6 +187,6 @@ class TrelloBoard(MetricSource):
         """ Return the number of inactive cards. """
         return self.nr_of_inactive_cards(*metric_source_ids)
 
-    def inactive_actions_url(self, *metric_source_ids: str) -> List:
+    def inactive_actions_url(self, *metric_source_ids: str) -> List[Tuple[str, str, str]]:
         """ Return the urls for the inactive cards. """
         return self.inactive_cards_url(*metric_source_ids)

@@ -24,7 +24,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import sys
-from typing import cast, Callable, IO
+from typing import cast, Callable, IO, Set
 
 
 class Timeout(object):
@@ -49,9 +49,9 @@ class Timeout(object):
 class TimeoutTracker(object):
     """ Class to keep track of urls that have timed out. """
 
-    timed_out_netlocs = set()  # Keep track of the network locations (host/port) that have timed out
+    timed_out_netlocs: Set[str] = set()  # Keep track of the network locations (host/port) that have timed out
 
-    def raise_timeout_if_url_timed_out_before(self, url):
+    def raise_timeout_if_url_timed_out_before(self, url) -> None:
         """ Raise a time out error if the netloc of the url has timed out before. """
         netloc = self.__netloc(url)
         if netloc in self.timed_out_netlocs:
@@ -59,12 +59,12 @@ class TimeoutTracker(object):
             logging.warning("Not opening %s: %s", url, reason)
             raise TimeoutError(reason)
 
-    def register_url(self, url):
+    def register_url(self, url) -> None:
         """ Register the url as timed out. """
         self.timed_out_netlocs.add(self.__netloc(url))
 
     @staticmethod
-    def __netloc(url):
+    def __netloc(url) -> str:
         """ Return the netloc for the url. """
         return urllib.parse.urlparse(url).netloc
 

@@ -38,7 +38,7 @@ class HTMLCoverageReport(CoverageReport):
         try:
             soup = self.__get_soup(metric_source_id)
         except UrlOpener.url_open_exceptions:
-            coverage = -1
+            coverage = -1.
         else:
             coverage = self._parse_statement_coverage_percentage(soup)
         return coverage
@@ -52,7 +52,7 @@ class HTMLCoverageReport(CoverageReport):
         try:
             soup = self.__get_soup(metric_source_id)
         except UrlOpener.url_open_exceptions:
-            coverage = -1
+            coverage = -1.
         else:
             coverage = self._parse_branch_coverage_percentage(soup)
         return coverage

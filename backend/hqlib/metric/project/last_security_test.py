@@ -17,6 +17,8 @@ limitations under the License.
 import datetime
 import logging
 
+from hqlib.typing import MetricValue
+
 from ... import metric_source
 from ...domain import LowerIsBetterMetric
 
@@ -35,7 +37,7 @@ class LastSecurityTest(LowerIsBetterMetric):
 
     metric_source_class = metric_source.FileWithDate
 
-    def value(self):
+    def value(self) -> MetricValue:
         """ Return the number of days since the last security test. """
         if not (self._metric_source and self._metric_source_id):
             return -1

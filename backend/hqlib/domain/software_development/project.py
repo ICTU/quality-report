@@ -116,7 +116,7 @@ class Project(RequirementSubject, measurable.MeasurableObject):
         """ Return the environments of the project """
         return self.__environments
 
-    def set_dashboard(self, dashboard_columns: DashboardColumns, dashboard_rows: DashboardRows):
+    def set_dashboard(self, dashboard_columns: DashboardColumns, dashboard_rows: DashboardRows) -> None:
         """ Set the dashboard layout for the project. """
         self.__dashboard = (dashboard_columns, dashboard_rows)
 

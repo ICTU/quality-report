@@ -18,6 +18,7 @@ import datetime
 import functools
 from typing import Iterable
 
+from hqlib.typing import DateTime
 from ... import domain
 
 
@@ -36,13 +37,13 @@ class OWASPDependencyReport(domain.MetricSource):
         raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
-    def datetime(self, *metric_source_ids):
+    def datetime(self, *metric_source_ids: str) -> DateTime:
         """ Return the date/time of the reports. """
         results = []
         for metric_source_id in metric_source_ids:
             results.append(self._report_datetime(metric_source_id))
         return min(results) if results else datetime.datetime.min
 
-    def _report_datetime(self, metric_source_id):
+    def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date/time of one report. """
         raise NotImplementedError

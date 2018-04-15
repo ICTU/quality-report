@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import logging
-from typing import List, Dict, Tuple, Union, Optional
+from typing import Callable, List, Dict, Tuple, Union, Optional
 import dateutil.parser
 from hqlib.typing import DateTime
 from ..abstract.issue_tracker import BugTracker
@@ -51,7 +51,7 @@ class JiraFilter(BugTracker):
         """ Return the number of empty fields, returned by the query. """
         return self.__query_field(query_id, self._increment_if_field_empty, field)
 
-    def __query_field(self, query_id: QueryId, func: callable, field: str) -> Tuple[int, List[str]]:
+    def __query_field(self, query_id: QueryId, func: Callable, field: str) -> Tuple[int, List[str]]:
         """ Return the number of empty fields, returned by the query. """
         result = self.sum_for_all_issues(query_id, func, tuple(), field)
         return (-1, []) if result is None else (sum(result[::2]), self._get_just_links(result[1::2]))
@@ -70,7 +70,7 @@ class JiraFilter(BugTracker):
         results = self.__jira.get_query(query_id)
         return (int(results['total']), self._get_just_links(results['issues'])) if results else (-1, [])
 
-    def _get_just_links(self, issues: list):
+    def _get_just_links(self, issues: List):
         return [
             ExtraInfo.format_extra_info_link(
                 self.get_issue_url(issue['key']),
@@ -116,7 +116,7 @@ class JiraFilter(BugTracker):
             return to_in_progress_date, None
         return to_in_progress_date, from_in_progress_date
 
-    def sum_for_all_issues(self, query_id: QueryId, func: callable, total: object, *args, **kwargs):
+    def sum_for_all_issues(self, query_id: QueryId, func: Callable, total: object, *args, **kwargs):
         """ Perform the func calculation over jira issues returned by the query specified by query_id. """
         results = self.__jira.get_query(query_id)
         if not results:

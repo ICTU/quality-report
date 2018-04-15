@@ -14,6 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import cast, List, Tuple
+
+from hqlib import metric_source
 from . import CIJobs
 
 
@@ -35,5 +38,6 @@ class UnusedCIJobs(CIJobs):
         """ Return the number of unused jobs. """
         return self._metric_source.number_of_unused_jobs() if self._metric_source else -1
 
-    def extra_info_rows(self) -> list((str, str, str)):
-        return self._metric_source.unused_jobs_url()
+    def extra_info_rows(self) -> List[Tuple[str, str, str]]:
+        source = cast(metric_source.CIServer, self._metric_source)
+        return source.unused_jobs_url()
