@@ -1,4 +1,4 @@
-2018-04-16  Release 2.53.0
+2018-04-18  Release 2.53.0
 
   * Feature #358: Add aggregated test coverage metrics.
 
