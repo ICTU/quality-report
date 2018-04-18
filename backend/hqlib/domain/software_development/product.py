@@ -36,7 +36,7 @@ class Product(RequirementSubject, MeasurableObject):
         return (requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackUserStoriesInProgress,
                 requirement.TrackDurationOfUserStories, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.UnitTestCoverage,
-                requirement.CodeQuality, requirement.TrackBranches,
+                requirement.AggregatedTestCoverage, requirement.CodeQuality, requirement.TrackBranches,
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
                 requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
                 requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,

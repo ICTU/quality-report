@@ -36,9 +36,9 @@ class QualityReport(domain.DomainObject):
     def requirement_classes(cls) -> Sequence[Type[domain.Requirement]]:
         """ Return a list of all requirement classes that the report can report on. """
         return (requirement.UnitTests, requirement.UnitTestCoverage, requirement.ART, requirement.ARTCoverage,
-                requirement.UserStoriesAndLTCs, requirement.CodeQuality, requirement.PerformanceLoad,
-                requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackActions,
-                requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
+                requirement.AggregatedTestCoverage, requirement.UserStoriesAndLTCs, requirement.CodeQuality,
+                requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
+                requirement.TrackActions, requirement.TrackRisks, requirement.TrackBugs, requirement.TrackSecurityBugs,
                 requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate, requirement.TrackFindings,
                 requirement.TrackTechnicalDebt, requirement.TrackQualityGate, requirement.TrackManualLTCs,
                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackReadyUS, requirement.TrackCIJobs,
@@ -205,13 +205,13 @@ class QualityReport(domain.DomainObject):
         """ Return the section for the product. """
         metrics = self.__required_subject_metrics(
             product, requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
-            requirement.TrackSecurityTestDate,
-            requirement.TrackFindings, requirement.TrackTechnicalDebt, requirement.TrackQualityGate,
-            requirement.UnitTests, requirement.UnitTestCoverage, requirement.ART, requirement.ARTCoverage,
-            requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
-            requirement.CodeQuality, requirement.PerformanceLoad, requirement.PerformanceEndurance,
-            requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
-            requirement.Checkmarx, requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
+            requirement.TrackSecurityTestDate, requirement.TrackFindings, requirement.TrackTechnicalDebt,
+            requirement.TrackQualityGate, requirement.UnitTests, requirement.UnitTestCoverage, requirement.ART,
+            requirement.ARTCoverage, requirement.AggregatedTestCoverage, requirement.UserStoriesAndLTCs,
+            requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks, requirement.CodeQuality,
+            requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
+            requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
+            requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
         self.__metrics.extend(metrics)

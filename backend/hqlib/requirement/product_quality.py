@@ -73,6 +73,13 @@ class ARTCoverage(Requirement):
     _metric_classes = (metric.ARTStatementCoverage, metric.ARTBranchCoverage, metric.ARTCoverageReportAge)
 
 
+class AggregatedTestCoverage(Requirement):
+    """ Require the coverage of the aggregated tests to be measured. """
+    _name = 'Aggregated test coverage'
+    _metric_classes = (metric.AggregatedTestStatementCoverage, metric.AggregatedTestBranchCoverage,
+                       metric.AggregatedTestCoverageReportAge)
+
+
 class CodeQuality(Requirement):
     """ Require the source code quality of the product to be tracked. """
     _name = 'Code quality'

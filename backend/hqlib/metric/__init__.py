@@ -19,6 +19,8 @@ limitations under the License.
 
 from .product.analysis_age import SonarAnalysisAge, OWASPDependencyReportAge, OpenVASScanReportAge, \
     CheckmarxReportAge, UnittestReportAge
+from .product.aggregated_test_coverage_metrics import (
+    AggregatedTestStatementCoverage, AggregatedTestBranchCoverage, AggregatedTestCoverageReportAge)
 from .product.automated_regression_test_metrics import FailingRegressionTests, RegressionTestAge
 from .product.automated_regression_test_coverage_metrics import (
     ARTStatementCoverage, ARTBranchCoverage, ARTCoverageReportAge)

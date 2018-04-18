@@ -1,3 +1,8 @@
+2018-04-16  Release 2.53.0
+
+  * Feature #358: Add aggregated test coverage metrics.
+
+
 2018-04-11  Release 2.52.2
 
   * Bug fix: Add percentage signs to y-axis labels of the relative trend graph.

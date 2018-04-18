@@ -17,7 +17,7 @@ limitations under the License.
 
 from .abstract.archive_system import ArchiveSystem
 from .abstract.ci_server import CIServer
-from .abstract.coverage_report import ARTCoverageReport, UnittestCoverageReport
+from .abstract.coverage_report import ARTCoverageReport, UnittestCoverageReport, AggregatedCoverageReport
 from .abstract.owasp_dependency_report import OWASPDependencyReport
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport

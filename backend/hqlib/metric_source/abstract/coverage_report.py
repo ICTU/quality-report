@@ -74,3 +74,19 @@ class ARTCoverageReport(CoverageReport):
     def datetime(self, *metric_source_ids: str) -> DateTime:
         """ Return the date when the coverage for a specific product was last successfully measured. """
         raise NotImplementedError
+
+
+class AggregatedCoverageReport(CoverageReport):
+    """ Abstract class representing an aggregated test coverage report. """
+    def statement_coverage(self, metric_source_id: str) -> float:
+        """ Return the statement coverage for a specific product. """
+        raise NotImplementedError
+
+    def branch_coverage(self, metric_source_id: str) -> float:
+        """ Return the branch coverage for a specific product. """
+        raise NotImplementedError
+
+    @functools.lru_cache(maxsize=1024)
+    def datetime(self, *metric_source_ids: str) -> DateTime:
+        """ Return the date when the coverage for a specific product was last successfully measured. """
+        raise NotImplementedError
