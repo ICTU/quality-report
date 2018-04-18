@@ -1,6 +1,7 @@
 2018-04-18  Release 2.53.0
 
   * Feature #358: Add aggregated test coverage metrics.
+    See https://github.com/ICTU/quality-report/wiki/Aggregated-test-coverage-metrics
 
 
 2018-04-11  Release 2.52.2
