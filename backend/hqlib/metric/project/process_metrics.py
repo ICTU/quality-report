@@ -147,3 +147,34 @@ class UserStoriesWithoutPerformanceRiskAssessment(UserStoriesWithoutAssessmentMe
     name = 'Hoeveelheid user stories zonder performance risk beoordeling'
     unit = 'ready user stories zonder performance risk beoordeling'
     metric_source_class = metric_source.UserStoryWithoutPerformanceRiskAssessmentTracker
+
+
+class PredictedNumberOfFinishedUserStoryPoints(HigherIsBetterMetric):
+    """ Metric for the predicted percentage of user story points the project will deliver in the current sprint. """
+    name = "Voorspelling van het percentage user story punten dat in de huidige sprint zal worden opgeleverd"
+    unit = "%"
+    norm_template = "Het voorspelde aantal user story punten voor de huidige sprint is tenminste {target}{unit} van " \
+                    "het aantal geplande user story punten. De metriek is rood als de voorspelling minder dan " \
+                    "{low_target}{unit} van het aantal geplande user strory punten is."
+    template = "Het voorspelde aantal user story punten ({predicted}) voor de huidige sprint is {value}{unit} van " \
+               "het geplande aantal user stories punten ({planned})."
+    metric_source_class = metric_source.UserStoryPointsPredictor
+    target_value = 90
+    low_target_value = 80
+
+    def value(self) -> MetricValue:
+        if not self._metric_source:
+            return -1
+        prediction = self._metric_source.predicted_number_of_user_story_points(*self._get_metric_source_ids())
+        planned = self._metric_source.planned_number_of_user_story_points(*self._get_metric_source_ids())
+        if planned == 0 or -1 in (prediction, planned):
+            return -1
+        return round((prediction / planned) * 100)
+
+    def _parameters(self):
+        parameters = super()._parameters()
+        if self._metric_source:
+            ids = self._get_metric_source_ids()
+            parameters["predicted"] = self._metric_source.predicted_number_of_user_story_points(*ids)
+            parameters["planned"] = self._metric_source.planned_number_of_user_story_points(*ids)
+        return parameters

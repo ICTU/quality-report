@@ -52,7 +52,8 @@ from .project.bug_metrics import OpenBugs, OpenSecurityBugs, OpenStaticSecurityA
     OpenFindings, QualityGate
 from .project.last_security_test import LastSecurityTest
 from .project.process_metrics import ReadyUserStoryPoints, UserStoriesWithoutSecurityRiskAssessment, \
-    UserStoriesWithoutPerformanceRiskAssessment, UserStoriesInProgress, UserStoriesDuration
+    UserStoriesWithoutPerformanceRiskAssessment, UserStoriesInProgress, UserStoriesDuration, \
+    PredictedNumberOfFinishedUserStoryPoints
 from .project.project_management_metrics import RiskLog, ActionActivity, IssueLogMetric, OverDueActions, StaleActions
 
 # Team metrics

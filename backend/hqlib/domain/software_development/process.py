@@ -34,7 +34,7 @@ class Process(RequirementSubject, MeasurableObject):
                 requirement.TrackTechnicalDebt,
                 requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
-                requirement.TrackManualLTCs)
+                requirement.TrackManualLTCs, requirement.PredictUserStories)
 
 
 class ProjectManagement(Process):
@@ -84,4 +84,5 @@ class Scrum(Process):
     @staticmethod
     def optional_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories
+        return (requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
+                requirement.PredictUserStories)

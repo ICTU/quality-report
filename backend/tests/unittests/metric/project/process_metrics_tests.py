@@ -506,9 +506,6 @@ class UserStoriesDurationTest(unittest.TestCase):
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.return_value = changelog_json
         self.__project.metric_sources.return_value = [jira_filter]
-        duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
-
-        self.__project.metric_sources.return_value = [jira_filter]
         self.__subject.metric_source_id.return_value = 3
         duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
@@ -638,3 +635,74 @@ class UserStoriesWithoutPerformanceRiskTest(unittest.TestCase):
     def test_value(self):
         """ Test that the value is correct. """
         self.assertEqual(12, self.__metric.value())
+
+
+class PredictedNumberOfFinishedUserStoryPointsTest(unittest.TestCase):
+    """ Unit tests for the predicted number of finished user story points metric. """
+
+    def test_norm(self):
+        """ Test that the norm is correct. """
+        prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=domain.Project())
+        self.assertEqual("Het voorspelde aantal user story punten voor de huidige sprint is tenminste 90% van het "
+                         "aantal geplande user story punten. De metriek is rood als de voorspelling minder dan 80% "
+                         "van het aantal geplande user strory punten is.", prediction.norm())
+
+    def test_value(self):
+        """ Test that the value is correct. """
+        predictor = unittest.mock.Mock()
+        predictor.predicted_number_of_user_story_points.return_value = 20
+        predictor.planned_number_of_user_story_points.return_value = 20
+        project = domain.Project(metric_sources={metric_source.UserStoryPointsPredictor: predictor},
+                                 metric_source_ids={predictor: "project"})
+        prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
+        self.assertEqual(100., prediction.value())
+
+    def test_value_without_metric_source(self):
+        """ Test that the value is -1 if the metric has no metric source. """
+        self.assertEqual(-1, metric.PredictedNumberOfFinishedUserStoryPoints(project=domain.Project()).value())
+
+    def test_value_when_planned_user_story_points_is_zero(self):
+        """ Test that the value is -1 if the planned number of user story points is zero. """
+        predictor = unittest.mock.Mock()
+        predictor.predicted_number_of_user_story_points.return_value = 20
+        predictor.planned_number_of_user_story_points.return_value = 0
+        project = domain.Project(metric_sources={metric_source.UserStoryPointsPredictor: predictor},
+                                 metric_source_ids={predictor: "project"})
+        prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
+        self.assertEqual(-1, prediction.value())
+
+    def test_value_without_metric_source_id(self):
+        """ Test that the value is -1 if the metric has no metric source id. """
+        predictor = unittest.mock.Mock()
+        project = domain.Project(metric_sources={metric_source.UserStoryPointsPredictor: predictor})
+        self.assertEqual(-1, metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project).value())
+
+    def test_report(self):
+        """ Test that the report is correct. """
+        predictor = unittest.mock.Mock()
+        predictor.predicted_number_of_user_story_points.return_value = 20
+        predictor.planned_number_of_user_story_points.return_value = 20
+        project = domain.Project(metric_sources={metric_source.UserStoryPointsPredictor: predictor},
+                                 metric_source_ids={predictor: "project"})
+        prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
+        self.assertEqual("Het voorspelde aantal user story punten (20) voor de huidige sprint is 100% van het "
+                         "geplande aantal user stories punten (20).", prediction.report())
+
+    def test_report_decimals(self):
+        """ Test that the report rounds the percentage. """
+        predictor = unittest.mock.Mock()
+        predictor.predicted_number_of_user_story_points.return_value = 20
+        predictor.planned_number_of_user_story_points.return_value = 21
+        project = domain.Project(metric_sources={metric_source.UserStoryPointsPredictor: predictor},
+                                 metric_source_ids={predictor: "project"})
+        prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
+        self.assertEqual("Het voorspelde aantal user story punten (20) voor de huidige sprint is 95% van het "
+                         "geplande aantal user stories punten (21).", prediction.report())
+
+    def test_report_without_metric_source(self):
+        """ Test that the report is correct when there is no metric source. """
+        project = domain.Project()
+        prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
+        self.assertEqual("De voorspelling van het percentage user story punten dat in de huidige sprint zal worden "
+                         "opgeleverd van <no name> kon niet gemeten worden omdat de bron UserStoryPointsPredictor niet "
+                         "is geconfigureerd.", prediction.report())

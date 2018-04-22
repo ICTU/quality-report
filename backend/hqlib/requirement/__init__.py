@@ -24,7 +24,7 @@ from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScrip
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, TrackSecurityBugs, \
     TrackStaticSecurityBugs, TrackFindings, TrackTechnicalDebt, TrackQualityGate, TrackActions, TrackRisks, \
     TrackReadyUS, TrackUserStoriesInProgress, TrackDurationOfUserStories, TrackSecurityAndPerformanceRisks, \
-    TrackSecurityTestDate
+    TrackSecurityTestDate, PredictUserStories
 from .environment import TrackCIJobs, TrackSonarVersion, OpenVAS
 from .team import TrackSpirit
 from .document import TrackDocumentAge

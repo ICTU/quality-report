@@ -112,7 +112,8 @@ class ScrumTest(unittest.TestCase):
 
     def test_optional_requirements(self):
         """ Test that the optional requirements are correct. """
-        self.assertEqual((requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,),
+        self.assertEqual((requirement.TrackUserStoriesInProgress, requirement.TrackDurationOfUserStories,
+                          requirement.PredictUserStories),
                          domain.Scrum.optional_requirements())
 
     def test_default_name(self):

@@ -28,6 +28,12 @@ class UserStoriesAndLTCs(Requirement):
                        metric.ManualLogicalTestCases, metric.NumberOfManualLogicalTestCases)
 
 
+class PredictUserStories(Requirement):
+    """ Add predictions about current and future sprints in the report. """
+    _name = "User stories prediction"
+    _metric_classes = (metric.PredictedNumberOfFinishedUserStoryPoints,)
+
+
 class TrackManualLTCs(Requirement):
     """ Require the execution time of manual logical test cases to be recorded and not be too long. """
     _name = 'Track manual logical test cases'

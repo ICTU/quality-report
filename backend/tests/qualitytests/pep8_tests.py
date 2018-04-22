@@ -23,6 +23,6 @@ class TestCodeFormat(unittest.TestCase):
     """ Code format tests. """
     def test_pep8_conformance(self):
         """Test that we conform to PEP-8."""
-        style = pycodestyle.StyleGuide(quiet=True, config_file="setup.cfg")
+        style = pycodestyle.StyleGuide(quiet=False, config_file="setup.cfg")
         result = style.check_files(['.'])
         self.assertEqual(result.total_errors, 0, "Found code style errors (and warnings): {0}.".format(result.messages))

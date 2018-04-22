@@ -28,6 +28,7 @@ from .abstract.issue_tracker import BugTracker, SecurityBugTracker, StaticSecuri
     UserStoriesInProgressTracker, UserStoriesDurationTracker
 from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
+from .abstract.user_story_points_predictor import UserStoryPointsPredictor
 from .abstract.version_control_system import VersionControlSystem
 from .archive_system.nexus import Nexus
 from .birt import Birt
@@ -57,6 +58,7 @@ from .test_report.uft_test_report import UFTTestReport
 from .issue_log.trello import TrelloBoard
 from .issue_log.wekan import WekanBoard
 from .url_opener import UrlOpener
+from .user_story_points_predictor.gros_user_story_points_predictor import GROSUserStoryPointsPredictor
 from .version_control_system.git import Git
 from .version_control_system.subversion import Subversion
 from .zap_scan_report import ZAPScanReport

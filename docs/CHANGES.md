@@ -1,3 +1,10 @@
+2018-04-22  Release 2.54.0
+
+  * Feature: Add user story point prediction metric, based on the "Grip op Software" (GROS) research project
+    conducted at ICTU (see https://www.ictu.nl/nieuws/softwareontwikkeling-onder-wetenschappelijke-loep, in Dutch).
+    Configuration documentation at https://github.com/ICTU/quality-report/wiki/Prediction-metrics.
+
+
 2018-04-18  Release 2.53.0
 
   * Feature #358: Add aggregated test coverage metrics.
