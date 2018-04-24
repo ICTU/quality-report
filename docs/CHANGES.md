@@ -1,3 +1,8 @@
+2018-04-24  Release 2.55.2
+
+  * Bug fix #302: link reference in the metric comment fixed to also accept port number and parameters.
+
+
 2018-04-24  Release 2.55.1
 
   * Bug fix #368: Reading the old history format (using the metric source "History") failed.

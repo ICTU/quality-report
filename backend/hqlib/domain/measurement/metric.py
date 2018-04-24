@@ -122,10 +122,10 @@ class Metric(object):
 
     @staticmethod
     def _format_links_in_comment_text(text: str) -> str:
-        return re.sub(
-            r'(https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+)', r"<a href='\1' target='_blank'>\1</a>",
-            utils.html_escape(text).replace('\n', ' ')
-        )
+        url_pattern = re.compile(r'(?i)\b(http(?:s?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]|'
+                                 r'\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|'
+                                 r'[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+        return re.sub(url_pattern, r"<a href='\1' target='_blank'>\1</a>", utils.html_escape(text).replace('\n', ' '))
 
     @classmethod
     def norm_template_default_values(cls) -> MetricParameters:

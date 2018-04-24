@@ -69,8 +69,28 @@ class MetricTest(unittest.TestCase):
 
     def test_format_comment_with_links_in_text(self):
         """ Test that the link in the text is changed to href. """
-        self.assertEqual("Some <a href='http://a.href' target='_blank'>http://a.href</a> text...",
-                         self.__metric.format_comment_with_links('Some http://a.href text...', {}, 'ignored'))
+        self.assertEqual("Some <a href='http://a.href/sub/x/s/' target='_blank'>http://a.href/sub/x/s/</a> text...",
+                         self.__metric.format_comment_with_links('Some http://a.href/sub/x/s/ text...', {}, 'ignored'))
+
+    def test_format_comment_with_links_with_port_in_text(self):
+        """ Test that the link with a port number in the text is changed to href. """
+        self.assertEqual("Some <a href='http://a.href:8080/sub/' target='_blank'>http://a.href:8080/sub/</a> text...",
+                         self.__metric.format_comment_with_links('Some http://a.href:8080/sub/ text...', {}, 'ignored'))
+
+    def test_format_comment_with_links_with_www_in_text(self):
+        """ Test that the link containing www in the text is changed to href. """
+        self.assertEqual("Some <a href='http://www.href/sub' target='_blank'>http://www.href/sub</a> text...",
+                         self.__metric.format_comment_with_links('Some http://www.href/sub text...', {}, 'ignored'))
+
+    def test_format_comment_with_links_with_www_in_text_xx(self):
+        """ Test that the url without http is treated as a text. """
+        self.assertEqual("Some www.href/sub text...",
+                         self.__metric.format_comment_with_links('Some www.href/sub text...', {}, 'ignored'))
+
+    def test_format_comment_with_links_with_params_in_text(self):
+        """ Test that the link containing url parameter in the text is changed to href. """
+        self.assertEqual("Some <a href='http://a.href?param=1' target='_blank'>http://a.href?param=1</a> text...",
+                         self.__metric.format_comment_with_links('Some http://a.href?param=1 text...', {}, 'ignored'))
 
     def test_format_comment_with_links_with_label(self):
         """ Test that the formatted text is followed by a comma separated list of keys. """
