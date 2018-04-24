@@ -332,19 +332,19 @@ class Metric(object):
 
     def recent_history(self) -> List[int]:
         """ Return a list of recent values of the metric, to be used in e.g. a spark line graph. """
-        return self.__history_records(self.__history.recent_history)
+        return self.__history_records(self.__history.recent_history) if self.__history else []
 
     def long_history(self) -> List[int]:
         """ Return a long list of values of the metric, to be used in e.g. a spark line graph. """
-        return self.__history_records(self.__history.long_history)
+        return self.__history_records(self.__history.long_history) if self.__history else []
 
-    def get_recent_history_dates(self):
+    def get_recent_history_dates(self) -> str:
         """ Return a list of recent dates when report was generated. """
-        return self.__history.get_dates()
+        return self.__history.get_dates() if self.__history else ""
 
-    def get_long_history_dates(self):
+    def get_long_history_dates(self) -> str:
         """ Return a long list of dates when report was generated. """
-        return self.__history.get_dates(long_history=True)
+        return self.__history.get_dates(long_history=True) if self.__history else ""
 
     def y_axis_range(self) -> Tuple[int, int]:
         """ Return a two-tuple (min, max) for use in graphs. """

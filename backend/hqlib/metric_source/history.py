@@ -61,7 +61,7 @@ class CompactHistory(domain.MetricSource):
         return values
 
     def get_dates(self, long_history: bool = False) -> str:
-        """ Retrieve the list of report dates concatenated in comma separated string.. """
+        """ Retrieve the list of report dates concatenated in comma separated string. """
         history = self.__read_history()
         number_of_records = self.__long_history_count if long_history else self.__recent_history
         return ','.join(history['dates'][-number_of_records:])
@@ -128,6 +128,7 @@ class CompactHistory(domain.MetricSource):
 class History(domain.MetricSource):
     """ Class representing the history file. """
     metric_source_name = 'Measurement history file'
+    __long_history_count = 2000
 
     def __init__(self, history_filename: str, recent_history: int = 100, file_: Callable[[str], TextIO] = None) -> None:
         self.__history_filename = history_filename
@@ -146,6 +147,14 @@ class History(domain.MetricSource):
             if metric_id in measurement:
                 values.append(measurement[metric_id])
         return values
+
+    def long_history(self, metric_id) -> List[Number]:
+        """ Retrieve longer history for the metric_ids. """
+        return []  # Not supported for the old history format.
+
+    def get_dates(self, long_history: bool = False) -> str:
+        """ Retrieve the list of report dates concatenated in comma separated string. """
+        return ""  # Not supported for the old history format.
 
     def status_start_date(self, metric_id: str, current_status: str,
                           now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:

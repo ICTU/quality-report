@@ -1,3 +1,8 @@
+2018-04-24  Release 2.55.1
+
+  * Bug fix #368: Reading the old history format (using the metric source "History") failed.
+
+
 2018-04-24  Release 2.55.0
 
   * Feature #128: history chart in detail pane
