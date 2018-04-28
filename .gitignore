@@ -1,23 +1,22 @@
-# Ignore PyCharm settings folder:
+# Ignore IDE settings folders:
 .idea
+.vscode
 
-# Ignore python byte-compiled files:
+# Ignore Python byte-compiled files:
 *.pyc
-__pycache__/
+__pycache__
 
 # Ignore generated coverage and test reports and test data:
+frontend/coverage
 backend/tests/integrationtests/*/*history.json
 repos
 
 # Ignore build folders
 build
-backend/build
-backend/.mypy_cache
 dist
+.mypy_cache
 quality_report.egg-info
-frontend/node_modules
-frontend/coverage
-backend/hqlib/app/dist
+node_modules
 backend/hqlib/app/img
 backend/hqlib/app/html
 

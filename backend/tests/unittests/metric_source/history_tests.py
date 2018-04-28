@@ -185,8 +185,8 @@ class CompactHistoryTest(unittest.TestCase):
                                                           now=lambda: datetime.datetime(2013, 1, 1, 0, 0, 0)))
 
     def test_url(self):
-        """ Test that the url is the filename. """
-        self.assertEqual('fake file', self.__history.url())
+        """ Test that the url is unspecified. """
+        self.assertEqual("http://unspecified/", self.__history.url())
 
     def test_add_metrics(self):
         """ Test that metrics can be added. """
@@ -310,5 +310,5 @@ class HistoryTest(HistoryTestCase):
                          self.__history.status_start_date('OpenBugsFoo', 'green'))
 
     def test_url(self):
-        """ Test that the url is the filename. """
-        self.assertEqual('fake file', self.__history.url())
+        """ Test that the url is not specified. """
+        self.assertEqual("http://unspecified/", self.__history.url())

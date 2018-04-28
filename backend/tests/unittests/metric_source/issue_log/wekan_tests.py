@@ -94,8 +94,8 @@ class WekanBoardTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url. """
-        self.assertEqual('http://wekan',
-                         WekanBoard('http://wekan/', '', '', api=FakeWekanAPI([FakeBoard()])).url())
+        self.assertEqual("http://wekan/",
+                         WekanBoard("http://wekan/", "", "", api=FakeWekanAPI([FakeBoard()])).url())
 
     def test_over_due_actions_without_overdue_cards(self):
         """ Test the number of overdue cards when there are none. """

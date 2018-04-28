@@ -243,3 +243,31 @@ class FormatUnitTests(unittest.TestCase):
     def test_percentage_unit(self):
         """ Test that the percentage has no space before it. """
         self.assertEqual("%", utils.format_unit("%"))
+
+
+class UrlJoinTests(unittest.TestCase):
+    """ Unit tests for the url_join method. """
+
+    def test_no_parts(self):
+        """ Test that no arguments result in an empty string. """
+        self.assertEqual("", utils.url_join())
+
+    def test_one_part(self):
+        """ Test that one part is unchanged. """
+        self.assertEqual("http://url", utils.url_join("http://url"))
+
+    def test_one_part_with_final_slash(self):
+        """ Test that one part is unchanged. """
+        self.assertEqual("http://url/", utils.url_join("http://url/"))
+
+    def test_two_parts(self):
+        """ Test that two parts are joined with a /. """
+        self.assertEqual("http://part1/part2", utils.url_join("http://part1", "part2"))
+
+    def test_two_parts_with_slashes(self):
+        """ Test that existing slashes in the parts are ignored. """
+        self.assertEqual("http://part1/part2", utils.url_join("http://part1/", "/part2"))
+
+    def test_two_parts_with_final_slash(self):
+        """ Test that an existing slash at the last part is kept. """
+        self.assertEqual("http://part1/part2/", utils.url_join("http://part1", "/part2/"))

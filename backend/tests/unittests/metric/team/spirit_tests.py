@@ -41,7 +41,7 @@ class FakeWiki(domain.MetricSource):
         return self.date_of_last_measurement if set(team_ids) & set(self.team_ids) else datetime.datetime.min
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
-        return ['http://wiki' for _ in metric_source_ids]
+        return ["http://wiki/" for _ in metric_source_ids]
 
 
 class TeamSpiritTest(unittest.TestCase):
@@ -122,4 +122,4 @@ class TeamSpiritAgeTests(unittest.TestCase):
 
     def test_url(self):
         """ Test that the url points to the Wiki. """
-        self.assertEqual({'Wiki': 'http://wiki'}, self.__metric.url())
+        self.assertEqual({"Wiki": "http://wiki/"}, self.__metric.url())

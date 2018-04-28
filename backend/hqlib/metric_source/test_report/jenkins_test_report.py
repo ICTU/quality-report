@@ -18,16 +18,37 @@ limitations under the License.
 import ast
 import datetime
 import logging
-from typing import Dict, Optional, Union
+import re
+from typing import Dict, List, Optional, Sequence, Union
+
+from hqlib import utils
 
 from ..abstract import test_report
 from ..url_opener import UrlOpener
 from ...typing import DateTime
+from .. import Jenkins
 
 
 class JenkinsTestReport(test_report.TestReport):
     """ Class representing Jenkins test reports. """
     metric_source_name = 'Jenkins testreport'
+
+    def _expand_metric_source_id_reg_exps(self, *metric_source_ids: str) -> Sequence[str]:
+        """ Expand regular expressions. """
+        job_names = [job["name"] for job in Jenkins(self.url(), self._username, self._password).jobs()]
+        matching_job_names = set()
+        for metric_source_id in metric_source_ids:
+            if "/" in metric_source_id:
+                matching_job_names.add(metric_source_id)  # pipeline job
+            else:
+                reg_exp = re.compile(metric_source_id)
+                matching_job_names |= set(filter(reg_exp.match, job_names))
+        return sorted(list(matching_job_names))
+
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
+        """ Return the url(s) to the metric source for the metric source id. """
+        metric_source_ids = self._expand_metric_source_id_reg_exps(*metric_source_ids)
+        return sorted([utils.url_join(self.url(), "job", metric_source_id) for metric_source_id in metric_source_ids])
 
     def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """
@@ -48,26 +69,27 @@ class JenkinsTestReport(test_report.TestReport):
         """ Return the number of skipped tests. """
         return self.__test_count(metric_source_id, 'skipCount')
 
-    def __test_count(self, report_url: str, result_type: str) -> int:
+    def __test_count(self, metric_source_id: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """
-        json = self.__read_json(self.__join_url(report_url, 'lastCompletedBuild/api/python'))
+        json = self.__read_json(metric_source_id, "lastCompletedBuild/api/python")
         if not json:
             # Last completed build doesn't have the requested information, e.g. because it's aborted.
             # Fall back to last successful build.
-            json = self.__read_json(self.__join_url(report_url, 'lastSuccessfulBuild/api/python'))
+            json = self.__read_json(metric_source_id, "lastSuccessfulBuild/api/python")
         return int(json[result_type]) if json else -1
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the specified report. """
-        json = self.__read_json(self.__join_url(metric_source_id, 'lastCompletedBuild/api/python'))
+        json = self.__read_json(metric_source_id, "lastCompletedBuild/api/python")
         if not json:
             # Last completed build doesn't have the requested information, e.g. because it's aborted.
             # Fall back to last successful build.
-            json = self.__read_json(self.__join_url(metric_source_id, 'lastSuccessfulBuild/api/python'))
+            json = self.__read_json(metric_source_id, "lastSuccessfulBuild/api/python")
         return datetime.datetime.fromtimestamp(float(json["timestamp"]) / 1000.) if json else datetime.datetime.min
 
-    def __read_json(self, api_url: str) -> Optional[Dict[str, Union[int, str]]]:
+    def __read_json(self, job_name: str, api_postfix: str) -> Optional[Dict[str, Union[int, str]]]:
         """ Return the test results and the timestamp from the url, or None when something goes wrong. """
+        api_url = utils.url_join(self.url(), "job", job_name, api_postfix)
         try:
             contents = self._url_read(api_url)
         except UrlOpener.url_open_exceptions:
@@ -89,8 +111,3 @@ class JenkinsTestReport(test_report.TestReport):
                 action["timestamp"] = build["timestamp"]
                 return action
         return None
-
-    @staticmethod
-    def __join_url(*parts: str) -> str:
-        """ Join the different url parts with forward slashes. """
-        return '/'.join([part.strip('/') for part in parts])

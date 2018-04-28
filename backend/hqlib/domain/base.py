@@ -20,10 +20,10 @@ class DomainObject(object):
     default_name = "<no name>"
     default_short_name = "NN"
 
-    def __init__(self, name: str = '', url: str = '', short_name: str = '', *args, **kwargs) -> None:
+    def __init__(self, name: str = '', url: str = 'http://unspecified', short_name: str = '', *args, **kwargs) -> None:
         self.__name = name or self.default_name
         self.__short_name = short_name or self.default_short_name
-        self.__url = url
+        self.__url = url + ("" if url.endswith("/") else "/")
         super().__init__(*args, **kwargs)
 
     def name(self) -> str:

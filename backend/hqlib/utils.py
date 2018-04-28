@@ -185,3 +185,8 @@ def version_number_to_numerical(version_number_tuple: Tuple[int, ...]) -> int:
 def format_unit(unit: str) -> str:
     """ Add a space before the unit if necessary, e.g. 'LOC' -> ' LOC', but '%' -> '%'. """
     return ' ' + unit if unit and unit != '%' and not unit.startswith(' ') else unit
+
+
+def url_join(*parts: str) -> str:
+    """ Join the different url parts with forward slashes. """
+    return "/".join([part.strip("/") for part in parts]) + ("/" if parts and parts[-1].endswith("/") else "")

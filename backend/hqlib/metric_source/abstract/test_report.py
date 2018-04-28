@@ -17,7 +17,7 @@ limitations under the License.
 
 import datetime
 import functools
-from typing import Callable
+from typing import Callable, Sequence
 
 from .. import url_opener
 from ... import domain
@@ -29,34 +29,44 @@ class TestReport(domain.MetricSource):
     metric_source_name = 'Test report'
 
     def __init__(self, *args, url_read: Callable[[str], str] = None, **kwargs) -> None:
+        self._username = kwargs.pop("username", "")
+        self._password = kwargs.pop("password", "")
         self._url_read = url_read or url_opener.UrlOpener(
-            uri=kwargs.pop('uri', ''), username=kwargs.pop('username', ''),
-            password=kwargs.pop('password', '')).url_read
+            uri=kwargs.pop('uri', ''), username=self._username, password=self._password).url_read
         super().__init__(*args, **kwargs)
 
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *metric_source_ids: str) -> DateTime:
         """ Return the (oldest) date and time of the reports. """
+        metric_source_ids = self._expand_metric_source_id_reg_exps(*metric_source_ids)
         return min([self._report_datetime(metric_source_id) for metric_source_id in metric_source_ids]) \
             if metric_source_ids else datetime.datetime.min
 
     @functools.lru_cache(maxsize=1024)
     def passed_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of passed tests. """
+        metric_source_ids = self._expand_metric_source_id_reg_exps(*metric_source_ids)
         return sum([self._passed_tests(metric_source_id) for metric_source_id in metric_source_ids]) \
             if metric_source_ids else -1
 
     @functools.lru_cache(maxsize=1024)
     def failed_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of failed tests. """
+        metric_source_ids = self._expand_metric_source_id_reg_exps(*metric_source_ids)
         return sum([self._failed_tests(metric_source_id) for metric_source_id in metric_source_ids]) \
             if metric_source_ids else -1
 
     @functools.lru_cache(maxsize=1024)
     def skipped_tests(self, *metric_source_ids: str) -> int:
         """ Return the number of skipped tests. """
+        metric_source_ids = self._expand_metric_source_id_reg_exps(*metric_source_ids)
         return sum([self._skipped_tests(metric_source_id) for metric_source_id in metric_source_ids]) \
             if metric_source_ids else -1
+
+    def _expand_metric_source_id_reg_exps(self, *metric_source_ids: str) -> Sequence[str]:
+        """ Can be overridden to support regular expressions. """
+        # pylint: disable=no-self-use
+        return metric_source_ids
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:
         """ Return the date and time of the report. """

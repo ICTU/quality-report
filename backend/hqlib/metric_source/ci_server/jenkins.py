@@ -119,9 +119,9 @@ class Jenkins(ci_server.CIServer):
 
     def __active_jobs(self) -> Jobs:
         """ Return all active Jenkins jobs. """
-        return [job for job in self.__jobs() if job.get('buildable', False)]
+        return [job for job in self.jobs() if job.get('buildable', False)]
 
-    def __jobs(self) -> Jobs:
+    def jobs(self) -> Jobs:
         """ Return all Jenkins jobs that match our job regular expression. """
         all_jobs: Jobs = []
         jobs = self._api(self.__jobs_api_url)['jobs']

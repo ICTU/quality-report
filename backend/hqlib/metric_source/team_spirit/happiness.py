@@ -68,10 +68,7 @@ class Happiness(team_spirit.TeamSpirit):
 
     def __api_url(self) -> str:
         """ Return the api url. """
-        url = self.url()
-        if not url.endswith('/'):
-            url += '/'
-        return url + 'api/'
+        return self.url() + 'api/'
 
     @staticmethod
     def __parse_date(date_text: str) -> DateTime:

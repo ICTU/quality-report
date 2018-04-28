@@ -34,4 +34,4 @@ class DomainObjectTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url of the domain object. """
-        self.assertEqual('http://url', self.__object.url())
+        self.assertEqual('http://url/', self.__object.url())

@@ -16,86 +16,136 @@ limitations under the License.
 
 import datetime
 import unittest
+from unittest.mock import patch
 import urllib.error
 
-from hqlib.metric_source import JenkinsTestReport
-
-
-class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
-    """ Fake URL opener. """
-    contents = '{}'
-
-    def url_read(self, url):
-        """ Fake opening the url or raise an exception. """
-        if 'raise' in url:
-            raise urllib.error.HTTPError(None, None, None, None, None)
-        if isinstance(self.contents, list):
-            return self.contents.pop(0)
-        return self.contents
+from hqlib.metric_source import JenkinsTestReport, Jenkins, UrlOpener
 
 
 class JenkinsTestReportTest(unittest.TestCase):
     """ Unit tests for the Jenkins test report class. """
     def setUp(self):
-        self.__opener = FakeUrlOpener()
         for method in (JenkinsTestReport.datetime, JenkinsTestReport.failed_tests, JenkinsTestReport.skipped_tests,
                        JenkinsTestReport.passed_tests):
             method.cache_clear()
-        self.__jenkins = JenkinsTestReport(url_read=self.__opener.url_read)
 
-    def test_testreport(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_testreport(self, mock_url_read, mock_jenkins_jobs):
         """ Test retrieving a Jenkins test report. """
-        self.__opener.contents = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
-                                 '"passCount":9, "skipCount":1, "totalCount":12}]}'
-        self.assertEqual(2, self.__jenkins.failed_tests('job'))
-        self.assertEqual(9, self.__jenkins.passed_tests('job'))
-        self.assertEqual(1, self.__jenkins.skipped_tests('job/'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
+                                     '"passCount":9, "skipCount":1, "totalCount":12}]}'
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(2, jenkins.failed_tests('job'))
+        self.assertEqual(9, jenkins.passed_tests('job'))
+        self.assertEqual(1, jenkins.skipped_tests('job'))
 
-    def test_testreport_without_pass_count(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_testreport_with_re(self, mock_url_read, mock_jenkins_jobs):
+        """ Test retrieving a Jenkins test report. """
+        mock_jenkins_jobs.return_value = [{"name": "job1"}, {"name": "job2"}, {"name": "ignore"}]
+        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
+                                     '"passCount":9, "skipCount":1, "totalCount":12}]}'
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(4, jenkins.failed_tests('job?'))
+        self.assertEqual(18, jenkins.passed_tests('job?'))
+        self.assertEqual(2, jenkins.skipped_tests('job?'))
+
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_testreport_without_pass_count(self, mock_url_read, mock_jenkins_jobs):
         """ Test retrieving a Jenkins test report that has no pass count. Apparently that field is not present when
             there are no tests. """
-        self.__opener.contents = '{"timestamp":1467929105000, ' \
-                                 '"actions":[{"urlName":"testReport", "failCount":0, "skipCount":0, "totalCount":8}]}'
-        self.assertEqual(0, self.__jenkins.failed_tests('job/'))
-        self.assertEqual(8, self.__jenkins.passed_tests('job'))
-        self.assertEqual(0, self.__jenkins.skipped_tests('job'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", ' \
+                                     '"failCount":0, "skipCount":0, "totalCount":8}]}'
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(0, jenkins.failed_tests('job'))
+        self.assertEqual(8, jenkins.passed_tests('job'))
+        self.assertEqual(0, jenkins.skipped_tests('job'))
 
-    def test_last_completed_build_without_results(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_last_completed_build_without_results(self, mock_url_read, mock_jenkins_jobs):
         """ Test retrieving a Jenkins test report that was completed but has no test results, e.g. because it was
             aborted. """
-        self.__opener.contents = [
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.side_effect = [
             '{"timestamp": 1467929105000, "actions":[]}',
             '{"timestamp": 1467929105000, "actions":[{}, {"totalCount":10, "failCount":1}]}']
-        self.assertEqual(1, self.__jenkins.failed_tests('job/'))
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(1, jenkins.failed_tests("job"))
 
-    def test_http_error(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_http_error(self, mock_url_read, mock_jenkins_jobs):
         """ Test that the default is returned when a HTTP error occurs. """
-        self.assertEqual(-1, self.__jenkins.failed_tests('raise'))
-        self.assertEqual(-1, self.__jenkins.passed_tests('raise'))
-        self.assertEqual(-1, self.__jenkins.skipped_tests('raise'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(-1, jenkins.failed_tests('raise'))
+        self.assertEqual(-1, jenkins.passed_tests('raise'))
+        self.assertEqual(-1, jenkins.skipped_tests('raise'))
 
-    def test_eval_exception(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_eval_exception(self, mock_url_read, mock_jenkins_jobs):
         """ Test that the default is returned when the json can't be parsed. """
-        self.__opener.contents = '{"failCount":, "passCount":9, "skipCount":1}'
-        self.assertEqual(-1, self.__jenkins.failed_tests('job'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.return_value = '{"failCount":, "passCount":9, "skipCount":1}'
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(-1, jenkins.failed_tests('job'))
 
-    def test_report_datetime(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_report_datetime(self, mock_url_read, mock_jenkins_job):
         """ Test that the date and time of the test suite is returned. """
-        self.__opener.contents = '{"timestamp":1467929105000, "actions":[{"totalCount":10,"failCount":0}]}'
-        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
+        mock_jenkins_job.return_value = [{"name": "job"}]
+        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"totalCount":10,"failCount":0}]}'
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), jenkins.datetime('job'))
 
-    def test_report_datetime_on_missing_results(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_report_datetime_on_missing_results(self, mock_url_read, mock_jenkins_jobs):
         """ Test that the date and time of the test suite is returned, even when the last completed build has no
             test results. """
-        self.__opener.contents = ['{"timestamp":"this build should be ignored"}',
-                                  '{"actions":[{"totalCount":10,"failCount":0}], "timestamp":1467929105000}']
-        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), self.__jenkins.datetime('job'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.side_effect = ['{"timestamp":"this build should be ignored"}',
+                                     '{"actions":[{"totalCount":10,"failCount":0}], "timestamp":1467929105000}']
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), jenkins.datetime('job'))
 
-    def test_missing_report_datetime(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_missing_report_datetime(self, mock_url_read, mock_jenkins_jobs):
         """ Test that the minimum datetime is returned when the date and time of the test suite is missing. """
-        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime('raise'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(datetime.datetime.min, jenkins.datetime('job'))
 
-    def test_invalid_date_time(self):
+    @patch.object(Jenkins, "jobs")
+    @patch.object(UrlOpener, "url_read")
+    def test_invalid_date_time(self, mock_url_read, mock_jenkins_jobs):
         """ Test that the minimum datetime is returned when the json invalid. """
-        self.__opener.contents = '{"timestamp":}'
-        self.assertEqual(datetime.datetime.min, self.__jenkins.datetime('job/'))
+        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_url_read.return_value = '{"timestamp":}'
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(datetime.datetime.min, jenkins.datetime("job"))
+
+    def test_url(self):
+        """ Test the metric sourc url. """
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual("http://jenkins/", jenkins.url())
+
+    @patch.object(Jenkins, "jobs")
+    def test_metric_source_urls(self, mock_jenkins_jobs):
+        """ Test that the metric source urls are assembled correctly. """
+        mock_jenkins_jobs.return_value = [{"name": "job1"}, {"name": "master"}, {"name": "test1"}, {"name": "test2"}]
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(["http://jenkins/job/job1", "http://jenkins/job/pipeline/job/master",
+                          "http://jenkins/job/test1", "http://jenkins/job/test2"],
+                         jenkins.metric_source_urls("job1", "pipeline/job/master", "test?"))

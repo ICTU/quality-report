@@ -1,3 +1,9 @@
+2018-04-28  Release 2.56.0
+
+ * Feature #373: Allow for using regular expressions when specifying jobs that contain Jenkins test reports.
+   See https://github.com/ICTU/quality-report/wiki/Jenkins-test-report.
+
+
 2018-04-24  Release 2.55.2
 
   * Bug fix #302: link reference in the metric comment fixed to also accept port number and parameters.

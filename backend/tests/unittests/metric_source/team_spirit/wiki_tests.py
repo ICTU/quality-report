@@ -50,15 +50,15 @@ class WikiTest(unittest.TestCase):
     """ Unit tests for the Wiki class. """
 
     def setUp(self):
-        self.__wiki = WikiUnderTest('http://wiki')
+        self.__wiki = WikiUnderTest("http://wiki")
 
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual('http://wiki', self.__wiki.url())
+        self.assertEqual("http://wiki/", self.__wiki.url())
 
     def test_metric_source_urls(self):
         """ Test that the metric source urls are simply the Wiki url. """
-        self.assertEqual(["http://wiki"], self.__wiki.metric_source_urls("team1", "team2"))
+        self.assertEqual(["http://wiki/"], self.__wiki.metric_source_urls("team1", "team2"))
 
     def test_team_spirit(self):
         """ Test the spirit of the team. """
