@@ -19,7 +19,7 @@ import ast
 import datetime
 import logging
 import re
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict, List, Optional, Sequence, Set, Union
 
 from hqlib import utils
 
@@ -35,15 +35,26 @@ class JenkinsTestReport(test_report.TestReport):
 
     def _expand_metric_source_id_reg_exps(self, *metric_source_ids: str) -> Sequence[str]:
         """ Expand regular expressions. """
-        job_names = [job["name"] for job in Jenkins(self.url(), self._username, self._password).jobs()]
+        try:
+            job_names = [job["name"] for job in Jenkins(self.url(), self._username, self._password).jobs()]
+        except UrlOpener.url_open_exceptions:
+            return metric_source_ids
         matching_job_names = set()
         for metric_source_id in metric_source_ids:
-            if "/" in metric_source_id:
-                matching_job_names.add(metric_source_id)  # pipeline job
-            else:
-                reg_exp = re.compile(metric_source_id)
-                matching_job_names |= set(filter(reg_exp.match, job_names))
+            matching_job_names |= self.__expand_metric_source_id(metric_source_id, job_names)
         return sorted(list(matching_job_names))
+
+    def __expand_metric_source_id(self, metric_source_id: str, job_names: List[str]) -> Set[str]:
+        """ Expand the metric source id if it is a regular expression. """
+        if "/" in metric_source_id:
+            return {metric_source_id}  # pipeline job
+        reg_exp = re.compile(metric_source_id)
+        matching_job_names = set(filter(reg_exp.match, job_names))
+        if matching_job_names:
+            return matching_job_names
+        logging.warning("No Jenkins jobs match metric source id %s.", metric_source_id)
+        logging.warning("Jenkins jobs found at %s: %s", self.url(), ", ".join(job_names))
+        return {metric_source_id}
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
         """ Return the url(s) to the metric source for the metric source id. """

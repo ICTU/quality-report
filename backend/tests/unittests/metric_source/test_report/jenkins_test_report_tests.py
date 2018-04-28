@@ -136,6 +136,13 @@ class JenkinsTestReportTest(unittest.TestCase):
         jenkins = JenkinsTestReport(url="http://jenkins")
         self.assertEqual(datetime.datetime.min, jenkins.datetime("job"))
 
+    @patch.object(Jenkins, "jobs")
+    def test_date_time_on_timeout(self, mock_jenkins_jobs):
+        """ Test that the minimum datetime is returned when the Jenkins jobs method gives a timeout. """
+        mock_jenkins_jobs.side_effect = TimeoutError
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(datetime.datetime.min, jenkins.datetime("job"))
+
     def test_url(self):
         """ Test the metric sourc url. """
         jenkins = JenkinsTestReport(url="http://jenkins")
@@ -149,3 +156,19 @@ class JenkinsTestReportTest(unittest.TestCase):
         self.assertEqual(["http://jenkins/job/job1", "http://jenkins/job/pipeline/job/master",
                           "http://jenkins/job/test1", "http://jenkins/job/test2"],
                          jenkins.metric_source_urls("job1", "pipeline/job/master", "test?"))
+
+    @patch.object(Jenkins, "jobs")
+    def test_metric_source_urls__timeout(self, mock_jenkins_jobs):
+        """ Test that the metric source urls are assembled correctly. """
+        mock_jenkins_jobs.side_effect = TimeoutError
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(["http://jenkins/job/job1", "http://jenkins/job/pipeline/job/master",
+                          "http://jenkins/job/test?"],
+                         jenkins.metric_source_urls("job1", "pipeline/job/master", "test?"))
+
+    @patch.object(Jenkins, "jobs")
+    def test_metric_source_urls_no_match(self, mock_jenkins_jobs):
+        """ Test that the metric source urls are assembled correctly. """
+        mock_jenkins_jobs.return_value = [{"name": "job1"}, {"name": "master"}, {"name": "test1"}, {"name": "test2"}]
+        jenkins = JenkinsTestReport(url="http://jenkins")
+        self.assertEqual(["http://jenkins/job/notfound.*"], jenkins.metric_source_urls("notfound.*"))
