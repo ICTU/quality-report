@@ -14,7 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
+import subprocess
 import unittest
+from unittest.mock import patch
 
 from hqlib.metric_source import VersionControlSystem
 
@@ -37,3 +40,31 @@ class VersionControlSystemTests(unittest.TestCase):
     def test_do_not_ignore_branches_by_default(self):
         """ Test that branches are not ignored by default. """
         self.assertFalse(VersionControlSystem._ignore_branch('foo'))
+
+    # pylint: disable=protected-access
+
+    def test_run_shell_command(self):
+        """ Test that the result of the shell command is returned. """
+        mock_shell_command = unittest.mock.Mock(return_value="success")
+        vcs = VersionControlSystem(run_shell_command=mock_shell_command)
+        self.assertEqual("success", vcs._run_shell_command(shell_command=("ls",)))
+
+    @patch("os.chdir")
+    def test_run_shell_command_chdir(self, mock_chdir):  # pylint: disable=no-self-use
+        """ Test that shell command is run in the correct folder. """
+        vcs = VersionControlSystem(run_shell_command=unittest.mock.Mock())
+        vcs._run_shell_command(shell_command=("ls",), folder="test")
+        mock_chdir.assert_any_call("test")
+
+    def test_run_shell_command_exception(self):
+        """ Test that the result is the empty string if an exception occurs. """
+        mock_shell_command = unittest.mock.Mock(side_effect=subprocess.CalledProcessError(1, "ls"))
+        vcs = VersionControlSystem(run_shell_command=mock_shell_command)
+        self.assertEqual("", vcs._run_shell_command(shell_command=("ls",)))
+
+    def test_run_shell_command_exception_reraise(self):
+        """ Test that any exception is reraised if the log level is higher than warning. """
+        mock_shell_command = unittest.mock.Mock(side_effect=subprocess.CalledProcessError(1, "ls"))
+        vcs = VersionControlSystem(run_shell_command=mock_shell_command)
+        self.assertRaises(subprocess.CalledProcessError, vcs._run_shell_command, shell_command=("ls",),
+                          log_level=logging.ERROR)

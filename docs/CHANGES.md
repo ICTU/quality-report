@@ -1,3 +1,8 @@
+2018-04-29  Release 2.56.2
+
+  * Bug fix: Set time outs on shell commands so HQ doesn't wait forever when e.g. a Git server is down.
+
+
 2018-04-29  Release 2.56.1
 
   * Bug fix: Don't crash when retrieving Jenkins jobs times out.
