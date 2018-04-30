@@ -45,6 +45,11 @@ class Metric(object):
         """ Return the stable id of the metric. """
         return 'metric_id'
 
+    @staticmethod
+    def normalized_stable_id():
+        """ Return the stable id of the metric. """
+        return 'metric_id'
+
     def id_string(self):
         """ Return the id string of the metric. """
         return self.__id_string

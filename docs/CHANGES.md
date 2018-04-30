@@ -1,3 +1,8 @@
+2018-04-30  Release 2.56.3
+
+  * Bug #379 solved: forward slashes in component names produced crash.
+
+
 2018-04-29  Release 2.56.2
 
   * Bug fix: Set time outs on shell commands so HQ doesn't wait forever when e.g. a Git server is down.

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from random import randint
 from typing import cast, Dict, List, Optional, Type, Tuple, TYPE_CHECKING
 import json
 import re
@@ -135,6 +136,11 @@ class Metric(object):
     def is_applicable(self) -> bool:  # pylint: disable=no-self-use
         """ Return whether this metric applies to the specified subject. """
         return True
+
+    @functools.lru_cache(maxsize=1024)
+    def normalized_stable_id(self):
+        """ Returns stable_id where non-alphanumerics are substituted by _ and with random three digits at the end. """
+        return "".join([c if c.isalnum() else "_" for c in self.stable_id()]) + '_' + str(randint(1000, 9999))
 
     def stable_id(self) -> str:
         """ Return an id that doesn't depend on numbering/order of metrics. """

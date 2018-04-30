@@ -98,8 +98,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
 
     @classmethod
     def __save_metric_long_history(cls, metric, report_dir):
-        filename = os.path.join(report_dir, 'json', '{stable_id}.txt'
-                                .format(stable_id=metric.stable_id().replace(" ", "_")))
+        filename = os.path.join(report_dir, 'json', '{stable_id}.txt'.format(stable_id=metric.normalized_stable_id()))
         filesystem.write_file(",".join(str(i) if i is not None else '' for i in metric.long_history()),
                               filename, mode='w', encoding=None)
 

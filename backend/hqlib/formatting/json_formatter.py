@@ -139,7 +139,7 @@ class MetricsFormatter(base_formatter.Formatter):
         kwargs['status'] = status
         kwargs['status_start_date'] = self.__date_array(status_start_date) if status_start_date else []
         kwargs['metric_id'] = metric.id_string()
-        kwargs['stable_id'] = metric.stable_id()
+        kwargs['stable_id'] = metric.normalized_stable_id()
         kwargs['name'] = metric.name
         kwargs['unit'] = metric.unit
         kwargs['section'] = metric.id_string().split('-')[0]
