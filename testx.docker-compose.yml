@@ -1,0 +1,11 @@
+www:
+  build: .
+  dockerfile: example_report.Dockerfile
+  ports:
+    - "2015:2015"
+test:
+  build: .
+  dockerfile: testx.Dockerfile
+  links:
+    - "www"
+  command: ["conf.coffee", "--baseUrl=http://www:2015"]

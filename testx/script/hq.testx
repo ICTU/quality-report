@@ -1,0 +1,17 @@
+- go to:
+    url: /
+- wait to appear:
+    element1: navigationBar
+- check matches:
+    reportTitle: 'Kwaliteitsrapportage Organization name/Q*'
+    sectionHeader: 'Proceskwaliteit algemeen'
+- check exists:
+    expandButton: 'true'
+- set:
+    expandButton:
+- wait to appear:
+    element1: hideButton
+- check equals:
+    actionTableHeader: 'Te late acties'
+    actionTableLink: 'Wiki actions'
+    actionTableColumnHeader: 'Te laat '

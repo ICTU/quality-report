@@ -1,3 +1,8 @@
+2018-07-31  Release 2.63.2
+
+  * Feature #387: implemented ART using testx.
+
+
 2018-07-27  Release 2.63.1
 
   * Bug #364: Improve wording of failing regression test metric.

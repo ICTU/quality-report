@@ -29,7 +29,7 @@ class UrlOpenerMock(UrlOpener):
     """
 
     def __init__(self, uri: str = None, username: str = None, password: str = None) -> None:
-        self._dir_path = pathlib.Path(__file__).parent.parent.parent.parent
+        self._dir_path = pathlib.Path.cwd()
         examples_metric_sources_path = self._dir_path / 'docs' / 'examples' / 'example_metric_sources'
         self._map = {
             # begin UserStoriesInProgress

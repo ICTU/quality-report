@@ -1,0 +1,8 @@
+navigationBar,css,nav.navbar
+reportTitle,css,a.navbar-brand
+sectionHeader,css,section#section_PC>.page-header>h1
+expandButton,css,section#section_PC div#table_PC tr#PC-01_details+tr.yellow_metric>td>button
+hideButton,css,section#section_PC div#table_PC tr#PC-02_details.yellow_metric button#PC-02
+actionTableHeader,css,section#section_PC div#table_PC tr#PC-02_details.yellow_metric>td>table>tbody h4.panel-heading
+actionTableLink,css,section#section_PC div#table_PC tr#PC-02_details.yellow_metric>td>table>tbody>tr+tr>td>div.row>div.col-sm-4 div.panel-body>table>tbody>tr>td>a
+actionTableColumnHeader,css,section#section_PC div#table_PC tr#PC-02_details.yellow_metric>td>table>tbody>tr+tr>td>div.row>div.col-sm-4 div.panel-body>table>thead>tr>th+th
