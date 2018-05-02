@@ -1,3 +1,8 @@
+2018-05-02  Release 2.56.5
+
+  * Bug fix #383: Wiki metric source for team spirit didn't work.
+
+
 2018-05-02  Release 2.56.4
 
   * Bug #384 solved: History charts of newly introduced metrics are shifted in the past.
@@ -20,8 +25,8 @@
 
 2018-04-28  Release 2.56.0
 
- * Feature #373: Allow for using regular expressions when specifying jobs that contain Jenkins test reports.
-   See https://github.com/ICTU/quality-report/wiki/Jenkins-test-report.
+  * Feature #373: Allow for using regular expressions when specifying jobs that contain Jenkins test reports.
+    See https://github.com/ICTU/quality-report/wiki/Jenkins-test-report.
 
 
 2018-04-24  Release 2.55.2

@@ -16,120 +16,88 @@ limitations under the License.
 
 import datetime
 import unittest
+from unittest.mock import patch
+import urllib.error
 
 import bs4
 
 from hqlib.metric_source import Wiki
 
 
-class WikiUnderTest(Wiki):  # pylint: disable=too-few-public-methods
-    """ Override the soup method to return a fixed HTML fragment. """
-    html = """<table border="1">
-                <tr>
-                  <th align="right">Datum</th>
-                  <th>9-1-2013</th>
-                  <th>18-1-2013</th>
-                </tr>
-                <tr id="team_1">
-                    <td>Smiley team 1</td>
-                    <td></td><td>:-)</td>
-                </tr>
-                <tr id="team_2">
-                    <td>Smiley 2</td>
-                    <td>:-)</td>
-                    <td>:-(</td>
-                </tr>
-              </table>"""
-
-    def soup(self, url):  # pylint: disable=unused-argument
-        """ Return the static html. """
-        return bs4.BeautifulSoup(self.html, "lxml")
-
-
 class WikiTest(unittest.TestCase):
     """ Unit tests for the Wiki class. """
 
-    def setUp(self):
-        self.__wiki = WikiUnderTest("http://wiki")
-
     def test_url(self):
         """ Test that the url is correct. """
-        self.assertEqual("http://wiki/", self.__wiki.url())
+        self.assertEqual("http://wiki/", Wiki("http://wiki").url())
 
     def test_metric_source_urls(self):
-        """ Test that the metric source urls are simply the Wiki url. """
-        self.assertEqual(["http://wiki/"], self.__wiki.metric_source_urls("team1", "team2"))
+        """ Test that the metric source urls point to the team wiki pages. """
+        self.assertEqual(["http://wiki/team1", "http://wiki/team2"],
+                         Wiki("http://wiki").metric_source_urls("team1", "team2"))
 
-    def test_team_spirit(self):
+    @patch.object(Wiki, "soup")
+    def test_team_spirit(self, mock_soup):
         """ Test the spirit of the team. """
-        self.assertEqual(':-(', self.__wiki.team_spirit('team_2'))
+        mock_soup.return_value = bs4.BeautifulSoup("<tr></tr><tr><td>:-)</td></tr>", "lxml")
+        self.assertEqual(':-)', Wiki("http://wiki").team_spirit('team_id'))
 
-    def test_missing_team_spirit(self):
-        """ Test exception when team is missing. """
-        self.assertEqual('', self.__wiki.team_spirit('missing'))
+    @patch.object(Wiki, "soup")
+    def test_team_spirit_on_error(self, mock_soup):
+        """ Test the spirit of the team. """
+        mock_soup.side_effect = urllib.error.URLError("reason")
+        self.assertEqual('', Wiki("http://wiki").team_spirit('team'))
 
-    def test_no_column_header(self):
+    @patch.object(Wiki, "soup")
+    def test_team_spirit_no_smiley_row(self, mock_soup):
+        """ Test the spirit of the team. """
+        mock_soup.return_value = bs4.BeautifulSoup("<tr><th>18-1-2013</th></tr>", "lxml")
+        self.assertEqual('', Wiki("http://wiki").team_spirit('team'))
+
+    @patch.object(Wiki, "soup")
+    def test_invalid_smiley(self, mock_soup):
+        """ Test invalid smiley. """
+        mock_soup.return_value = bs4.BeautifulSoup("<tr></tr><tr><td>:-P</td></tr>", "lxml")
+        self.assertEqual("", Wiki("http://wiki").team_spirit('team'))
+
+    @patch.object(Wiki, "soup")
+    def test_missing_smiley(self, mock_soup):
+        """ Test missing smiley. """
+        mock_soup.return_value = bs4.BeautifulSoup("<tr></tr><tr><td></td></tr>", "lxml")
+        self.assertEqual("", Wiki("http://wiki").team_spirit('team'))
+
+    @patch.object(Wiki, "soup")
+    def test_no_column_header(self, mock_soup):
         """ Test missing columns. """
-        self.__wiki.html = """<table border="1">
-                        <tr>
-                          <th align="right">Datum</th>
-                          <th>9-1-2013</th>
-                          <th></th>
-                        </tr>
-                        <tr id="team_1">
-                            <td>Smiley team 1</td>
-                            <td>:-)</td>
-                            <td>:-)</td>
-                        </tr>
-                      </table>"""
-        self.assertEqual(datetime.datetime.min, self.__wiki.datetime('team_1'))
+        mock_soup.return_value = bs4.BeautifulSoup("<tr><th>18-1-2013</th><th></th></tr>", "lxml")
+        self.assertEqual(datetime.datetime.min, Wiki("http://wiki").datetime('team'))
 
-    def test_date_of_last_measurement(self):
+    @patch.object(Wiki, "soup")
+    def test_date_of_last_measurement(self, mock_soup):
         """ Test the date of the last measurement of the spirit of the team. """
-        self.assertEqual(datetime.datetime(2013, 1, 18), self.__wiki.datetime('team_2'))
+        mock_soup.return_value = bs4.BeautifulSoup("<tr><th>18-1-2013</th></tr>", "lxml")
+        self.assertEqual(datetime.datetime(2013, 1, 18), Wiki("http://wiki").datetime('team'))
 
-    def test_invalid_date(self):
+    @patch.object(Wiki, "soup")
+    def test_date_of_last_measurement_on_error(self, mock_soup):
+        """ Test the date of the last measurement of the spirit of the team when an error occurs. """
+        mock_soup.side_effect = urllib.error.URLError("reason")
+        self.assertEqual(datetime.datetime.min, Wiki("http://wiki").datetime('team'))
+
+    @patch.object(Wiki, "soup")
+    def test_invalid_date(self, mock_soup):
         """ Test that an invalid date is taken care of. """
-        self.__wiki.html = """<table border="1">
-                                <tr>
-                                  <th align="right">Datum</th>
-                                  <th>9-1--2013</th>
-                                </tr>
-                                <tr id="team_1">
-                                    <td>Smiley team 1</td>
-                                    <td>:-)</td>
-                                </tr>
-                              </table>"""
-        self.assertEqual(datetime.datetime.min, self.__wiki.datetime('team_1'))
+        mock_soup.return_value = bs4.BeautifulSoup("<tr><th>Datum</th><th>9-1--2013</th></tr>", "lxml")
+        self.assertEqual(datetime.datetime.min, Wiki("http://wiki").datetime('team'))
 
-    def test_line_breaks(self):
+    @patch.object(Wiki, "soup")
+    def test_line_breaks(self, mock_soup):
         """ Test with line breaks. """
-        self.__wiki.html = """<table border="1">
-                        <tr>
-                          <th align="right">Datum</th>
-                          <th>9-1-2013</th>
-                          <th>10-1-2014</th>
-                        </tr>
-                        <tr id="team_1">
-                            <td>Smiley team 1</td>
-                            <td>:-)<br/></td>
-                            <td>:-)<br/></td>
-                        </tr>
-                      </table>"""
-        self.assertEqual(':-)', self.__wiki.team_spirit('team_1'))
+        mock_soup.return_value = bs4.BeautifulSoup("<tr></tr><tr><td>Smiley</td><td>:-)<br/></td></tr>", "lxml")
+        self.assertEqual(':-)', Wiki("http://wiki").team_spirit('team'))
 
-    def test_line_breaks_in_dates(self):
+    @patch.object(Wiki, "soup")
+    def test_line_breaks_in_dates(self, mock_soup):
         """ Test with line breaks. """
-        self.__wiki.html = """<table border="1">
-                        <tr>
-                          <th align="right">Datum</th>
-                          <th>9-1-2013</th>
-                          <th>10-1-2014<br/></th>
-                        </tr>
-                        <tr id="team_1">
-                            <td>Smiley team 1</td>
-                            <td>:-)<br/></td>
-                            <td>:-)<br/></td>
-                        </tr>
-                      </table>"""
-        self.assertEqual(datetime.datetime(2014, 1, 10), self.__wiki.datetime('team_1'))
+        mock_soup.return_value = bs4.BeautifulSoup("<tr><th>Date</th><th>9-1-2018<br/></th></tr>", "lxml")
+        self.assertEqual(datetime.datetime(2018, 1, 9), Wiki("http://wiki").datetime('team'))
