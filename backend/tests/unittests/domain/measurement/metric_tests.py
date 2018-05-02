@@ -52,6 +52,23 @@ class MetricTest(unittest.TestCase):
         """ Test that the metric has a stable id. """
         self.assertEqual('MetricUnderTestFakeSubject', self.__metric.stable_id())
 
+    def test_normalized_stable_id(self):
+        """ Test that it returns stable id with _ instead of non-alphanumeric characters . """
+
+        result = self.__metric.normalized_stable_id()
+
+        self.assertEqual('MetricUnderTestFakeSubject_', result)
+
+    @patch.object(MetricUnderTest, 'stable_id')
+    def test_normalized_stable_id_with_non_alphanumerics(self, mock_stable_id):
+        """ Test that it returns stable id with _ instead of non-alphanumeric characters . """
+        mock_stable_id.return_value = 'q3@a "a>_-\\/'
+
+        result = self.__metric.normalized_stable_id()
+
+        self.assertEqual('q3_a__a_____', result[:result.rfind('_')])
+        self.assertEqual('6432346295459247', result[result.rfind('_') + 1:])
+
     def test_stable_id_mutable_subject(self):
         """ Test that the stable id doesn't include the subject if the subject is a list. """
         self.assertEqual('Metric', domain.Metric([], project=domain.Project()).stable_id())

@@ -1,3 +1,8 @@
+2018-05-02  Release 2.56.4
+
+  * Bug #384 solved: History charts of newly introduced metrics are shifted in the past.
+
+
 2018-04-30  Release 2.56.3
 
   * Bug #379 solved: forward slashes in component names produced crash.

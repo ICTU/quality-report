@@ -30,10 +30,9 @@ class CompactHistory(domain.MetricSource):
     """ Class for reading and writing history JSON files. """
     __long_history_count = 2000
 
-    def __init__(self, history_filename: str, recent_history: int = 100, file_: Callable[[str], TextIO] = None) -> None:
+    def __init__(self, history_filename: str, recent_history: int = 100) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
-        self.__file = file_ if file_ else open
         super().__init__()
 
     def filename(self) -> str:
@@ -52,12 +51,25 @@ class CompactHistory(domain.MetricSource):
         """ Retrieve the given number of history records for the metric_id. """
         history = self.__read_history()
         measurements = history['metrics'].get(metric_id, [])
-        values = []
-        for date in history['dates'][-number_of_records:]:
+        dates = history['dates'][-number_of_records:]
+        values = self.__get_prehistory(dates, measurements)
+
+        for date in dates:
             for measurement in reversed(measurements):
                 if measurement['start'] <= date <= measurement['end']:
                     values.append(measurement.get('value', None))
                     break  # Next date
+
+        return values
+
+    @classmethod
+    def __get_prehistory(cls, dates, measurements) -> List[Number]:
+        values = []
+        if dates and measurements:
+            i = 0
+            while dates[i] < measurements[0]['start'] and i < len(dates):
+                values.append(None)
+                i += 1
         return values
 
     def get_dates(self, long_history: bool = False) -> str:
@@ -115,13 +127,13 @@ class CompactHistory(domain.MetricSource):
     def __read_history(self) -> Dict[str, Union[List, Dict]]:
         """ Return the parsed history JSON. """
         try:
-            return json.load(self.__file(self.__history_filename))
-        except FileNotFoundError:
+            return json.load(open(self.__history_filename))
+        except (IOError, FileNotFoundError):
             return dict(dates=[], statuses=[], metrics={})
 
     def __write_history(self, history):
         """ Write the history to the JSON file. """
-        json.dump(history, self.__file(self.__history_filename, mode='w', encoding='utf-8'),
+        json.dump(history, open(self.__history_filename, mode='w', encoding='utf-8'),
                   sort_keys=True, indent=2)
 
 
@@ -134,6 +146,8 @@ class History(domain.MetricSource):
         self.__history_filename = history_filename
         self.__recent_history = recent_history
         self.__file = file_ if file_ else open
+        logging.warning('History class is deprecated! Please, use CompactHistory instead. See: %s',
+                        "https://github.com/ICTU/quality-report/wiki/History")
         super().__init__()
 
     def filename(self) -> str:
