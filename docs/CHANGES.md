@@ -1,3 +1,10 @@
+2018-05-03  Release 2.57.0
+
+  * Remove feature #389: Remove support for Nexus as metric source because Nexus 3 doesn't provide
+    the last date an artifact was changed which is needed to report on the last date a document
+    was changed.
+
+
 2018-05-02  Release 2.56.5
 
   * Bug fix #383: Wiki metric source for team spirit didn't work.

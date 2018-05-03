@@ -13,7 +13,6 @@ PROJECT = Project(
     'Integrationtest', name='all requirements and sources, but no source ids',
     metric_sources={
         metric_source.History: HISTORY,
-        metric_source.ArchiveSystem: project_definition.GIT,
         metric_source.VersionControlSystem: project_definition.GIT,
         metric_source.BugTracker: project_definition.BUG_TRACKER,
         metric_source.Sonar: project_definition.SONAR},

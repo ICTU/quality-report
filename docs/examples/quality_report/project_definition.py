@@ -41,7 +41,6 @@ PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
                       metric_source.Jenkins: BUILD_SERVER,
                       metric_source.VersionControlSystem: GIT,
-                      metric_source.ArchiveSystem: GIT,
                       metric_source.Sonar: SONAR,
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,

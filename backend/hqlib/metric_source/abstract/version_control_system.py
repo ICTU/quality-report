@@ -23,10 +23,10 @@ import subprocess
 from typing import Dict, Tuple, List
 
 from hqlib.typing import DateTime
-from . import archive_system
+from hqlib import domain
 
 
-class VersionControlSystem(archive_system.ArchiveSystem):
+class VersionControlSystem(domain.MetricSource):
     """ Abstract base class for version control systems such as Subversion and Git. """
 
     metric_source_name = 'Version control system'
@@ -41,6 +41,11 @@ class VersionControlSystem(archive_system.ArchiveSystem):
     def last_changed_date(self, path: str) -> DateTime:
         """ Return the date when the url was last changed. """
         raise NotImplementedError
+
+    @staticmethod
+    def normalize_path(path: str) -> str:
+        """ Return a normalized version of the path. """
+        return path
 
     def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the specified path. """

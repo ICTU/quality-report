@@ -40,7 +40,7 @@ class DocumentAgeTest(unittest.TestCase):
 
     def setUp(self):
         self.__subversion = FakeSubversion()
-        self.__project = domain.Project(metric_sources={metric_source.ArchiveSystem: self.__subversion})
+        self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: self.__subversion})
         self.__document = domain.Document(name='Title', url='http://doc',
                                           metric_source_ids={self.__subversion: 'http://doc/'})
         self.__metric = metric.DocumentAge(subject=self.__document, project=self.__project)
@@ -71,7 +71,7 @@ class MissingDocumentAgeTest(unittest.TestCase):
         self.__subversion = FakeSubversion()
         self.__document = domain.Document(name='Title', url='http://doc',
                                           metric_source_ids={self.__subversion: 'raise'})
-        self.__project = domain.Project(metric_sources={metric_source.ArchiveSystem: self.__subversion})
+        self.__project = domain.Project(metric_sources={metric_source.VersionControlSystem: self.__subversion})
         self.__metric = metric.DocumentAge(subject=self.__document, project=self.__project)
 
     def test_value(self):
@@ -87,13 +87,13 @@ class MissingDocumentAgeTest(unittest.TestCase):
         project = domain.Project()
         document = domain.Document(name='Title', url='http://doc', metric_source_ids={self.__subversion: 'path'})
         age = metric.DocumentAge(subject=document, project=project)
-        self.assertEqual('De document update leeftijd van Title kon niet gemeten worden omdat de bron ArchiveSystem '
-                         'niet is geconfigureerd.', age.report())
+        self.assertEqual('De document update leeftijd van Title kon niet gemeten worden omdat de bron '
+                         'VersionControlSystem niet is geconfigureerd.', age.report())
 
     def test_report_no_vcs_path(self):
         """ Test the report when there's no version control system path. """
         document = domain.Document(name='Title', url='http://doc')
         age = metric.DocumentAge(subject=document, project=self.__project)
         self.assertEqual('De document update leeftijd van Title kon niet gemeten worden omdat niet alle '
-                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de bron ArchiveSystem.',
+                         'benodigde bron-ids zijn geconfigureerd. Configureer ids voor de bron VersionControlSystem.',
                          age.report())

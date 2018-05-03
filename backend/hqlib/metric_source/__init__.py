@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 
-from .abstract.archive_system import ArchiveSystem
 from .abstract.ci_server import CIServer
 from .abstract.coverage_report import ARTCoverageReport, UnittestCoverageReport, AggregatedCoverageReport
 from .abstract.owasp_dependency_report import OWASPDependencyReport
@@ -30,7 +29,6 @@ from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
 from .abstract.user_story_points_predictor import UserStoryPointsPredictor
 from .abstract.version_control_system import VersionControlSystem
-from .archive_system.nexus import Nexus
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover

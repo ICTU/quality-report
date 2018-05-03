@@ -15,7 +15,6 @@ PROJECT = Project(
     'Integrationtest', name='all requirements and sources, but no source ids',
     metric_sources={
         metric_source.History: HISTORY,
-        metric_source.ArchiveSystem: GIT,
         metric_source.VersionControlSystem: GIT,
         metric_source.BugTracker: BUG_TRACKER,
         metric_source.ActionLog: WEKAN,
