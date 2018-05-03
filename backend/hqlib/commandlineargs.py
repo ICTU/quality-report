@@ -32,6 +32,8 @@ def parse() -> Namespace:
                         action='store_true')
     parser.add_argument('--log', default="WARNING", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                         help="log level (WARNING by default)")
+    parser.add_argument('--frontend', default="yes", choices=['yes', 'no'],
+                        help="should backend process also build the frontend?")
     parser.add_argument('--version', action='version', version=hqlib.VERSION)
     args = parser.parse_args()
     if not args.project:

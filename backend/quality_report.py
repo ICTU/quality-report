@@ -33,22 +33,23 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     def __init__(self, project_folder_or_filename):
         self.__project = configuration.project(project_folder_or_filename)
 
-    def create_report(self, report_folder):
+    def create_report(self, report_folder, create_frontend: bool = True):
         """ Create, format, and write the quality report. """
         quality_report = report.QualityReport(self.__project)
         for history in self.__project.metric_sources(metric_source.History):
             if history.filename():
                 history.add_report(quality_report)
-        self.__create_report(quality_report, report_folder)
+        self.__create_report(quality_report, report_folder, create_frontend)
         return quality_report
 
     @classmethod
-    def __create_report(cls, quality_report, report_dir):
+    def __create_report(cls, quality_report, report_dir, create_resources: bool = True):
         """ Format the quality report to HTML and write the files in the report folder. """
         report_dir = report_dir or '.'
         filesystem.create_dir(report_dir)
         filesystem.create_dir(os.path.join(report_dir, 'json'))
-        cls.__create_resources(report_dir)
+        if create_resources:
+            cls.__create_resources(report_dir)
         json_files = dict(metrics=formatting.MetricsFormatter,
                           meta_history=formatting.MetaMetricsHistoryFormatter,
                           meta_data=formatting.MetaDataJSONFormatter)
@@ -114,6 +115,6 @@ if __name__ == '__main__':
     args = commandlineargs.parse()
     log.init_logging(args.log)
     logging.info("%s v%s starting quality report", NAME, VERSION)
-    report = Reporter(args.project).create_report(args.report)
+    report = Reporter(args.project).create_report(args.report, args.frontend != 'no')
     logging.info("%s v%s done with quality report", NAME, VERSION)
     sys.exit(2 if args.failure_exit_code and report.direct_action_needed() else 0)

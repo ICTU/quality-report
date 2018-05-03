@@ -1,3 +1,8 @@
+2018-05-08  Release 2.58.0
+
+  * Feature #393: Option added to the report generator to generate just data files (json) and to omit frontend.
+
+
 2018-05-04  Release 2.57.2
 
   * Bug fix: More consistent use of logging levels: CRITICAL if the report can't be created,
