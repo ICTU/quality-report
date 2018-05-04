@@ -46,7 +46,7 @@ class Checkmarx(domain.MetricSource):
                 checkmarx_report_urls.append("{}/CxWebClient/ViewerMain.aspx?scanId={}&ProjectID={}".format(
                     self.url(), str(json["Id"]), str(json["ProjectId"])))
             except (IndexError, KeyError, TypeError) as reason:
-                logging.warning("Couldn't load values from json: %s - %s", project_name, reason)
+                logging.error("Couldn't load values from json: %s - %s", project_name, reason)
             except url_opener.UrlOpener.url_open_exceptions:
                 return [self.url()]
 
@@ -62,8 +62,8 @@ class Checkmarx(domain.MetricSource):
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
             except (KeyError, IndexError) as reason:
-                logging.warning("Couldn't parse alerts for project %s with %s risk level from %s: %s",
-                                project_name, priority, self.url(), reason)
+                logging.error("Couldn't parse alerts for project %s with %s risk level from %s: %s",
+                              project_name, priority, self.url(), reason)
                 return -1
         return nr_alerts
 
@@ -77,8 +77,8 @@ class Checkmarx(domain.MetricSource):
             except url_opener.UrlOpener.url_open_exceptions:
                 return datetime.datetime.min
             except (KeyError, IndexError) as reason:
-                logging.warning("Couldn't parse date and time for project %s from %s: %s",
-                                project_name, self.url(), reason)
+                logging.error("Couldn't parse date and time for project %s from %s: %s",
+                              project_name, self.url(), reason)
                 return datetime.datetime.min
         return min(dates, default=datetime.datetime.min)
 

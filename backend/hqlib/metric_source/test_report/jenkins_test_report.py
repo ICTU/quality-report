@@ -108,7 +108,7 @@ class JenkinsTestReport(test_report.TestReport):
         try:
             build = ast.literal_eval(contents)
         except (SyntaxError, NameError, TypeError) as reason:
-            logging.warning("Couldn't eval %s: %s\nData received: %s", api_url, reason, contents)
+            logging.error("Couldn't eval %s: %s\nData received: %s", api_url, reason, contents)
             return None
         return self.__test_data(build)
 

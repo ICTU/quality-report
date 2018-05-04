@@ -60,7 +60,7 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
         try:
             return dateutil.parser.parse(list(rows)[1][10].split(' ')[0], dayfirst=True)
         except (ValueError, IndexError, TypeError) as reason:
-            logging.warning("Couldn't parse report date time from %s, retrieved from %s: %s", rows, url, reason)
+            logging.error("Couldn't parse report date time from %s, retrieved from %s: %s", rows, url, reason)
             return datetime.datetime.min
 
     def _duration_from_url(self, url: str) -> TimeDelta:

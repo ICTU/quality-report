@@ -52,7 +52,7 @@ class JSONFormatter(base_formatter.Formatter):
                                                                          stat=metric.status(),
                                                                          date=metric.status_start_date())
         except ValueError:
-            logging.error('Error formatting %s', metric.stable_id())
+            logging.critical('Error formatting %s', metric.stable_id())
             raise
 
     @staticmethod
@@ -268,8 +268,8 @@ class MetaDataJSONFormatter(object):
         id_ = metric_class.__name__
         try:
             norm = metric_class.norm_template.format(**metric_class.norm_template_default_values())
-        except ValueError:
-            logging.error('Metric class %s has faulty norm template', metric_class.__name__)
+        except ValueError as reason:
+            logging.critical("Metric class %s has faulty norm template: %s", metric_class.__name__, reason)
             raise
         return '{{"included": {0}, "name": "{1}", "id": "{2}", "norm": "{3}"}}'.format(included, name, id_, norm)
 

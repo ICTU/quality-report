@@ -163,12 +163,12 @@ def eval_json(json_string: Union[str, bytes]) -> Any:
         try:
             json_string = json_string.decode('utf-8')
         except UnicodeDecodeError as reason:
-            logging.warning("Couldn't decode %s using utf-8: %s", json_string, reason)
+            logging.error("Couldn't decode %s using utf-8: %s", json_string, reason)
             raise
     try:
         return json.loads(json_string)
     except ValueError as reason:
-        logging.warning("Couldn't load json string '%s': %s", json_string, reason)
+        logging.error("Couldn't load json string '%s': %s", json_string, reason)
         raise
 
 

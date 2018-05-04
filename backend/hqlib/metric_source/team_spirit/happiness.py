@@ -47,7 +47,7 @@ class Happiness(team_spirit.TeamSpirit):
         try:
             return {'1': ':-(', '2': ':-(', '3': ':-|', '4': ':-)', '5': ':-)'}[json[-1]['smiley']]
         except (KeyError, IndexError) as reason:
-            logging.warning("Could not find smiley for %s in %s: %s", team_id, self.__api_url(), reason)
+            logging.error("Could not find smiley for %s in %s: %s", team_id, self.__api_url(), reason)
             return ''
 
     def datetime(self, *team_ids: str) -> DateTime:
@@ -61,7 +61,7 @@ class Happiness(team_spirit.TeamSpirit):
         try:
             return self.__parse_date(json[-1]['datum'])
         except (KeyError, IndexError) as reason:
-            logging.warning("Could not find smiley for %s in %s: %s", team_ids[0], self.__api_url(), reason)
+            logging.error("Could not find smiley for %s in %s: %s", team_ids[0], self.__api_url(), reason)
             return datetime.datetime.min
 
     # Utility methods

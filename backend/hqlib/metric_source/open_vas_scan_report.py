@@ -47,7 +47,7 @@ class OpenVASScanReport(domain.MetricSource):
                 try:
                     nr_alerts += self.__parse_alerts(soup, risk_level)
                 except IndexError as reason:
-                    logging.warning("Error parsing alerts from report at %s: %s", url, reason)
+                    logging.error("Error parsing alerts from report at %s: %s", url, reason)
                     return -1
         return nr_alerts
 
@@ -64,7 +64,7 @@ class OpenVASScanReport(domain.MetricSource):
             return min([self.__report_datetime(report_url) for report_url in report_urls],
                        default=datetime.datetime.min)
         except (TypeError, ValueError, IndexError) as reason:
-            logging.warning("Error parsing date from report urls at %s: %s", report_urls, reason)
+            logging.error("Error parsing date from report urls at %s: %s", report_urls, reason)
             return datetime.datetime.min
 
     def __report_datetime(self, report_url: str) -> DateTime:

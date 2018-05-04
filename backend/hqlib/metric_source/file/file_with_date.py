@@ -45,5 +45,5 @@ class FileWithDate(domain.MetricSource):
             try:
                 return dateutil.parser.parse(list(json.loads(file_content).values())[0])
             except (ValueError, AttributeError, IndexError) as reason:
-                logging.warning("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, url, reason)
+                logging.error("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, url, reason)
         return datetime.datetime.min

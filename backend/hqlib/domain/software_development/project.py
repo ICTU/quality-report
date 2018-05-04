@@ -127,8 +127,8 @@ class Project(RequirementSubject, measurable.MeasurableObject):
     def __check_short_section_name(self, name: str) -> None:
         """ Raise an exception when the short section name is already in use. """
         if name in self.__short_section_names:
-            logging.error('Section abbreviation must be unique: %s already used: %s',
-                          name, self.__short_section_names)
+            logging.critical('Section abbreviation must be unique: %s already used: %s',
+                             name, self.__short_section_names)
             raise ValueError('Section abbreviation {0!s} is not unique'.format(name))
         else:
             self.__short_section_names.add(name)

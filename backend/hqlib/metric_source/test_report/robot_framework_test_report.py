@@ -79,5 +79,5 @@ class RobotFrameworkTestReport(test_report.TestReport):
         try:
             return xml.etree.cElementTree.fromstring(contents)
         except xml.etree.cElementTree.ParseError as reason:
-            logging.warning("Couldn't parse report at %s: %s", report_url, reason)
+            logging.error("Couldn't parse report at %s: %s", report_url, reason)
             raise

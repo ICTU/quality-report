@@ -184,8 +184,8 @@ class Sonar(metric_source.TestReport):
         except self.__url_opener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", self.__plugin_api_url, reason)
         except ValueError as reason:
-            logging.warning("Error parsing response from %s: '%s'. "
-                            "Assume the branch plugin is not installed.", self.__plugin_api_url, reason)
+            logging.error("Error parsing response from %s: '%s'. "
+                          "Assume the branch plugin is not installed.", self.__plugin_api_url, reason)
         return False
 
     @functools.lru_cache(maxsize=4096)
@@ -400,8 +400,8 @@ class Sonar(metric_source.TestReport):
                     datetime_string = datetime_string.split('+')[0]  # Ignore timezone
                     return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')
                 except (TypeError, KeyError, IndexError) as reason:
-                    logging.warning("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
-                                    product, components_json, url, reason)
+                    logging.error("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
+                                  product, components_json, url, reason)
             except self.__url_opener.url_open_exceptions:
                 pass
             return datetime.datetime.min
@@ -419,8 +419,8 @@ class Sonar(metric_source.TestReport):
         try:
             datetime_string = components_json[0]['date']
         except (TypeError, KeyError, IndexError) as reason:
-            logging.warning("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
-                            product, components_json, url, reason)
+            logging.error("Couldn't get date of last analysis of %s from JSON %s (retrieved from %s): %s",
+                          product, components_json, url, reason)
             return datetime.datetime.min
         datetime_string = datetime_string.split('+')[0]  # Ignore timezone
         return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%S')

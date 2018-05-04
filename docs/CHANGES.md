@@ -1,3 +1,10 @@
+2018-05-04  Release 2.57.2
+
+  * Bug fix: More consistent use of logging levels: CRITICAL if the report can't be created,
+    ERROR if data retrieved from a metric source can't be parsed, WARNING if a metric source
+    can't be reached, and INFO for progress.
+
+
 2018-05-04  Release 2.57.1
 
   * Bug fix: More consistent use of logging levels: ERROR if the report can't be created,

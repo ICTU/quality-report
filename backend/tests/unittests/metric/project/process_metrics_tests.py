@@ -15,8 +15,9 @@ limitations under the License.
 """
 
 import unittest
-import logging
 from unittest.mock import MagicMock, patch, call
+import logging
+
 from hqlib import metric, domain, metric_source
 from .bug_metrics_tests import FakeJiraFilter
 
@@ -81,22 +82,34 @@ class UserStoriesDurationTest(unittest.TestCase):
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
         issues_json = {"total": "5", "issues": [{"key": issue, "fields": {"summary": "Issue Title"}},
                                                 {"key": issue2, "fields": {"summary": "Issue2 Title"}}]}
-        changelog_json = \
-            {"id": "133274", "changelog":
-                {"histories": [
-                    {"created": "2017-12-15T23:54:15.000+0100", "items":
-                        [{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
-                    {"created": "2017-11-15T23:54:15.000+0100", "items":
-                        [{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
-                    {"created": "2017-12-25T09:59:15.000+0100", "items":
-                        [{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
-        changelog_json2 = \
-            {"id": "133274", "changelog":
-                {"histories": [
-                    {"created": "2017-11-15T08:54:15.000+0100", "items":
-                        [{"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
-                    {"created": "2017-11-16T09:59:15.000+0100", "items":
-                        [{"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
+        changelog_json = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-12-15T23:54:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
+                    {
+                        "created": "2017-11-15T23:54:15.000+0100",
+                        "items": [
+                            {"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
+                    {
+                        "created": "2017-12-25T09:59:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
+        changelog_json2 = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-11-15T08:54:15.000+0100",
+                        "items": [{"field": "status", "fieldtype": "jira", "fromString": "X", "toString":
+                                   "In Progress"}]},
+                    {
+                        "created": "2017-11-16T09:59:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.side_effect = [changelog_json, changelog_json2]
         self.__project.metric_sources.return_value = [jira_filter]
@@ -149,15 +162,21 @@ class UserStoriesDurationTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
         issues_json = {"total": "5", "issues": [{"key": issue, "fields": {"summary": "Issue Title"}}]}
-        changelog_json = \
-            {"id": "133274", "changelog":
-                {"histories": [
-                    {"created": "2017-12-15T23:54:15.000+0100", "items": [
-                        {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
-                    {"created": "2017-11-15T23:54:15.000+0100", "items": [
-                        {"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
-                    {"created": "2017-12-25T09:59:15.000+0100", "items": [
-                        {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
+        changelog_json = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-12-15T23:54:15.000+0100",
+                        "items": [{"field": "status", "fieldtype": "jira", "fromString": "X",
+                                   "toString": "In Progress"}]},
+                    {
+                        "created": "2017-11-15T23:54:15.000+0100",
+                        "items": [{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
+                    {
+                        "created": "2017-12-25T09:59:15.000+0100",
+                        "items": [{"field": "status", "fieldtype": "jira", "fromString": "In Progress",
+                                   "toString": "X"}]}]}}
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.return_value = changelog_json
         self.__project.metric_sources.return_value = [jira_filter]
@@ -181,11 +200,14 @@ class UserStoriesDurationTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
         issues_json = {"total": "5", "issues": [{"key": issue, "fields": {"summary": "Issue Title"}}]}
-        changelog_json = \
-            {"id": "133274", "changelog":
-                {"histories": [
-                    {"created": "2017-12-15T23:54:15.000+0100", "items": [
-                        {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]}]}}
+        changelog_json = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-12-15T23:54:15.000+0100",
+                        "items": [{"field": "status", "fieldtype": "jira", "fromString": "X",
+                                   "toString": "In Progress"}]}]}}
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.return_value = changelog_json
         self.__project.metric_sources.return_value = [jira_filter]
@@ -208,10 +230,14 @@ class UserStoriesDurationTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
         issues_json = {"total": "5", "issues": [{"key": issue, "fields": {"summary": "Issue Title"}}]}
-        changelog_json = \
-            {"id": "133274", "changelog":
-                {"histories": [{"created": "2017-12-15T23:54:15.000+0100", "items": [
-                    {"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]}]}}
+        changelog_json = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-12-15T23:54:15.000+0100",
+                        "items": [{"field": "Flagged", "fieldtype": "custom", "fromString": "X",
+                                   "toString": "X"}]}]}}
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.side_effect = [changelog_json]
         self.__project.metric_sources.return_value = [jira_filter]
@@ -236,20 +262,33 @@ class UserStoriesDurationTest(unittest.TestCase):
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
         issues_json = {"total": "5", "issues": [{"key": issue, "fields": {"summary": "Issue Title"}},
                                                 {"key": issue2, "fields": {"summary": "Issue2 Title"}}]}
-        changelog_json = \
-            {"id": "133274", "changelog": {"histories": [
-                {"created": "2017-12-15T23:54:15.000+0100", "items": [
-                    {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
-                {"created": "2017-11-15T23:54:15.000+0100", "items": [
-                    {"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
-                {"created": "2017-12-25T09:59:15.000+0100", "items": [
-                    {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
-        changelog_json2 = \
-            {"id": "133274", "changelog": {"histories": [
-                {"created": "2017-11-15T08:54:15.000+0100", "items": [
-                    {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
-                {"created": "2017-11-16T09:59:15.000+0100", "items": [
-                    {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
+        changelog_json = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-12-15T23:54:15.000+0100",
+                        "items": [{"field": "status", "fieldtype": "jira", "fromString": "X",
+                                   "toString": "In Progress"}]},
+                    {
+                        "created": "2017-11-15T23:54:15.000+0100",
+                        "items": [{"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
+                    {
+                        "created": "2017-12-25T09:59:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
+        changelog_json2 = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-11-15T08:54:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
+                    {
+                        "created": "2017-11-16T09:59:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.side_effect = [changelog_json, changelog_json2]
         self.__project.metric_sources.return_value = [jira_filter]
@@ -466,7 +505,7 @@ class UserStoriesDurationTest(unittest.TestCase):
         get_issue_details_mock.assert_has_calls([call(issue)])
         self.assertEqual(-1, result)
 
-    @patch.object(logging, 'warning')
+    @patch.object(logging, 'error')
     @patch.object(metric_source.Jira, 'get_issue_details')
     @patch.object(metric_source.Jira, 'get_query')
     def testvalue_get_duration_of_stories_json_error(self, get_issues_mock, get_issue_details_mock, logging_mock):
@@ -494,15 +533,22 @@ class UserStoriesDurationTest(unittest.TestCase):
         issue = "ISSUE-1"
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
         issues_json = {"total": "5", "issues": [{"key": issue, "fields": {"summary": "Issue Title"}}]}
-        changelog_json = \
-            {"id": "133274", "changelog":
-                {"histories": [
-                    {"created": "2017-12-15T23:54:15.000+0100", "items": [
-                        {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
-                    {"created": "2017-11-15T23:54:15.000+0100", "items": [
-                        {"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
-                    {"created": "2017-12-25T09:59:15.000+0100", "items": [
-                        {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
+        changelog_json = {
+            "id": "133274",
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2017-12-15T23:54:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "X", "toString": "In Progress"}]},
+                    {
+                        "created": "2017-11-15T23:54:15.000+0100",
+                        "items": [
+                            {"field": "Flagged", "fieldtype": "custom", "fromString": "X", "toString": "X"}]},
+                    {
+                        "created": "2017-12-25T09:59:15.000+0100",
+                        "items": [
+                            {"field": "status", "fieldtype": "jira", "fromString": "In Progress", "toString": "X"}]}]}}
         get_issues_mock.return_value = issues_json
         get_issue_details_mock.return_value = changelog_json
         self.__project.metric_sources.return_value = [jira_filter]

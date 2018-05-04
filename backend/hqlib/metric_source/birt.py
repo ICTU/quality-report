@@ -183,5 +183,5 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         try:
             return int(test_design_report('div', {'class': 'style_4'})[row_nr].string.replace(',', ''))
         except (ValueError, IndexError) as reason:
-            logging.warning("Could not obtain row %s from Birt report %s: %s", row_nr, self.__test_design_url, reason)
+            logging.error("Could not obtain row %s from Birt report %s: %s", row_nr, self.__test_design_url, reason)
             return -1

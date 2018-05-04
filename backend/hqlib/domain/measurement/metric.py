@@ -277,8 +277,10 @@ class Metric(object):
         """ Return a description of the norm for the metric. """
         try:
             return self.norm_template.format(**self._parameters())
-        except KeyError:
-            logging.error('Key missing in parameters of %s: %s', self.__class__.__name__, self._parameters())
+        except KeyError as reason:
+            class_name = self.__class__.__name__
+            logging.critical('Key missing in %s parameters (%s) for norm template "%s": %s', class_name,
+                             self._parameters(), self.norm_template, reason)
             raise
 
     def extra_info_rows(self) -> List:

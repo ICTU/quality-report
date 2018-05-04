@@ -41,8 +41,8 @@ def project(project_folder_or_filename: str) -> Project:
     try:
         return __import__(module_name).PROJECT
     except ModuleNotFoundError as reason:
-        logging.error("Couldn't open %s: %s.", module_name, reason)
+        logging.critical("Couldn't open %s: %s.", module_name, reason)
         raise
     except AttributeError as reason:
-        logging.error("Couldn't get PROJECT from %s: %s.", module_name, reason)
+        logging.critical("Couldn't get PROJECT from %s: %s.", module_name, reason)
         raise
