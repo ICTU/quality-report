@@ -53,7 +53,7 @@ class RobotFrameworkTestReport(test_report.TestReport):
         try:
             return dateutil.parser.parse(root.get("generated"))
         except TypeError as reason:
-            logging.error("Couldn't parse report date and time from %s: %s", metric_source_id, reason)
+            logging.warning("Couldn't parse report date and time from %s: %s", metric_source_id, reason)
             return datetime.datetime.min
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:  # pylint: disable=no-self-use
@@ -70,7 +70,7 @@ class RobotFrameworkTestReport(test_report.TestReport):
         try:
             return int(root.findall("statistics/total/stat")[1].get(result_type, -1))
         except IndexError as reason:
-            logging.error("Can't find %s test count in %s: %s", result_type, report_url, reason)
+            logging.warning("Can't find %s test count in %s: %s", result_type, report_url, reason)
             return -1
 
     def __element_tree(self, report_url: str) -> Element:
@@ -79,5 +79,5 @@ class RobotFrameworkTestReport(test_report.TestReport):
         try:
             return xml.etree.cElementTree.fromstring(contents)
         except xml.etree.cElementTree.ParseError as reason:
-            logging.error("Couldn't parse report at %s: %s", report_url, reason)
+            logging.warning("Couldn't parse report at %s: %s", report_url, reason)
             raise

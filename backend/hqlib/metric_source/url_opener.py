@@ -118,7 +118,7 @@ class UrlOpener(object):
             if "Operation timed out after" in str(reason):
                 self.__time_out_tracker.register_url(url)
             if log_error:
-                logging.error("Couldn't open %s: %s", url, reason)
+                logging.warning("Couldn't open %s: %s", url, reason)
             raise  # Let caller decide whether to ignore the exception
 
     @functools.lru_cache(maxsize=4096)

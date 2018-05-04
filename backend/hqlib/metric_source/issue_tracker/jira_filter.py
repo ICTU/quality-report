@@ -107,7 +107,7 @@ class JiraFilter(BugTracker):
             logging.info("Invalid date, or issue %s never moved to status 'In Progress'", issue['key'])
             return None, None
         except TypeError:
-            logging.error("Invalid json: %s", json)
+            logging.warning("Received invalid json from %s: %s", self.__url, json)
             return None, None
         try:
             from_in_progress_date = max(self._get_create_date_from_json(json, False))

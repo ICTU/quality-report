@@ -76,14 +76,14 @@ class Wiki(team_spirit.TeamSpirit, beautifulsoup.BeautifulSoupOpener):
             last_cell = soup('tr')[0]('th')[-1]
             date_text = last_cell.contents[0].strip()
         except (IndexError, AttributeError, TypeError) as reason:
-            logging.error("Could not read the date of the last spirit measurement of team %s from %s: %s",
-                          team_ids[0], url, reason)
+            logging.warning("Could not read the date of the last spirit measurement of team %s from %s: %s",
+                            team_ids[0], url, reason)
             return datetime.datetime.min
         try:
             return self.__parse_date(date_text)
         except ValueError as reason:
-            logging.error("Could not parse the date of the last spirit measurement of team %s from %s: %s",
-                          team_ids[0], url, reason)
+            logging.warning("Could not parse the date of the last spirit measurement of team %s from %s: %s",
+                            team_ids[0], url, reason)
             return datetime.datetime.min
 
     # Utility methods

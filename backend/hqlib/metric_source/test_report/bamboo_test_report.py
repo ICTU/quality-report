@@ -56,8 +56,8 @@ class BambooTestReport(test_report.TestReport):
             # use naive date times internally:
             return dateutil.parser.parse(date_time_string, ignoretz=False).astimezone().replace(tzinfo=None)
         except (AttributeError, ValueError, TypeError) as reason:
-            logging.error("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, metric_source_id,
-                          reason)
+            logging.warning("Couldn't parse date and time from %s at %s: %s", self.metric_source_name, metric_source_id,
+                            reason)
             return datetime.datetime.min
 
     def __test_count(self, report_url: str, result_type: str) -> int:
@@ -69,8 +69,8 @@ class BambooTestReport(test_report.TestReport):
         try:
             return int(root.find(result_type).text)
         except (AttributeError, ValueError, TypeError) as reason:
-            logging.error("Couldn't parse %s from %s at %s: %s", result_type, self.metric_source_name, report_url,
-                          reason)
+            logging.warning("Couldn't parse %s from %s at %s: %s", result_type, self.metric_source_name, report_url,
+                            reason)
             return -1
 
     def __element_tree(self, report_url: str) -> Element:
@@ -79,5 +79,5 @@ class BambooTestReport(test_report.TestReport):
         try:
             return xml.etree.cElementTree.fromstring(contents)
         except xml.etree.cElementTree.ParseError as reason:
-            logging.error("Couldn't parse %s at %s: %s", self.metric_source_name, report_url, reason)
+            logging.warning("Couldn't parse %s at %s: %s", self.metric_source_name, report_url, reason)
             raise

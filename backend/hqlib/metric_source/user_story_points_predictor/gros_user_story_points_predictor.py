@@ -59,13 +59,13 @@ class GROSUserStoryPointsPredictor(UserStoryPointsPredictor):
             try:
                 json = eval_json(json_string)
             except (ValueError, TypeError, KeyError) as reason:
-                logging.error("Couldn't evaluate JSON retrieved from %s: %s", url, reason)
-                logging.error("JSON received: %s", json_string)
+                logging.warning("Couldn't evaluate JSON retrieved from %s: %s", url, reason)
+                logging.warning("JSON received: %s", json_string)
                 return -1
             try:
                 result += float(get_field_from_json(json))
             except (KeyError, ValueError) as reason:
-                logging.error("Couldn't get %s from JSON retrieved from %s: %s", field_name, url, reason)
-                logging.error("JSON received: %s", json)
+                logging.warning("Couldn't get %s from JSON retrieved from %s: %s", field_name, url, reason)
+                logging.warning("JSON received: %s", json)
                 return -1
         return result

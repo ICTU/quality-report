@@ -466,10 +466,10 @@ class UserStoriesDurationTest(unittest.TestCase):
         get_issue_details_mock.assert_has_calls([call(issue)])
         self.assertEqual(-1, result)
 
-    @patch.object(logging, 'error')
+    @patch.object(logging, 'warning')
     @patch.object(metric_source.Jira, 'get_issue_details')
     @patch.object(metric_source.Jira, 'get_query')
-    def testvalue_get_duration_of_stories_json_error(self, get_issues_mock, get_issue_details_mock, logging_error_mock):
+    def testvalue_get_duration_of_stories_json_error(self, get_issues_mock, get_issue_details_mock, logging_mock):
         """ Test that the number of days returned is -1 if an invalid json is returned as a result. """
         issue = "ISSUE-1"
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
@@ -482,7 +482,7 @@ class UserStoriesDurationTest(unittest.TestCase):
 
         result = duration_metric.value()
 
-        logging_error_mock.assert_called_with("Invalid json: %s", changelog_json)
+        logging_mock.assert_called_with("Received invalid json from %s: %s", "http://jira/", changelog_json)
         get_issues_mock.assert_called_once()
         get_issue_details_mock.assert_has_calls([call(issue)])
         self.assertEqual(-1, result)

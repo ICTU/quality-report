@@ -91,7 +91,7 @@ class WekanBoard(domain.MetricSource):
             urls.append((self.__card_url(card), card.id, time_delta))
         return urls
 
-    def __board_urls(self, *board_ids: str) -> Sequence[str]:
+    def __board_urls(self, *board_ids: str) -> List[str]:
         """ Return the urls of the boards. """
         urls = []
         for board in self.__boards(*board_ids):
@@ -109,14 +109,15 @@ class WekanBoard(domain.MetricSource):
         try:
             api = self.__wekan_api(self.__url, credentials=dict(username=self.__username, password=self.__password))
         except Exception as reason:
-            logging.error("Couldn't create API for Wekan at %s for user %s: %s", self.__url, self.__username, reason)
+            logging.warning("Couldn't create API for Wekan at %s for user %s: %s", self.__url, self.__username, reason)
             return []
         boards = []
         for board in api.get_user_boards():
             if board.id in board_ids:
                 boards.append(board)
         if not boards:
-            logging.error("Couldn't find boards with ids %s at %s for user %s", board_ids, self.__url, self.__username)
+            logging.warning("Couldn't find boards with ids %s at %s for user %s", board_ids, self.__url,
+                            self.__username)
         return boards
 
     @classmethod

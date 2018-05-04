@@ -83,7 +83,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
             table = soup('table', attrs={'class': ['config']})[0]
             date_string = table('tr')[3]('td')[1].string
         except IndexError:
-            logging.error("Can't get date from performance report")
+            logging.warning("Can't get date from performance report")
             return datetime.datetime.min
         year, month, day, hour, minute, second = [int(part) for part in date_string.split('.')][:6]
         return datetime.datetime(year, month, day, hour, minute, second)
@@ -97,7 +97,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
             for row_index in [3, 4]:
                 date_time_strings.append(table('tr')[row_index]('td')[1].string)
         except IndexError:
-            logging.error("Can't get start and end dates from performance report")
+            logging.warning("Can't get start and end dates from performance report")
             return datetime.timedelta.max
         date_times = []
         for date_time_string in date_time_strings:

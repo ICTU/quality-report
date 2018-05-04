@@ -60,19 +60,21 @@ class UrlOpenerTest(unittest.TestCase):
 
     def test_exception_while_opening(self):
         """ Test an exception during opening. """
-        logging.error = unittest.mock.MagicMock()
+        logging.warning = unittest.mock.MagicMock()
         opener = url_opener.UrlOpener()
         opener._UrlOpener__opener = unittest.mock.Mock(side_effect=urllib.error.HTTPError(None, None, None, None, None))
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
-        logging.error.assert_called_once()
+        logging.warning.assert_called_once()
 
     def test_exception_while_opening_without_logging(self):
         """ Test an exception during opening without logging. """
         logging.error = unittest.mock.MagicMock()
+        logging.warning = unittest.mock.MagicMock()
         opener = url_opener.UrlOpener()
         opener._UrlOpener__opener = unittest.mock.Mock(side_effect=urllib.error.HTTPError(None, None, None, None, None))
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla', log_error=False)
         logging.error.assert_not_called()
+        logging.warning.assert_not_called()
 
     @unittest.mock.patch('signal.signal', side_effect=lambda _, handler: handler())
     def test_timeout(self, mock_signal):  # pylint: disable=unused-argument

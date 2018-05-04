@@ -47,8 +47,8 @@ class LastSecurityTest(LowerIsBetterMetric):
             return -1
 
         if read_date > datetime.datetime.now() + datetime.timedelta(seconds=60):
-            logging.error("%s at %s returned a date and time in the future: %s",
-                          self.metric_source_class.metric_source_name, self._metric_source.url(), read_date)
+            logging.warning("%s at %s returned a date and time in the future: %s",
+                            self.metric_source_class.metric_source_name, self._metric_source.url(), read_date)
             return -1
 
         return max(0, (datetime.datetime.now() - read_date).days)

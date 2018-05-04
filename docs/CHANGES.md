@@ -1,3 +1,10 @@
+2018-05-04  Release 2.57.1
+
+  * Bug fix: More consistent use of logging levels: ERROR if the report can't be created,
+    WARNING if metric sources can't be reached or information can't be parsed, INFO for
+    progress.
+
+
 2018-05-03  Release 2.57.0
 
   * Remove feature #389: Remove support for Nexus as metric source because Nexus 3 doesn't provide

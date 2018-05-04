@@ -45,7 +45,7 @@ class JaCoCo(HTMLCoverageReport):
         try:
             coverage_text = soup('tfoot')[0]('td')[td_index].string
         except IndexError:
-            logging.error("Can't parse %s", soup)
+            logging.warning("Can't parse %s", soup)
             raise
         coverage_text = coverage_text.replace(',', '').replace('.', '')
         missed, total = (int(text) for text in coverage_text.split(' of '))
@@ -56,7 +56,7 @@ class JaCoCo(HTMLCoverageReport):
         try:
             session_rows = soup('tbody')[0]('tr')
         except IndexError:
-            logging.error("Can't find JaCoCo session table in %s", soup)
+            logging.warning("Can't find JaCoCo session table in %s", soup)
             return coverage_date
         for row in session_rows:
             date_time_string = row('td')[2].string

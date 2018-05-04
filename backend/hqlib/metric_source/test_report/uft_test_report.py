@@ -57,8 +57,8 @@ class UFTTestReport(test_report.TestReport):
         try:
             total = int(steps[0].find("Details").text)
         except (AttributeError, TypeError, ValueError) as reason:
-            logging.error("Can't parse 'Stappenreferentie' from %s at %s: %s",
-                          self.metric_source_name, metric_source_id, reason)
+            logging.warning("Can't parse 'Stappenreferentie' from %s at %s: %s",
+                            self.metric_source_name, metric_source_id, reason)
             return -1
         skipped = total - (passed_tests + failed_tests)
         if skipped < 0:
@@ -80,7 +80,7 @@ class UFTTestReport(test_report.TestReport):
         try:
             date_string, time_string = summary.get('eTime').split(' - ')
         except AttributeError as reason:
-            logging.error("UFT report summary at %s has no e(nd)Time attribute: %s", metric_source_id, reason)
+            logging.warning("UFT report summary at %s has no e(nd)Time attribute: %s", metric_source_id, reason)
             return datetime.datetime.min
         day, month, year = date_string.split('-')
         hour, minute, second = time_string.split(':')
@@ -107,5 +107,5 @@ class UFTTestReport(test_report.TestReport):
         try:
             return xml.etree.cElementTree.fromstring(contents)
         except xml.etree.cElementTree.ParseError as reason:
-            logging.error("Couldn't parse report at %s: %s", report_url, reason)
+            logging.warning("Couldn't parse report at %s: %s", report_url, reason)
             raise
