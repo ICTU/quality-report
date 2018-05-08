@@ -90,7 +90,17 @@ class Jenkins(ci_server.CIServer):
             age = self.__age_of_last_stable_build(job)
             return '?' if age == datetime.timedelta.max else str(age.days)
 
-        return [(job['name'], job['url'], days(job)) for job in jobs]
+        return [(self.__format_job_name(job), job['url'], days(job)) for job in jobs]
+
+    @classmethod
+    def __format_job_name(cls, job: Job):
+        """ Formats the job name for display. """
+        parts = job['url'].split('/')
+        length = len(parts)
+        if not parts[length - 1]:
+            length -= 1
+        return parts[length - 3] + '/' + parts[length - 1] \
+            if length > 2 and parts[length - 1] == job['name'] and parts[length - 2] == 'job' else job['name']
 
     def __failing_jobs(self) -> Jobs:
         """ Return the active Jenkins jobs that are failing. """

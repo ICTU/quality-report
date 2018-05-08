@@ -1,5 +1,10 @@
 2018-05-08  Release 2.58.0
 
+  * Bug #363: Pipeline name added to the job name in the list of the CI jobs.
+
+
+2018-05-08  Release 2.58.0
+
   * Feature #393: Option added to the report generator to generate just data files (json) and to omit frontend.
 
 
