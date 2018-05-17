@@ -15,25 +15,28 @@ limitations under the License.
 """
 
 import datetime
-import functools
-import io
-import json
-import logging
-from ast import literal_eval
-from typing import Callable, TextIO, List, Dict, Union, Tuple, cast
+from typing import Type, Callable, List, Dict, Union
 
+from hqlib.persistence import JsonPersister, FilePersister
 from .. import domain
-from ..typing import DateTime, HistoryRecord, Number
+from ..typing import DateTime, Number
 
 
 class CompactHistory(domain.MetricSource):
     """ Class for reading and writing history JSON files. """
     __long_history_count = 2000
+    __persister = FilePersister
 
     def __init__(self, history_filename: str, recent_history: int = 100) -> None:
         self.__history_filename = history_filename
         self.__recent_history = recent_history
+        self.__history = self.__persister.read_json(history_filename) or dict(dates=[], statuses=[], metrics={})
         super().__init__()
+
+    @classmethod
+    def set_persister(cls, new_persister: Type[JsonPersister]):
+        """ Method injects non-default persister class insetad of Filepersister. """
+        cls.__persister = new_persister
 
     def filename(self) -> str:
         """ Return the history filename """
@@ -49,9 +52,8 @@ class CompactHistory(domain.MetricSource):
 
     def __history_records(self, metric_id: str, number_of_records: int) -> List[Number]:
         """ Retrieve the given number of history records for the metric_id. """
-        history = self.__read_history()
-        measurements = history['metrics'].get(metric_id, [])
-        dates = history['dates'][-number_of_records:]
+        measurements = self.__history['metrics'].get(metric_id, [])
+        dates = self.__history['dates'][-number_of_records:]
         values = self.__get_prehistory(dates, measurements)
 
         for date in dates:
@@ -74,15 +76,13 @@ class CompactHistory(domain.MetricSource):
 
     def get_dates(self, long_history: bool = False) -> str:
         """ Retrieve the list of report dates concatenated in comma separated string. """
-        history = self.__read_history()
         number_of_records = self.__long_history_count if long_history else self.__recent_history
-        return ','.join(history['dates'][-number_of_records:])
+        return ','.join(self.__history['dates'][-number_of_records:])
 
     def status_start_date(self, metric_id: str, current_status: str,
                           now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:
         """ Return the start date of the current status of the metric. """
-        history = self.__read_history()
-        measurements = history['metrics'].get(metric_id, [])
+        measurements = self.__history['metrics'].get(metric_id, [])
         if measurements:
             last_status, date_string = measurements[-1]['status'], measurements[-1]['start']
             start_date = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
@@ -91,9 +91,8 @@ class CompactHistory(domain.MetricSource):
 
     def statuses(self) -> List[Dict[str, Union[str, int]]]:
         """ Return the statuses for each measurement. """
-        history = self.__read_history()
         status_records = []
-        for (date, statuses) in zip(history['dates'], history['statuses']):
+        for (date, statuses) in zip(self.__history['dates'], self.__history['statuses']):
             status_record = dict(date=date)
             status_record.update(statuses)
             status_records.append(status_record)
@@ -105,12 +104,11 @@ class CompactHistory(domain.MetricSource):
 
     def add_metrics(self, date_time, metrics):
         """ Add the metrics to the history file. """
-        history = self.__read_history()
         date = date_time.strftime('%Y-%m-%d %H:%M:%S')
-        history['dates'].append(date)
-        history['statuses'].append(dict())
+        self.__history['dates'].append(date)
+        self.__history['statuses'].append(dict())
         for metric in metrics:
-            measurements = history['metrics'].setdefault(metric.stable_id(), [])
+            measurements = self.__history['metrics'].setdefault(metric.stable_id(), [])
             value = metric.numerical_value()
             status = metric.status()
             if measurements and measurements[-1].get('value', -1) == value and measurements[-1].get('status') == status:
@@ -120,128 +118,9 @@ class CompactHistory(domain.MetricSource):
                 if value != -1:
                     new_measurement['value'] = value
                 measurements.append(new_measurement)
-            history['statuses'][-1][status] = history['statuses'][-1].get(status, 0) + 1
-        self.__write_history(history)
-
-    @functools.lru_cache(maxsize=1024)
-    def __read_history(self) -> Dict[str, Union[List, Dict]]:
-        """ Return the parsed history JSON. """
-        try:
-            return json.load(open(self.__history_filename))
-        except (IOError, FileNotFoundError):
-            return dict(dates=[], statuses=[], metrics={})
-
-    def __write_history(self, history):
-        """ Write the history to the JSON file. """
-        json.dump(history, open(self.__history_filename, mode='w', encoding='utf-8'),
-                  sort_keys=True, indent=2)
+                self.__history['statuses'][-1][status] = self.__history['statuses'][-1].get(status, 0) + 1
+        self.__persister.write_json(self.__history, self.__history_filename)
 
 
-class History(domain.MetricSource):
-    """ Class representing the history file. """
-    metric_source_name = 'Measurement history file'
-    __long_history_count = 2000
-
-    def __init__(self, history_filename: str, recent_history: int = 100, file_: Callable[[str], TextIO] = None) -> None:
-        self.__history_filename = history_filename
-        self.__recent_history = recent_history
-        self.__file = file_ if file_ else open
-        logging.warning('History class is deprecated! Please, use CompactHistory instead. See: %s',
-                        "https://github.com/ICTU/quality-report/wiki/History")
-        super().__init__()
-
-    def filename(self) -> str:
-        """ Return the history filename """
-        return self.__history_filename
-
-    def recent_history(self, metric_id: str) -> List:
-        """ Retrieve the recent history for the metric_ids. """
-        values = []
-        for measurement in self.__historic_values():
-            if metric_id in measurement:
-                values.append(measurement[metric_id])
-        return values
-
-    def long_history(self, metric_id) -> List[Number]:
-        """ Retrieve longer history for the metric_ids. """
-        return []  # Not supported for the old history format.
-
-    def get_dates(self, long_history: bool = False) -> str:
-        """ Retrieve the list of report dates concatenated in comma separated string. """
-        return ""  # Not supported for the old history format.
-
-    def status_start_date(self, metric_id: str, current_status: str,
-                          now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:
-        """ Return the start date of the current status of the metric. """
-        last_status, date = self.__last_status(metric_id)
-        return date if last_status == current_status else now()
-
-    def statuses(self) -> List[Dict[str, Union[str, int]]]:
-        """ Return the statuses for each measurement. """
-        measurements = self.__load_history(recent_only=False)
-        statuses = []
-        for measurement in measurements:
-            measurement_statuses: Dict[str, int] = dict()
-            for measurement_data in list(measurement.values()):
-                if isinstance(measurement_data, tuple):
-                    status = measurement_data[1]
-                    measurement_statuses[status] = measurement_statuses.get(status, 0) + 1
-            measurement_statuses_with_date: Dict[str, Union[str, int]] = dict()
-            measurement_statuses_with_date.update(measurement_statuses)
-            measurement_statuses_with_date['date'] = cast(str, measurement['date'])
-            statuses.append(measurement_statuses_with_date)
-        return statuses
-
-    def __last_status(self, metric_id: str) -> Tuple[str, DateTime]:
-        """ Return the last recorded status of the metric and the date that the metric first had that status. """
-        try:
-            last_measurement = self.__load_history()[-1][metric_id]
-        except (IndexError, KeyError):
-            last_measurement = None
-        if isinstance(last_measurement, tuple) and len(last_measurement) >= 3:
-            last_status = last_measurement[1]
-            time_stamp = last_measurement[2]
-            time_stamp_format = '%Y-%m-%d %H:%M:%S'
-            if '.' in time_stamp:
-                time_stamp_format += '.%f'
-            date = datetime.datetime.strptime(time_stamp, time_stamp_format)
-            return last_status, date
-        return '', datetime.datetime.min
-
-    @functools.lru_cache(maxsize=1024)
-    def __historic_values(self, recent_only: bool = True) -> List[Dict[str, int]]:
-        """ Return only the historic values from the history file, so without the status and status date. """
-        measurements = self.__load_history(recent_only)
-        value_only_measurements = []
-        for measurement in measurements:
-            values_only_measurement: Dict[str, int] = dict()
-            for metric_id, measurement_data in list(measurement.items()):
-                value = measurement_data[0] if isinstance(measurement_data, tuple) else measurement_data
-                values_only_measurement[metric_id] = cast(int, value)
-            value_only_measurements.append(values_only_measurement)
-        return value_only_measurements
-
-    def __load_history(self, recent_only: bool = True) -> List[HistoryRecord]:
-        """ Load measurements from the history file. """
-        lines = self.__load_complete_history()
-        return lines[-self.__recent_history:] if recent_only else lines
-
-    @functools.lru_cache(maxsize=1024)
-    def __load_complete_history(self) -> List[HistoryRecord]:
-        """ Load all measurements from the history file. """
-        try:
-            history_file = self.__file(self.__history_filename)
-        except IOError:
-            logging.warning('Could not open %s', self.__history_filename)
-            history_file = io.StringIO()  # Fake an empty file
-        lines = [literal_eval(line) for line in history_file if line.strip()]
-        history_file.close()
-        lines = [line for line in lines if len(line) > 6]  # Weed out lines with meta metrics only
-        logging.info('Read %d lines from %s', len(lines), self.__history_filename)
-        return lines
-
-    def add_report(self, quality_report):
-        """ Write the report to the history file. """
-        from .. import filesystem, formatting  # Prevent circular import
-        formatted_report = formatting.JSONFormatter().process(quality_report)
-        filesystem.write_file(formatted_report, self.__history_filename, 'a', 'ascii')
+class History(CompactHistory):
+    """ Class representing the obsolete history file. Substituted by CompactHistory."""

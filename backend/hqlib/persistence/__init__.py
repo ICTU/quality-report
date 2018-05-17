@@ -14,21 +14,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import datetime
-from distutils.version import LooseVersion
-from typing import Dict, Union, Tuple, Sequence, Optional
-
-from .domain.base import DomainObject
-
-
-# pylint: disable=invalid-name
-
-Number = Union[float, int]
-DateTime = datetime.datetime
-TimeDelta = datetime.timedelta
-
-MetricValue = Union[Number, str, LooseVersion]
-MetricParameters = Dict[str, MetricValue]
-DashboardColumns = Sequence[Tuple[str, int]]
-DashboardRows = Sequence[Sequence[Tuple[Union[DomainObject, str], str, Optional[Tuple[int, int]]]]]
-Dashboard = Tuple[DashboardColumns, DashboardRows]
+from .json_persister import JsonPersister, FilePersister
