@@ -66,7 +66,7 @@ test('metrics table rendered without comment header if the comment is empty', (t
 
 test('metrics table rendered correctly', (t) => {
     const wrapper = mount(<MetricsTable metrics={[{"id_value": "PD-01", "id_format": "PD-1", "section": "PD",
-        "status_start_date": [2018, 1, 1, 12, 0, 0], "sparkline": "<img src='img/PD-1.png' />;",
+        "status_start_date": [2018, 1, 1, 12, 0, 0], "sparkline": "<img src='chart/PD-1.png' />;",
         "status": "missing_source",
         "measurement": "Measurement result", "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]} />)
 
@@ -84,7 +84,7 @@ test('metrics table rendered correctly', (t) => {
     t.equal(wrapper.find('span.missing_source_metric').text().trim(), "PD-1");
 
     // metric data
-    t.equal(wrapper.find('img[src="img/PD-1.svg"]').exists(), true);
+    t.equal(wrapper.find('img[src="chart/PD-1.svg"]').exists(), true);
     t.equal(wrapper.find('img[alt="🛠"]').exists(), true);
     t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
         .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Measurement result").exists(), true);

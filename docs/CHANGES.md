@@ -1,4 +1,9 @@
-2018-05-08  Release 2.58.0
+2018-05-17  Release 2.58.2
+
+  * Tech. #399: Images of charts are moved to a separate folder.
+
+
+2018-05-08  Release 2.58.1
 
   * Bug #363: Pipeline name added to the job name in the list of the CI jobs.
 

@@ -52,11 +52,18 @@ class ReporterTest(unittest.TestCase):
 
         reporter = quality_report.Reporter('folder').create_report('report_dir', True)
 
-        mock_create_dir.assert_has_calls(
-            [call('report_dir'), call(os.path.join('report_dir', 'json')), call(os.path.join('report_dir', 'img'))])
-        mock_resource_listdir.assert_has_calls(
-            [call('hqlib.app', 'img'), call('hqlib.app', 'dist'), call('hqlib.app', 'html')])
-
+        self.assertTrue(all(b in mock_create_dir.call_args_list for b in [
+            call('report_dir'),
+            call(os.path.join('report_dir', 'json')),
+            call(os.path.join('report_dir', 'img')),
+            call(os.path.join('report_dir', 'dist')),
+            call(os.path.join('report_dir', 'chart'))
+        ]))
+        mock_resource_listdir.assert_has_calls([
+            call('hqlib.app', 'img'),
+            call('hqlib.app', 'dist'),
+            call('hqlib.app', 'html')
+        ])
         mock_write_file.assert_has_calls([
             call('formatted report', os.path.join('report_dir', 'json', 'metrics.json'), 'w', 'utf-8'),
             call('[]\n', os.path.join('report_dir', 'json', 'meta_history.json'), 'w', 'utf-8'),
@@ -86,7 +93,7 @@ class ReporterTest(unittest.TestCase):
         reporter = quality_report.Reporter('folder').create_report('report_dir', False)
 
         mock_create_dir.assert_has_calls(
-            [call('report_dir'), call(os.path.join('report_dir', 'json'))])
+            [call('report_dir'), call(os.path.join('report_dir', 'json')), call(os.path.join('report_dir', 'chart'))])
 
         self.assertTrue(os.path.join('report_dir', 'img') not in mock_create_dir.call_args_list)
 

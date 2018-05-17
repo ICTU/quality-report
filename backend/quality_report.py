@@ -84,11 +84,12 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Retrieve and write the trend images. """
         style = pygal.style.Style(background='transparent', plot_background='transparent')
         dates = ''
+        filesystem.create_dir(os.path.join(report_dir, 'chart'))
         for metric in quality_report.metrics():
             line_chart = pygal.Line(style=style, range=metric.y_axis_range())
             line_chart.add('', metric.recent_history(), stroke_style={'width': 2})
             image = line_chart.render_sparkline()
-            filename = os.path.join(report_dir, 'img', '{0!s}.svg'.format(metric.id_string()))
+            filename = os.path.join(report_dir, 'chart', '{0!s}.svg'.format(metric.id_string()))
             filesystem.write_file(image, filename, mode='wb', encoding=None)
             cls.__save_metric_long_history(metric, report_dir)
             if not dates:
