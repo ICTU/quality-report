@@ -1,3 +1,8 @@
+2018-05-22  Release 2.58.3
+
+  * Tech #400: Json persistence layer implemented; Old History class phased out.
+
+
 2018-05-17  Release 2.58.2
 
   * Tech. #399: Images of charts are moved to a separate folder.
