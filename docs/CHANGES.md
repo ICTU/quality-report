@@ -1,3 +1,8 @@
+2018-05-22  Release 2.58.4
+
+  * Bug #407: problem with history updates solved.
+
+
 2018-05-22  Release 2.58.3
 
   * Tech #400: Json persistence layer implemented; Old History class phased out.
