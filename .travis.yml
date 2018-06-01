@@ -53,7 +53,7 @@ deploy:
     tags: true
 after_deploy:
   - cd ..
-  - docker build --no-cache -t ictu/quality-report .
+  - docker build --no-cache -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push ictu/quality-report
 addons:

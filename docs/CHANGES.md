@@ -1,3 +1,8 @@
+2018-06-01  Release 2.59.0
+
+  * Feature: Add release tags to Docker images. Closes #367.
+  
+  
 2018-06-01  Release 2.58.6
 
   * Bug fix: The meta metrics were not written correctly to the history file.
