@@ -20,6 +20,8 @@ limitations under the License.
 import logging
 import os
 import sys
+from typing import cast
+
 import pygal
 
 import pkg_resources
@@ -37,6 +39,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Create, format, and write the quality report. """
         quality_report = report.QualityReport(self.__project)
         for history in self.__project.metric_sources(metric_source.History):
+            history = cast(metric_source.History, history)
             if history.filename():
                 history.add_report(quality_report)
         self.__create_report(quality_report, report_folder, create_frontend)

@@ -335,7 +335,7 @@ class CompactHistoryTest(unittest.TestCase):
             "dates": ["2013-02-28 17:01:45"],
             "metrics": {"ExampleMetric": [
                 {"value": 10, "start": "2013-02-28 17:01:45", "end": "2013-02-28 17:01:45", "status": "green"}]},
-            "statuses": []
+            "statuses": [{"green": 1}]
         }
         history = CompactHistory('history_file_name.json')
 
@@ -363,7 +363,7 @@ class CompactHistoryTest(unittest.TestCase):
             'dates': ['2013-02-28 17:01:45', '2015-01-01 00:00:00'],
             'metrics': {'ExampleMetric': [
                 {'value': 10, 'start': '2013-02-28 17:01:45', 'end': '2015-01-01 00:00:00', 'status': 'green'}]},
-            'statuses': [{}]}, 'history_file_name.json')
+            'statuses': [{"green": 1}, {"green": 1}]}, 'history_file_name.json')
 
 
 class HistoryTestCase(unittest.TestCase):

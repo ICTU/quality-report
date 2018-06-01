@@ -35,7 +35,7 @@ class CompactHistory(domain.MetricSource):
 
     @classmethod
     def set_persister(cls, new_persister: Type[JsonPersister]):
-        """ Method injects non-default persister class insetad of Filepersister. """
+        """ Method injects non-default persister class instead of FilePersister. """
         cls.__persister = new_persister
 
     def filename(self) -> str:
@@ -118,7 +118,7 @@ class CompactHistory(domain.MetricSource):
                 if value != -1:
                     new_measurement['value'] = value
                 measurements.append(new_measurement)
-                self.__history['statuses'][-1][status] = self.__history['statuses'][-1].get(status, 0) + 1
+            self.__history['statuses'][-1][status] = self.__history['statuses'][-1].get(status, 0) + 1
         self.__persister.write_json(self.__history, self.__history_filename)
 
 

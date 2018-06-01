@@ -1,3 +1,8 @@
+2018-06-01  Release 2.58.6
+
+  * Bug fix: The meta metrics were not written correctly to the history file.
+  
+  
 2018-06-01  Release 2.58.5
 
   * Bug #410: Don't turn off the "Longer than a week the same status" filter when unchecking "All statuses". 
