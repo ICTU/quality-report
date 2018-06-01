@@ -27,11 +27,11 @@ class App extends React.Component {
         this.storage = this.props.storage === undefined ? localStorage : this.props.storage;
         let state = {
             metrics_data: 'loading', tab: 'metrics_tab', show_one_table: false, show_dashboard: true,
-            metrics: [], filter: this.filter_all(true, [])
+            metrics: [], filter: this.filter_all(true, true, [])
         };
         const stored_filter = JSON.parse(this.storage.getItem('filter'));
         if (stored_filter !== null) {
-            let filter = Object.assign(this.filter_all(true, []), stored_filter['filter']);
+            let filter = Object.assign(this.filter_all(true, true, []), stored_filter['filter']);
             Object.assign(state, {filter: filter});
         }
         const stored_show_one_table = JSON.parse(this.storage.getItem('show_one_table'));
@@ -52,10 +52,12 @@ class App extends React.Component {
         this.onSearchReset = this.onSearchReset.bind(this);
     }
 
-    filter_all(state, hidden_metrics) {
+    filter_all(state, previous_filter_status_week, hidden_metrics) {
+        // Don't turn thus filter off when the user clicks "All statuses"; they don't expect it.
+        const filter_status_week = state ? state : previous_filter_status_week;
         return {
             filter_all: state,
-            filter_status_week: state,
+            filter_status_week: filter_status_week,
             filter_color_red: state,
             filter_color_yellow: state,
             filter_color_green: state,
@@ -119,7 +121,8 @@ class App extends React.Component {
             } else if (target === 'filter_all') {
                 // User clicked "all metrics": turn all filters on or off, depending on its previous state but
                 // keep the list of hidden metrics unchanged
-                filter = self.filter_all(!previous_state.filter.filter_all, previous_state.filter.hidden_metrics);
+                filter = self.filter_all(!previous_state.filter.filter_all, previous_state.filter.filter_status_week,
+                                         previous_state.filter.hidden_metrics);
             } else {
                 // User clicked a specific filter: toggle it
                 filter[target] = !filter[target];

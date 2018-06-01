@@ -1,3 +1,9 @@
+2018-06-01  Unreleased
+
+  * Bug #410: Don't turn off the "Longer than a week the same status" filter when unchecking "All statuses". 
+    It's confusing to users.
+    
+
 2018-05-22  Release 2.58.4
 
   * Bug #407: problem with history updates solved.
