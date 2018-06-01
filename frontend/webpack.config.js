@@ -15,6 +15,7 @@ module.exports = {
     path: path.resolve(__dirname, '../backend/hqlib/app/dist'),
     publicPath: 'dist/'
   },
+  mode: 'production',
   resolve: {
     modules: [
       path.resolve('./js'),
@@ -26,8 +27,7 @@ module.exports = {
       jQuery: 'jquery',
       $: 'jquery',
       jquery: 'jquery'
-    }),
-    new webpack.optimize.UglifyJsPlugin()
+    })
   ],
   module: {
     rules: [

@@ -18,7 +18,6 @@ import React from 'react';
 import {DashboardTable} from 'components/dashboard_table.js';
 import {MetricsSections} from 'components/metrics_sections.js';
 import {TrendGraphs} from 'components/trend_graphs.js';
-import {Loader} from 'widgets/loader.js';
 import {Help} from 'components/help.js';
 import {format_date_time} from 'utils.js';
 
@@ -72,7 +71,7 @@ class Footer extends React.Component {
 }
 
 class MainContainer extends React.Component {
-    render() {        
+    render() {
         var tabs = {
             metrics_tab: <Metrics metrics_data={this.props.metrics_data}
                                   metrics={this.props.metrics}
