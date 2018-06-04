@@ -1,3 +1,8 @@
+2018-06-04  Release 2.60.0
+
+  * Feature: Updated default test coverage norms. 
+  
+  
 2018-06-01  Release 2.59.0
 
   * Feature: Add release tags to Docker images. Closes #367.

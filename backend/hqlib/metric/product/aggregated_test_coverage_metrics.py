@@ -55,8 +55,8 @@ class AggregatedTestStatementCoverage(AggregatedTestCoverage):
     """ Metric for measuring the statement coverage of aggregated tests for a product. """
 
     name = 'Geaggregeerde test statement coverage'
-    target_value = 80
-    low_target_value = 70
+    target_value = 90
+    low_target_value = 80
     covered_item = 'statement'
     covered_items = 'statements'
 
@@ -68,8 +68,8 @@ class AggregatedTestBranchCoverage(AggregatedTestCoverage):
     """ Metric for measuring the branch coverage of aggregated tests for a product. """
 
     name = 'Geaggregeerde test branch coverage'
-    target_value = 75
-    low_target_value = 60
+    target_value = 85
+    low_target_value = 75
     covered_item = 'branch'
     covered_items = 'branches'
 

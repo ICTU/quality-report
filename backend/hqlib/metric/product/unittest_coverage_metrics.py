@@ -36,8 +36,8 @@ class UnittestLineCoverage(UnittestCoverage):
     norm_template = 'Minimaal {target}{unit} van de regels code wordt gedekt door unittests. ' \
         'Lager dan {low_target}{unit} is rood.'
     template = '{name} unittest line coverage is {value:.0f}{unit}.'
-    target_value = 98
-    low_target_value = 90
+    target_value = 90
+    low_target_value = 80
 
     def value(self):
         return round(self._metric_source.statement_coverage(self._metric_source_id)) if self._metric_source else -1
