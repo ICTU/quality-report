@@ -1,6 +1,7 @@
-2018-06-04  Release 2.60.0
+2018-06-05  Release 2.60.0
 
   * Feature: Updated default test coverage norms. 
+  * Bug #417: Fix typos in the GROS user story points prediction metric.
   
   
 2018-06-01  Release 2.59.0

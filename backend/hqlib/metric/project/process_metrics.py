@@ -154,10 +154,10 @@ class PredictedNumberOfFinishedUserStoryPoints(HigherIsBetterMetric):
     name = "Voorspelling van het percentage user story punten dat in de huidige sprint zal worden opgeleverd"
     unit = "%"
     norm_template = "Het voorspelde aantal user story punten voor de huidige sprint is tenminste {target}{unit} van " \
-                    "het aantal geplande user story punten. De metriek is rood als de voorspelling minder dan " \
-                    "{low_target}{unit} van het aantal geplande user strory punten is."
+                    "het geplande aantal user story punten. De metriek is rood als de voorspelling minder dan " \
+                    "{low_target}{unit} van het geplande aantal user story punten is."
     template = "Het voorspelde aantal user story punten ({predicted}) voor de huidige sprint is {value}{unit} van " \
-               "het geplande aantal user stories punten ({planned})."
+               "het geplande aantal user story punten ({planned})."
     metric_source_class = metric_source.UserStoryPointsPredictor
     target_value = 90
     low_target_value = 80

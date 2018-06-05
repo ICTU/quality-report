@@ -690,8 +690,8 @@ class PredictedNumberOfFinishedUserStoryPointsTest(unittest.TestCase):
         """ Test that the norm is correct. """
         prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=domain.Project())
         self.assertEqual("Het voorspelde aantal user story punten voor de huidige sprint is tenminste 90% van het "
-                         "aantal geplande user story punten. De metriek is rood als de voorspelling minder dan 80% "
-                         "van het aantal geplande user strory punten is.", prediction.norm())
+                         "geplande aantal user story punten. De metriek is rood als de voorspelling minder dan 80% "
+                         "van het geplande aantal user story punten is.", prediction.norm())
 
     def test_value(self):
         """ Test that the value is correct. """
@@ -732,7 +732,7 @@ class PredictedNumberOfFinishedUserStoryPointsTest(unittest.TestCase):
                                  metric_source_ids={predictor: "project"})
         prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
         self.assertEqual("Het voorspelde aantal user story punten (20) voor de huidige sprint is 100% van het "
-                         "geplande aantal user stories punten (20).", prediction.report())
+                         "geplande aantal user story punten (20).", prediction.report())
 
     def test_report_decimals(self):
         """ Test that the report rounds the percentage. """
@@ -743,7 +743,7 @@ class PredictedNumberOfFinishedUserStoryPointsTest(unittest.TestCase):
                                  metric_source_ids={predictor: "project"})
         prediction = metric.PredictedNumberOfFinishedUserStoryPoints(project=project, subject=project)
         self.assertEqual("Het voorspelde aantal user story punten (20) voor de huidige sprint is 95% van het "
-                         "geplande aantal user stories punten (21).", prediction.report())
+                         "geplande aantal user story punten (21).", prediction.report())
 
     def test_report_without_metric_source(self):
         """ Test that the report is correct when there is no metric source. """
