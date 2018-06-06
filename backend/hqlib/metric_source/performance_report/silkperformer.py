@@ -81,7 +81,13 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
         """ Return the date when performance was last measured. """
         try:
             table = soup('table', attrs={'class': ['config']})[0]
-            date_string = table('tr')[4]('td')[1].string
+            for row in table("tr"):
+                if row("td")[0].string == "Report generated":
+                    date_string = row("td")[1].string
+                    break
+            else:
+                logging.warning("Can't get date from performance report")
+                return datetime.datetime.min
         except IndexError:
             logging.warning("Can't get date from performance report")
             return datetime.datetime.min
@@ -93,9 +99,10 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
         """ Return the duration of the performance test. """
         date_time_strings = []
         try:
-            table = soup('table', attrs={'class': ['config']})[0]
-            for row_index in [4, 5]:
-                date_time_strings.append(table('tr')[row_index]('td')[1].string)
+            table = soup("table", attrs={"class": ["config"]})[0]
+            for row in table("tr"):
+                if row("td")[0].string in ["Report generated", "Start of the test"]:
+                    date_time_strings.append(row("td")[1].string)
         except IndexError:
             logging.warning("Can't get start and end dates from performance report")
             return datetime.timedelta.max

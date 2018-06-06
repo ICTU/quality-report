@@ -1,3 +1,8 @@
+2018-06-06  Release 2.60.2
+
+  * Bug fix: Don't crash on the old performance report format.
+  
+  
 2018-06-06  Release 2.60.1
 
   * Bug fix: Don't crash on changed performance report format.
