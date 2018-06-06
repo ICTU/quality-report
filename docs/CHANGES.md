@@ -1,3 +1,8 @@
+2018-06-06  Release 2.60.3
+
+  * Bug fix: Make sure the Docker container uses the right version of the HQ python package.
+  
+  
 2018-06-06  Release 2.60.2
 
   * Bug fix: Don't crash on the old performance report format.

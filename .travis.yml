@@ -53,7 +53,7 @@ deploy:
     tags: true
 after_deploy:
   - cd ..
-  - docker build --no-cache -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
+  - docker build --no-cache --build-arg hq_version=$HQ_VERSION -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push ictu/quality-report
 addons:
@@ -61,5 +61,6 @@ addons:
     organization: ictu
 env:
   global:
+  - HQ_VERSION=`echo $TRAVIS_TAG | python -c "import sys; sys.stdout.write(sys.stdin.read()[1:])"`
   - CC_TEST_REPORTER_ID=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
   - secure: mOpbXELefnD2snAx7ie+wQwcF52/ee1n1ILeqjnSunDGHCZzitpYwVR1+hhqXyK0bNy+HdALCXf2rlqzJUvOsQmAYefj19w4K5SzejVd27MVeJ15EFX9NAruRo0Z3qg1jr5s0argFra5JrdXbfGGLWqY7Ejj5ZzG40VlRjKMx88=
