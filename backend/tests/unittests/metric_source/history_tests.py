@@ -369,5 +369,5 @@ class CompactHistoryTest(unittest.TestCase):
 class HistoryTestCase(unittest.TestCase):
     """ Base class for History file test cases. """
     def test_if_history_is_compact_history(self):
-        """" Test if instantiating of History class creates a CompactHistory object. """
+        """ Test if instantiating of History class creates a CompactHistory object. """
         self.assertTrue(isinstance(History('unimportant'), CompactHistory))

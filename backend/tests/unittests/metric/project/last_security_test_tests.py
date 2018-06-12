@@ -22,10 +22,10 @@ from hqlib import domain, metric, metric_source
 
 
 class ProjectAndFileWithDatePrerequisitesTestCase(unittest.TestCase):
-    """" Prerequisites tests for LastSecurityTestCase"""
+    """ Prerequisites tests for LastSecurityTestCase"""
 
     def test_project_and_file_with_date(self):
-        """" Checks if the real objects fulfill requirements expected by LastSecurityTestCase """
+        """ Checks if the real objects fulfill requirements expected by LastSecurityTestCase """
 
         project = domain.Project(metric_sources={metric_source.FileWithDate: metric_source.FileWithDate()})
 

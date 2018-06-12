@@ -312,12 +312,12 @@ class SonarUrlsTest(SonarTestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarBranchParameterTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality. """
 
     # pylint: disable=no-self-use
 
     def test_branch_param(self, url_read_mock):
-        """" Test that the correct branch name is returned, when server version is >= 6.7 """
+        """ Test that the correct branch name is returned, when server version is >= 6.7. """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -339,7 +339,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
 
     def test_branch_param_no_component_json_valid(self, url_read_mock):
-        """" Test that the correct branch name is returned, when server version is >= 6.7 """
+        """ Test that the correct branch name is returned, when server version is >= 6.7 """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -361,7 +361,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
 
     def test_branch_param_no_branch(self, url_read_mock):
-        """" Test that no branch name is returned, when the product has no : character """
+        """ Test that no branch name is returned, when the product has no : character """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu_quality_report_my-branch"
@@ -380,7 +380,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, product, None)
 
     def test_branch_param_when_component(self, url_read_mock):
-        """" Test that the branch name is empty, when component exists """
+        """ Test that the branch name is empty, when component exists """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -402,7 +402,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, product, None)
 
     def test_branch_param_old(self, url_read_mock):
-        """" Test that the empty branch name is returned, when server version is < 6.7 """
+        """ Test that the empty branch name is returned, when server version is < 6.7 """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -418,7 +418,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, product, None)
 
     def test_branch_param_plugin_answer_no_json(self, url_read_mock):
-        """" Test that the empty branch name is returned, when no Branch plugin is installed """
+        """ Test that the empty branch name is returned, when no branch plugin is installed """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -437,7 +437,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, product, None)
 
     def test_branch_param_no_plugin(self, url_read_mock):
-        """" Test that the branch name is empty, when branch plugin is not installed. """
+        """ Test that the branch name is empty, when branch plugin is not installed. """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -456,7 +456,7 @@ class SonarBranchParameterTest(unittest.TestCase):
         func.assert_called_with(sonar, product, None)
 
     def test_branch_param_url_fault(self, url_read_mock):
-        """" Test that the branch name is empty, when getting plugin information throws """
+        """ Test that the branch name is empty, when getting plugin information throws """
 
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
@@ -477,7 +477,7 @@ class SonarBranchParameterTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarBranchVersionNumberTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_version_number(self, url_read_mock):
         """ Test that the server version number is acquired when Sonar object is created. """
@@ -508,10 +508,10 @@ class SonarBranchVersionNumberTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarVersionWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_version_with_branch(self, url_read_mock):
-        """" Check that version function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that version function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
@@ -525,12 +525,13 @@ class SonarVersionWithBranchTest(unittest.TestCase):
         result = sonar.version(product + ':' + branch)
 
         url_read_mock.assert_called_with(
-            fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION&branch={branch}'
+            fake_url + 'api/project_analyses/search?project={project}&format=json&ps=1&category=VERSION&branch={branch}'
             .format(project=product, branch=branch), log_error=False)
         self.assertEqual("version_name", result)
 
     def test_version_without_given_branch(self, url_read_mock):
-        """" Check that version function correctly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that version function correctly splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = ""
@@ -544,12 +545,13 @@ class SonarVersionWithBranchTest(unittest.TestCase):
         result = sonar.version(product + ':' + branch)
 
         url_read_mock.assert_called_with(
-            fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION'
+            fake_url + 'api/project_analyses/search?project={project}&format=json&ps=1&category=VERSION'
             .format(project=product), log_error=False)
         self.assertEqual("version_name", result)
 
     def test_version_wit_branch_when_url_opener_throws(self, url_read_mock):
-        """" Check that version function correctly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that version function correctly splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my_branch"
@@ -562,7 +564,7 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
         result = sonar.version(product + ':' + branch)
 
-        calls = [call(fake_url + 'api/project_analyses/search?project={project}&format=json&category=VERSION&'
+        calls = [call(fake_url + 'api/project_analyses/search?project={project}&format=json&ps=1&category=VERSION&'
                                  'branch={branch}'.format(project=product, branch=branch), log_error=False),
                  call(fake_url + 'api/resources?resource={project}&format=json&'
                                  'branch={branch}'.format(project=product, branch=branch))]
@@ -572,19 +574,20 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarNclocBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_ncloc_with_branch(self, url_read_mock):
-        """" Check that ncloc function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that ncloc function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","ncloc":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        ncloc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"ncloc","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, ncloc, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.ncloc(product + ':' + branch)
@@ -595,15 +598,17 @@ class SonarNclocBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_ncloc_without_branch(self, url_read_mock):
-        """" Check that ncloc function orrectly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that ncloc function correctly splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","ncloc":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        ncloc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"ncloc","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, ncloc, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.ncloc(product + ':')
@@ -614,13 +619,13 @@ class SonarNclocBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_ncloc_with_branch_old(self, url_read_mock):
-        """" Check that ncloc function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that ncloc function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        ncloc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"ncloc","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, ncloc, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.ncloc(product)
@@ -633,19 +638,20 @@ class SonarNclocBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarLinesWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_lines_with_branch(self, url_read_mock):
-        """" Check that lines function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that lines function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","lines":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"lines","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, lines, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.lines(product + ':' + branch)
@@ -656,15 +662,17 @@ class SonarLinesWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_lines_without_branch(self, url_read_mock):
-        """" Check that lines function orrectly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that lines function correctly splits an empty branch and does not add it as a parameter to the
+             url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","lines":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"lines","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, lines, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.lines(product + ':')
@@ -675,13 +683,13 @@ class SonarLinesWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_lines_with_branch_old(self, url_read_mock):
-        """" Check that lines function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that lines function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"lines","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, lines, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.lines(product)
@@ -694,19 +702,20 @@ class SonarLinesWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarViolationsWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_major_violations_with_branch(self, url_read_mock):
-        """" Check that major_violations function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that major_violations function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","major_violations":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        major_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"major_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, major_violations, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.major_violations(product + ':' + branch)
@@ -717,15 +726,17 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_major_violations_without_branch(self, url_read_mock):
-        """" Check that major_violations function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that major_violations function splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","major_violations":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        major_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"major_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, major_violations, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.major_violations(product + ':')
@@ -736,13 +747,13 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_major_violations_with_branch_old(self, url_read_mock):
-        """" Check that major_violations correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that major_violations correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        major_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"major_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, major_violations, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.major_violations(product)
@@ -753,17 +764,17 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_critical_violations_with_branch(self, url_read_mock):
-        """" Check that critical_violations correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that critical_violations correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","critical_violations":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        critical_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"critical_violations","value":"1192"}]}}'
         url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     critical_violations, measures_json]
+                                     components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.critical_violations(product + ':' + branch)
@@ -774,16 +785,16 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_critical_violations_without_branch(self, url_read_mock):
-        """" Check that critical_violations correctly splits an empty branch and does not add it to the url. """
+        """ Check that critical_violations correctly splits an empty branch and does not add it to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","critical_violations":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        critical_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"critical_violations","value":"1192"}]}}'
         url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     critical_violations, measures_json]
+                                     components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.critical_violations(product + ':')
@@ -794,13 +805,13 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_critical_violations_with_branch_old(self, url_read_mock):
-        """" Check that critical_violations correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that critical_violations correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        critical_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"critical_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, critical_violations, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.critical_violations(product)
@@ -811,16 +822,17 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_blocker_violations_with_branch(self, url_read_mock):
-        """" Check that blocker_violations correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that blocker_violations correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","blocker_violations":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        blocker_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"blocker_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, blocker_violations, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.blocker_violations(product + ':' + branch)
@@ -831,15 +843,16 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_blocker_violations_without_branch(self, url_read_mock):
-        """" Check that blocker_violations correctly splits an empty branch and does not add it to the url. """
+        """ Check that blocker_violations correctly splits an empty branch and does not add it to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","blocker_violations":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        blocker_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"blocker_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, blocker_violations, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.blocker_violations(product + ':')
@@ -850,13 +863,13 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_blocker_violations_with_branch_old(self, url_read_mock):
-        """" Check that blocker_violations correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that blocker_violations correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        blocker_violations = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"blocker_violations","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, blocker_violations, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.blocker_violations(product)
@@ -869,19 +882,20 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_duplicated_lines_with_branch(self, url_read_mock):
-        """" Check that duplicated_lines function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that duplicated_lines function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","duplicated_lines":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        duplicated_lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"duplicated_lines","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, duplicated_lines, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.duplicated_lines(product + ':' + branch)
@@ -892,15 +906,17 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_duplicated_lines_without_branch(self, url_read_mock):
-        """" Check that duplicated_lines correctly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that duplicated_lines correctly splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","duplicated_lines":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        duplicated_lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"duplicated_lines","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, duplicated_lines, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.duplicated_lines(product + ':')
@@ -911,13 +927,13 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_duplicated_lines_with_branch_old(self, url_read_mock):
-        """" Check that duplicated_lines correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that duplicated_lines correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        duplicated_lines = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"duplicated_lines","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, duplicated_lines, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.duplicated_lines(product)
@@ -930,19 +946,20 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarCoverageWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_line_coverage_with_branch(self, url_read_mock):
-        """" Check that line_coverage function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that line_coverage function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","line_coverage":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, line_coverage, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittest_line_coverage(product + ':' + branch)
@@ -953,15 +970,16 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_line_coverage_without_branch(self, url_read_mock):
-        """" Check that line_coverage function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that line_coverage function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","line_coverage":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, line_coverage, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittest_line_coverage(product + ':')
@@ -972,13 +990,13 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_line_coverage_with_branch_old(self, url_read_mock):
-        """" Check that line_coverage function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that line_coverage function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        line_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"line_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, line_coverage, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittest_line_coverage(product)
@@ -989,16 +1007,17 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_branch_coverage_with_branch(self, url_read_mock):
-        """" Check that branch_coverage function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that branch_coverage function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","branch_coverage":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, branch_coverage, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittest_branch_coverage(product + ':' + branch)
@@ -1009,15 +1028,17 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_branch_coverage_without_branch(self, url_read_mock):
-        """" Check that branch_coverage correctly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that branch_coverage correctly splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","branch_coverage":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, branch_coverage, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittest_branch_coverage(product + ':')
@@ -1028,13 +1049,13 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_branch_coverage_with_branch_old(self, url_read_mock):
-        """" Check that branch_coverage correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that branch_coverage correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        branch_coverage = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"branch_coverage","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, branch_coverage, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittest_branch_coverage(product)
@@ -1047,19 +1068,20 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarTestsWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_tests_with_branch(self, url_read_mock):
-        """" Check that tests function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that tests function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","tests":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        tests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"tests","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, tests, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittests(product + ':' + branch)
@@ -1070,15 +1092,16 @@ class SonarTestsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_tests_without_branch(self, url_read_mock):
-        """" Check that tests function orrectly splits an empty branch and does not it as a parameter to the url. """
+        """ Check that tests function orrectly splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","tests":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        tests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"tests","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, tests, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittests(product + ':')
@@ -1089,13 +1112,13 @@ class SonarTestsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_tests_with_branch_old(self, url_read_mock):
-        """" Check that tests function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that tests function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        tests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"tests","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, tests, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.unittests(product)
@@ -1108,19 +1131,20 @@ class SonarTestsWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarFunctionsWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_functions_with_branch(self, url_read_mock):
-        """" Check that functions function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that functions function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        metric_json = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"functions","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, metric_json, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.methods(product + ':' + branch)
@@ -1131,15 +1155,16 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_functions_without_branch(self, url_read_mock):
-        """" Check that functions function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that functions function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","functions":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        metric_json = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"functions","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, metric_json, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.methods(product + ':')
@@ -1150,13 +1175,13 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
         self.assertEqual(1192, result)
 
     def test_functions_with_branch_old(self, url_read_mock):
-        """" Check that functions function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that functions function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        metric_json = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"functions","value":"1192"}]}}'
-        url_read_mock.side_effect = [server_version, metric_json, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.methods(product)
@@ -1169,10 +1194,10 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarDashboardWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_dashboard_url(self, url_read_mock):
-        """" Check that dashboard_url correctly splits the branch from product and completely ignores it. """
+        """ Check that dashboard_url correctly splits the branch from product and completely ignores it. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
@@ -1188,7 +1213,7 @@ class SonarDashboardWithBranchTest(unittest.TestCase):
                          result)
 
     def test_dashboard_url_old(self, url_read_mock):
-        """" Check that dashboard_url does not split the branch from product for sonar versions prior to 6.7. """
+        """ Check that dashboard_url does not split the branch from product for sonar versions prior to 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
         server_version = '6.5.1234'
@@ -1204,20 +1229,21 @@ class SonarDashboardWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarMethodsWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_complex_methods_with_branch(self, url_read_mock):
-        """" Check that complex_methods function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that complex_methods function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","complex_methods":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        complex_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, complex_methods, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.complex_methods(product + ':' + branch)
@@ -1228,16 +1254,17 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_complex_methods_without_branch(self, url_read_mock):
-        """" Check that complex_methods splits an empty branch and does not it as a parameter to the url. """
+        """ Check that complex_methods splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","complex_methods":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        complex_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, complex_methods, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.complex_methods(product + ':')
@@ -1248,14 +1275,14 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_complex_methods_with_branch_old(self, url_read_mock):
-        """" Check that complex_methods correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that complex_methods correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        complex_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck'
-        url_read_mock.side_effect = [server_version, complex_methods, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.complex_methods(product)
@@ -1266,17 +1293,18 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_long_methods_with_branch(self, url_read_mock):
-        """" Check that long_methods function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that long_methods function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","long_methods":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        long_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'squid:S138'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, long_methods, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.long_methods(product + ':' + branch)
@@ -1287,16 +1315,17 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_long_methods_without_branch(self, url_read_mock):
-        """" Check that long_methods function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that long_methods function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","long_methods":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        long_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'squid:S138'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, long_methods, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.long_methods(product + ':')
@@ -1307,14 +1336,14 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_long_methods_with_branch_old(self, url_read_mock):
-        """" Check that long_methods function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that long_methods function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        long_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'squid:S138'
-        url_read_mock.side_effect = [server_version, long_methods, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.long_methods(product)
@@ -1325,18 +1354,18 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_many_parameters_methods_with_branch(self, url_read_mock):
-        """" Check that many_parameters_methods correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that many_parameters_methods correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","many_parameters_methods":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        many_parameters_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck'
         url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     many_parameters_methods, measures_json]
+                                     components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.many_parameters_methods(product + ':' + branch)
@@ -1347,17 +1376,18 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_many_parameters_methods_without_branch(self, url_read_mock):
-        """" Check that many_parameters_methods splits an empty branch and does not it as a parameter to the url. """
+        """ Check that many_parameters_methods splits an empty branch and does not add it as a parameter to the
+             url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","many_parameters_methods":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        many_parameters_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck'
         url_read_mock.side_effect = [server_version, plugins_json, component_ret_val,
-                                     many_parameters_methods, measures_json]
+                                     components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.many_parameters_methods(product + ':')
@@ -1368,14 +1398,14 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_many_parameters_methods_with_branch_old(self, url_read_mock):
-        """" Check that many_parameters_methods correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that many_parameters_methods correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        many_parameters_methods = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck'
-        url_read_mock.side_effect = [server_version, many_parameters_methods, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.many_parameters_methods(product)
@@ -1388,20 +1418,21 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarCommentedLocWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_commented_loc_with_branch(self, url_read_mock):
-        """" Check that commented_loc function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that commented_loc function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","commented_loc":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        commented_loc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'csharpsquid:S125'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, commented_loc, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.commented_loc(product + ':' + branch)
@@ -1412,16 +1443,17 @@ class SonarCommentedLocWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_commented_loc_without_branch(self, url_read_mock):
-        """" Check that commented_loc function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that commented_loc function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","commented_loc":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        commented_loc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'csharpsquid:S125'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, commented_loc, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.commented_loc(product + ':')
@@ -1432,14 +1464,14 @@ class SonarCommentedLocWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_commented_loc_with_branch_old(self, url_read_mock):
-        """" Check that commented_loc function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that commented_loc function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        commented_loc = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'csharpsquid:S125'
-        url_read_mock.side_effect = [server_version, commented_loc, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.commented_loc(product)
@@ -1452,20 +1484,21 @@ class SonarCommentedLocWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarNoSonarWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_no_sonar_with_branch(self, url_read_mock):
-        """" Check that no_sonar function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that no_sonar function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","no_sonar":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        no_sonar = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'squid:NoSonar'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, no_sonar, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.no_sonar(product + ':' + branch)
@@ -1476,16 +1509,17 @@ class SonarNoSonarWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_no_sonar_without_branch(self, url_read_mock):
-        """" Check that no_sonar function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that no_sonar function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","no_sonar":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        no_sonar = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'squid:NoSonar'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, no_sonar, measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
+                                     measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.no_sonar(product + ':')
@@ -1496,14 +1530,14 @@ class SonarNoSonarWithBranchTest(unittest.TestCase):
         self.assertEqual(7, result)
 
     def test_no_sonar_with_branch_old(self, url_read_mock):
-        """" Check that no_sonar function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that no_sonar function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        no_sonar = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
         rule_name = 'squid:NoSonar'
-        url_read_mock.side_effect = [server_version, no_sonar, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
         sonar = Sonar(fake_url)
 
         result = sonar.no_sonar(product)
@@ -1516,10 +1550,10 @@ class SonarNoSonarWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarFalsePositivesWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_false_positives_url(self, url_read_mock):
-        """" Check that false_positives_url correctly splits the branch from product and completely ignores it. """
+        """ Check that false_positives_url correctly splits the branch from product and completely ignores it. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
@@ -1536,7 +1570,7 @@ class SonarFalsePositivesWithBranchTest(unittest.TestCase):
                          result)
 
     def test_false_positives_url_old(self, url_read_mock):
-        """" Check that false_positives_url does not split the branch from product for sonar versions prior to 6.7. """
+        """ Check that false_positives_url does not split the branch from product for sonar versions prior to 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
         server_version = '6.5.1234'
@@ -1553,21 +1587,21 @@ class SonarFalsePositivesWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarUnitTestsWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_failing_unittests_with_branch(self, url_read_mock):
-        """" Check that failing_unittests correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that failing_unittests correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        failing_unittests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
         measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
         url_read_mock.side_effect = \
-            [server_version, plugins_json, component_ret_val, failing_unittests, measures_json, measures_err_json]
+            [server_version, plugins_json, component_ret_val, components_search_json, measures_json, measures_err_json]
         sonar = Sonar(fake_url)
 
         result = sonar.failing_unittests(product + ':' + branch)
@@ -1582,17 +1616,18 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
         self.assertEqual(11, result)
 
     def test_failing_unittests_without_branch(self, url_read_mock):
-        """" Check that failing_unittests function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that failing_unittests function splits an empty branch and does not add it as a parameter to the
+            url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
-        failing_unittests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
         measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
         url_read_mock.side_effect = \
-            [server_version, plugins_json, component_ret_val, failing_unittests, measures_json, measures_err_json]
+            [server_version, plugins_json, component_ret_val, components_search_json, measures_json, measures_err_json]
         sonar = Sonar(fake_url)
 
         result = sonar.failing_unittests(product + ':')
@@ -1607,14 +1642,14 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
         self.assertEqual(11, result)
 
     def test_failing_unittests_with_branch_old(self, url_read_mock):
-        """" Check that failing_unittests function handles product with branch, for sonar version before 6.7. """
+        """ Check that failing_unittests function handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
-        failing_unittests = '[{"id":6151,"k":"' + product + '","nm":"Name-name","sc":"PRJ","qu":"BRC"}]'
+        components_search_json = '{"paging": {"total": "1"}}'
         measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
         measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
-        url_read_mock.side_effect = [server_version, failing_unittests, measures_json, measures_err_json]
+        url_read_mock.side_effect = [server_version, components_search_json, measures_json, measures_err_json]
         sonar = Sonar(fake_url)
 
         result = sonar.failing_unittests(product)
@@ -1631,10 +1666,10 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class SonarDatetimeWithBranchTest(unittest.TestCase):
-    """" Unit tests for branch functionality """
+    """ Unit tests for branch functionality """
 
     def test_datetime_with_branch(self, url_read_mock):
-        """" Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
@@ -1653,7 +1688,7 @@ class SonarDatetimeWithBranchTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2017, 11, 23, 10, 55, 33), result)
 
     def test_datetime_without_branch(self, url_read_mock):
-        """" Check that datetime function splits an empty branch and does not it as a parameter to the url. """
+        """ Check that datetime function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
@@ -1671,7 +1706,7 @@ class SonarDatetimeWithBranchTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2017, 11, 23, 10, 55, 33), result)
 
     def test_datetime_with_branch_old(self, url_read_mock):
-        """" Check that datetime function correctly handles product with branch, for sonar version before 6.7. """
+        """ Check that datetime function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
@@ -1687,7 +1722,7 @@ class SonarDatetimeWithBranchTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2017, 11, 23, 10, 55, 33), result)
 
     def test_datetime_with_branch_with_resource_url(self, url_read_mock):
-        """" Check that datetime does not split the branch and calls resource url, with sonar >= 6.4 and < 6.7. """
+        """ Check that datetime does not split the branch and calls resource url, with sonar >= 6.4 and < 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
         server_version = '6.3.1234'
@@ -1703,7 +1738,7 @@ class SonarDatetimeWithBranchTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2017, 11, 29, 15, 10, 31), result)
 
     def test_datetime_with_branch_with_resource_url_throwing(self, url_read_mock):
-        """" Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
+        """ Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:my-branch"
         server_version = '6.3.1234'
@@ -1717,3 +1752,41 @@ class SonarDatetimeWithBranchTest(unittest.TestCase):
         url_read_mock.assert_called_with(
             fake_url + 'api/resources?resource={resource}&format=json'.format(resource=product))
         self.assertEqual(datetime.datetime.min, result)
+
+
+@patch.object(url_opener.UrlOpener, 'url_read')
+class SonarHasProjectTest(unittest.TestCase):
+    """ Unit tests for the __has_project method. """
+
+    def test_components_search_api(self, url_read_mock):
+        """ Test that the project can be found. """
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        components_search_json = '{"paging": {"total": "1"}}'
+        measures_json = '{"component":{"measures":[{"metric":"test_failures","value":"7"}]}}'
+        measures_err_json = '{"component":{"measures":[{"metric":"test_errors","value":"4"}]}}'
+        url_read_mock.side_effect = \
+            [server_version, plugins_json, component_ret_val, components_search_json, measures_json, measures_err_json]
+
+        self.assertEqual(11, Sonar("http://fake.url/").failing_unittests("nl.ictu:quality_report"))
+
+    def test_no_components_found(self, url_read_mock):
+        """ Test that if no components can be found, the metric is -1. """
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        components_search_json = '{"paging": {"total": "0"}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json]
+
+        self.assertEqual(-1, Sonar("http://fake.url/").failing_unittests("nl.ictu:quality_report"))
+
+    def test_search_components_error(self, url_read_mock):
+        """ Test that if no components can be found, the metric is -1. """
+        server_version = '6.8.1234'
+        plugins_json = '[{"key":"branch","name":"Branch","failing_unittests":"1.0.0.507"}]'
+        component_ret_val = '{"whatever": "not a component"}'
+        components_search_json = '{"paging": {}}'
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json]
+
+        self.assertEqual(-1, Sonar("http://fake.url/").failing_unittests("nl.ictu:quality_report"))

@@ -19,7 +19,7 @@ from hqlib.metric_source.url_opener import UrlOpener
 
 
 class UrlOpenerMock(UrlOpener):
-    """" The class is used to mock UrlOpener class, to avoid real http calls to the urls given in example
+    """ The class is used to mock UrlOpener class, to avoid real http calls to the urls given in example
     project definition file and to provide example report with example metric sources data.
     Usage:
             import hqlib.metric_source.url_opener

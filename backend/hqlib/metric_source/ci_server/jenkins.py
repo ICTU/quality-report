@@ -177,7 +177,7 @@ class Jenkins(ci_server.CIServer):
             return datetime.datetime.min
 
     def __builds(self, job: Job, *results: str) -> List[Dict]:
-        """" Return the builds of the job with the given status, if any. """
+        """ Return the builds of the job with the given status, if any. """
         builds = self._api(job["url"] + self.builds_api_postfix).get("builds", [])
         builds = [build for build in builds if not build.get("building")]
         return [build for build in builds if build.get("result") in results] if results else builds

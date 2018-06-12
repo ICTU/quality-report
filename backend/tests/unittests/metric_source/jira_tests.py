@@ -25,7 +25,7 @@ class JiraConstructorTests(unittest.TestCase):
     """ Unit tests of the constructor of the Jira class. """
 
     def test_url_opener_constructor(self, init_mock):
-        """" Test that by Jira initialisation, UrlOpener is initialised with user name and password as parameters. """
+        """ Test that by Jira initialisation, UrlOpener is initialised with user name and password as parameters. """
         init_mock.return_value = None
 
         Jira('http://jira/', 'jira_username', 'jira_password')
@@ -33,7 +33,7 @@ class JiraConstructorTests(unittest.TestCase):
         init_mock.assert_called_with(username='jira_username', password='jira_password')
 
     def test_url_is_padded(self, init_mock):
-        """" Tests that jira url is padded if needed."""
+        """ Tests that jira url is padded if needed."""
         init_mock.return_value = None
 
         jira = Jira('X', '', '')
@@ -41,7 +41,7 @@ class JiraConstructorTests(unittest.TestCase):
         self.assertEqual('X/', jira._Jira__url)
 
     def test_url_padding(self, init_mock):
-        """" Tests that jira url is not padded if not needed."""
+        """ Tests that jira url is not padded if not needed."""
         init_mock.return_value = None
 
         jira = Jira('X/', '', '')

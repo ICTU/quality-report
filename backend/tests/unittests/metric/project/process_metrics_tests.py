@@ -23,10 +23,10 @@ from .bug_metrics_tests import FakeJiraFilter
 
 
 class ProjectPrerequisitesTestCase(unittest.TestCase):
-    """" Prerequisites tests for UserStoriesDurationTest and UserStoriesInProgress"""
+    """ Prerequisites tests for UserStoriesDurationTest and UserStoriesInProgress"""
 
     def test_project_for_user_stories_in_progress(self):
-        """" Checks if the real objects fulfill requirements expected by LastSecurityTestCase """
+        """ Checks if the real objects fulfill requirements expected by LastSecurityTestCase """
 
         project = domain.Project()
 

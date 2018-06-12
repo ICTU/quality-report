@@ -24,10 +24,10 @@ from hqlib.metric_source import url_opener, FileWithDate
 
 
 class UrlOpenerPrerequisitesTestCase(unittest.TestCase):
-    """" Prerequisites tests for FileWithDateTestCase"""
+    """ Prerequisites tests for FileWithDateTestCase"""
 
     def test_url_opener(self):
-        """" Checks if the UrlOpener, that is mocked in the tests, fulfill requirements """
+        """ Checks if the UrlOpener, that is mocked in the tests, fulfill requirements """
 
         opener = url_opener.UrlOpener()
 

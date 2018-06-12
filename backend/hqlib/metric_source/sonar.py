@@ -28,7 +28,7 @@ from ..typing import DateTime, Number
 
 
 def extract_branch_decorator(func):
-    """" Checks if product name has to be splitted into product and branch and performs the splitting."""
+    """ Checks if product name has to be splitted into product and branch and performs the splitting."""
     def _branch_param(self, product: str) -> (str, str):
         """ Return the branch url parameter. """
 
@@ -61,8 +61,9 @@ class Sonar(metric_source.TestReport):
         self.__base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self.__base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots='
         self.__issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
-        self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json'
+        self.__analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json&ps=1'
         self.__components_show_api_url = sonar_url + 'api/components/show?component={component}'
+        self.__components_search_api_url = sonar_url + 'api/components/search?qualifiers=BRC,TRK&q={component}'
         self.__resource_api_url = sonar_url + 'api/resources?resource={resource}&format=json'
         self.__projects_api_url = sonar_url + 'api/projects/index?subprojects=true'
         self.__measures_api_url = sonar_url + 'api/measures/component?componentKey={component}&metricKeys={metric}'
@@ -103,7 +104,7 @@ class Sonar(metric_source.TestReport):
 
     @classmethod
     def __add_branch_param_to_url(cls, url: str, branch: str) -> str:
-        """" Adds branch url query param to the url, if defined. """
+        """ Adds branch url query param to the url, if defined. """
         return url + "&branch=" + branch if branch else url
 
     @extract_branch_decorator
@@ -190,7 +191,7 @@ class Sonar(metric_source.TestReport):
 
     @functools.lru_cache(maxsize=4096)
     def is_component_absent(self, product: str) -> bool:
-        """" Checks if the component with complete name, including branch, is defined """
+        """ Checks if the component with complete name, including branch, is defined """
         url = self.__components_show_api_url.format(component=product)
         try:
             if json.loads(self.__url_opener.url_read(url, log_error=False))["component"]:
@@ -206,10 +207,21 @@ class Sonar(metric_source.TestReport):
 
     def __has_project(self, project: str, branch) -> bool:
         """ Return whether Sonar has the project (analysis). """
-        found = project in self.__projects(branch)
-        if not found:
-            logging.warning("Sonar has no analysis of %s", project)
-        return found
+        if self.version_number() >= "6.3":
+            url = self.__add_branch_param_to_url(self.__components_search_api_url.format(component=project), branch)
+            try:
+                count = int(self.__get_json(url)["paging"]["total"])
+                if count == 0:
+                    logging.warning("Sonar has no analysis of %s", project)
+                return count > 0
+            except self.__url_opener.url_open_exceptions + (KeyError, IndexError, TypeError, ValueError) as reason:
+                logging.warning("Sonar has no analysis of %s: %s", project, reason)
+                return False
+        else:
+            found = project in self.__projects(branch)
+            if not found:
+                logging.warning("Sonar has no analysis of %s", project)
+            return found
 
     def __projects(self, branch) -> List[str]:
         """ Return all projects in Sonar. """
