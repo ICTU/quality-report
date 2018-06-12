@@ -1,3 +1,9 @@
+2018-06-11  Release 2.60.4
+
+  * Bug fix: Stop using the deprecated /projects/index SonarQube API to check for the existence of analyses in 
+    SonarQube.
+  
+  
 2018-06-06  Release 2.60.3
 
   * Bug fix: Make sure the Docker container uses the right version of the HQ python package.
