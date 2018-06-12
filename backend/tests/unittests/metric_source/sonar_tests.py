@@ -1790,3 +1790,10 @@ class SonarHasProjectTest(unittest.TestCase):
         url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json]
 
         self.assertEqual(-1, Sonar("http://fake.url/").failing_unittests("nl.ictu:quality_report"))
+
+    def test_search_components_version_error(self, url_read_mock):
+        """ Test that if the SonarQube version can't be retrieved, the metric is -1. """
+        server_version = None
+        url_read_mock.side_effect = [server_version]
+
+        self.assertEqual(-1, Sonar("http://fake.url/").failing_unittests("nl.ictu:quality_report"))

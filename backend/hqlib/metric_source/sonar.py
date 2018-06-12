@@ -207,7 +207,10 @@ class Sonar(metric_source.TestReport):
 
     def __has_project(self, project: str, branch) -> bool:
         """ Return whether Sonar has the project (analysis). """
-        if self.version_number() >= "6.3":
+        version = self.version_number()
+        if not version:
+            return False
+        if version >= "6.3":
             url = self.__add_branch_param_to_url(self.__components_search_api_url.format(component=project), branch)
             try:
                 count = int(self.__get_json(url)["paging"]["total"])
