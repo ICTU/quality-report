@@ -211,6 +211,8 @@ class Sonar(metric_source.TestReport):
         if not version:
             return False
         if version >= "6.3":
+            # We use the components/search API and not the project_analyses/search API because the former supports
+            # searching for subprojects and the latter does not.
             url = self.__add_branch_param_to_url(self.__components_search_api_url.format(component=project), branch)
             try:
                 count = int(self.__get_json(url)["paging"]["total"])
