@@ -18,6 +18,7 @@ import datetime
 import functools
 import logging
 import os
+import pathlib
 import urllib.request
 from typing import Callable, List, Dict, Tuple
 
@@ -48,7 +49,7 @@ class Git(VersionControlSystem):
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         if not self.__repo_folder:
             self.__get_repo()
-        folder = self.__repo_folder if os.path.exists(self.__repo_folder) else folder
+        folder = self.__repo_folder if self.__repo_folder.exists() else folder
         return super()._run_shell_command(shell_command, folder=folder, log_level=log_level)
 
     def last_changed_date(self, path: str) -> DateTime:
@@ -103,7 +104,7 @@ class Git(VersionControlSystem):
         """ Clone the repository if necessary, else pull it. """
         self.__repo_folder = self.__determine_repo_folder_name()
         command = ['git']
-        if os.path.exists(self.__repo_folder):
+        if self.__repo_folder.exists():
             logging.info('Updating Git repo %s in %s', self.url(), self.__repo_folder)
             command.extend(['pull', '--prune'])
         else:
@@ -124,12 +125,12 @@ class Git(VersionControlSystem):
             return url.format(username=self._username, password=urllib.request.pathname2url(self._password))
         return self.url()
 
-    def __determine_repo_folder_name(self) -> str:
+    def __determine_repo_folder_name(self) -> pathlib.Path:
         url_parts = [part for part in self.url().split('/') if part]
         folder = url_parts[-1]
         if self.__branch_to_checkout:
             folder += '-{0!s}'.format(self.__branch_to_checkout)
-        return os.path.join(os.getcwd(), 'repos', folder)
+        return pathlib.Path.cwd() / 'repos' / folder
 
     @staticmethod
     def __valid_names(text: str, is_valid: Callable[[str], bool] = bool) -> List[str]:

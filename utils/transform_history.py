@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import pathlib
 import json
 import logging
 import re
@@ -95,7 +95,8 @@ def main():
     """ Do the work. """
     history = dict(dates=[], statuses=[], metrics={})
 
-    with open(sys.argv[1]) as history_file:
+    path = pathlib.Path(sys.argv[1])
+    with path.open() as history_file:
         for line in history_file:
             if line.strip():
                 process_line(history, line)

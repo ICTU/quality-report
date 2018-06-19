@@ -18,7 +18,7 @@ limitations under the License.
 # Python script to retrieve metrics from different back-end systems, like Sonar and Jenkins.
 
 import logging
-import os
+import pathlib
 import sys
 from typing import cast
 
@@ -48,9 +48,9 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     @classmethod
     def __create_report(cls, quality_report, report_dir, create_resources: bool = True):
         """ Format the quality report to HTML and write the files in the report folder. """
-        report_dir = report_dir or '.'
+        report_dir = pathlib.Path(report_dir or '.').resolve()
         filesystem.create_dir(report_dir)
-        filesystem.create_dir(os.path.join(report_dir, 'json'))
+        filesystem.create_dir(report_dir / 'json')
         if create_resources:
             cls.__create_resources(report_dir)
         json_files = dict(metrics=formatting.MetricsFormatter,
@@ -64,7 +64,7 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
     @classmethod
     def __create_json_file(cls, quality_report, report_dir, formatter, filename):
         """ Create the JSON file using the JSON formatter specified. """
-        json_filename = os.path.join(report_dir, 'json', '{0}.json'.format(filename))
+        json_filename = report_dir / 'json' / '{0}.json'.format(filename)
         cls.__format_and_write_report(quality_report, formatter, json_filename, 'w', 'utf-8')
 
     @staticmethod
@@ -73,10 +73,10 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         resource_manager = pkg_resources.ResourceManager()
         resource_module = app.__name__
         for resource_type, encoding in (('img', None), ('dist', None), ('html', 'utf-8')):
-            resource_dir = os.path.join(report_dir, resource_type) if resource_type != 'html' else report_dir
+            resource_dir = (report_dir / resource_type) if resource_type != 'html' else report_dir
             filesystem.create_dir(resource_dir)
             for resource in resource_manager.resource_listdir(resource_module, resource_type):
-                filename = os.path.join(resource_dir, resource)
+                filename = resource_dir / resource
                 contents = resource_manager.resource_string(resource_module, resource_type + '/' + resource)
                 mode = 'w' if encoding else 'wb'
                 contents = contents.decode(encoding) if encoding else contents
@@ -87,23 +87,23 @@ class Reporter(object):  # pylint: disable=too-few-public-methods
         """ Retrieve and write the trend images. """
         style = pygal.style.Style(background='transparent', plot_background='transparent')
         dates = ''
-        filesystem.create_dir(os.path.join(report_dir, 'chart'))
+        filesystem.create_dir(report_dir / 'chart')
         for metric in quality_report.metrics():
             line_chart = pygal.Line(style=style, range=metric.y_axis_range())
             line_chart.add('', metric.recent_history(), stroke_style={'width': 2})
             image = line_chart.render_sparkline()
-            filename = os.path.join(report_dir, 'chart', '{0!s}.svg'.format(metric.id_string()))
+            filename = report_dir / 'chart' / '{0!s}.svg'.format(metric.id_string())
             filesystem.write_file(image, filename, mode='wb', encoding=None)
             cls.__save_metric_long_history(metric, report_dir)
             if not dates:
                 dates = metric.get_long_history_dates()
 
-        filename = os.path.join(report_dir, 'json', 'dates.txt')
+        filename = report_dir / 'json' / 'dates.txt'
         filesystem.write_file(dates, filename, mode='w', encoding=None)
 
     @classmethod
     def __save_metric_long_history(cls, metric, report_dir):
-        filename = os.path.join(report_dir, 'json', '{stable_id}.txt'.format(stable_id=metric.normalized_stable_id()))
+        filename = report_dir / 'json' / '{stable_id}.txt'.format(stable_id=metric.normalized_stable_id())
         filesystem.write_file(",".join(str(i) if i is not None else '' for i in metric.long_history()),
                               filename, mode='w', encoding=None)
 

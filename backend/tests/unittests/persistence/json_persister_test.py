@@ -14,10 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import pathlib
 import json
 import logging
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
 from hqlib.persistence import JsonPersister, FilePersister
 
 
@@ -33,63 +35,55 @@ class JsonPersisterTestCase(unittest.TestCase):
         self.assertRaises(NotImplementedError, JsonPersister().write_json, {}, 'location')
 
 
-@patch('builtins.open')
 class FilePersisterTestCase(unittest.TestCase):
     """ Unit tests for the FilePersister class with errors. """
 
-    def test_read(self, mock_open):
+    def test_read(self):
         """ Test that the json file content is read and interpreted correctly. """
-        fake_file = MagicMock()
-        fake_file.read.return_value = '{"x": "y"}'
-        mock_open.return_value = fake_file
+        with patch.object(pathlib.Path, 'read_text') as mock_read_text:
+            mock_read_text.return_value = '{"x": "y"}'
+            self.assertEqual({"x": "y"}, FilePersister.read_json('unimportant'))
 
-        self.assertEqual({"x": "y"}, FilePersister.read_json('unimportant'))
-
-    def test_read_invalid_json(self, mock_open):
+    def test_read_invalid_json(self):
         """ Test that it raises if the json is invalid. """
-        fake_file = MagicMock()
-        fake_file.read.return_value = 'non-json'
-        mock_open.return_value = fake_file
-
-        self.assertRaises(json.decoder.JSONDecodeError, FilePersister.read_json, 'unimportant')
+        with patch.object(pathlib.Path, 'read_text') as mock_read_text:
+            mock_read_text.return_value = 'non-json'
+            self.assertRaises(json.decoder.JSONDecodeError, FilePersister.read_json, 'unimportant')
 
     @patch.object(logging, 'error')
-    def test_read_json_io_error(self, mock_error, mock_open):
+    def test_read_json_io_error(self, mock_error):
         """ Test there is no result if io error happens and it is logged. """
-        mock_error.return_value = None
-        mock_open.side_effect = IOError
+        with patch.object(pathlib.Path, 'read_text') as mock_read_text:
+            mock_read_text.return_value = None
+            mock_read_text.side_effect = IOError
 
-        self.assertEqual(None, FilePersister.read_json('file\\path'))
-        mock_error.assert_called_once_with('Error reading file %s.', 'file\\path')
+            self.assertEqual(None, FilePersister.read_json('file\\path'))
+            mock_error.assert_called_once_with('Error reading file %s.', 'file\\path')
 
-    def test_read_json_file_not_found(self, mock_open):
+    def test_read_json_file_not_found(self):
         """ Test there is no result if file is not found. """
-        mock_open.side_effect = FileNotFoundError
+        with patch.object(pathlib.Path, 'read_text') as mock_read_text:
+            mock_read_text.side_effect = FileNotFoundError
 
-        self.assertEqual(None, FilePersister.read_json('unimportant'))
+            self.assertEqual(None, FilePersister.read_json('unimportant'))
 
-    def test_write(self, mock_open):
+    def test_write(self):
         """ Test that a json is correctly written to a file. """
-        fake_file = MagicMock()
-        mock_open.return_value = fake_file
+        with patch.object(pathlib.Path, 'write_text') as mock_write_text:
+            FilePersister.write_json({"x": 10}, 'file\\path')
 
-        FilePersister.write_json({"x": 10}, 'file\\path')
-
-        mock_open.assert_called_once_with('file\\path', mode='w', encoding='utf-8')
-        fake_file.write.assert_called()
-        saved_json = json.loads(''.join([args[0] for (args, kwargs) in fake_file.write.call_args_list]))
-        self.assertEqual(10, saved_json['x'])
+            mock_write_text.assert_called_once_with('{\n  "x": 10\n}', encoding='utf-8')
+            saved_json = json.loads(''.join([args[0] for (args, kwargs) in mock_write_text.call_args_list]))
+            self.assertEqual(10, saved_json['x'])
 
     @patch.object(logging, 'error')
-    def test_write_io_error(self, mock_error, mock_open):
+    def test_write_io_error(self, mock_error):
         """ Test that an incorrect json raises when it is tried to write it to a file. """
-        mock_error.return_value = None
-        fake_file = MagicMock()
-        fake_file.write.return_value = None
-        mock_open.side_effect = IOError
+        with patch.object(pathlib.Path, 'write_text') as mock_write_text:
+            mock_error.return_value = None
+            mock_write_text.side_effect = IOError
 
-        FilePersister.write_json('unimportant', 'file\\path')
+            FilePersister.write_json('unimportant', 'file\\path')
 
-        mock_open.assert_called_once_with('file\\path', mode='w', encoding='utf-8')
-        fake_file.write.assert_not_called()
-        mock_error.assert_called_once_with('Error writing file %s.', 'file\\path')
+            mock_write_text.assert_called_once_with('"unimportant"', encoding='utf-8')
+            mock_error.assert_called_once_with('Error writing file %s.', 'file\\path')

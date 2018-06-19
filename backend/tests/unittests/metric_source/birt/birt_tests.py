@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 import datetime
-import os
+import pathlib
 import unittest
 import urllib.error
 
@@ -26,7 +26,7 @@ from hqlib.metric_source import Birt
 
 def read_html(filename: str) -> str:
     """ Read the html file and return its contents. """
-    return open(os.path.join(os.path.dirname(os.path.abspath(__file__)), filename), "r").read()
+    return (pathlib.Path(__file__).resolve().parent / filename).read_text()
 
 
 TEST_DESIGN_HTML = read_html("test_design.html")

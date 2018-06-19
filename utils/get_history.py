@@ -31,7 +31,7 @@ import argparse
 import ast
 import datetime
 import logging
-import os
+import pathlib
 import subprocess
 import xml.etree.cElementTree
 
@@ -54,20 +54,15 @@ class LastRevisionCollected(object):
     """ Keep track of the last revision collected. """
 
     def __init__(self):
-        self.__filename = 'history.json.last_revision.txt'
+        self.__path = pathlib.Path('history.json.last_revision.txt').resolve()
 
     def get(self):
         """ Get the last collected revision. """
-        if os.path.exists(self.__filename):
-            with open(self.__filename, mode='r') as last_revision_file:
-                return int(last_revision_file.read())
-        else:
-            return None
+        return int(self.__path.read_text()) if self.__path.exists() else None
 
     def set(self, revision):
         """ Set the last collected revision. """
-        with open(self.__filename, mode='w') as last_revision_file:
-            last_revision_file.write(bytes(revision))
+        self.__path.write_text(revision)
 
 
 class TimeEstimator(object):
@@ -83,8 +78,7 @@ class TimeEstimator(object):
             seconds_per_step = (datetime.datetime.now() - self.__start_time).total_seconds() / steps_done
             seconds_remaining = (self.__total_steps - steps_done) * seconds_per_step
             return str(datetime.timedelta(seconds=round(seconds_remaining)))
-        else:
-            return 'not enough data to estimate'
+        return 'not enough data to estimate'
 
 
 class RevisionsToCollect(list):
@@ -118,7 +112,7 @@ class RevisionCollector(object):
     def __init__(self, url, last_revision):
         self.__url = url
         self.__last_revision = last_revision
-        self.__filename = 'history.json'
+        self.__filename = pathlib.Path('history.json')
 
     def collect(self, revisions):
         """ Get the revisions and append the last measurement of each revision to the full history file. """
@@ -139,7 +133,7 @@ class RevisionCollector(object):
 
     def __write_measurement(self, measurement):
         """ Append the measurement to the history file. """
-        with open(self.__filename, mode='a') as history_file:
+        with self.__filename.open(mode='a') as history_file:
             history_file.write(measurement + '\n')
 
     @staticmethod

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
+import pathlib
 from hqlib.metric_source.url_opener import UrlOpener
 
 
@@ -28,117 +28,133 @@ class UrlOpenerMock(UrlOpener):
     """
 
     def __init__(self, uri: str = None, username: str = None, password: str = None) -> None:
-        self._dir_path = os.getcwd()
+        self._dir_path = pathlib.Path(__file__).parent.parent.parent.parent
+        examples_metric_sources_path = self._dir_path / 'docs' / 'examples' / 'example_metric_sources'
         self._map = {
             # begin UserStoriesInProgress
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15208': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_filter_stories_in_progress.json')),
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15208':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jira_filter_stories_in_progress.json'
+                ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_filter_search_stories_in_progress.json')),
+            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jira_filter_search_stories_in_progress.json'
+                ),
             # end UserStoriesInProgress
 
             # begin DurationOfManualLogicalTestCases
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15999': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_filter_manual_tests.json')),
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15999':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jira_filter_manual_tests.json'
+                ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/search?filter_manual_tests': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_filter_search_manual_tests.json')),
+            'https://jira.myorg.nl/jira/rest/api/2/search?filter_manual_tests':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jira_filter_search_manual_tests.json'
+                ),
             # end DurationOfManualLogicalTestCases
 
             # begin UserStoriesDuration
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15225': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_filter_stories_duration.json')),
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15225':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jira_filter_stories_duration.json'
+                ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters_duration': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jira_filter_search_stories_duration.json')),
+            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters_duration':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jira_filter_search_stories_duration.json'
+                ),
 
             'https://jira.myorg.nl/jira/rest/api/2/issue/ISS-1?expand=changelog&fields="*all,-comment"':
                 self._get_file_content(
-                    os.path.join(self._dir_path,
-                                 'docs/examples/example_metric_sources/jira_changelog_stories_duration.json')),
+                    examples_metric_sources_path / 'jira_changelog_stories_duration.json'
+                ),
             # end UserStoriesDuration
 
             # begin FailingCIJobs and UnusedCIJobs
 
             'http://www.jenkins.proj.org:8080/api/python?tree=jobs[name,description,color,url,buildable]':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/jenkins_get_jobs_1.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'example_metric_sources' / 'jenkins_get_jobs_1.json'
+                ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/api/python?tree=jobs'
-            '[name,description,color,url,buildable]': self._get_file_content(
-                os.path.join(self._dir_path, 'docs/examples/example_metric_sources/jenkins_ci_jobs.json')),
+            '[name,description,color,url,buildable]':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_ci_jobs.json'
+                ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
-            'api/python?tree=builds[result,building]&depth=1': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jenkins_build_result.json')),
+            'api/python?tree=builds[result,building]&depth=1':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_build_result.json'
+                ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/api/python?tree='
-            'builds[result,building]&depth=1': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jenkins_build_result.json')),
+            'builds[result,building]&depth=1':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_build_result.json'
+                ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
-            'lastStableBuild/api/python': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jenkins_unused_job_1029_last_stable.json')),
+            'lastStableBuild/api/python':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_unused_job_1029_last_stable.json'
+                ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/'
-            'lastCompletedBuild/api/python': self._get_file_content(
-                os.path.join(self._dir_path,
-                             'docs/examples/example_metric_sources/jenkins_unused_job_1029_last_complete.json')),
+            'lastCompletedBuild/api/python':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_unused_job_1029_last_complete.json'
+                ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/lastCompletedBuild/api/python':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'jenkins_failing_job_5553_last_complete.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_failing_job_5553_last_complete.json'
+                ),
             # end FailingCIJobs and UnusedCIJobs
 
             # begin Sonar
             'https://my.sonarqube.com/api/server/version':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'sonar_version.txt')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_version.txt'
+                ),
 
             'https://my.sonarqube.com/api/updatecenter/installed_plugins':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'sonar_plugins.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_plugins.json'
+                ),
 
             'https://my.sonarqube.com/api/project_analyses/search?'
             'project=nl.comp:my_project&format=json&category=VERSION':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'sonar_search.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search.json'
+                ),
 
             'https://my.sonarqube.com/api/projects/index?subprojects=true':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'sonar_projects.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_projects.json'
+                ),
 
             'https://my.sonarqube.com/api/components/show?component=nl.comp:my_project':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'sonar_component.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_component.json'
+                ),
             # end Sonar
 
             # begin trello
             'https://api.trello.com/1/boards/5fe/?fields=id,url,dateLastActivity&lists=open&list_fields=name'
             '&cards=visible&card_fields=shortUrl,dateLastActivity,due,idList,name&key=2d3&token=57b':
-                self._get_file_content(os.path.join(self._dir_path,
-                                                    'docs/examples/example_metric_sources/'
-                                                    'trello_board.json')),
+                self._get_file_content(
+                    examples_metric_sources_path / 'trello_board.json'
+                ),
             # end trello
 
-            'https://last_security_date_url': self._get_file_content(
-                os.path.join(self._dir_path, 'docs/examples/example_metric_sources/file_with_date.json'))
+            'https://last_security_date_url':
+                self._get_file_content(
+                    examples_metric_sources_path / 'file_with_date.json'
+                ),
         }
         super().__init__()
 
@@ -146,6 +162,5 @@ class UrlOpenerMock(UrlOpener):
         return self._map[url] if url in self._map.keys() else ""
 
     @staticmethod
-    def _get_file_content(file_name: str) -> str:
-        with open(file_name) as file:
-            return file.read()
+    def _get_file_content(file_name: pathlib.Path) -> str:
+        return pathlib.Path(file_name).read_text()

@@ -14,35 +14,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-import codecs
-import os
+import pathlib
 import stat
+
+from typing import Union
+
+
+PathType = Union[str, pathlib.Path]
 
 
 class FileSystem(object):
     """ Class for methods that manipulate the file system. """
     @staticmethod
-    def write_file(contents: str, filename: str, mode: str, encoding: str = None) -> None:
+    def write_file(contents: str, filename: PathType, mode: str, encoding: str = None) -> None:
         """ Write the contents to the specified file. """
-        if os.path.exists(filename):
-            FileSystem.make_file_readable(filename)
-        output_file = codecs.open(filename, mode, encoding)
-        output_file.write(contents)
-        output_file.close()
-        FileSystem.make_file_readable(filename)
+        path = pathlib.Path(filename)
+        if path.exists():
+            FileSystem.make_file_readable(path)
+        if 'b' in mode:
+            path.write_bytes(contents.encode() if isinstance(contents, str) else bytes(contents))
+        else:
+            path.write_text(contents, encoding=encoding)
+        FileSystem.make_file_readable(path)
 
     @staticmethod
-    def create_dir(dir_name: str) -> None:
+    def create_dir(dir_name: PathType) -> None:
         """ Create a directory and make it accessible. """
-        if not os.path.exists(dir_name):
-            os.mkdir(dir_name)
-        os.chmod(dir_name, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | stat.S_IRUSR | stat.S_IWUSR)
+        dir_path = pathlib.Path(dir_name)
+        if not dir_path.exists():
+            dir_path.mkdir(parents=True)
+        dir_path.chmod(stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | stat.S_IRUSR | stat.S_IWUSR)
 
     @staticmethod
-    def make_file_readable(filename: str) -> None:
+    def make_file_readable(filename: PathType) -> None:
         """ Make the file readable and writeable for the user and readable for everyone else. """
-        os.chmod(filename, stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+        path = pathlib.Path(filename)
+        path.chmod(stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
 
 
 # pylint: disable=invalid-name

@@ -16,6 +16,7 @@ limitations under the License.
 
 import json
 import os
+import pathlib
 import sys
 import tempfile
 import unittest
@@ -23,6 +24,10 @@ import unittest
 import bs4
 
 from hqlib import domain, requirement
+
+
+PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
+TESTS_DIR = PROJECT_DIR / 'backend' / 'tests'
 
 
 def requirement_metric_classes(*requirements):
@@ -49,16 +54,20 @@ class IntegrationTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Create the report and read it. """
-        cls.report_folder = tempfile.mkdtemp(dir='build')
+        build_dir = PROJECT_DIR / 'build'
+        build_dir.mkdir(parents=True, exist_ok=True)
+        cls.report_folder = pathlib.Path(tempfile.mkdtemp(dir=build_dir))
+        (cls.report_folder / 'json').mkdir(parents=True, exist_ok=True)
+        (cls.report_folder / 'json' / 'metrics.json').touch()
         os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
                   '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
-        with open('{0}/json/metrics.json'.format(cls.report_folder)) as metrics_json:
+        with (cls.report_folder / 'json' / 'metrics.json').open() as metrics_json:
             cls.metrics = json.load(metrics_json)["metrics"]
 
 
 class AllRequirementsNoSourcesTests(IntegrationTestCase):
     """ Integration tests using a report with all requirements, but no sources defined. """
-    project_folder = 'tests/integrationtests/test_all_requirements_no_sources'
+    project_folder = TESTS_DIR / 'integrationtests' / 'test_all_requirements_no_sources'
     nr_metrics = len(metric_classes([domain.Project, domain.Process, domain.Product, domain.Application,
                                      domain.Component, domain.Environment, domain.Document, domain.Team]))
     nr_meta_metrics = 5
@@ -67,18 +76,20 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
     def report(self):
         """ Read the report and return as beautiful soup. """
-        with open('{0}/index.html'.format(self.report_folder)) as contents:
-            return bs4.BeautifulSoup(contents.read(), "lxml")
+        return bs4.BeautifulSoup((pathlib.Path(self.report_folder) / 'index.html').read_text(), "lxml")
 
-    def assert_file_exists(self, filename):
+    def assert_file_exists(self, *names):
         """ Assert that the specified file exists. """
-        self.assertTrue(os.path.exists('{0}/{1}'.format(self.report_folder, filename)))
+        path = pathlib.Path(self.report_folder)
+        for name in names:
+            path = path / name
+        self.assertTrue(path.exists())
 
     def test_files_exists(self):
         """ Test that the copied/generated files exists. """
         self.assert_file_exists('index.html')
         for filename in 'metrics', 'meta_history', 'meta_data':
-            self.assert_file_exists('json/{0}.json'.format(filename))
+            self.assert_file_exists('json', '{0}.json'.format(filename))
 
     def test_report_title(self):
         """ Test the report title. """
@@ -92,17 +103,17 @@ class AllRequirementsNoSourcesTests(IntegrationTestCase):
 
 class AllRequirementsNoSourceIdsTests(AllRequirementsNoSourcesTests):
     """ Integration tests using a report with all requirements and all sources, but no source ids defined. """
-    project_folder = 'tests/integrationtests/test_no_source_ids'
+    project_folder = TESTS_DIR / 'integrationtests' / 'test_no_source_ids'
 
 
 class AllRequirementsNoSourceIdsSecondProject(AllRequirementsNoSourceIdsTests):
     """ Integration tests using a second project definition from the same folder. """
-    project_folder = AllRequirementsNoSourceIdsTests.project_folder + '/second_project_definition.py'
+    project_folder = AllRequirementsNoSourceIdsTests.project_folder / 'second_project_definition.py'
 
 
 class MetricOptionsTests(IntegrationTestCase):
     """ Integration tests for metric options. """
-    project_folder = 'tests/integrationtests/test_metric_options'
+    project_folder = TESTS_DIR / 'integrationtests' / 'test_metric_options'
 
     def test_technical_debt_does_not_change_norm(self):
         """ Test that the norm is not changed when there is technical debt. """

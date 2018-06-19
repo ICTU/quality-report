@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
+import pathlib
 import sys
 import logging
 
@@ -23,21 +23,23 @@ from ..domain import Project
 
 def project(project_folder_or_filename: str) -> Project:
     """ Import the project from the project definition file in the project folder. """
-    if project_folder_or_filename.endswith('.py'):
-        project_folder, project_definition_filename = project_folder_or_filename.rsplit('/', 1)
-    else:
-        project_folder, project_definition_filename = project_folder_or_filename, 'project_definition.py'
+    project_definition_path = pathlib.Path(project_folder_or_filename).resolve()
+    if project_definition_path.suffix != '.py':
+        project_definition_path = project_definition_path / 'project_definition.py'
+
+    # remember current path to restore it when we're done
+    old_sys_path = sys.path.copy()
 
     # Add the parent folder of the project folder to the python path so the
     # project definition can import shared resources from other folders.
-    sys.path.insert(0, os.path.abspath(os.path.join(project_folder, '..')))
+    sys.path.insert(0, str(project_definition_path.parent.parent))
 
     # Add the project folder itself to the python path so that we can import the project definition itself.
-    sys.path.insert(0, project_folder)
+    sys.path.insert(0, str(project_definition_path.parent))
 
     # Import the project definition and get the project from it.
     # Use the default project definition if it doesn't exist.
-    module_name = project_definition_filename[:-len('.py')]
+    module_name = project_definition_path.stem
     try:
         return __import__(module_name).PROJECT
     except ModuleNotFoundError as reason:
@@ -46,3 +48,5 @@ def project(project_folder_or_filename: str) -> Project:
     except AttributeError as reason:
         logging.critical("Couldn't get PROJECT from %s: %s.", module_name, reason)
         raise
+    finally:
+        sys.path = old_sys_path

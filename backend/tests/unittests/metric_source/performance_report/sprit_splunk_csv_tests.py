@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import io
-import os
+import pathlib
 import unittest
 import urllib.error
 from typing import IO
@@ -24,7 +24,7 @@ from typing import IO
 from hqlib.metric_source import SpiritSplunkCSVPerformanceLoadTestReport
 
 
-CSV = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "spirit_splunk_csv.txt"), "rb").read()
+CSV = (pathlib.Path(__file__).resolve().parent / "spirit_splunk_csv.txt").read_bytes()
 
 
 class ReportUnderTest(SpiritSplunkCSVPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods

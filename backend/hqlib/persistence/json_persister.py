@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import pathlib
 import json
 import logging
 from typing import List, Dict, Union
@@ -39,8 +39,9 @@ class FilePersister(JsonPersister):
     @classmethod
     def read_json(cls, location: str) -> Dict[str, Union[List, Dict]]:
         """ Returns the parsed json document from the file. """
+        path = pathlib.Path(location)
         try:
-            return json.load(open(location))
+            return json.loads(path.read_text())
         except (IOError, FileNotFoundError):
             logging.error("Error reading file %s.", location)
             return None
@@ -48,7 +49,8 @@ class FilePersister(JsonPersister):
     @classmethod
     def write_json(cls, document, location: str):
         """ Writes json document to a file. """
+        path = pathlib.Path(location)
         try:
-            json.dump(document, open(location, mode='w', encoding='utf-8'), sort_keys=True, indent=2)
+            path.write_text(json.dumps(document, sort_keys=True, indent=2), encoding='utf-8')
         except IOError:
             logging.error("Error writing file %s.", location)

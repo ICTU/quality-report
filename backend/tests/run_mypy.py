@@ -16,20 +16,29 @@ limitations under the License.
 
 # Run the mypy static type checker.
 
-import os
+import pathlib
 from mypy import api
 
 
-if __name__ == '__main__':  # pragma: no branch
-    os.makedirs('build', exist_ok=True)
-    result = api.run(['hqlib', '--html-report', 'build/mypy_report'])
+def run_mypy():
+    """ Create report folder and run mypy. """
+    backend_dir = pathlib.Path(__file__).parent.parent
+    hqlib_dir = backend_dir / "hqlib"
+    report_dir = backend_dir.parent / "build" / "mypy_report"
+    report_dir.mkdir(parents=True, exist_ok=True)
+
+    result = api.run([str(hqlib_dir), "--html-report", str(report_dir)])
 
     if result[0]:
-        print('\nType checking report:\n')
+        print("\nType checking report:\n")
         print(result[0])  # stdout
 
     if result[1]:
-        print('\nError report:\n')
+        print("\nError report:\n")
         print(result[1])  # stderr
 
-    print('\nExit status:', result[2])
+    print("\nExit status:", result[2])
+
+
+if __name__ == "__main__":  # pragma: no branch
+    run_mypy()

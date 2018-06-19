@@ -16,7 +16,7 @@ limitations under the License.
 
 import datetime
 import io
-import os
+import pathlib
 import unittest
 import urllib.error
 from typing import cast, IO
@@ -24,7 +24,7 @@ from typing import cast, IO
 from hqlib.metric_source import SilkPerformerPerformanceLoadTestReport
 
 
-HTML = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "silkperformer.html"), "r").read()
+HTML = (pathlib.Path(__file__).resolve().parent / "silkperformer.html").read_text()
 
 
 class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
