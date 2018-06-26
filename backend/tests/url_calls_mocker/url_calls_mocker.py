@@ -76,7 +76,7 @@ class UrlOpenerMock(UrlOpener):
 
             'http://www.jenkins.proj.org:8080/api/python?tree=jobs[name,description,color,url,buildable]':
                 self._get_file_content(
-                    examples_metric_sources_path / 'example_metric_sources' / 'jenkins_get_jobs_1.json'
+                    examples_metric_sources_path / 'jenkins_get_jobs_1.json'
                 ),
 
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/api/python?tree=jobs'
@@ -127,7 +127,7 @@ class UrlOpenerMock(UrlOpener):
                 ),
 
             'https://my.sonarqube.com/api/project_analyses/search?'
-            'project=nl.comp:my_project&format=json&category=VERSION':
+            'project=nl.comp:my_project&format=json&ps=1&category=VERSION':
                 self._get_file_content(
                     examples_metric_sources_path / 'sonar_search.json'
                 ),

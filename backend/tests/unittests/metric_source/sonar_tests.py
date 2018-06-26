@@ -14,35 +14,172 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
 import datetime
 import urllib.error
 import unittest
 from unittest.mock import patch, call, MagicMock
 
-from hqlib.metric_source import Sonar, url_opener, extract_branch_decorator
+from hqlib.metric_source import Sonar, Sonar6, Sonar7, url_opener, extract_branch_decorator
 
 
-class SonarTestCase(unittest.TestCase):
+def clear_method_cache(class_object, function_name: str):
+    """ Function clears the cache of a method class_object.function_name """
+    sonar_method_list = [getattr(class_object, method) for method in dir(class_object) if function_name == method]
+    if sonar_method_list and sonar_method_list[0]:
+        cache_clear = getattr(sonar_method_list[0], 'cache_clear')
+        if cache_clear:
+            cache_clear()
+
+
+class SonarFacadeTest(unittest.TestCase):
+    """ Tests Sonar facade class. """
+
+    @patch.object(Sonar, 'version_number')
+    @patch.object(logging, 'error')
+    def test_version_too_low(self, mock_log_error, mock_version_number):
+        """ Test that the error is logged when Sonar version is lower than 6.0. """
+        mock_version_number.return_value = '3.6'
+
+        sonar = Sonar('unimportant')
+
+        mock_log_error.assert_called_once_with(
+            "SonarQube version lower than 5.4 is not supported. Version %s detected.", '3.6')
+        self.assertIsNotNone(sonar)
+
+    @patch.object(Sonar, 'version_number')
+    @patch.object(logging, 'error')
+    def test_version_not_supported(self, mock_log_error, mock_version_number):
+        """ Test that the error is logged when Sonar version is not supported. """
+        mock_version_number.return_value = '999.6'
+
+        sonar = Sonar('unimportant')
+
+        mock_log_error.assert_called_once_with(
+            "SonarQube version %s is not supported. Supported versions are from 6.0 to 9.0 (excluding).", '999.6')
+        self.assertIsNotNone(sonar)
+
+    @patch.object(Sonar, 'version_number')
+    def test_version_6(self, mock_version_number):
+        """ Test that the Sonar6 is instantiated when version number is 6.x is passed. """
+        mock_version_number.return_value = '6.3'
+
+        sonar = Sonar('unimportant')
+
+        self.assertIsNotNone(sonar)
+        self.assertIsInstance(sonar, Sonar6)
+
+
+class Sonar6TestCase(unittest.TestCase):
     """ Base class for Sonar unit tests. """
     def setUp(self):
-        Sonar._Sonar__get_json.cache_clear()
-        Sonar._Sonar__metric.cache_clear()
-        self._sonar = Sonar('http://sonar/')
+        clear_method_cache(Sonar, '_get_json')
+        clear_method_cache(Sonar6, '_metric')
+
+        with patch.object(Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            self._sonar = Sonar('http://sonar/')
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarTest(SonarTestCase):
+class Sonar6Test(Sonar6TestCase):
     """ Unit tests for the Sonar class. """
+
+    # pylint: disable=no-member
+
+    def test_is_component_absent_http_error(self, mock_url_read):
+        """ Test that it returns true if the component is absent. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        self.assertTrue(self._sonar.is_component_absent('product'))
+
+    @patch.object(logging, 'info')
+    def test_is_component_absent(self, mock_info, mock_url_read):
+        """ Test that it returns true if the component is absent. """
+        mock_url_read.return_value = '{"component": "x"}'
+        self.assertFalse(self._sonar.is_component_absent('product'))
+        mock_info.asset_called_once_with("Component '%s' found. No branch is defined.", "product")
+
+    def test_is_component_absent_key_error(self, mock_url_read):
+        """ Test that it returns true if the component is absent. """
+        mock_url_read.return_value = '{"xomponent": "x"}'
+        self.assertTrue(self._sonar.is_component_absent('product'))
 
     def test_version(self, mock_url_read):
         """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
         mock_url_read.side_effect = ["5.6", '{"analyses": [{"events": [{"name": "4.2"}]}]}']
         self.assertEqual('4.2', self._sonar.version('product'))
 
-    def test_version_without_analyses(self, mock_url_read):
-        """ Test that the version is unknowm if Sonar has no analyses for the product. """
+    @patch.object(Sonar6, 'is_branch_plugin_installed')
+    @patch.object(Sonar6, 'is_component_absent')
+    def test_version_with_branch(self, mock_is_component_absent, mock_is_branch_plugin_installed, mock_url_read):
+        """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
+        mock_is_component_absent.return_value = True
+        mock_is_branch_plugin_installed.return_value = True
+        mock_url_read.side_effect = ["6.8", '{"analyses": [{"events": [{"name": "4.2"}]}]}']
+        self.assertEqual('4.2', self._sonar.version('product:branch'))
+
+    @patch.object(logging, 'warning')
+    def test_version_index_error(self, mock_warning, mock_url_read):
+        """ Test that the version is unknown if Sonar has incomplete analyses. """
         mock_url_read.side_effect = ["5.6", '{"analyses": [{"events": []}]}']
-        self.assertEqual('?', self._sonar.version('empty'))
+
+        result = self._sonar.version('prod')
+
+        mock_warning.assert_called_once()
+        self.assertIsInstance(mock_warning.call_args[0][4], IndexError)
+        self.assertEqual('?', result)
+
+    @patch.object(logging, 'warning')
+    def test_version_key_error(self, mock_warning, mock_url_read):
+        """ Test that the version is unknown if Sonar has unknown json key. """
+        mock_url_read.side_effect = ["5.6", '{"analyses": [{"xvents": [{"name": "4.2"}]}]}']
+
+        result = self._sonar.version('prod')
+
+        mock_warning.assert_called_once()
+        self.assertIsInstance(mock_warning.call_args[0][4], KeyError)
+        self.assertEqual('?', result)
+
+    @patch.object(logging, 'warning')
+    def test_version_older_index_error(self, mock_warning, mock_url_read):
+        """ Test that the version is unknown if Sonar has empty version keys, in older server versions. """
+        mock_url_read.side_effect = ["5.6", urllib.error.HTTPError(None, None, None, None, None), '[]']
+
+        result = self._sonar.version('prod')
+
+        mock_warning.assert_called_once()
+        self.assertIsInstance(mock_warning.call_args[0][4], IndexError)
+        self.assertEqual('?', result)
+
+    def test_version_http_errors(self, mock_url_read):
+        """ Test that the version is unknown if Sonar constantly returns http faults. """
+        mock_url_read.side_effect = \
+            ["5.6",
+             urllib.error.HTTPError(None, None, None, None, None),
+             urllib.error.HTTPError(None, None, None, None, None)]
+
+        result = self._sonar.version('prod')
+
+        self.assertEqual('?', result)
+
+    @patch.object(logging, 'warning')
+    def test_version_older_key_error(self, mock_warning, mock_url_read):
+        """ Test that the version is unknown if Sonar has no version key, in older server versions. """
+        mock_url_read.side_effect = ["5.6", urllib.error.HTTPError(None, None, None, None, None), '{"analyses": []}']
+
+        result = self._sonar.version('prod')
+
+        mock_warning.assert_called_once()
+        self.assertIsInstance(mock_warning.call_args[0][4], KeyError)
+        self.assertEqual('?', result)
+
+    def test_version_older_key(self, mock_url_read):
+        """ Test that the version is unknown if Sonar has no version key, in older server versions. """
+        mock_url_read.side_effect = ["5", urllib.error.HTTPError(None, None, None, None, None), '[{"version": "5.2"}]']
+
+        result = self._sonar.version('prod')
+
+        self.assertEqual('5.2', result)
 
     def test_ncloc(self, mock_url_read):
         """ Test that the number of non-commented lines of code equals the ncloc returned by the dashboard. """
@@ -85,10 +222,15 @@ class SonarTest(SonarTestCase):
         mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "50"}}']
         self.assertEqual(50, self._sonar.complex_methods('product'))
 
+    def test_complex_methods_http_error(self, mock_url_read):
+        """ Test that the number of complex methods is -1 when http errors. """
+        mock_url_read.side_effect = ["5.6", urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(-1, self._sonar.complex_methods('product'))
+
     def test_complex_methods_missing(self, mock_url_read):
         """ Test that the number of complex methods is zero when none of the rules return a result. """
         mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
-        self.assertEqual(0, self._sonar.commented_loc('product'))
+        self.assertEqual(0, self._sonar.complex_methods('product'))
 
     def test_long_methods(self, mock_url_read):
         """ Test that the number of long methods equals the number of long methods returned by the violations page. """
@@ -148,8 +290,10 @@ class SonarTest(SonarTestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarCoverage(SonarTestCase):
+class Sonar6Coverage(Sonar6TestCase):
     """ Unit tests for unit test, integration test, and coverage metrics. """
+
+    # pylint: disable=no-member
 
     def test_unittest_line_coverage(self, mock_url_read):
         """ Test that the line coverage equals the line coverage returned by the dashboard. """
@@ -179,8 +323,10 @@ class SonarCoverage(SonarTestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarViolationsTest(SonarTestCase):
+class Sonar6ViolationsTest(Sonar6TestCase):
     """ Unit tests for violations. """
+
+    # pylint: disable=no-member
 
     def test_major_violations(self, mock_url_read):
         """ Test that the number of major violations equals the number of major violations returned by the
@@ -211,8 +357,10 @@ class SonarViolationsTest(SonarTestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarSuppressionTest(SonarTestCase):
+class Sonar6SuppressionTest(Sonar6TestCase):
     """ Unit tests for suppression metrics. """
+
+    # pylint: disable=no-member
 
     def test_no_sonar(self, mock_url_read):
         """ Test that by default the number of no sonar violations is zero. """
@@ -235,10 +383,17 @@ class SonarSuppressionTest(SonarTestCase):
         mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"issues": []}']
         self.assertEqual(0, self._sonar.false_positives('product'))
 
+    def test_no_false_positives_no_product(self, mock_url_read):
+        """ Test that the number of false positives is zero. """
+        mock_url_read.side_effect = ["5.6", urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(-1, self._sonar.false_positives('product'))
+
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarVersionsTest(SonarTestCase):
+class Sonar6VersionsTest(Sonar6TestCase):
     """ Unit tests for Sonar meta data. """
+
+    # pylint: disable=no-member
 
     def test_version_number(self, mock_url_read):
         """ Test that the version number is correct. """
@@ -255,8 +410,13 @@ class SonarVersionsTest(SonarTestCase):
         mock_url_read.return_value = '[{"key": "pmd", "name": "PMD", "version": "1.1"}]'
         self.assertEqual('0.0', self._sonar.plugin_version('checkstyle'))
 
+    def test_plugin_version_http_error(self, mock_url_read):
+        """ Test that the version number of a missing plugin is 0.0. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        self.assertEqual('0.0', self._sonar.plugin_version('pmd'))
+
     def test_default_quality_profile(self, mock_url_read):
-        """ Test that the name of the quality profile is returned. """
+        """ Test that the name of the default quality profile is returned. """
         mock_url_read.return_value = """{"profiles":
         [{
             "key": "java-findbugs-94130",
@@ -284,9 +444,84 @@ class SonarVersionsTest(SonarTestCase):
         }]}"""
         self.assertEqual("Java profile v1.8-20151111", self._sonar.default_quality_profile('java'))
 
+    def test_default_quality_profile_http_errors(self, mock_url_read):
+        """ Test that the name of the quality profile is empty if http errors happen. """
+        mock_url_read.side_effect =\
+            [
+                urllib.error.HTTPError(None, None, None, None, None),
+                urllib.error.HTTPError(None, None, None, None, None)
+            ]
 
-class SonarUrlsTest(SonarTestCase):
+        self.assertEqual("", self._sonar.default_quality_profile('some-strange-language'))
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_no_language(self, mock_warning, mock_url_read):
+        """ Test that the name of the quality profile is empty if there is no profile for the given language. """
+        mock_url_read.return_value = """{"profiles":
+                [{
+                    "key": "java-findbugs-94130",
+                    "name": "FindBugs",
+                    "language": "java",
+                    "isDefault": false
+                },
+                {
+                    "key": "java-java-profile-v1-7-20151021-85551",
+                    "name": "Java profile v1.7-20151021",
+                    "language": "java",
+                    "isDefault": false
+                },
+                {
+                    "key": "java-java-profile-v1-8-20151111-91699",
+                    "name": "Java profile v1.8-20151111",
+                    "language": "java",
+                    "isDefault": true
+                },
+                {
+                    "key": "java-sonar-way-31199",
+                    "name": "Sonar way",
+                    "language": "java",
+                    "isDefault": false
+                }]}"""
+        result = self._sonar.default_quality_profile('some-strange-language')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0],
+                         "Couldn't find a default quality profile for %s in %s, retrieved from %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'some-strange-language')
+        self.assertEqual("", result)
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_no_default(self, mock_warning, mock_url_read):
+        """ Test that the name of the quality profile is empty if there is no default profile for the language. """
+        mock_url_read.return_value = """{"profiles":
+                    [{
+                        "key": "java-findbugs-94130",
+                        "name": "FindBugs",
+                        "language": "java",
+                        "isDefault": false
+                    }]}"""
+        result = self._sonar.default_quality_profile('java')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0],
+                         "Couldn't find a default quality profile for %s in %s, retrieved from %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'java')
+        self.assertEqual("", result)
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_no_profiles(self, mock_warning, mock_url_read):
+        """ Test that the name of the quality profile is empty if there are no profiles at all. """
+        mock_url_read.return_value = """{"profiles": []}"""
+        result = self._sonar.default_quality_profile('java')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0],
+                         "Couldn't find a default quality profile for %s in %s, retrieved from %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'java')
+        self.assertEqual("", result)
+
+
+class Sonar6UrlsTest(Sonar6TestCase):
     """ Unit tests for the Sonar methods that return urls. """
+
+    # pylint: disable=no-member
 
     def test_url(self):
         """ Test the url. """
@@ -311,7 +546,7 @@ class SonarUrlsTest(SonarTestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarBranchParameterTest(unittest.TestCase):
+class Sonar6BranchParameterTest(unittest.TestCase):
     """ Unit tests for branch functionality. """
 
     # pylint: disable=no-self-use
@@ -476,7 +711,7 @@ class SonarBranchParameterTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarBranchVersionNumberTest(unittest.TestCase):
+class Sonar6BranchVersionNumberTest(unittest.TestCase):
     """ Unit tests for branch functionality """
 
     def test_version_number(self, url_read_mock):
@@ -490,8 +725,9 @@ class SonarBranchVersionNumberTest(unittest.TestCase):
 
         self.assertEqual(server_version, sonar.version_number())
 
-    def test_version_number_when_url_opener_throws(self, url_read_mock):
-        """ Test that the server version number is acquired when Sonar object created. """
+    @patch.object(logging, 'error')
+    def test_version_number_when_url_opener_throws(self, mock_error, url_read_mock):
+        """ Test that server version number is None and the error is logged when retrieval fails. """
 
         fake_url = "http://fake.url/"
         url_read_mock.side_effect = urllib.error.HTTPError(None, None, None, None, None)
@@ -504,11 +740,14 @@ class SonarBranchVersionNumberTest(unittest.TestCase):
 
         self.assertIsNone(sonar.version_number())
         func.assert_called_with(sonar, product, None)
+        mock_error.assert_called_with("Error getting SonarQube version number.")
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarVersionWithBranchTest(unittest.TestCase):
+class Sonar6VersionWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_version_with_branch(self, url_read_mock):
         """ Check that version function correctly splits the branch and adds it as a parameter to the url. """
@@ -573,8 +812,10 @@ class SonarVersionWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarNclocBranchTest(unittest.TestCase):
+class Sonar6NclocBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_ncloc_with_branch(self, url_read_mock):
         """ Check that ncloc function correctly splits the branch and adds it as a parameter to the url. """
@@ -637,8 +878,10 @@ class SonarNclocBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarLinesWithBranchTest(unittest.TestCase):
+class Sonar6LinesWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_lines_with_branch(self, url_read_mock):
         """ Check that lines function correctly splits the branch and adds it as a parameter to the url. """
@@ -701,8 +944,10 @@ class SonarLinesWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarViolationsWithBranchTest(unittest.TestCase):
+class Sonar6ViolationsWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_major_violations_with_branch(self, url_read_mock):
         """ Check that major_violations function correctly splits the branch and adds it as a parameter to the url. """
@@ -881,8 +1126,10 @@ class SonarViolationsWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
+class Sonar6DuplicatedLinesWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_duplicated_lines_with_branch(self, url_read_mock):
         """ Check that duplicated_lines function correctly splits the branch and adds it as a parameter to the url. """
@@ -945,8 +1192,10 @@ class SonarDuplicatedLinesWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarCoverageWithBranchTest(unittest.TestCase):
+class Sonar6CoverageWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_line_coverage_with_branch(self, url_read_mock):
         """ Check that line_coverage function correctly splits the branch and adds it as a parameter to the url. """
@@ -1067,8 +1316,10 @@ class SonarCoverageWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarTestsWithBranchTest(unittest.TestCase):
+class Sonar6TestsWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_tests_with_branch(self, url_read_mock):
         """ Check that tests function correctly splits the branch and adds it as a parameter to the url. """
@@ -1130,8 +1381,10 @@ class SonarTestsWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarFunctionsWithBranchTest(unittest.TestCase):
+class Sonar6FunctionsWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_functions_with_branch(self, url_read_mock):
         """ Check that functions function correctly splits the branch and adds it as a parameter to the url. """
@@ -1193,8 +1446,10 @@ class SonarFunctionsWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarDashboardWithBranchTest(unittest.TestCase):
+class Sonar6DashboardWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_dashboard_url(self, url_read_mock):
         """ Check that dashboard_url correctly splits the branch from product and completely ignores it. """
@@ -1226,10 +1481,25 @@ class SonarDashboardWithBranchTest(unittest.TestCase):
 
         self.assertEqual(fake_url + 'dashboard?id={component}'.format(component=product), result)
 
+    def test_metric_source_urls(self, url_read_mock):
+        """ Check that dashboard_url correctly splits the branch from product and completely ignores it. """
+        fake_url = "http://fake.url/"
+        products = "quality_report"
+        server_version = '6.3'
+        plugins_json = '[]'
+        url_read_mock.side_effect = [server_version, plugins_json]
+        sonar = Sonar(fake_url)
+
+        result = sonar.metric_source_urls(products)
+
+        self.assertEqual([fake_url + 'dashboard?id={component}'.format(component=products)], result)
+
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarMethodsWithBranchTest(unittest.TestCase):
+class Sonar6MethodsWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_complex_methods_with_branch(self, url_read_mock):
         """ Check that complex_methods function correctly splits the branch and adds it as a parameter to the url. """
@@ -1417,8 +1687,10 @@ class SonarMethodsWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarCommentedLocWithBranchTest(unittest.TestCase):
+class Sonar6CommentedLocWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_commented_loc_with_branch(self, url_read_mock):
         """ Check that commented_loc function correctly splits the branch and adds it as a parameter to the url. """
@@ -1483,8 +1755,10 @@ class SonarCommentedLocWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarNoSonarWithBranchTest(unittest.TestCase):
+class Sonar6NoSonarWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_no_sonar_with_branch(self, url_read_mock):
         """ Check that no_sonar function correctly splits the branch and adds it as a parameter to the url. """
@@ -1549,8 +1823,10 @@ class SonarNoSonarWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarFalsePositivesWithBranchTest(unittest.TestCase):
+class Sonar6FalsePositivesWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_false_positives_url(self, url_read_mock):
         """ Check that false_positives_url correctly splits the branch from product and completely ignores it. """
@@ -1586,8 +1862,10 @@ class SonarFalsePositivesWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarUnitTestsWithBranchTest(unittest.TestCase):
+class Sonar6UnitTestsWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_failing_unittests_with_branch(self, url_read_mock):
         """ Check that failing_unittests correctly splits the branch and adds it as a parameter to the url. """
@@ -1665,8 +1943,10 @@ class SonarUnitTestsWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarDatetimeWithBranchTest(unittest.TestCase):
+class Sonar6DatetimeWithBranchTest(unittest.TestCase):
     """ Unit tests for branch functionality """
+
+    # pylint: disable=no-member
 
     def test_datetime_with_branch(self, url_read_mock):
         """ Check that datetime function correctly splits the branch and adds it as a parameter to the url. """
@@ -1755,8 +2035,10 @@ class SonarDatetimeWithBranchTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
-class SonarHasProjectTest(unittest.TestCase):
+class Sonar6HasProjectTest(unittest.TestCase):
     """ Unit tests for the __has_project method. """
+
+    # pylint: disable=no-member
 
     def test_components_search_api(self, url_read_mock):
         """ Test that the project can be found. """
@@ -1797,3 +2079,295 @@ class SonarHasProjectTest(unittest.TestCase):
         url_read_mock.side_effect = [server_version]
 
         self.assertEqual(-1, Sonar("http://fake.url/").failing_unittests("nl.ictu:quality_report"))
+
+
+class Sonar7TestCase(unittest.TestCase):
+    """ Base class for Sonar unit tests. """
+
+    # pylint: disable=no-member
+
+    def setUp(self):
+        clear_method_cache(Sonar, '_get_json')
+        clear_method_cache(Sonar7, '_metric')
+
+        with patch.object(Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '7.3'
+            self._sonar = Sonar('http://sonar/')
+
+
+@patch.object(url_opener.UrlOpener, 'url_read')
+class Sonar7Test(Sonar7TestCase):
+    """ Unit tests for the Sonar class. """
+
+    # pylint: disable=no-member
+
+    @patch.object(Sonar7, 'is_branch_plugin_installed')
+    def test_version_with_branch_without_plugin(self, mock_is_branch_plugin_installed, mock_url_read):
+        """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
+        mock_is_branch_plugin_installed.return_value = False
+        mock_url_read.side_effect = ['{"analyses": [{"events": [{"name": "4.2"}]}]}']
+        self.assertEqual('4.2', self._sonar.version('product:branch'))
+
+    @patch.object(logging, 'warning')
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_version_index_error(self, mock_is_branch_name_included, mock_warning, mock_url_read):
+        """ Test that the version is unknown if Sonar has incomplete analyses. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = '{"analyses": [{"events": []}]}'
+
+        result = self._sonar.version('prod')
+
+        mock_warning.assert_called_once()
+        self.assertIsInstance(mock_warning.call_args[0][4], IndexError)
+        self.assertEqual('?', result)
+
+    @patch.object(logging, 'warning')
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_version_key_error(self, mock_is_branch_name_included, mock_warning, mock_url_read):
+        """ Test that the version is unknown if Sonar has unknown json key. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = '{"analyses": [{"xvents": [{"name": "4.2"}]}]}'
+
+        result = self._sonar.version('prod')
+
+        mock_warning.assert_called_once()
+        self.assertIsInstance(mock_warning.call_args[0][4], KeyError)
+        self.assertEqual('?', result)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_version_http_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the version is unknown if Sonar returns http error. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
+
+        result = self._sonar.version('prod')
+
+        self.assertEqual('?', result)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_analysis_datetime_empty_product(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the analysis date and time is min when there is no product. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['{"component": {"analysisDate": "2017-04-07T16:27:27+0000"}}']
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime(''))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_analysis_datetime_none_product(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the analysis date and time is min when there is no product. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['{"component": {"analysisDate": "2017-04-07T16:27:27+0000"}}']
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime(None))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_analysis_datetime(self, mock_is_branch_name_included, mock_url_read):
+        """ Test the analysis date and time are correct. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['{"component": {"analysisDate": "2017-04-07T16:27:27+0000"}}']
+        self.assertEqual(datetime.datetime(2017, 4, 7, 16, 27, 27), self._sonar.datetime('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_analysis_datetime_http_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test the analysis date and time with http error. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_analysis_datetime_missing_key(self, mock_error, mock_is_branch_name_included, mock_url_read):
+        """ Test the analysis date and time when the key is missing. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = '{"component": {}}'
+
+        result = self._sonar.datetime('product')
+
+        mock_error.assert_called_once()
+        self.assertIsInstance(mock_error.call_args[0][4], KeyError)
+        self.assertEqual(datetime.datetime.min, result)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_analysis_datetime_wrong(self, mock_error, mock_is_branch_name_included, mock_url_read):
+        """ Test the analysis date and time when the date is invalid. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = '{"component": {"analysisDate": "2017-99-07T16:27:27+0000"}}'
+
+        result = self._sonar.datetime('product')
+
+        mock_error.assert_called_once()
+        self.assertIsInstance(mock_error.call_args[0][4], ValueError)
+        self.assertEqual(datetime.datetime.min, result)
+
+
+@patch.object(url_opener.UrlOpener, 'url_read')
+@patch.object(Sonar7, 'is_branch_name_included')
+class Sonar7Metric(Sonar7TestCase):
+    """ Unit tests for unit test, integration test, and coverage metrics. """
+
+    # pylint: disable=no-member
+
+    def test_unittests(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}',
+                                     '{"component": {"measures": [{"metric": "tests", "value": "1111"}]}}']
+        self.assertEqual(1111, self._sonar.unittests('product'))
+
+    @patch.object(logging, 'warning')
+    def test_unittests_http_error(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
+
+        self.assertEqual(-1, self._sonar.unittests('product'))
+        mock_warning.assert_not_called()
+
+    @patch.object(logging, 'warning')
+    def test_unittests_no_component(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of unit tests returns -1 when there is no component. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "0"}}']
+
+        result = self._sonar.unittests('product')
+
+        mock_warning.assert_called_once_with("Sonar has no analysis of %s", 'product')
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'warning')
+    def test_unittests_no_tests(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of unit tests returns -1 when there is no required metric. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}',
+                                     '{"component": {"measures": [{"metric": "somathing-else", "value": "1111"}]}}']
+
+        result = self._sonar.unittests('product')
+
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0], "Can't get %s value for %s from %s (retrieved from %s): %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'tests')
+        self.assertEqual(mock_warning.call_args[0][2], 'product')
+        self.assertIsInstance(mock_warning.call_args[0][3], dict)
+        self.assertEqual(mock_warning.call_args[0][4],
+                         'http://sonar/api/measures/component?component=product&metricKeys=tests')
+        self.assertEqual(mock_warning.call_args[0][5], 'metric not found in component measures')
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'warning')
+    def test_unittests_key_error(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of unit tests returns -1 when measures key is not found. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}', '{"component": {}}']
+
+        result = self._sonar.unittests('product')
+
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0], "Can't get %s value for %s from %s (retrieved from %s): %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'tests')
+        self.assertEqual(mock_warning.call_args[0][2], 'product')
+        self.assertIsInstance(mock_warning.call_args[0][3], dict)
+        self.assertEqual(mock_warning.call_args[0][4],
+                         'http://sonar/api/measures/component?component=product&metricKeys=tests')
+        self.assertIsInstance(mock_warning.call_args[0][5], KeyError)
+        self.assertEqual(-1, result)
+
+    @patch.object(logging, 'warning')
+    def test_unittests_type_error(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of unit tests returns -1 when type is not correct. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}',
+                                     '{"component": {"measures": 99}}']
+
+        result = self._sonar.unittests('product')
+
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0], "Can't get %s value for %s from %s (retrieved from %s): %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'tests')
+        self.assertEqual(mock_warning.call_args[0][2], 'product')
+        self.assertIsInstance(mock_warning.call_args[0][3], dict)
+        self.assertEqual(mock_warning.call_args[0][4],
+                         'http://sonar/api/measures/component?component=product&metricKeys=tests')
+        self.assertIsInstance(mock_warning.call_args[0][5], TypeError)
+        self.assertEqual(-1, result)
+
+
+@patch.object(url_opener.UrlOpener, 'url_read')
+@patch.object(Sonar7, 'is_branch_name_included')
+class Sonar7VersionsTest(Sonar7TestCase):
+    """ Unit tests for Sonar meta data. """
+
+    # pylint: disable=no-member
+
+    def test_default_quality_profile(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the name of the default quality profile is returned. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = """{"profiles":
+        [{
+            "key": "java-java-profile-v1-8-20151111-91699",
+            "name": "Java profile v1.8-20151111",
+            "language": "java",
+            "isDefault": true
+        }]}"""
+        self.assertEqual("Java profile v1.8-20151111", self._sonar.default_quality_profile('java'))
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_http_errors(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the name of the quality profile is empty if http errors happen. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
+
+        self.assertEqual("", self._sonar.default_quality_profile('some-strange-language'))
+        mock_warning.assert_not_called()
+
+    def test_default_quality_profile_key_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the empty string is returned when key not found. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = """{"xprofiles": [{}]}"""
+        self.assertEqual("", self._sonar.default_quality_profile('java'))
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_no_language(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the name of the quality profile is empty if there is no profile for the given language. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = """{"profiles":
+                [{
+                    "key": "java-java-profile-v1-8-20151111-91699",
+                    "name": "Java profile v1.8-20151111",
+                    "language": "java",
+                    "isDefault": true
+                }]}"""
+        result = self._sonar.default_quality_profile('some-strange-language')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0],
+                         "Couldn't find a default quality profile for %s in %s, retrieved from %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'some-strange-language')
+        self.assertEqual("", result)
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_no_default(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the name of the quality profile is empty if there is no default profile for the language. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = """{"profiles":
+                    [{
+                        "key": "java-findbugs-94130",
+                        "name": "FindBugs",
+                        "language": "java",
+                        "isDefault": false
+                    }]}"""
+        result = self._sonar.default_quality_profile('java')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0],
+                         "Couldn't find a default quality profile for %s in %s, retrieved from %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'java')
+        self.assertEqual("", result)
+
+    @patch.object(logging, 'warning')
+    def test_default_quality_profile_no_profiles(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+        """ Test that the name of the quality profile is empty if there are no profiles at all. """
+        mock_is_branch_name_included.return_value = False
+        mock_url_read.return_value = """{"profiles": []}"""
+        result = self._sonar.default_quality_profile('java')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0],
+                         "Couldn't find a default quality profile for %s in %s, retrieved from %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'java')
+        self.assertEqual("", result)

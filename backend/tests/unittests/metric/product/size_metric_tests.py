@@ -24,30 +24,32 @@ class ProductLOCTest(unittest.TestCase):
     """ Unit tests for the product LOC metric. """
 
     def setUp(self):
-        sonar = metric_source.Sonar('')
+        with patch.object(metric_source.Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            sonar = metric_source.Sonar('unimportant')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: 'sonar id'})
         self._metric = metric.ProductLOC(subject=subject, project=project)
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_norm(self, mock_ncloc):
         """ Test that the norm is correct. """
         mock_ncloc.return_value = 123
         self.assertEqual("Maximaal 50000 regels code. Meer dan 100000 regels code is rood.", self._metric.norm())
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_value(self, mock_ncloc):
         """ Test that the value of the metric equals the NCLOC returned by Sonar. """
         mock_ncloc.return_value = 123
         self.assertEqual(123, self._metric.value())
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_report(self, mock_ncloc):
         """ Test that the metric report is correct. """
         mock_ncloc.return_value = 123
         self.assertEqual("FakeSubject heeft 123 regels code.", self._metric.report())
 
-    @patch.object(metric_source.Sonar, 'dashboard_url')
+    @patch.object(metric_source.Sonar6, 'dashboard_url')
     def test_url(self, mock_dashboard_url):
         """ Test that the url is correct. """
         mock_dashboard_url.return_value = 'http://sonar'
@@ -58,7 +60,9 @@ class TotalLOCTest(unittest.TestCase):
     """ Unit tests for the total LOC metric. """
 
     def setUp(self):
-        self.__sonar = metric_source.Sonar('')
+        with patch.object(metric_source.Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            self.__sonar = metric_source.Sonar('unimportant')
         project = domain.Project(
             metric_sources={metric_source.Sonar: self.__sonar, metric_source.History: metric_source.CompactHistory('')},
             metric_options={metric.TotalLOC: dict(target=1000000, low_target=2000000)},
@@ -74,26 +78,26 @@ class TotalLOCTest(unittest.TestCase):
         project.add_product(test_product)
         self.__metric = metric.TotalLOC(subject=project, project=project)
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_norm(self, mock_ncloc):
         """ Test that the norm is correct. """
         mock_ncloc.return_value = 123
         self.assertEqual("Maximaal 1000000 regels code. Meer dan 2000000 regels code is rood.",
                          self.__metric.norm())
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_value(self, mock_ncloc):
         """ Test that the value of the metric equals the sum of the NCLOC returned by Sonar. """
         mock_ncloc.return_value = 123
         self.assertEqual(2 * 123, self.__metric.value())
 
-    @patch.object(metric_source.Sonar, 'url')
+    @patch.object(metric_source.Sonar6, 'url')
     def test_url(self, mock_url):
         """ Test that the url refers to Sonar. """
         mock_url.return_value = 'http://sonar'
         self.assertEqual({'SonarQube': 'http://sonar'}, self.__metric.url())
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_report(self, mock_ncloc):
         """ Test that the report is correct. """
         mock_ncloc.return_value = 123
@@ -114,7 +118,7 @@ class TotalLOCTest(unittest.TestCase):
         """ Test that the low target can be overridden via the project. """
         self.assertEqual(2000000, self.__metric.low_target())
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_technical_debt(self, mock_ncloc):
         """ Test that technical debt can be specified via the project. """
 
@@ -130,7 +134,7 @@ class TotalLOCTest(unittest.TestCase):
         mock_ncloc.return_value = 111
         self.assertEqual('grey', total_loc.status())
 
-    @patch.object(metric_source.Sonar, 'ncloc')
+    @patch.object(metric_source.Sonar6, 'ncloc')
     def test_unavailable_sonar(self, mock_ncloc):
         """ Test that the value is -1 when Sonar is not available. """
         mock_ncloc.return_value = -1

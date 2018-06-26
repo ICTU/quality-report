@@ -16,6 +16,7 @@ limitations under the License.
 
 import datetime
 import unittest
+from unittest.mock import patch
 
 from hqlib.metric_source import Sonar
 
@@ -23,7 +24,9 @@ from hqlib.metric_source import Sonar
 class SonarTestReportTest(unittest.TestCase):
     """ Unit tests for the test report part of SonarQube. """
     def setUp(self):
-        self.__test_report = Sonar('http://sonar/')
+        with patch.object(Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            self.__test_report = Sonar('http://sonar/')
 
     def test_test_report(self):
         """ Test retrieving a Sonar test report. """

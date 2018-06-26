@@ -16,37 +16,42 @@ limitations under the License.
 
 import datetime
 import unittest
+from unittest.mock import patch
 
-from hqlib.metric_source import Sonar
+
+from hqlib.metric_source import Sonar, Sonar6
 
 
 class SonarCoverageReportTest(unittest.TestCase):
     """ Unit tests for the coverage report part of SonarQube. """
 
-    @unittest.mock.patch.object(Sonar, "unittest_line_coverage")
+    # pylint: disable=no-member
+
+    def setUp(self):
+        with patch.object(Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            self.coverage_report = Sonar('http://sonar/')
+
+    @patch.object(Sonar6, "unittest_line_coverage")
     def test_statement_coverage(self, unittest_line_coverage):
         """ Test that the coverage report returns the statement coverage provided by SonarQube. """
         unittest_line_coverage.return_value = 80.
-        coverage_report = Sonar("http://sonar/")
-        self.assertEqual(80, coverage_report.statement_coverage("sonar_id"))
+        self.assertEqual(80, self.coverage_report.statement_coverage("sonar_id"))
 
-    @unittest.mock.patch.object(Sonar, "unittest_branch_coverage")
+    @patch.object(Sonar6, "unittest_branch_coverage")
     def test_branch_coverage(self, unittest_branch_coverage):
         """ Test that the coverage report returns the branch coverage provided by SonarQube. """
         unittest_branch_coverage.return_value = 70.
-        coverage_report = Sonar("http://sonar/")
-        self.assertEqual(70, coverage_report.branch_coverage("sonar_id"))
+        self.assertEqual(70, self.coverage_report.branch_coverage("sonar_id"))
 
-    @unittest.mock.patch.object(Sonar, "datetime")
+    @patch.object(Sonar6, "datetime")
     def test_datetime(self, analysis_datetime):
         """ Test that the coverage report returns the statement coverage provided by SonarQube. """
         analysis_datetime.return_value = datetime.datetime(2017, 1, 1)
-        coverage_report = Sonar("http://sonar/")
-        self.assertEqual(datetime.datetime(2017, 1, 1), coverage_report.datetime("sonar_id"))
+        self.assertEqual(datetime.datetime(2017, 1, 1), self.coverage_report.datetime("sonar_id"))
 
-    @unittest.mock.patch.object(Sonar, "dashboard_url")
+    @patch.object(Sonar6, "dashboard_url")
     def test_urls(self, dashboard_url):
         """ Test that the coverage report returns the urls provided by SonarQube. """
         dashboard_url.return_value = "http://sonar/sonar_id"
-        coverage_report = Sonar("http://sonar/")
-        self.assertEqual(["http://sonar/sonar_id"], coverage_report.metric_source_urls("sonar_id"))
+        self.assertEqual(["http://sonar/sonar_id"], self.coverage_report.metric_source_urls("sonar_id"))

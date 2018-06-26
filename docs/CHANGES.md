@@ -1,3 +1,9 @@
+2018-06-29  Release 2.61.0
+
+  * Tech #433: API for Sonar Qube versions 7.x implemented.
+  * Tech #430: Using of different Sonar links sets per version implemented.
+
+
 2018-06-11  Release 2.60.5
 
   * Bug fix: Don't crash when SonarQube isn't available.

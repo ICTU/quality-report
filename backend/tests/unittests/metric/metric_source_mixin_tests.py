@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import patch
 
 from hqlib import domain, metric_source
 from hqlib.metric.metric_source_mixin import SonarMetric
@@ -25,7 +26,9 @@ class SonarMetricTest(unittest.TestCase):
 
     def test_url(self):
         """ Test the url. """
-        sonar = metric_source.Sonar('http://sonar/')
+        with patch.object(metric_source.Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product(metric_source_ids={sonar: 'sonar id'})
         self.assertEqual({sonar.metric_source_name: sonar.url()}, SonarMetric(product, project).url())
@@ -38,7 +41,9 @@ class SonarMetricTest(unittest.TestCase):
 
     def test_url_without_sonar_id(self):
         """ Test that the metric has a url when the product has no Sonar id configured. """
-        sonar = metric_source.Sonar('http://sonar/')
+        with patch.object(metric_source.Sonar, 'version_number') as mock_version_number:
+            mock_version_number.return_value = '6.3'
+            sonar = metric_source.Sonar('http://sonar/')
         project = domain.Project(metric_sources={metric_source.Sonar: sonar})
         product = domain.Product()
         self.assertEqual(dict(), SonarMetric(product, project).url())
