@@ -1,3 +1,8 @@
+2018-06-29  Release 2.61.1
+
+  * Bug fix: Don't crash when running commands in the shell on Windows.
+  
+  
 2018-06-29  Release 2.61.0
 
   * Tech #433: API for Sonar Qube versions 7.x implemented.

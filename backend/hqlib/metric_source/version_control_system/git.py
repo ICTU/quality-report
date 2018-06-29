@@ -110,7 +110,7 @@ class Git(VersionControlSystem):
         else:
             branch_string = self.__branch_to_checkout or 'master'
             logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, self.__repo_folder)
-            command.extend(['clone', self.__full_url(), self.__repo_folder])
+            command.extend(['clone', self.__full_url(), str(self.__repo_folder)])
             if self.__branch_to_checkout:
                 command.insert(2, '--branch')
                 command.insert(3, self.__branch_to_checkout)
