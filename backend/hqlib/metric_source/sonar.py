@@ -57,21 +57,25 @@ class Sonar(metric_source.TestReport):
         self.__stuff_right_sonar_version_class(version_number, sonar_url)
 
     def __stuff_right_sonar_version_class(self, version_number: LooseVersion, sonar_url: str):
-        if version_number is None:
-            self.__class__ = Sonar6
-            logging.error("Error getting SonarQube version number.")
-        elif version_number < LooseVersion('5.4'):
-            self.__class__ = Sonar6
-            logging.error("SonarQube version lower than 5.4 is not supported. Version %s detected.", version_number)
-        elif version_number < LooseVersion('7.0'):
-            self.__class__ = Sonar6
-            self._init_from_facade(sonar_url=sonar_url)  # pylint: disable=no-member
-        elif version_number < LooseVersion('9.0'):
+
+        if version_number is not None and version_number >= LooseVersion('7.0'):
             self.__class__ = Sonar7
-            self._init_from_facade(sonar_url=sonar_url)  # pylint: disable=no-member
         else:
-            logging.error("SonarQube version %s is not supported. Supported versions are from 6.0 to 9.0 (excluding).",
-                          version_number)
+            self.__class__ = Sonar6
+
+        self._init_from_facade(sonar_url=sonar_url)  # pylint: disable=no-member
+        self.__log_verison_messages(version_number)
+
+    @classmethod
+    def __log_verison_messages(cls, version_number: LooseVersion):
+        if version_number is not None:
+            if version_number < LooseVersion('5.4'):
+                logging.warning(
+                    "SonarQube version lower than 5.4 is not supported. Version %s detected.", version_number)
+            elif version_number >= LooseVersion('9.0'):
+                logging.warning(
+                    "SonarQube version %s is not supported. Supported versions are from 6.0 to 9.0(excluding).",
+                    version_number)
 
     @functools.lru_cache(maxsize=4096)
     def _get_json(self, url: str, *args, **kwargs) -> \
@@ -89,8 +93,11 @@ class Sonar(metric_source.TestReport):
     def version_number(self) -> Optional[str]:
         """ Return the version number of Sonar. """
         try:
-            return self._url_opener.url_read(self._version_number_url)
+            version_number = self._url_opener.url_read(self._version_number_url)
+            logging.info("Sonar Qube server version retrieved: %s", version_number)
+            return version_number
         except self._url_opener.url_open_exceptions:
+            logging.warning("Error retrieving Sonar Qube server version!")
             return None
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:  # pragma: no cover
@@ -129,9 +136,10 @@ class Sonar6(Sonar):
         self._false_positives_api_url = sonar_url + \
             'api/issues/search?resolutions=FALSE-POSITIVE&componentRoots={resource}'
         self._false_positives_url = sonar_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
-        self._plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins'
+        self._plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins?format=json'
         self._quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?format=json'
         self._old_quality_profiles_api_url = sonar_url + 'api/profiles/list?format=json'
+        logging.info("Sonar class instantiated as Sonar6.")
 
     # Coverage report API
 
@@ -193,7 +201,7 @@ class Sonar6(Sonar):
     def plugin_version(self, plugin: str) -> str:
         """ Return the version of the SonarQube plugin. """
         try:
-            plugins = self._get_json(self._plugin_api_url)
+            plugins = self._get_plugins_json()
         except self._url_opener.url_open_exceptions:
             return '0.0'
         mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
@@ -232,16 +240,19 @@ class Sonar6(Sonar):
     def is_branch_plugin_installed(self) -> bool:
         """ Return whether SonarQube has the branch plugin installed, which is needed for interpreting Sonar keys. """
         try:
-            plugins = json.loads(self._url_opener.url_read(self._plugin_api_url))
+            plugins = self._get_plugins_json()
             if "branch" in [item["key"] for item in plugins]:
                 return True
             logging.info("Branch plugin not installed.")
         except self._url_opener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s: %s", self._plugin_api_url, reason)
-        except ValueError as reason:
+        except (TypeError, ValueError) as reason:
             logging.error("Error parsing response from %s: '%s'. "
                           "Assume the branch plugin is not installed.", self._plugin_api_url, reason)
         return False
+
+    def _get_plugins_json(self):
+        return self._get_json(self._plugin_api_url)
 
     @functools.lru_cache(maxsize=4096)
     def is_component_absent(self, product: str) -> bool:
@@ -575,10 +586,14 @@ class Sonar7(Sonar6):
         self._false_positives_url = sonar_url + 'issues/search?componentKeys={resource}&resolutions=FALSE-POSITIVE'
         self._plugin_api_url = sonar_url + 'api/plugins/installed'
         self._quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?format=json'
+        logging.info("Sonar class instantiated as Sonar7.")
 
     def is_branch_name_included(self, product: str) -> bool:
         """ Checks if the component name includes the branch name. """
         return self.is_branch_plugin_installed() and self.is_component_absent(product)
+
+    def _get_plugins_json(self):
+        return self._get_json(self._plugin_api_url)['plugins']
 
     @extract_branch_decorator
     def version(self, product: str, branch: str) -> str:

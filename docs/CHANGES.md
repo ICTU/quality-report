@@ -1,3 +1,8 @@
+2018-07-02  Release 2.61.2
+
+  * Bug #434: crash of report by Sonar Qube server version lower than 5.4 fixed.
+
+
 2018-06-29  Release 2.61.1
 
   * Bug fix: Don't crash when running commands in the shell on Windows.

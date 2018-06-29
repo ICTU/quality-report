@@ -19,6 +19,8 @@ import datetime
 import urllib.error
 import unittest
 from unittest.mock import patch, call, MagicMock
+from distutils.version import LooseVersion
+from json import JSONDecodeError
 
 from hqlib.metric_source import Sonar, Sonar6, Sonar7, url_opener, extract_branch_decorator
 
@@ -36,32 +38,35 @@ class SonarFacadeTest(unittest.TestCase):
     """ Tests Sonar facade class. """
 
     @patch.object(Sonar, 'version_number')
-    @patch.object(logging, 'error')
-    def test_version_too_low(self, mock_log_error, mock_version_number):
+    @patch.object(logging, 'warning')
+    def test_version_too_low(self, mock_log_warning, mock_version_number):
         """ Test that the error is logged when Sonar version is lower than 6.0. """
         mock_version_number.return_value = '3.6'
 
         sonar = Sonar('unimportant')
 
-        mock_log_error.assert_called_once_with(
-            "SonarQube version lower than 5.4 is not supported. Version %s detected.", '3.6')
+        mock_log_warning.assert_called_once_with(
+            "SonarQube version lower than 5.4 is not supported. Version %s detected.", LooseVersion('3.6'))
         self.assertIsNotNone(sonar)
+        self.assertIsInstance(sonar, Sonar6)
 
     @patch.object(Sonar, 'version_number')
-    @patch.object(logging, 'error')
-    def test_version_not_supported(self, mock_log_error, mock_version_number):
+    @patch.object(logging, 'warning')
+    def test_version_not_supported(self, mock_log_warning, mock_version_number):
         """ Test that the error is logged when Sonar version is not supported. """
         mock_version_number.return_value = '999.6'
 
         sonar = Sonar('unimportant')
 
-        mock_log_error.assert_called_once_with(
-            "SonarQube version %s is not supported. Supported versions are from 6.0 to 9.0 (excluding).", '999.6')
+        mock_log_warning.assert_called_once_with(
+            "SonarQube version %s is not supported. Supported versions are from 6.0 to 9.0(excluding).",
+            LooseVersion('999.6'))
         self.assertIsNotNone(sonar)
+        self.assertIsInstance(sonar, Sonar7)
 
     @patch.object(Sonar, 'version_number')
     def test_version_6(self, mock_version_number):
-        """ Test that the Sonar6 is instantiated when version number is 6.x is passed. """
+        """ Test that the Sonar6 is instantiated when version number 6.x is passed. """
         mock_version_number.return_value = '6.3'
 
         sonar = Sonar('unimportant')
@@ -69,12 +74,50 @@ class SonarFacadeTest(unittest.TestCase):
         self.assertIsNotNone(sonar)
         self.assertIsInstance(sonar, Sonar6)
 
+    @patch.object(Sonar, 'version_number')
+    def test_version_7(self, mock_version_number):
+        """ Test that the Sonar7 is instantiated when version number 7.x is passed. """
+        mock_version_number.return_value = '7.0'
+
+        sonar = Sonar('unimportant')
+
+        self.assertIsNotNone(sonar)
+        self.assertIsInstance(sonar, Sonar7)
+
+    @patch.object(Sonar, 'version_number')
+    def test_version_none(self, mock_version_number):
+        """ Test that the Sonar6 is instantiated when none version number is is passed. """
+        mock_version_number.return_value = None
+
+        sonar = Sonar('unimportant')
+
+        self.assertIsNotNone(sonar)
+        self.assertIsInstance(sonar, Sonar6)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    @patch.object(logging, 'info')
+    def test_version_number(self, mock_info, mock_url_read):
+        """ Test that the version number is correct. """
+        mock_url_read.return_value = "5.6"
+        self.assertEqual('5.6', Sonar('unimportant').version_number())
+        self.assertEqual(call("Sonar Qube server version retrieved: %s", '5.6'), mock_info.call_args_list[0])
+        self.assertEqual(call('Sonar class instantiated as Sonar6.'), mock_info.call_args_list[1])
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    @patch.object(logging, 'warning')
+    def test_version_number_none(self, mock_warning, mock_url_read):
+        """ Test that the version number is correct. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        self.assertEqual(None, Sonar('unimportant').version_number())
+        mock_warning.assert_called_once_with("Error retrieving Sonar Qube server version!")
+
 
 class Sonar6TestCase(unittest.TestCase):
     """ Base class for Sonar unit tests. """
     def setUp(self):
         clear_method_cache(Sonar, '_get_json')
         clear_method_cache(Sonar6, '_metric')
+        clear_method_cache(Sonar6, 'is_branch_plugin_installed')
 
         with patch.object(Sonar, 'version_number') as mock_version_number:
             mock_version_number.return_value = '6.3'
@@ -87,6 +130,57 @@ class Sonar6Test(Sonar6TestCase):
 
     # pylint: disable=no-member
 
+    def test_is_branch_plugin_installed(self, mock_url_read):
+        """" Test that the branch plugin is installed. """
+        mock_url_read.return_value = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
+        self.assertTrue(self._sonar.is_branch_plugin_installed())
+
+    @patch.object(logging, 'info')
+    def test_is_branch_plugin_not_installed(self, mock_info, mock_url_read):
+        """" Test that the branch plugin is not installed. """
+        mock_url_read.return_value = '[{"key":"x","name":"X"}]'
+
+        result = self._sonar.is_branch_plugin_installed()
+
+        mock_info.assert_called_once_with("Branch plugin not installed.")
+        self.assertFalse(result)
+
+    @patch.object(logging, 'error')
+    def test_is_branch_plugin_json_error(self, mock_error, mock_url_read):
+        """" Test that the branch plugin is reported not installed if json decode error happens. """
+        mock_url_read.side_effect = 'not-valid-json'
+        result = self._sonar.is_branch_plugin_installed()
+        mock_error.assert_called()
+        self.assertEqual(mock_error.call_args[0][0],
+                         "Error parsing response from %s: '%s'. Assume the branch plugin is not installed.")
+        self.assertEqual(mock_error.call_args[0][1], 'http://sonar/api/updatecenter/installed_plugins?format=json')
+        self.assertIsInstance(mock_error.call_args[0][2], JSONDecodeError)
+        self.assertFalse(result)
+
+    @patch.object(logging, 'error')
+    def test_is_branch_plugin_type_error(self, mock_error, mock_url_read):
+        """" Test that the branch plugin is reported not installed if json type error happens. """
+        mock_url_read.side_effect = 'not-valid-json'
+        result = self._sonar.is_branch_plugin_installed()
+        mock_error.assert_called()
+        self.assertEqual(mock_error.call_args[0][0],
+                         "Error parsing response from %s: '%s'. Assume the branch plugin is not installed.")
+        self.assertEqual(mock_error.call_args[0][1], 'http://sonar/api/updatecenter/installed_plugins?format=json')
+        self.assertIsInstance(mock_error.call_args[0][2], JSONDecodeError)
+        self.assertFalse(result)
+
+    @patch.object(logging, 'warning')
+    def test_is_branch_plugin_http_error(self, mock_warning, mock_url_read):
+        """" Test that the branch plugin is reported not installed if http error happens. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        result = self._sonar.is_branch_plugin_installed()
+        # mock_warning.assert_called_once_with("Couldn't open %s: %s", 'xxxxxxx', '')
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0], "Couldn't open %s: %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'http://sonar/api/updatecenter/installed_plugins?format=json')
+        self.assertIsInstance(mock_warning.call_args[0][2], urllib.error.HTTPError)
+        self.assertFalse(result)
+
     def test_is_component_absent_http_error(self, mock_url_read):
         """ Test that it returns true if the component is absent. """
         mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
@@ -97,7 +191,7 @@ class Sonar6Test(Sonar6TestCase):
         """ Test that it returns true if the component is absent. """
         mock_url_read.return_value = '{"component": "x"}'
         self.assertFalse(self._sonar.is_component_absent('product'))
-        mock_info.asset_called_once_with("Component '%s' found. No branch is defined.", "product")
+        mock_info.assert_called_once_with("Component '%s' found. No branch is defined.", "product")
 
     def test_is_component_absent_key_error(self, mock_url_read):
         """ Test that it returns true if the component is absent. """
@@ -395,11 +489,6 @@ class Sonar6VersionsTest(Sonar6TestCase):
 
     # pylint: disable=no-member
 
-    def test_version_number(self, mock_url_read):
-        """ Test that the version number is correct. """
-        mock_url_read.return_value = "5.6"
-        self.assertEqual('5.6', self._sonar.version_number())
-
     def test_plugin_version(self, mock_url_read):
         """ Test that the plugins can be retrieved. """
         mock_url_read.return_value = '[{"key": "pmd", "name": "PMD", "version": "1.1"}]'
@@ -567,7 +656,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins'),
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json'),
                  call(fake_url + 'api/components/show?component={component}'.format(component=product),
                       log_error=False)]
         url_read_mock.assert_has_calls(calls)
@@ -589,7 +678,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins'),
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json'),
                  call(fake_url + 'api/components/show?component={component}'.format(component=product),
                       log_error=False)]
         url_read_mock.assert_has_calls(calls)
@@ -610,7 +699,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins')]
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json')]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, product, None)
 
@@ -630,7 +719,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins'),
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json'),
                  call(fake_url + 'api/components/show?component={component}'.format(component=product),
                       log_error=False)]
         url_read_mock.assert_has_calls(calls)
@@ -667,7 +756,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins')]
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json')]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, product, None)
 
@@ -686,7 +775,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins')]
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json')]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, product, None)
 
@@ -705,7 +794,7 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         decorated_func(sonar, product)
 
         calls = [call(fake_url + 'api/server/version'),
-                 call(fake_url + 'api/updatecenter/installed_plugins')]
+                 call(fake_url + 'api/updatecenter/installed_plugins?format=json')]
         url_read_mock.assert_has_calls(calls)
         func.assert_called_with(sonar, product, None)
 
@@ -725,8 +814,7 @@ class Sonar6BranchVersionNumberTest(unittest.TestCase):
 
         self.assertEqual(server_version, sonar.version_number())
 
-    @patch.object(logging, 'error')
-    def test_version_number_when_url_opener_throws(self, mock_error, url_read_mock):
+    def test_version_number_when_url_opener_throws(self, url_read_mock):
         """ Test that server version number is None and the error is logged when retrieval fails. """
 
         fake_url = "http://fake.url/"
@@ -740,7 +828,6 @@ class Sonar6BranchVersionNumberTest(unittest.TestCase):
 
         self.assertIsNone(sonar.version_number())
         func.assert_called_with(sonar, product, None)
-        mock_error.assert_called_with("Error getting SonarQube version number.")
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
@@ -2213,14 +2300,12 @@ class Sonar7Metric(Sonar7TestCase):
                                      '{"component": {"measures": [{"metric": "tests", "value": "1111"}]}}']
         self.assertEqual(1111, self._sonar.unittests('product'))
 
-    @patch.object(logging, 'warning')
-    def test_unittests_http_error(self, mock_warning, mock_is_branch_name_included, mock_url_read):
+    def test_unittests_http_error(self, mock_is_branch_name_included, mock_url_read):
         """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
         mock_is_branch_name_included.return_value = False
         mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
 
         self.assertEqual(-1, self._sonar.unittests('product'))
-        mock_warning.assert_not_called()
 
     @patch.object(logging, 'warning')
     def test_unittests_no_component(self, mock_warning, mock_is_branch_name_included, mock_url_read):
@@ -2288,6 +2373,28 @@ class Sonar7Metric(Sonar7TestCase):
                          'http://sonar/api/measures/component?component=product&metricKeys=tests')
         self.assertIsInstance(mock_warning.call_args[0][5], TypeError)
         self.assertEqual(-1, result)
+
+
+@patch.object(url_opener.UrlOpener, 'url_read')
+class Sonar7PluginTest(Sonar7TestCase):
+    """ Unit tests for Sonar meta data. """
+
+    # pylint: disable=no-member
+
+    def test_is_branch_plugin_installed(self, mock_url_read):
+        """" Test that the branch plugin is installed. """
+        mock_url_read.return_value = '{"plugins":[{"key":"branch","name":"Branch"}]}'
+        self.assertTrue(self._sonar.is_branch_plugin_installed())
+
+    @patch.object(logging, 'info')
+    def test_is_branch_plugin_not_installed(self, mock_info, mock_url_read):
+        """" Test that the branch plugin is not installed. """
+        mock_url_read.return_value = '{"plugins":[{"key":"x","name":"X"}]}'
+
+        result = self._sonar.is_branch_plugin_installed()
+
+        mock_info.assert_called_once_with("Branch plugin not installed.")
+        self.assertFalse(result)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
