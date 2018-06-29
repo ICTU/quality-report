@@ -31,25 +31,11 @@ class ParseTest(unittest.TestCase):
         self.assertRaises(SystemExit, commandlineargs.parse)
         self.assertEqual(
             [
-                call("usage: quality_report.py [-h] [--project PROJECT] [--report REPORT]\n"
+                call("usage: quality_report.py [-h] --project PROJECT --report REPORT\n"
                      "                         [--failure-exit-code]\n"
                      "                         [--log {DEBUG,INFO,WARNING,ERROR,CRITICAL}]\n"
                      "                         [--frontend {yes,no}] [--version]\n"),
-                call("quality_report.py: error: Need a project folder or filename\n")],
-            mock_write.call_args_list)
-
-    @patch.object(sys, "argv", ["quality_report.py", "--project", "project"])
-    @patch.object(sys.stderr, "write")
-    def test_missing_folder(self, mock_write):
-        """ Test missing report folder. """
-        self.assertRaises(SystemExit, commandlineargs.parse)
-        self.assertEqual(
-            [
-                call("usage: quality_report.py [-h] [--project PROJECT] [--report REPORT]\n"
-                     "                         [--failure-exit-code]\n"
-                     "                         [--log {DEBUG,INFO,WARNING,ERROR,CRITICAL}]\n"
-                     "                         [--frontend {yes,no}] [--version]\n"),
-                call("quality_report.py: error: Need a report folder\n")],
+                call("quality_report.py: error: the following arguments are required: --project, --report\n")],
             mock_write.call_args_list)
 
     @patch.object(sys, "argv", ["quality_report.py", "--project", "project", "--report", "report"])

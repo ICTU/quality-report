@@ -25,19 +25,14 @@ def parse() -> Namespace:
     parser = ArgumentParser(description='Generate a quality report.')
     parser.add_argument('--project', help='folder with project definition file or filename of the project definition '
                                           'file (the history file is assumed to be in the same folder as the project '
-                                          'definition file)')
-    parser.add_argument('--report', help='folder to write the HTML report in')
+                                          'definition file)', required=True)
+    parser.add_argument('--report', help='folder to write the HTML report in', required=True)
     parser.add_argument('--failure-exit-code', help='return exit code 2 when the report needs direct action, i.e. any '
                                                     'metric is red or missing',
                         action='store_true')
     parser.add_argument('--log', default="WARNING", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        help="log level (WARNING by default)")
+                        help="log level (default: WARNING)")
     parser.add_argument('--frontend', default="yes", choices=['yes', 'no'],
-                        help="should backend process also build the frontend?")
+                        help="should backend process also build the frontend? (default: yes)")
     parser.add_argument('--version', action='version', version=hqlib.VERSION)
-    args = parser.parse_args()
-    if not args.project:
-        parser.error('Need a project folder or filename')
-    if not args.report:
-        parser.error('Need a report folder')
-    return args
+    return parser.parse_args()
