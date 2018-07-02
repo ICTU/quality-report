@@ -44,6 +44,12 @@ class SonarVersion(HigherIsBetterMetric):
     def _missing(self) -> bool:
         return self._metric_source.version_number() is None if self._metric_source else True
 
+    def _metric_source_urls(self) -> List[str]:
+        """ Return a list of metric source urls to be used to create the url dict. """
+        if self._metric_source:
+            return [self._metric_source.url()]
+        return []
+
 
 class SonarQualityProfileVersion(HigherIsBetterMetric):
     """ Measure the version number of the default Sonar quality profile for a specific language. """

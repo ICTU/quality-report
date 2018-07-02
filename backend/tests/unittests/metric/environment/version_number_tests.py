@@ -46,10 +46,6 @@ class FakeSonar(object):
         """ Return the Sonar url. """
         return 'http://sonar/'
 
-    def metric_source_urls(self, *metric_source_ids):
-        """ Return the urls for the metric source ids. """
-        return [self.url() for _ in metric_source_ids]
-
 
 class SonarVersionTest(unittest.TestCase):
     """ Unit tests for the SonarVersion metric. """
@@ -70,6 +66,13 @@ class SonarVersionTest(unittest.TestCase):
     def test_url(self):
         """ Test that the url is correct. """
         self.assertEqual({FakeSonar.metric_source_name: FakeSonar().url()}, self.__metric.url())
+
+    def test_url_empty(self):
+        """ Test that the url is empty for empty metric source. """
+        project = domain.Project(metric_sources={metric_source.Sonar: []})
+        environment = domain.Environment(metric_source_ids={FakeSonar(): 'dummy'})
+        self.__metric = metric.SonarVersion(project=project, subject=environment)
+        self.assertEqual({}, self.__metric.url())
 
     def test_status(self):
         """ Test that the metric is green. """

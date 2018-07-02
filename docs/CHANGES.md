@@ -1,3 +1,8 @@
+2018-07-03  Release 2.61.4
+
+  * Bug #345: dummy links in CI-jobs and Sonar version corrected.
+
+
 2018-07-03  Release 2.61.3
 
   * Bug #440: crash because of the string as a part of plugin version solved.

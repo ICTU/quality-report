@@ -88,7 +88,7 @@ PROJECT.add_document(Document(name='Quality plan', url=QUALITY_PLAN_URL,
 
 # Development environment of the project
 ENVIRONMENT = Environment(name='Environment', short_name='EN', added_requirements=Environment.optional_requirements(),
-                          metric_source_ids={JENKINS: 'dummy'})
+                          metric_source_ids={SONAR: 'dummy', JENKINS: 'dummy'})
 PROJECT.add_environment(ENVIRONMENT)
 
 # Products the project develop(s).

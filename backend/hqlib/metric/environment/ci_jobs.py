@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+from typing import List
 from hqlib import metric_source
 from hqlib.domain import LowerIsBetterMetric
 from hqlib.typing import MetricParameters
@@ -33,3 +33,9 @@ class CIJobs(LowerIsBetterMetric):
     def convert_item_to_extra_info(item):
         """ Item arguments url, text, nr_of_inactive_days convey as a link and a number  """
         return ({"href": item[1], "text": item[0]}, item[2]) if item else None
+
+    def _metric_source_urls(self) -> List[str]:
+        """ Return a list of metric source urls to be used to create the url dict. """
+        if self._metric_source:
+            return [self._metric_source.url()]
+        return []

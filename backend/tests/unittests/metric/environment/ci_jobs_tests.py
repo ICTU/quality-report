@@ -26,6 +26,8 @@ class CIJobsTest(unittest.TestCase):
     def setUp(self):
         """ Create the text fixture. """
         self._jenkins = MagicMock()
+        self._jenkins.url.return_value = 'mock_jenkins_url'
+        self._jenkins.metric_source_name = 'link'
         self._project = domain.Project(metric_sources={metric_source.CIServer: self._jenkins},
                                        metric_source_ids={self._jenkins: 'dummy'})
         self._metric = CIJobs(subject=self._project, project=self._project)
@@ -33,6 +35,16 @@ class CIJobsTest(unittest.TestCase):
     def test_label(self):
         """ Test that the label to use in the HTML report is correct. """
         self.assertEqual('', self._metric.url_label_text)
+
+    def test_url(self):
+        """ Test if ci job returns correct url. """
+        self.assertEqual({"link": "mock_jenkins_url"}, self._metric.url())
+
+    def test_url_empty(self):
+        """ Test if ci job returns empty url when metric source is empty. """
+        self._project = domain.Project(metric_sources={metric_source.CIServer: []})
+        self._metric = CIJobs(subject=self._project, project=self._project)
+        self.assertEqual({}, self._metric.url())
 
     def test_convert_item_to_extra_info(self):
         """ Test if ci job item is correctly converted to extra info record. """

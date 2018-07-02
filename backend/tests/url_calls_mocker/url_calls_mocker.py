@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import pathlib
+import logging
 from hqlib.metric_source.url_opener import UrlOpener
 
 
@@ -121,7 +122,7 @@ class UrlOpenerMock(UrlOpener):
                     examples_metric_sources_path / 'sonar_version.txt'
                 ),
 
-            'https://my.sonarqube.com/api/updatecenter/installed_plugins':
+            'https://my.sonarqube.com/api/updatecenter/installed_plugins?format=json':
                 self._get_file_content(
                     examples_metric_sources_path / 'sonar_plugins.json'
                 ),
@@ -141,6 +142,11 @@ class UrlOpenerMock(UrlOpener):
                 self._get_file_content(
                     examples_metric_sources_path / 'sonar_component.json'
                 ),
+
+            'https://my.sonarqube.com/api/qualityprofiles/search?format=json':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_qualityprofiles.json'
+                ),
             # end Sonar
 
             # begin trello
@@ -159,7 +165,10 @@ class UrlOpenerMock(UrlOpener):
         super().__init__()
 
     def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
-        return self._map[url] if url in self._map.keys() else ""
+        if url in self._map.keys():
+            return self._map[url]
+        logging.info("URL %s is still not mocked for example report!")
+        return ''
 
     @staticmethod
     def _get_file_content(file_name: pathlib.Path) -> str:
