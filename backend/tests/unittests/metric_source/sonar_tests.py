@@ -490,9 +490,14 @@ class Sonar6VersionsTest(Sonar6TestCase):
     # pylint: disable=no-member
 
     def test_plugin_version(self, mock_url_read):
-        """ Test that the plugins can be retrieved. """
+        """ Test that the plugin's version is retrieved correctly. """
         mock_url_read.return_value = '[{"key": "pmd", "name": "PMD", "version": "1.1"}]'
         self.assertEqual('1.1', self._sonar.plugin_version('pmd'))
+
+    def test_plugin_version_with_build(self, mock_url_read):
+        """ Test that the plugin's version is retrieved correctly if the build number is put in the brackets. """
+        mock_url_read.return_value = '[{"key": "pmd", "name": "PMD", "version": "1.1 (build 1495)"}]'
+        self.assertEqual('1.1.1495', self._sonar.plugin_version('pmd'))
 
     def test_missing_plugin(self, mock_url_read):
         """ Test that the version number of a missing plugin is 0.0. """

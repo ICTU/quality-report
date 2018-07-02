@@ -1,3 +1,8 @@
+2018-07-03  Release 2.61.3
+
+  * Bug #440: crash because of the string as a part of plugin version solved.
+
+
 2018-07-02  Release 2.61.2
 
   * Bug #434: crash of report by Sonar Qube server version lower than 5.4 fixed.
@@ -10,7 +15,7 @@
   
 2018-06-29  Release 2.61.0
 
-  * Tech #433: API for Sonar Qube versions 7.x implemented.
+  * Feature #433: API for Sonar Qube versions 7.x implemented.
   * Tech #430: Using of different Sonar links sets per version implemented.
 
 

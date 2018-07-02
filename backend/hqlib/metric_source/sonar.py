@@ -198,13 +198,20 @@ class Sonar6(Sonar):
                                 product, analyses_json, url, reason)
                 return '?'
 
+    @classmethod
+    def __normalize_version_build(cls, version: str) -> str:
+        if '(build' in version:
+            version_parts = version.split("(build")
+            return version_parts[0].strip() + '.' + version_parts[1].split(")")[0].strip()
+        return version
+
     def plugin_version(self, plugin: str) -> str:
         """ Return the version of the SonarQube plugin. """
         try:
             plugins = self._get_plugins_json()
         except self._url_opener.url_open_exceptions:
             return '0.0'
-        mapping = dict((plugin['key'], plugin['version']) for plugin in plugins)
+        mapping = dict((plugin['key'], self.__normalize_version_build(plugin['version'])) for plugin in plugins)
         return mapping.get(plugin, '0.0')
 
     def plugins_url(self) -> str:
