@@ -24,6 +24,7 @@ BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user',
 JENKINS = metric_source.Jenkins(url='http://www.jenkins.proj.org:8080/')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
 SONAR = metric_source.Sonar('https://my.sonarqube.com/')
+JUNIT=metric_source.JunitTestReport()
 HISTORY = metric_source.CompactHistory(PROJECT_DIR / 'docs' / 'examples' / 'quality_report' / 'history.json')
 JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
                               'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
@@ -47,6 +48,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.Jenkins: BUILD_SERVER,
                       metric_source.VersionControlSystem: GIT,
                       metric_source.Sonar: SONAR,
+                      metric_source.SystemTestReport: JUNIT,
                       metric_source.JaCoCo: JACOCO,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
@@ -96,6 +98,7 @@ QUALITY_REPORT = Application(
     short_name='QR', name='Example product',
     metric_source_ids={
         SONAR: 'nl.comp:my_project',
+        JUNIT: "http://www.junit.report.url/junit.xml",
         JACOCO: 'quality-report-coverage-report',
         GIT: '.',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},

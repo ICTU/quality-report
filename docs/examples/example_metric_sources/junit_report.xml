@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<testsuites>
+  <testsuite name="junit_report" tests="0" timestamp="2018-07-04T11:13:39"/>
+  <testsuite name="Example flow." timestamp="2018-07-04T11:14:11" tests="9" failures="2" skipped="0" errors="0" time="286.889">
+    <testcase name="XXA-598. Do something to perform the scenario's." time="19.828" status="passed"/>
+    <testcase name="XXA-598, 600, 601, 602, 630, 733, 834. Some steps for a tangible product" time="68.666" status="failed">
+      <failure type="Behat\Mink\Exception\ResponseTextException"><![CDATA[And I should see "Some text!": The text "Some text!" was not found anywhere in the text of the current page.]]></failure>
+    </testcase>
+    <testcase name="XXA-639. Do something to perform the scenario's." time="16.517" status="passed"/>
+    <testcase name="XXA-598. Do something to perform the scenario's." time="13.207" status="passed"/>
+    <testcase name="XXA-639, XXA-834. Some steps for an activity." time="42.139" status="failed">
+      <failure type="Behat\Mink\Exception\ResponseTextException"><![CDATA[And I should see "Other text!": The text "Other text!" was not found anywhere in the text of the current page.]]></failure>
+    </testcase>
+    <testcase name="XXA-639, XXA-834. Some steps for a mixed order." time="77.746" status="passed"/>
+    <testcase name="XXA-598. Delete products." time="14.923" status="passed"/>
+    <testcase name="XXA-598. Un-delete products." time="18.259" status="passed"/>
+    <testcase name="XXA-598. Re-delete products." time="15.298" status="passed"/>
+  </testsuite>
+</testsuites>

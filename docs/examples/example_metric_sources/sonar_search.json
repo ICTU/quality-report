@@ -1,1 +1,1 @@
-{"errors":[{"msg":"Component key 'nl.comp:my_project:' not found"}]}
+{"paging":{"pageIndex":1,"pageSize":1,"total":1},"analyses":[{"key":"AWRxxxcBwDYp45H","date":"2018-07-04T03:24:42+0000","events":[{"key":"AWRxxxcBwDYp45I","category":"VERSION","name":"1.17.0-SNAPSHOT"}]}]}

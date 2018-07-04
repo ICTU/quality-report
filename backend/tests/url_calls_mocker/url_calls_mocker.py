@@ -147,6 +147,223 @@ class UrlOpenerMock(UrlOpener):
                 self._get_file_content(
                     examples_metric_sources_path / 'sonar_qualityprofiles.json'
                 ),
+
+            'https://my.sonarqube.com/api/components/search?qualifiers=BRC,TRK&q=nl.comp:my_project':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_component_search.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?'
+            'componentKey=nl.comp:my_project&metricKeys=blocker_violations':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_blocker_violations.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?'
+            'componentKey=nl.comp:my_project&metricKeys=critical_violations':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_critical_violations.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?'
+            'componentKey=nl.comp:my_project&metricKeys=major_violations':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_major_violations.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=pmd:CyclomaticComplexity':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=squid:MethodCyclomaticComplexity':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=csharpsquid:S1541':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=csharpsquid:FunctionComplexity':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=javascript:FunctionComplexity':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=Web:ComplexityCheck':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=python:FunctionComplexity':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=vbnet:S1541':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&'
+            'resolved=false&rules=tslint:cyclomatic-complexity':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?componentKey=nl.comp:my_project&metricKeys=functions':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_measures.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?componentKey=nl.comp:my_project&'
+            'metricKeys=duplicated_lines':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_duplicated_lines.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?componentKey=nl.comp:my_project&metricKeys=lines':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_lines.json'
+                ),
+
+            'https://my.sonarqube.com/api/measures/component?componentKey=nl.comp:my_project&metricKeys=ncloc':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_ncloc.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=squid:S138':
+                self._get_file_content(
+                    examples_metric_sources_path /  'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=Pylint:R0915':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=Web:LongJavaScriptCheck':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=pmd:ExcessiveParameterList':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=csharpsquid:S107':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=squid:S00107':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=javascript:ExcessiveParameterList':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=python:S107':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=csharpsquid:S125':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=csharpsquid:CommentedCode':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=squid:CommentedOutCodeLine':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=javascript:CommentedCode':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=python:S125':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=Web:AvoidCommentedOutCodeCheck':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=squid:NoSonar':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&'
+            'rules=Pylint:I0011':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?resolutions=FALSE-POSITIVE&componentRoots=nl.comp:my_project':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
             # end Sonar
 
             # begin trello
@@ -156,6 +373,13 @@ class UrlOpenerMock(UrlOpener):
                     examples_metric_sources_path / 'trello_board.json'
                 ),
             # end trello
+
+            # begin junit
+            'http://www.junit.report.url/junit.xml':
+                self._get_file_content(
+                    examples_metric_sources_path / 'junit_report.xml'
+                ),
+            # end junit
 
             'https://last_security_date_url':
                 self._get_file_content(
@@ -167,7 +391,7 @@ class UrlOpenerMock(UrlOpener):
     def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
         if url in self._map.keys():
             return self._map[url]
-        logging.info("URL %s is still not mocked for example report!")
+        logging.info("URL %s is still not mocked for example report!", url)
         return ''
 
     @staticmethod
