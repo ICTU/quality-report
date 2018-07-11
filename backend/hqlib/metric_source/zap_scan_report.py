@@ -29,8 +29,8 @@ class ZAPScanReport(domain.MetricSource):
     """ Class representing ZAP Scan reports. """
     metric_source_name = 'ZAP Scan rapport'
 
-    def __init__(self, url_open=None, **kwargs) -> None:
-        self._url_open = url_open or url_opener.UrlOpener(**kwargs).url_open
+    def __init__(self, **kwargs) -> None:
+        self._url_opener = url_opener.UrlOpener(**kwargs)
         super().__init__()
 
     @functools.lru_cache(maxsize=1024)
@@ -51,7 +51,7 @@ class ZAPScanReport(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url: str):
         """ Return the HTML soup. """
-        return bs4.BeautifulSoup(self._url_open(url), "lxml")
+        return bs4.BeautifulSoup(self._url_opener.url_read(url), "lxml")
 
     @staticmethod
     def __parse_alerts(soup, risk_level: str) -> int:

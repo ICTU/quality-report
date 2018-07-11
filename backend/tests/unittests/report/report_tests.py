@@ -17,6 +17,8 @@ limitations under the License.
 import datetime
 import unittest
 
+from unittest.mock import patch
+
 from hqlib import report, domain, metric, metric_source, requirement
 
 
@@ -314,8 +316,10 @@ class QualityReportMetricsTest(unittest.TestCase):
         for metric_class in [metric.FailingUnittests, metric.UnittestReportAge]:
             self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UnitTests]))
 
-    def test_unittest_coverage_metrics(self):
+    @patch.object(metric.UnittestBranchCoverage, 'is_applicable')
+    def test_unittest_coverage_metrics(self, mock_is_applicable):
         """ Test that the unit test coverage metrics are added if required. """
+        mock_is_applicable.return_value = True
         for metric_class in [metric.UnittestLineCoverage, metric.UnittestBranchCoverage]:
             self.__assert_metric(metric_class, product_kwargs=dict(requirements=[requirement.UnitTestCoverage]))
 

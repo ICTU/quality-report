@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import MagicMock
 
 from hqlib import metric, domain, metric_source
 
@@ -62,3 +63,35 @@ class UnittestBranchCoverageTest(CommonUnittestMetricTestsMixin, unittest.TestCa
     class_under_test = metric.UnittestBranchCoverage
     expected_value = 87
     expected_report = 'FakeSubject unittest branch coverage is 87%.'
+
+
+class UnittestBranchCoverageTestDirect(unittest.TestCase):
+    """ Unit tests without mixin class. """
+
+    def test_is_applicable(self):
+        """ Test that  is_applicable returns True if metric source's has_branch_coverage returns True. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.has_branch_coverage.return_value = True
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        branch_coverage = metric.UnittestBranchCoverage(subject=MagicMock(), project=project)
+
+        self.assertTrue(branch_coverage.is_applicable())
+
+    def test_is_applicable_false(self):
+        """ Test that  is_applicable returns False if metric source's has_branch_coverage returns False. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.has_branch_coverage.return_value = False
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        branch_coverage = metric.UnittestBranchCoverage(subject=MagicMock(), project=project)
+
+        self.assertFalse(branch_coverage.is_applicable())
+
+    def test_is_applicable_no_metric_source(self):
+        """ Test that  is_applicable returns True if there is no metric source. """
+        project = MagicMock()
+        project.metric_sources.return_value = [None]
+        branch_coverage = metric.UnittestBranchCoverage(subject=MagicMock(), project=project)
+
+        self.assertTrue(branch_coverage.is_applicable())

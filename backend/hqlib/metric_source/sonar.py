@@ -143,6 +143,11 @@ class Sonar6(Sonar):
 
     # Coverage report API
 
+    def has_branch_coverage(self, metric_source_id: str) -> bool:
+        """ Determines if the branch coverage is defined on Sonar. """
+        # pylint: disable=no-value-for-parameter
+        return self.version_number() is None or self.unittest_branch_coverage(metric_source_id) != -1
+
     def statement_coverage(self, metric_source_id: str) -> float:
         """ Return the statement coverage for a specific product. """
         return self.unittest_line_coverage(metric_source_id)

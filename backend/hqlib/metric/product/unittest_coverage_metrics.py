@@ -53,5 +53,8 @@ class UnittestBranchCoverage(UnittestCoverage):
     target_value = 80
     low_target_value = 60
 
+    def is_applicable(self):
+        return self._metric_source is None or self._metric_source.has_branch_coverage(self._metric_source_id)
+
     def value(self):
         return round(self._metric_source.branch_coverage(self._metric_source_id)) if self._metric_source else -1

@@ -15,14 +15,12 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import patch, call
+
 import urllib.error
+from hqlib.metric_source import ZAPScanReport, url_opener
 
-from hqlib.metric_source import ZAPScanReport
-
-
-class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
-    """ Fake the url opener to return static html. """
-    html = '''<html>
+ZAP_REPORT = '''<html>
     <body>
     <table width="45%" class="summary">
     <tr bgcolor="#666666">
@@ -51,73 +49,48 @@ class FakeUrlOpener(object):  # pylint: disable=too-few-public-methods
     </html>
     '''
 
-    old_report_html = '''<html>
-    <body>
-    <table width="45%" border="0">
-    <tr bgcolor="#666666">
-    <td width="45%" height="24"><strong><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif">Risk
-          Level</font></strong></td><td width="55%" align="center"><strong><font color="#FFFFFF" size="2"
-          face="Arial, Helvetica, sans-serif">Number of Alerts</font></strong></td>
-    </tr>
-    <tr bgcolor="#e8e8e8">
-    <td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#high">High</a></font></td>
-    <td align="center"><font size="2" face="Arial, Helvetica, sans-serif">0</font></td>
-    </tr>
-    <tr bgcolor="#e8e8e8">
-    <td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#medium">Medium</a></font></td>
-    <td align="center"><font size="2" face="Arial, Helvetica, sans-serif">1</font></td>
-    </tr>
-    <tr bgcolor="#e8e8e8">
-    <td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#low">Low</a></font></td>
-    <td align="center"><font size="2" face="Arial, Helvetica, sans-serif">4</font></td>
-    </tr>
-    <tr bgcolor="#e8e8e8">
-    <td><font size="2" face="Arial, Helvetica, sans-serif"><a href="#info">Informational</a></font></td>
-    <td align="center"><font size="2" face="Arial, Helvetica, sans-serif">2</font></td>
-    </tr>
-    </table>
-    </body>
-    </html>
-    '''
 
-    def url_open(self, url):
-        """ Open a url. """
-        if 'raise' in url:
-            raise urllib.error.HTTPError(url, None, None, None, None)
-        else:
-            return self.html
-
-
+@patch.object(url_opener.UrlOpener, 'url_read')
 class ZAPScanReportTest(unittest.TestCase):
     """ Unit tests for the ZAP Scan report class. """
 
     def setUp(self):
-        self.__opener = FakeUrlOpener()
         ZAPScanReport.alerts.cache_clear()
         ZAPScanReport._ZAPScanReport__get_soup.cache_clear()
-        self.__report = ZAPScanReport(url_open=self.__opener.url_open)
+        self.__report = ZAPScanReport()
 
-    def test_high_risk_alerts(self):
+    def test_high_risk_alerts(self, mock_url_read):
         """ Test the number of high risk alerts. """
+        mock_url_read.return_value = ZAP_REPORT
         self.assertEqual(0, self.__report.alerts('high', 'url'))
+        mock_url_read.assert_called_once()
 
-    def test_medium_risk_alerts(self):
+    def test_medium_risk_alerts(self, mock_url_read):
         """ Test the number of medium risk alerts. """
+        mock_url_read.return_value = ZAP_REPORT
         self.assertEqual(1, self.__report.alerts('medium', 'url'))
+        mock_url_read.assert_called_once()
 
-    def test_low_risk_alerts(self):
+    def test_low_risk_alerts(self, mock_url_read):
         """ Test the number of low risk alerts. """
+        mock_url_read.return_value = ZAP_REPORT
         self.assertEqual(4, self.__report.alerts('low', 'url'))
+        mock_url_read.assert_called_once()
 
-    def test_passed_raise(self):
+    def test_passed_raise(self, mock_url_read):
         """ Test that the value is -1 when the report can't be opened. """
+        mock_url_read.side_effect = urllib.error.HTTPError('raise', None, None, None, None)
         self.assertEqual(-1, self.__report.alerts('high', 'raise'))
+        mock_url_read.assert_called_once()
 
-    def test_multiple_urls(self):
+    def test_multiple_urls(self, mock_url_read):
         """ Test the number of alerts for multiple urls. """
+        mock_url_read.return_value = ZAP_REPORT
         self.assertEqual(2, self.__report.alerts('medium', 'url1', 'url2'))
+        self.assertEqual(mock_url_read.call_args_list, [call('url1'), call('url2')])
 
-    def test_missing_table(self):
+    def test_missing_table(self, mock_url_read):
         """ Test that a missing table can be handled. """
-        self.__opener.html = '<html></html>'
+        mock_url_read.return_value = '<html></html>'
         self.assertEqual(-1, self.__report.alerts('high', 'url'))
+        mock_url_read.assert_called_once()

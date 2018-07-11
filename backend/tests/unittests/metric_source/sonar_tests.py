@@ -112,6 +112,35 @@ class SonarFacadeTest(unittest.TestCase):
         mock_warning.assert_called_once_with("Error retrieving Sonar Qube server version!")
 
 
+class Sonar6PublicMethodsTest(unittest.TestCase):
+    """ Test methods of Sonar6 that do not need url mocking """
+
+    @patch.object(Sonar6, 'version_number')
+    @patch.object(Sonar6, 'unittest_branch_coverage')
+    def test_has_branch_coverage(self, mock_unittest_branch_coverage, mock_version_number):
+        """ Test that Sonar6 has branch coverage """
+        mock_version_number.return_value = '6.3'
+        mock_unittest_branch_coverage.return_value = 2
+        sonar = Sonar6('url')
+        self.assertTrue(sonar.has_branch_coverage('metric_source_id'))
+
+    @patch.object(Sonar6, 'version_number')
+    @patch.object(Sonar6, 'unittest_branch_coverage')
+    def test_has_branch_coverage_not(self, mock_unittest_branch_coverage, mock_version_number):
+        """ Test that Sonar6 has no branch coverage if unittest_branch_coverage returns -1. """
+        mock_version_number.return_value = '6.3'
+        mock_unittest_branch_coverage.return_value = -1
+        sonar = Sonar6('url')
+        self.assertFalse(sonar.has_branch_coverage('metric_source_id'))
+
+    @patch.object(Sonar6, 'version_number')
+    def test_has_branch_coverage_when_no_version(self, mock_version_number):
+        """ Test that Sonar6 formally has branch coverage when no valid version number is returne. """
+        mock_version_number.return_value = None
+        sonar = Sonar6('url')
+        self.assertTrue(sonar.has_branch_coverage('metric_source_id'))
+
+
 class Sonar6TestCase(unittest.TestCase):
     """ Base class for Sonar unit tests. """
     def setUp(self):

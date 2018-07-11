@@ -1,3 +1,8 @@
+2018-07-13  Release 2.61.7
+
+  * Bug #372: Branch coverage not shown in the report when not applicable.
+
+
 2018-07-12  Release 2.61.6
 
   * Bug fix: Don't crash when a performance report contains an empty transaction.

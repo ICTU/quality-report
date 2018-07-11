@@ -381,6 +381,13 @@ class UrlOpenerMock(UrlOpener):
                 ),
             # end junit
 
+            # begin zap scan
+            'http://jenkins/job/zap_scan/ws/report.html':
+                self._get_file_content(
+                    examples_metric_sources_path / 'ZAPScanningReport.html'
+                ),
+            # end zap scan
+
             'https://last_security_date_url':
                 self._get_file_content(
                     examples_metric_sources_path / 'file_with_date.json'
