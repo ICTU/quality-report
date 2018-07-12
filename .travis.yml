@@ -1,8 +1,7 @@
-sudo: required
-dist: trusty
+sudo: true
+dist: xenial
 language: python
-python:
-- '3.6'
+python: 3.7
 services:
 - docker
 before_install:
@@ -13,54 +12,71 @@ install:
 - pip install codacy-coverage
 - pip install coveralls
 - pip install codecov
-before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build
-script:
-- cd frontend
-- npm install
-- npm run build
-- npm run cover
-- cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
-- cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-- cd ../backend
-- coverage run --parallel-mode --branch --source=hqlib,tests tests/run_unittests.py
-- coverage run --parallel-mode --branch --source=hqlib,tests tests/run_integrationtests.py
-- coverage combine
-- coverage xml
-- python-codacy-coverage -r coverage.xml
-- coveralls
-- codecov
-- python tests/run_qualitytests.py  # Check code quality (pep8)
-- nosetests --with-xunit tests/unittests/  # For SonarQube, see https://docs.sonarqube.org/display/PLUG/Python+Unit+Tests+Execution+Reports+Import
-- cd ..
-- sonar-scanner -Dsonar.login=$SONAR_TOKEN
-after_script:
-- cd backend
-- ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-- cd ..
-before_deploy:
-- cd backend
-- python setup.py bundle
-deploy:
-  provider: pypi
-  user: fniessink
-  skip_cleanup: true
-  password:
-    secure: FI9Q2kC5D6i2hjK7t0GTVzYIgmU7H9GoI0qqtzVtT6V7gfV74HtfPxuIbkF6HND09GY1moSF5I0vyR8Bm2nMxEs+9PflYtNUMeNlyrEEof/brbYIrKujPGr6wVdgT4iZlMAVeybRTWhPQpo5PFsGuGcQa5cZOzt4fPPy/KO8C0c=
-  on:
-    tags: true
-after_deploy:
-  - cd ..
-  - docker build --no-cache --build-arg hq_version=$HQ_VERSION -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push ictu/quality-report
-addons:
-  sonarcloud:
-    organization: ictu
+jobs:
+  include:
+    - stage: test
+      python: 3.6
+      dist: trusty
+      sudo: false
+      script:
+      - cd backend
+      - python tests/run_qualitytests.py  # Check code quality (pep8, pylint)
+    - stage: test
+      python: 3.7
+      dist: xenial
+      sudo: true
+      before_script:
+      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - chmod +x ./cc-test-reporter
+      - ./cc-test-reporter before-build
+      script:
+      - cd frontend
+      - npm install
+      - npm run build
+      - npm run cover
+      - cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
+      - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+      - cd ../backend
+      - coverage run --parallel-mode --branch --source=hqlib,tests tests/run_unittests.py
+      - coverage run --parallel-mode --branch --source=hqlib,tests tests/run_integrationtests.py
+      - coverage combine
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+      - coveralls
+      - codecov
+      - nosetests --with-xunit tests/unittests/  # For SonarQube, see https://docs.sonarqube.org/display/PLUG/Python+Unit+Tests+Execution+Reports+Import
+      - cd ..
+      - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+      after_script:
+      - cd backend
+      - ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+      - cd ..
+      addons:
+        sonarcloud:
+          organization: ictu
+    - stage: deploy
+      python: 3.7
+      dist: xenial
+      sudo: true
+      script: true
+      before_deploy:
+      - cd backend
+      - python setup.py bundle
+      deploy:
+        provider: pypi
+        user: fniessink
+        skip_cleanup: true
+        password:
+          secure: FI9Q2kC5D6i2hjK7t0GTVzYIgmU7H9GoI0qqtzVtT6V7gfV74HtfPxuIbkF6HND09GY1moSF5I0vyR8Bm2nMxEs+9PflYtNUMeNlyrEEof/brbYIrKujPGr6wVdgT4iZlMAVeybRTWhPQpo5PFsGuGcQa5cZOzt4fPPy/KO8C0c=
+        on:
+          tags: true
+      after_deploy:
+      - cd ..
+      - docker build --no-cache --build-arg hq_version=$HQ_VERSION -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker push ictu/quality-report
 env:
   global:
-  - HQ_VERSION=`echo $TRAVIS_TAG | python -c "import sys; sys.stdout.write(sys.stdin.read()[1:])"`
+  - HQ_VERSION=`echo $TRAVIS_TAG | python -c "import sys; sys.stdout.write(sys.stdin.read().lstrip('v'))"`
   - CC_TEST_REPORTER_ID=58f7db7da1655acbe50dec6251772d4473dce782808e29b20299d5a7f3fca904
   - secure: mOpbXELefnD2snAx7ie+wQwcF52/ee1n1ILeqjnSunDGHCZzitpYwVR1+hhqXyK0bNy+HdALCXf2rlqzJUvOsQmAYefj19w4K5SzejVd27MVeJ15EFX9NAruRo0Z3qg1jr5s0argFra5JrdXbfGGLWqY7Ejj5ZzG40VlRjKMx88=

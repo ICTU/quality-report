@@ -19,6 +19,7 @@ quality_report.egg-info
 node_modules
 backend/hqlib/app/img
 backend/hqlib/app/html
+backend/.venv
 
 # Ignore OS specific folders and files
 .DS_Store
