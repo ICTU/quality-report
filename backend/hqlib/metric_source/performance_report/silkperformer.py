@@ -48,7 +48,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
                 query_names = row('td', attrs={'class': ['name']})
                 if not query_names:
                     continue  # Header row
-                query_name = query_names[0].string
+                query_name = query_names[0].string or ""
                 if not product_query_re.match(query_name):
                     continue  # Not our product
                 if len(row('td')) < self.COLUMN_90_PERC + 1 or not row('td')[self.COLUMN_90_PERC].has_attr('class'):
