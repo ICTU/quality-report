@@ -1,3 +1,8 @@
+2018-07-12  Release 2.61.5
+
+  * Tech: Upgrade backend to Python 3.7.
+
+
 2018-07-03  Release 2.61.4
 
   * Bug #345: dummy links in CI-jobs and Sonar version corrected.

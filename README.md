@@ -66,7 +66,7 @@ Long term changes are visible in the trend graphs.
 Usage
 -----
 
-### Using Python 3.6
+### Using Python 3.7
 
 Install HQ from the Python Package Index (PyPI):
 
