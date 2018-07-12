@@ -3,6 +3,8 @@ branch = True
 omit =
     */lib/python*
     tests/integrationtests/test_no_source_ids/missing_project_definition.py
+    tests/run_*.py
+    tests/test_runner.py
 data_file = build/.coverage
 
 [report]

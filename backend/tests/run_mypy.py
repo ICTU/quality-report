@@ -14,20 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# Run the mypy static type checker.
-
 import pathlib
 from mypy import api
 
 
-def run_mypy():
-    """ Create report folder and run mypy. """
-    backend_dir = pathlib.Path(__file__).parent.parent
-    hqlib_dir = backend_dir / "hqlib"
-    report_dir = backend_dir.parent / "build" / "mypy_report"
-    report_dir.mkdir(parents=True, exist_ok=True)
+def run_mypy() -> None:
+    """ Create report folder and run mypy (static type checker). """
+    my_dir = pathlib.Path(__file__).resolve().parent
+    hqlib_dir = my_dir.parent / "hqlib"
+    results_dir = my_dir.parent / "build" / "mypy_report"
+    results_dir.mkdir(parents=True, exist_ok=True)
 
-    result = api.run([str(hqlib_dir), "--html-report", str(report_dir)])
+    result = api.run([str(hqlib_dir), "--html-report", str(results_dir)])
 
     if result[0]:
         print("\nType checking report:\n")

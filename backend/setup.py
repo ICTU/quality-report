@@ -17,6 +17,7 @@ limitations under the License.
 """
 
 import os
+import pathlib
 from distutils import core, dir_util
 from setuptools import setup, find_packages
 
@@ -35,12 +36,16 @@ class Bundle(core.Command):
         pass
 
     def run(self):
-        os.chdir('../frontend')
+        my_dir = pathlib.Path(__file__).resolve().parent
+        frontend_dir = my_dir.parent / 'frontend'
+        backend_dir = my_dir.parent / 'backend'
+        hqlib_app_dir = backend_dir / "hqlib" / "app"
+        os.chdir(frontend_dir)
         os.system('npm install')
         os.system('npm run build')
-        dir_util.copy_tree('html', '../backend/hqlib/app/html')
-        dir_util.copy_tree('img', '../backend/hqlib/app/img')
-        os.chdir('../backend')
+        dir_util.copy_tree('html', str(hqlib_app_dir / "html"))
+        dir_util.copy_tree('img', str(hqlib_app_dir / "img"))
+        os.chdir(backend_dir)
 
 
 setup(name='quality_report',

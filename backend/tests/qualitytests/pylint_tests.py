@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+import pathlib
+import os
 import re
 import unittest
 from pylint import epylint as lint
@@ -24,9 +25,18 @@ class TestCodeFormat(unittest.TestCase):
     """ Code format tests. """
     def assert_pylint_score(self, path, target):
         pylint_stdout, pylint_stderr = lint.py_run(path, return_std=True)
-        score = float(re.search(r"Your code has been rated at ([-+]?\d*\.\d+|\d+)/10", pylint_stdout.read()).group(1))
+        found = re.search(r"Your code has been rated at ([-+]?\d*\.\d+|\d+)/10", pylint_stdout.read())
+        if found:
+            score = float(found.group(1))
+        else:
+            score = -1.0
         self.failUnless(score >= target, score)
 
     def test_pylint_score_main_script(self):
         """Test that our score is high enough."""
+        my_dir = pathlib.Path(__file__).resolve().parent
+        backend_dir = my_dir.parent.parent
+        return_to_dir = pathlib.Path.cwd()
+        os.chdir(backend_dir)
         self.assert_pylint_score("quality_report.py", 10.0)
+        os.chdir(return_to_dir)

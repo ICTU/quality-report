@@ -14,24 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# Run the integration tests.
-
-import io
-import logging
 import os
+import pathlib
 import sys
-import unittest
 
-import xmlrunner
+from test_runner import run_tests
+
+
+def run_integration_tests() -> None:
+    """ Create the application bundle and run the integration tests. """
+    my_dir = pathlib.Path(__file__).resolve().parent
+    setup_py = my_dir.parent / "setup.py"
+    os.system(f"{sys.executable} {setup_py} bundle")
+    run_tests("integrationtests", "integration-test-reports")
+
 
 if __name__ == '__main__':  # pragma: no branch
-    sys.path.insert(0, '.')
-    # Make sure log messages are not shown on stdout/stderr. We can't simply
-    # increase the log level since some integration tests may expect logging to happen.
-    logging.getLogger().addHandler(logging.StreamHandler(io.StringIO()))
-    # Run the unit test with the XML test runner so that the test output
-    # can be processed by Sonar.
-    os.makedirs('build', exist_ok=True)
-    os.system('python3 setup.py bundle')
-    unittest.main(module=None, testRunner=xmlrunner.XMLTestRunner(output='build/integration-test-reports'),
-                  argv=[sys.argv[0], 'discover', '-s', 'integrationtests', '-p', '*_tests.py'])
+    run_integration_tests()

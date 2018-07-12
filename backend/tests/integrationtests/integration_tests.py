@@ -26,8 +26,10 @@ import bs4
 from hqlib import domain, requirement
 
 
-PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
-TESTS_DIR = PROJECT_DIR / 'backend' / 'tests'
+MY_DIR = pathlib.Path(__file__).resolve().parent
+PROJECT_DIR = MY_DIR.parent.parent.parent
+BACKEND_DIR = PROJECT_DIR / "backend"
+TESTS_DIR = BACKEND_DIR / "tests"
 
 
 def requirement_metric_classes(*requirements):
@@ -54,11 +56,12 @@ class IntegrationTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Create the report and read it. """
-        build_dir = PROJECT_DIR / 'build'
+        build_dir = BACKEND_DIR / "build" / "temp"
         build_dir.mkdir(parents=True, exist_ok=True)
         cls.report_folder = pathlib.Path(tempfile.mkdtemp(dir=build_dir))
         (cls.report_folder / 'json').mkdir(parents=True, exist_ok=True)
         (cls.report_folder / 'json' / 'metrics.json').touch()
+        os.chdir(BACKEND_DIR)
         os.system('coverage{0} run --parallel-mode --branch quality_report.py --project {1} --report {2} '
                   '--log ERROR'.format(sys.version_info[0], cls.project_folder, cls.report_folder))
         with (cls.report_folder / 'json' / 'metrics.json').open() as metrics_json:
