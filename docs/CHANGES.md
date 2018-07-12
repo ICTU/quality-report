@@ -1,3 +1,8 @@
+2018-07-12  Release 2.61.6
+
+  * Bug fix: Don't crash when a performance report contains an empty transaction.
+
+
 2018-07-12  Release 2.61.5
 
   * Tech: Upgrade backend to Python 3.7.
