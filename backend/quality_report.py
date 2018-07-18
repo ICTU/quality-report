@@ -30,7 +30,7 @@ from hqlib import app, formatting, commandlineargs, report, metric_source, log, 
     NAME, VERSION
 
 
-class Reporter(object):  # pylint: disable=too-few-public-methods
+class Reporter():  # pylint: disable=too-few-public-methods
     """ Class for creating the quality report for a specific project. """
     def __init__(self, project_folder_or_filename):
         self.__project = configuration.project(project_folder_or_filename)
