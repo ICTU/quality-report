@@ -63,6 +63,7 @@ jobs:
       - python setup.py bundle sdist
       - cd ..
       - docker build --no-cache --build-arg hq_version=$HQ_VERSION -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
+      - cd backend
       deploy:
         - provider: pypi
           user: fniessink
