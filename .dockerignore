@@ -1,2 +1,4 @@
 # Exclude all files as the Dockerfile contains all the information needed to build the image.
 *
+!backend/dist/*.tar.gz
+
