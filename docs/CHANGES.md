@@ -1,3 +1,8 @@
+2018-07-20  Release 2.61.9
+
+  * Bug fix: More reliable release process. 
+
+
 2018-07-20  Release 2.61.8
 
   * Bug fix: More reliable release process. 
