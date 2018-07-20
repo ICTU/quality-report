@@ -60,7 +60,7 @@ jobs:
       sudo: true
       script: 
       - cd backend
-      - python setup.py bundle
+      - python setup.py bundle sdist
       - cd ..
       - docker build --no-cache --build-arg hq_version=$HQ_VERSION -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
       deploy:
