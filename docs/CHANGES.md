@@ -1,3 +1,8 @@
+2018-07-20  Release 2.61.8
+
+  * Bug fix: More reliable release process. 
+
+
 2018-07-13  Release 2.61.7
 
   * Bug #372: Branch coverage not shown in the report when not applicable.
