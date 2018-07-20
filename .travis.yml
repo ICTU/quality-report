@@ -68,6 +68,8 @@ jobs:
           skip_cleanup: true
           password:
             secure: FI9Q2kC5D6i2hjK7t0GTVzYIgmU7H9GoI0qqtzVtT6V7gfV74HtfPxuIbkF6HND09GY1moSF5I0vyR8Bm2nMxEs+9PflYtNUMeNlyrEEof/brbYIrKujPGr6wVdgT4iZlMAVeybRTWhPQpo5PFsGuGcQa5cZOzt4fPPy/KO8C0c=
+          on:
+            tags: true
         - provider: script
           skip_cleanup: true
           script:
@@ -75,8 +77,8 @@ jobs:
           - docker build --no-cache --build-arg hq_version=$HQ_VERSION -t ictu/quality-report:latest -t ictu/quality-report:$TRAVIS_TAG .
           - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
           - docker push ictu/quality-report
-        on:
-          tags: true
+          on:
+            tags: true
 env:
   global:
   - HQ_VERSION=`echo $TRAVIS_TAG | python -c "import sys; sys.stdout.write(sys.stdin.read().lstrip('v'))"`
