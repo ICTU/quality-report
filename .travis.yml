@@ -77,9 +77,7 @@ jobs:
           skip_cleanup: true
           on:
             tags: true
-          script:
-          - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-          - docker push ictu/quality-report
+          script: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" && docker push ictu/quality-report
 env:
   global:
   - HQ_VERSION=`echo $TRAVIS_TAG | python -c "import sys; sys.stdout.write(sys.stdin.read().lstrip('v'))"`

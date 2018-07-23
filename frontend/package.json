@@ -1,6 +1,6 @@
 {
   "name": "HQ",
-  "version": "2.61.10",
+  "version": "2.61.11",
   "description": "Holistic Software Quality Reporting",
   "main": "index.js",
   "scripts": {

@@ -1,3 +1,8 @@
+2018-07-23  Release 2.61.11
+
+  * Bug fix: Fix Travis deploy stage.
+
+
 2018-07-23  Release 2.61.10
 
   * Bug fix: Fix Travis deploy stage.
