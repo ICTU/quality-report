@@ -1,3 +1,8 @@
+2018-07-24  Release 2.61.12
+
+  * Bug #453: Report crash fixed for JaCoCo metric source.
+
+
 2018-07-23  Release 2.61.11
 
   * Bug fix: Fix Travis deploy stage.

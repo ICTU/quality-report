@@ -17,7 +17,7 @@ limitations under the License.
 
 import datetime
 import functools
-from typing import Callable, List
+from typing import List
 
 import bs4
 
@@ -29,8 +29,8 @@ from ..url_opener import UrlOpener
 class HTMLCoverageReport(CoverageReport):
     """ Abstract class representing a HTML coverage report. """
 
-    def __init__(self, url_open: Callable[[str], bytes] = None, **kwargs) -> None:
-        self.__url_open = url_open or UrlOpener(**kwargs).url_open
+    def __init__(self, **kwargs) -> None:
+        self._url_opener = UrlOpener(**kwargs)
         super().__init__()
 
     def statement_coverage(self, metric_source_id: str) -> float:
@@ -86,4 +86,4 @@ class HTMLCoverageReport(CoverageReport):
     @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url: str, log_error: bool = True):
         """ Get a beautiful soup of the HTML at the url. """
-        return bs4.BeautifulSoup(self.__url_open(url, log_error=log_error), "lxml")
+        return bs4.BeautifulSoup(self._url_opener.url_read(url, log_error=log_error), "lxml")

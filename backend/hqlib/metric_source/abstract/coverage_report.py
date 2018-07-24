@@ -38,6 +38,11 @@ class CoverageReport(domain.MetricSource):
         """ Return the branch coverage for a specific product. """
         raise NotImplementedError
 
+    @classmethod
+    def has_branch_coverage(cls) -> bool:
+        """ Determines if the branch coverage is defined on Sonar. """
+        return True
+
     @functools.lru_cache(maxsize=1024)
     def datetime(self, *metric_source_ids: str) -> DateTime:
         """ Return the date when the coverage for a specific product was last successfully measured. """
