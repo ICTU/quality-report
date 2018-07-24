@@ -1,3 +1,8 @@
+2018-07-24  Release 2.61.13
+
+  * Bug #453: Report crash fixed for JaCoCo metric source - fix.
+
+
 2018-07-24  Release 2.61.12
 
   * Bug #453: Report crash fixed for JaCoCo metric source.

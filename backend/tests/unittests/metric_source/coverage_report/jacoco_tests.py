@@ -53,7 +53,7 @@ class JacocoTest(unittest.TestCase):
     def test_has_branch_coverage(self, mock_url_read):
         """ Test that coverage report has branch coverage. """
         mock_url_read.return_value = 'dummy'
-        self.assertTrue(self.__jacoco.has_branch_coverage())
+        self.assertTrue(self.__jacoco.has_branch_coverage('dummy'))
 
     def test_zero_statement_coverage(self, mock_url_read):
         """ Test zero statement coverage. """

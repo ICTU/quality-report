@@ -39,7 +39,7 @@ class CoverageReport(domain.MetricSource):
         raise NotImplementedError
 
     @classmethod
-    def has_branch_coverage(cls) -> bool:
+    def has_branch_coverage(cls, metric_source_id: str) -> bool:
         """ Determines if the branch coverage is defined on Sonar. """
         return True
 

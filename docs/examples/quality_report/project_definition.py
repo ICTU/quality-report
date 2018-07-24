@@ -26,8 +26,7 @@ GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
 SONAR = metric_source.Sonar('https://my.sonarqube.com/')
 JUNIT=metric_source.JunitTestReport()
 HISTORY = metric_source.CompactHistory(PROJECT_DIR / 'docs' / 'examples' / 'quality_report' / 'history.json')
-JACOCO = metric_source.JaCoCo(BUILD_SERVER.url() +
-                              'job/%s/lastSuccessfulBuild/artifact/trunk/coveragereport/index.html')
+JACOCO = metric_source.JaCoCo()
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 SECURITY_REPORT_PROXY = metric_source.FileWithDate()
 
