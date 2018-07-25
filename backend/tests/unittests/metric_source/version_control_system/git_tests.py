@@ -17,7 +17,9 @@ limitations under the License.
 import datetime
 import unittest
 
-from hqlib.metric_source import Git, VersionControlSystem
+import dateutil
+
+from hqlib.metric_source import Git, VersionControlSystem, Branch
 
 
 class GitTests(unittest.TestCase):
@@ -51,15 +53,31 @@ class GitTests(unittest.TestCase):
 
     def test_unmerged_branches(self):
         """ Test that there are no unmerged branches by default. """
-        self.assertEqual({}, self.__git.unmerged_branches('http://git/'))
+        self.assertEqual([], self.__git.unmerged_branches('http://git/'))
 
     def test_unmerged_branches_with_repo(self):
         """ Test the unmerged branches with a (faked) repo. """
         VersionControlSystem._run_shell_command.cache_clear()
         Git._run_shell_command.cache_clear()
-        git = Git(url=self.__git.url(), username='u', password='p',
-                  run_shell_command=lambda *args, **kwargs: 'branch\n')
-        self.assertEqual(dict(branch=1), git.unmerged_branches('path'))
+        git = Git(
+            url=self.__git.url(),
+            username='u', password='p',
+            run_shell_command=lambda *args, **kwargs: "2018-01-01T10:00:00+02:00\n" if "show" in args[0] else "branch\n"
+        )
+        expected_datetime = dateutil.parser.parse("2018-01-01T10:00:00+02:00",
+                                                  ignoretz=False).astimezone().replace(tzinfo=None)
+        self.assertEqual([Branch("branch", 1, expected_datetime)], git.unmerged_branches('path'))
+
+    def test_unmerged_branches_invalid_date(self):
+        """ Test that the last change date of a branch is the minimum date if parsing fails. """
+        VersionControlSystem._run_shell_command.cache_clear()
+        Git._run_shell_command.cache_clear()
+        git = Git(
+            url=self.__git.url(),
+            username='u', password='p',
+            run_shell_command=lambda *args, **kwargs: "invalid date\n" if "show" in args[0] else "branch\n"
+        )
+        self.assertEqual([Branch("branch", 1, datetime.datetime.min)], git.unmerged_branches('path'))
 
     def test_normalize_path(self):
         """ Test path that needs no changes. """

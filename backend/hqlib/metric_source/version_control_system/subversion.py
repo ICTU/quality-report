@@ -17,15 +17,15 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import List, Dict
+from typing import List
 
 import bs4
 
 from hqlib.typing import DateTime
-from ..abstract import version_control_system
+from ..abstract.version_control_system import VersionControlSystem, Branch
 
 
-class Subversion(version_control_system.VersionControlSystem):
+class Subversion(VersionControlSystem):
     """ Class representing the Subversion repository. """
 
     metric_source_name = 'Subversion'
@@ -55,15 +55,14 @@ class Subversion(version_control_system.VersionControlSystem):
 
     def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
                           re_of_branches_to_ignore: str = '',
-                          list_of_branches_to_include: List[str] = None) -> Dict[str, int]:
-        """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
-            unmerged revisions. """
+                          list_of_branches_to_include: List[str] = None) -> List[Branch]:
+        """ Return a list of branches that have unmerged revisions. """
         branches = [branch for branch in self.branches(path) if not
                     self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
                                         list_of_branches_to_include)]
         branches_and_revs = [(branch, self.__nr_unmerged_revisions(path, branch)) for branch in branches]
-        unmerged_branches = [(branch, nr_revisions) for (branch, nr_revisions) in branches_and_revs if nr_revisions > 0]
-        return dict(unmerged_branches)
+        return [Branch(branch, nr_revisions, self.__date_branch_last_change(path, branch))
+                for (branch, nr_revisions) in branches_and_revs if nr_revisions > 0]
 
     def __nr_unmerged_revisions(self, product_url: str, branch_name: str) -> int:
         """ Return whether the branch has unmerged revisions. """
@@ -83,6 +82,10 @@ class Subversion(version_control_system.VersionControlSystem):
                 if '/tags/' in self.__revision_url(branch_url, revision):
                     nr_revisions -= 1
         return nr_revisions
+
+    def __date_branch_last_change(self, product_url: str, branch_name: str) -> DateTime:
+        """ Return the date of the last change on the branch. """
+        return self.last_changed_date(self.__branches_folder(product_url) + branch_name)
 
     def __revision_url(self, branch_url: str, revision_number: str) -> str:
         """ Return the url for a specific revision number. """

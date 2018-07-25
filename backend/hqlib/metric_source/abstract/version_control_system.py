@@ -15,15 +15,32 @@ limitations under the License.
 """
 
 
+import datetime
 import functools
 import logging
 import os
 import re
 import subprocess
-from typing import Dict, Tuple, List
+from typing import Tuple, List
 
 from hqlib.typing import DateTime
 from hqlib import domain
+
+
+class Branch:
+    """ A branch in a version control system. """
+
+    def __init__(self, name: str, nr_revisions: int = None, date_last_change: DateTime = datetime.datetime.min) -> None:
+        self.name = name
+        self.nr_revisions = nr_revisions
+        self.date_last_change = date_last_change
+
+    def __repr__(self):
+        return "{0}({1}. {2}, {3})".format(self.__class__.__name__, self.name, self.nr_revisions, self.date_last_change)
+
+    def __eq__(self, other: "Branch") -> bool:
+        return self.name == other.name and self.nr_revisions == other.nr_revisions and \
+            self.date_last_change == other.date_last_change
 
 
 class VersionControlSystem(domain.MetricSource):
@@ -53,11 +70,10 @@ class VersionControlSystem(domain.MetricSource):
 
     def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
                           re_of_branches_to_ignore: str = '',
-                          list_of_branches_to_include: List[str] = None) -> Dict[str, int]:
+                          list_of_branches_to_include: List[str] = None) -> List[Branch]:
         # pylint: disable=unused-argument
-        """ Return a dictionary of branch names and number of unmerged revisions for each branch that has any
-            unmerged revisions. Branches listed in the list of branches to ignore or that match the regular
-            expression of branches to ignore are, obviously, ignored. """
+        """ Return a list of branches that have unmerged revisions. Branches listed in the list of branches to ignore
+            or that match the regular expression of branches to ignore are, obviously, ignored. """
         raise NotImplementedError
 
     @staticmethod

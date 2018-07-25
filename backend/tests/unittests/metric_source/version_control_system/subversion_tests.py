@@ -17,7 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 
-from hqlib.metric_source import Subversion
+from hqlib.metric_source import Subversion, Branch
 
 
 class SubversionUnderTest(Subversion):
@@ -32,9 +32,9 @@ class SubversionUnderTest(Subversion):
         self.last_command = command
         if command[1] == 'mergeinfo':
             return self.mergeinfo
-        elif command[1] == 'list' and 'path' not in command[3]:
-            return '<name>folder</name>'
-        return ''
+        elif 'path' not in command[3]:
+            return '<name>folder</name><date>2018-07-24T07:46:27.00000Z</date>'
+        return''
 
 
 class SubversionTests(unittest.TestCase):
@@ -52,33 +52,34 @@ class SubversionTests(unittest.TestCase):
 
     def test_unmerged_branches(self):
         """ Test that there are no unmerged branches by default. """
-        self.assertEqual({}, self.__svn.unmerged_branches('http://svn/'))
+        self.assertEqual([], self.__svn.unmerged_branches('http://svn/'))
 
     def test_one_unmerged_branch(self):
         """ Test one unmerged branch. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual(dict(folder=5), self.__svn.unmerged_branches('http://svn/'))
+        self.assertEqual([Branch("folder", 5, datetime.datetime(2018, 7, 24, 7, 46, 27))],
+                         self.__svn.unmerged_branches('http://svn/'))
 
     def test_one_unmerged_branch_that_is_ignored(self):
         """ Test one unmerged branch that is ignored. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual(dict(), self.__svn.unmerged_branches('http://svn/', list_of_branches_to_ignore=['folder']))
+        self.assertEqual([], self.__svn.unmerged_branches('http://svn/', list_of_branches_to_ignore=['folder']))
 
     def test_one_unmerged_branch_that_is_ignored_with_re(self):
         """ Test one unmerged branch that is ignored. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual(dict(), self.__svn.unmerged_branches('http://svn/', re_of_branches_to_ignore='f.*'))
+        self.assertEqual([], self.__svn.unmerged_branches('http://svn/', re_of_branches_to_ignore='f.*'))
 
     def test_one_unmerged_branch_that_is_included(self):
         """ Test that the unmerged branch is returned when it is explicitly included. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual(dict(folder=5), self.__svn.unmerged_branches('http://svn/',
-                                                                      list_of_branches_to_include=['folder']))
+        self.assertEqual([Branch("folder", 5, datetime.datetime(2018, 7, 24, 7, 46, 27))],
+                         self.__svn.unmerged_branches('http://svn/', list_of_branches_to_include=['folder']))
 
     def test_one_unmerged_branch_that_is_not_included(self):
         """ Test that the unmerged branch is returned when it is explicitly included. """
         self.__svn.mergeinfo = 'rev1\nrev2\nrev3\nrev4\nrev5'
-        self.assertEqual(dict(), self.__svn.unmerged_branches('http://svn/', list_of_branches_to_include=['other']))
+        self.assertEqual([], self.__svn.unmerged_branches('http://svn/', list_of_branches_to_include=['other']))
 
     def test_normalize_path(self):
         """ Test path that needs no changes. """

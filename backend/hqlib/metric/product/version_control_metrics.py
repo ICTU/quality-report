@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 from hqlib import utils
 from hqlib.typing import MetricParameters
 from ...domain import LowerIsBetterMetric, ExtraInfo
-from ...metric_source import VersionControlSystem
+from ...metric_source import VersionControlSystem, Branch
 
 
 class UnmergedBranches(LowerIsBetterMetric):
@@ -69,11 +69,13 @@ class UnmergedBranches(LowerIsBetterMetric):
         extra_info = None
         unmerged_branches = self.__unmerged_branches()
         if unmerged_branches:
-            extra_info = ExtraInfo(link="Branch", comment="Aantal__detail-column-number")
+            extra_info = ExtraInfo(link="Branch", comment="Aantal__detail-column-number",
+                                   date_last_change="Datum laatste wijziging__detail-column-number")
             extra_info.title = self.url_label_text
-            for branch, nr_revisions in list(unmerged_branches.items()):
-                extra_info += {"href": self.__branch_folder_for_branch(self.__vcs_path(), branch),
-                               "text": branch}, "{nr} ongemergde revisie(s)".format(nr=nr_revisions)
+            for branch in unmerged_branches:
+                extra_info += ({"href": self.__branch_folder_for_branch(self.__vcs_path(), branch.name),
+                                "text": branch.name}, "{nr} ongemergde revisie(s)".format(nr=branch.nr_revisions),
+                               branch.date_last_change.strftime("%d-%m-%Y"))
 
         return extra_info if extra_info is not None and extra_info.data else None
 
@@ -112,10 +114,10 @@ class UnmergedBranches(LowerIsBetterMetric):
 
     def __branches(self) -> List[str]:
         """ Return a list of branches for the product. """
-        return self._metric_source.branches(self.__vcs_path()) if self._metric_source else []
+        return self._metric_source.branches(self.__vcs_path()) if self._metric_source else None
 
-    def __unmerged_branches(self) -> Optional[Dict[str, int]]:
-        """ Return a dictionary of unmerged branch names and the number of unmerged revisions for each branch. """
+    def __unmerged_branches(self) -> Optional[List[Branch]]:
+        """ Return a list of unmerged branches. """
         return self._metric_source.unmerged_branches(
             self.__vcs_path(), self.__list_of_branches_to_ignore(), self.__re_of_branches_to_ignore(),
             self.__list_of_branches_to_include()) if self._metric_source else None

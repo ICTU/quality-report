@@ -28,7 +28,7 @@ from .abstract.issue_tracker import BugTracker, SecurityBugTracker, StaticSecuri
 from .abstract.team_spirit import TeamSpirit
 from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
 from .abstract.user_story_points_predictor import UserStoryPointsPredictor
-from .abstract.version_control_system import VersionControlSystem
+from .abstract.version_control_system import VersionControlSystem, Branch
 from .birt import Birt
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover

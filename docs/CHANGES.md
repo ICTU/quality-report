@@ -1,3 +1,8 @@
+2018-07-25  Release 2.62.0
+
+  * Feature #390: Show when branches were last changed in the detail pane of the unmerged branches metric.
+
+
 2018-07-24  Release 2.61.13
 
   * Bug #453: Report crash fixed for JaCoCo metric source - fix.

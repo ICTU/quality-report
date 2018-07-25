@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import unittest
 from unittest.mock import MagicMock
 from hqlib import metric, domain, metric_source
@@ -95,15 +96,18 @@ class UnmergedBranchesTest(unittest.TestCase):
     def test_extra_info(self):
         """ Test that correct extra info is returned."""
         subversion = MagicMock()
-        subversion.unmerged_branches.return_value = {"some_branch": 22}
+        subversion.unmerged_branches.return_value = [metric_source.Branch("some_branch", 22,
+                                                                          datetime.datetime(2018, 1, 1))]
         subversion.branch_folder_for_branch.return_value = "http://some_branch"
 
         project = domain.Project(metric_sources={metric_source.VersionControlSystem: subversion})
         subject = domain.Product(metric_source_ids={subversion: '_'})
 
-        expected_result = domain.ExtraInfo(link="Branch", comment="Aantal__detail-column-number")
+        expected_result = domain.ExtraInfo(link="Branch", comment="Aantal__detail-column-number",
+                                           date_last_change="Datum laatste wijziging__detail-column-number")
         expected_result.data = \
-            [{"link": {"href": "http://some_branch", "text": "some_branch"}, "comment": "22 ongemergde revisie(s)"}]
+            [{"link": {"href": "http://some_branch", "text": "some_branch"}, "comment": "22 ongemergde revisie(s)",
+              "date_last_change": "01-01-2018"}]
         obj = metric.UnmergedBranches(project=project, subject=subject)
 
         result = obj.extra_info()
