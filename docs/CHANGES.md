@@ -1,6 +1,7 @@
 2018-07-26  Release 2.62.2
 
   * Bug fix: Remove repetitive label from the unmerged branches detail table.
+  * Bug #435: Fix label of the manual test case duration detail table.
   
 
 2018-07-26  Release 2.62.1

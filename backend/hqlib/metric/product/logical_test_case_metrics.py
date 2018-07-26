@@ -177,7 +177,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     low_target_value = 240
     metric_source_class = metric_source.ManualLogicalTestCaseTracker
     extra_info_headers = {"issue": "Handmatige logische testgevallen"}
-    url_label_text = "Lijst van handmatige logische testgevallen zonder uitvoeringstijd"
+    url_label_text = "Lijst van handmatige logische testgevallen"
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
