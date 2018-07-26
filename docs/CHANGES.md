@@ -1,4 +1,4 @@
-2018-07-26  Unreleased
+2018-07-26  Release 2.62.2
 
   * Bug fix: Remove repetitive label from the unmerged branches detail table.
   
