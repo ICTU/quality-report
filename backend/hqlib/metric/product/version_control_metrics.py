@@ -69,13 +69,12 @@ class UnmergedBranches(LowerIsBetterMetric):
         extra_info = None
         unmerged_branches = self.__unmerged_branches()
         if unmerged_branches:
-            extra_info = ExtraInfo(link="Branch", comment="Aantal__detail-column-number",
+            extra_info = ExtraInfo(link="Branch", comment="Aantal ongemergde revisies__detail-column-number",
                                    date_last_change="Datum laatste wijziging__detail-column-number")
             extra_info.title = self.url_label_text
             for branch in unmerged_branches:
                 extra_info += ({"href": self.__branch_folder_for_branch(self.__vcs_path(), branch.name),
-                                "text": branch.name}, "{nr} ongemergde revisie(s)".format(nr=branch.nr_revisions),
-                               branch.date_last_change.strftime("%d-%m-%Y"))
+                                "text": branch.name}, branch.nr_revisions, branch.date_last_change.strftime("%d-%m-%Y"))
 
         return extra_info if extra_info is not None and extra_info.data else None
 

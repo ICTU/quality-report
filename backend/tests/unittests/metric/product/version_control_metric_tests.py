@@ -103,10 +103,10 @@ class UnmergedBranchesTest(unittest.TestCase):
         project = domain.Project(metric_sources={metric_source.VersionControlSystem: subversion})
         subject = domain.Product(metric_source_ids={subversion: '_'})
 
-        expected_result = domain.ExtraInfo(link="Branch", comment="Aantal__detail-column-number",
+        expected_result = domain.ExtraInfo(link="Branch", comment="Aantal ongemergde revisies__detail-column-number",
                                            date_last_change="Datum laatste wijziging__detail-column-number")
         expected_result.data = \
-            [{"link": {"href": "http://some_branch", "text": "some_branch"}, "comment": "22 ongemergde revisie(s)",
+            [{"link": {"href": "http://some_branch", "text": "some_branch"}, "comment": 22,
               "date_last_change": "01-01-2018"}]
         obj = metric.UnmergedBranches(project=project, subject=subject)
 

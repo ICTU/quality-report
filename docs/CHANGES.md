@@ -1,3 +1,8 @@
+2018-07-26  Unreleased
+
+  * Bug fix: Remove repetitive label from the unmerged branches detail table.
+  
+
 2018-07-26  Release 2.62.1
 
   * Bug fix: Retrieving the date of the last change on a branch would sometimes crash HQ with a decode unicode error.
