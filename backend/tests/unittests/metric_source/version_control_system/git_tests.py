@@ -17,8 +17,6 @@ limitations under the License.
 import datetime
 import unittest
 
-import dateutil
-
 from hqlib.metric_source import Git, VersionControlSystem, Branch
 
 
@@ -62,10 +60,9 @@ class GitTests(unittest.TestCase):
         git = Git(
             url=self.__git.url(),
             username='u', password='p',
-            run_shell_command=lambda *args, **kwargs: "2018-01-01T10:00:00+02:00\n" if "show" in args[0] else "branch\n"
+            run_shell_command=lambda *args, **kwargs: "1490445344.0\n" if "log" in args[0] else "branch\n"
         )
-        expected_datetime = dateutil.parser.parse("2018-01-01T10:00:00+02:00",
-                                                  ignoretz=False).astimezone().replace(tzinfo=None)
+        expected_datetime = datetime.datetime.fromtimestamp(1490445344.0)
         self.assertEqual([Branch("branch", 1, expected_datetime)], git.unmerged_branches('path'))
 
     def test_unmerged_branches_invalid_date(self):

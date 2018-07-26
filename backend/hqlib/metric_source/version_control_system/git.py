@@ -22,8 +22,6 @@ import pathlib
 import urllib.request
 from typing import Callable, List, Tuple
 
-import dateutil
-
 from hqlib.typing import DateTime
 from ..abstract.version_control_system import VersionControlSystem, Branch
 
@@ -56,9 +54,12 @@ class Git(VersionControlSystem):
 
     def last_changed_date(self, path: str) -> DateTime:
         """ Return the date when the url was last changed in Git. """
-        timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', '--', path))
+        timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', path))
         if timestamp:
-            return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
+            try:
+                return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
+            except ValueError as reason:
+                logging.error("Couldn't convert timestamp %s to datetime for path %s: %s", timestamp, path, reason)
         return datetime.datetime.min
 
     def branch(self) -> str:
@@ -77,7 +78,7 @@ class Git(VersionControlSystem):
         unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not
                              self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
                                                  list_of_branches_to_include)]
-        return [Branch(name, self.__nr_unmerged_commits(name), self.__date_last_change(name))
+        return [Branch(name, self.__nr_unmerged_commits(name), self.last_changed_date(name))
                 for name in unmerged_branches]
 
     @classmethod
@@ -101,20 +102,6 @@ class Git(VersionControlSystem):
         nr_commits = commits.count('\n')
         logging.info('Branch %s has %d unmerged commits.', branch_name, nr_commits)
         return nr_commits
-
-    def __date_last_change(self, branch_name: str) -> DateTime:
-        """ Return the date of the last change on the branch. """
-        command = ("git", "show", "--format=%ci", branch_name)
-        date_time_string = self._run_shell_command(command).split("\n")[0]
-        logging.info("Date last change for branch %s: %s", branch_name, date_time_string)
-        # Parse the date time string timezone-aware, and then convert it a date time without time zones since we
-        # use naive date times internally:
-        try:
-            return dateutil.parser.parse(date_time_string, ignoretz=False).astimezone().replace(tzinfo=None)
-        except ValueError as reason:
-            logging.warning("Couldn't parse date of last change for branch %s from %s: %s", branch_name,
-                            date_time_string, reason)
-            return datetime.datetime.min
 
     def __get_repo(self) -> None:
         """ Clone the repository if necessary, else pull it. """
