@@ -1,3 +1,8 @@
+2018-07-26  Release 2.62.1
+
+  * Bug fix: Retrieving the date of the last change on a branch would sometimes crash HQ with a decode unicode error.
+
+
 2018-07-25  Release 2.62.0
 
   * Feature #390: Show when branches were last changed in the detail pane of the unmerged branches metric.
