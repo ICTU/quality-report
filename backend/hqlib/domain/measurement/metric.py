@@ -283,10 +283,6 @@ class Metric(object):
                              self._parameters(), self.norm_template, reason)
             raise
 
-    def extra_info_rows(self) -> List:
-        """ Returns rows of extra info table. """
-        return self._extra_info_data
-
     def url(self) -> Dict[str, str]:
         """ Return a dictionary of urls for the metric. The key is the anchor, the value the url. """
         label = self._metric_source.metric_source_name if self._metric_source else 'Unknown metric source'
@@ -374,7 +370,7 @@ class Metric(object):
             return value
         raise NotImplementedError
 
-    def extra_info(self) -> Optional[ExtraInfo]:  # pylint: disable=no-self-use
+    def extra_info(self) -> Optional[ExtraInfo]:
         """ Method can be overridden by concrete metrics that fill extra info. """
         extra_info = None
         if self._metric_source and self.extra_info_headers:
@@ -382,6 +378,10 @@ class Metric(object):
             if url_list:
                 extra_info = self.__create_extra_info(url_list)
         return extra_info if extra_info is not None and extra_info.data else None
+
+    def extra_info_rows(self) -> List:
+        """ Returns rows of extra info table. """
+        return self._extra_info_data
 
     def __create_extra_info(self, url_list):
         extra_info = ExtraInfo(**self.extra_info_headers)

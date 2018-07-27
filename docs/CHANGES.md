@@ -1,7 +1,13 @@
+2018-07-26  Unreleased
+
+  * Feature: Add duration of manual test cases to the detail table of the duration of manual test cases metric. 
+  * Feature: Add user story points of ready user stories to the detail table of the ready user story points metric. 
+  * Bug #435: Fix label of the manual test case duration detail table.
+
+
 2018-07-26  Release 2.62.2
 
   * Bug fix: Remove repetitive label from the unmerged branches detail table.
-  * Bug #435: Fix label of the manual test case duration detail table.
   
 
 2018-07-26  Release 2.62.1

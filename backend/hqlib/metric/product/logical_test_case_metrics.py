@@ -18,7 +18,7 @@ limitations under the License.
 import functools
 import datetime
 
-from hqlib.typing import MetricParameters
+from hqlib.typing import MetricParameters, MetricValue
 from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
@@ -176,17 +176,16 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     target_value = 120
     low_target_value = 240
     metric_source_class = metric_source.ManualLogicalTestCaseTracker
-    extra_info_headers = {"issue": "Handmatige logische testgevallen"}
+    extra_info_headers = {"issue": "Handmatige logische testgevallen", "duration": "Uitvoeringstijd in minuten"}
     url_label_text = "Lijst van handmatige logische testgevallen"
 
     @functools.lru_cache(maxsize=1024)
-    def value(self):
+    def value(self) -> MetricValue:
         """ Returns the sum of the issues and sets caches issue list for extra info"""
-        result = -1
         if self._metric_source:
-            result, self._extra_info_data = self._metric_source.sum_field(
-                *self._get_metric_source_ids())
-        return result
+            self._extra_info_data = self._metric_source.sum_field(*self._get_metric_source_ids())
+            return sum([row[1] for row in self._extra_info_data])
+        return -1
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()

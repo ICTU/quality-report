@@ -254,7 +254,7 @@ class DurationOfManualLogicalTestCasesTest(unittest.TestCase):
     def test_value(self, sum_field_mock):
         """ Test that the value of the metric is the duration of the manual logical test cases. """
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
-        sum_field_mock.return_value = (120, [])
+        sum_field_mock.return_value = [("issue1", 20), ("issue2", 60), ("issue3", 40)]
         self.__project = domain.Project(metric_sources={metric_source.ManualLogicalTestCaseTracker: jira_filter},
                                         metric_source_ids={jira_filter: '12345'})
         self.__metric = metric.DurationOfManualLogicalTestCases(subject=self.__project, project=self.__project)

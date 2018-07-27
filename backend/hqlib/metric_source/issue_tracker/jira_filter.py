@@ -35,18 +35,6 @@ class JiraFilter(BugTracker):
         self.__field_name = field_name
         super().__init__()
 
-    def _query_sum(self, query_id: QueryId, field: str) -> Tuple[float, List[str]]:
-        """ Return the sum of the fields as returned by the query. """
-        return self.__query_field(query_id, self._get_field_float_value, field)
-
-    @classmethod
-    def _get_field_float_value(cls, issue: Dict, field: str) -> Tuple:
-        """ Get the float value from issue's field, or 0, in the case of error. """
-        try:
-            return float(issue['fields'][field]), issue
-        except (TypeError, KeyError):
-            return 0, None
-
     def _query_field_empty(self, query_id: QueryId, field: str) -> Tuple[int, List[str]]:
         """ Return the number of empty fields, returned by the query. """
         return self.__query_field(query_id, self._increment_if_field_empty, field)
@@ -136,12 +124,23 @@ class JiraFilter(BugTracker):
             for metric_source_id in metric_source_ids])
         return -1 if -1 in count else sum(count), issues[0]
 
-    def sum_field(self, *metric_source_ids: str) -> Tuple[float, List[str]]:
-        """ Return the sum of the values in the specified field. """
-        results, issues = zip(*[
-            self._query_sum(int(metric_source_id), self.__field_name)
-            for metric_source_id in metric_source_ids])
-        return -1 if -1 in results else sum(results), issues[0]
+    def sum_field(self, *metric_source_ids: str) -> List[Tuple[str, float]]:
+        """ Return a list of issues links and values from the specified field. """
+        links_and_values = []
+        for query_id in metric_source_ids:
+            query_result = self.__jira.get_query(query_id)
+            try:
+                issues = query_result["issues"]
+            except (ValueError, KeyError, TypeError) as reason:
+                logging.error("Couldn't get issues from Jira filter %s: %s", query_id, reason)
+                return []
+            for issue in issues:
+                fields = issue["fields"]
+                if not fields.get(self.__field_name):
+                    continue  # Skip issues that don't have a value for the field
+                link = ExtraInfo.format_extra_info_link(self.get_issue_url(issue["key"]), fields["summary"])
+                links_and_values.append((link, float(fields[self.__field_name])))
+        return links_and_values
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
         """ Return the url(s) to the metric source for the metric source id. """

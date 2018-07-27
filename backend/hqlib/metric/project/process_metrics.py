@@ -31,15 +31,14 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
     target_value = 30
     low_target_value = 15
     metric_source_class = metric_source.ReadyUserStoryPointsTracker
-    extra_info_headers = {"issue": "Issue"}
-    url_label_text = "Lijst van issues"
+    extra_info_headers = {"issue": "Ready stories", "points": "User story punten__detail-column-number"}
+    url_label_text = "Lijst van stories"
 
     def value(self) -> MetricValue:
-        result = -1
         if self._metric_source:
-            result, self._extra_info_data = self._metric_source.sum_field(
-                *self._get_metric_source_ids())
-        return result
+            self._extra_info_data = self._metric_source.sum_field(*self._get_metric_source_ids())
+            return sum([row[1] for row in self._extra_info_data])
+        return -1
 
 
 class UserStoriesDuration(LowerIsBetterMetric):

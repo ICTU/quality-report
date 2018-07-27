@@ -34,7 +34,7 @@ class FakeJiraFilter(object):
     @staticmethod
     def sum_field(*metric_source_ids):
         """ Return a fake duration. """
-        return 120, []
+        return [("issue1", 20), ("issue2", 100)]
 
     @staticmethod
     def nr_issues_with_field_empty(*metric_source_ids):

@@ -93,26 +93,25 @@ class JiraFilterTest(unittest.TestCase):
                 {"key": "ISS-2", "fields": {"summary": "2nd Issue", "customfield_11700": 100}},
                 {"key": "ISS-3", "fields": {"summary": "The Last Issue", "customfield_11700": None}}]}
 
-        result, issue_list = jira_filter.sum_field('12345')
+        issue_list = jira_filter.sum_field('12345')
 
         get_query_url_mock.assert_called_once()
-        self.assertEqual(120.3, result)
+        self.assertEqual(120.3, sum([issues[1] for issues in issue_list]))
         self.assertEqual([
-            {"href": "http://jira/browse/ISS-1", "text": "First Issue"},
-            {"href": "http://jira/browse/ISS-2", "text": "2nd Issue"}
+            ({"href": "http://jira/browse/ISS-1", "text": "First Issue"}, 20.3),
+            ({"href": "http://jira/browse/ISS-2", "text": "2nd Issue"}, 100.0)
         ], issue_list)
 
     @patch.object(Jira, 'get_query')
     def test_sum_field_when_no_issues(self, get_query_url_mock):
-        """ Test that the sum is zero and the issue list is empty when there is no issues. """
+        """ Test that the sum is zero and the issue list is empty when there are no issues. """
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
         get_query_url_mock.return_value = \
             {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": []}
 
-        result, issue_list = jira_filter.sum_field('12345')
+        issue_list = jira_filter.sum_field('12345')
 
         get_query_url_mock.assert_called_once()
-        self.assertEqual(0, result)
         self.assertEqual([], issue_list)
 
     @patch.object(Jira, 'get_query')
@@ -121,23 +120,10 @@ class JiraFilterTest(unittest.TestCase):
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
         get_query_url_mock.return_value = []
 
-        result, issue_list = jira_filter.sum_field('12345')
+        issue_list = jira_filter.sum_field('12345')
 
         get_query_url_mock.assert_called_once()
-        self.assertEqual(-1, result)
         self.assertEqual([], issue_list)
-
-    @patch.object(JiraFilter, '_query_sum')
-    def test_sum_field_multiple_sources(self, query_sum_mock):
-        """ Test that the field is summed correctly and that involved issues are in the issue list. """
-        jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
-        query_sum_mock.return_value = (0, ([]))
-
-        jira_filter.sum_field('12345', '78910')
-
-        self.assertTrue(query_sum_mock.has_calls([
-            call('12345'), call('78910')
-        ]))
 
     @patch.object(Jira, 'get_query')
     def test_nr_issues_with_field_empty(self, get_query_url_mock):

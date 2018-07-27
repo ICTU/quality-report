@@ -56,7 +56,7 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
     def test_value(self, sum_field_mock):
         """ Test that the sum value is retrieved correctly. """
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
-        sum_field_mock.return_value = (120, [])
+        sum_field_mock.return_value = [("issue1", 50), ("issue2", 70)]
         self.__project = domain.Project(metric_sources={metric_source.ReadyUserStoryPointsTracker: jira_filter},
                                         metric_source_ids={jira_filter: '12345'})
         ready_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
