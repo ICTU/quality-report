@@ -1,3 +1,8 @@
+2018-07-27  Release 2.63.1
+
+  * Bug #364: Improve wording of failing regression test metric.
+  
+  
 2018-07-27  Release 2.63.0
 
   * Feature: Add duration of manual test cases to the detail table of the duration of manual test cases metric. 

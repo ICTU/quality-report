@@ -36,7 +36,7 @@ class ReadyUserStoryPoints(HigherIsBetterMetric):
 
     def value(self) -> MetricValue:
         if self._metric_source:
-            self._extra_info_data = self._metric_source.sum_field(*self._get_metric_source_ids())
+            self._extra_info_data = self._metric_source.issues_with_field(*self._get_metric_source_ids())
             return sum([row[1] for row in self._extra_info_data])
         return -1
 

@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from hqlib.typing import MetricParameters
+from hqlib.typing import MetricParameters, MetricValue
 from ... import metric_source
 from ...domain import LowerIsBetterMetric, MetricSourceAgeMetric
 
@@ -26,42 +26,34 @@ class FailingRegressionTests(LowerIsBetterMetric):
     name = 'Hoeveelheid falende regressietesten'
     unit = 'regressietesten'
     norm_template = 'Alle {unit} slagen.'
-    perfect_template = 'Alle {tests} {unit} van {name} slagen.'
-    template = '{value} van de {tests} {unit} van {name} slagen niet.'
+    perfect_template = 'Alle {tests} {unit} van {name} slagen en geen van de {unit} is overgeslagen.'
+    template = 'Van de {tests} {name} {unit} zijn er {value} niet geslaagd en zijn er {skipped} overgeslagen.'
     target_value = 0
     low_target_value = 0
     metric_source_class = metric_source.SystemTestReport
 
-    def value(self):
+    def value(self) -> MetricValue:
         if self._missing():
             return -1
-        urls = self._get_metric_source_ids()
-        return self._metric_source.failed_tests(*urls) + self._metric_source.skipped_tests(*urls)
+        ids = self._get_metric_source_ids()
+        return self._metric_source.failed_tests(*ids) + self._metric_source.skipped_tests(*ids)
 
     def _missing(self) -> bool:
         if not self._metric_source:
             return True
-        urls = self._get_metric_source_ids()
-        passed = self._metric_source.passed_tests(*urls)
-        failed = self._metric_source.failed_tests(*urls)
-        skipped = self._metric_source.skipped_tests(*urls)
+        ids = self._get_metric_source_ids()
+        passed = self._metric_source.passed_tests(*ids)
+        failed = self._metric_source.failed_tests(*ids)
+        skipped = self._metric_source.skipped_tests(*ids)
         return passed < 0 or failed < 0 or skipped < 0
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters['tests'] = '?' if self._missing() else \
-            self.value() + self._metric_source.passed_tests(*self._get_metric_source_ids())
-        parameters['skipped'] = '?' if self._missing() else \
-            self._metric_source.skipped_tests(*self._get_metric_source_ids())
+        ids = self._get_metric_source_ids()
+        parameters['tests'] = '?' if self._missing() else self.value() + self._metric_source.passed_tests(*ids)
+        parameters['skipped'] = '?' if self._missing() else self._metric_source.skipped_tests(*ids)
         return parameters
-
-    def _get_template(self) -> str:
-        # pylint: disable=protected-access
-        template = super()._get_template()
-        if not self._missing() and self._metric_source.skipped_tests(*self._get_metric_source_ids()) > 0:
-            template += ' {skipped} van de {tests} {unit} zijn overgeslagen.'
-        return template
 
 
 class RegressionTestAge(MetricSourceAgeMetric):

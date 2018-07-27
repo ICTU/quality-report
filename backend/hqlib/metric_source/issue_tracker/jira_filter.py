@@ -124,7 +124,7 @@ class JiraFilter(BugTracker):
             for metric_source_id in metric_source_ids])
         return -1 if -1 in count else sum(count), issues[0]
 
-    def sum_field(self, *metric_source_ids: str) -> List[Tuple[str, float]]:
+    def issues_with_field(self, *metric_source_ids: str) -> List[Tuple[str, float]]:
         """ Return a list of issues links and values from the specified field. """
         links_and_values = []
         for query_id in metric_source_ids:

@@ -52,16 +52,16 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
         self.assertEqual("Minimaal 20 ready user story punten. "
                          "Minder dan 10 ready user story punten is rood.", duration_metric.norm())
 
-    @patch.object(metric_source.JiraFilter, 'sum_field')
-    def test_value(self, sum_field_mock):
-        """ Test that the sum value is retrieved correctly. """
+    @patch.object(metric_source.JiraFilter, 'issues_with_field')
+    def test_value(self, issues_with_field_mock):
+        """ Test that the sum value is calculated correctly. """
         jira_filter = metric_source.JiraFilter('http://jira/', 'username', 'password')
-        sum_field_mock.return_value = [("issue1", 50), ("issue2", 70)]
+        issues_with_field_mock.return_value = [("issue1", 50), ("issue2", 70)]
         self.__project = domain.Project(metric_sources={metric_source.ReadyUserStoryPointsTracker: jira_filter},
                                         metric_source_ids={jira_filter: '12345'})
         ready_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
 
-        sum_field_mock.asses_called_once()
+        issues_with_field_mock.asses_called_once()
         self.assertEqual(120, ready_metric.value())
 
 

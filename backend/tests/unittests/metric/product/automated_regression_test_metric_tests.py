@@ -93,13 +93,14 @@ class FailingRegressionTestsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        self.assertEqual('4 van de 18 regressietesten van FakeSubject slagen niet.', self.__metric.report())
+        self.assertEqual("Van de 18 FakeSubject regressietesten zijn er 4 niet geslaagd en zijn er 0 overgeslagen.",
+                         self.__metric.report())
 
     def test_report_with_skipped_tests(self):
         """ Test that the report for the metric is correct when tests are skipped. """
         self.__jenkins.skipped = 2
-        self.assertEqual('6 van de 20 regressietesten van FakeSubject slagen niet. '
-                         '2 van de 20 regressietesten zijn overgeslagen.', self.__metric.report())
+        self.assertEqual("Van de 20 FakeSubject regressietesten zijn er 6 niet geslaagd en zijn er 2 overgeslagen.",
+                         self.__metric.report())
 
     def test_missing_metric_source(self):
         """ Test the metric without a metric source. """

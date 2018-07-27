@@ -183,7 +183,7 @@ class DurationOfManualLogicalTestCases(LowerIsBetterMetric):
     def value(self) -> MetricValue:
         """ Returns the sum of the issues and sets caches issue list for extra info"""
         if self._metric_source:
-            self._extra_info_data = self._metric_source.sum_field(*self._get_metric_source_ids())
+            self._extra_info_data = self._metric_source.issues_with_field(*self._get_metric_source_ids())
             return sum([row[1] for row in self._extra_info_data])
         return -1
 

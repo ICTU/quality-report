@@ -79,13 +79,11 @@ class JiraFilterTest(unittest.TestCase):
 
         jira_filter.nr_issues('12345', '78910')
 
-        self.assertTrue(query_sum_mock.has_calls([
-            call('12345'), call('78910')
-        ]))
+        self.assertTrue(query_sum_mock.has_calls([call('12345'), call('78910')]))
 
     @patch.object(Jira, 'get_query')
-    def test_sum_field(self, get_query_url_mock):
-        """ Test that the field is summed correctly and that involved issues are in the issue list. """
+    def test_issues_with_field(self, get_query_url_mock):
+        """ Test that the issues are returned correctly with their field values. """
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
         get_query_url_mock.return_value = \
             {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
@@ -93,34 +91,33 @@ class JiraFilterTest(unittest.TestCase):
                 {"key": "ISS-2", "fields": {"summary": "2nd Issue", "customfield_11700": 100}},
                 {"key": "ISS-3", "fields": {"summary": "The Last Issue", "customfield_11700": None}}]}
 
-        issue_list = jira_filter.sum_field('12345')
+        issue_list = jira_filter.issues_with_field('12345')
 
         get_query_url_mock.assert_called_once()
-        self.assertEqual(120.3, sum([issues[1] for issues in issue_list]))
         self.assertEqual([
             ({"href": "http://jira/browse/ISS-1", "text": "First Issue"}, 20.3),
             ({"href": "http://jira/browse/ISS-2", "text": "2nd Issue"}, 100.0)
         ], issue_list)
 
     @patch.object(Jira, 'get_query')
-    def test_sum_field_when_no_issues(self, get_query_url_mock):
-        """ Test that the sum is zero and the issue list is empty when there are no issues. """
+    def test_issues_with_field_without_issues(self, get_query_url_mock):
+        """ Test that the issue list is empty when there are no issues. """
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
         get_query_url_mock.return_value = \
             {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": []}
 
-        issue_list = jira_filter.sum_field('12345')
+        issue_list = jira_filter.issues_with_field('12345')
 
         get_query_url_mock.assert_called_once()
         self.assertEqual([], issue_list)
 
     @patch.object(Jira, 'get_query')
-    def test_sum_field_with_empty_jira_answer(self, get_query_url_mock):
-        """ Test that the sum is -1 and the issue list is empty when jira returns empty json. """
+    def test_issues_with_field_with_empty_jira_answer(self, get_query_url_mock):
+        """ Test that the issue list is empty when jira returns empty json. """
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
         get_query_url_mock.return_value = []
 
-        issue_list = jira_filter.sum_field('12345')
+        issue_list = jira_filter.issues_with_field('12345')
 
         get_query_url_mock.assert_called_once()
         self.assertEqual([], issue_list)
@@ -138,9 +135,7 @@ class JiraFilterTest(unittest.TestCase):
 
         get_query_url_mock.assert_called_once()
         self.assertEqual(1, result)
-        self.assertEqual([
-            {"href": "http://jira/browse/ISS-1", "text": "First Issue"}
-        ], issue_list)
+        self.assertEqual([{"href": "http://jira/browse/ISS-1", "text": "First Issue"}], issue_list)
 
     @patch.object(Jira, 'get_query')
     def test_nr_issues_with_field_omitted(self, get_query_url_mock):
@@ -155,9 +150,7 @@ class JiraFilterTest(unittest.TestCase):
 
         get_query_url_mock.assert_called_once()
         self.assertEqual(1, result)
-        self.assertEqual([
-            {"href": "http://jira/browse/ISS-1", "text": "First Issue"}
-        ], issue_list)
+        self.assertEqual([{"href": "http://jira/browse/ISS-1", "text": "First Issue"}], issue_list)
 
     @patch.object(Jira, 'get_query')
     def test_nr_issues_with_field_empty_when_no_issues(self, get_query_url_mock):
@@ -192,9 +185,7 @@ class JiraFilterTest(unittest.TestCase):
 
         jira_filter.nr_issues_with_field_empty('12345', '78910')
 
-        self.assertTrue(query_sum_mock.has_calls([
-            call('12345'), call('78910')
-        ]))
+        self.assertTrue(query_sum_mock.has_calls([call('12345'), call('78910')]))
 
     @patch.object(Jira, 'get_query_url')
     def test_url(self, get_query_url_mock):

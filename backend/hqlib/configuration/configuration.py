@@ -38,7 +38,6 @@ def project(project_folder_or_filename: str) -> Project:
     sys.path.insert(0, str(project_definition_path.parent))
 
     # Import the project definition and get the project from it.
-    # Use the default project definition if it doesn't exist.
     module_name = project_definition_path.stem
     try:
         return __import__(module_name).PROJECT
