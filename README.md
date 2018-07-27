@@ -68,40 +68,42 @@ Usage
 
 ### Using Python 3.7
 
-Install HQ from the Python Package Index (PyPI):
-
-    pip install quality_report
-
 We recommend using virtualenv:
 
-    $HQ_VIRTUAL_ENV=/home/jenkins/hq-pyenv  # For example
+```console
+$ mkdir hq
+$ cd hq
+$ virtualenv --python-python3.7 .venv
+$ . .venv/bin/activate
+```
 
-    # Delete previous version
-    if [ -d $HQ_VIRTUAL_ENV ]; then
-        rm -rf $HQ_VIRTUAL_ENV
-    fi
+Unfortunately, one package that HQ uses isn't available from the Python Package Index (PyPI) and needs to be installed manually before we can install HQ itself:
+```console
+$ pip install 'git+https://github.com/wekan/wekan-python-api-client.git#egg=wekanapi&subdirectory=src'
+$ pip install quality_report
+```
 
-    # Create the virtualenv and activate it
-    virtualenv $HQ_VIRTUAL_ENV
-    . $HQ_VIRTUAL_ENV/bin/activate
+HQ can now be started from the command line. Adding the `--help` parameter should show a brief help message:
 
-    # Install HQ
-    pip install quality_report
+```console
+$ quality_report.py --help
+```
 
-HQ can now be started from the command line:
-
-    $PROJECT=/path/to/project_definition_folder
-    $REPORT=/path/to/folder/to/write/report/to
-    quality_report.py --project $PROJECT --report $REPORT
+See the [HQ Wiki](https://github.com/ICTU/quality-report/wiki) for more information on how to configure quality reports.
 
 ### Using Docker
 
 Pull the image from Docker Hub:
 
-    docker pull ictu/quality-report
+```console
+$ docker pull ictu/quality-report
+```
 
-HQ can now be started from the command line:
+HQ can now be started from the command line. Adding the `--help` parameter should show a brief help message:
 
-    $PROJECT=/path/to/project_definition_folder
-    $REPORT=/path/to/folder/to/write/report/to
-    docker run --rm -u `id -u`:`id -g` -v /etc/localtime:/etc/localtime:ro -v `pwd`:/work -w /work ictu/quality-report --project $PROJECT --report $REPORT
+```console
+$ docker run --rm -u `id -u`:`id -g` -v /etc/localtime:/etc/localtime:ro -v `pwd`:/work -w /work ictu/quality-report --help 
+```
+
+See the [HQ Wiki](https://github.com/ICTU/quality-report/wiki) for more information on how to configure quality reports.
+
