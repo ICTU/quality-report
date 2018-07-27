@@ -1,4 +1,4 @@
-2018-07-26  Unreleased
+2018-07-27  Release 2.63.0
 
   * Feature: Add duration of manual test cases to the detail table of the duration of manual test cases metric. 
   * Feature: Add user story points of ready user stories to the detail table of the ready user story points metric. 
