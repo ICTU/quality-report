@@ -282,7 +282,7 @@ class Sonar6(Sonar):
 
     # Sonar projects
 
-    def __has_project(self, project: str, branch) -> bool:
+    def _has_project(self, project: str, branch) -> bool:
         """ Return whether Sonar has the project (analysis). """
         version = self.version_number()
         if not version:
@@ -292,10 +292,7 @@ class Sonar6(Sonar):
             # searching for subprojects and the latter does not.
             url = self._add_branch_param_to_url(self._components_search_api_url.format(component=project), branch)
             try:
-                count = int(self._get_json(url)["paging"]["total"])
-                if count == 0:
-                    logging.warning("Sonar has no analysis of %s", project)
-                return count > 0
+                return self._has_paging_total(project, url)
             except self._url_opener.url_open_exceptions + (KeyError, IndexError, TypeError, ValueError) as reason:
                 logging.warning("Sonar has no analysis of %s: %s", project, reason)
                 return False
@@ -304,6 +301,12 @@ class Sonar6(Sonar):
             if not found:
                 logging.warning("Sonar has no analysis of %s", project)
             return found
+
+    def _has_paging_total(self, project, url) -> bool:
+        count = int(self._get_json(url)["paging"]["total"])
+        if count == 0:
+            logging.warning("Sonar has no analysis of %s", project)
+        return count > 0
 
     def __projects(self, branch) -> List[str]:
         """ Return all projects in Sonar. """
@@ -393,7 +396,7 @@ class Sonar6(Sonar):
                       'vbnet:S1541',
                       'tslint:cyclomatic-complexity')
         for rule_name in rule_names:
-            nr_complex_methods = self.__rule_violation(product, rule_name, 0, branch)
+            nr_complex_methods = self._rule_violation(product, rule_name, 0, branch)
             if nr_complex_methods:
                 return nr_complex_methods
         return 0
@@ -407,7 +410,7 @@ class Sonar6(Sonar):
                       'Pylint:R0915',
                       'Web:LongJavaScriptCheck')
         for rule_name in rule_names:
-            nr_long_methods = self.__rule_violation(product, rule_name, 0, branch)
+            nr_long_methods = self._rule_violation(product, rule_name, 0, branch)
             if nr_long_methods:
                 return nr_long_methods
         return 0
@@ -421,8 +424,9 @@ class Sonar6(Sonar):
                       'squid:S00107',
                       'javascript:ExcessiveParameterList',
                       'python:S107')
+
         for rule_name in rule_names:
-            nr_many_parameters = self.__rule_violation(product, rule_name, 0, branch)
+            nr_many_parameters = self._rule_violation(product, rule_name, 0, branch)
             if nr_many_parameters:
                 return nr_many_parameters
         return 0
@@ -433,7 +437,7 @@ class Sonar6(Sonar):
         rule_names = ('csharpsquid:S125', 'csharpsquid:CommentedCode', 'squid:CommentedOutCodeLine',
                       'javascript:CommentedCode', 'python:S125', 'Web:AvoidCommentedOutCodeCheck')
         for rule_name in rule_names:
-            nr_commented_loc = self.__rule_violation(product, rule_name, 0, branch)
+            nr_commented_loc = self._rule_violation(product, rule_name, 0, branch)
             if nr_commented_loc:
                 return nr_commented_loc
         return 0
@@ -443,7 +447,7 @@ class Sonar6(Sonar):
         """ Return the number of NOSONAR usages (or other suppressions) in the source code of the product. """
         rule_names = ('squid:NoSonar', 'Pylint:I0011')
         for rule_name in rule_names:
-            nr_no_sonar = self.__rule_violation(product, rule_name, 0, branch)
+            nr_no_sonar = self._rule_violation(product, rule_name, 0, branch)
             if nr_no_sonar:
                 return nr_no_sonar
         return 0
@@ -530,12 +534,8 @@ class Sonar6(Sonar):
     @functools.lru_cache(maxsize=4096)
     def _metric(self, product: str, metric_name: str, branch: str) -> Number:
         """ Return a specific metric value for the product. """
-        if not self.__has_project(product, branch):
-            return -1
-        url = self._add_branch_param_to_url(
-            self._measures_api_url.format(component=product, metric=metric_name), branch)
         try:
-            return self._get_measure_value(url, metric_name, product)
+            return self._get_measure_of_product(branch, metric_name, product)
         except self._url_opener.url_open_exceptions:
             pass  # Keep going, and try the old API
         url = self._add_branch_param_to_url(
@@ -551,9 +551,16 @@ class Sonar6(Sonar):
         except self._url_opener.url_open_exceptions:
             return -1
 
-    def __rule_violation(self, product: str, rule_name: str, default: int = 0, branch: str = None) -> int:
+    def _get_measure_of_product(self, branch, metric_name, product):
+        if not self._has_project(product, branch):
+            return -1
+        url = self._add_branch_param_to_url(
+            self._measures_api_url.format(component=product, metric=metric_name), branch)
+        return self._get_measure_value(url, metric_name, product)
+
+    def _rule_violation(self, product: str, rule_name: str, default: int = 0, branch: str = None) -> int:
         """ Return a specific violation value for the product. """
-        if not self.__has_project(product, branch):
+        if not self._has_project(product, branch):
             return -1
         try:
             issues_json = self._get_json(
@@ -564,7 +571,7 @@ class Sonar6(Sonar):
 
     def __false_positives(self, product: str, default: int = 0, branch: str = None) -> int:
         """ Return the number of issues resolved as false positive. """
-        if not self.__has_project(product, branch):
+        if not self._has_project(product, branch):
             return -1
         try:
             false_positives_json = self._get_json(
@@ -643,28 +650,81 @@ class Sonar7(Sonar6):
                     pass
         return datetime.datetime.min
 
-    def __has_project(self, project: str, branch) -> bool:
+    def _has_project(self, project: str, branch) -> bool:
         """ Return whether Sonar has the project (analysis). """
         if self.version_number():
             url = self._add_branch_param_to_url(self._components_search_api_url.format(component=project), branch)
             try:
-                count = int(self._get_json(url)["paging"]["total"])
-                if count == 0:
-                    logging.warning("Sonar has no analysis of %s", project)
-                return count > 0
+                return self._has_paging_total(project, url)
             except self._url_opener.url_open_exceptions + (KeyError, IndexError, TypeError, ValueError) as reason:
                 logging.warning("Sonar has no analysis of %s: %s", project, reason)
         return False
 
+    def __get_rule_violations(self, product, branch, rule_names, function_name):
+        try:
+            return self._rule_violation(product, rule_names, -1, branch)
+        except KeyError as reason:
+            logging.error("Error parsing json response in %s: %s", function_name, reason)
+            return -1
+
+    @extract_branch_decorator
+    def many_parameters_methods(self, product: str, branch: str) -> int:
+        """ Return the number of methods in the product that have too many parameters. """
+        rule_names = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.ParameterNumberCheck,' \
+                     'pmd:ExcessiveParameterList,' \
+                     'csharpsquid:S107,' \
+                     'squid:S00107,' \
+                     'javascript:ExcessiveParameterList,' \
+                     'python:S107'
+        return self.__get_rule_violations(product, branch, rule_names, 'many_parameters_methods')
+
+    @extract_branch_decorator
+    def long_methods(self, product: str, branch: str) -> int:
+        """ Return the number of methods in the product that have to many non-comment statements. """
+        # NB: There is no long methods rule for C# and VB.NET. How to deal with this? FIXME
+        rule_names = 'squid:S138,' \
+                     'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.JavaNCSSCheck,' \
+                     'Pylint:R0915,' \
+                     'Web:LongJavaScriptCheck'
+        return self.__get_rule_violations(product, branch, rule_names, 'long_methods')
+
+    @extract_branch_decorator
+    def complex_methods(self, product: str, branch: str) -> int:
+        """ Return the number of methods that violate the Cyclomatic complexity threshold. """
+        rule_names = 'checkstyle:com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck,' \
+                     'pmd:CyclomaticComplexity,' \
+                     'squid:MethodCyclomaticComplexity,' \
+                     'csharpsquid:S1541,' \
+                     'csharpsquid:FunctionComplexity,' \
+                     'javascript:FunctionComplexity,' \
+                     'Web:ComplexityCheck,' \
+                     'python:FunctionComplexity,' \
+                     'vbnet:S1541,' \
+                     'tslint:cyclomatic-complexity'
+
+        return self.__get_rule_violations(product, branch, rule_names, 'complex_methods')
+
+    @extract_branch_decorator
+    def commented_loc(self, product: str, branch: str) -> int:
+        """ Return the number of commented out lines in the source code of the product. """
+        rule_names = 'csharpsquid:S125,' \
+                     'csharpsquid:CommentedCode,' \
+                     'squid:CommentedOutCodeLine,' \
+                     'javascript:CommentedCode,' \
+                     'python:S125,' \
+                     'Web:AvoidCommentedOutCodeCheck'
+        return self.__get_rule_violations(product, branch, rule_names, 'commented_loc')
+
+    @extract_branch_decorator
+    def no_sonar(self, product: str, branch: str) -> int:
+        """ Return the number of NOSONAR usages (or other suppressions) in the source code of the product. """
+        return self.__get_rule_violations(product, branch, 'squid:NoSonar,Pylint:I0011', 'no_sonar')
+
     @functools.lru_cache(maxsize=4096)
     def _metric(self, product: str, metric_name: str, branch: str) -> Number:
         """ Return a specific metric value for the product. """
-        if not self.__has_project(product, branch):
-            return -1
-        url = self._add_branch_param_to_url(
-            self._measures_api_url.format(component=product, metric=metric_name), branch)
         try:
-            return self._get_measure_value(url, metric_name, product)
+            return self._get_measure_of_product(branch, metric_name, product)
         except self._url_opener.url_open_exceptions:
             return -1
 

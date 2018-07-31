@@ -1,3 +1,8 @@
+2018-08-01  Release 2.63.3
+
+  * Bug #465: results for specific SonarQube violations (Sonar version>7) corrected
+
+
 2018-07-31  Release 2.63.2
 
   * Feature #387: implemented ART using testx.

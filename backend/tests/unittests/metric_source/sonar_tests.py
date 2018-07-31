@@ -2214,6 +2214,7 @@ class Sonar7TestCase(unittest.TestCase):
         with patch.object(Sonar, 'version_number') as mock_version_number:
             mock_version_number.return_value = '7.3'
             self._sonar = Sonar('http://sonar/')
+            self._sonar.version_number = mock_version_number
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
@@ -2264,6 +2265,137 @@ class Sonar7Test(Sonar7TestCase):
         result = self._sonar.version('prod')
 
         self.assertEqual('?', result)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_many_parameters_methods(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of methods with many parameters equals the number of methods with many parameters
+            returned by the violations page. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"total": "25"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(25, self._sonar.many_parameters_methods('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_many_parameters_methods_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of methods with many parameters returns -1 if http error occurs. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', urllib.error.HTTPError(None, None, None, None, None)]
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.many_parameters_methods('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_many_parameters_methods_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of methods with many parameters returns -1 if different json is returned. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"no_total": "1"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.many_parameters_methods('product'))
+        mock_log_error.assert_called_once()
+        self.assertEqual(mock_log_error.call_args[0][0], "Error parsing json response in %s: %s")
+        self.assertEqual(mock_log_error.call_args[0][1], "many_parameters_methods")
+        self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_complex_methods(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of too complex methods equals the one returned by the violations page. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"total": "25"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(25, self._sonar.complex_methods('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_complex_methods_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of too complex methods returns -1 if http error occurs. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', urllib.error.HTTPError(None, None, None, None, None)]
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.complex_methods('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_complex_methods_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of too complex methods returns -1 if different json is returned. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"no_total": "1"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.complex_methods('product'))
+        mock_log_error.assert_called_once()
+        self.assertEqual(mock_log_error.call_args[0][0], "Error parsing json response in %s: %s")
+        self.assertEqual(mock_log_error.call_args[0][1], "complex_methods")
+        self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_commented_loc(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of commented lines of code equals the one returned by the violations page. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"total": "25"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(25, self._sonar.commented_loc('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_commented_loc_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of commented lines of code returns -1 if http error occurs. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', urllib.error.HTTPError(None, None, None, None, None)]
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.commented_loc('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_commented_loc_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of commented lines of code returns -1 if different json is returned. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"no_total": "1"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.commented_loc('product'))
+        mock_log_error.assert_called_once()
+        self.assertEqual(mock_log_error.call_args[0][0], "Error parsing json response in %s: %s")
+        self.assertEqual(mock_log_error.call_args[0][1], "commented_loc")
+        self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_long_methods(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of log methods equals the one returned by the violations page. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"total": "25"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(25, self._sonar.long_methods('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_long_methods_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of log methods returns -1 if http error occurs. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', urllib.error.HTTPError(None, None, None, None, None)]
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.long_methods('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_long_methods_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of log methods returns -1 if different json is returned. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"no_total": "1"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.long_methods('product'))
+        mock_log_error.assert_called_once()
+        self.assertEqual(mock_log_error.call_args[0][0], "Error parsing json response in %s: %s")
+        self.assertEqual(mock_log_error.call_args[0][1], "long_methods")
+        self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_no_sonar(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of NOSONAR usages equals the one returned by the violations page. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"total": "25"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(25, self._sonar.no_sonar('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_no_sonar_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of NOSONAR usages returns -1 if http error occurs. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', urllib.error.HTTPError(None, None, None, None, None)]
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.no_sonar('product'))
+
+    @patch.object(Sonar7, 'is_branch_name_included')
+    @patch.object(logging, 'error')
+    def test_no_sonar_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of NOSONAR usages returns -1 if different json is returned. """
+        mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"no_total": "1"}}']
+        mock_is_branch_name_included.return_value = False
+        self.assertEqual(-1, self._sonar.no_sonar('product'))
+        mock_log_error.assert_called_once()
+        self.assertEqual(mock_log_error.call_args[0][0], "Error parsing json response in %s: %s")
+        self.assertEqual(mock_log_error.call_args[0][1], "no_sonar")
+        self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
 
     @patch.object(Sonar7, 'is_branch_name_included')
     def test_analysis_datetime_empty_product(self, mock_is_branch_name_included, mock_url_read):
@@ -2330,7 +2462,7 @@ class Sonar7Metric(Sonar7TestCase):
     def test_unittests(self, mock_is_branch_name_included, mock_url_read):
         """ Test that the number of unit tests equals the number of unit tests returned by the dashboard. """
         mock_is_branch_name_included.return_value = False
-        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}',
+        mock_url_read.side_effect = ['{"paging": {"total": "40"}}',
                                      '{"component": {"measures": [{"metric": "tests", "value": "1111"}]}}']
         self.assertEqual(1111, self._sonar.unittests('product'))
 
@@ -2345,7 +2477,7 @@ class Sonar7Metric(Sonar7TestCase):
     def test_unittests_no_component(self, mock_warning, mock_is_branch_name_included, mock_url_read):
         """ Test that the number of unit tests returns -1 when there is no component. """
         mock_is_branch_name_included.return_value = False
-        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "0"}}']
+        mock_url_read.side_effect = ['{"paging": {"total": "0"}}']
 
         result = self._sonar.unittests('product')
 
@@ -2356,7 +2488,7 @@ class Sonar7Metric(Sonar7TestCase):
     def test_unittests_no_tests(self, mock_warning, mock_is_branch_name_included, mock_url_read):
         """ Test that the number of unit tests returns -1 when there is no required metric. """
         mock_is_branch_name_included.return_value = False
-        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}',
+        mock_url_read.side_effect = ['{"paging": {"total": "40"}}',
                                      '{"component": {"measures": [{"metric": "somathing-else", "value": "1111"}]}}']
 
         result = self._sonar.unittests('product')
@@ -2375,7 +2507,7 @@ class Sonar7Metric(Sonar7TestCase):
     def test_unittests_key_error(self, mock_warning, mock_is_branch_name_included, mock_url_read):
         """ Test that the number of unit tests returns -1 when measures key is not found. """
         mock_is_branch_name_included.return_value = False
-        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}', '{"component": {}}']
+        mock_url_read.side_effect = ['{"paging": {"total": "40"}}', '{"component": {}}']
 
         result = self._sonar.unittests('product')
 
@@ -2393,7 +2525,7 @@ class Sonar7Metric(Sonar7TestCase):
     def test_unittests_type_error(self, mock_warning, mock_is_branch_name_included, mock_url_read):
         """ Test that the number of unit tests returns -1 when type is not correct. """
         mock_is_branch_name_included.return_value = False
-        mock_url_read.side_effect = ['[{"k": "product"}]', '{"paging": {"total": "40"}}',
+        mock_url_read.side_effect = ['{"paging": {"total": "40"}}',
                                      '{"component": {"measures": 99}}']
 
         result = self._sonar.unittests('product')
