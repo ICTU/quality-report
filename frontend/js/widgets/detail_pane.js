@@ -85,26 +85,66 @@ class ActionPanel extends React.Component {
 }
 
 class TablePanel extends React.Component {
-    renderHeaderCell(header_text, index) {
-        if(header_text[0] !== '_') {
+    constructor(props) {
+        super(props);
+        let state = { headers: this.props.extra_info.headers, data: this.props.extra_info.data, sort_column: '', sort_asc: true };
+        this.state = state;
+    }
+
+    renderHeaderCell(header_text, header_key, index) {
+        if (header_text[0] !== '_') {
+            var sorting_char = this.getSortingIndicator(header_key);
             var header = header_text.split('__');
             if (header.length>1) {
-                return <th key={index} className={header[1]}>{header[0]}&nbsp;</th>
+                return <th key={index} onClick={() => this.sortBy(header_key)} className={header[1] + " detail-table-header"}>
+                            {header[0] + sorting_char}
+                        </th>
             }
-            return <th key={index}>{header[0]}&nbsp;</th>
+            return <th key={index} onClick={() => this.sortBy(header_key)} className="detail-table-header">
+                        {header[0] + sorting_char}
+                    </th>
         }
         return null;
     }
 
+    getSortingIndicator(header_key) {
+        return this.state.sort_column === header_key ? (this.state.sort_asc ? '▾' : '▴') : ' ';
+    }
+
+    compareBy(key, sort_order) {
+        return function (a, b) {
+            var is_object = (a[key] !== null && typeof a[key] === 'object')
+            var a_comp = is_object ? a[key]['text'] : a[key];
+            var b_comp = is_object ? b[key]['text'] : b[key];
+            var ret = sort_order ? 1 : -1;
+            return (a_comp >= b_comp) ? ret : -ret;
+        };
+    }
+
+    sortBy(key) {
+        var sort_order = true;
+        if (this.state.sort_column === key) {
+            sort_order = !this.state.sort_asc
+        }
+        let arrayCopy = [...this.state.data];
+        arrayCopy.sort(this.compareBy(key, sort_order));
+        this.setState({data: arrayCopy, sort_asc: sort_order, sort_column: key});
+    }
+
     renderHeader(headers) {
-        return (
-            <thead>
-                <tr>
-                    {Object.values(headers).map((col, index) => {
-                        return this.renderHeaderCell(col, index);
-                    })}
-                </tr>
-            </thead>)
+        if (headers) {
+            var header_keys = Object.keys(headers);
+            return (
+                <thead>
+                    <tr>
+                        {Object.values(headers).map((col, index) => {
+                            return this.renderHeaderCell(col, header_keys[index], index);
+                        })}
+                    </tr>
+                </thead>);
+        } else {
+            return <thead />;
+        }
     }
 
     formatCell(cell_content) {
@@ -150,15 +190,15 @@ class TablePanel extends React.Component {
         return null;
     }
 
-    renderTableBody(extra_info) {
-        const columns = Object.keys(extra_info.headers);
+    renderTableBody(headers, data) {
+        const columns = Object.keys(headers);
         var rows;
-        var format_columns = this.getFormatColumns(extra_info.headers);
+        var format_columns = this.getFormatColumns(headers);
 
-        if(extra_info && extra_info.data) {
-            rows = extra_info.data.map((row, index) => {
+        if(headers && data) {
+            rows = data.map((row, index) => {
 
-                var classNames = this.applyClassNames(row, format_columns, extra_info.headers);
+                var classNames = this.applyClassNames(row, format_columns, headers);
                 var clsName = 'detail-row-default';
                 if (classNames.length > 0) {
                     clsName = classNames.join(' ');
@@ -167,7 +207,7 @@ class TablePanel extends React.Component {
                 return (
                 <tr key={index} className={clsName}>
                     {columns.map((col) => {
-                        return this.renderRowCell(extra_info.headers[col], row[col], index);
+                        return this.renderRowCell(headers[col], row[col], index);
                     })}
                 </tr>
                 );
@@ -186,8 +226,8 @@ class TablePanel extends React.Component {
                 <h4 className="panel-heading">{this.props.extra_info["title"]}</h4>
                 <div className="panel-body">
                     <table className="table-striped">
-                        {this.renderHeader(this.props.extra_info["headers"])}
-                        {this.renderTableBody(this.props.extra_info)}
+                        {this.renderHeader(this.state.headers)}
+                        {this.renderTableBody(this.state.headers, this.state.data)}
                     </table>
                 </div>
             </div>

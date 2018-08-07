@@ -1,3 +1,8 @@
+2018-08-07  Release 2.64.0
+
+  * Feature #470: detail table sorting added.
+
+
 2018-08-01  Release 2.63.3
 
   * Bug #465: results for specific SonarQube violations (Sonar version>7) corrected

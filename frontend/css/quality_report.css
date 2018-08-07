@@ -129,6 +129,10 @@ div.meta_metrics_history_graph {
     padding: 4px 8px 4px 8px;
 }
 
+.detail-table-header {
+    cursor: pointer;
+}
+
 .detail-row-alter {
     font-style: italic;
 }

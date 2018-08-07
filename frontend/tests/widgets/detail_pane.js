@@ -35,24 +35,32 @@ test('detail pane renders headers of table panel with extra info', (t) => {
         metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"link": "Branch"}, "title":"Extra Info Title"}}}>
     </DetailPane>)
     t.equals(wrapper.find('TablePanel').exists(), true);
-    t.equals(wrapper.find('TablePanel').dive().find('th').text(), "Branch ");
+    t.equals(wrapper.find('TablePanel').dive().find('th').text(), "Branch ");
     t.equals(wrapper.find('TablePanel').dive().find('h4').text(), "Extra Info Title");
+    t.end();
+});
+
+test('detail pane renders empty headers', (t) => {
+    const wrapper = shallow(<DetailPane has_extra_info={true} metric_detail = {{extra_info: {"headers": ''}}}>
+    </DetailPane>)
+    t.equals(wrapper.find('TablePanel').exists(), true);
+    t.equals(wrapper.find('TablePanel').dive().find('thead').children().exists(), false);
     t.end();
 });
 
 test('detail pane does not render headers of table panel beginning with underscore', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col1": "X", "col2": "_x"}}}}>
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"col1": "X", "col2": "_x"}}}}>
     </DetailPane>)
     t.equals(wrapper.find('TablePanel').dive().find('th').length, 1);
-    t.equals(wrapper.find('TablePanel').dive().find('th').text(), "X ");
+    t.equals(wrapper.find('TablePanel').dive().find('th').text(), "X ");
     t.end();
 });
 
 
 test('detail pane does not render columns of the table panel if their header begins with underscore', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "_x", "num": "Number"},
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "_x", "num": "Number"},
                                 "data":[{"str": "First Row", "num": "1"}, {"str": "Second Row", "num": "2"}]}}}>
     </DetailPane>)
     t.equals(wrapper.find('TablePanel').dive().find('tbody tr').first().find('td').length, 1);
@@ -65,19 +73,19 @@ test('detail pane does not render columns of the table panel if their header beg
 
 test('detail pane renders with css classes in header names', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "FirstHeader__css_class"},
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "FirstHeader__css_class"},
         "data":[{"str": "First Row"}]}}}>
     </DetailPane>)
     
     t.equals(wrapper.find('TablePanel').dive().find('tbody tr').first().find('td').length, 1);
     t.equals(wrapper.find('TablePanel').dive().find('tbody tr td.css_class').contains('First Row'), true);
-    t.equals(wrapper.find('TablePanel').dive().find('th.css_class').text(), "FirstHeader ");
+    t.equals(wrapper.find('TablePanel').dive().find('th.css_class').text(), "FirstHeader ");
     t.end();
 });
 
 test('detail pane renders rows of the table panel with <className> if the column with _<className> header text is "true"', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "format": "_italic"},
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "String", "format": "_italic"},
                              "data":[{"str": "First Row", "format": "true"}, {"str": "Second Row", "format": "false"}]}}}>
     </DetailPane>)
 
@@ -91,7 +99,7 @@ test('detail pane renders rows of the table panel with <className> if the column
 
 test('detail pane renders rows of the table panel with extra info', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"str": "String", "num": "Number"},
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "String", "num": "Number"},
                                 "data":[{"str": "First Row", "num": "1"}, {"str": "Second Row", "num": "2"}]}}}>
     </DetailPane>)
 
@@ -105,7 +113,7 @@ test('detail pane renders rows of the table panel with extra info', (t) => {
 
 test('detail pane renders rows of the table panel with links in extra info', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"},
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"col": "Link"},
                                 "data":[{"col": {"href":"http://xxx", "text": "Description"}}]}}} />)
 
     t.equals(wrapper.find('TablePanel').exists(), true);
@@ -116,7 +124,7 @@ test('detail pane renders rows of the table panel with links in extra info', (t)
 
 test('detail pane renders rows of the table panel with links in extra info, with link as the text', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
-        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', extra_info: {"headers": {"col": "Link"},
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"col": "Link"},
                 "data":[{"col": {"href":"http://xxx", "text": ""}}]}}} />)
     t.equals(wrapper.find('TablePanel').exists(), true);
     t.equals(wrapper.find('TablePanel').dive().find('tbody tr a').text(), "http://xxx");
@@ -160,7 +168,7 @@ test('detail pane renders history chart without stable id', (t) => {
     t.end();
 });
 
-test('detail pane renders hides metric when hide button clicked', (t) => {
+test('detail pane executes function that should hide metric when hide button clicked', (t) => {
     const onButtonClick = sinon.spy();
     const wrapper = shallow(<DetailPane on_hide_metric={onButtonClick} metric_detail={{id: 'IDx', extra_info: {}}} />)
     var button = wrapper.find('ActionPanel').dive().find('button');
@@ -176,19 +184,66 @@ test('detail pane does render detail table if there is extra info', (t) => {
         extra_info: {title: "Extra!", headers: {"x": "y"}, data:[{"x":"extra data"}]}}} />)
     t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane').length, 1);
     t.equals(wrapper.find('TablePanel').length, 1);
-    t.equals(wrapper.find('TablePanel').dive()
-            .equals(<div className="panel panel-default">
-                        <h4 className="panel-heading">Extra!</h4>
-                        <div className="panel-body">
-                            <table className="table-striped">
-                            <thead>
-                                <tr><th>y </th></tr>
-                            </thead>
-                            <tbody>
-                                <tr className="detail-row-default"><td>extra data</td></tr>
-                            </tbody>
-                            </table>
-                        </div>
-                    </div>), true);
+    var rendered_table = wrapper.find('TablePanel').dive();
+    t.equals(rendered_table.find('div.panel.panel-default').length, 1);
+    t.equals(rendered_table.find('div.panel.panel-default h4.panel-heading').text(), "Extra!");
+    t.equals(rendered_table.find('div.panel.panel-default div.panel-body table.table-striped').length, 1);
+    t.equals(rendered_table.find('thead>tr>th.detail-table-header').first().text(), 'y ');
+    t.equals(rendered_table.find('tbody>tr>td').first().text(), 'extra data');
     t.end();
 });
+
+test('when clicked on header of detail table, extra info is sorted', (t) => {
+    const wrapper = mount(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', 
+        extra_info: {title: "Extra!", headers: {"c1": "Col Name"}, data:[{"c1":"bb"}, {"c1":"aa"}]}}} />)
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'bb');
+    var header = wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped thead>tr>th').first();
+    t.equals(header.text(), 'Col Name ');
+    header.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'aa');
+    t.equals(header.text(), 'Col Name▾');
+    t.end();
+});
+
+test('when clicked on header of detail table that contains link, extra info is sorted on text', (t) => {
+    const wrapper = mount(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', 
+        extra_info: {title: "Extra!", headers: {"c1": "whatever"}, data:[{"c1": {"href":"http://xxx", "text": "bb"}}, {"c1": {"href":"http://yyy", "text": "aa"}}]}}} />)
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'bb');
+    var header = wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped thead>tr>th').first();
+    header.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'aa');
+    t.end();
+});
+
+test('when clicked again on the header of detail table, extra info is sorted in reversed order', (t) => {
+    const wrapper = mount(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', 
+        extra_info: {title: "Extra!", headers: {"c1": "Col Name"}, data:[{"c1":"bb"}, {"c1":"aa"}]}}} />)
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'bb');
+    var header = wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped thead>tr>th.detail-table-header').first();
+    t.equals(header.text(), 'Col Name ');
+    header.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'aa');
+    t.equals(header.text(), 'Col Name▾');
+    header.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'bb');
+    t.equals(header.text(), 'Col Name▴');
+    t.end();
+});
+
+test('when clicked on the other header of the detail table, extra info is sorted ascending on that column', (t) => {
+    const wrapper = mount(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', 
+        extra_info: {title: "Extra!", headers: {"c1": "whatever", "c2": "header2"}, data:[{"c1":"bb", "c2":"xx"}, {"c1":"aa", "c2":"zz"}]}}} />)
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'bb');
+    var header = wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped thead>tr>th.detail-table-header').first();
+    header.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'aa');
+    var header2 = wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped thead>tr>th.detail-table-header').last();
+    header2.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').last().text(), 'xx');
+    t.end();
+});
+
