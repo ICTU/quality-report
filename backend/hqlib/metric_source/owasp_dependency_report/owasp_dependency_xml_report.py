@@ -28,9 +28,42 @@ from ...typing import DateTime
 class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     """ Class representing OWASP dependency reports in XML format. """
 
-    def __init__(self, url_read=None, **kwargs) -> None:
-        self.__url_read = url_read or url_opener.UrlOpener(**kwargs).url_read
+    def __init__(self, **kwargs) -> None:
+        self._url_opener = url_opener.UrlOpener(**kwargs)
         super().__init__()
+
+    def get_dependencies_info(self, metric_source_id: str, priority: str) -> list:
+        """ Extracts info of dependencies with vulnerabilities of given priority. """
+        priority = 'Medium' if priority == 'normal' else 'High'
+        root, namespace = self.__report_root(metric_source_id)
+        dependencies = root.findall(
+            ".//{{{ns}}}dependency[{{{ns}}}vulnerabilities]".format(ns=namespace))
+
+        dependencies_info = []
+        for dependency in dependencies:
+            vulnerabilities = dependency.findall(
+                "{{{ns}}}vulnerabilities/{{{ns}}}vulnerability[{{{ns}}}severity='{priority}']"
+                .format(ns=namespace, priority=priority))
+            if vulnerabilities:
+                file_name = self.__get_text_from_node(dependency, "{{{ns}}}fileName", namespace)
+                dependency_info = self.__create_dependency_info(namespace, vulnerabilities)
+                dependency_info.file_name = file_name
+                dependencies_info.append(dependency_info)
+        return dependencies_info
+
+    def __create_dependency_info(self, nsp: str, vulnerabilities) -> owasp_dependency_report.Dependency:
+        count_vulnerabilities = len(vulnerabilities)
+        cves = []
+        for vulnerability in vulnerabilities:
+            name = self.__get_text_from_node(vulnerability, "{{{ns}}}name", nsp)
+            url = self.__get_text_from_node(vulnerability, "{{{ns}}}references/{{{ns}}}reference[1]/{{{ns}}}url", nsp)
+            cves.append((name, url))
+        return owasp_dependency_report.Dependency('', count_vulnerabilities, cves)
+
+    @classmethod
+    def __get_text_from_node(cls, node, xpath: str, namespace: str):
+        found = node.find(xpath.format(ns=namespace))
+        return found.text if found is not None else ''
 
     def _nr_warnings(self, metric_source_id: str, priority: str) -> int:
         """ Return the number of warnings for the specified priority in the report. """
@@ -86,7 +119,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     @functools.lru_cache(maxsize=1024)
     def __report_root(self, report_url: str) -> Tuple[Any, str]:
         """ Return the root node and namespace of the OWASP dependency XML report. """
-        contents = self.__url_read(report_url)
+        contents = self._url_opener.url_read(report_url)
         root = xml.etree.cElementTree.fromstring(contents)
         # ElementTree has no API to get the namespace so we extract it from the root tag:
         namespace = root.tag.split('}')[0][1:]

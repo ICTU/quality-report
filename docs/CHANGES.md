@@ -1,3 +1,8 @@
+2018-08-16  Release 2.65.0
+
+  * Feature #471: detail table implemented for OWASP measures.
+
+
 2018-08-07  Release 2.64.0
 
   * Feature #470: detail table sorting added.

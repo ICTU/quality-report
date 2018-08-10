@@ -26,6 +26,7 @@ SONAR = metric_source.Sonar('https://my.sonarqube.com/')
 JUNIT=metric_source.JunitTestReport()
 HISTORY = metric_source.CompactHistory(PROJECT_DIR / 'docs' / 'examples' / 'quality_report' / 'history.json')
 JACOCO = metric_source.JaCoCo()
+OWASP_DEPENDENCY_REPORT = metric_source.OWASPDependencyXMLReport()
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 SECURITY_REPORT_PROXY = metric_source.FileWithDate()
 
@@ -47,6 +48,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                       metric_source.Sonar: SONAR,
                       metric_source.SystemTestReport: JUNIT,
                       metric_source.JaCoCo: JACOCO,
+                      metric_source.OWASPDependencyReport: OWASP_DEPENDENCY_REPORT,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
                       metric_source.CIServer: JENKINS,
@@ -92,6 +94,7 @@ QUALITY_REPORT = Application(
         SONAR: 'nl.comp:my_project',
         JUNIT: "http://www.junit.report.url/junit.xml",
         JACOCO: 'quality-report-coverage-report',
+        OWASP_DEPENDENCY_REPORT: 'http://owasp.dependency/report.xml',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
     metric_options={
         metric.UnittestLineCoverage:

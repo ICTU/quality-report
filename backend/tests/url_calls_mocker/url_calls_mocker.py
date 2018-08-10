@@ -388,6 +388,13 @@ class UrlOpenerMock(UrlOpener):
                 ),
             # end zap scan
 
+            # begin OWASP dependency rapport
+            'http://owasp.dependency/report.xml':
+                self._get_file_content(
+                    examples_metric_sources_path / 'dependency-check-report.xml'
+                ),
+            # end OWASP dependency rapport
+
             'https://last_security_date_url':
                 self._get_file_content(
                     examples_metric_sources_path / 'file_with_date.json'

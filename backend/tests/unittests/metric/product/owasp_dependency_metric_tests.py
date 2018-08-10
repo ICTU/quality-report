@@ -15,38 +15,13 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import MagicMock, call
 
 from typing import Type
 
 from hqlib import metric, domain, metric_source
 from hqlib.metric.product.alerts_metrics import AlertsMetric
-
-
-class FakeSubject(object):
-    """ Provide for a fake subject. """
-
-    def __init__(self, metric_source_ids=None):
-        self.__metric_source_ids = metric_source_ids or dict()
-
-    @staticmethod
-    def name():
-        """ Return the name of the subject. """
-        return 'FakeSubject'
-
-    def metric_source_id(self, the_metric_source):
-        """ Return the id of the subject for the metric source. """
-        return self.__metric_source_ids.get(the_metric_source)
-
-
-class FakeJenkinsOWASPDependenciesReport(domain.MetricSource):
-    """ Fake a Jenkins OWASP dependency report for unit test purposes. """
-
-    metric_source_name = metric_source.JenkinsOWASPDependencyReport.metric_source_name
-
-    @staticmethod
-    def nr_warnings(job_names, priority):
-        """ Return the number of warnings for the jobs. """
-        return -1 if job_names == [None] else dict(high=4, normal=2, low=14)[priority]
+from hqlib.metric_source.abstract.owasp_dependency_report import Dependency
 
 
 class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
@@ -55,25 +30,49 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
     class_under_test: Type[AlertsMetric] = metric.HighPriorityOWASPDependencyWarnings  # May be overridden
 
     def setUp(self):
-        self.__jenkins = FakeJenkinsOWASPDependenciesReport()
-        self.__subject = FakeSubject(metric_source_ids={self.__jenkins: 'jenkins_job'})
-        self.__project = domain.Project(metric_sources={metric_source.OWASPDependencyReport: self.__jenkins})
+        self.__metric_source = MagicMock()
+        self.__metric_source.nr_warnings = MagicMock(return_value=4)
+        self.__metric_source.metric_source_name = metric_source.JenkinsOWASPDependencyReport.metric_source_name
+        self.__subject = MagicMock()
+        self.__subject.name = MagicMock(return_value='X')
+        self.__subject.metric_source_id = MagicMock(return_value=['X', 'Y'])
+        self.__project = domain.Project(metric_sources={metric_source.OWASPDependencyReport: self.__metric_source})
+        self.__project.metric_sources = MagicMock(return_value=[self.__metric_source])
         self.__metric = self.class_under_test(subject=self.__subject, project=self.__project)
 
     def expected_warnings(self, job):
         """ Return the number of expected warnings. """
-        return self.__jenkins.nr_warnings(job, self.class_under_test.risk_level_key)
+        return self.__metric_source.nr_warnings(job, self.class_under_test.risk_level_key)
 
     def test_value(self):
         """ Test that value of the metric equals the number of warnings as reported by Jenkins. """
         self.assertEqual(self.expected_warnings('jenkins_job'), self.__metric.value())
 
+    def test_extra_info_rows(self):
+        """ Test that extra info urls of the metric are as expected. """
+        expected_dependencies = [Dependency("dep1", 3, ["url", "text"])]
+        self.__metric_source.get_dependencies_info = MagicMock(return_value=expected_dependencies)
+
+        result = self.__metric.extra_info_rows()
+
+        self.assertEqual(expected_dependencies + expected_dependencies, result)
+        self.assertEqual(call('X', self.__metric.risk_level_key),
+                         self.__metric_source.get_dependencies_info.call_args_list[0])
+        self.assertEqual(call('Y', self.__metric.risk_level_key),
+                         self.__metric_source.get_dependencies_info.call_args_list[1])
+
+    def test_convert_item_to_extra_info(self):
+        """ Test the conversion of dependency record to extra info. """
+        depend = Dependency("dep1", 3, [("text", "url"), ("text2", "url2")])
+        self.assertEqual((depend.file_name, depend.nr_vulnerabilities,
+                          ({'href': 'url', 'text': 'text'}, {'href': 'url2', 'text': 'text2'})),
+                         self.__metric.convert_item_to_extra_info(depend))
+
     def test_value_multiple_jobs(self):
         """ Test that the value of the metric equals the number of warnings if there are multiple
             test reports. """
-        subject = FakeSubject(metric_source_ids={self.__jenkins: ['a', 'b']})
-        failing_tests = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual(self.expected_warnings(['a', 'b']), failing_tests.value())
+        self.__subject.metric_source_id = MagicMock(return_value=['a', 'b'])
+        self.assertEqual(self.expected_warnings(['a', 'b']), self.__metric.value())
 
     def test_value_without_metric_source(self):
         """ Test that the value is -1 when no OWASP dependency report is provided. """
@@ -82,7 +81,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
-        expected_report = 'Dependencies van FakeSubject hebben {0} {1} prioriteit waarschuwingen.'.format(
+        expected_report = 'Dependencies van X hebben {0} {1} prioriteit waarschuwingen.'.format(
             self.expected_warnings('jenkins_job'), self.class_under_test.risk_level)
         self.assertEqual(expected_report, self.__metric.report())
 
@@ -101,7 +100,7 @@ class HighPriorityOWASPDependencyWarningsTest(unittest.TestCase):
 
     def test_is_missing_without_jenkins_job(self):
         """ Test that the metric cannot be measured without Jenkins. """
-        owasp = self.class_under_test(FakeSubject(), self.__project)
+        owasp = self.class_under_test(None, self.__project)
         self.assertTrue(owasp._missing())  # pylint: disable=protected-access
 
     def test_is_not_missing(self):

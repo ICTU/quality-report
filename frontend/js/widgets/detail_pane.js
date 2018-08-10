@@ -113,11 +113,18 @@ class TablePanel extends React.Component {
 
     compareBy(key, sort_order) {
         return function (a, b) {
-            var is_object = (a[key] !== null && typeof a[key] === 'object')
-            var a_comp = is_object ? a[key]['text'] : a[key];
-            var b_comp = is_object ? b[key]['text'] : b[key];
-            var ret = sort_order ? 1 : -1;
-            return (a_comp >= b_comp) ? ret : -ret;
+            let aField = a[key];
+            let bField = b[key];
+            if (Array.isArray(aField)) {
+                aField = aField[0];
+                bField = bField[0];
+            }
+            if (aField !== null && typeof aField === 'object') {
+                aField = aField['text'];
+                bField = bField['text'];
+            }
+            let sortSign = sort_order ? 1 : -1;
+            return (aField >= bField) ? sortSign : -sortSign;
         };
     }
 
@@ -147,9 +154,22 @@ class TablePanel extends React.Component {
         }
     }
 
+    formatLink(cell_content) {
+        if (cell_content.hasOwnProperty('href')) {
+            return <a href={cell_content.href} target="_blank">{cell_content.text || cell_content.href}</a>
+        }
+        return cell_content;
+    }
+
     formatCell(cell_content) {
-        if (cell_content && cell_content.hasOwnProperty('href')) {
-            return <a href={cell_content.href}>{cell_content.text || cell_content.href}</a>
+        if (cell_content) {
+            if (Array.isArray(cell_content)) {
+                return cell_content.map(
+                    (c, i, content) => content[i+1] ? [this.formatLink(c), ', '] : this.formatLink(c)
+                );
+            } else {
+                return  this.formatLink(cell_content);
+            }
         }
         return cell_content;
     }

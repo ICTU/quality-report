@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 
+from hqlib.domain import ExtraInfo
 from .alerts_metrics import AlertsMetric
 from ... import metric_source
 
@@ -28,6 +29,27 @@ class OWASPDependencyWarnings(AlertsMetric):
                     'Meer dan {low_target} is rood.'
     template = 'Dependencies van {name} hebben {value} {risk_level} prioriteit {unit}.'
     metric_source_class = metric_source.OWASPDependencyReport
+
+    extra_info_headers = {
+        "dependency": "Dependency",
+        "CVE_count": "Aantal CVE's__detail-column-number",
+        "links": "CVE's"
+    }
+
+    def extra_info_rows(self) -> list:
+        metric_source_ids = self._get_metric_source_ids()
+        dependencies = []
+        for metric_id in metric_source_ids:
+            dependencies += self._metric_source.get_dependencies_info(metric_id, self.risk_level_key)
+        return dependencies
+
+    def convert_item_to_extra_info(self, item: metric_source.Dependency) -> (str, str, int, list):
+        """ Transform a dependency item to a link and integer. """
+        # cve_links = []
+        cves = []
+        for cve in item.cve_links:
+            cves.append(ExtraInfo.format_extra_info_link(cve[1], cve[0]) if item.cve_links else '')
+        return (item.file_name, item.nr_vulnerabilities, tuple(cves)) if item else None
 
     def _nr_alerts(self) -> int:
         """ Return the number of warnings. """

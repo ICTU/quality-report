@@ -97,6 +97,17 @@ test('detail pane renders rows of the table panel with <className> if the column
     t.end();
 });
 
+test('detail pane table renders empty cell for missing data', (t) => {
+    const wrapper = shallow(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "String", "int": "Integer"},
+                             "data":[{"int": 3}]}}}>
+    </DetailPane>)
+
+    t.equals(wrapper.find('TablePanel').dive().find('tbody tr').find('td').first().text(), '');
+    t.equals(wrapper.find('TablePanel').dive().find('tbody tr').find('td').last().text(), '3');
+    t.end();
+});
+
 test('detail pane renders rows of the table panel with extra info', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
         metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "String", "num": "Number"},
@@ -111,6 +122,33 @@ test('detail pane renders rows of the table panel with extra info', (t) => {
     t.end();
 });
 
+test('detail pane renders rows of the table panel with array of values', (t) => {
+    const wrapper = shallow(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"csv": "CSV"},
+                                "data":[{"csv": ["1", "A", "enough"]}]}}}>
+    </DetailPane>)
+
+    t.equals(wrapper.find('TablePanel').exists(), true);
+    var bodyRow = wrapper.find('TablePanel').dive().find('tbody tr').first()
+    t.equals(bodyRow.containsAllMatchingElements(['1', 'A', ', ', "enough"]), true);
+    t.end();
+});
+
+test('detail pane renders rows of the table panel with array of values of different types', (t) => {
+    const wrapper = mount(
+    <DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], extra_info: {
+            "headers": {"csv": "CSV"}, 
+            "data":[{"csv": [1, {"href":"http://xxx", "text": "Description"}, "some text"]}]}}}>
+    </DetailPane>)
+    t.equals(wrapper.find('TablePanel').exists(), true);
+    var bodyRow = wrapper.find('TablePanel').find('tbody tr').first().find('td').last();
+    t.equals(bodyRow.contains("1"), true);
+    t.equals(bodyRow.contains("some text"), true);
+    t.equals(bodyRow.find('a[href="http://xxx"]').contains('Description'), true);
+    t.end();
+});
+
 test('detail pane renders rows of the table panel with links in extra info', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
         metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"col": "Link"},
@@ -119,6 +157,7 @@ test('detail pane renders rows of the table panel with links in extra info', (t)
     t.equals(wrapper.find('TablePanel').exists(), true);
     t.equals(wrapper.find('TablePanel').dive().find('tbody tr a').text(), "Description");
     t.equals(wrapper.find('TablePanel').dive().find('tbody tr a[href="http://xxx"]').exists(), true);
+    t.equals(wrapper.find('TablePanel').dive().find('tbody tr a[target="_blank"]').exists(), true);
     t.end();
 });
 
@@ -203,6 +242,17 @@ test('when clicked on header of detail table, extra info is sorted', (t) => {
     header.simulate('click');
     t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'aa');
     t.equals(header.text(), 'Col Name▾');
+    t.end();
+});
+
+test('when clicked on header of detail table containing multiple values, extra info is sorted using the first value', (t) => {
+    const wrapper = mount(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], className: 'cls', id: 'IDx', comment:'', 
+        extra_info: {title: "Extra!", headers: {"c1": "Col Name"}, data:[{"c1":["bb", "baaa"]}, {"c1":["aa", "a", "xx"]}]}}} />)
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'bb, baaa');
+    var header = wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped thead>tr>th').first();
+    header.simulate('click');
+    t.equals(wrapper.find('tr.cls.collapse[id="IDx_details"] td.detail_pane table.table-striped tbody>tr').first().find('td').first().text(), 'aa, a, xx');
     t.end();
 });
 

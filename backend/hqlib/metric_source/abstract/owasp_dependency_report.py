@@ -22,9 +22,22 @@ from hqlib.typing import DateTime
 from ... import domain
 
 
+class Dependency:
+    """ A dependency in owasp report. """
+    # pylint: disable=too-few-public-methods
+    def __init__(self, file_name: str, nr_vulnerabilities: int, cve_links: list((str, str))) -> None:
+        self.file_name = file_name
+        self.nr_vulnerabilities = nr_vulnerabilities
+        self.cve_links = cve_links
+
+
 class OWASPDependencyReport(domain.MetricSource):
     """ Abstract class representing a OWASP dependency report. """
     metric_source_name = 'OWASP dependency rapport'
+
+    def get_dependencies_info(self, metric_source_id: str, priority: str) -> list:
+        """ Return info of dependencies with vulnerabilities of given priority. """
+        raise NotImplementedError
 
     @functools.lru_cache(maxsize=1024)
     def nr_warnings(self, metric_source_ids: Iterable[str], priority: str) -> int:

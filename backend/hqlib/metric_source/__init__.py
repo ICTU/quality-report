@@ -17,7 +17,7 @@ limitations under the License.
 
 from .abstract.ci_server import CIServer
 from .abstract.coverage_report import ARTCoverageReport, UnittestCoverageReport, AggregatedCoverageReport
-from .abstract.owasp_dependency_report import OWASPDependencyReport
+from .abstract.owasp_dependency_report import OWASPDependencyReport, Dependency
 from .abstract.performance_report import PerformanceLoadTestReport, PerformanceEnduranceTestReport, \
     PerformanceScalabilityTestReport
 from .abstract.issue_log import ActionLog, IssueLog, RiskLog
