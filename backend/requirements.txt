@@ -1,5 +1,5 @@
 # Required Python packages
-beautifulsoup4==4.6.1
+beautifulsoup4==4.6.3
 lxml==4.2.4
 python-dateutil==2.7.3
 pygal==2.4.0
