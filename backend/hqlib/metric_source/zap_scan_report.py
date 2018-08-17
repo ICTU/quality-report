@@ -48,6 +48,34 @@ class ZAPScanReport(domain.MetricSource):
                 return -1
         return nr_alerts
 
+    def get_warnings_info(self, risk_level: str, *report_urls: str) -> list:
+        """ Returns the information about the warnings from zap scan report of a certain risk level."""
+        warnings = []
+        for url in report_urls:
+            try:
+                warnings += self.__parse_warnings(self.__get_soup(url), risk_level)
+            except url_opener.UrlOpener.url_open_exceptions:
+                return []
+            except IndexError as reason:
+                logging.warning("Couldn't parse alert details with %s risk level from %s: %s", risk_level, url, reason)
+                traceback.print_exc()
+                return []
+        return warnings
+
+    @staticmethod
+    def __parse_warnings(soup, risk_level: str) -> list:
+        warnings = []
+        headers = soup.find_all('tr', attrs={"class": "risk-{level}".format(level=risk_level)})
+        for header in headers:
+            name = header.find_all('th')[1].string
+            description = header.find_next_sibling().find_all('td')[1]
+            while description.string is None:
+                description = description.contents[0]
+            warnings.append((name, description.string))
+        if not warnings:
+            logging.warning("Couldn't find any entries with %s risk level.", risk_level)
+        return warnings
+
     @functools.lru_cache(maxsize=1024)
     def __get_soup(self, url: str):
         """ Return the HTML soup. """

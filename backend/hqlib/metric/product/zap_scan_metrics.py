@@ -27,6 +27,15 @@ class ZAPScanAlertsMetric(AlertsMetric):
                     'Meer dan {low_target} is rood.'
     metric_source_class = metric_source.ZAPScanReport
 
+    extra_info_headers = {
+        "title": "Waarschuwing",
+        "description": "Omschrijving"
+    }
+
+    def extra_info_rows(self) -> list:
+        """ Returns warnings info tuple as rows of extra info table. """
+        return self._metric_source.get_warnings_info(self.risk_level_key, *self._metric_source_urls())
+
 
 class HighRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
     """ Metric for measuring the number of high risk ZAP Scan alerts. """
@@ -35,6 +44,7 @@ class HighRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
     risk_level = 'hoog'
     risk_level_key = 'high'
     low_target_value = 3
+    url_label_text = "Waarschuwingen met hoog risiconiveau"
 
 
 class MediumRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
@@ -44,3 +54,4 @@ class MediumRiskZAPScanAlertsMetric(ZAPScanAlertsMetric):
     risk_level = 'medium'
     risk_level_key = 'medium'
     low_target_value = 10
+    url_label_text = "Waarschuwingen met medium risiconiveau"

@@ -45,7 +45,6 @@ class OWASPDependencyWarnings(AlertsMetric):
 
     def convert_item_to_extra_info(self, item: metric_source.Dependency) -> (str, str, int, list):
         """ Transform a dependency item to a link and integer. """
-        # cve_links = []
         cves = []
         for cve in item.cve_links:
             cves.append(ExtraInfo.format_extra_info_link(cve[1], cve[0]) if item.cve_links else '')
@@ -65,6 +64,7 @@ class HighPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
     risk_level = 'hoge'
     risk_level_key = 'high'
     low_target_value = 3
+    url_label_text = "Waarschuwingen met hoge prioriteit"
 
 
 class NormalPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
@@ -75,3 +75,4 @@ class NormalPriorityOWASPDependencyWarnings(OWASPDependencyWarnings):
     risk_level = 'normale'
     risk_level_key = 'normal'
     low_target_value = 10
+    url_label_text = "Waarschuwingen met normale prioriteit"

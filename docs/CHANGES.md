@@ -1,3 +1,8 @@
+2018-08-17  Release 2.66.0
+
+  * Feature #472: ZAP scan report detail table added.
+
+
 2018-08-16  Release 2.65.0
 
   * Feature #471: detail table implemented for OWASP measures.

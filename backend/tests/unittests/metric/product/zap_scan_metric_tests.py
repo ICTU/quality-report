@@ -15,38 +15,12 @@ limitations under the License.
 """
 
 import unittest
+from unittest.mock import MagicMock
 
 from typing import Type
 
 from hqlib import metric, domain, metric_source
 from hqlib.metric.product.alerts_metrics import AlertsMetric
-
-
-class FakeSubject(object):
-    """ Provide for a fake subject. """
-
-    def __init__(self, metric_source_ids=None):
-        self.__metric_source_ids = metric_source_ids or dict()
-
-    @staticmethod
-    def name():
-        """ Return the name of the subject. """
-        return 'FakeSubject'
-
-    def metric_source_id(self, the_metric_source):
-        """ Return the id of the subject for the metric source. """
-        return self.__metric_source_ids.get(the_metric_source)
-
-
-class FakeZAPScanReport(domain.MetricSource):  # pylint: disable=too-few-public-methods
-    """ Fake a ZAP Scan report for unit test purposes. """
-
-    metric_source_name = metric_source.ZAPScanReport.metric_source_name
-
-    @staticmethod
-    def alerts(risk_level, *report_urls):
-        """ Return the number of warnings for the jobs. """
-        return -1 if (not report_urls or 'raise' in report_urls[0]) else dict(high=4, medium=2, low=14)[risk_level]
 
 
 class HighRiskZAPScanAlertsTest(unittest.TestCase):
@@ -56,35 +30,35 @@ class HighRiskZAPScanAlertsTest(unittest.TestCase):
     #   May be overridden
 
     def setUp(self):
-        self.__zap_scan_report = FakeZAPScanReport()
-        self.__subject = FakeSubject(metric_source_ids={self.__zap_scan_report: 'url'})
+        self.__zap_scan_report = MagicMock()
+        self.__zap_scan_report.alerts = MagicMock(return_value=99)
+        self.__zap_scan_report.metric_source_name = metric_source.ZAPScanReport.metric_source_name
+        self.__subject = MagicMock()
+        self.__subject.name = MagicMock(return_value='FakeSubject')
+        self.__subject.metric_source_id = MagicMock()
         self.__project = domain.Project(metric_sources={metric_source.ZAPScanReport: self.__zap_scan_report})
         self.__metric = self.class_under_test(subject=self.__subject, project=self.__project)
 
-    def expected_alerts(self, url):
-        """ Return the number of expected alrts. """
-        return self.__zap_scan_report.alerts(self.class_under_test.risk_level_key, url)
-
     def test_value(self):
         """ Test that value of the metric equals the number of warnings as reported by Jenkins. """
-        self.assertEqual(self.expected_alerts('url'), self.__metric.value())
+        self.assertEqual(99, self.__metric.value())
 
-    def test_value_multiple_jobs(self):
-        """ Test that the value of the metric equals the number of warnings if there are multiple
-            test reports. """
-        subject = FakeSubject(metric_source_ids={self.__zap_scan_report: ['a', 'b']})
-        alerts = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual(self.expected_alerts(['a', 'b']), alerts.value())
+    def test_extra_info_rows(self):
+        """ Test that it returns the result of get_warnings_info of metric source object. """
+        extra_info = [('xx', 'yy')]
+        self.__zap_scan_report.get_warnings_info = MagicMock(return_value=extra_info)
+        self.assertEqual(extra_info, self.__metric.extra_info_rows())
 
     def test_value_without_metric_source(self):
         """ Test that the value is -1 when no ZAP Scan report is provided. """
-        alerts = self.class_under_test(subject=self.__subject, project=domain.Project())
-        self.assertEqual(-1, alerts.value())
+        self.__project = domain.Project(metric_sources={})
+        self.__metric = self.class_under_test(subject=self.__subject, project=self.__project)
+        self.assertEqual(-1, self.__metric.value())
 
     def test_report(self):
         """ Test that the report for the metric is correct. """
         expected_report = 'FakeSubject heeft {0} {1} risico security waarschuwingen.'.format(
-            self.expected_alerts('url'), self.class_under_test.risk_level)
+            99, self.class_under_test.risk_level)
         self.assertEqual(expected_report, self.__metric.report())
 
     def test_norm(self):
@@ -97,13 +71,8 @@ class HighRiskZAPScanAlertsTest(unittest.TestCase):
 
     def test_is_missing_without_zap_scan_report(self):
         """ Test that metric is missing when the ZAP Scan report is not available. """
-        alerts = self.class_under_test(self.__subject, domain.Project())
-        self.assertTrue(alerts._missing())  # pylint: disable=protected-access
-
-    def test_is_missing_without_url(self):
-        """ Test that the metric cannot be measured without report url. """
-        alerts = self.class_under_test(FakeSubject(), self.__project)
-        self.assertTrue(alerts._missing())  # pylint: disable=protected-access
+        self.__metric = self.class_under_test(subject=self.__subject, project=domain.Project())
+        self.assertTrue(self.__metric._missing())  # pylint: disable=protected-access
 
     def test_is_not_missing(self):
         """ Test that the metric is not missing when the report is available. """

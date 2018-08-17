@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import traceback
+import logging
 import unittest
 from unittest.mock import patch, call
 
@@ -45,6 +47,15 @@ ZAP_REPORT = '''<html>
     <h3>Alert Detail</h3>
     <div class="spacer"></div>
     <table width="100%" class="results">
+        <tr height="24" class="risk-high">
+            <th width="20%"><a name="high"></a>High (Medium)</th>
+            <th width="80%">Warning Name</th>
+        </tr>
+        <tr bgcolor="#e8e8e8">
+            <td width="20%">Description</td>
+            <td width="80%">{description}</td>
+        </tr>
+    </table>
     </body>
     </html>
     '''
@@ -58,6 +69,48 @@ class ZAPScanReportTest(unittest.TestCase):
         ZAPScanReport.alerts.cache_clear()
         ZAPScanReport._ZAPScanReport__get_soup.cache_clear()
         self.__report = ZAPScanReport()
+
+    def test_get_warnings_info(self, mock_url_read):
+        """ Test that data about warnings are extracted correctly. """
+        mock_url_read.return_value = ZAP_REPORT.format(description="Be aware!")
+        result = self.__report.get_warnings_info('high', 'url')
+        self.assertEqual([("Warning Name", "Be aware!")], result)
+
+    def test_get_warnings_info_with_broad_description(self, mock_url_read):
+        """ Test that data about warnings are extracted correctly, when the description is folded in sub-elements. """
+        mock_url_read.return_value = ZAP_REPORT.format(
+            description="<div><p>The First Part</p><span>of a very long description</span></div>"
+        )
+        result = self.__report.get_warnings_info('high', 'url')
+        self.assertEqual([("Warning Name", "The First Part")], result)
+
+    def test_get_warnings_info_http_error(self, mock_url_read):
+        """ Test that data about warnings are empty when http error happens. """
+        mock_url_read.side_effect = urllib.error.HTTPError('raise', None, None, None, None)
+        result = self.__report.get_warnings_info('high', 'url')
+        self.assertEqual([], result)
+
+    @patch.object(logging, 'warning')
+    def test_get_warnings_info_attribute_error(self, mock_warning, mock_url_read):
+        """ Test that data about warnings are empty and appropriate logging is done no expected html tags are found. """
+        mock_url_read.return_value = 'no table at all!'
+        result = self.__report.get_warnings_info('high', 'url')
+        self.assertEqual([], result)
+        mock_warning.assert_called_once_with("Couldn't find any entries with %s risk level.", "high")
+
+    @patch.object(traceback, 'print_exc')
+    @patch.object(logging, 'warning')
+    def test_get_warnings_info_index_error(self, mock_warning, mock_traceback, mock_url_read):
+        """ Test that data about warnings are empty and appropriate logging is done no expected html tags are found. """
+        mock_url_read.return_value = '<table class="results"><tr class="risk-high"><th /></tr></table> '
+        result = self.__report.get_warnings_info('high', 'url')
+        self.assertEqual([], result)
+        mock_warning.assert_called_once()
+        self.assertEqual(mock_warning.call_args[0][0], "Couldn't parse alert details with %s risk level from %s: %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'high')
+        self.assertEqual(mock_warning.call_args[0][2], 'url')
+        self.assertIsInstance(mock_warning.call_args[0][3], IndexError)
+        mock_traceback.assert_called_once()
 
     def test_high_risk_alerts(self, mock_url_read):
         """ Test the number of high risk alerts. """
