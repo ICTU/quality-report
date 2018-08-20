@@ -1,3 +1,8 @@
+2018-08-20  Release 2.66.1
+
+  * Bug #484: OWASP details table links fixed for reports with more than OWASP report.
+
+
 2018-08-17  Release 2.66.0
 
   * Feature #472: ZAP scan report detail table added.

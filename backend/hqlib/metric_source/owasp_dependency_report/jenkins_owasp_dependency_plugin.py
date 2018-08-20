@@ -34,9 +34,6 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         super().__init__(*args, **kwargs)
         self.__report_url = self.url() + "job/{job}/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/"
         self.__report_api_url = self.__report_url + self.api_postfix
-        self.__dependencies = []
-        self._vulnerable_files = dict()
-        self._vulnerable_links = dict()
 
         # URL for the partial OWASP dependency page listing individual files
         self.__report_html_file_list = self.__report_url + 'tab.files/'
@@ -44,19 +41,19 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
     def get_dependencies_info(self, metric_source_id: str, priority: str) -> list:
         """ Return info of dependencies with vulnerabilities of given priority. """
         try:
-            self._get_vulnerable_files(metric_source_id, priority)
+            vulnerable_files, vulnerable_links = self._get_vulnerable_files(metric_source_id, priority)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s to read warning count %s: %s",
                             self.__report_html_file_list.format(job=metric_source_id), priority, reason)
             return []
         dependencies_info = []
-        for i, link in enumerate(self._vulnerable_links[priority]):
+        for i, link in enumerate(vulnerable_links):
             cves = self._get_cves(self.__report_html_file_list.format(job=metric_source_id) + link, priority)
             if not cves:
                 logging.warning("No CVEs retrieved for metric_source_id %s and priority %s!",
                                 metric_source_id, priority)
             dependencies_info.append(
-                owasp_dependency_report.Dependency(self._vulnerable_files[priority][i], len(cves), cves))
+                owasp_dependency_report.Dependency(vulnerable_files[i], len(cves), cves))
         return dependencies_info
 
     def _get_cves(self, url: str, priority: str):
@@ -65,24 +62,28 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
         return [(c.text, url.rstrip('/') + '/' + c['href'].strip('/') + '/' + priority.upper()) for c in cve_links]
 
     @functools.lru_cache(maxsize=1024)
-    def _get_vulnerable_files(self, metric_source_id: str, priority: str):
+    def _get_vulnerable_files(self, metric_source_id: str, priority: str) -> (List[str], List[str]):
         soup = self._get_soup(self.__report_html_file_list.format(job=metric_source_id))
         regex = re.compile('.*{0}.*'.format(priority.capitalize()))
         relevant_severities = soup.find_all(attrs={"tooltip": regex})
-        self._vulnerable_files[priority] = [tag.parent.parent.find('a').text for tag in relevant_severities]
-        self._vulnerable_links[priority] = [tag.parent.parent.find('a')['href'] for tag in relevant_severities]
+
+        return (
+            [tag.parent.parent.find('a').text for tag in relevant_severities],
+            [tag.parent.parent.find('a')['href'] for tag in relevant_severities]
+        )
 
     def _nr_warnings(self, metric_source_id: str, priority: str) -> int:
         """ Return the number of vulnerable files of the specified type in the job. """
         try:
-            self._get_vulnerable_files(metric_source_id, priority)
+            # pylint: disable=unused-variable
+            vulnerable_files, vulnerable_links = self._get_vulnerable_files(metric_source_id, priority)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Couldn't open %s to read warning count %s: %s",
                             self.__report_html_file_list.format(job=metric_source_id), priority, reason)
             return -1
-        vulnerable_file_count = len(self._vulnerable_files[priority])
+        vulnerable_file_count = len(vulnerable_files)
         logging.debug("Number of vulnerable files: %s \nList of filenames: %s", str(vulnerable_file_count),
-                      str(self._vulnerable_files[priority]))
+                      str(vulnerable_files))
         return vulnerable_file_count
 
     def metric_source_urls(self, *job_names: str) -> List[str]:

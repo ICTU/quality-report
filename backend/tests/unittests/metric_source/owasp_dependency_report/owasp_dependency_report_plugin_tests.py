@@ -128,6 +128,43 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
                                        'dependency-check-jenkins-pluginResult/tab.files/file.-910/type.345/HIGH')],
                          result[2].cve_links)
 
+    @patch.object(url_opener.UrlOpener, 'url_open')
+    def test_get_dependencies_info_multiple_sources(self, mock_url_open):
+        """ Test retrieving high priority warnings. """
+        self.html = ''''<tr>\n'
+            '    <td class="pane">\n'
+            '        <a href="file.-123/">{file}</a>\n'
+            '    </td>\n'
+            '    <td class="pane">\n'
+            '        <table cellpadding="0" cellspacing="0" tooltip="High:1" width="100%">\n'
+            '            </tr>\n'
+            '        </table>\n'
+            '    </td>\n'
+            '</tr>\n'''
+        mock_url_open.side_effect = [
+            self.html.format(file='AspNet.WebApi'),
+            self._cve_table_response.format(type_nr='111', cve_nr='1112'),
+            self.html.format(file='Other.Component'),
+            self._cve_table_response.format(type_nr='222', cve_nr='2223')
+        ]
+
+        result = self.__jenkins.get_dependencies_info('job', 'high')
+        result2 = self.__jenkins.get_dependencies_info('other_job', 'high')
+
+        self.assertEqual(1, len(result))
+        self.assertEqual('AspNet.WebApi', result[0].file_name)
+        self.assertEqual(1, result[0].nr_vulnerabilities)
+        self.assertEqual([('CVE-1112', 'http://jenkins/job/job/lastSuccessfulBuild/'
+                                       'dependency-check-jenkins-pluginResult/tab.files/file.-123/type.111/HIGH')],
+                         result[0].cve_links)
+
+        self.assertEqual(1, len(result2))
+        self.assertEqual('Other.Component', result2[0].file_name)
+        self.assertEqual(1, result2[0].nr_vulnerabilities)
+        self.assertEqual([('CVE-2223', 'http://jenkins/job/other_job/lastSuccessfulBuild/'
+                                       'dependency-check-jenkins-pluginResult/tab.files/file.-123/type.222/HIGH')],
+                         result2[0].cve_links)
+
     @patch.object(logging, 'warning')
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_get_dependencies_info_no_cves(self, mock_url_open, mock_warning):
