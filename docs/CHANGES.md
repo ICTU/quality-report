@@ -1,3 +1,9 @@
+2018-08-22  Release 2.66.2
+
+  * Bug #409 fixed: branch metrics were green when unauthorised to clone repo.
+  * Bug #486 fixed: when owasp xml report was not present, the application was crashing.
+
+
 2018-08-20  Release 2.66.1
 
   * Bug #484: OWASP details table links fixed for reports with more than OWASP report.

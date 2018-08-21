@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 import datetime
 import functools
 import logging
@@ -21,6 +22,7 @@ import os
 import pathlib
 import urllib.request
 from typing import Callable, List, Tuple
+from subprocess import CalledProcessError
 
 from hqlib.typing import DateTime
 from ..abstract.version_control_system import VersionControlSystem, Branch
@@ -49,17 +51,19 @@ class Git(VersionControlSystem):
         """ Invoke a shell and run the command. If a folder is specified, run the command in that folder. """
         if not self.__repo_folder:
             self.__get_repo()
-        folder = self.__repo_folder if self.__repo_folder.exists() else folder
+        folder = self.__repo_folder if self.__repo_folder and self.__repo_folder.exists() else folder
         return super()._run_shell_command(shell_command, folder=folder, log_level=log_level)
 
     def last_changed_date(self, path: str) -> DateTime:
         """ Return the date when the url was last changed in Git. """
-        timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', path))
-        if timestamp:
-            try:
+        try:
+            timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', path))
+            if timestamp:
                 return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
-            except ValueError as reason:
-                logging.error("Couldn't convert timestamp %s to datetime for path %s: %s", timestamp, path, reason)
+        except ValueError as reason:
+            logging.error("Couldn't convert timestamp %s to datetime for path %s: %s", timestamp, path, reason)
+        except CalledProcessError:
+            pass
         return datetime.datetime.min
 
     def branch(self) -> str:
@@ -68,25 +72,34 @@ class Git(VersionControlSystem):
 
     def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the master branch. """
-        return self.__get_branches()
+        try:
+            return self._get_branches()
+        except CalledProcessError:
+            pass
+        return None
 
     def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
                           re_of_branches_to_ignore: str = '',
                           list_of_branches_to_include: List[str] = None) -> List[Branch]:
         """ Return a dictionary of branch names and number of unmerged commits for each branch that has
             any unmerged commits. """
-        unmerged_branches = [branch for branch in self.__get_branches(unmerged_only=True) if not
-                             self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
-                                                 list_of_branches_to_include)]
-        return [Branch(name, self.__nr_unmerged_commits(name), self.last_changed_date(name))
-                for name in unmerged_branches]
+        try:
+            unmerged_branches = [branch for branch in self._get_branches(unmerged_only=True) if not
+                                 self._ignore_branch(branch, list_of_branches_to_ignore, re_of_branches_to_ignore,
+                                                     list_of_branches_to_include)]
+            return [Branch(name, self.__nr_unmerged_commits(name), self.last_changed_date(name))
+                    for name in unmerged_branches]
+        except CalledProcessError:
+            pass
+        return None
 
     @classmethod
     def branch_folder_for_branch(cls, trunk_url: str, branch: str) -> str:
         """ Return the branch folder for the specified branch. """
         return trunk_url + '/' + branch
 
-    def __get_branches(self, unmerged_only: bool = False) -> List[str]:
+    @functools.lru_cache(maxsize=1024)
+    def _get_branches(self, unmerged_only: bool = False) -> List[str]:
         """ Get the (remote) branches for the repository. """
         command = ['git', 'branch', '--list', '--remote', '--no-color']
         if unmerged_only:
@@ -110,6 +123,7 @@ class Git(VersionControlSystem):
         if self.__repo_folder.exists():
             logging.info('Updating Git repo %s in %s', self.url(), self.__repo_folder)
             command.extend(['pull', '--prune'])
+            self._run_shell_command(tuple(command))
         else:
             branch_string = self.__branch_to_checkout or 'master'
             logging.info('Cloning Git repo %s (branch: %s) in %s', self.url(), branch_string, self.__repo_folder)
@@ -117,7 +131,11 @@ class Git(VersionControlSystem):
             if self.__branch_to_checkout:
                 command.insert(2, '--branch')
                 command.insert(3, self.__branch_to_checkout)
-        self._run_shell_command(tuple(command))
+            try:
+                super()._run_shell_command(tuple(command), folder='', log_level=logging.ERROR)
+            except CalledProcessError:
+                self.__repo_folder = None
+                raise
 
     def __full_url(self) -> str:
         """ Return the Git repository url with username and password. """

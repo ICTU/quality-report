@@ -14,5 +14,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-NAME = "HQ"
-VERSION = "2.66.2"
+from . import check_output_mocker
