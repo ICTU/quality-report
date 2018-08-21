@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
 import datetime
 import unittest
 from unittest.mock import patch
@@ -99,6 +100,17 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
         self.assertEqual('dependency.name', result[0].file_name)
         self.assertEqual(1, result[0].nr_vulnerabilities)
         self.assertEqual([('CVE-123', 'http://www.securityfocus.com/bid/123')], result[0].cve_links)
+
+    @patch.object(logging, 'error')
+    def test_get_dependencies_info_http_error(self, mock_error, mock_url_read):
+        """ Test that it returns empty list and logs event, with http error occurs. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+
+        result = self.__report.get_dependencies_info('url', 'x')
+
+        self.assertEqual([], result)
+        mock_error.assert_called_once_with('Error retrieving dependencies information for %s, priority %s.',
+                                           'url', 'High')
 
     def test_high_priority_warnings(self, mock_url_read):
         """ Test retrieving high priority warnings. """

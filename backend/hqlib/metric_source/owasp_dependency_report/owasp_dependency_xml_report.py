@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
 import datetime
 import functools
 import re
@@ -35,7 +36,11 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     def get_dependencies_info(self, metric_source_id: str, priority: str) -> list:
         """ Extracts info of dependencies with vulnerabilities of given priority. """
         priority = 'Medium' if priority == 'normal' else 'High'
-        root, namespace = self.__report_root(metric_source_id)
+        try:
+            root, namespace = self.__report_root(metric_source_id)
+        except url_opener.UrlOpener.url_open_exceptions:
+            logging.error('Error retrieving dependencies information for %s, priority %s.', metric_source_id, priority)
+            return []
         dependencies = root.findall(
             ".//{{{ns}}}dependency[{{{ns}}}vulnerabilities]".format(ns=namespace))
 
