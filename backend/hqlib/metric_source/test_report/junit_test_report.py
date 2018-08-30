@@ -33,8 +33,14 @@ class JunitTestReport(test_report.TestReport):
 
     metric_source_name = 'Junit test report'
 
+    def __init__(self, *args, **kwargs):
+        self.__metric_source_url_re = kwargs.pop("metric_source_url_re", r"junit/junit\.xml$")
+        self.__metric_source_url_repl = kwargs.pop("metric_source_url_repl", "html/htmlReport.html")
+        super().__init__(*args, **kwargs)
+
     def metric_source_urls(self, *report_urls: str) -> List[str]:
-        return [re.sub(r'junit/junit\.xml$', 'html/htmlReport.html', report_url) for report_url in report_urls]
+        return [re.sub(self.__metric_source_url_re, self.__metric_source_url_repl, report_url)
+                for report_url in report_urls]
 
     def _passed_tests(self, metric_source_id: str) -> int:
         """ Return the number of passed tests. """

@@ -1,3 +1,8 @@
+2018-08-30  Release 2.67.0
+
+  * Feature #491: Allow for configuring how the URL for the Junit xml file is translated into the url for the HTML report.
+  
+  
 2018-08-22  Release 2.66.2
 
   * Bug #409 fixed: branch metrics were green when unauthorised to clone repo.
