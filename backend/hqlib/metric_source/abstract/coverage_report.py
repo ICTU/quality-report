@@ -15,20 +15,14 @@ limitations under the License.
 """
 
 import functools
-from typing import Callable
 
 from hqlib.typing import DateTime
-from ..url_opener import UrlOpener
 from ... import domain
 
 
 class CoverageReport(domain.MetricSource):
     """ Abstract class representing a coverage report. """
     metric_source_name = 'Coverage report'
-
-    def __init__(self, url_open: Callable[[str], bytes] = None, **kwargs) -> None:
-        self.__url_open = url_open or UrlOpener(**kwargs).url_open
-        super().__init__()
 
     def statement_coverage(self, metric_source_id: str) -> float:
         """ Return the statement coverage for a specific product. """

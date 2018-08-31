@@ -118,6 +118,11 @@ def parse_iso_datetime(datetime_string: str) -> DateTime:
     return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
+def parse_sql_datetime(datetime_string: str) -> DateTime:
+    """ Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. """
+    return datetime.datetime.strptime(datetime_string, '%Y-%m-%d %H:%M:%S')
+
+
 def percentage(numerator: Number, denominator: Number, zero_divided_by_zero_is_zero: bool = False) -> int:
     """ Return numerator / denominator * 100. """
     if float(denominator) == 0.0:

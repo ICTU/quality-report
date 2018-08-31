@@ -23,21 +23,21 @@ import bs4
 
 from hqlib.typing import DateTime
 from ..abstract.coverage_report import CoverageReport
-from ..url_opener import UrlOpener
+from ...metric_source import url_opener
 
 
 class HTMLCoverageReport(CoverageReport):
     """ Abstract class representing a HTML coverage report. """
 
     def __init__(self, **kwargs) -> None:
-        self._url_opener = UrlOpener(**kwargs)
+        self._url_opener = url_opener.UrlOpener(**kwargs)
         super().__init__()
 
     def statement_coverage(self, metric_source_id: str) -> float:
         """ Return the statement coverage for a specific product. """
         try:
             soup = self.__get_soup(metric_source_id)
-        except UrlOpener.url_open_exceptions:
+        except url_opener.UrlOpener.url_open_exceptions:
             coverage = -1.
         else:
             coverage = self._parse_statement_coverage_percentage(soup)
@@ -51,7 +51,7 @@ class HTMLCoverageReport(CoverageReport):
         """ Return the branch coverage for a specific product. """
         try:
             soup = self.__get_soup(metric_source_id)
-        except UrlOpener.url_open_exceptions:
+        except url_opener.UrlOpener.url_open_exceptions:
             coverage = -1.
         else:
             coverage = self._parse_branch_coverage_percentage(soup)
@@ -69,7 +69,7 @@ class HTMLCoverageReport(CoverageReport):
             is_last_url = index + 1 == len(coverage_date_urls)
             try:
                 soup = self.__get_soup(coverage_date_url, log_error=is_last_url)
-            except UrlOpener.url_open_exceptions:
+            except url_opener.UrlOpener.url_open_exceptions:
                 continue
             return self._parse_coverage_date(soup)
         return datetime.datetime.min

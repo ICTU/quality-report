@@ -395,6 +395,13 @@ class UrlOpenerMock(UrlOpener):
                 ),
             # end OWASP dependency rapport
 
+            # begin LCOV coverage rapport
+            'http://xxx.sourceforge.net/coverage/lcov/output/index.html':
+                self._get_file_content(
+                    examples_metric_sources_path / 'lcov_report.html'
+                ),
+            # end LCOV coverage rapport
+
             'https://last_security_date_url':
                 self._get_file_content(
                     examples_metric_sources_path / 'file_with_date.json'

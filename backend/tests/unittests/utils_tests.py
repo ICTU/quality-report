@@ -214,6 +214,10 @@ class ParseISODateTimeTest(unittest.TestCase):
         """ Test that parsing an invalid string throws an exception. """
         self.assertRaises(ValueError, utils.parse_iso_datetime, 'Apr -1')
 
+    def test_sql_datetime(self):
+        """ Test that parsing a date time in sql format works. """
+        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1), utils.parse_sql_datetime('2015-10-06 15:00:01'))
+
 
 class VersionNumberToNumericalTest(unittest.TestCase):
     """ Unit tests for the version number to numerical conversion method. """

@@ -9,7 +9,6 @@ from tests.url_calls_mocker.url_calls_mocker import UrlOpenerMock
 hqlib.metric_source.url_opener.UrlOpener = UrlOpenerMock
 
 from tests import check_output_mocker
-
 ### END
 
 import pathlib
@@ -22,15 +21,13 @@ from hqlib.domain import Project, Environment, Application, Team, Document, Tech
 
 PROJECT_DIR = pathlib.Path(__file__).parent.parent.parent.parent
 
-BUILD_SERVER = metric_source.Jenkins('http://jenkins/', username='jenkins_user', password='jenkins_password',
-                                     job_re='-metrics')
 JENKINS = metric_source.Jenkins(url='http://www.jenkins.proj.org:8080/')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git',
                         run_shell_command=check_output_mocker.check_output_mocker.check_output)
 SONAR = metric_source.Sonar('https://my.sonarqube.com/')
 JUNIT=metric_source.JunitTestReport()
 HISTORY = metric_source.CompactHistory(PROJECT_DIR / 'docs' / 'examples' / 'quality_report' / 'history.json')
-JACOCO = metric_source.JaCoCo()
+LCOV = metric_source.LCOV()
 OWASP_DEPENDENCY_REPORT = metric_source.OWASPDependencyXMLReport()
 ZAP_SCAN_REPORT = metric_source.ZAPScanReport()
 SECURITY_REPORT_PROXY = metric_source.FileWithDate()
@@ -49,11 +46,10 @@ TRELLO_BOARD = metric_source.TrelloBoard(appkey='2d3', token='57b')
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
-                      metric_source.Jenkins: BUILD_SERVER,
                       metric_source.VersionControlSystem: GIT,
                       metric_source.Sonar: SONAR,
                       metric_source.SystemTestReport: JUNIT,
-                      metric_source.JaCoCo: JACOCO,
+                      metric_source.ARTCoverageReport : LCOV,
                       metric_source.OWASPDependencyReport: OWASP_DEPENDENCY_REPORT,
                       metric_source.ZAPScanReport: ZAP_SCAN_REPORT,
                       metric_source.History: HISTORY,
@@ -99,7 +95,7 @@ QUALITY_REPORT = Application(
     metric_source_ids={
         SONAR: 'nl.comp:my_project',
         JUNIT: "http://www.junit.report.url/junit.xml",
-        JACOCO: 'quality-report-coverage-report',
+        LCOV: 'http://xxx.sourceforge.net/coverage/lcov/output/index.html',
         GIT: '.',
         OWASP_DEPENDENCY_REPORT: 'http://owasp.dependency/report.xml',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},

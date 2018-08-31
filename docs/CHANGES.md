@@ -1,3 +1,8 @@
+2018-09-03  Release 2.68.0
+
+  * Feature #496: LCOV coverage report metric source added.
+
+
 2018-08-30  Release 2.67.0
 
   * Feature #491: Allow for configuring how the URL for the Junit xml file is translated into the url for the HTML report.
