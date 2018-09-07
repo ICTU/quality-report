@@ -214,7 +214,7 @@ class MetricTest(unittest.TestCase):
         self.assertRaises(KeyError, self.__metric.norm)
 
     def test_url(self):
-        """ Test that the metric has no default url. """
+        """ Test metric url when there is a metric source id. """
         mock_metric_source = MagicMock()
         mock_metric_source.metric_source_urls.return_value = ['http:/url1']
         mock_metric_source.metric_source_name = "Text"
@@ -227,7 +227,7 @@ class MetricTest(unittest.TestCase):
         self.assertEqual({"Text": "http:/url1"}, test_metric.url())
 
     def test_url_two_sources(self):
-        """ Test that the metric has no default url. """
+        """ Test metric url when there are two metric source ids. """
         mock_metric_source = MagicMock()
         mock_metric_source.metric_source_urls.return_value = ['http:/url1', 'http:/url2']
         mock_metric_source.metric_source_name = "Text"
@@ -239,9 +239,9 @@ class MetricTest(unittest.TestCase):
 
         self.assertEqual({"Text (1/2)": "http:/url1", "Text (2/2)": "http:/url2"}, test_metric.url())
 
-    @patch.object(domain.Metric, '_get_metric_source_ids')
-    def test_url_from_metric_source_urls(self, mock_get_metric_source_ids):
-        """ Test metric source url when there is no source id. """
+    @patch.object(domain.Metric, '_get_display_urls')
+    def test_url_from_metric_source_urls(self, mock_get_display_urls):
+        """ Test metric url when there is no source id. """
         mock_metric_source = MagicMock()
         mock_metric_source.url.return_value = 'http://url!'
         mock_metric_source.metric_source_name = "Text"
@@ -249,10 +249,55 @@ class MetricTest(unittest.TestCase):
         subject.metric_source_id.return_value = "MsId"
         project = MagicMock()
         project.metric_sources.return_value = [mock_metric_source]
-        mock_get_metric_source_ids.return_value = None
+        mock_get_display_urls.return_value = None
         test_metric = domain.Metric(subject=subject, project=project)
 
         self.assertEqual({"Text": 'http://url!'}, test_metric.url())
+
+    def test_url_metric_source_different_metric_source_urls(self):
+        """ Test metric url when there are metric source urls. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ["metric source url"]
+        mock_metric_source.metric_source_name = "Text"
+
+        subject = MagicMock()
+        subject.metric_source_id.return_value = "MsId"
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        test_metric = domain.Metric(subject=subject, project=project)
+
+        self.assertEqual({"Text": "metric source url"}, test_metric.url())
+        mock_metric_source.metric_source_urls.assert_called_once_with('MsId')
+
+    def test_url_metric_source_different_display(self):
+        """ Test metric url when there is a display link. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ["metric source url"]
+        mock_metric_source.metric_source_name = "Text"
+
+        subject = MagicMock()
+        subject.metric_source_id.return_value = {"source": 'http:\\link', "display": 'http:\\display.url'}
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        test_metric = domain.Metric(subject=subject, project=project)
+
+        self.assertEqual({"Text": "metric source url"}, test_metric.url())
+        mock_metric_source.metric_source_urls.assert_called_once_with('http:\\display.url')
+
+    def test_url_metric_source_different_display_two_links(self):
+        """ Test metric url when there are two links - one with a display link and the other without. """
+        mock_metric_source = MagicMock()
+        mock_metric_source.metric_source_urls.return_value = ["metric source url"]
+        mock_metric_source.metric_source_name = "Text"
+
+        subject = MagicMock()
+        subject.metric_source_id.return_value = [{"source": 'http:\\link', "display": 'http:\\display.url'}, "simple"]
+        project = MagicMock()
+        project.metric_sources.return_value = [mock_metric_source]
+        test_metric = domain.Metric(subject=subject, project=project)
+
+        self.assertEqual({"Text": "metric source url"}, test_metric.url())
+        mock_metric_source.metric_source_urls.assert_called_once_with('http:\\display.url', "simple")
 
     def test_default_url(self):
         """ Test that the metric has no default url. """

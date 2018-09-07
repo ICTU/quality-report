@@ -89,7 +89,7 @@ class Metric(object):
                 continue
             if source_id:
                 self._metric_source = source
-                self._metric_source_id = source_id
+                self._metric_source_id, self._display_url = self.__separate_metric_source_links(source_id)
                 break
         else:
             if self.metric_source_class:
@@ -97,11 +97,28 @@ class Metric(object):
                                 self.stable_id())
             self._metric_source = None
             self._metric_source_id = None
+            self._display_url = None
         self.__id_string = self.stable_id()
         self._extra_info_data = list()
         from hqlib import metric_source
         history_sources = self._project.metric_sources(metric_source.History) if self._project else []
         self.__history = cast(metric_source.History, history_sources[0]) if history_sources else None
+
+    def __separate_metric_source_links(self, values) -> tuple:
+        if not isinstance(values, list):
+            return self.__split_source_and_display(values)
+        else:
+            source = []
+            display = []
+            for val in values:
+                src, dsp = self.__split_source_and_display(val)
+                source.append(src)
+                display.append(dsp)
+        return source, display
+
+    @staticmethod
+    def __split_source_and_display(val) -> tuple:
+        return (val['source'], val['display']) if isinstance(val, dict) else (val, val)
 
     def format_text_with_links(self, text: str) -> str:
         """ Format a text paragraph with additional url. """
@@ -295,10 +312,14 @@ class Metric(object):
     def _metric_source_urls(self) -> List[str]:
         """ Return a list of metric source urls to be used to create the url dict. """
         if self._metric_source:
-            if self._get_metric_source_ids():
-                return self._metric_source.metric_source_urls(*self._get_metric_source_ids())
+            if self._get_display_urls():
+                return self._metric_source.metric_source_urls(*self._get_display_urls())
             return [self._metric_source.url()]
         return []
+
+    def _get_display_urls(self) -> List[str]:
+        ids = self._display_url if isinstance(self._display_url, list) else [self._display_url]
+        return [id_ for id_ in ids if id_]
 
     def _get_metric_source_ids(self) -> List[str]:
         """ Allow for subclasses to override what the metric source id is. """

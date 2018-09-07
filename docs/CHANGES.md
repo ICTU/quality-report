@@ -1,3 +1,8 @@
+2018-09-10  Release 2.69.0
+
+  * Feature #497: now it is possible to have different display link than the source link for metric source.
+
+
 2018-09-03  Release 2.68.0
 
   * Feature #496: LCOV coverage report metric source added.
