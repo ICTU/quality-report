@@ -79,24 +79,24 @@ class MetricTest(unittest.TestCase):
 
     def test_format_comment_with_links(self):
         """ Test that the formatted text is followed by a comma separated list of keys. """
-        self.assertEqual("Some text... [<a href='http://url/br1' target='_blank'>branch_1</a>, "
-                         "<a href='http://url/br2' target='_blank'>branch_2</a>]",
+        self.assertEqual("Some text... [{'href': 'http://url/br1', 'text': 'branch_1'}, "
+                         "{'href': 'http://url/br2', 'text': 'branch_2'}]",
                          self.__metric.format_comment_with_links(
                              'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, ""))
 
     def test_format_comment_with_links_in_text(self):
         """ Test that the link in the text is changed to href. """
-        self.assertEqual("Some <a href='http://a.href/sub/x/s/' target='_blank'>http://a.href/sub/x/s/</a> text...",
+        self.assertEqual("Some {'href': 'http://a.href/sub/x/s/', 'text': 'http://a.href/sub/x/s/'} text...",
                          self.__metric.format_comment_with_links('Some http://a.href/sub/x/s/ text...', {}, 'ignored'))
 
     def test_format_comment_with_links_with_port_in_text(self):
         """ Test that the link with a port number in the text is changed to href. """
-        self.assertEqual("Some <a href='http://a.href:8080/sub/' target='_blank'>http://a.href:8080/sub/</a> text...",
+        self.assertEqual("Some {'href': 'http://a.href:8080/sub/', 'text': 'http://a.href:8080/sub/'} text...",
                          self.__metric.format_comment_with_links('Some http://a.href:8080/sub/ text...', {}, 'ignored'))
 
     def test_format_comment_with_links_with_www_in_text(self):
         """ Test that the link containing www in the text is changed to href. """
-        self.assertEqual("Some <a href='http://www.href/sub' target='_blank'>http://www.href/sub</a> text...",
+        self.assertEqual("Some {'href': 'http://www.href/sub', 'text': 'http://www.href/sub'} text...",
                          self.__metric.format_comment_with_links('Some http://www.href/sub text...', {}, 'ignored'))
 
     def test_format_comment_with_links_with_www_in_text_xx(self):
@@ -106,13 +106,13 @@ class MetricTest(unittest.TestCase):
 
     def test_format_comment_with_links_with_params_in_text(self):
         """ Test that the link containing url parameter in the text is changed to href. """
-        self.assertEqual("Some <a href='http://a.href?param=1' target='_blank'>http://a.href?param=1</a> text...",
+        self.assertEqual("Some {'href': 'http://a.href?param=1', 'text': 'http://a.href?param=1'} text...",
                          self.__metric.format_comment_with_links('Some http://a.href?param=1 text...', {}, 'ignored'))
 
     def test_format_comment_with_links_with_label(self):
         """ Test that the formatted text is followed by a comma separated list of keys. """
-        self.assertEqual("Some text... [Label: <a href='http://url/br1' target='_blank'>branch_1</a>, "
-                         "<a href='http://url/br2' target='_blank'>branch_2</a>]",
+        self.assertEqual("Some text... [Label: {'href': 'http://url/br1', 'text': 'branch_1'}, "
+                         "{'href': 'http://url/br2', 'text': 'branch_2'}]",
                          self.__metric.format_comment_with_links(
                              'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, "Label"))
 
@@ -126,7 +126,7 @@ class MetricTest(unittest.TestCase):
         project.metric_sources.return_value = [mock_metric_source]
         test_metric = domain.Metric(subject=MagicMock(), project=project)
 
-        self.assertEqual("Some text... [<a href='http://url1' target='_blank'>Text</a>]",
+        self.assertEqual("Some text... [{'href': 'http://url1', 'text': 'Text'}]",
                          test_metric.format_text_with_links('Some text...'))
 
     @patch.object(domain.Metric, '_metric_source_urls')
@@ -137,7 +137,7 @@ class MetricTest(unittest.TestCase):
         project.metric_sources.return_value = []
         test_metric = domain.Metric(subject=MagicMock(), project=project)
 
-        self.assertEqual("Some text... [<a href='http://url1' target='_blank'>Unknown metric source</a>]",
+        self.assertEqual("Some text... [{'href': 'http://url1', 'text': 'Unknown metric source'}]",
                          test_metric.format_text_with_links('Some text...'))
 
     def test_set_id_string(self):
@@ -180,6 +180,12 @@ class MetricTest(unittest.TestCase):
     def test_report_with_long_subject(self):
         """ Test that the subject is abbreviated when long. """
         self.assertEqual('FakeSubject heeft 0 foo.', self.__metric.report(max_subject_length=1))
+
+    def test_report_with_perfect_template(self):
+        """ Test that the subject is abbreviated when long. """
+        self.__metric.perfect_template = 'Perfect!'
+        self.__metric.perfect_value = 0
+        self.assertEqual('Perfect!', self.__metric.report())
 
     def test_missing_metric_source_report(self):
         """ Test that the metric report explains which metric source needs to be configured. """

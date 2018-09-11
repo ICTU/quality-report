@@ -54,15 +54,18 @@ class MetricsTable extends React.Component {
         var table_rows = [];
         this.props.metrics.forEach(function (metric) {
             var cells = [this.id_format(metric), this.sparkline(metric), this.status(metric),
-            { __html: metric["measurement"] },
-            { __html: metric["norm"] }];
+                metric["measurement"], metric["norm"]];
             if (has_comments) {
-                cells.push({ __html: metric["comment"] });
+                cells.push(metric["comment"]);
             }
             table_rows.push({
-            cells: cells,
-                className: this.bgColorClassName(metric), id: metric["id_value"], stable_id: metric["stable_metric_id"],
-                name: metric['name'], unit: metric['unit'], extra_info: metric["extra_info"]
+                cells: cells,
+                className: this.bgColorClassName(metric), 
+                id: metric["id_value"], 
+                stable_id: metric["stable_metric_id"],
+                name: metric['name'], 
+                unit: metric['unit'], 
+                extra_info: metric["extra_info"]
             });
         }, this);
         return table_rows;
@@ -78,6 +81,7 @@ class MetricsTable extends React.Component {
         if (has_comments) {
             headers.push(["comment", "Comment"]);
         }
+
         return (
             <BootstrapTable headers={headers} onSort={this.props.onSort}
                             report_dates={this.props.report_dates}

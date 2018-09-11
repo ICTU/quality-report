@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from hqlib.domain import ExtraInfo
+from hqlib import utils
 from .alerts_metrics import AlertsMetric
 from ... import metric_source
 
@@ -47,7 +47,7 @@ class OWASPDependencyWarnings(AlertsMetric):
         """ Transform a dependency item to a link and integer. """
         cves = []
         for cve in item.cve_links:
-            cves.append(ExtraInfo.format_extra_info_link(cve[1], cve[0]) if item.cve_links else '')
+            cves.append(utils.format_link_object(cve[1], cve[0]) if item.cve_links else '')
         return (item.file_name, item.nr_vulnerabilities, tuple(cves)) if item else None
 
     def _nr_alerts(self) -> int:

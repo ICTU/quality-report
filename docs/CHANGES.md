@@ -1,3 +1,8 @@
+2018-09-12  Release 2.69.1
+
+  * Tech #234: removed html elements generation from server side and html direct setting on client side.
+
+
 2018-09-10  Release 2.69.0
 
   * Feature #497: now it is possible to have different display link than the source link for metric source.

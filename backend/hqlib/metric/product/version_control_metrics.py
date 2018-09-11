@@ -81,10 +81,11 @@ class UnmergedBranches(LowerIsBetterMetric):
     def format_text_with_links(self, text: str) -> str:
         """ Format a text paragraph with additional url. """
         if self._metric_source:
-            text = '{0} [{1}]'.format(utils.html_escape(text).replace('\n', ' '),
-                                      "<a href='{href}' target='_blank'>{anchor}</a>"
-                                      .format(href=self._metric_source.url(), anchor=utils
-                                              .html_escape(self._metric_source.metric_source_name)))
+            text = '{0} [{1}]'.format(
+                utils.html_escape(text).replace('\n', ' '),
+                str(utils.format_link_object(
+                    self._metric_source.url(), utils.html_escape(self._metric_source.metric_source_name)
+                )))
         return json.dumps(text)[1:-1]  # Strip quotation marks
 
     @staticmethod

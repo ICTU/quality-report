@@ -46,11 +46,6 @@ class ExtraInfo(object):
             self.data.append(dict(zip(self.headers.keys(), item[dictionary_length * i:dictionary_length * (i + 1)])))
         return self
 
-    @staticmethod
-    def format_extra_info_link(url: str, text: str):
-        """ Formats extra info link dictionary. """
-        return {"href": url, "text": text}
-
 
 class Metric(object):
     """ Base class for metrics. """
@@ -129,8 +124,10 @@ class Metric(object):
                                   url_label: str) -> str:
         """ Format a text paragraph with optional urls and label for the urls. """
         comment_text = Metric._format_links_in_comment_text(text)
-        links = ["<a href='{href}' target='_blank'>{anchor}</a>"
-                 .format(href=href, anchor=utils.html_escape(anchor)) for (anchor, href) in list(url_dict.items())]
+        links = [
+            str(utils.format_link_object(href, utils.html_escape(anchor))) for (anchor, href) in list(url_dict.items())
+        ]
+
         if links:
             if url_label:
                 url_label += ': '
@@ -142,7 +139,7 @@ class Metric(object):
         url_pattern = re.compile(r'(?i)\b(http(?:s?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]|'
                                  r'\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|'
                                  r'[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
-        return re.sub(url_pattern, r"<a href='\1' target='_blank'>\1</a>", utils.html_escape(text).replace('\n', ' '))
+        return re.sub(url_pattern, r"{'href': '\1', 'text': '\1'}", utils.html_escape(text).replace('\n', ' '))
 
     @classmethod
     def norm_template_default_values(cls) -> MetricParameters:

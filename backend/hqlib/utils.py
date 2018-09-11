@@ -195,3 +195,8 @@ def format_unit(unit: str) -> str:
 def url_join(*parts: str) -> str:
     """ Join the different url parts with forward slashes. """
     return "/".join([part.strip("/") for part in parts]) + ("/" if parts and parts[-1].endswith("/") else "")
+
+
+def format_link_object(url: str, text: str) -> dict:
+    """ Formats link dictionary object. """
+    return {"href": url, "text": text}

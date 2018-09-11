@@ -62,12 +62,39 @@ class BootstrapTableRow extends React.Component {
     }
 
     handleClick = () => this.setState((state) => ({is_expanded: !state.is_expanded}));
+
+    splitOnLinks(str) {
+        var ret = [];
+        var regexPatern = /{\s*'href':\s*(\S+),\s*'text':\s*([^}]+)\s*}/i
+        var pos = str.search(regexPatern);
+        
+        if(pos >= 0) {
+            ret.push(str.substring(0, pos));
+            var p1 = str.indexOf("}") + 1;
+            var hrf = str.substring(pos, p1);
+            var txt = hrf.replace(regexPatern, '$1}$2');
+            var href_text = txt.split('}');
+            ret.push(<a href={href_text[0].slice(1,-1)} target="_blank">{href_text[1].slice(1,-1)}</a>);
+            ret = ret.concat(this.splitOnLinks(str.substring(p1)));
+        } else {
+            ret.push(str);
+        }
+        return ret;
+    }
+
+    formatLink (str) {
+        if (typeof(str) === 'string') {
+            return this.splitOnLinks(str);
+        } else {
+            return str;
+        }
+    }
     
     makeRowCells(row) {
         return row['cells'].map((cell, index) => 
-                cell.hasOwnProperty('__html') ?
-                    <td className="report_cell" key={index} dangerouslySetInnerHTML={cell}></td> :
-                    <td className="report_cell" key={index}>{cell}</td>
+                    <td className="report_cell" key={index}>
+                        {this.formatLink(cell)}
+                    </td>
                 );
     }
 

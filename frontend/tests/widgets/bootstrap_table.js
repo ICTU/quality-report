@@ -116,12 +116,12 @@ test('bootstrap table body', (t) => {
 test('bootstrap table body html filled', (t) => {
     const wrapper = shallow(
         <BootstrapTable headers={[["", ""],["id", "ID"]]}>
-            {[{cells: [{__html: "<p>cell 1</p>"}], className: ''}]}
+            {[{cells: ["<p>cell 1</p>"], className: ''}]}
         </BootstrapTable>)
     t.equals(wrapper.find('BootstrapTableBody').exists(), true);
     t.equal(wrapper.find('BootstrapTableBody').dive().find("tbody").exists(), true)
-     t.equal(wrapper.find('BootstrapTableBody').dive().find('BootstrapTableRow').dive()
-                    .find("td[dangerouslySetInnerHTML]").prop('dangerouslySetInnerHTML').__html, "<p>cell 1</p>");
+    t.equal(wrapper.find('BootstrapTableBody').dive().find('BootstrapTableRow').dive()
+                   .find('tr').find('td[className="report_cell"]').text(), '<p>cell 1</p>');
     t.end();
 });
 
@@ -143,7 +143,7 @@ test('bootstrap table renders bootstrap row', (t) => {
     t.end();
 });
 
-test('bootstrap table renders detail pane with col span information', (t) => {
+test('bootstrap table renders detail pane', (t) => {
     var fn = () => { return 0; }
     const wrapper = shallow(<BootstrapTable headers={[["x", "X"],["id", "ID"]]} report_dates='some report dates' on_hide_metric={fn}>
         {[{cells: ["cell 1"], extra_info: {"x":"x"}}]}

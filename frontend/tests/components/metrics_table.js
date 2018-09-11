@@ -84,13 +84,28 @@ test('metrics table rendered correctly', (t) => {
     t.equal(wrapper.find('span.missing_source_metric').text().trim(), "PD-1");
 
     // metric data
-    t.equal(wrapper.find('img[src="chart/PD-1.svg"]').exists(), true);
-    t.equal(wrapper.find('img[alt="🛠"]').exists(), true);
-    t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
-        .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Measurement result").exists(), true);
-    t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
-        .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Norm message").exists(), true);
-    t.equal(wrapper.find("td[dangerouslySetInnerHTML]")
-        .findWhere(x => x.prop('dangerouslySetInnerHTML').__html === "Comment!").exists(), true);
+    t.equal(wrapper.find('BootstrapTableRow').find('img[src="chart/PD-1.svg"]').exists(), true);
+    t.equal(wrapper.find('BootstrapTableRow').find('img[alt="🛠"]').exists(), true);
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).text(), "Measurement result");
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(5).text(), "Norm message");
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(6).text(), "Comment!");
+    t.end();
+});
+
+test('metrics table rendered correctly with links in texts', (t) => {
+    const wrapper = mount(<MetricsTable metrics={[{
+        "status_start_date": [],
+        "measurement": "Measurement links: {'href': 'http://measurement.com', 'text': 'Measurement!'}, {'href': 'http://link.com', 'text': 'Link!'} <-",
+        "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]
+    } />)
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).text(), "Measurement links: Measurement!, Link! <-");
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).type(), 'a');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).text(), 'Measurement!');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).prop('href'), 'http://measurement.com');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).prop('target'), '_blank');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).type(), 'a');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).text(), 'Link!');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('href'), 'http://link.com');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('target'), '_blank');
     t.end();
 });

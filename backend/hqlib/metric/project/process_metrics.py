@@ -20,7 +20,7 @@ from typing import List, Dict, Tuple, Union
 from hqlib.typing import MetricParameters, MetricValue
 from ... import metric_source
 from ... import utils
-from ...domain import HigherIsBetterMetric, LowerIsBetterMetric, ExtraInfo
+from ...domain import HigherIsBetterMetric, LowerIsBetterMetric
 
 
 class ReadyUserStoryPoints(HigherIsBetterMetric):
@@ -75,7 +75,7 @@ class UserStoriesDuration(LowerIsBetterMetric):
     def _get_days_in_progress(self, issue: Dict) -> Tuple[object, str, str, Union[str, int], bool]:
         """ Fetch the changelog of the given issue and get number of days between it is moved for the first time
             to the status "In Progress", till the last time it is moved out of it. """
-        issue_link = ExtraInfo.format_extra_info_link(
+        issue_link = utils.format_link_object(
             self._metric_source.get_issue_url(issue['key']), issue['fields']['summary'])
         to_in_progress_date, from_in_progress_date = self._metric_source.get_start_and_end_progress_date(issue)
         to_date_str = utils.format_date(to_in_progress_date, year=True) if to_in_progress_date else 'geen'

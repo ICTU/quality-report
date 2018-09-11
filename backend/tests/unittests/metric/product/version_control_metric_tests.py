@@ -149,7 +149,7 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_format_text_with_links(self):
         """ Test that the formatted text is followed by a link in square brackets. """
-        self.assertEqual("Some text... [<a href='http://fake_subversion.com' target='_blank'>Subversion</a>]",
+        self.assertEqual("Some text... [{'href': 'http://fake_subversion.com', 'text': 'Subversion'}]",
                          self.__metric.format_text_with_links('Some text...'))
 
     def test_format_comment_with_links(self):

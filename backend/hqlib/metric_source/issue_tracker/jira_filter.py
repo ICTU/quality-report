@@ -17,9 +17,9 @@ limitations under the License.
 import logging
 from typing import Callable, List, Dict, Tuple, Union, Optional
 import dateutil.parser
+from hqlib import utils
 from hqlib.typing import DateTime
 from ..abstract.issue_tracker import BugTracker
-from ...domain import ExtraInfo
 
 QueryId = Union[int, str]  # pylint: disable=invalid-name
 
@@ -60,7 +60,7 @@ class JiraFilter(BugTracker):
 
     def _get_just_links(self, issues: List):
         return [
-            ExtraInfo.format_extra_info_link(
+            utils.format_link_object(
                 self.get_issue_url(issue['key']),
                 issue['fields']['summary'])
             for issue in issues if issue]
@@ -138,7 +138,7 @@ class JiraFilter(BugTracker):
                 fields = issue["fields"]
                 if not fields.get(self.__field_name):
                     continue  # Skip issues that don't have a value for the field
-                link = ExtraInfo.format_extra_info_link(self.get_issue_url(issue["key"]), fields["summary"])
+                link = utils.format_link_object(self.get_issue_url(issue["key"]), fields["summary"])
                 links_and_values.append((link, float(fields[self.__field_name])))
         return links_and_values
 
