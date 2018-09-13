@@ -76,7 +76,7 @@ class MetricsTable extends React.Component {
             return metric["comment"];
         });
         var table_rows = this.stuffTableRows(has_comments);
-        var headers = [["",""], ["id_format", "Id"], ["sparkline", "Trend"], ["status_format", "Status"],
+        var headers = [["",""], ["id_format", "Id"], ["sparkline", "Trend (7\xa0dagen)"], ["status_format", "Status"],
                        ["measurement", "Meting"], ["norm", "Norm"]];
         if (has_comments) {
             headers.push(["comment", "Comment"]);

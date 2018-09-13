@@ -41,7 +41,7 @@ test('metrics table rendered without metrics', (t) => {
     t.equal(wrapper.find('BootstrapTable').prop('table_sort_ascending'), "tsc");
     t.equal(wrapper.find('BootstrapTable').prop('on_hide_metric'), "onHideMetricFn");
     t.deepEqual(wrapper.find('BootstrapTable')
-        .prop('headers'), [["", ""], ["id_format", "Id"], ["sparkline", "Trend"],
+        .prop('headers'), [["", ""], ["id_format", "Id"], ["sparkline", "Trend (7\xa0dagen)"],
                             ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"]]);
     t.equal(wrapper.find('BootstrapTable').children().exists(), false);
     t.end();
@@ -51,7 +51,7 @@ test('metrics table rendered with comment header if there is at least one commen
     const wrapper = shallow(<MetricsTable metrics={[{"comment": "Whatever",
                                                      "status_start_date": [2018, 1, 1, 12, 0, 0]}]} />)
     t.deepEqual(wrapper.find('BootstrapTable').prop('headers'),
-            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"],
+            [["", ""], ["id_format", "Id"], ["sparkline", "Trend (7\xa0dagen)"],
              ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"], ["comment", "Comment"]]);
     t.end();
 });
@@ -59,7 +59,7 @@ test('metrics table rendered with comment header if there is at least one commen
 test('metrics table rendered without comment header if the comment is empty', (t) => {
     const wrapper = shallow(<MetricsTable metrics={[{"comment": "", "status_start_date": [2018, 1, 1, 12, 0, 0]}]} />)
     t.deepEqual(wrapper.find('BootstrapTable').prop('headers'),
-            [["", ""], ["id_format", "Id"], ["sparkline", "Trend"],
+            [["", ""], ["id_format", "Id"], ["sparkline", "Trend (7\xa0dagen)"],
              ["status_format", "Status"], ["measurement", "Meting"], ["norm", "Norm"]]);
     t.end();
 });
@@ -74,7 +74,7 @@ test('metrics table rendered correctly', (t) => {
 
     // columns' headers
     t.equal(wrapper.find('thead th[id="id_format"]').text(), "Id");
-    t.equal(wrapper.find('thead th[id="sparkline"]').text(), "Trend");
+    t.equal(wrapper.find('thead th[id="sparkline"]').text(), "Trend (7\xa0dagen)");
     t.equal(wrapper.find('thead th[id="status_format"]').text(), "Status");
     t.equal(wrapper.find('thead th[id="measurement"]').text(), "Meting");
     t.equal(wrapper.find('thead th[id="norm"]').text(), "Norm");

@@ -46,12 +46,22 @@ class EmptyCompactHistoryTestCase(unittest.TestCase):
         self.assertEqual([], history.long_history('metric id'))
 
 
+DT_NOW = datetime.datetime.now()
+DT_3AGO = DT_NOW - datetime.timedelta(days=3)
+DT_8AGO = DT_NOW - datetime.timedelta(days=8)
+
+DATE1 = "{y}-{m:02}-{d:02} 12:01:45".format(y=DT_8AGO.year, m=DT_8AGO.month, d=DT_8AGO.day)
+DATE2 = "{y}-{m:02}-{d:02} 17:20:45".format(y=DT_3AGO.year, m=DT_3AGO.month, d=DT_3AGO.day)
+DATE3 = "{y}-{m:02}-{d:02} 18:20:45".format(y=DT_3AGO.year, m=DT_3AGO.month, d=DT_3AGO.day)
+DATE4 = "{y}-{m:02}-{d:02} 17:16:45".format(y=DT_NOW.year, m=DT_NOW.month, d=DT_NOW.day)
+
 COMPACT_HISTORY = {
-    "dates": ["2013-02-28 17:01:45", "2013-02-28 17:16:45", "2013-03-05 17:16:45"],
+    "dates": [DATE1, DATE2, DATE3, DATE4],
     "metrics": {"OpenBugsNone": [
-        {"value": 10, "start": "2013-02-28 17:01:45", "end": "2013-02-28 17:01:45", "status": "yellow"},
-        {"value": 38, "start": "2013-02-28 17:16:45", "end": "2013-03-05 17:16:45", "status": "red"}
-    ]},
+        {"value": 3,
+         "start": "2017-02-28 17:01:45", "end": DATE1, "status": "yellow"},
+        {"value": 10, "start": DATE2, "end": DATE2, "status": "yellow"},
+        {"value": 38, "start": DATE3, "end": DATE4, "status": "red"}]},
     "statuses": [{"yellow": 1}, {"red": 1}, {"red": 1}]
 }
 
@@ -92,31 +102,30 @@ class CompactHistoryTest(unittest.TestCase):
 
     def test_recent_history_when_metric_added_later(self, mock_read_json):
         """ Test the recent history of a specific metric. """
-
-        mock_read_json.return_value = {
-            "dates": ["2013-01-15 12:01:00", "2013-02-28 17:01:45", "2013-02-28 17:16:45", "2013-03-05 17:16:45"],
+        history = {
+            "dates": [
+                "{y}-{m:02}-{d:02} 17:16:45".format(y=DT_3AGO.year, m=DT_3AGO.month, d=DT_3AGO.day),
+                "{y}-{m:02}-{d:02} 17:21:45".format(y=DT_3AGO.year, m=DT_3AGO.month, d=DT_3AGO.day),
+                "{y}-{m:02}-{d:02} 17:16:45".format(y=DT_NOW.year, m=DT_NOW.month, d=DT_NOW.day)
+            ],
             "metrics": {"OpenBugsNone": [
-                {"value": 10, "start": "2013-02-28 17:01:45", "end": "2013-02-28 17:01:45", "status": "yellow"},
-                {"value": 38, "start": "2013-02-28 17:16:45", "end": "2013-03-05 17:16:45", "status": "red"}]},
+                {"value": 38,
+                 "start": "{y}-{m:02}-{d:02} 17:21:45".format(y=DT_3AGO.year, m=DT_3AGO.month, d=DT_3AGO.day),
+                 "end": "{y}-{m:02}-{d:02} 23:59:59".format(y=DT_NOW.year, m=DT_NOW.month, d=DT_NOW.day),
+                 "status": "red"}]},
             "statuses": [{"yellow": 1}, {"red": 1}, {"red": 1}]
         }
+
+        mock_read_json.return_value = history
         history = CompactHistory('history_file_name.json')
 
-        self.assertEqual([None, 10, 38, 38], history.recent_history('OpenBugsNone'))
+        self.assertEqual([None, 38, 38], history.recent_history('OpenBugsNone'))
 
     def test_get_dates(self, mock_read_json):
         """ Test the reporting dates. """
         mock_read_json.return_value = COMPACT_HISTORY
         history = CompactHistory('history_file_name.json')
-        self.assertEqual(
-            '2013-02-28 17:01:45,2013-02-28 17:16:45,2013-03-05 17:16:45', history.get_dates())
-
-    def test_get_dates_recent_limit(self, mock_read_json):
-        """ Test he reporting dates are limited to 100 for recent history. """
-        mock_read_json.return_value = {"dates": ["2013-02-28 17:01:45"] * 101, "metrics": {}, "statuses": []}
-        history = CompactHistory('history_file_name.json')
-
-        self.assertEqual(','.join(['2013-02-28 17:01:45'] * 100), history.get_dates())
+        self.assertEqual(DATE2 + ',' + DATE3 + ',' + DATE4, history.get_dates())
 
     def test_get_dates_long_limit(self, mock_read_json):
         """ Test he reporting dates are limited to 2000 for long history. """
@@ -124,19 +133,6 @@ class CompactHistoryTest(unittest.TestCase):
         history = CompactHistory('history_file_name.json')
 
         self.assertEqual(','.join(['2013-02-28 17:01:45'] * 2000), history.get_dates(long_history=True))
-
-    def test_recent_history_length(self, mock_read_json):
-        """ Test the length of recent history of a specific metric. """
-        mock_read_json.return_value = {
-            "dates": ["2013-02-28 17:01:45"] * 101,
-            "metrics": {"OpenBugsNone": [
-                {"value": 10, "start": "2013-02-28 17:01:45", "end": "2013-02-28 17:01:45", "status": "yellow"},
-                {"value": 38, "start": "2013-02-28 17:16:45", "end": "2013-03-05 17:16:45", "status": "red"}]},
-            "statuses": [{"yellow": 1}, {"red": 1}, {"red": 1}]
-        }
-        history = CompactHistory('history_file_name.json')
-
-        self.assertEqual(100, len(history.recent_history('OpenBugsNone')))
 
     def test_long_history_length(self, mock_read_json):
         """ Test the length of a long history of a specific metric. """
@@ -156,7 +152,7 @@ class CompactHistoryTest(unittest.TestCase):
         mock_read_json.return_value = COMPACT_HISTORY
         history = CompactHistory('history_file_name.json')
 
-        self.assertEqual([10, 38, 38], history.long_history('OpenBugsNone'))
+        self.assertEqual([3, 10, 38, 38], history.long_history('OpenBugsNone'))
 
     def test_missing_recent_history(self, mock_read_json):
         """ Test the recent history of a non-existing metric. """
@@ -170,7 +166,7 @@ class CompactHistoryTest(unittest.TestCase):
         mock_read_json.return_value = COMPACT_HISTORY
         history = CompactHistory('history_file_name.json')
 
-        self.assertEqual(datetime.datetime(2013, 2, 28, 17, 16, 45),
+        self.assertEqual(datetime.datetime(DT_3AGO.year, DT_3AGO.month, DT_3AGO.day, 18, 20, 45),
                          history.status_start_date('OpenBugsNone', 'red'))
 
     def test_statuses(self, mock_read_json):
@@ -178,9 +174,9 @@ class CompactHistoryTest(unittest.TestCase):
         mock_read_json.return_value = COMPACT_HISTORY
         history = CompactHistory('history_file_name.json')
 
-        self.assertEqual([{'yellow': 1, 'date': '2013-02-28 17:01:45'},
-                          {'red': 1, 'date': '2013-02-28 17:16:45'},
-                          {'red': 1, 'date': '2013-03-05 17:16:45'}], history.statuses())
+        self.assertEqual([{'yellow': 1, 'date': DATE1},
+                          {'red': 1, 'date': DATE2},
+                          {'red': 1, 'date': DATE3}], history.statuses())
 
     def test_status_start_date_no_history(self, mock_read_json):
         """ Test the status start date without history. """

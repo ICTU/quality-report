@@ -1,3 +1,8 @@
+2018-09-14  Release 2.70.0
+
+  * Feature #175: The trend spark-line chart displays the data of last 7 days.
+
+
 2018-09-14  Release 2.69.3
 
   * Bug #502: problem with links with spaces corrected.

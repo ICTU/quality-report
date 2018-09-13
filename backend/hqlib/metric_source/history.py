@@ -26,9 +26,9 @@ class CompactHistory(domain.MetricSource):
     __long_history_count = 2000
     __persister = FilePersister
 
-    def __init__(self, history_filename: str, recent_history: int = 100) -> None:
+    def __init__(self, history_filename: str, recent_history_days: int = 7) -> None:
         self.__history_filename = history_filename
-        self.__recent_history = recent_history
+        self.__recent_history_days = recent_history_days
         self.__history = self.__persister.read_json(history_filename) or dict(dates=[], statuses=[], metrics={})
         super().__init__()
 
@@ -42,25 +42,27 @@ class CompactHistory(domain.MetricSource):
         return self.__history_filename
 
     def recent_history(self, metric_id: str) -> List[Number]:
-        """ Retrieve the recent history for the metric_ids. """
-        return self.__history_records(metric_id, self.__recent_history)
+        """ Retrieve history records of the last n days. """
+        return self._get_history_records_for_dates(self._get_recent_dates(), metric_id)
+
+    def _get_recent_dates(self):
+        recent_days = self.__recent_history_days
+        before_days = f'{datetime.datetime.now() - datetime.timedelta(days=recent_days):%Y-%m-%d %H:%M:%S}'
+        dates = [dt for dt in self.__history['dates'] if before_days < dt]
+        return dates
 
     def long_history(self, metric_id) -> List[Number]:
         """ Retrieve longer history for the metric_ids. """
-        return self.__history_records(metric_id, self.__long_history_count)
+        return self._get_history_records_for_dates(self.__history['dates'][-self.__long_history_count:], metric_id)
 
-    def __history_records(self, metric_id: str, number_of_records: int) -> List[Number]:
-        """ Retrieve the given number of history records for the metric_id. """
+    def _get_history_records_for_dates(self, dates, metric_id):
         measurements = self.__history['metrics'].get(metric_id, [])
-        dates = self.__history['dates'][-number_of_records:]
         values = self.__get_prehistory(dates, measurements)
-
         for date in dates:
             for measurement in reversed(measurements):
                 if measurement['start'] <= date <= measurement['end']:
                     values.append(measurement.get('value', None))
                     break  # Next date
-
         return values
 
     @classmethod
@@ -75,8 +77,9 @@ class CompactHistory(domain.MetricSource):
 
     def get_dates(self, long_history: bool = False) -> str:
         """ Retrieve the list of report dates concatenated in comma separated string. """
-        number_of_records = self.__long_history_count if long_history else self.__recent_history
-        return ','.join(self.__history['dates'][-number_of_records:])
+        return ','.join(
+            self.__history['dates'][-self.__long_history_count:] if long_history else self._get_recent_dates()
+        )
 
     def status_start_date(self, metric_id: str, current_status: str,
                           now: Callable[[], DateTime] = datetime.datetime.now) -> DateTime:
