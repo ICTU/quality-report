@@ -139,7 +139,7 @@ class Metric(object):
         url_pattern = re.compile(r'(?i)\b(http(?:s?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]|'
                                  r'\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|'
                                  r'[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
-        return re.sub(url_pattern, r"{'href': '\1', 'text': '\1'}", utils.html_escape(text).replace('\n', ' '))
+        return re.sub(url_pattern, r"{'href': '\1', 'text': '\1'}", text.replace('\n', ' '))
 
     @classmethod
     def norm_template_default_values(cls) -> MetricParameters:

@@ -1,3 +1,8 @@
+2018-09-13  Release 2.69.2
+
+  * Bug #500: escaped quotes in norm texts fixed.
+
+
 2018-09-12  Release 2.69.1
 
   * Tech #234: removed html elements generation from server side and html direct setting on client side.

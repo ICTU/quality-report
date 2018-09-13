@@ -84,6 +84,11 @@ class MetricTest(unittest.TestCase):
                          self.__metric.format_comment_with_links(
                              'Some text...', {"branch_1": "http://url/br1", "branch_2": "http://url/br2"}, ""))
 
+    def test_format_comment_quotes(self):
+        """ Test that the quotes in formatted text are correctly escaped. """
+        self.assertEqual("Someone's \\\"text\\\"...",
+                         self.__metric.format_comment_with_links('Someone\'s "text"...', {}, ""))
+
     def test_format_comment_with_links_in_text(self):
         """ Test that the link in the text is changed to href. """
         self.assertEqual("Some {'href': 'http://a.href/sub/x/s/', 'text': 'http://a.href/sub/x/s/'} text...",

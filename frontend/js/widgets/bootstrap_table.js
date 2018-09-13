@@ -82,18 +82,18 @@ class BootstrapTableRow extends React.Component {
         return ret;
     }
 
-    formatLink (str) {
-        if (typeof(str) === 'string') {
-            return this.splitOnLinks(str);
+    formatCellText (cell) {
+        if (typeof(cell) === 'string') {
+            return this.splitOnLinks(cell);
         } else {
-            return str;
+            return cell;
         }
     }
     
     makeRowCells(row) {
         return row['cells'].map((cell, index) => 
                     <td className="report_cell" key={index}>
-                        {this.formatLink(cell)}
+                        {this.formatCellText(cell)}
                     </td>
                 );
     }
