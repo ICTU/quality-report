@@ -65,7 +65,7 @@ class BootstrapTableRow extends React.Component {
 
     splitOnLinks(str) {
         var ret = [];
-        var regexPatern = /{\s*'href':\s*(\S+),\s*'text':\s*([^}]+)\s*}/i
+        var regexPatern = /{\s*'href':\s*'(.+)',\s*'text':\s*'(.+)'\s*}/i
         var pos = str.search(regexPatern);
         
         if(pos >= 0) {
@@ -74,7 +74,7 @@ class BootstrapTableRow extends React.Component {
             var hrf = str.substring(pos, p1);
             var txt = hrf.replace(regexPatern, '$1}$2');
             var href_text = txt.split('}');
-            ret.push(<a href={href_text[0].slice(1,-1)} target="_blank">{href_text[1].slice(1,-1)}</a>);
+            ret.push(<a href={href_text[0]} target="_blank">{href_text[1]}</a>);
             ret = ret.concat(this.splitOnLinks(str.substring(p1)));
         } else {
             ret.push(str);

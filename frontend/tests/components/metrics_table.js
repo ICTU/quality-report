@@ -95,7 +95,7 @@ test('metrics table rendered correctly', (t) => {
 test('metrics table rendered correctly with links in texts', (t) => {
     const wrapper = mount(<MetricsTable metrics={[{
         "status_start_date": [],
-        "measurement": "Measurement links: {'href': 'http://measurement.com', 'text': 'Measurement!'}, {'href': 'http://link.com', 'text': 'Link!'} <-",
+        "measurement": "Measurement links: {'href': 'http://measurement.com', 'text': 'Measurement!'}, {'href': 'http://link with spaces.com', 'text': 'Link!'} <-",
         "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]
     } />)
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).text(), "Measurement links: Measurement!, Link! <-");
@@ -105,7 +105,7 @@ test('metrics table rendered correctly with links in texts', (t) => {
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).prop('target'), '_blank');
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).type(), 'a');
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).text(), 'Link!');
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('href'), 'http://link.com');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('href'), 'http://link with spaces.com');
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('target'), '_blank');
     t.end();
 });

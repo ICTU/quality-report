@@ -1,3 +1,8 @@
+2018-09-14  Release 2.69.3
+
+  * Bug #502: problem with links with spaces corrected.
+
+
 2018-09-13  Release 2.69.2
 
   * Bug #500: escaped quotes in norm texts fixed.
