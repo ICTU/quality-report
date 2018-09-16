@@ -6,7 +6,7 @@ pygal==2.4.0
 git+https://github.com/wekan/wekan-python-api-client.git#egg=wekanapi&subdirectory=src
 
 # Development dependencies
-setuptools==40.2.0
+setuptools==40.3.0
 coverage==4.5.1
 xmlrunner==1.7.7
 pycodestyle==2.4.0
