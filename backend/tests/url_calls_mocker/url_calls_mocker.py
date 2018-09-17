@@ -364,6 +364,24 @@ class UrlOpenerMock(UrlOpener):
                 self._get_file_content(
                     examples_metric_sources_path / 'sonar_search_0_found.json'
                 ),
+
+            'https://my.sonarqube.com/api/issues/search?componentRoots=nl.comp:my_project&resolved=false&types=BUG':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_bugs.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=VULNERABILITY':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_vulnerabilities.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=CODE_SMELL':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_code_smells.json'
+                ),
+
             # end Sonar
 
             # begin trello

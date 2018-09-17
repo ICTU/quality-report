@@ -159,6 +159,24 @@ class Sonar6Test(Sonar6TestCase):
 
     # pylint: disable=no-member
 
+    def test_maintainability_bugs(self, mock_url_read):
+        """ Test that the retrieval of maintainability bugs. """
+        mock_url_read.side_effect = ["5.6", '[{"id":305,"k":"product"}]', '{"total": "3", "issues": []}']
+        result = self._sonar.maintainability_bugs('product')
+        self.assertEqual(3, result)
+
+    def test_vulnerabilities(self, mock_url_read):
+        """ Test that the retrieval of vulnerabilities. """
+        mock_url_read.side_effect = ["5.6", '[{"id":305,"k":"product"}]', '{"total": "22", "issues": []}']
+        result = self._sonar.vulnerabilities('product')
+        self.assertEqual(22, result)
+
+    def test_code_smells(self, mock_url_read):
+        """ Test that the retrieval of code smells. """
+        mock_url_read.side_effect = ["6.5", '{"paging": {"total": "1"}}', '{"total": "99", "issues": []}']
+        result = self._sonar.code_smells('product')
+        self.assertEqual(99, result)
+
     def test_is_branch_plugin_installed(self, mock_url_read):
         """" Test that the branch plugin is installed. """
         mock_url_read.return_value = '[{"key":"branch","name":"Branch","version":"1.0.0.507"}]'
@@ -203,7 +221,6 @@ class Sonar6Test(Sonar6TestCase):
         """" Test that the branch plugin is reported not installed if http error happens. """
         mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
         result = self._sonar.is_branch_plugin_installed()
-        # mock_warning.assert_called_once_with("Couldn't open %s: %s", 'xxxxxxx', '')
         mock_warning.assert_called_once()
         self.assertEqual(mock_warning.call_args[0][0], "Couldn't open %s: %s")
         self.assertEqual(mock_warning.call_args[0][1], 'http://sonar/api/updatecenter/installed_plugins?format=json')
@@ -498,12 +515,12 @@ class Sonar6SuppressionTest(Sonar6TestCase):
 
     def test_false_positives(self, mock_url_read):
         """ Test the number of false positives. """
-        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"issues": [{}, {}, {}, {}, {}, {}, {}, {}]}']
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"total": "8", "issues": []}']
         self.assertEqual(8, self._sonar.false_positives('product'))
 
     def test_no_false_positives(self, mock_url_read):
         """ Test that the number of false positives is zero. """
-        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"issues": []}']
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"total": "0", "issues": []}']
         self.assertEqual(0, self._sonar.false_positives('product'))
 
     def test_no_false_positives_no_product(self, mock_url_read):

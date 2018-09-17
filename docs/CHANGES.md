@@ -1,3 +1,8 @@
+2018-09-20  Release 2.71.0
+
+  * Feature #424: Added metrics for code maintainability: Maintainability Bugs, Vulnerabilities and Code Smells.
+
+
 2018-09-14  Release 2.70.0
 
   * Feature #175: The trend spark-line chart displays the data of last 7 days.

@@ -127,6 +127,8 @@ class Sonar6(Sonar):
         self._base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self._base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots={component}'
         self._issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
+        self._issues_by_type_api_url = sonar_url + \
+            'api/issues/search?componentRoots={component}&resolved=false&types={type}'
         self._analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json&ps=1'
         self._components_show_api_url = sonar_url + 'api/components/show?component={component}'
         self._components_search_api_url = sonar_url + 'api/components/search?qualifiers=BRC,TRK&q={component}'
@@ -142,6 +144,24 @@ class Sonar6(Sonar):
         logging.info("Sonar class instantiated as Sonar6.")
 
     # Coverage report API
+
+    @extract_branch_decorator
+    def maintainability_bugs(self, product: str, branch: str) -> int:
+        """ Return the number of maintainability bugs detected by sonar, for the product. """
+        return self.__number_of_issues(product, branch,
+                                       self._issues_by_type_api_url.format(component=product, type='BUG'), 0)
+
+    @extract_branch_decorator
+    def vulnerabilities(self, product: str, branch: str) -> int:
+        """ Return the number of vulnerabilities detected by sonar, for the product. """
+        return self.__number_of_issues(product, branch,
+                                       self._issues_by_type_api_url.format(component=product, type='VULNERABILITY'), 0)
+
+    @extract_branch_decorator
+    def code_smells(self, product: str, branch: str) -> int:
+        """ Return the number of code smells detected by sonar, for the product. """
+        return self.__number_of_issues(product, branch,
+                                       self._issues_by_type_api_url.format(component=product, type='CODE_SMELL'), 0)
 
     def has_branch_coverage(self, metric_source_id: str) -> bool:
         """ Determines if the branch coverage is defined on Sonar. """
@@ -462,7 +482,7 @@ class Sonar6(Sonar):
     @extract_branch_decorator
     def false_positives(self, product: str, branch: str) -> int:
         """ Return the number of false positives listed for the product. """
-        return self.__false_positives(product, 0, branch)
+        return self.__number_of_issues(product, branch, self._false_positives_api_url.format(resource=product), 0)
 
     @extract_branch_decorator
     def false_positives_url(self, product: str, branch: str) -> str:
@@ -569,16 +589,15 @@ class Sonar6(Sonar):
             return default
         return int(issues_json['paging']['total'])
 
-    def __false_positives(self, product: str, default: int = 0, branch: str = None) -> int:
-        """ Return the number of issues resolved as false positive. """
+    def __number_of_issues(self, product: str, branch: str, url: str, default: int = 0) -> int:
+        """ Return the number of issues retrieved by given url. """
         if not self._has_project(product, branch):
             return -1
         try:
-            false_positives_json = self._get_json(
-                self._add_branch_param_to_url(self._false_positives_api_url.format(resource=product), branch))
+            issues_json = self._get_json(self._add_branch_param_to_url(url, branch))
         except self._url_opener.url_open_exceptions:
             return default
-        return len(false_positives_json['issues'])
+        return int(issues_json['total'])
 
 
 class Sonar7(Sonar6):
@@ -596,6 +615,8 @@ class Sonar7(Sonar6):
         self._base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self._base_violations_url = sonar_url + 'project/issues?id={component}&resolved=false'
         self._issues_api_url = sonar_url + 'api/issues/search?componentKeys={component}&resolved=false&rules={rule}'
+        self._issues_by_type_api_url = sonar_url + \
+            'api/issues/search?componentKeys={component}&resolved=false&types={type}'
         self._analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json&ps=1'
         self._components_show_api_url = sonar_url + 'api/components/show?component={component}'
         self._components_search_api_url = sonar_url + 'api/components/search?qualifiers=BRC,TRK&q={component}'

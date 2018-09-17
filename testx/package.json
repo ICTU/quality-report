@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@ictu/testx": "^2.11.1-I0.2"
+    "@ictu/testx": "^2.11.2"
   },
   "devDependencies": {},
   "scripts": {

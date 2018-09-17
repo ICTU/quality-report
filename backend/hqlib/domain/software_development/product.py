@@ -36,11 +36,11 @@ class Product(RequirementSubject, MeasurableObject):
         return (requirement.UserStoriesAndLTCs, requirement.TrackReadyUS, requirement.TrackUserStoriesInProgress,
                 requirement.TrackDurationOfUserStories, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.UnitTestCoverage,
-                requirement.AggregatedTestCoverage, requirement.CodeQuality, requirement.TrackBranches,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
-                requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
-                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
-                requirement.TrackSecurityTestDate,
+                requirement.AggregatedTestCoverage, requirement.CodeQuality, requirement.ViolationsBySeverity,
+                requirement.ViolationsByType, requirement.TrackBranches, requirement.OWASPDependencies,
+                requirement.OWASPZAP, requirement.Checkmarx, requirement.PerformanceLoad,
+                requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackBugs,
+                requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate,
                 requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate)
 
     def __eq__(self, other):
@@ -66,7 +66,8 @@ class Component(Product):
     @staticmethod
     def default_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return requirement.CodeQuality, requirement.UnitTests, requirement.UnitTestCoverage, requirement.TrackBranches
+        return requirement.CodeQuality, requirement.ViolationsBySeverity, \
+            requirement.UnitTests, requirement.UnitTestCoverage, requirement.TrackBranches
 
     @staticmethod
     def optional_requirements() -> Sequence[Type[Requirement]]:
@@ -82,9 +83,9 @@ class Application(Product):
     @staticmethod
     def default_requirements() -> Sequence[Type[Requirement]]:
         from ... import requirement
-        return (requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches,
-                requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.OWASPDependencies,
-                requirement.OWASPZAP, requirement.Checkmarx)
+        return (requirement.CodeQuality, requirement.ART, requirement.ViolationsBySeverity, requirement.ARTCoverage,
+                requirement.TrackBranches, requirement.PerformanceLoad, requirement.PerformanceEndurance,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx)
 
     @staticmethod
     def optional_requirements() -> Sequence[Type[Requirement]]:

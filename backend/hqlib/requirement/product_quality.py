@@ -83,10 +83,21 @@ class AggregatedTestCoverage(Requirement):
 class CodeQuality(Requirement):
     """ Require the source code quality of the product to be tracked. """
     _name = 'Code quality'
-    _metric_classes = (metric.BlockerViolations, metric.CriticalViolations, metric.MajorViolations,
-                       metric.CyclomaticComplexity, metric.JavaDuplication, metric.ProductLOC, metric.LongMethods,
+    _metric_classes = (metric.CyclomaticComplexity, metric.JavaDuplication, metric.ProductLOC, metric.LongMethods,
                        metric.ManyParameters, metric.CommentedLOC, metric.NoSonar, metric.FalsePositives,
                        metric.SonarAnalysisAge)
+
+
+class ViolationsBySeverity(Requirement):
+    """ Require the source code quality of the product to be tracked. """
+    _name = 'Violations by severity'
+    _metric_classes = (metric.BlockerViolations, metric.CriticalViolations, metric.MajorViolations)
+
+
+class ViolationsByType(Requirement):
+    """ Require the source code quality of the product to be tracked. """
+    _name = 'Violations by type'
+    _metric_classes = (metric.MaintainabilityBugs, metric.Vulnerabilities, metric.CodeSmells)
 
 
 class PerformanceLoad(Requirement):

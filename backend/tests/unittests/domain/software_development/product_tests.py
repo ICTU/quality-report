@@ -49,8 +49,8 @@ class ComponentTest(unittest.TestCase):
 
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
-        self.assertEqual((requirement.CodeQuality, requirement.UnitTests, requirement.UnitTestCoverage,
-                          requirement.TrackBranches),
+        self.assertEqual((requirement.CodeQuality, requirement.ViolationsBySeverity, requirement.UnitTests,
+                          requirement.UnitTestCoverage, requirement.TrackBranches),
                          domain.Component.default_requirements())
 
     def test_optional_requirements(self):
@@ -63,10 +63,11 @@ class ApplicationTest(unittest.TestCase):
 
     def test_default_requirements(self):
         """ Test that the default requirements are correct. """
-        self.assertEqual((requirement.CodeQuality, requirement.ART, requirement.ARTCoverage, requirement.TrackBranches,
+        self.assertEqual((requirement.CodeQuality, requirement.ART, requirement.ViolationsBySeverity,
+                          requirement.ARTCoverage, requirement.TrackBranches,
                           requirement.PerformanceLoad, requirement.PerformanceEndurance,
-                          requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx),
-                         domain.Application.default_requirements())
+                          requirement.OWASPDependencies, requirement.OWASPZAP,
+                          requirement.Checkmarx), domain.Application.default_requirements())
 
     def test_optional_requirements(self):
         """ Test that the optional requirements don't contain the default requirements. """

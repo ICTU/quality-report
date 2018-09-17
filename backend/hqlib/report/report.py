@@ -209,6 +209,7 @@ class QualityReport(domain.DomainObject):
             requirement.TrackQualityGate, requirement.UnitTests, requirement.UnitTestCoverage, requirement.ART,
             requirement.ARTCoverage, requirement.AggregatedTestCoverage, requirement.UserStoriesAndLTCs,
             requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks, requirement.CodeQuality,
+            requirement.ViolationsBySeverity, requirement.ViolationsByType,
             requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
             requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
             requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)

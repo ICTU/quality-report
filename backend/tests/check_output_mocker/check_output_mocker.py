@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
 import logging
+
 
 POPENARGS_MAP = {
     ('git', 'pull', '--prune'): '',
@@ -46,11 +46,16 @@ POPENARGS_MAP = {
 }
 
 
-# pylint: disable=unused-argument
-def check_output(*popenargs, timeout=None, **kwargs):
-    """ The function mocks behaviour of subprocess.check_output function"""
+class CheckOutputMocker(object):
+    """ Wrap for mock function check_output. """
 
-    if popenargs[0] in POPENARGS_MAP.keys():
-        return POPENARGS_MAP[popenargs[0]]
-    logging.info("Command '%s' is still not mocked for example report!", popenargs[0])
-    return ''
+    # pylint: disable=too-few-public-methods
+    # pylint: disable=unused-argument
+    @staticmethod
+    def check_output(*popenargs, timeout=None, **kwargs):
+        """ The function mocks behaviour of subprocess.check_output function"""
+
+        if popenargs[0] in POPENARGS_MAP.keys():
+            return POPENARGS_MAP[popenargs[0]]
+        logging.info("Command '%s' is still not mocked for example report!", popenargs[0])
+        return ''

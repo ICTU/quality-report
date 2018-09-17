@@ -8,7 +8,7 @@ import hqlib.metric_source.url_opener
 from tests.url_calls_mocker.url_calls_mocker import UrlOpenerMock
 hqlib.metric_source.url_opener.UrlOpener = UrlOpenerMock
 
-from tests import check_output_mocker
+from tests.check_output_mocker.check_output_mocker import CheckOutputMocker
 ### END
 
 import pathlib
@@ -23,7 +23,7 @@ PROJECT_DIR = pathlib.Path(__file__).parent.parent.parent.parent
 
 JENKINS = metric_source.Jenkins(url='http://www.jenkins.proj.org:8080/')
 GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git',
-                        run_shell_command=check_output_mocker.check_output_mocker.check_output)
+                        run_shell_command=CheckOutputMocker.check_output)
 SONAR = metric_source.Sonar('https://my.sonarqube.com/')
 JUNIT=metric_source.JunitTestReport()
 HISTORY = metric_source.CompactHistory(PROJECT_DIR / 'docs' / 'examples' / 'quality_report' / 'history.json')
@@ -99,6 +99,7 @@ QUALITY_REPORT = Application(
         GIT: '.',
         OWASP_DEPENDENCY_REPORT: 'http://owasp.dependency/report.xml',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
+    added_requirements={requirement.ViolationsByType},
     metric_options={
         metric.UnittestLineCoverage:
             dict(debt_target=TechnicalDebtTarget(0, 'Sonar incorrectly reports 0% unit test coverage')),
