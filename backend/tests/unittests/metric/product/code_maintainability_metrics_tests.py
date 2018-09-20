@@ -21,6 +21,33 @@ from hqlib import domain, metric_source
 from hqlib.metric import MaintainabilityBugs, Vulnerabilities, CodeSmells
 
 
+class CodeMaintainabilityMetricTest(unittest.TestCase):
+    """ Unit tests for the CodeMaintainabilityMetric metric class. """
+    def test_extra_info_rows(self):
+        """ Test if function correctly calls metric source function and formats the result. """
+        sonar = MagicMock()
+        sonar.violations_type_severity = MagicMock(
+            side_effect=[('url_blocker', 1), ('url_critical', 3), ('url_major', 5), ('url_minor', 7), ('url_info', 11)]
+        )
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='sonar_id')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        metric = MaintainabilityBugs(subject=subject, project=project)
+
+        result = metric.extra_info_rows()
+
+        self.assertEqual([
+            ({'href': 'url_blocker', 'text': 'Blocker'}, 1),
+            ({'href': 'url_critical', 'text': 'Critical'}, 3),
+            ({'href': 'url_major', 'text': 'Major'}, 5),
+            ({'href': 'url_minor', 'text': 'Minor'}, 7),
+            ({'href': 'url_info', 'text': 'Info'}, 11),
+        ], result)
+        self.assertEqual('Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.', metric.norm_template)
+        self.assertEqual('{name} heeft {value} {unit}.', metric.template)
+        self.assertEqual(5, sonar.violations_type_severity.call_count)
+
+
 class MaintainabilityBugsTest(unittest.TestCase):
     """ Unit tests for the MaintainabilityBugs metric class. """
     def test_value(self):
@@ -37,10 +64,10 @@ class MaintainabilityBugsTest(unittest.TestCase):
         self.assertEqual(99, result)
         self.assertEqual('Hoeveelheid maintainability bugs', metric.name)
         self.assertEqual('maintainability bugs', metric.unit)
-        self.assertEqual('Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.', metric.norm_template)
-        self.assertEqual('{name} heeft {value} {unit}.', metric.template)
         self.assertEqual(0, metric.target_value)
         self.assertEqual(3, metric.low_target_value)
+        self.assertEqual('BUG', metric.violation_type)
+        self.assertEqual('Maintainability bugs per severity', metric.url_label_text)
         sonar.maintainability_bugs.assert_called_once_with('sonar_id')
 
 
@@ -60,8 +87,6 @@ class VulnerabilitiesTest(unittest.TestCase):
         self.assertEqual(99, result)
         self.assertEqual('Hoeveelheid vulnerabilities', metric.name)
         self.assertEqual('vulnerabilities', metric.unit)
-        self.assertEqual('Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.', metric.norm_template)
-        self.assertEqual('{name} heeft {value} {unit}.', metric.template)
         self.assertEqual(0, metric.target_value)
         self.assertEqual(3, metric.low_target_value)
         sonar.vulnerabilities.assert_called_once_with('sonar_id')
@@ -83,8 +108,6 @@ class CodeSmellsTest(unittest.TestCase):
         self.assertEqual(99, result)
         self.assertEqual('Hoeveelheid code smells', metric.name)
         self.assertEqual('code smells', metric.unit)
-        self.assertEqual('Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.', metric.norm_template)
-        self.assertEqual('{name} heeft {value} {unit}.', metric.template)
         self.assertEqual(25, metric.target_value)
         self.assertEqual(50, metric.low_target_value)
         sonar.code_smells.assert_called_once_with('sonar_id')

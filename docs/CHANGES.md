@@ -1,3 +1,9 @@
+2018-09-21  Release 2.72.0
+
+  * Feature #513, #512, #511: Detail info for detected code maintainability issues (bugs, vulnerabilities and code smells).
+  * Feature #514: Detail info table for code maintainability issues has links to the Sonar.
+
+
 2018-09-20  Release 2.71.0
 
   * Feature #424: Added metrics for code maintainability: Maintainability Bugs, Vulnerabilities and Code Smells.

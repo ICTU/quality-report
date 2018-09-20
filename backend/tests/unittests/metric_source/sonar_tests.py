@@ -428,6 +428,16 @@ class Sonar6Test(Sonar6TestCase):
         mock_url_read.side_effect = ["6.4", '{"component": {}}']
         self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
 
+    def test_violations_type_severity(self, mock_url_read):
+        """ Test that the number and link are returned correctly. """
+        mock_url_read.side_effect = ["6.4", '{"paging": {"total": 1}}', '{"total": 5}']
+
+        result = self._sonar.violations_type_severity('product', 'bug', 'very_severe')
+
+        self.assertEqual(
+            ('http://sonar/project/issues?id=product&resolved=false&types=BUG&severities=VERY_SEVERE', 5), result
+        )
+
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class Sonar6Coverage(Sonar6TestCase):
@@ -704,14 +714,15 @@ class Sonar6BranchParameterTest(unittest.TestCase):
         func = MagicMock()
         decorated_func = extract_branch_decorator(func)
 
-        decorated_func(sonar, product)
+        additional_parameter = 'whatever'
+        decorated_func(sonar, product, additional_parameter)
 
         calls = [call(fake_url + 'api/server/version'),
                  call(fake_url + 'api/updatecenter/installed_plugins?format=json'),
                  call(fake_url + 'api/components/show?component={component}'.format(component=product),
                       log_error=False)]
         url_read_mock.assert_has_calls(calls)
-        func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch")
+        func.assert_called_with(sonar, "nl.ictu:quality_report", "my-branch", additional_parameter)
 
     def test_branch_param_no_component_json_valid(self, url_read_mock):
         """ Test that the correct branch name is returned, when server version is >= 6.7 """

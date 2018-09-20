@@ -29,15 +29,15 @@ from ..typing import DateTime, Number
 
 def extract_branch_decorator(func):
     """ Checks if product name has to be splitted into product and branch and performs the splitting."""
-    def _branch_param(self, product: str) -> (str, str):
+    def _branch_param(self, product: str, *args, **kwargs) -> (str, str):
         """ Return the branch url parameter. """
         if self.is_branch_name_included(product):
             prod = product.rsplit(":", 1)
             if len(prod) == 2:
-                return func(self, prod[0], None if prod[1] == '' else prod[1])
+                return func(self, prod[0], None if prod[1] == '' else prod[1], *args, **kwargs)
             logging.warning(
                 "A branch name is not defined in '%s' and no component with corresponding name is found.", product)
-        return func(self, product, None)
+        return func(self, product, None, *args, **kwargs)
     return _branch_param
 
 
@@ -123,12 +123,17 @@ class Sonar6(Sonar):
     def _init_from_facade(self, sonar_url: str):
 
         # pylint: disable=attribute-defined-outside-init
+        # pylint: disable=invalid-name
 
         self._base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self._base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots={component}'
+        self._violations_type_severity_url = sonar_url + \
+            'project/issues?id={component}&resolved=false&types={type}&severities={severities}'
         self._issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
         self._issues_by_type_api_url = sonar_url + \
             'api/issues/search?componentRoots={component}&resolved=false&types={type}'
+        self._issues_by_type_and_severity_api_url = sonar_url + \
+            'api/issues/search?componentRoots={component}&resolved=false&types={type}&severities={severities}'
         self._analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json&ps=1'
         self._components_show_api_url = sonar_url + 'api/components/show?component={component}'
         self._components_search_api_url = sonar_url + 'api/components/search?qualifiers=BRC,TRK&q={component}'
@@ -150,6 +155,17 @@ class Sonar6(Sonar):
         """ Return the number of maintainability bugs detected by sonar, for the product. """
         return self.__number_of_issues(product, branch,
                                        self._issues_by_type_api_url.format(component=product, type='BUG'), 0)
+
+    @extract_branch_decorator
+    def violations_type_severity(self, product: str, branch: str, violation_type: str, severity: str) -> (str, int):
+        """ Return the number of violations of a given type and severity, detected by sonar, for the product. """
+        return (
+            self._violations_type_severity_url.format(
+                component=product, type=violation_type.upper(), severities=severity.upper()),
+            self.__number_of_issues(
+                product, branch,
+                self._issues_by_type_and_severity_api_url.format(
+                    component=product, type=violation_type.upper(), severities=severity.upper()), 0))
 
     @extract_branch_decorator
     def vulnerabilities(self, product: str, branch: str) -> int:
@@ -611,12 +627,17 @@ class Sonar7(Sonar6):
     def _init_from_facade(self, sonar_url: str):
 
         # pylint: disable=attribute-defined-outside-init
+        # pylint: disable=invalid-name
 
         self._base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self._base_violations_url = sonar_url + 'project/issues?id={component}&resolved=false'
+        self._violations_type_severity_url = sonar_url + \
+            'project/issues?id={component}&resolved=false&types={type}&severities={severities}'
         self._issues_api_url = sonar_url + 'api/issues/search?componentKeys={component}&resolved=false&rules={rule}'
         self._issues_by_type_api_url = sonar_url + \
             'api/issues/search?componentKeys={component}&resolved=false&types={type}'
+        self._issues_by_type_and_severity_api_url = sonar_url + \
+            'api/issues/search?componentKeys={component}&resolved=false&types={type}&severities={severities}'
         self._analyses_api_url = sonar_url + 'api/project_analyses/search?project={project}&format=json&ps=1'
         self._components_show_api_url = sonar_url + 'api/components/show?component={component}'
         self._components_search_api_url = sonar_url + 'api/components/search?qualifiers=BRC,TRK&q={component}'

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
+from hqlib import utils
 from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import LowerIsBetterMetric
 
@@ -23,6 +23,19 @@ class CodeMaintainabilityMetric(SonarDashboardMetric, LowerIsBetterMetric):
     """ Abstract class for metric measuring the amount of bugs reported by Sonar. """
     norm_template = 'Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.'
     template = '{name} heeft {value} {unit}.'
+    violation_type = 'Subclass responsibility'
+
+    extra_info_headers = {"severity": "Severity", "number": "Aantal__detail-column-number"}
+
+    def extra_info_rows(self) -> list((object, int)):
+        """ Returns formatted rows of extra info table for code maintainability metrics. """
+        severities = ['Blocker', 'Critical', 'Major', 'Minor', 'Info']
+        ret = list()
+        for severity in severities:
+            url, count = \
+                self._metric_source.violations_type_severity(self._metric_source_id, self.violation_type, severity)
+            ret.append((utils.format_link_object(url, severity), count))
+        return ret
 
 
 class MaintainabilityBugs(CodeMaintainabilityMetric):
@@ -31,6 +44,8 @@ class MaintainabilityBugs(CodeMaintainabilityMetric):
     unit = 'maintainability bugs'
     target_value = 0
     low_target_value = 3
+    violation_type = 'BUG'
+    url_label_text = 'Maintainability bugs per severity'
 
     def value(self):
         """ Retrieves the number of maintainability bugs detected by sonar qube. """
@@ -43,6 +58,8 @@ class Vulnerabilities(CodeMaintainabilityMetric):
     unit = 'vulnerabilities'
     target_value = 0
     low_target_value = 3
+    violation_type = 'VULNERABILITY'
+    url_label_text = 'Vulnerabilities per severity'
 
     def value(self):
         """ Retrieves the number of vulnerabilities detected by sonar qube. """
@@ -55,6 +72,8 @@ class CodeSmells(CodeMaintainabilityMetric):
     unit = 'code smells'
     target_value = 25
     low_target_value = 50
+    violation_type = 'CODE_SMELL'
+    url_label_text = 'Code smells per severity'
 
     def value(self):
         """ Retrieves the number of code smells detected by sonar qube. """
