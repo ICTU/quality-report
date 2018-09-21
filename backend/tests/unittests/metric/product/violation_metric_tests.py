@@ -15,37 +15,8 @@ limitations under the License.
 """
 
 import unittest
-
+from unittest.mock import MagicMock
 from hqlib import metric, domain, metric_source
-
-
-class FakeSonar(object):
-    """ Provide for a fake Sonar object so that the unit test don't need access to an actual Sonar instance. """
-    # pylint: disable=unused-argument
-
-    metric_source_name = metric_source.Sonar.metric_source_name
-
-    def __init__(self, blocker_violations=0, critical_violations=0, major_violations=0):
-        self.__blocker_violations = blocker_violations
-        self.__critical_violations = critical_violations
-        self.__major_violations = major_violations
-
-    def blocker_violations(self, *args):
-        """ Return the number of blocker violations. """
-        return self.__blocker_violations
-
-    def critical_violations(self, *args):
-        """ Return the number of critical violations. """
-        return self.__critical_violations
-
-    def major_violations(self, *args):
-        """ Return the number of major violations. """
-        return self.__major_violations
-
-    @staticmethod
-    def false_positives(*args):
-        """ Return the number of issues marked as false positive. """
-        return 3
 
 
 class ViolationsTestMixin(object):
@@ -53,9 +24,11 @@ class ViolationsTestMixin(object):
 
     def setUp(self):  # pylint: disable=invalid-name,missing-docstring
         self.__nr_violations = 51
-        self.__sonar = FakeSonar(blocker_violations=self.__nr_violations,
-                                 critical_violations=self.__nr_violations,
-                                 major_violations=self.__nr_violations)
+        self.__sonar = MagicMock()
+        self.__sonar.major_violations = MagicMock(return_value=self.__nr_violations)
+        self.__sonar.critical_violations = MagicMock(return_value=self.__nr_violations)
+        self.__sonar.blocker_violations = MagicMock(return_value=self.__nr_violations)
+
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
         self.__subject = domain.Product(short_name='PR', name='FakeSubject',
                                         metric_source_ids={self.__sonar: "sonar id"})
@@ -63,6 +36,7 @@ class ViolationsTestMixin(object):
 
     def test_numerical_value(self):
         """ Test that the numerical value of the metric equals the number of violation as provided by Sonar. """
+        self.__sonar.major_violations = MagicMock(return_value=self.__nr_violations)
         self.assertEqual(self.__nr_violations, self._metric.numerical_value())
 
     def test_value(self):
@@ -86,15 +60,37 @@ class ViolationsTestMixin(object):
 
     def test_is_perfect(self):
         """ Test that the metric is perfect when the number of violations is zero. """
-        sonar = FakeSonar()
-        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        product = domain.Product(metric_source_ids={sonar: "sonar id"})
-        violations = self.metric_class(subject=product, project=project)
-        self.assertEqual('perfect', violations.status())
+        self.__subject.low_target = MagicMock(return_value=51)
+        self.__subject.target = MagicMock(return_value=51)
+        self._metric.perfect_value = 51
+        self.assertEqual('perfect', self._metric.status())
 
     def test_norm_template_default_values(self):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(self.metric_class.norm_template % self.metric_class.norm_template_default_values())
+
+    def test_extra_info_headers(self):
+        """ Test if the detail table headers are as defined. """
+        self.assertEqual(
+            {"violation_type": "Violation type", "number": "Aantal__detail-column-number"},
+            self._metric.extra_info_headers
+        )
+
+    def test_extra_info_rows(self):
+        """ Unit tests for the CodeMaintainabilityMetric metric class. """
+
+        self.__sonar.violations_type_severity = MagicMock(
+            side_effect=[('url_bugs', 1), ('url_vulnerabilities', 3), ('url_code_smells', 5)]
+        )
+
+        result = self._metric.extra_info_rows()
+
+        self.assertEqual([
+            ({'href': 'url_bugs', 'text': 'Bugs'}, 1),
+            ({'href': 'url_vulnerabilities', 'text': 'Vulnerabilities'}, 3),
+            ({'href': 'url_code_smells', 'text': 'Code Smell'}, 5)
+        ], result)
+        self.assertEqual(3, self.__sonar.violations_type_severity.call_count)
 
 
 class BlockerViolationsTest(ViolationsTestMixin, unittest.TestCase):
@@ -122,11 +118,24 @@ class FalsePositivesTest(unittest.TestCase):
     """ Unit tests for the false positives metric class. """
 
     def setUp(self):
-        sonar = FakeSonar()
-        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        self.__subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: "sonar id"})
-        self.__metric = metric.FalsePositives(subject=self.__subject, project=project)
+        self._sonar = MagicMock()
+        self.__subject = domain.Product(short_name='PR', name='FakeSubject',
+                                        metric_source_ids={self._sonar: "sonar id"})
 
     def test_value(self):
         """ Test that the value is equal to the number of false positives as reported by Sonar. """
-        self.assertEqual(3, self.__metric.value())
+        self._sonar.false_positives = MagicMock(return_value=3)
+        project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
+        violation_metric = metric.FalsePositives(subject=self.__subject, project=project)
+
+        self.assertEqual(3, violation_metric.value())
+        self._sonar.false_positives.assert_called_once_with('sonar id')
+
+    def test_value_no_metric_source(self):
+        """ Test that the value is equal to the number of false positives as reported by Sonar. """
+        project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
+        project.metric_sources = MagicMock(return_value=[None])
+        violation_metric = metric.FalsePositives(subject=self.__subject, project=project)
+
+        self.assertEqual(-1, violation_metric.value())
+        self._sonar.false_positives.assert_not_called()

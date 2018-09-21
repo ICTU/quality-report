@@ -1,3 +1,8 @@
+2018-09-27  Release 2.73.0
+
+  * Feature #516: The detail info table for violations per severity measures added.
+
+
 2018-09-21  Release 2.72.0
 
   * Feature #513, #512, #511: Detail info for detected code maintainability issues (bugs, vulnerabilities and code smells).

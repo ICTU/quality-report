@@ -17,6 +17,7 @@ limitations under the License.
 
 from typing import List
 
+from hqlib import utils
 from hqlib.typing import MetricParameters
 from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
@@ -29,6 +30,18 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
         'Meer dan {low_target} {violation_type} {unit} is rood.'
     template = '{name} heeft {value} {violation_type} {unit}.'
     violation_type = 'Subclass responsibility'
+
+    extra_info_headers = {"violation_type": "Violation type", "number": "Aantal__detail-column-number"}
+
+    def extra_info_rows(self) -> list((object, int)):
+        """ Returns formatted rows of extra info table for code maintainability metrics. """
+        violation_sorts = [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell')]
+        ret = list()
+        for sort in violation_sorts:
+            url, count = \
+                self._metric_source.violations_type_severity(self._metric_source_id, sort[0], self.violation_type)
+            ret.append((utils.format_link_object(url, sort[1]), count))
+        return ret
 
     @classmethod
     def norm_template_default_values(cls):
@@ -54,6 +67,7 @@ class BlockerViolations(Violations):
     violation_type = 'blocker'
     target_value = 0
     low_target_value = 0
+    url_label_text = 'Blocker violations per soort'
 
 
 class CriticalViolations(Violations):
@@ -63,6 +77,7 @@ class CriticalViolations(Violations):
     violation_type = 'critical'
     target_value = 0
     low_target_value = 1
+    url_label_text = 'Critical violations per soort'
 
 
 class MajorViolations(Violations):
@@ -72,6 +87,7 @@ class MajorViolations(Violations):
     violation_type = 'major'
     target_value = 25
     low_target_value = 50
+    url_label_text = 'Major violations per soort'
 
 
 class NoSonar(SonarViolationsMetric, LowerIsBetterMetric):
