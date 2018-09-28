@@ -1,3 +1,8 @@
+2018-09-28  Release 2.73.1
+
+  * Bug #521: detail table of violations not shown any more, when there are no violations.
+
+
 2018-09-27  Release 2.73.0
 
   * Feature #516: The detail info table for violations per severity measures added.

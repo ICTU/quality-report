@@ -51,7 +51,10 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
 
     def value(self):
         method_name = '{0}_violations'.format(self.violation_type)
-        return getattr(self._metric_source, method_name)(self._sonar_id()) if self._metric_source else -1
+        val = getattr(self._metric_source, method_name)(self._sonar_id()) if self._metric_source else -1
+        if val <= 0:
+            self.extra_info_headers = None
+        return val
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access

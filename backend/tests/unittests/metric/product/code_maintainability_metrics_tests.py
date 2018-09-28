@@ -46,6 +46,23 @@ class CodeMaintainabilityMetricTest(unittest.TestCase):
         self.assertEqual('Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.', metric.norm_template)
         self.assertEqual('{name} heeft {value} {unit}.', metric.template)
         self.assertEqual(5, sonar.violations_type_severity.call_count)
+        self.assertEqual({"severity": "Severity", "number": "Aantal__detail-column-number"}, metric.extra_info_headers)
+
+    def test_value_no_metric_source(self):
+        """ Test that the value is equal to -1 when there is no metric source. """
+        sonar = MagicMock()
+        sonar.maintainability_bugs = MagicMock(return_value=99)
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='sonar_id')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        project.metric_sources = MagicMock(return_value=[None])
+        metric = MaintainabilityBugs(subject=subject, project=project)
+
+        result = metric.value()
+
+        self.assertEqual(-1, result)
+        self.assertEqual(None, metric.extra_info_headers)
+        sonar.maintainability_bugs.assert_not_called()
 
 
 class MaintainabilityBugsTest(unittest.TestCase):

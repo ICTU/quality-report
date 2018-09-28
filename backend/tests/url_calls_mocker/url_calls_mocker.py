@@ -382,6 +382,95 @@ class UrlOpenerMock(UrlOpener):
                     examples_metric_sources_path / 'sonar_code_smells.json'
                 ),
 
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=BUG&severities=BLOCKER':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=VULNERABILITY&severities=BLOCKER':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=CODE_SMELL&severities=BLOCKER':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=BUG&severities=CRITICAL':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=VULNERABILITY&severities=CRITICAL':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=CODE_SMELL&severities=CRITICAL':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=BUG&severities=MAJOR':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_major_bugs.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=VULNERABILITY&severities=MAJOR':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_major_vulnerabilities.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=CODE_SMELL&severities=MAJOR':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_major_code_smell.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=BUG&severities=MINOR':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=VULNERABILITY&severities=MINOR':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_minor_vulnerabilities.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=CODE_SMELL&severities=MINOR':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_minor_code_smell.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=BUG&severities=INFO':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=VULNERABILITY&severities=INFO':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_info_vulnerabilities.json'
+                ),
+
+            'https://my.sonarqube.com/api/issues/search?'
+            'componentRoots=nl.comp:my_project&resolved=false&types=CODE_SMELL&severities=INFO':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_info_code_smell.json'
+                ),
             # end Sonar
 
             # begin trello

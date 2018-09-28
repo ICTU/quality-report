@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+# pylint: disable=abstract-method
+
 from hqlib import utils
 from ..metric_source_mixin import SonarDashboardMetric
 from ...domain import LowerIsBetterMetric
@@ -27,6 +29,10 @@ class CodeMaintainabilityMetric(SonarDashboardMetric, LowerIsBetterMetric):
 
     extra_info_headers = {"severity": "Severity", "number": "Aantal__detail-column-number"}
 
+    def _metric_source_number_of_issues(self, product: str) -> int:
+        """ Placeholder for metric source function """
+        raise NotImplementedError
+
     def extra_info_rows(self) -> list((object, int)):
         """ Returns formatted rows of extra info table for code maintainability metrics. """
         severities = ['Blocker', 'Critical', 'Major', 'Minor', 'Info']
@@ -36,6 +42,13 @@ class CodeMaintainabilityMetric(SonarDashboardMetric, LowerIsBetterMetric):
                 self._metric_source.violations_type_severity(self._metric_source_id, self.violation_type, severity)
             ret.append((utils.format_link_object(url, severity), count))
         return ret
+
+    def value(self):
+        """ Retrieves the number of issues detected by sonar. """
+        val = self._metric_source_number_of_issues(self._sonar_id()) if self._metric_source else -1
+        if val <= 0:
+            self.extra_info_headers = None
+        return val
 
 
 class MaintainabilityBugs(CodeMaintainabilityMetric):
@@ -47,9 +60,10 @@ class MaintainabilityBugs(CodeMaintainabilityMetric):
     violation_type = 'BUG'
     url_label_text = 'Maintainability bugs per severity'
 
-    def value(self):
-        """ Retrieves the number of maintainability bugs detected by sonar qube. """
-        return self._metric_source.maintainability_bugs(self._sonar_id()) if self._metric_source else -1
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self._metric_source:
+            self._metric_source_number_of_issues = self._metric_source.maintainability_bugs
 
 
 class Vulnerabilities(CodeMaintainabilityMetric):
@@ -61,9 +75,10 @@ class Vulnerabilities(CodeMaintainabilityMetric):
     violation_type = 'VULNERABILITY'
     url_label_text = 'Vulnerabilities per severity'
 
-    def value(self):
-        """ Retrieves the number of vulnerabilities detected by sonar qube. """
-        return self._metric_source.vulnerabilities(self._sonar_id()) if self._metric_source else -1
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self._metric_source:
+            self._metric_source_number_of_issues = self._metric_source.vulnerabilities
 
 
 class CodeSmells(CodeMaintainabilityMetric):
@@ -75,6 +90,7 @@ class CodeSmells(CodeMaintainabilityMetric):
     violation_type = 'CODE_SMELL'
     url_label_text = 'Code smells per severity'
 
-    def value(self):
-        """ Retrieves the number of code smells detected by sonar qube. """
-        return self._metric_source.code_smells(self._sonar_id()) if self._metric_source else -1
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self._metric_source:
+            self._metric_source_number_of_issues = self._metric_source.code_smells

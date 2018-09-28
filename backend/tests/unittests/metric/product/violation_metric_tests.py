@@ -43,6 +43,14 @@ class ViolationsTestMixin(object):
         """ Test that the value is equal to the number of violations as reported by Sonar. """
         self.assertEqual(self.__nr_violations, self._metric.value())
 
+    def test_value_no_metric_source(self):
+        """ Test that the value is equal to -1 and the extra info headers are None when there is no metric source. """
+        project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
+        project.metric_sources = MagicMock(return_value=[None])
+        self._metric = self.metric_class(subject=self.__subject, project=project)
+        self.assertEqual(-1, self._metric.value())
+        self.assertEqual(None, self._metric.extra_info_headers)
+
     def test_status(self):
         """ Test that the status is red when there are too many violations. """
         self.assertEqual('red', self._metric.status())
@@ -132,7 +140,7 @@ class FalsePositivesTest(unittest.TestCase):
         self._sonar.false_positives.assert_called_once_with('sonar id')
 
     def test_value_no_metric_source(self):
-        """ Test that the value is equal to the number of false positives as reported by Sonar. """
+        """ Test that the value is equal to -1 when there is no metric source. """
         project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
         project.metric_sources = MagicMock(return_value=[None])
         violation_metric = metric.FalsePositives(subject=self.__subject, project=project)
