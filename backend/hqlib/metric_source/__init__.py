@@ -41,6 +41,7 @@ from .jira import Jira
 from .open_vas_scan_report import OpenVASScanReport
 from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
 from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport
+from .owasp_dependency_report.tfs_owasp_dependency_xml_report import TfsOWASPDependencyXMLReport
 from .performance_report.silkperformer import SilkPerformerPerformanceLoadTestReport, \
     SilkPerformerPerformanceEnduranceTestReport, SilkPerformerPerformanceScalabilityTestReport
 from .performance_report.spirit_splunk_csv import SpiritSplunkCSVPerformanceLoadTestReport, \

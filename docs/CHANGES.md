@@ -1,3 +1,8 @@
+2018-10-03  Release 2.74.0
+
+  * Feature #523: implemented new metric source - OWASP report for tfs.
+
+
 2018-09-28  Release 2.73.1
 
   * Bug #521: detail table of violations not shown any more, when there are no violations.

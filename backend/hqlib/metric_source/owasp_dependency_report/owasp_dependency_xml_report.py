@@ -78,6 +78,9 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             root, namespace = self.__report_root(metric_source_id)
         except url_opener.UrlOpener.url_open_exceptions:
             return -1
+        except xml.etree.ElementTree.ParseError as reason:
+            logging.error('Error parsing returned xml: %s.', reason)
+            return -1
 
         dependencies = root.findall(".//{{{ns}}}dependency".format(ns=namespace))
         return len(self.__vulnerable_dependencies(dependencies, priority, namespace))
@@ -124,8 +127,11 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     @functools.lru_cache(maxsize=1024)
     def __report_root(self, report_url: str) -> Tuple[Any, str]:
         """ Return the root node and namespace of the OWASP dependency XML report. """
-        contents = self._url_opener.url_read(report_url)
+        contents = self._get_content(report_url)
         root = xml.etree.cElementTree.fromstring(contents)
         # ElementTree has no API to get the namespace so we extract it from the root tag:
         namespace = root.tag.split('}')[0][1:]
         return root, namespace
+
+    def _get_content(self, report_url) -> str:
+        return self._url_opener.url_read(report_url)

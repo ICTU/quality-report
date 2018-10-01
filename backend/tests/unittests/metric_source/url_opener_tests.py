@@ -16,7 +16,7 @@ limitations under the License.
 
 import logging
 import unittest
-import unittest.mock
+from unittest.mock import MagicMock, patch
 import urllib.request
 import urllib.error
 import io
@@ -28,6 +28,7 @@ from hqlib.metric_source import url_opener
 class UrlOpenerTest(unittest.TestCase):
     """ Unit tests for the URL opener class. """
 
+    # pylint: disable=protected-access
     def setUp(self):
         url_opener.TimeoutTracker.timed_out_netlocs = set()
 
@@ -39,18 +40,41 @@ class UrlOpenerTest(unittest.TestCase):
 
     def test_opener_with_password_mgr(self):
         """ Test that the opener can create a basic auth handler with password manager. """
-        urlopener = unittest.mock.MagicMock()
-        urlopener.open = unittest.mock.MagicMock(return_value='url contents')
-        urllib.request.build_opener = unittest.mock.MagicMock(return_value=urlopener)
+        urlopener = MagicMock()
+        urlopener.open = MagicMock(return_value='url contents')
+        urllib.request.build_opener = MagicMock(return_value=urlopener)
         opener = url_opener.UrlOpener('http://uri', username='user', password='pass')
         self.assertEqual('url contents', opener.url_open('url'))
 
-    def test_basic_auth_handler(self):
+    @patch.object(urllib.request.Request, 'add_header')
+    def test_basic_auth_handler(self, mock_add_header):
         """ Test that the opener can create a basic auth handler.  """
         urllib.request._opener = unittest.mock.Mock()
         urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
         opener = url_opener.UrlOpener(username='user', password='pass')
         self.assertEqual('url contents', opener.url_open('http://bla'))
+        urllib.request._opener.open.assert_called_once()
+        mock_add_header.assert_called_once_with('Authorization', 'Basic dXNlcjpwYXNz')
+
+    @patch.object(urllib.request.Request, 'add_header')
+    def test_basic_auth_handler_empty_user(self, mock_add_header):
+        """ Test that the opener can create a basic auth handler, when user name is empty.  """
+        urllib.request._opener = unittest.mock.Mock()
+        urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
+        opener = url_opener.UrlOpener(username='', password='pass')
+        self.assertEqual('url contents', opener.url_open('http://bla'))
+        urllib.request._opener.open.assert_called_once()
+        mock_add_header.assert_called_once_with('Authorization', 'Basic OnBhc3M=')
+
+    @patch.object(urllib.request.Request, 'add_header')
+    def test_basic_auth_handler_empty_credentials(self, mock_add_header):
+        """ Test that the opener does not create a basic auth handler, when credentials are empty.  """
+        urllib.request._opener = unittest.mock.Mock()
+        urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
+        opener = url_opener.UrlOpener(username='', password='')
+        self.assertEqual('url contents', opener.url_open('http://bla'))
+        urllib.request._opener.open.assert_called_once()
+        mock_add_header.assert_not_called()
 
     def test_opener_without_auth(self):
         """ Test that the opener can open urls without authentication. """
@@ -60,7 +84,7 @@ class UrlOpenerTest(unittest.TestCase):
 
     def test_exception_while_opening(self):
         """ Test an exception during opening. """
-        logging.warning = unittest.mock.MagicMock()
+        logging.warning = MagicMock()
         opener = url_opener.UrlOpener()
         opener._UrlOpener__opener = unittest.mock.Mock(side_effect=urllib.error.HTTPError(None, None, None, None, None))
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla')
@@ -68,8 +92,8 @@ class UrlOpenerTest(unittest.TestCase):
 
     def test_exception_while_opening_without_logging(self):
         """ Test an exception during opening without logging. """
-        logging.error = unittest.mock.MagicMock()
-        logging.warning = unittest.mock.MagicMock()
+        logging.error = MagicMock()
+        logging.warning = MagicMock()
         opener = url_opener.UrlOpener()
         opener._UrlOpener__opener = unittest.mock.Mock(side_effect=urllib.error.HTTPError(None, None, None, None, None))
         self.assertRaises(urllib.error.HTTPError, opener.url_open, 'http://bla', log_error=False)
