@@ -31,16 +31,19 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
     template = '{name} heeft {value} {violation_type} {unit}.'
     violation_type = 'Subclass responsibility'
 
-    extra_info_headers = {"violation_type": "Violation type", "number": "Aantal__detail-column-number"}
+    extra_info_headers = {"violation_type": "Violation type",
+                          "number": "Aantal__detail-column-number",
+                          "debt": "Geschatte oplostijd__detail-column-number"}
 
-    def extra_info_rows(self) -> list((object, int)):
+    def extra_info_rows(self) -> list((object, int, str)):
         """ Returns formatted rows of extra info table for code maintainability metrics. """
         violation_sorts = [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell')]
         ret = list()
         for sort in violation_sorts:
-            url, count = \
+            url, count, effort = \
                 self._metric_source.violations_type_severity(self._metric_source_id, sort[0], self.violation_type)
-            ret.append((utils.format_link_object(url, sort[1]), count))
+
+            ret.append((utils.format_link_object(url, sort[1]), count, effort))
         return ret
 
     @classmethod

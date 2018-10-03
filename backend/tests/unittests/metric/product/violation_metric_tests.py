@@ -80,23 +80,25 @@ class ViolationsTestMixin(object):
     def test_extra_info_headers(self):
         """ Test if the detail table headers are as defined. """
         self.assertEqual(
-            {"violation_type": "Violation type", "number": "Aantal__detail-column-number"},
+            {"violation_type": "Violation type",
+             "number": "Aantal__detail-column-number",
+             "debt": "Geschatte oplostijd__detail-column-number"},
             self._metric.extra_info_headers
         )
 
     def test_extra_info_rows(self):
         """ Unit tests for the CodeMaintainabilityMetric metric class. """
 
-        self.__sonar.violations_type_severity = MagicMock(
-            side_effect=[('url_bugs', 1), ('url_vulnerabilities', 3), ('url_code_smells', 5)]
-        )
+        self.__sonar.violations_type_severity = MagicMock(side_effect=[
+            ('url_bugs', 1, '5min'), ('url_vulnerabilities', 3, '1h 2min'), ('url_code_smells', 5, '32min')
+        ])
 
         result = self._metric.extra_info_rows()
 
         self.assertEqual([
-            ({'href': 'url_bugs', 'text': 'Bugs'}, 1),
-            ({'href': 'url_vulnerabilities', 'text': 'Vulnerabilities'}, 3),
-            ({'href': 'url_code_smells', 'text': 'Code Smell'}, 5)
+            ({'href': 'url_bugs', 'text': 'Bugs'}, 1, '5min'),
+            ({'href': 'url_vulnerabilities', 'text': 'Vulnerabilities'}, 3, '1h 2min'),
+            ({'href': 'url_code_smells', 'text': 'Code Smell'}, 5, '32min')
         ], result)
         self.assertEqual(3, self.__sonar.violations_type_severity.call_count)
 

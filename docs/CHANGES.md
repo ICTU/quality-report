@@ -1,3 +1,8 @@
+2018-10-08  Release 2.75.0
+
+  * Feature #510: Estimated technical debt column added to violations detail table.
+
+
 2018-10-04  Release 2.74.1
 
   * Bug #526: faullt due to different paths in owasp zip solved.

@@ -27,7 +27,8 @@ class CodeMaintainabilityMetricTest(unittest.TestCase):
         """ Test if function correctly calls metric source function and formats the result. """
         sonar = MagicMock()
         sonar.violations_type_severity = MagicMock(
-            side_effect=[('url_blocker', 1), ('url_critical', 3), ('url_major', 5), ('url_minor', 7), ('url_info', 11)]
+            side_effect=[('url_blocker', 1, '5min'), ('url_critical', 3, '10min'), ('url_major', 5, '15min'),
+                         ('url_minor', 7, '25min'), ('url_info', 11, '35min')]
         )
         subject = MagicMock()
         subject.metric_source_id = MagicMock(return_value='sonar_id')
@@ -37,16 +38,19 @@ class CodeMaintainabilityMetricTest(unittest.TestCase):
         result = metric.extra_info_rows()
 
         self.assertEqual([
-            ({'href': 'url_blocker', 'text': 'Blocker'}, 1),
-            ({'href': 'url_critical', 'text': 'Critical'}, 3),
-            ({'href': 'url_major', 'text': 'Major'}, 5),
-            ({'href': 'url_minor', 'text': 'Minor'}, 7),
-            ({'href': 'url_info', 'text': 'Info'}, 11),
+            ({'href': 'url_blocker', 'text': 'Blocker'}, 1, '5min'),
+            ({'href': 'url_critical', 'text': 'Critical'}, 3, '10min'),
+            ({'href': 'url_major', 'text': 'Major'}, 5, '15min'),
+            ({'href': 'url_minor', 'text': 'Minor'}, 7, '25min'),
+            ({'href': 'url_info', 'text': 'Info'}, 11, '35min'),
         ], result)
         self.assertEqual('Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood.', metric.norm_template)
         self.assertEqual('{name} heeft {value} {unit}.', metric.template)
         self.assertEqual(5, sonar.violations_type_severity.call_count)
-        self.assertEqual({"severity": "Severity", "number": "Aantal__detail-column-number"}, metric.extra_info_headers)
+        self.assertEqual(
+            {"severity": "Severity", "number": "Aantal__detail-column-number",
+             "debt": "Geschatte oplostijd__detail-column-number"},
+            metric.extra_info_headers)
 
     def test_value_no_metric_source(self):
         """ Test that the value is equal to -1 when there is no metric source. """

@@ -165,6 +165,13 @@ class Sonar6Test(Sonar6TestCase):
         result = self._sonar.maintainability_bugs('product')
         self.assertEqual(3, result)
 
+    def test_maintainability_bugs_http_error(self, mock_url_read):
+        """ Test that the retrieval of maintainability bugs. """
+        mock_url_read.side_effect =\
+            ["5.6", '[{"id":305,"k":"product"}]', urllib.error.HTTPError(None, None, None, None, None)]
+        result = self._sonar.maintainability_bugs('product')
+        self.assertEqual(0, result)
+
     def test_vulnerabilities(self, mock_url_read):
         """ Test that the retrieval of vulnerabilities. """
         mock_url_read.side_effect = ["5.6", '[{"id":305,"k":"product"}]', '{"total": "22", "issues": []}']
@@ -228,13 +235,13 @@ class Sonar6Test(Sonar6TestCase):
         self.assertFalse(result)
 
     def test_is_component_absent_http_error(self, mock_url_read):
-        """ Test that it returns true if the component is absent. """
+        """ Test that it returns true if http error happens. """
         mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
         self.assertTrue(self._sonar.is_component_absent('product'))
 
     @patch.object(logging, 'info')
     def test_is_component_absent(self, mock_info, mock_url_read):
-        """ Test that it returns true if the component is absent. """
+        """ Test that it returns false if the component is found. """
         mock_url_read.return_value = '{"component": "x"}'
         self.assertFalse(self._sonar.is_component_absent('product'))
         mock_info.assert_called_once_with("Component '%s' found. No branch is defined.", "product")
@@ -242,6 +249,11 @@ class Sonar6Test(Sonar6TestCase):
     def test_is_component_absent_key_error(self, mock_url_read):
         """ Test that it returns true if the component is absent. """
         mock_url_read.return_value = '{"xomponent": "x"}'
+        self.assertTrue(self._sonar.is_component_absent('product'))
+
+    def test_is_component_absent_empty(self, mock_url_read):
+        """ Test that it returns true if the component is absent. """
+        mock_url_read.return_value = '{"component": ""}'
         self.assertTrue(self._sonar.is_component_absent('product'))
 
     def test_version(self, mock_url_read):
@@ -326,6 +338,35 @@ class Sonar6Test(Sonar6TestCase):
         mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
                                      '{"component": {"measures": [{"metric": "ncloc", "value": "8554"}]}}']
         self.assertEqual(8554, self._sonar.ncloc('product'))
+
+    def test_ncloc_older_api(self, mock_url_read):
+        """ Test that the number of non-commented lines of code equals the ncloc returned by the dashboard. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     urllib.error.HTTPError(None, None, None, None, None),
+                                     '[{"msr": [{"val": "79"}]}]']
+        self.assertEqual(79, self._sonar.ncloc('product'))
+
+    @patch.object(logging, 'warning')
+    def test_ncloc_older_api_incorrect(self, mock_warning, mock_url_read):
+        """ Test that the number of non-commented lines of code retruns -1 when json does is not correct. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     urllib.error.HTTPError(None, None, None, None, None),
+                                     '[{"incorrect": 0}]']
+        self.assertEqual(-1, self._sonar.ncloc('product'))
+        self.assertEqual(mock_warning.call_args[0][0], "Can't get %s value for %s from %s (retrieved from %s): %s")
+        self.assertEqual(mock_warning.call_args[0][1], 'ncloc')
+        self.assertEqual(mock_warning.call_args[0][2], 'product')
+        self.assertEqual(mock_warning.call_args[0][3], [{"incorrect": 0}])
+        self.assertEqual(mock_warning.call_args[0][4],
+                         'http://sonar/api/resources?resource=product&format=json&metrics=ncloc')
+        self.assertIsInstance(mock_warning.call_args[0][5], KeyError)
+
+    def test_ncloc_older_api_http_error(self, mock_url_read):
+        """ Test that the number of non-commented lines of code returns -1 on http errors. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]',
+                                     urllib.error.HTTPError(None, None, None, None, None),
+                                     urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(-1, self._sonar.ncloc('product'))
 
     def test_lines(self, mock_url_read):
         """ Test that the number of lines of code equals the number of lines returned by the dashboard. """
@@ -429,13 +470,70 @@ class Sonar6Test(Sonar6TestCase):
         self.assertEqual(datetime.datetime.min, self._sonar.datetime('product'))
 
     def test_violations_type_severity(self, mock_url_read):
-        """ Test that the number and link are returned correctly. """
-        mock_url_read.side_effect = ["6.4", '{"paging": {"total": 1}}', '{"total": 5}']
+        """ Test that the number of issues, link and estimated fix time are returned correctly. """
+        mock_url_read.side_effect = [
+            "6.4", '{"total": 5, "paging": {"total": 5}}',
+            '{"total": 2, "paging": {"total": 2, "pageSize": 100},'
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11min"}]}',
+            urllib.error.HTTPError(None, None, None, None, None)]
 
         result = self._sonar.violations_type_severity('product', 'bug', 'very_severe')
 
         self.assertEqual(
-            ('http://sonar/project/issues?id=product&resolved=false&types=BUG&severities=VERY_SEVERE', 5), result
+            ('http://sonar/project/issues?id=product&resolved=false&types=BUG&severities=VERY_SEVERE', 2, "-"),
+            result
+        )
+
+    def test_violations_type_severity_no_project(self, mock_url_read):
+        """ Test that the number of issues, link and estimated fix time returns -1 when no project. """
+        mock_url_read.side_effect = [
+            "6.4", '{"total": 5, "paging": {"total": 5}}',
+            '{"total": 2, "paging": {"total": 2, "pageSize": 100},'
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11min"}]}',
+            '{"total": 2, "paging": {"total": 2, "pageSize": 100}, '
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11min"}]}']
+
+        result = self._sonar.violations_type_severity('product', 'bug', 'very_severe')
+
+        self.assertEqual(
+            ('http://sonar/project/issues?id=product&resolved=false&types=BUG&severities=VERY_SEVERE', 2, "1h 33min"),
+            result
+        )
+
+    @patch.object(logging, 'warning')
+    def test_violations_type_severity_bad_format(self, mock_warning, mock_url_read):
+        """ Test that the number of issues, link and estimated fix time are returned correctly. """
+        mock_url_read.side_effect = [
+            "6.4", '{"total": 5, "paging": {"total": 5}}',
+            '{"total": 2, "paging": {"total": 2, "pageSize": 100},'
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11eon"}]}',
+            '{"total": 2, "paging": {"total": 2, "pageSize": 100}, '
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11eon"}]}']
+
+        result = self._sonar.violations_type_severity('product', 'bug', 'very_severe')
+
+        self.assertEqual(
+            ('http://sonar/project/issues?id=product&resolved=false&types=BUG&severities=VERY_SEVERE', 2, "1h 22min"),
+            result
+        )
+        mock_warning.assert_called_once_with('Invalid format of field effort: %s', '11eon')
+
+    def test_violations_type_severity_many_pages(self, mock_url_read):
+        """ Test that the number of issues, link and estimated fix time are returned correctly, if many pages. """
+        mock_url_read.side_effect = [
+            "6.4", '{"total": 5, "paging": {"total": 5}}',
+            '{"total": 4, "paging": {"total": 4, "pageSize": 2},'
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11min"}]}',
+            '{"total": 4, "paging": {"total": 4, "pageSize": 2},'
+            '"issues": [{"effort": "1h 22min"}, {"effort": "11min"}]}',
+            '{"total": 4, "paging": {"total": 4, "pageIndex": 2, "pageSize": 2},'
+            '"issues": [{"effort": "30min"}, {"effort": "1min"}]}']
+
+        result = self._sonar.violations_type_severity('product', 'bug', 'very_severe')
+
+        self.assertEqual(
+            ('http://sonar/project/issues?id=product&resolved=false&types=BUG&severities=VERY_SEVERE', 4, "2h 04min"),
+            result
         )
 
 

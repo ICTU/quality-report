@@ -157,7 +157,8 @@ class Sonar6(Sonar):
                                        self._issues_by_type_api_url.format(component=product, type='BUG'), 0)
 
     @extract_branch_decorator
-    def violations_type_severity(self, product: str, branch: str, violation_type: str, severity: str) -> (str, int):
+    def violations_type_severity(self, product: str, branch: str, violation_type: str, severity: str)\
+            -> (str, int, str):
         """ Return the number of violations of a given type and severity, detected by sonar, for the product. """
         return (
             self._violations_type_severity_url.format(
@@ -165,7 +166,12 @@ class Sonar6(Sonar):
             self.__number_of_issues(
                 product, branch,
                 self._issues_by_type_and_severity_api_url.format(
-                    component=product, type=violation_type.upper(), severities=severity.upper()), 0))
+                    component=product, type=violation_type.upper(), severities=severity.upper()), 0),
+            self.__time_to_fix(
+                branch,
+                self._issues_by_type_and_severity_api_url.format(
+                    component=product, type=violation_type.upper(), severities=severity.upper()), '-')
+        )
 
     @extract_branch_decorator
     def vulnerabilities(self, product: str, branch: str) -> int:
@@ -614,6 +620,44 @@ class Sonar6(Sonar):
         except self._url_opener.url_open_exceptions:
             return default
         return int(issues_json['total'])
+
+    def __time_to_fix(self, branch: str, url: str, default: str = '-') -> str:
+        """ Return the number of issues retrieved by given url. """
+        try:
+            total_minutes = 0
+            issues = self.__get_all_issues(url, branch)
+            for issue in issues:
+                total_minutes += self.__add_effort(issue['effort']) if 'effort' in issue else 0
+            return self.__format_time_to_fix(total_minutes)
+        except self._url_opener.url_open_exceptions:
+            pass
+        return default
+
+    def __get_all_issues(self, url: str, branch: str) -> List:
+        url += '&pageSize=-1&pageIndex={page_index}'
+        page_index = 1
+        result_list = []
+        while True:
+            current_json = self._get_json(self._add_branch_param_to_url(url.format(page_index=page_index), branch))
+            result_list.extend(current_json['issues'])
+            if page_index * current_json['paging']['pageSize'] >= current_json['paging']['total']:
+                break
+            page_index += 1
+        return result_list
+
+    @staticmethod
+    def __format_time_to_fix(total_minutes: int) -> str:
+        hours, minutes = divmod(total_minutes, 60)
+        return '{0}h {1:02}min'.format(hours, minutes) if hours > 0 else '{0:2}min'.format(minutes)
+
+    @staticmethod
+    def __add_effort(effort: str) -> int:
+        try:
+            return int(effort[:effort.find('h')] if effort.find('h') > 0 else 0) * 60 +\
+                int(effort[effort.find('h') + 1:effort.find('min')])
+        except ValueError:
+            logging.warning('Invalid format of field effort: %s', effort)
+        return 0
 
 
 class Sonar7(Sonar6):

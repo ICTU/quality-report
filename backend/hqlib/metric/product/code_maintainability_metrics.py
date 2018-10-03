@@ -27,7 +27,9 @@ class CodeMaintainabilityMetric(SonarDashboardMetric, LowerIsBetterMetric):
     template = '{name} heeft {value} {unit}.'
     violation_type = 'Subclass responsibility'
 
-    extra_info_headers = {"severity": "Severity", "number": "Aantal__detail-column-number"}
+    extra_info_headers = {"severity": "Severity",
+                          "number": "Aantal__detail-column-number",
+                          "debt": "Geschatte oplostijd__detail-column-number"}
 
     def _metric_source_number_of_issues(self, product: str) -> int:
         """ Placeholder for metric source function """
@@ -38,9 +40,9 @@ class CodeMaintainabilityMetric(SonarDashboardMetric, LowerIsBetterMetric):
         severities = ['Blocker', 'Critical', 'Major', 'Minor', 'Info']
         ret = list()
         for severity in severities:
-            url, count = \
+            url, count, effort = \
                 self._metric_source.violations_type_severity(self._metric_source_id, self.violation_type, severity)
-            ret.append((utils.format_link_object(url, severity), count))
+            ret.append((utils.format_link_object(url, severity), count, effort))
         return ret
 
     def value(self):
