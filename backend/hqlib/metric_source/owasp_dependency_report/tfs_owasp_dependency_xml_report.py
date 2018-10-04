@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
 import json
 import zipfile
 import logging
@@ -82,7 +81,7 @@ class TfsOWASPDependencyXMLReport(OWASPDependencyXMLReport):
         try:
             response = self._url_opener.url_open(report_url)
             zipped_content = zipfile.ZipFile(BytesIO(response.read()))
-            return zipped_content.read(os.path.join('OWASP', 'dependency-check-report.xml'))
+            return zipped_content.read('OWASP/dependency-check-report.xml')
         except urllib.error.HTTPError:
             logging.error("Error getting content of the OWASP report from %s.", report_url)
         except AttributeError as reason:

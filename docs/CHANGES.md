@@ -1,3 +1,8 @@
+2018-10-04  Release 2.74.1
+
+  * Bug #526: faullt due to different paths in owasp zip solved.
+
+
 2018-10-03  Release 2.74.0
 
   * Feature #523: implemented new metric source - OWASP report for tfs.
