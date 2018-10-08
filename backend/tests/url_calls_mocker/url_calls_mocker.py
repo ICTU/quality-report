@@ -517,6 +517,8 @@ class UrlOpenerMock(UrlOpener):
         super().__init__()
 
     def url_read(self, url: str, *args, encoding: str = 'utf-8', **kwargs) -> str:  # pylint: disable=unused-argument
+        if '&pageSize=-1&pageIndex=1' in url:
+            url = url.replace('&pageSize=-1&pageIndex=1', '')
         if url in self._map.keys():
             return self._map[url]
         logging.info("URL %s is still not mocked for example report!", url)

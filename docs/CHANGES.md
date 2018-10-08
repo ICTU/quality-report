@@ -1,3 +1,8 @@
+2018-10-09  Release 2.75.1
+
+  * Bug #529: Extra slash from checkmarx url removed.
+
+
 2018-10-08  Release 2.75.0
 
   * Feature #510: Estimated technical debt column added to violations detail table.

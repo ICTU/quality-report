@@ -32,9 +32,8 @@ class Checkmarx(domain.MetricSource):
     """ Class representing the Checkmarx API. """
     metric_source_name = 'Checkmarx'
 
-    def __init__(self, url: str, username: str, password: str, url_open: url_opener.UrlOpener = None,
-                 *args, **kwargs) -> None:
-        self._url_open = url_open or url_opener.UrlOpener("", username, password)
+    def __init__(self, url: str, username: str, password: str, *args, **kwargs) -> None:
+        self._url_open = url_opener.UrlOpener(username=username, password=password)
         super().__init__(url=url, *args, **kwargs)
 
     def metric_source_urls(self, *report_urls: str) -> List[str]:
@@ -100,8 +99,9 @@ class Checkmarx(domain.MetricSource):
     @functools.lru_cache(maxsize=1024)
     def __fetch_last_scan(self, project_name: str) -> Dict[str, int]:
         """ Create the api URL and fetch the report from it. """
-        api_url = "{}/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27{}%27".format(
-            self.url(), urllib.parse.quote(project_name))
+        api_url = urllib.parse.urljoin(
+            self.url(), "/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27{}%27"
+            .format(urllib.parse.quote(project_name)))
         return self.__get_json(api_url)["value"][0]["LastScan"]
 
     def __get_json(self, api_url: str) -> Dict[str, List[Dict[str, Dict[str, int]]]]:
