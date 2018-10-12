@@ -75,21 +75,30 @@ class UrlOpener(object):
     url_open_exceptions = (urllib.error.HTTPError, urllib.error.URLError, socket.error, socket.gaierror,
                            http.client.BadStatusLine, TimeoutError)
 
-    def __init__(self, uri: str = None, username: str = None, password: str = None) -> None:
+    def __init__(self, uri: str = None,
+                 username: str = None, password: str = None, authorization_token: str = None) -> None:
         self.__username = username
         self.__password = password
+        self.__basic_auth_credentials = \
+            base64.b64encode(bytes(':'.join([username, password]), 'utf-8')).decode('ascii')\
+            if username or password else ''
+        self.__bearer_token = authorization_token
         self.__opener = self.__create_url_opener(uri)
         self.__time_out_tracker = TimeoutTracker()
 
-    def username(self) -> str:
-        """ Return the username, if any. """
-        return self.__username
+    def __url_open_with_basic_auth(self, url: str, data: object = None):
+        """ Open the url with basic authentication. """
+        request = urllib.request.Request(url)
+        request.add_header('Authorization', 'Basic ' + self.__basic_auth_credentials)
+        return urllib.request.urlopen(request, data)
 
-    def password(self) -> str:
-        """ Return the password, if any. """
-        return self.__password
+    def __url_open_with_token_auth(self, url: str, data: object = None):
+        """ Open the url with bearer token authentication. """
+        request = urllib.request.Request(url)
+        request.add_header('Authorization', 'Bearer ' + self.__bearer_token)
+        return urllib.request.urlopen(request, data)
 
-    def __create_url_opener(self, uri: str) -> Callable[[str], IO]:
+    def __create_url_opener(self, uri: str) -> Callable[[str, object], IO]:
         """ Return a url opener method. If credentials are supplied, create an opener with authentication handler. """
         if uri and self.__username:
             password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
@@ -97,23 +106,18 @@ class UrlOpener(object):
             auth_handler = urllib.request.HTTPBasicAuthHandler(cast(urllib.request.HTTPPasswordMgr, password_manager))
             return urllib.request.build_opener(auth_handler).open
         elif (self.__username or self.__password):
-            credentials = base64.b64encode(bytes(':'.join([self.__username, self.__password]), 'utf-8')).decode('ascii')
+            return self.__url_open_with_basic_auth
+        elif self.__bearer_token:
+            return self.__url_open_with_token_auth
 
-            def url_open_with_basic_auth(url: str):
-                """ Open the url with basic authentication. """
-                request = urllib.request.Request(url)
-                request.add_header('Authorization', 'Basic ' + credentials)
-                return urllib.request.urlopen(request)
-
-            return url_open_with_basic_auth
         return urllib.request.urlopen
 
-    def url_open(self, url: str, log_error: bool = True) -> IO:
+    def url_open(self, url: str, log_error: bool = True, post_body: object = None) -> IO:
         """ Return an opened url, using the opener created earlier. """
         self.__time_out_tracker.raise_timeout_if_url_timed_out_before(url)
         try:
             with Timeout(15):
-                return self.__opener(url)
+                return self.__opener(url, post_body)
         except self.url_open_exceptions as reason:
             if "Operation timed out after" in str(reason):
                 self.__time_out_tracker.register_url(url)

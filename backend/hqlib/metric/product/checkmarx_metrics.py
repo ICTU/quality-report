@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-from .alerts_metrics import AlertsMetric
+from hqlib import utils
 from ... import metric_source
+from .alerts_metrics import AlertsMetric
 
 
 class CheckmarxAlertsMetric(AlertsMetric):
@@ -26,6 +26,15 @@ class CheckmarxAlertsMetric(AlertsMetric):
     norm_template = 'Het product heeft geen {risk_level} risico Checkmarx {unit}. ' \
                     'Meer dan {low_target} is rood.'
     metric_source_class = metric_source.Checkmarx
+    extra_info_headers = \
+        {"title": "Title", "group": "Groep", "number": "Aantal gevonden__detail-column-number", "state": "Status"}
+
+    def extra_info_rows(self) -> list((object, str, int, str)):
+        """ Returns formatted rows of extra info table for checkmarx. """
+        self._metric_source.obtain_issues(self._get_metric_source_ids(), self.risk_level_key.title())
+        return [(utils.format_link_object(issue.display_url, issue.title), issue.group, issue.count, issue.status)
+                for issue
+                in self._metric_source.issues()]
 
     def _nr_alerts(self):
         """ Return the number of warnings. """
@@ -37,6 +46,7 @@ class HighRiskCheckmarxAlertsMetric(CheckmarxAlertsMetric):
     """ Metric for measuring the number of high risk Checkmarx alerts. """
 
     name = 'Hoeveelheid Checkmarx waarschuwingen met hoog risiconiveau'
+    url_label_text = "Waarschuwingen met hoog risiconiveau"
     risk_level = 'hoog'
     risk_level_key = 'high'
     low_target_value = 3
@@ -46,6 +56,7 @@ class MediumRiskCheckmarxAlertsMetric(CheckmarxAlertsMetric):
     """ Metric for measuring the number of medium risk Checkmarx alerts. """
 
     name = 'Hoeveelheid Checkmarx waarschuwingen met medium risiconiveau'
+    url_label_text = "Waarschuwingen met medium risiconiveau"
     risk_level = 'medium'
     risk_level_key = 'medium'
     low_target_value = 10

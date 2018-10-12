@@ -32,18 +32,12 @@ class UrlOpenerTest(unittest.TestCase):
     def setUp(self):
         url_opener.TimeoutTracker.timed_out_netlocs = set()
 
-    def test_username_password(self):
-        """ Test that the username and password can be set. """
-        opener = url_opener.UrlOpener(username='user', password='pass')
-        self.assertEqual('user', opener.username())
-        self.assertEqual('pass', opener.password())
-
     def test_opener_with_password_mgr(self):
         """ Test that the opener can create a basic auth handler with password manager. """
         urlopener = MagicMock()
         urlopener.open = MagicMock(return_value='url contents')
         urllib.request.build_opener = MagicMock(return_value=urlopener)
-        opener = url_opener.UrlOpener('http://uri', username='user', password='pass')
+        opener = url_opener.UrlOpener('http://uri', username='user', password='pass')  # nosec
         self.assertEqual('url contents', opener.url_open('url'))
 
     @patch.object(urllib.request.Request, 'add_header')
@@ -51,17 +45,31 @@ class UrlOpenerTest(unittest.TestCase):
         """ Test that the opener can create a basic auth handler.  """
         urllib.request._opener = unittest.mock.Mock()
         urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
-        opener = url_opener.UrlOpener(username='user', password='pass')
+        opener = url_opener.UrlOpener(username='user', password='pass')  # nosec
+
         self.assertEqual('url contents', opener.url_open('http://bla'))
         urllib.request._opener.open.assert_called_once()
+        self.assertEqual('GET', urllib.request._opener.open.call_args[0][0].get_method())
         mock_add_header.assert_called_once_with('Authorization', 'Basic dXNlcjpwYXNz')
+
+    @patch.object(urllib.request.Request, 'add_header')
+    def test_token_bearer_auth_handler(self, mock_add_header):
+        """ Test that the opener can create a token bearer auth handler.  """
+        urllib.request._opener = unittest.mock.Mock()
+        urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
+        opener = url_opener.UrlOpener(authorization_token='auth.token')
+
+        self.assertEqual('url contents', opener.url_open('http://bla'))
+        urllib.request._opener.open.assert_called_once()
+        self.assertEqual('GET', urllib.request._opener.open.call_args[0][0].get_method())
+        mock_add_header.assert_called_once_with('Authorization', 'Bearer auth.token')
 
     @patch.object(urllib.request.Request, 'add_header')
     def test_basic_auth_handler_empty_user(self, mock_add_header):
         """ Test that the opener can create a basic auth handler, when user name is empty.  """
         urllib.request._opener = unittest.mock.Mock()
         urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
-        opener = url_opener.UrlOpener(username='', password='pass')
+        opener = url_opener.UrlOpener(username='', password='pass')  # nosec
         self.assertEqual('url contents', opener.url_open('http://bla'))
         urllib.request._opener.open.assert_called_once()
         mock_add_header.assert_called_once_with('Authorization', 'Basic OnBhc3M=')
@@ -71,7 +79,7 @@ class UrlOpenerTest(unittest.TestCase):
         """ Test that the opener does not create a basic auth handler, when credentials are empty.  """
         urllib.request._opener = unittest.mock.Mock()
         urllib.request._opener.open = unittest.mock.Mock(return_value='url contents')
-        opener = url_opener.UrlOpener(username='', password='')
+        opener = url_opener.UrlOpener(username='', password='')  # nosec
         self.assertEqual('url contents', opener.url_open('http://bla'))
         urllib.request._opener.open.assert_called_once()
         mock_add_header.assert_not_called()

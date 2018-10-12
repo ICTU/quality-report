@@ -14,25 +14,135 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import time
 import ssl
 import logging
 import datetime
+import xml.etree.cElementTree
 import urllib.error
+from typing import List
 import unittest
 from unittest.mock import patch, call
 
 from hqlib.metric_source import Checkmarx, url_opener
 
 
-LAST_SCAN = '{"value": [{"LastScan": {"High": 0, "Medium": 1, "ScanCompletedOn": "2017-09-20T00:43:35.73+01:00"}}]}'
+LAST_SCAN = '{"value": [{"LastScan": ' \
+            '{"Id": 1237654, "High": 0, "Medium": 1, "ScanCompletedOn": "2017-09-20T00:43:35.73+01:00"}}]}'
+
+SAST_REPORT = '''<?xml version="1.0" encoding="utf-8"?>
+<CxXMLResults>
+  <Query id="789" name="Reflected_XSS" group="JScript_Vulnerabilities" Severity="{severity}" QueryVersionCode="842956">
+    <Result Status="Recurrent" FalsePositive="{false_positive}" >
+    </Result>
+  </Query>
+</CxXMLResults>
+'''
+
+
+class CheckmarxIssueTest(unittest.TestCase):
+    """ Unit tests for Issue class. """
+
+    def test_issue(self):
+        """ Test if issue is created correctly. """
+        issue = Checkmarx.Issue('a_group', 'the_name', 'http://url', 3, 'New')
+
+        self.assertEqual('a group', issue.group)
+        self.assertEqual('the name', issue.title)
+        self.assertEqual('http://url', issue.display_url)
+        self.assertEqual(3, issue.count)
+        self.assertEqual('New', issue.status)
+
+
+class CheckmarxConstructorTest(unittest.TestCase):
+    """ Unit tests for constructor of Checkmarx class. """
+
+    # pylint: disable=too-many-public-methods
+
+    @patch.object(logging, 'error')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_checkmarx_init(self, mock_url_read, mock_error):
+        """ Test that initialization of checkmarx goes correctly. """
+        mock_url_read.return_value = '{"access_token": "abc123"}'
+        marx = Checkmarx(url='http://url', username='un', password='pwd')  # nosec
+
+        self.assertIsNotNone(marx)
+        mock_url_read.assert_called_once_with(
+            'http://url/cxrestapi/auth/identity/connect/token',
+            post_body=b'username=un&password=pwd&scope=sast_rest_api&grant_type=password&'
+                      b'client_id=resource_owner_client&client_secret=014DF517-39D1-4453-B7B3-9930C563627C')
+        mock_error.assert_not_called()
+
+    @patch('ssl._create_unverified_context')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_checkmarx_init_no_ssl(self, mock_url_read, mock_create_unverified_context):
+        """ Test that initialization of checkmarx goes correctly without ssl. """
+        # pylint: disable=protected-access
+        delattr(ssl, '_create_unverified_context')
+        mock_url_read.return_value = '{"access_token": "abc123"}'
+        marx = Checkmarx(url='http://url', username='un', password='pwd')  # nosec
+
+        self.assertIsNotNone(marx)
+        self.assertFalse(hasattr(ssl, '_create_unverified_context'))
+        self.assertTrue(hasattr(ssl, '_create_default_https_context'))
+        mock_create_unverified_context.assert_not_called()
+
+    @patch.object(logging, 'error')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_checkmarx_init_http_error(self, mock_url_read, mock_error):
+        """ Test initialization of checkmarx when http error occures. """
+        mock_url_read.side_effect = urllib.error.HTTPError('raise', None, None, None, None)
+        marx = Checkmarx(url='http://url', username='un', password='pwd')  # nosec
+
+        self.assertIsNotNone(marx)
+        mock_url_read.assert_called_once_with(
+            'http://url/cxrestapi/auth/identity/connect/token',
+            post_body=b'username=un&password=pwd&scope=sast_rest_api&grant_type=password&'
+                      b'client_id=resource_owner_client&client_secret=014DF517-39D1-4453-B7B3-9930C563627C')
+        mock_error.assert_called_once_with("HTTP error during the retrieving of access token!")
+
+    @patch.object(logging, 'error')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_checkmarx_init_invalid_jon_error(self, mock_url_read, mock_error):
+        """ Test initialization of checkmarx with invalid json response. """
+        mock_url_read.return_value = 'non-json'
+        marx = Checkmarx(url='http://url', username='un', password='pwd')  # nosec
+
+        self.assertIsNotNone(marx)
+        mock_url_read.assert_called_once_with(
+            'http://url/cxrestapi/auth/identity/connect/token',
+            post_body=b'username=un&password=pwd&scope=sast_rest_api&grant_type=password&'
+                      b'client_id=resource_owner_client&client_secret=014DF517-39D1-4453-B7B3-9930C563627C')
+        self.assertEqual(mock_error.call_args[0][0], "Couldn't load access token from json: %s.")
+        self.assertIsInstance(mock_error.call_args[0][1], ValueError)
+
+    @patch.object(logging, 'error')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_checkmarx_init_key_missing_error(self, mock_url_read, mock_error):
+        """ Test initialization of checkmarx with invalid json response. """
+        # pylint: disable=protected-access
+        mock_url_read.return_value = '{}'
+        marx = Checkmarx(url='http://url', username='un', password='pwd')  # nosec
+
+        self.assertIsNotNone(marx)
+        mock_url_read.assert_called_once_with(
+            'http://url/cxrestapi/auth/identity/connect/token',
+            post_body=b'username=un&password=pwd&scope=sast_rest_api&grant_type=password&'
+                      b'client_id=resource_owner_client&client_secret=014DF517-39D1-4453-B7B3-9930C563627C')
+        self.assertEqual(mock_error.call_args[0][0], "Couldn't load access token from json: %s.")
+        self.assertIsInstance(mock_error.call_args[0][1], KeyError)
+        self.assertEqual(ssl._create_default_https_context, ssl._create_unverified_context)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
 class CheckmarxTest(unittest.TestCase):
     """ Unit tests for the Checkmarx class. """
 
+    # pylint: disable=too-many-public-methods
+
     def setUp(self):
-        self.__report = Checkmarx('http://url', 'username', 'password')
+        with patch.object(url_opener.UrlOpener, 'url_read', return_value='{"access_token": "abc123"}'):
+            self.__report = Checkmarx('http://url', 'username', 'password')
 
     def test_high_risk_warnings(self, mock_url_read):
         """ Test the number of high risk warnings. """
@@ -41,15 +151,120 @@ class CheckmarxTest(unittest.TestCase):
         mock_url_read.assert_called_once_with(
             'http://url/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27id%27')
 
-    @patch('ssl._create_unverified_context')
-    def test_nr_warnings_legacy_ssl(self, mock_create_unverified_context, mock_url_read):
-        """ Test the number of high risk warnings with legacy python ssl. """
-        delattr(ssl, '_create_unverified_context')
-        mock_url_read.return_value = LAST_SCAN
-        self.assertEqual(0, self.__report.nr_warnings(['id'], 'high'))
-        mock_url_read.assert_called_once_with(
-            'http://url/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27id%27')
-        mock_create_unverified_context.assert_not_called()
+    def test_obtain_issues(self, mock_url_read):
+        """ Test that issues are correctly obtained. """
+        mock_url_read.side_effect = [LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
+                                     SAST_REPORT.format(false_positive=False, severity='High')]
+
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+
+        self.assertIsInstance(issues, List)
+        self.assertIsInstance(issues[0], Checkmarx.Issue)
+        self.assertEqual('JScript Vulnerabilities', issues[0].group)
+        self.assertEqual('Reflected XSS', issues[0].title)
+        self.assertEqual('http://url/CxWebClient/ScanQueryDescription.aspx?queryID=789&'
+                         'queryVersionCode=842956&queryTitle=Reflected_XSS', issues[0].display_url)
+        self.assertEqual(1, issues[0].count)
+        self.assertEqual("Recurrent", issues[0].status)
+
+    @patch.object(logging, 'error')
+    def test_obtain_issues_xml_error(self, mock_error, mock_url_read):
+        """ Test that issues are correctly obtained. """
+        mock_url_read.side_effect = [LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}', 'not-an-xml']
+        self.__report.obtain_issues(['id'], 'high')
+
+        issues = self.__report.issues()
+
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+        self.assertEqual(mock_error.call_args[0][0], "Error in checkmarx report xml: %s.")
+        self.assertIsInstance(mock_error.call_args[0][1], xml.etree.ElementTree.ParseError)
+
+    @patch.object(logging, 'error')
+    @patch.object(time, 'sleep')
+    def test_obtain_issue_ssast_report_not_created(self, mock_sleep, mock_error, mock_url_read):
+        """ Test that issues are correctly obtained. """
+        mock_url_read.side_effect = [LAST_SCAN, '{"reportId": 22}'] + ['{"status": {"value": "InProgress"}}'] * 5
+        self.__report.obtain_issues(['id'], 'high')
+
+        issues = self.__report.issues()
+
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+        mock_error.assert_called_once_with("SAST report is not created on the Checkmarx server!")
+        mock_sleep.assert_called()
+
+    @patch.object(logging, 'error')
+    def test_obtain_issues_xml_tag_error(self, mock_error, mock_url_read):
+        """ Test that issues are correctly obtained. """
+        mock_url_read.side_effect = [LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
+                                     '<CxXMLResults><Query /></CxXMLResults>']
+        self.__report.obtain_issues(['id'], 'high')
+
+        issues = self.__report.issues()
+
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+        self.assertEqual(mock_error.call_args[0][0], "Tag %s could not be found.")
+        self.assertIsInstance(mock_error.call_args[0][1], KeyError)
+
+    def test_obtain_issues_exclude_false_positives(self, mock_url_read):
+        """ Test that issues are omitted when false positive. """
+        mock_url_read.side_effect = [LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
+                                     SAST_REPORT.format(false_positive=True, severity='High')]
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+
+    def test_obtain_issues_exclude_wrong_severity(self, mock_url_read):
+        """ Test that issues are omitted when severity does not match. """
+        mock_url_read.side_effect = [LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
+                                     SAST_REPORT.format(false_positive=False, severity='Low')]
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+
+    def test_obtain_issues_no_query(self, mock_url_read):
+        """ Test that issues are omitted when there is no query. """
+        mock_url_read.side_effect = \
+            [LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}', '<CxXMLResults />']
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+
+    def test_obtain_issues_http_error(self, mock_url_read):
+        """ Test that issues are omitted when http error occurs. """
+        mock_url_read.side_effect = urllib.error.HTTPError('raise', None, None, None, None)
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+
+    @patch.object(logging, 'error')
+    def test_obtain_issues_response_error(self, mock_error, mock_url_read):
+        """ Test that issues are omitted when json error occurs. """
+        mock_url_read.return_value = 'non-json'
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+        self.assertEqual(mock_error.call_args[0][0], "Error loading json: %s.")
+        self.assertIsInstance(mock_error.call_args[0][1], ValueError)
+
+    @patch.object(logging, 'error')
+    def test_obtain_issues_json_error(self, mock_error, mock_url_read):
+        """ Test that issues are omitted when json error occurs. """
+        mock_url_read.return_value = '{}'
+        self.__report.obtain_issues(['id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+        self.assertEqual(mock_error.call_args[0][0], "Tag %s could not be found.")
+        self.assertIsInstance(mock_error.call_args[0][1], KeyError)
 
     def test_medium_risk_warnins(self, mock_url_read):
         """ Test the number of medium risk warnings. """
@@ -84,16 +299,12 @@ class CheckmarxTest(unittest.TestCase):
         mock_url_read.return_value = LAST_SCAN
         self.assertEqual([], self.__report.metric_source_urls('id'))
 
-    @patch.object(logging, 'warning')
-    def test_metric_source_urls_on_error(self, mock_warning, mock_url_read):
+    def test_metric_source_urls_on_error(self, mock_url_read):
         """ Test the metric source urls when an error occurs. """
         mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
         self.assertEqual(["http://url/"], self.__report.metric_source_urls('project_1'))
         mock_url_read.assert_called_once_with(
             'http://url/Cxwebinterface/odata/v1/Projects?$expand=LastScan&$filter=Name%20eq%20%27project_1%27')
-        mock_warning.assert_called_once()
-        self.assertEqual(mock_warning.call_args[0][0], "Couldn't open %s: %s")
-        self.assertIsInstance(mock_warning.call_args[0][2], urllib.error.HTTPError)
 
     def test_url(self, mock_url_read):
         """ Test the metric source base url. """

@@ -15,38 +15,11 @@ limitations under the License.
 """
 
 import unittest
-
+from unittest.mock import MagicMock
 from typing import Type
 
 from hqlib import metric, domain, metric_source
 from hqlib.metric.product.alerts_metrics import AlertsMetric
-
-
-class FakeSubject(object):
-    """ Provide for a fake subject. """
-
-    def __init__(self, metric_source_ids=None):
-        self.__metric_source_ids = metric_source_ids or dict()
-
-    @staticmethod
-    def name():
-        """ Return the name of the subject. """
-        return 'FakeSubject'
-
-    def metric_source_id(self, the_metric_source):
-        """ Return the id of the subject for the metric source. """
-        return self.__metric_source_ids.get(the_metric_source)
-
-
-class FakeCheckmarxReport(domain.MetricSource):  # pylint: disable=too-few-public-methods
-    """ Fake a Checkmarx report for unit test purposes. """
-
-    metric_source_name = metric_source.Checkmarx.metric_source_name
-
-    @staticmethod
-    def nr_warnings(report_urls, risk_level):
-        """ Return the number of warnings for the jobs. """
-        return -1 if (not report_urls or 'raise' in report_urls[0]) else dict(high=4, medium=2, low=14)[risk_level]
 
 
 class HighRiskCheckmarxAlertsTest(unittest.TestCase):
@@ -54,61 +27,58 @@ class HighRiskCheckmarxAlertsTest(unittest.TestCase):
 
     class_under_test: Type[AlertsMetric] = metric.HighRiskCheckmarxAlertsMetric  # May be overridden
 
-    def setUp(self):
-        self.__checkmarx_report = FakeCheckmarxReport()
-        self.__subject = FakeSubject(metric_source_ids={self.__checkmarx_report: 'url'})
-        self.__project = domain.Project(metric_sources={metric_source.Checkmarx: self.__checkmarx_report})
-        self.__metric = self.class_under_test(subject=self.__subject, project=self.__project)
-
-    def expected_alerts(self, url):
-        """ Return the number of expected alrts. """
-        return self.__checkmarx_report.nr_warnings((url,), self.class_under_test.risk_level_key)
-
     def test_value(self):
         """ Test that value of the metric equals the number of warnings as reported by Jenkins. """
-        self.assertEqual(self.expected_alerts('url'), self.__metric.value())
+        checkmarx_report = MagicMock()
+        checkmarx_report.nr_warnings = MagicMock(return_value=99)
+        project = domain.Project(metric_sources={metric_source.Checkmarx: checkmarx_report})
+        metric_object = self.class_under_test(subject=MagicMock(), project=project)
+
+        self.assertEqual(99, metric_object.value())
 
     def test_value_multiple_jobs(self):
         """ Test that the value of the metric equals the number of warnings if there are multiple reports. """
-        subject = FakeSubject(metric_source_ids={self.__checkmarx_report: ['a', 'b']})
-        alerts = self.class_under_test(subject=subject, project=self.__project)
-        self.assertEqual(self.expected_alerts(['a', 'b']), alerts.value())
+        checkmarx_report = MagicMock()
+        checkmarx_report.nr_warnings = MagicMock(return_value=99)
+        project = domain.Project(metric_sources={metric_source.Checkmarx: checkmarx_report})
+        subject = MagicMock()
+        subject.metric_source_id.return_value = ['ms_1', 'ms_2']
+        metric_object = self.class_under_test(subject=subject, project=project)
+
+        self.assertEqual(99, metric_object.value())
+        checkmarx_report.nr_warnings.assert_called_with(('ms_1', 'ms_2'), self.class_under_test.risk_level_key)
 
     def test_value_without_metric_source(self):
         """ Test that the value is -1 when no ZAP Scan report is provided. """
-        alerts = self.class_under_test(subject=self.__subject, project=domain.Project())
+        alerts = self.class_under_test(subject=None, project=domain.Project())
         self.assertEqual(-1, alerts.value())
-
-    def test_report(self):
-        """ Test that the report for the metric is correct. """
-        expected_report = 'FakeSubject heeft {0} {1} risico security waarschuwingen.'.format(
-            self.expected_alerts('url'), self.class_under_test.risk_level)
-        self.assertEqual(expected_report, self.__metric.report())
 
     def test_norm(self):
         """ Test that the norm is correct. """
+        metric_object = self.class_under_test(subject=None, project=MagicMock())
         expected_norm = 'Het product heeft geen {} risico Checkmarx security waarschuwingen. ' \
                         'Meer dan {} is rood.'.format(self.class_under_test.risk_level,
                                                       self.class_under_test.low_target_value)
         self.assertEqual(expected_norm,
-                         self.__metric.norm_template.format(**self.__metric.norm_template_default_values()))
+                         metric_object.norm_template.format(**metric_object.norm_template_default_values()))
 
-    def test_is_missing_without_zap_scan_report(self):
-        """ Test that metric is missing when the Checkmarx report is not available. """
-        alerts = self.class_under_test(self.__subject, domain.Project())
-        self.assertTrue(alerts._missing())  # pylint: disable=protected-access
+    def test_extra_info_no_issues(self):
+        """ Test that the extra info is returned correctly when there are no issues. """
+        checkmarx_report = MagicMock()
+        checkmarx_report.issues = MagicMock(
+            return_value=[metric_source.Checkmarx.Issue('a_group', 'the_name', 'http://url', 3, 'New')])
+        checkmarx_report.obtain_issues = MagicMock()
+        project = domain.Project(metric_sources={metric_source.Checkmarx: checkmarx_report})
+        subject = MagicMock()
+        subject.metric_source_id.return_value = ['ms_1']
+        metric_object = self.class_under_test(subject=subject, project=project)
 
-    def test_is_missing_without_url(self):
-        """ Test that the metric cannot be measured without report url. """
-        alerts = self.class_under_test(FakeSubject(), self.__project)
-        self.assertTrue(alerts._missing())  # pylint: disable=protected-access
-
-    def test_is_not_missing(self):
-        """ Test that the metric is not missing when the report is available. """
-        self.assertFalse(self.__metric._missing())  # pylint: disable=protected-access
+        issues = metric_object.extra_info_rows()
+        self.assertEqual(({'href': 'http://url', 'text': 'the name'}, 'a group', 3, 'New'), issues[0])
+        checkmarx_report.obtain_issues.assert_called_once_with(['ms_1'], self.class_under_test.risk_level_key.title())
 
 
-class MediumRiskZAPScanAlertsTest(HighRiskCheckmarxAlertsTest):
+class MediumRiskCheckmarxAlertsTest(HighRiskCheckmarxAlertsTest):
     """ Unit tests for the medium risk level Checkmarx alert metric. """
 
     class_under_test = metric.MediumRiskCheckmarxAlertsMetric

@@ -1,3 +1,8 @@
+2018-10-19  Release 2.76.0
+
+  * Feature #473: Checkmarx warnings added to the detail table.
+
+
 2018-10-09  Release 2.75.1
 
   * Bug #529: Extra slash from checkmarx url removed.
