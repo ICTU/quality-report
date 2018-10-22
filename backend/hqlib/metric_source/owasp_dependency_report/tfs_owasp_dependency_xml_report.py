@@ -42,6 +42,7 @@ class TfsOWASPDependencyXMLReport(OWASPDependencyXMLReport):
     def __init__(self,
                  base_url: str, organization: str, project: str, definitions: str, pat_token: str, **kwargs) -> None:
         super().__init__(username='', password=pat_token, **kwargs)
+        self._base_url = base_url
         build_url = utils.url_join(
             base_url, 'tfs', organization, project,
             '_apis/build/builds?queryOrder=finishTimeDescending&statusFilter=completed&definitions='
@@ -53,7 +54,9 @@ class TfsOWASPDependencyXMLReport(OWASPDependencyXMLReport):
     def __get_build_artifacts_url(self, url: str) -> str:
         try:
             json_string = self._url_opener.url_read(url)
-            return utils.eval_json(json_string)['value'][0]['url']
+            art_url = utils.eval_json(json_string)['value'][0]['url']
+            return utils.url_join(self._base_url, art_url[art_url.find('/tfs/'):])
+
         except urllib.error.HTTPError:
             logging.error('Error constructing TfsOWASPDependencyXMLReport - could not get list of builds.')
         except json.decoder.JSONDecodeError:

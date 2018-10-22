@@ -39,7 +39,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_get_dependencies_info(self, mock_url_open, mock_url_read):
         """ Test that it gets medium priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
         archive = zipfile.ZipFile('temp.zip', 'w')
         report = '''<analysis xmlns="https://namespace.1.3.xsd">
                     <dependencies>
@@ -93,7 +93,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_nr_warnings(self, mock_url_open, mock_url_read):
         """ Test retrieving high priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
         archive = zipfile.ZipFile('temp.zip', 'w')
         report = '''<?xml version="1.0"?>
         <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
@@ -143,7 +143,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_nr_warnings_http_error(self, mock_url_open, mock_url_read, mock_error):
         """ Test retrieving high priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
         mock_url_open.side_effect = urllib.error.HTTPError(None, None, None, None, None)
 
         report = metric_source.TfsOWASPDependencyXMLReport(
@@ -152,8 +152,8 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
 
         self.assertEqual(-1, report.nr_warnings(('url',), 'high'))
         self.assertEqual('Error getting content of the OWASP report from %s.', mock_error.mock_calls[0][1][0])
-        self.assertEqual(mock_error.mock_calls[0][1][1],
-                         'http://build/artifacts?artifactName=OWASP&api-version=4.1&%24format=zip')
+        self.assertEqual('http://base.url/tfs/api/artifacts?artifactName=OWASP&api-version=4.1&%24format=zip',
+                         mock_error.mock_calls[0][1][1])
         self.assertEqual('Error parsing returned xml: %s.', mock_error.mock_calls[1][1][0])
         self.assertIsInstance(mock_error.mock_calls[1][1][1], xml.etree.ElementTree.ParseError)
 
@@ -162,7 +162,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_nr_warnings_unreadable_content(self, mock_url_open, mock_url_read, mock_error):
         """ Test retrieving high priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
         mock_url_open.return_value = 'not an object with read function'
 
         report = metric_source.TfsOWASPDependencyXMLReport(
@@ -180,7 +180,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_nr_warnings_unexpected_content_type(self, mock_url_open, mock_url_read, mock_error):
         """ Test retrieving high priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
         response = MagicMock()
         response.read = MagicMock(return_value='unexpected content')
         mock_url_open.return_value = response
@@ -201,7 +201,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_nr_warnings_corrupted_archive(self, mock_url_open, mock_url_read, mock_error):
         """ Test retrieving high priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
         response = MagicMock()
         response.read = MagicMock(return_value=b'unexpected content')
         mock_url_open.return_value = response
@@ -221,7 +221,7 @@ class TfsOWASPDependencyXMLReportTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_nr_warnings_no_archived_content(self, mock_url_open, mock_url_read, mock_error):
         """ Test retrieving high priority warnings. """
-        mock_url_read.return_value = '{"value": [{"url": "http://build"}]}'
+        mock_url_read.return_value = '{"value": [{"url": "http://build/tfs/api"}]}'
 
         archive = zipfile.ZipFile('temp.zip', 'w')
         report = 'some content'

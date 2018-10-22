@@ -1,3 +1,8 @@
+2018-10-22  Release 2.76.1
+
+  * Tech #538: Base url of tfs server is now used in artifact url.
+
+
 2018-10-19  Release 2.76.0
 
   * Feature #473: Checkmarx warnings added to the detail table.
