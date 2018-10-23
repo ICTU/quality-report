@@ -234,6 +234,7 @@ class QualityReport(domain.DomainObject):
     def __art_metrics(self, art: domain.RequirementSubject) -> List[domain.Metric]:
         """ Return a list of Automated Regression Test metrics for the (ART) product. """
         return self.__required_subject_metrics(art, requirement.CodeQuality, requirement.ARTCoverage,
+                                               requirement.ViolationsByType, requirement.ViolationsBySeverity,
                                                requirement.ART, requirement.TrackBranches) if art else []
 
     def __required_subject_metrics(self, subject: domain.RequirementSubject,

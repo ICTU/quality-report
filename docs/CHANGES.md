@@ -1,3 +1,8 @@
+2018-10-24  Release 2.76.1
+
+  * Bug #541: Violation metrics are now shown also for the components.
+
+
 2018-10-22  Release 2.76.1
 
   * Tech #538: Base url of tfs server is now used in artifact url.
