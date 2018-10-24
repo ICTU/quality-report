@@ -1,3 +1,9 @@
+2018-10-25  Release 2.77.2
+
+  * Bug #519: Help page updated with Violation metrics (per severity and per type).
+  * Tech #534: Checkmarx odata api calls replaced by rest api calls.
+
+
 2018-10-25  Release 2.77.1
 
   * Bug #539: Throw an exception when the project definition has domain objects with short names that contain spaces.
