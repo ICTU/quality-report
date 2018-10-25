@@ -104,21 +104,24 @@ class PerformanceLoad(Requirement):
     """ Require a performance load test. """
     _name = 'Performance load'
     _metric_classes = (metric.PerformanceLoadTestWarnings, metric.PerformanceLoadTestErrors,
-                       metric.PerformanceLoadTestAge, metric.PerformanceLoadTestDuration)
+                       metric.PerformanceLoadTestAge, metric.PerformanceLoadTestDuration,
+                       metric.PerformanceLoadTestFaultPercentage)
 
 
 class PerformanceEndurance(Requirement):
     """ Require a performance endurance test. """
     _name = 'Performance endurance'
     _metric_classes = (metric.PerformanceEnduranceTestWarnings, metric.PerformanceEnduranceTestErrors,
-                       metric.PerformanceEnduranceTestAge, metric.PerformanceEnduranceTestDuration)
+                       metric.PerformanceEnduranceTestAge, metric.PerformanceEnduranceTestDuration,
+                       metric.PerformanceEnduranceTestFaultPercentage)
 
 
 class PerformanceScalability(Requirement):
     """ Require a performance scalability (stress) test. """
     _name = 'Performance scalability'
     _metric_classes = (metric.PerformanceScalabilityTestWarnings, metric.PerformanceScalabilityTestErrors,
-                       metric.PerformanceScalabilityTestAge, metric.PerformanceScalabilityTestDuration)
+                       metric.PerformanceScalabilityTestAge, metric.PerformanceScalabilityTestDuration,
+                       metric.PerformanceScalabilityTestFaultPercentage)
 
 
 class TrackBranches(Requirement):

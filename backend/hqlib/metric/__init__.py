@@ -31,11 +31,15 @@ from .product.logical_test_case_metrics import (
     NumberOfManualLogicalTestCases)
 from .product.openvas_scan_metrics import HighRiskOpenVASScanAlertsMetric, MediumRiskOpenVASScanAlertsMetric
 from .product.owasp_dependency_metrics import HighPriorityOWASPDependencyWarnings, NormalPriorityOWASPDependencyWarnings
-from .product.performance_metrics import PerformanceLoadTestWarnings, PerformanceLoadTestErrors, \
+from .product.performance.performance_metrics import PerformanceLoadTestWarnings, PerformanceLoadTestErrors, \
     PerformanceEnduranceTestWarnings, PerformanceEnduranceTestErrors, PerformanceScalabilityTestWarnings, \
-    PerformanceScalabilityTestErrors, PerformanceLoadTestAge, PerformanceEnduranceTestAge, \
-    PerformanceScalabilityTestAge, PerformanceLoadTestDuration, PerformanceEnduranceTestDuration, \
-    PerformanceScalabilityTestDuration
+    PerformanceScalabilityTestErrors
+from .product.performance.performance_test_duration import PerformanceLoadTestDuration, \
+    PerformanceEnduranceTestDuration, PerformanceScalabilityTestDuration
+from .product.performance.performance_test_age import PerformanceLoadTestAge, PerformanceEnduranceTestAge, \
+    PerformanceScalabilityTestAge
+from .product.performance.performance_test_fault_percentage import PerformanceLoadTestFaultPercentage, \
+    PerformanceEnduranceTestFaultPercentage, PerformanceScalabilityTestFaultPercentage
 from .product.size_metrics import ProductLOC, TotalLOC
 from .product.source_code_metrics import CommentedLOC, CyclomaticComplexity, LongMethods, ManyParameters
 from .product.unittest_metrics import FailingUnittests

@@ -30,7 +30,8 @@ HTML = (pathlib.Path(__file__).resolve().parent / "silkperformer.html").read_tex
 class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the Silk Performer performance report to return the url as report contents. """
 
-    def url_open(self, url: str, log_error: bool = True) -> IO:  # pylint: disable=no-self-use,unused-argument
+    def url_open(self, url: str, log_error: bool = True,
+                 post_body: object = None) -> IO:  # pylint: disable=no-self-use,unused-argument
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')
@@ -39,7 +40,9 @@ class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint:
 
 class SilkPerformerTest(unittest.TestCase):
     """ Unit tests for the Silk Performer performance report metric source. """
-    expected_queries = 17
+    expected_queries = 18
+    expected_queries_violating_max = 1
+    expected_queries_violating_wished = expected_queries_violating_max + 1
 
     def setUp(self):
         SilkPerformerUnderTest.queries.cache_clear()
@@ -55,20 +58,22 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_queries(self):
         """ Test that the total number of queries for a product/version that is in the report. """
-        self.assertEqual(self.expected_queries, self._performance_report.queries(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(self.expected_queries, self._performance_report.queries('.*[0-9][0-9].*'))
 
     def test_queries_violating_max_responsetime(self):
         """ Test that the number of queries violating the maximum response times is zero. """
-        self.assertEqual(0, self._performance_report.queries_violating_max_responsetime(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(self.expected_queries_violating_max,
+                         self._performance_report.queries_violating_max_responsetime('.*[0-9][0-9].*'))
 
     def test_queries_violating_wished_reponsetime(self):
         """ Test that the number of queries violating the wished response times is zero. """
-        self.assertEqual(0, self._performance_report.queries_violating_wished_responsetime(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(self.expected_queries_violating_wished,
+                         self._performance_report.queries_violating_wished_responsetime('.*[0-9][0-9].*'))
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
-        self.assertEqual(datetime.datetime(2018, 6, 6, 1, 45, 2),
-                         self._performance_report.datetime(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(datetime.datetime(2018, 10, 21, 1, 47, 19),
+                         self._performance_report.datetime('.*[0-9][0-9].*'))
 
     def test_date_without_urls(self):
         """ Test that the min date is returned if there are no report urls to consult. """
@@ -77,13 +82,11 @@ class SilkPerformerTest(unittest.TestCase):
             def urls(self, product):  # pylint: disable=unused-argument
                 return []
 
-        self.assertEqual(datetime.datetime.min,
-                         SilkPerformerWithoutUrls('http://report').datetime(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(datetime.datetime.min, SilkPerformerWithoutUrls('http://report').datetime('.*[0-9][0-9].*'))
 
     def test_duration(self):
         """ Test tha the duration of the test is correct. """
-        self.assertEqual(datetime.timedelta(minutes=60, seconds=0),
-                         self._performance_report.duration(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(datetime.timedelta(seconds=3704), self._performance_report.duration('.*[0-9][0-9].*'))
 
     def test_duration_without_urls(self):
         """ Test that the max duration is returned if there are no report urls to consult. """
@@ -92,14 +95,28 @@ class SilkPerformerTest(unittest.TestCase):
             def urls(self, product):  # pylint: disable=unused-argument
                 return []
 
-        self.assertEqual(datetime.timedelta.max,
-                         SilkPerformerWithoutUrls('http://report').duration(('.*[0-9][0-9].*', 'dummy')))
+        self.assertEqual(datetime.timedelta.max, SilkPerformerWithoutUrls('http://report').duration('.*[0-9][0-9].*'))
+
+    def test_fault_percentage(self):
+        """ Test that the percentage of failed transactions can be read from the report. """
+        self.assertEqual(11, self._performance_report.fault_percentage('.*[0-9][0-9].*'))
+
+    def test_fault_percentage_without_urls(self):
+        """ Test that - is returned if there are no report urls to consult. """
+        class SilkPerformerWithoutUrls(SilkPerformerUnderTest):
+            """ Simulate missing urls. """
+            def urls(self, product):  # pylint: disable=unused-argument
+                return []
+
+        self.assertEqual(-1, SilkPerformerWithoutUrls('http://report').fault_percentage('.*[0-9][0-9].*'))
 
 
 class SilkPerformerMultipleReportsTest(SilkPerformerTest):
     """ Unit tests for the Silk Performer performance report metric source with multiple reports. """
 
     expected_queries = 2 * SilkPerformerTest.expected_queries
+    expected_queries_violating_max = 2 * SilkPerformerTest.expected_queries_violating_max
+    expected_queries_violating_wished = 2 * SilkPerformerTest.expected_queries_violating_wished
 
     def setUp(self):
         self._performance_report = SilkPerformerUnderTest('http://report/',
@@ -108,6 +125,14 @@ class SilkPerformerMultipleReportsTest(SilkPerformerTest):
 
 class SilkPerformerInvalidReportTest(unittest.TestCase):
     """ Unit tests for an invalid (missing Responsetimes header) Silk Performer performance report metric source. """
+
+    def test_queries_with_invalid_report(self):
+        """ Test that the value of an invalid report is -1. """
+        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').queries('p1'))
+
+    def test_queries_wished_responsetime_with_invalid_report(self):  # pylint: disable=invalid-name
+        """ Test that the value of an invalid report is -1. """
+        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').queries_violating_wished_responsetime('p1'))
 
     def test_queries_max_responsetime_with_invalid_report(self):
         """ Test that the value of an invalid report is -1. """
@@ -120,6 +145,10 @@ class SilkPerformerInvalidReportTest(unittest.TestCase):
     def test_duration_with_invalid_report(self):
         """ Test that the duration of an invalid report is the max duration. """
         self.assertEqual(datetime.timedelta.max, SilkPerformerUnderTest('http://invalid/').duration('p5'))
+
+    def test_fault_percentage_with_invalid_report(self):
+        """ Test that the fault percentage of an invalid report is -1. """
+        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').fault_percentage('p5'))
 
 
 class SilkPerformerMissingTest(unittest.TestCase):
@@ -144,3 +173,7 @@ class SilkPerformerMissingTest(unittest.TestCase):
     def test_duration_with_missing_report(self):
         """ Test that the duration of a missing report is the max duration. """
         self.assertEqual(datetime.timedelta.max, SilkPerformerUnderTest('http://error/').duration('p5'))
+
+    def test_fault_percentage_with_missing_report(self):
+        """ Test that the fault percentage of a missing report is -1. """
+        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').fault_percentage('p5'))

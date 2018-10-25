@@ -20,6 +20,7 @@ import logging
 import re
 from typing import List, Iterable
 
+from hqlib import utils
 from hqlib.typing import DateTime, TimeDelta
 from hqlib.metric_source import beautifulsoup, url_opener
 from ..abstract import performance_report
@@ -27,7 +28,9 @@ from ..abstract import performance_report
 
 class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
     """ The Silk Performer performance report is a variant of a JMeter report. """
+    COLUMN_SUCCESSFUL_TRANSACTIONS = 1
     COLUMN_90_PERC = 4
+    COLUMN_FAILED_TRANSACTIONS = 7
 
     def __init__(self, *args, **kwargs) -> None:
         self.__report_urls = kwargs.pop('report_urls', None)
@@ -36,7 +39,7 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         rows = []
-        product_query_re = re.compile(product[0])
+        product_query_re = re.compile(product)
         urls = self.urls(product)
         for url in urls:
             soup = self.soup(url)
@@ -56,9 +59,13 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
                 rows.append(row)
         return rows
 
-    def _has_query_color(self, row, color: str) -> bool:
-        """ Return whether the row has a query has the specified color. """
-        return color in row('td')[self.COLUMN_90_PERC]['class']
+    def _has_query_color(self, row, *colors: str) -> bool:
+        """ Return whether the row has a query with one of the specified colors. """
+        css_class = row('td')[self.COLUMN_90_PERC]['class']
+        for color in colors:
+            if color in css_class:
+                return True
+        return False
 
     def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when performance was last measured. """
@@ -75,6 +82,22 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.timedelta.max
         return self.__duration_from_soup(soup)
+
+    def fault_percentage(self, product: str) -> int:
+        """ Return the fault percentage for the product in the performance test. """
+        total, failed = 0, 0
+        try:
+            rows = self._query_rows(product)
+        except url_opener.UrlOpener.url_open_exceptions:
+            return -1
+        except ValueError:
+            return -1
+        for row in rows:
+            successful_transactions = int(row("td")[self.COLUMN_SUCCESSFUL_TRANSACTIONS].string or "0")
+            failed_transactions = int(row("td")[self.COLUMN_FAILED_TRANSACTIONS].string or "0")
+            total += successful_transactions + failed_transactions
+            failed += failed_transactions
+        return utils.percentage(failed, total) if total else -1
 
     @staticmethod
     def __datetime_from_soup(soup) -> DateTime:

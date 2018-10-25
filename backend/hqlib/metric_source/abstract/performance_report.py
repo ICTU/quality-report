@@ -59,7 +59,7 @@ class PerformanceReport(domain.MetricSource):
     def queries_violating_wished_responsetime(self, product: str) -> int:
         """ Return the number of performance queries that violate the maximum response time we'd like to meet. """
         try:
-            return self.__queries_violating_response_time(product, 'yellow')
+            return self.__queries_violating_response_time(product, 'yellow', 'red')
         except UrlOpener.url_open_exceptions:
             return -1
         except ValueError:
@@ -82,6 +82,10 @@ class PerformanceReport(domain.MetricSource):
             return self._duration_from_url(url)
         return datetime.timedelta.max
 
+    def fault_percentage(self, product: str) -> int:
+        """ Return the percentage of failed transactions in the performance test report(s) for the product. """
+        raise NotImplementedError
+
     def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when the performance was last measured. """
         raise NotImplementedError
@@ -94,12 +98,12 @@ class PerformanceReport(domain.MetricSource):
         """ Return the queries for the specified product. """
         raise NotImplementedError
 
-    def __queries_violating_response_time(self, product: str, color: str) -> int:
+    def __queries_violating_response_time(self, product: str, *colors: str) -> int:
         """ Return the number of queries that are violating either the maximum or the desired response time. """
-        return len([row for row in self._query_rows(product) if self._has_query_color(row, color)])
+        return len([row for row in self._query_rows(product) if self._has_query_color(row, *colors)])
 
-    def _has_query_color(self, row, color: str) -> bool:
-        """ Return whether the row has a query with the specified color. """
+    def _has_query_color(self, row, *colors: str) -> bool:
+        """ Return whether the row has a query with one of the specified colors. """
         raise NotImplementedError
 
 
@@ -109,6 +113,10 @@ class PerformanceLoadTestReport(PerformanceReport):
         """ Return the report urls for the specified product. """
         raise NotImplementedError
 
+    def fault_percentage(self, product: str) -> int:
+        """ Return the fault percentage in the performance report. """
+        raise NotImplementedError
+
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         raise NotImplementedError
@@ -121,8 +129,8 @@ class PerformanceLoadTestReport(PerformanceReport):
         """ Return the duration of the performance test. """
         raise NotImplementedError
 
-    def _has_query_color(self, row, color: str) -> bool:
-        """ Return whether the row has a query has the specified color. """
+    def _has_query_color(self, row, *colors: str) -> bool:
+        """ Return whether the row has a query with one of the specified colors. """
         raise NotImplementedError
 
 
@@ -132,6 +140,10 @@ class PerformanceEnduranceTestReport(PerformanceReport):
         """ Return the report urls for the specified product. """
         raise NotImplementedError
 
+    def fault_percentage(self, product: str) -> int:
+        """ Return the fault percentage in the performance report. """
+        raise NotImplementedError
+
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         raise NotImplementedError
@@ -144,8 +156,8 @@ class PerformanceEnduranceTestReport(PerformanceReport):
         """ Return the duration of the performance test. """
         raise NotImplementedError
 
-    def _has_query_color(self, row, color: str) -> bool:
-        """ Return whether the row has a query has the specified color. """
+    def _has_query_color(self, row, *colors: str) -> bool:
+        """ Return whether the row has a query with one of the specified colors. """
         raise NotImplementedError
 
 
@@ -155,6 +167,10 @@ class PerformanceScalabilityTestReport(PerformanceReport):
         """ Return the report urls for the specified product. """
         raise NotImplementedError
 
+    def fault_percentage(self, product: str) -> int:
+        """ Return the fault percentage in the performance report. """
+        raise NotImplementedError
+
     def _query_rows(self, product: str) -> List:
         """ Return the queries for the specified product. """
         raise NotImplementedError
@@ -167,6 +183,6 @@ class PerformanceScalabilityTestReport(PerformanceReport):
         """ Return the duration of the performance test. """
         raise NotImplementedError
 
-    def _has_query_color(self, row, color: str) -> bool:
-        """ Return whether the row has a query has the specified color. """
+    def _has_query_color(self, row, *colors: str) -> bool:
+        """ Return whether the row has a query with one of the specified colors. """
         raise NotImplementedError

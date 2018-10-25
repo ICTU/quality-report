@@ -46,10 +46,11 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
                     rows.append(row)
         return rows
 
-    def _has_query_color(self, row, color) -> bool:
-        """ Return whether the query has the specified color. """
-        status = row[self.PASS_FAIL_COLUMN]
-        return status == 'Failed' if color in ('yellow', 'red') else status != 'Failed'
+    def _has_query_color(self, row, *colors: str) -> bool:  # pylint: disable=unused-argument
+        """ Return whether the query has one of the specified colors. """
+        # The Spirit Splunk CSV performance report has no colors, only a pass/fail column, so we simply return whether
+        # the query in the row passes the performance target.
+        return row[self.PASS_FAIL_COLUMN] == 'Failed'
 
     def _datetime_from_url(self, url: str) -> DateTime:
         """ Return the date when performance was last measured. """
@@ -67,6 +68,11 @@ class SpiritSplunkCSVPerformanceReport(performance_report.PerformanceReport, url
         """ Return the duration of the performance test. """
         logging.warning("The %s metric source doesn't currently contain duration information.", self.metric_source_name)
         return datetime.timedelta.max  # Information is not available in the report.
+
+    def fault_percentage(self, product: str) -> int:
+        """ Return the percentage of failed transactions in the performance test. """
+        logging.warning("The %s metric source doesn't currently contain fault information.", self.metric_source_name)
+        return -1  # Information is not available in the report.
 
     def urls(self, product: str) -> Iterable[str]:  # pylint: disable=unused-argument
         """ Return the url(s) of the performance report for the specified product and version. """

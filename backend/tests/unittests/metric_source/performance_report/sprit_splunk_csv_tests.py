@@ -30,10 +30,13 @@ CSV = (pathlib.Path(__file__).resolve().parent / "spirit_splunk_csv.txt").read_b
 class ReportUnderTest(SpiritSplunkCSVPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
     """ Override the performance report to return the url as report contents. """
 
-    def url_open(self, url: str, log_error: bool = True) -> IO:  # pylint: disable=no-self-use,unused-argument
+    def url_open(self, url: str, log_error: bool = True,
+                 post_body: object = None) -> IO:  # pylint: disable=no-self-use,unused-argument
         """ Return the static html. """
         if 'error' in url:
             raise urllib.error.URLError('reason')
+        elif 'invalid' in url:
+            return io.BytesIO(b"invalid")
         else:
             return io.BytesIO(CSV)
 
@@ -78,6 +81,11 @@ class SpiritSplunkCSVPerformanceReportTest(unittest.TestCase):
         """ Test that the date of the last measurement is correctly parsed from the report. """
         self.assertEqual(datetime.datetime(2017, 6, 12), self._performance_report.datetime('ABC'))
 
+    def test_date_on_error(self):
+        """ Test that the date of the last measurement is correctly parsed from the report. """
+        performance_report = ReportUnderTest('http://invalid/')
+        self.assertEqual(datetime.datetime.min, performance_report.datetime('invalid'))
+
     def test_date_without_urls(self):
         """ Test that the min date is passed if there are no report urls to consult. """
         class SpiritSplunkCSVReportWithoutUrls(ReportUnderTest):
@@ -87,6 +95,14 @@ class SpiritSplunkCSVPerformanceReportTest(unittest.TestCase):
 
         self.assertEqual(datetime.datetime.min,
                          SpiritSplunkCSVReportWithoutUrls('http://report').datetime('ABC'))
+
+    def test_duration(self):
+        """ Test the duration of the performance report. """
+        self.assertEqual(datetime.timedelta.max, self._performance_report.duration("ABC"))
+
+    def test_fault_percentage(self):
+        """ Test the fault percentage of the performance report. """
+        self.assertEqual(-1, self._performance_report.fault_percentage("ABC"))
 
 
 class SpiritSplunkCSVPerformanceReportMultipleReportsTest(SpiritSplunkCSVPerformanceReportTest):

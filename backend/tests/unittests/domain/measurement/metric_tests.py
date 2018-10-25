@@ -250,17 +250,15 @@ class MetricTest(unittest.TestCase):
 
         self.assertEqual({"Text (1/2)": "http:/url1", "Text (2/2)": "http:/url2"}, test_metric.url())
 
-    @patch.object(domain.Metric, '_get_display_urls')
-    def test_url_from_metric_source_urls(self, mock_get_display_urls):
+    def test_url_from_metric_source_urls(self):
         """ Test metric url when there is no source id. """
         mock_metric_source = MagicMock()
-        mock_metric_source.url.return_value = 'http://url!'
+        mock_metric_source.metric_source_urls.return_value = ['http://url!']
         mock_metric_source.metric_source_name = "Text"
         subject = MagicMock()
         subject.metric_source_id.return_value = "MsId"
         project = MagicMock()
         project.metric_sources.return_value = [mock_metric_source]
-        mock_get_display_urls.return_value = None
         test_metric = domain.Metric(subject=subject, project=project)
 
         self.assertEqual({"Text": 'http://url!'}, test_metric.url())

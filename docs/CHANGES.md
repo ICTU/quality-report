@@ -1,3 +1,10 @@
+2018-10-25  Release 2.77.0
+
+  * Feature #359: Add a metric reporting the percentage of failed performance test queries.
+  * Bug fix: The metric for the number of performance test queries violating the wished for response times would not 
+    include the number of performance test queries violating the maximum response times.
+  
+  
 2018-10-24  Release 2.76.1
 
   * Bug #541: Violation metrics are now shown also for the components.
@@ -25,17 +32,17 @@
 
 2018-10-04  Release 2.74.1
 
-  * Bug #526: faullt due to different paths in owasp zip solved.
+  * Bug #526: Fault due to different paths in owasp zip solved.
 
 
 2018-10-03  Release 2.74.0
 
-  * Feature #523: implemented new metric source - OWASP report for tfs.
+  * Feature #523: Implemented new metric source - OWASP report for tfs.
 
 
 2018-09-28  Release 2.73.1
 
-  * Bug #521: detail table of violations not shown any more, when there are no violations.
+  * Bug #521: Detail table of violations not shown any more, when there are no violations.
 
 
 2018-09-27  Release 2.73.0
@@ -61,22 +68,22 @@
 
 2018-09-14  Release 2.69.3
 
-  * Bug #502: problem with links with spaces corrected.
+  * Bug #502: Problem with links with spaces corrected.
 
 
 2018-09-13  Release 2.69.2
 
-  * Bug #500: escaped quotes in norm texts fixed.
+  * Bug #500: Escaped quotes in norm texts fixed.
 
 
 2018-09-12  Release 2.69.1
 
-  * Tech #234: removed html elements generation from server side and html direct setting on client side.
+  * Tech #234: Removed html elements generation from server side and html direct setting on client side.
 
 
 2018-09-10  Release 2.69.0
 
-  * Feature #497: now it is possible to have different display link than the source link for metric source.
+  * Feature #497: Now it is possible to have different display link than the source link for metric source.
 
 
 2018-09-03  Release 2.68.0
@@ -91,8 +98,8 @@
   
 2018-08-22  Release 2.66.2
 
-  * Bug #409 fixed: branch metrics were green when unauthorised to clone repo.
-  * Bug #486 fixed: when owasp xml report was not present, the application was crashing.
+  * Bug #409: Branch metrics were green when unauthorised to clone repo.
+  * Bug #486: When owasp xml report was not present, the application was crashing.
 
 
 2018-08-20  Release 2.66.1
@@ -107,22 +114,22 @@
 
 2018-08-16  Release 2.65.0
 
-  * Feature #471: detail table implemented for OWASP measures.
+  * Feature #471: Detail table implemented for OWASP measures.
 
 
 2018-08-07  Release 2.64.0
 
-  * Feature #470: detail table sorting added.
+  * Feature #470: Detail table sorting added.
 
 
 2018-08-01  Release 2.63.3
 
-  * Bug #465: results for specific SonarQube violations (Sonar version>7) corrected
+  * Bug #465: Results for specific SonarQube violations (Sonar version>7) corrected
 
 
 2018-07-31  Release 2.63.2
 
-  * Feature #387: implemented ART using testx.
+  * Feature #387: Implemented ART using testx.
 
 
 2018-07-27  Release 2.63.1
@@ -199,17 +206,17 @@
 
 2018-07-03  Release 2.61.4
 
-  * Bug #345: dummy links in CI-jobs and Sonar version corrected.
+  * Bug #345: Dummy links in CI-jobs and Sonar version corrected.
 
 
 2018-07-03  Release 2.61.3
 
-  * Bug #440: crash because of the string as a part of plugin version solved.
+  * Bug #440: Crash because of the string as a part of plugin version solved.
 
 
 2018-07-02  Release 2.61.2
 
-  * Bug #434: crash of report by Sonar Qube server version lower than 5.4 fixed.
+  * Bug #434: Crash of report by Sonar Qube server version lower than 5.4 fixed.
 
 
 2018-06-29  Release 2.61.1
@@ -329,7 +336,7 @@
 
 2018-04-30  Release 2.56.3
 
-  * Bug #379 solved: forward slashes in component names produced crash.
+  * Bug #379 solved: Forward slashes in component names produced crash.
 
 
 2018-04-29  Release 2.56.2

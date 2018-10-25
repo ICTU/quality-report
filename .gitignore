@@ -10,6 +10,7 @@ __pycache__
 frontend/coverage
 backend/tests/integrationtests/*/*history.json
 repos
+.coverage
 
 # Ignore build folders
 build
