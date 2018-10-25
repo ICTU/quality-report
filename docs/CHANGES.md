@@ -1,3 +1,8 @@
+2018-10-25  Release 2.77.1
+
+  * Bug #539: Throw an exception when the project definition has domain objects with short names that contain spaces.
+  
+  
 2018-10-25  Release 2.77.0
 
   * Feature #359: Add a metric reporting the percentage of failed performance test queries.

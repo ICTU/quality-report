@@ -32,6 +32,10 @@ class DomainObjectTest(unittest.TestCase):
         """ Test the measurable short name. """
         self.assertEqual('AC', self.__object.short_name())
 
+    def test_short_name_with_spaces(self):
+        """ Test that the short name isn't allowed to contain spaces. """
+        self.assertRaises(ValueError, domain.DomainObject, name="Name", short_name="S p a c e s")
+
     def test_url(self):
         """ Test the url of the domain object. """
         self.assertEqual('http://url/', self.__object.url())

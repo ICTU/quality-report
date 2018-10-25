@@ -22,6 +22,8 @@ class DomainObject(object):
 
     def __init__(self, name: str = '', url: str = 'http://unspecified', short_name: str = '', *args, **kwargs) -> None:
         self.__name = name or self.default_name
+        if " " in short_name:
+            raise ValueError(f'The short_name "{short_name}" of {self.__class__.__name__} {name} contains spaces.')
         self.__short_name = short_name or self.default_short_name
         self.__url = url + ("" if url.endswith("/") else "/")
         super().__init__(*args, **kwargs)
