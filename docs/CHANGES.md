@@ -1,3 +1,8 @@
+2018-10-26  Release 2.77.3
+
+  * Bug fix: Don't crash when the Checkmarx last scan JSON doesn't contain the end date and time of the last scan.
+  
+  
 2018-10-25  Release 2.77.2
 
   * Bug #519: Help page updated with Violation metrics (per severity and per type).

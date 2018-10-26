@@ -43,7 +43,6 @@ class Checkmarx(MetricSourceWithIssues):
         # pylint: disable=too-many-arguments
         def __init__(self, group: str, name: str, display_url: str, count: int, status: str) -> None:
             self.group = group.replace('_', ' ')
-            self.group = group.replace('_', ' ')
             self.display_url = display_url
             self.count = count
             self.status = status
@@ -223,7 +222,7 @@ class Checkmarx(MetricSourceWithIssues):
                 dates.append(self.__parse_datetime(last_scan_json))
             except url_opener.UrlOpener.url_open_exceptions:
                 return datetime.datetime.min
-            except (KeyError, IndexError, ValueError) as reason:
+            except (KeyError, IndexError, ValueError, AttributeError) as reason:
                 logging.error("Couldn't parse date and time for project %s from %s: %s",
                               project_name, self.url(), reason)
                 return datetime.datetime.min
@@ -232,10 +231,8 @@ class Checkmarx(MetricSourceWithIssues):
     @staticmethod
     def __parse_datetime(json_object: Dict) -> DateTime:
         """ Parse the JSON to get the date and time of the last scan. """
-        datetimes = []
         datetime_string = json_object[0]["dateAndTime"]["finishedOn"].split('.')[0]
-        datetimes.append(dateutil.parser.parse(datetime_string, ignoretz=True))
-        return max(datetimes, default=datetime.datetime.min)
+        return dateutil.parser.parse(datetime_string, ignoretz=True)
 
     @functools.lru_cache(maxsize=1024)
     def _fetch_project_id(self, project_name: str) -> int:
