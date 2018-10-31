@@ -52,12 +52,17 @@ class JenkinsOWASPDependencyReport(owasp_dependency_report.OWASPDependencyReport
             if not cves:
                 logging.warning("No CVEs retrieved for metric_source_id %s and priority %s!",
                                 metric_source_id, priority)
-            dependencies_info.append(
-                owasp_dependency_report.Dependency(vulnerable_files[i], len(cves), cves))
+            dependencies_info.append(owasp_dependency_report.Dependency(vulnerable_files[i], len(cves), cves))
         return dependencies_info
 
     def _get_cves(self, url: str, priority: str):
-        soup = self._get_soup(url.rstrip('/') + '/' + priority.upper() + '/tab.types/')
+        tab_types_url = url.rstrip('/') + '/' + priority.upper() + '/tab.types/'
+        try:
+            soup = self._get_soup(tab_types_url)
+        except url_opener.UrlOpener.url_open_exceptions as reason:
+            logging.warning("Couldn't open %s to get CVEs. Reason: %s", tab_types_url, reason)
+            return []
+
         cve_links = soup.find_all("a")
         return [(c.text, url.rstrip('/') + '/' + c['href'].strip('/') + '/' + priority.upper()) for c in cve_links]
 

@@ -15,11 +15,11 @@ limitations under the License.
 """
 
 
-import time
 import logging
 import unittest
 from unittest.mock import patch
-from datetime import datetime, timedelta
+from datetime import datetime
+from socket import gaierror
 import urllib.error
 
 from hqlib import metric_source
@@ -127,6 +127,38 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
         self.assertEqual([('CVE-3332', 'http://jenkins/job/job/lastSuccessfulBuild/'
                                        'dependency-check-jenkins-pluginResult/tab.files/file.-910/type.345/HIGH')],
                          result[2].cve_links)
+
+    @patch.object(url_opener.UrlOpener, 'url_open')
+    @patch.object(logging, 'warning')
+    def test_get_dependencies_info_gaierror(self, mock_warning, mock_url_open):
+        """ Test retrieving high priority warnings, when gaierror happens. """
+        mock_url_open.side_effect = [
+            self.html,
+            gaierror,
+            self._cve_table_response.format(type_nr='234', cve_nr='2223'),
+            self._cve_table_response.format(type_nr='345', cve_nr='3332')]
+
+        result = self.__jenkins.get_dependencies_info('job', 'high')
+
+        self.assertEqual(3, len(result))
+        self.assertEqual('AspNet.WebApi', result[0].file_name)
+        self.assertEqual(0, result[0].nr_vulnerabilities)
+        self.assertEqual([], result[0].cve_links)
+        self.assertEqual('Microsoft', result[1].file_name)
+        self.assertEqual(1, result[1].nr_vulnerabilities)
+        self.assertEqual([('CVE-2223', 'http://jenkins/job/job/lastSuccessfulBuild/'
+                                       'dependency-check-jenkins-pluginResult/tab.files/file.-678/type.234/HIGH')],
+                         result[1].cve_links)
+        self.assertEqual('Microsoft.Core', result[2].file_name)
+        self.assertEqual(1, result[2].nr_vulnerabilities)
+        self.assertEqual([('CVE-3332', 'http://jenkins/job/job/lastSuccessfulBuild/'
+                                       'dependency-check-jenkins-pluginResult/tab.files/file.-910/type.345/HIGH')],
+                         result[2].cve_links)
+        mock_warning.assert_called()
+        self.assertEqual("Couldn't open %s to get CVEs. Reason: %s", mock_warning.call_args_list[0][0][0])
+        self.assertEqual("http://jenkins/job/job/lastSuccessfulBuild/dependency-check-jenkins-pluginResult/tab.files"
+                         "/file.-123/HIGH/tab.types/", mock_warning.call_args_list[0][0][1])
+        self.assertIsInstance(mock_warning.call_args_list[0][0][2], gaierror)
 
     @patch.object(url_opener.UrlOpener, 'url_open')
     def test_get_dependencies_info_multiple_sources(self, mock_url_open):
@@ -244,7 +276,4 @@ class JenkinsOWASPDependencyReportTest(unittest.TestCase):
     def test_datetime(self, mock_url_read):
         """ Test that the age of the job is returned. """
         mock_url_read.return_value = '''{"timestamp":1534268940906}'''
-        self.assertEqual(
-            datetime.fromtimestamp(1534268940906 / 1000) - timedelta(
-                hours=(time.localtime().tm_hour - time.gmtime().tm_hour)), self.__jenkins.datetime(*('job',))
-        )
+        self.assertEqual(datetime.utcfromtimestamp(1534268940906 / 1000), self.__jenkins.datetime(*('job',)))

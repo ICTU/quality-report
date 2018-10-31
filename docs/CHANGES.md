@@ -1,3 +1,8 @@
+2018-11-01  Release 2.77.4
+
+  * Bug #551: get address info error handled in OWASP dependency report.
+
+
 2018-10-26  Release 2.77.3
 
   * Bug fix: Don't crash when the Checkmarx last scan JSON doesn't contain the end date and time of the last scan.
