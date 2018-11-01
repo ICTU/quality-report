@@ -107,6 +107,51 @@ class FormatTimeDeltaTest(unittest.TestCase):
         """ Test that two days doesn't include hours. """
         self.assert_format('2 dagen', hours=55)
 
+    def test_count_working_days(self):
+        """ Test that number of working days between two Tuesdays is 5."""
+        self.assertEqual(5, utils.count_working_days(datetime.datetime(2018, 10, 30, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 6, 17, 20, 21)))
+
+    def test_count_working_days_sundays(self):
+        """ Test that number of working days between two Sundays is 5."""
+        self.assertEqual(5, utils.count_working_days(datetime.datetime(2018, 11, 4, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 11, 17, 20, 21)))
+
+    def test_count_working_days_over_weekend(self):
+        """ Test that number of working days between Thursday and Tuesday is 3."""
+        self.assertEqual(3, utils.count_working_days(datetime.datetime(2018, 11, 1, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 6, 17, 20, 21)))
+
+    def test_count_working_days_in_one_week(self):
+        """ Test that number of working days between Monday and Tuesday is 1."""
+        self.assertEqual(1, utils.count_working_days(datetime.datetime(2018, 11, 5, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 6, 17, 20, 21)))
+
+    def test_count_working_days_friday_sunday(self):
+        """ Test that number of working days between Friday and Sunday is 1."""
+        self.assertEqual(1, utils.count_working_days(datetime.datetime(2018, 11, 2, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 4, 17, 20, 21)))
+
+    def test_count_working_days_same_day(self):
+        """ Test that number of working days for the same day is 0."""
+        self.assertEqual(0, utils.count_working_days(datetime.datetime(2018, 11, 5, 9, 20, 21),
+                                                     datetime.datetime(2018, 11, 5, 17, 20, 21)))
+
+    def test_count_working_days_over_weeks(self):
+        """ Test that number of working days between Thursday and Tuesday in a week is 8."""
+        self.assertEqual(8, utils.count_working_days(datetime.datetime(2018, 10, 25, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 6, 17, 20, 21)))
+
+    def test_count_working_days_negative(self):
+        """ Test that number of working days is negative if the dates are reversed. """
+        self.assertEqual(-8, utils.count_working_days(datetime.datetime(2018, 11, 6, 17, 20, 21),
+                                                      datetime.datetime(2018, 10, 25, 19, 20, 21)))
+
+    def test_count_working_days_over_week_monday_wednesday(self):
+        """ Test that number of working days between Thursday and Tuesday in a week is 8."""
+        self.assertEqual(7, utils.count_working_days(datetime.datetime(2018, 11, 5, 19, 20, 21),
+                                                     datetime.datetime(2018, 11, 14, 17, 20, 21)))
+
 
 class HtmlEscapeTest(unittest.TestCase):
     """ Unit tests of the HTML escape method. """

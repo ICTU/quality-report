@@ -155,6 +155,22 @@ def format_timedelta(timedelta: TimeDelta) -> str:
     return 'minder dan een minuut'
 
 
+def count_working_days(start: DateTime, end: DateTime):
+    """ Function counts number of working days between start and end date, ignoring given time parts. """
+    end_normalized = end.replace(hour=0, minute=0, second=0, microsecond=0)
+    start_normalized = start.replace(hour=0, minute=0, second=0, microsecond=0)
+    number_of_days = (end_normalized - start_normalized).days
+    number_of_weeks = number_of_days // 7
+    end_weekday = end.weekday()
+    start_weekday = start.weekday()
+
+    diff = (end_weekday if end_weekday < 5 else 0) - (start_weekday if start_weekday < 5 else 0)
+
+    if diff < 0:
+        diff += 5
+    return number_of_weeks * 5 + diff
+
+
 def html_escape(text: str) -> str:
     """ Return the text with all HTML characters escaped. """
     for character, html_code in [('&', '&amp;'), ('"', '&quot;'), ("'", '&#39;'), (">", '&gt;'), ("<", '&lt;')]:

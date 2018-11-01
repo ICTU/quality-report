@@ -81,7 +81,7 @@ class UserStoriesDuration(LowerIsBetterMetric):
         to_date_str = utils.format_date(to_in_progress_date, year=True) if to_in_progress_date else 'geen'
         from_date_str = utils.format_date(from_in_progress_date, year=True) if from_in_progress_date else 'geen'
         both_dates_ok = from_in_progress_date and to_in_progress_date
-        days = (from_in_progress_date - to_in_progress_date).days if both_dates_ok else "n.v.t"
+        days = utils.count_working_days(to_in_progress_date, from_in_progress_date) if both_dates_ok else "n.v.t"
         yield issue_link, to_date_str, from_date_str, days, not both_dates_ok
 
     @staticmethod

@@ -119,7 +119,7 @@ class UserStoriesDurationTest(unittest.TestCase):
 
         get_issues_mock.assert_called_once()
         get_issue_details_mock.assert_has_calls([call(issue), call(issue2)])
-        self.assertEqual(5, result)
+        self.assertEqual(3.5, result)
 
     @patch.object(metric.UserStoriesDuration, '_get_days_in_progress')
     @patch.object(domain.Metric, '_get_metric_source_ids')
@@ -191,7 +191,7 @@ class UserStoriesDurationTest(unittest.TestCase):
         self.assertEqual('15 december 2017', result.data[0]['day_in'])
         self.assertEqual('25 december 2017', result.data[0]['day_out'])
         self.assertEqual(False, result.data[0]['is_omitted'])
-        self.assertEqual(9, result.data[0]['days'])
+        self.assertEqual(6, result.data[0]['days'])
 
     @patch.object(metric_source.Jira, 'get_issue_details')
     @patch.object(metric_source.Jira, 'get_query')
@@ -301,7 +301,7 @@ class UserStoriesDurationTest(unittest.TestCase):
         get_issue_details_mock.assert_has_calls([call(issue), call(issue2)])
         self.assertEqual('15 december 2017', result.data[0]['day_in'])
         self.assertEqual('25 december 2017', result.data[0]['day_out'])
-        self.assertEqual(9, result.data[0]['days'])
+        self.assertEqual(6, result.data[0]['days'])
         self.assertEqual('15 november 2017', result.data[1]['day_in'])
         self.assertEqual('16 november 2017', result.data[1]['day_out'])
         self.assertEqual(1, result.data[1]['days'])
@@ -332,7 +332,7 @@ class UserStoriesDurationTest(unittest.TestCase):
 
         get_issues_mock.assert_called_once()
         get_issue_details_mock.assert_has_calls([call(issue)])
-        self.assertEqual(9, result)
+        self.assertEqual(6, result)
 
     @patch.object(logging, 'info')
     @patch.object(metric_source.Jira, 'get_issue_details')
@@ -390,7 +390,7 @@ class UserStoriesDurationTest(unittest.TestCase):
             "Invalid date, or issue %s never moved to status 'In Progress'", issue)
         get_issues_mock.assert_called_once()
         get_issue_details_mock.assert_has_calls([call(issue), call(issue2)])
-        self.assertEqual(9, result)
+        self.assertEqual(6, result)
 
     @patch.object(logging, 'info')
     @patch.object(metric_source.Jira, 'get_issue_details')
@@ -447,7 +447,7 @@ class UserStoriesDurationTest(unittest.TestCase):
             "Invalid date, or issue %s still in status 'In Progress'", issue)
         get_issues_mock.assert_called_once()
         get_issue_details_mock.assert_has_calls([call(issue), call(issue2)])
-        self.assertEqual(9, result)
+        self.assertEqual(6, result)
 
     @patch.object(logging, 'info')
     @patch.object(metric_source.Jira, 'get_issue_details')
@@ -555,7 +555,7 @@ class UserStoriesDurationTest(unittest.TestCase):
         self.__subject.metric_source_id.return_value = 3
         duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
-        self.assertEqual("5 user stories waren 9.0 dagen gemiddeld in progress.", duration_metric.report())
+        self.assertEqual("5 user stories waren 6.0 dagen gemiddeld in progress.", duration_metric.report())
 
     def test_norm(self):
         """ Test that the norm is correct. """
