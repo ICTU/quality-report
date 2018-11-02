@@ -610,16 +610,18 @@ class Sonar6SuppressionTest(Sonar6TestCase):
 
     # pylint: disable=no-member
 
-    def test_no_sonar(self, mock_url_read):
-        """ Test that by default the number of no sonar violations is zero. """
-        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + ['{"paging": {"total": "0"}}'] * 20
-        self.assertEqual(0, self._sonar.no_sonar('product'))
+    def test_suppressions(self, mock_url_read):
+        """ Test the number of suppressions. """
+        nr_suppressions = 10
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]'] + \
+                                    ['{"paging": {"total": "%d"}}' % nr_suppressions] * len(Sonar.suppression_rules)
+        self.assertEqual(len(Sonar.suppression_rules) * nr_suppressions, self._sonar.suppressions('product'))
 
-    def test_no_sonar_found(self, mock_url_read):
-        """ Test that no sonar violations. """
-        self._sonar.json = """{"paging": {"total": 10}}"""
-        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "10"}}']
-        self.assertEqual(10, self._sonar.no_sonar('product'))
+    def test_suppressions_on_error(self, mock_url_read):
+        """ Test the number of suppressions on error. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"paging": {"total": "10"}}',
+                                     urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(-1, self._sonar.suppressions('product'))
 
     def test_false_positives(self, mock_url_read):
         """ Test the number of false positives. """
@@ -635,6 +637,21 @@ class Sonar6SuppressionTest(Sonar6TestCase):
         """ Test that the number of false positives is zero. """
         mock_url_read.side_effect = ["5.6", urllib.error.HTTPError(None, None, None, None, None)]
         self.assertEqual(-1, self._sonar.false_positives('product'))
+
+    def test_wont_fix(self, mock_url_read):
+        """ Test the number of won't fix issues. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"total": "8", "issues": []}']
+        self.assertEqual(8, self._sonar.wont_fix('product'))
+
+    def test_no_wont_fix(self, mock_url_read):
+        """ Test that the number of won't fix issues is zero. """
+        mock_url_read.side_effect = ["5.6", '[{"k": "product"}]', '{"total": "0", "issues": []}']
+        self.assertEqual(0, self._sonar.wont_fix('product'))
+
+    def test_no_wont_fix_no_product(self, mock_url_read):
+        """ Test that the number of won't fix issues is zero. """
+        mock_url_read.side_effect = ["5.6", urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(-1, self._sonar.wont_fix('product'))
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
@@ -791,6 +808,16 @@ class Sonar6UrlsTest(Sonar6TestCase):
     def test_plugins_url(self):
         """ Test that the url to the plugin updatecenter page is correct. """
         self.assertEqual('http://sonar/updatecenter/', self._sonar.plugins_url())
+
+    def test_suppressions_url(self):
+        """ Test that the url to the suppressions is correct. """
+        self.assertEqual(f"http://sonar/issues/search#rules={','.join(Sonar.suppression_rules)}|"
+                         "componentRoots=product", self._sonar.suppressions_url("product"))
+
+    def test_wont_fix_url(self):
+        """ Test that the url to the no sonar violations is correct. """
+        self.assertEqual("http://sonar/issues/search#resolutions=WONTFIX|componentRoots=product",
+                         self._sonar.wont_fix_url("product"))
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
@@ -2007,8 +2034,8 @@ class Sonar6NoSonarWithBranchTest(unittest.TestCase):
 
     # pylint: disable=no-member
 
-    def test_no_sonar_with_branch(self, url_read_mock):
-        """ Check that no_sonar function correctly splits the branch and adds it as a parameter to the url. """
+    def test_suppressions_with_branch(self, url_read_mock):
+        """ Check that the suppressions function correctly splits the branch and adds it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         branch = "my-branch"
@@ -2016,57 +2043,61 @@ class Sonar6NoSonarWithBranchTest(unittest.TestCase):
         plugins_json = '[{"key":"branch","name":"Branch","no_sonar":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
         components_search_json = '{"paging": {"total": "1"}}'
-        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        nr_suppressions = 7
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":%d}}' % nr_suppressions
         rule_name = 'squid:NoSonar'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
-                                     measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json] + \
+                                    [measures_json] * len(Sonar.suppression_rules)
         sonar = Sonar(fake_url)
 
-        result = sonar.no_sonar(product + ':' + branch)
+        result = sonar.suppressions(product + ':' + branch)
 
-        url_read_mock.assert_called_with(
+        url_read_mock.assert_any_call(
             fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}&branch={branch}'
             .format(component=product, rule=rule_name, branch=branch))
-        self.assertEqual(7, result)
+        self.assertEqual(len(Sonar.suppression_rules) * nr_suppressions, result)
 
-    def test_no_sonar_without_branch(self, url_read_mock):
-        """ Check that no_sonar function splits an empty branch and does not add it as a parameter to the url. """
+    def test_suppressions_without_branch(self, url_read_mock):
+        """ Check that suppressions function splits an empty branch and does not add it as a parameter to the url. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report"
         server_version = '6.8.1234'
         plugins_json = '[{"key":"branch","name":"Branch","no_sonar":"1.0.0.507"}]'
         component_ret_val = '{"whatever": "not a component"}'
         components_search_json = '{"paging": {"total": "1"}}'
-        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        nr_suppressions = 7
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":%d}}' % nr_suppressions
         rule_name = 'squid:NoSonar'
-        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json,
-                                     measures_json]
+        url_read_mock.side_effect = [server_version, plugins_json, component_ret_val, components_search_json] + \
+                                    [measures_json] * len(Sonar.suppression_rules)
         sonar = Sonar(fake_url)
 
-        result = sonar.no_sonar(product + ':')
+        result = sonar.suppressions(product + ':')
 
-        url_read_mock.assert_called_with(
+        url_read_mock.assert_any_call(
             fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
             .format(component=product, rule=rule_name))
-        self.assertEqual(7, result)
+        self.assertEqual(len(Sonar.suppression_rules * nr_suppressions), result)
 
-    def test_no_sonar_with_branch_old(self, url_read_mock):
-        """ Check that no_sonar function correctly handles product with branch, for sonar version before 6.7. """
+    def test_suppressions_with_branch_old(self, url_read_mock):
+        """ Check that suppressions function correctly handles product with branch, for sonar version before 6.7. """
         fake_url = "http://fake.url/"
         product = "nl.ictu:quality_report:brnch"
         server_version = '6.5.1234'
         components_search_json = '{"paging": {"total": "1"}}'
-        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":7}}'
+        nr_suppressions = 7
+        measures_json = '{"paging":{"pageIndex":1,"pageSize":100,"total":%d}}' % nr_suppressions
         rule_name = 'squid:NoSonar'
-        url_read_mock.side_effect = [server_version, components_search_json, measures_json]
+        url_read_mock.side_effect = [server_version, components_search_json] + \
+                                    [measures_json] * len(Sonar.suppression_rules)
         sonar = Sonar(fake_url)
 
-        result = sonar.no_sonar(product)
+        result = sonar.suppressions(product)
 
-        url_read_mock.assert_called_with(
+        url_read_mock.assert_any_call(
             fake_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
             .format(component=product, rule=rule_name))
-        self.assertEqual(7, result)
+        self.assertEqual(len(Sonar.suppression_rules) * nr_suppressions, result)
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
@@ -2498,29 +2529,29 @@ class Sonar7Test(Sonar7TestCase):
         self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
 
     @patch.object(Sonar7, 'is_branch_name_included')
-    def test_no_sonar(self, mock_is_branch_name_included, mock_url_read):
-        """ Test that the number of NOSONAR usages equals the one returned by the violations page. """
+    def test_suppressions(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of suppressions equals the one returned by the violations page. """
         mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"total": "25"}}']
         mock_is_branch_name_included.return_value = False
-        self.assertEqual(25, self._sonar.no_sonar('product'))
+        self.assertEqual(25, self._sonar.suppressions('product'))
 
     @patch.object(Sonar7, 'is_branch_name_included')
-    def test_no_sonar_error(self, mock_is_branch_name_included, mock_url_read):
-        """ Test that the number of NOSONAR usages returns -1 if http error occurs. """
+    def test_suppressions_error(self, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of suppressions returns -1 if http error occurs. """
         mock_url_read.side_effect = ['{"paging": {"total": "1"}}', urllib.error.HTTPError(None, None, None, None, None)]
         mock_is_branch_name_included.return_value = False
-        self.assertEqual(-1, self._sonar.no_sonar('product'))
+        self.assertEqual(-1, self._sonar.suppressions('product'))
 
     @patch.object(Sonar7, 'is_branch_name_included')
     @patch.object(logging, 'error')
-    def test_no_sonar_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
-        """ Test that the number of NOSONAR usages returns -1 if different json is returned. """
+    def test_suppressions_missing(self, mock_log_error, mock_is_branch_name_included, mock_url_read):
+        """ Test that the number of suppressions returns -1 if different json is returned. """
         mock_url_read.side_effect = ['{"paging": {"total": "1"}}', '{"paging": {"no_total": "1"}}']
         mock_is_branch_name_included.return_value = False
-        self.assertEqual(-1, self._sonar.no_sonar('product'))
+        self.assertEqual(-1, self._sonar.suppressions('product'))
         mock_log_error.assert_called_once()
         self.assertEqual(mock_log_error.call_args[0][0], "Error parsing json response in %s: %s")
-        self.assertEqual(mock_log_error.call_args[0][1], "no_sonar")
+        self.assertEqual(mock_log_error.call_args[0][1], "suppressions")
         self.assertIsInstance(mock_log_error.call_args[0][2], KeyError)
 
     @patch.object(Sonar7, 'is_branch_name_included')
@@ -2576,6 +2607,15 @@ class Sonar7Test(Sonar7TestCase):
         mock_error.assert_called_once()
         self.assertIsInstance(mock_error.call_args[0][4], ValueError)
         self.assertEqual(datetime.datetime.min, result)
+
+    @patch.object(Sonar7, '_has_project')
+    @patch.object(Sonar7, 'is_branch_name_included')
+    def test_ncloc_http_error(self, mock_is_branch_name_included, mock_has_project, mock_url_read):
+        """ Test the ncloc method with http error. """
+        mock_is_branch_name_included.return_value = False
+        mock_has_project.return_value = True
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
+        self.assertEqual(-1, self._sonar.ncloc('product'))
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')

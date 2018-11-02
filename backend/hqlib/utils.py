@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 
-from typing import Any, Tuple, Union
+from typing import Any, Dict, Tuple, Union
 import datetime
 import json
 import logging
@@ -213,6 +213,6 @@ def url_join(*parts: str) -> str:
     return "/".join([part.strip("/") for part in parts]) + ("/" if parts and parts[-1].endswith("/") else "")
 
 
-def format_link_object(url: str, text: str) -> dict:
+def format_link_object(url: str, text: str) -> Dict[str, str]:
     """ Formats link dictionary object. """
     return {"href": url, "text": text}

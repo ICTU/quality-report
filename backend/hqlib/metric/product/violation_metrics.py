@@ -18,8 +18,8 @@ limitations under the License.
 from typing import List
 
 from hqlib import utils
-from hqlib.typing import MetricParameters
-from ..metric_source_mixin import SonarDashboardMetric, SonarViolationsMetric, SonarMetric
+from hqlib.typing import MetricParameters, MetricValue
+from ..metric_source_mixin import SonarDashboardMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
 
 
@@ -35,7 +35,7 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
                           "number": "Aantal__detail-column-number",
                           "debt": "Geschatte oplostijd__detail-column-number"}
 
-    def extra_info_rows(self) -> list((object, int, str)):
+    def extra_info_rows(self) -> List:
         """ Returns formatted rows of extra info table for code maintainability metrics. """
         violation_sorts = [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell')]
         ret = list()
@@ -52,7 +52,7 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
         values['violation_type'] = cls.violation_type
         return values
 
-    def value(self):
+    def value(self) -> MetricValue:
         method_name = '{0}_violations'.format(self.violation_type)
         val = getattr(self._metric_source, method_name)(self._sonar_id()) if self._metric_source else -1
         if val <= 0:
@@ -96,33 +96,47 @@ class MajorViolations(Violations):
     url_label_text = 'Major violations per soort'
 
 
-class NoSonar(SonarViolationsMetric, LowerIsBetterMetric):
-    """ Metric for measuring the number of times //NOSONAR is used to suppress violations. """
-    name = 'Hoeveelheid violation-onderdrukkingen met //NOSONAR'
-    unit = 'violation-onderdrukkingen'
-    norm_template = 'Violations worden maximaal {target} keer onderdrukt met //NOSONAR. ' \
-        'Meer dan {low_target} {unit} is rood.'
-    template = '{name} bevat {value} {unit}.'
+class ViolationSuppressions(SonarMetric, LowerIsBetterMetric):
+    """ Metric for measuring the number of violations suppressed. """
+    name = "Hoeveelheid onderdrukte violations"
+    unit = "onderdrukte violations"
+    norm_template = "Maximaal {target} {unit}. Meer dan {low_target} {unit} is rood."
+    template = "{name} heeft {value} {unit}."
     target_value = 25
     low_target_value = 50
+    extra_info_headers = {"suppression_type": "Wijze van onderdrukking",
+                          "number": "Aantal__detail-column-number"}
 
-    def value(self):
-        return self._metric_source.no_sonar(self._sonar_id()) if self._metric_source else -1
-
-
-class FalsePositives(SonarMetric, LowerIsBetterMetric):
-    """ Metric for measuring the number of issues marked as false positive. """
-    name = 'Hoeveelheid false positives'
-    unit = 'false positives'
-    norm_template = 'Maximaal {target} violations zijn gemarkeerd als false positive. ' \
-                    'Meer dan {low_target} {unit} is rood.'
-    template = '{name} bevat {value} violations die zijn gemarkeerd als false positive.'
-    target_value = 25
-    low_target_value = 50
-
-    def value(self):
-        return self._metric_source.false_positives(self._sonar_id()) if self._metric_source else -1
+    def value(self) -> MetricValue:
+        if not self._metric_source:
+            return -1
+        counts = [suppression[0] for suppression in self._suppressions()]
+        return -1 if -1 in counts else sum(counts)
 
     def _metric_source_urls(self) -> List[str]:
-        """ Return the url to the Sonar violations. """
-        return [self._metric_source.false_positives_url(self._sonar_id())] if self._metric_source else []
+        """ Return the url to the suppressed violations. """
+        # This should ideally link to an issue search that returns all violation suppressions, but that doesn't
+        # seem to be possible in SonarQube
+        return [self._metric_source.violations_url(self._sonar_id())] if self._metric_source else []
+
+    def extra_info_rows(self) -> List:
+        """ Returns formatted rows of extra info table for code maintainability metrics. """
+        if not self._metric_source:
+            return []
+        rows = list()
+        for count, url, label in self._suppressions():
+            if count == -1:
+                return []
+            rows.append((utils.format_link_object(url, label), count))
+        return rows
+
+    def _suppressions(self) -> List:
+        """ Return the violation suppressions. """
+        sonar, sonar_id = self._metric_source, self._sonar_id()
+        return [
+            (sonar.false_positives(sonar_id), sonar.false_positives_url(sonar_id),
+             "Gemarkeerd als false positive in SonarQube"),
+            (sonar.wont_fix(sonar_id), sonar.wont_fix_url(sonar_id),
+             "Gemarkeerd als won't fix in SonarQube"),
+            (sonar.suppressions(sonar_id), sonar.suppressions_url(sonar_id),
+             "Commentaar (bijv. //NOSONAR) in de broncode")]

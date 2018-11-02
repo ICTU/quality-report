@@ -124,8 +124,8 @@ class MajorViolationsTest(ViolationsTestMixin, unittest.TestCase):
     violation_type = 'major'
 
 
-class FalsePositivesTest(unittest.TestCase):
-    """ Unit tests for the false positives metric class. """
+class ViolationSuppressionsTest(unittest.TestCase):
+    """ Unit tests for the violation suppressions metric class. """
 
     def setUp(self):
         self._sonar = MagicMock()
@@ -133,19 +133,72 @@ class FalsePositivesTest(unittest.TestCase):
                                         metric_source_ids={self._sonar: "sonar id"})
 
     def test_value(self):
-        """ Test that the value is equal to the number of false positives as reported by Sonar. """
+        """ Test that the value is equal to the number of violation suppressions as reported by Sonar. """
         self._sonar.false_positives = MagicMock(return_value=3)
+        self._sonar.wont_fix = MagicMock(return_value=4)
+        self._sonar.suppressions = MagicMock(return_value=2)
         project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
-        violation_metric = metric.FalsePositives(subject=self.__subject, project=project)
+        violation_metric = metric.ViolationSuppressions(subject=self.__subject, project=project)
 
-        self.assertEqual(3, violation_metric.value())
+        self.assertEqual(9, violation_metric.value())
         self._sonar.false_positives.assert_called_once_with('sonar id')
 
     def test_value_no_metric_source(self):
         """ Test that the value is equal to -1 when there is no metric source. """
         project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
         project.metric_sources = MagicMock(return_value=[None])
-        violation_metric = metric.FalsePositives(subject=self.__subject, project=project)
+        violation_metric = metric.ViolationSuppressions(subject=self.__subject, project=project)
 
         self.assertEqual(-1, violation_metric.value())
         self._sonar.false_positives.assert_not_called()
+        self._sonar.wont_fix.assert_not_called()
+        self._sonar.no_sonar.assert_not_called()
+
+    def test_url(self):
+        """ Test the metric url. """
+        self._sonar.metric_source_name = "SonarQube"
+        self._sonar.violations_url.return_value = "http://sonar/"
+        project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
+        violation_metric = metric.ViolationSuppressions(subject=self.__subject, project=project)
+
+        self.assertEqual(dict(SonarQube="http://sonar/"), violation_metric.url())
+
+    def test_extra_info_rows(self):
+        """ Test that the extra info contains the different types of suppressions. """
+        self._sonar.false_positives_url.return_value = "url_false_positives"
+        self._sonar.wont_fix_url.return_value = "url_wont_fix"
+        self._sonar.suppressions_url.return_value = "url_no_sonar"
+        self._sonar.false_positives.return_value = 1
+        self._sonar.wont_fix.return_value = 3
+        self._sonar.suppressions.return_value = 5
+        project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
+        violation_metric = metric.ViolationSuppressions(subject=self.__subject, project=project)
+        result = violation_metric.extra_info_rows()
+
+        self.assertEqual([
+            ({'href': 'url_false_positives', 'text': "Gemarkeerd als false positive in SonarQube"}, 1),
+            ({'href': 'url_wont_fix', 'text': "Gemarkeerd als won't fix in SonarQube"}, 3),
+            ({'href': 'url_no_sonar', 'text': "Commentaar (bijv. //NOSONAR) in de broncode"}, 5)
+        ], result)
+
+    def test_extra_info_rows_without_metric_source(self):
+        """ Test there are no rows without metric source. """
+        project = domain.Project()
+        violation_metric = metric.ViolationSuppressions(subject=self.__subject, project=project)
+        result = violation_metric.extra_info_rows()
+
+        self.assertEqual([], result)
+
+    def test_extra_info_rows_on_error(self):
+        """ Test there are no rows without metric source. """
+        self._sonar.false_positives_url.return_value = "url_false_positives"
+        self._sonar.wont_fix_url.return_value = "url_wont_fix"
+        self._sonar.no_sonar_url.return_value = "url_no_sonar"
+        self._sonar.false_positives.return_value = 1
+        self._sonar.wont_fix.return_value = -1
+        self._sonar.no_sonar.return_value = 5
+        project = domain.Project(metric_sources={metric_source.Sonar: self._sonar})
+        violation_metric = metric.ViolationSuppressions(subject=self.__subject, project=project)
+        result = violation_metric.extra_info_rows()
+
+        self.assertEqual([], result)

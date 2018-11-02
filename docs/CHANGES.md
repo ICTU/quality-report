@@ -1,3 +1,10 @@
+2018-11-02  Release 2.78.0
+
+  * Feature #334: Merge the metrics for SonarQube violation suppression (one was measuring the number of //NOSONAR
+    comments in source code and the other violations marked as false positive in SonarQube) into one metric 
+    that also counts violations closed as won't fix. 
+  
+
 2018-11-02  Release 2.77.5
 
   * Bug #225: UserStoriesDuration metric is now expressed in working days, not in calendar days.

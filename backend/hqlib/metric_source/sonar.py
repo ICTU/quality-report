@@ -45,6 +45,8 @@ class Sonar(metric_source.TestReport):
     """ Class representing the Sonar facade. """
 
     metric_source_name = 'SonarQube'
+    suppression_rules = ("squid:NoSonar", "csharpsquid:S1309", "squid:S1309", "squid:S1310", "squid:S1315",
+                         "Pylint:I0011", "Pylint:I0020")
 
     def __init__(self, sonar_url: str, *args, **kwargs) -> None:
         self._url_opener = \
@@ -64,10 +66,10 @@ class Sonar(metric_source.TestReport):
             self.__class__ = Sonar6
 
         self._init_from_facade(sonar_url=sonar_url)  # pylint: disable=no-member
-        self.__log_verison_messages(version_number)
+        self.__log_version_messages(version_number)
 
     @classmethod
-    def __log_verison_messages(cls, version_number: LooseVersion):
+    def __log_version_messages(cls, version_number: LooseVersion):
         if version_number is not None:
             if version_number < LooseVersion('5.4'):
                 logging.warning(
@@ -107,7 +109,6 @@ class Sonar(metric_source.TestReport):
 
 class Sonar6(Sonar):
     """ Class representing the Sonar instance, for apis supported in versions 5.x and 6.x. """
-
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-many-public-methods
 
@@ -127,6 +128,8 @@ class Sonar6(Sonar):
 
         self._base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self._base_violations_url = sonar_url + 'issues/search#resolved=false|componentRoots={component}'
+        self._suppressions_url = sonar_url + f"issues/search#rules={','.join(self.suppression_rules)}" + \
+            "|componentRoots={component}"
         self._violations_type_severity_url = sonar_url + \
             'project/issues?id={component}&resolved=false&types={type}&severities={severities}'
         self._issues_api_url = sonar_url + 'api/issues/search?componentRoots={component}&resolved=false&rules={rule}'
@@ -143,6 +146,8 @@ class Sonar6(Sonar):
         self._false_positives_api_url = sonar_url + \
             'api/issues/search?resolutions=FALSE-POSITIVE&componentRoots={resource}'
         self._false_positives_url = sonar_url + 'issues/search#resolutions=FALSE-POSITIVE|componentRoots={resource}'
+        self._wont_fix_api_url = sonar_url + 'api/issues/search?resolutions=WONTFIX&componentRoots={resource}'
+        self._wont_fix_url = sonar_url + 'issues/search#resolutions=WONTFIX|componentRoots={resource}'
         self._plugin_api_url = sonar_url + 'api/updatecenter/installed_plugins?format=json'
         self._quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?format=json'
         self._old_quality_profiles_api_url = sonar_url + 'api/profiles/list?format=json'
@@ -466,7 +471,6 @@ class Sonar6(Sonar):
                       'squid:S00107',
                       'javascript:ExcessiveParameterList',
                       'python:S107')
-
         for rule_name in rule_names:
             nr_many_parameters = self._rule_violation(product, rule_name, 0, branch)
             if nr_many_parameters:
@@ -485,14 +489,20 @@ class Sonar6(Sonar):
         return 0
 
     @extract_branch_decorator
-    def no_sonar(self, product: str, branch: str) -> int:
-        """ Return the number of NOSONAR usages (or other suppressions) in the source code of the product. """
-        rule_names = ('squid:NoSonar', 'Pylint:I0011')
-        for rule_name in rule_names:
-            nr_no_sonar = self._rule_violation(product, rule_name, 0, branch)
-            if nr_no_sonar:
-                return nr_no_sonar
-        return 0
+    def suppressions(self, product: str, branch: str) -> int:
+        """ Return the number of violation suppressions in the source code of the product. """
+        total = 0
+        for rule_name in self.suppression_rules:
+            suppressions = self._rule_violation(product, rule_name, -1, branch)
+            if suppressions == -1:
+                return -1
+            total += suppressions
+        return total
+
+    @extract_branch_decorator
+    def suppressions_url(self, product: str, branch: str) -> str:
+        """ Return the url for the suppression of rules in the source code. """
+        return self._add_branch_param_to_url(self._suppressions_url.format(component=product), branch)
 
     @extract_branch_decorator
     def violations_url(self, product: str, branch: str) -> str:
@@ -510,6 +520,16 @@ class Sonar6(Sonar):
     def false_positives_url(self, product: str, branch: str) -> str:
         """ Return the url to the list of false positives. """
         return self._add_branch_param_to_url(self._false_positives_url.format(resource=product), branch)
+
+    @extract_branch_decorator
+    def wont_fix(self, product: str, branch: str) -> int:
+        """ Return the number of won't fix issues listed for the product. """
+        return self.__number_of_issues(product, branch, self._wont_fix_api_url.format(resource=product), 0)
+
+    @extract_branch_decorator
+    def wont_fix_url(self, product: str, branch: str) -> str:
+        """ Return the url to the list of won't fix issues. """
+        return self._add_branch_param_to_url(self._wont_fix_url.format(resource=product), branch)
 
     # Meta data
 
@@ -675,6 +695,8 @@ class Sonar7(Sonar6):
 
         self._base_dashboard_url = sonar_url + 'dashboard?id={project}'
         self._base_violations_url = sonar_url + 'project/issues?id={component}&resolved=false'
+        self._suppressions_url = sonar_url + "project/issues?id={component}&" + \
+            f"rules={','.join(self.suppression_rules)}"
         self._violations_type_severity_url = sonar_url + \
             'project/issues?id={component}&resolved=false&types={type}&severities={severities}'
         self._issues_api_url = sonar_url + 'api/issues/search?componentKeys={component}&resolved=false&rules={rule}'
@@ -688,7 +710,9 @@ class Sonar7(Sonar6):
         self._measures_api_url = sonar_url + 'api/measures/component?component={component}&metricKeys={metric}'
         self._false_positives_api_url = sonar_url + \
             'api/issues/search?resolutions=FALSE-POSITIVE&componentKeys={resource}'
-        self._false_positives_url = sonar_url + 'issues/search?componentKeys={resource}&resolutions=FALSE-POSITIVE'
+        self._false_positives_url = sonar_url + 'project/issues?id={resource}&resolutions=FALSE-POSITIVE'
+        self._wont_fix_api_url = sonar_url + 'api/issues/search?resolutions=WONTFIX&componentKeys={resource}'
+        self._wont_fix_url = sonar_url + 'project/issues?id={resource}&resolutions=WONTFIX'
         self._plugin_api_url = sonar_url + 'api/plugins/installed'
         self._quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?format=json'
         logging.info("Sonar class instantiated as Sonar7.")
@@ -802,9 +826,9 @@ class Sonar7(Sonar6):
         return self.__get_rule_violations(product, branch, rule_names, 'commented_loc')
 
     @extract_branch_decorator
-    def no_sonar(self, product: str, branch: str) -> int:
-        """ Return the number of NOSONAR usages (or other suppressions) in the source code of the product. """
-        return self.__get_rule_violations(product, branch, 'squid:NoSonar,Pylint:I0011', 'no_sonar')
+    def suppressions(self, product: str, branch: str) -> int:
+        """ Return the number of suppressions in the source code of the product. """
+        return self.__get_rule_violations(product, branch, ','.join(self.suppression_rules), 'suppressions')
 
     @functools.lru_cache(maxsize=4096)
     def _metric(self, product: str, metric_name: str, branch: str) -> Number:

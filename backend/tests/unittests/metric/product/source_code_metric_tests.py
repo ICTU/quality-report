@@ -54,11 +54,6 @@ class FakeSonar(object):
         """ Return the number of methods. """
         return 100
 
-    @staticmethod
-    def no_sonar(*args):
-        """ Return the number of //NOSONAR usages. """
-        return 4
-
 
 class SonarViolationsUrlTestMixin(object):
     # pylint: disable=too-few-public-methods
@@ -155,25 +150,3 @@ class ManyParametersTest(SonarViolationsUrlTestMixin, unittest.TestCase):
         """ Test that the right values are returned to fill in the norm template. """
         self.assertTrue(metric.ManyParameters.norm_template.format(
             **metric.ManyParameters.norm_template_default_values()))
-
-
-class NoSonarTest(SonarViolationsUrlTestMixin, unittest.TestCase):
-    """ Unit tests for the no Sonar metric. """
-
-    def setUp(self):
-        sonar = FakeSonar()
-        subject = domain.Product(short_name='PR', name='FakeSubject', metric_source_ids={sonar: "sonar id"})
-        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
-        self._metric = metric.NoSonar(subject=subject, project=project)
-
-    def test_value(self):
-        """ Test that the value of the metric equals the number of times //NOSONAR was used. """
-        self.assertEqual(4, self._metric.value())
-
-    def test_report(self):
-        """ Test that the report of the metric is correct. """
-        self.assertEqual('FakeSubject bevat 4 violation-onderdrukkingen.', self._metric.report())
-
-    def test_norm_template_default_values(self):
-        """ Test that the right values are returned to fill in the norm template. """
-        self.assertTrue(metric.NoSonar.norm_template.format(**metric.NoSonar.norm_template_default_values()))
