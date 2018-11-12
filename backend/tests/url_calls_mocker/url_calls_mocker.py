@@ -471,6 +471,36 @@ class UrlOpenerMock(UrlOpener):
                 self._get_file_content(
                     examples_metric_sources_path / 'sonar_info_code_smell.json'
                 ),
+            'https://my.sonarqube.com/api/issues/search?resolutions=WONTFIX&componentRoots=nl.comp:my_project':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+            'https://my.sonarqube.com/api/issues/search?componentRoots='
+            'nl.comp:my_project&resolved=false&rules=csharpsquid:S1309':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+            'https://my.sonarqube.com/api/issues/search?componentRoots='
+            'nl.comp:my_project&resolved=false&rules=squid:S1309':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+            'https://my.sonarqube.com/api/issues/search?componentRoots='
+            'nl.comp:my_project&resolved=false&rules=squid:S1310':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+            'https://my.sonarqube.com/api/issues/search?componentRoots='
+            'nl.comp:my_project&resolved=false&rules=squid:S1315':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+            'https://my.sonarqube.com/api/issues/search?componentRoots='
+            'nl.comp:my_project&resolved=false&rules=Pylint:I0020':
+                self._get_file_content(
+                    examples_metric_sources_path / 'sonar_search_0_found.json'
+                ),
+
             # end Sonar
 
             # begin trello

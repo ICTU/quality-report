@@ -14,4 +14,4 @@
 - check equals:
     actionTableHeader: 'Te late acties'
     actionTableLink: 'Wiki actions'
-    actionTableColumnHeader: 'Te laat '
+    actionTableColumnHeader: 'Te laat'

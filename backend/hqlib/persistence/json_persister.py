@@ -23,12 +23,12 @@ class JsonPersister():
     """ Abstract class defining the interface for json persistence (to file system, mongo db or else). """
 
     @classmethod
-    def read_json(cls, location: str) -> Dict[str, Union[List, Dict]]:
+    def read_json(cls, location: str) -> Dict[str, Union[str, List, Dict]]:
         """ Reads persisted json document. """
         raise NotImplementedError
 
     @classmethod
-    def write_json(cls, document, location: str):
+    def write_json(cls, document: Dict, location: str):
         """ Writes json document to the persistence layer. """
         raise NotImplementedError
 
@@ -37,20 +37,22 @@ class FilePersister(JsonPersister):
     """ Saves/reads json documents to file system. """
 
     @classmethod
-    def read_json(cls, location: str) -> Dict[str, Union[List, Dict]]:
+    def read_json(cls, location: str) -> Dict[str, Union[str, List, Dict]]:
         """ Returns the parsed json document from the file. """
         path = pathlib.Path(location)
         try:
             return json.loads(path.read_text())
-        except (IOError, FileNotFoundError):
-            logging.error("Error reading file %s.", location)
-            return None
+        except (IOError, FileNotFoundError) as reason:
+            logging.error("Error reading file %s. Reason: %s.", location, reason)
+        except json.decoder.JSONDecodeError as reason:
+            logging.error("Invalid json format found in file %s. Reason: %s.", location, reason)
+        return None
 
     @classmethod
-    def write_json(cls, document, location: str):
+    def write_json(cls, document: Dict, location: str):
         """ Writes json document to a file. """
         path = pathlib.Path(location)
         try:
             path.write_text(json.dumps(document, sort_keys=True, indent=2), encoding='utf-8')
-        except IOError:
-            logging.error("Error writing file %s.", location)
+        except IOError as reason:
+            logging.error("Error writing file %s. Reason: %s.", location, reason)

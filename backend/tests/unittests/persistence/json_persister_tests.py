@@ -44,28 +44,37 @@ class FilePersisterTestCase(unittest.TestCase):
             mock_read_text.return_value = '{"x": "y"}'
             self.assertEqual({"x": "y"}, FilePersister.read_json('unimportant'))
 
-    def test_read_invalid_json(self):
+    @patch.object(logging, 'error')
+    def test_read_invalid_json(self, mock_error):
         """ Test that it raises if the json is invalid. """
         with patch.object(pathlib.Path, 'read_text') as mock_read_text:
             mock_read_text.return_value = 'non-json'
-            self.assertRaises(json.decoder.JSONDecodeError, FilePersister.read_json, 'unimportant')
+            self.assertEqual(None, FilePersister.read_json('file\\path'))
+            self.assertEqual("Invalid json format found in file %s. Reason: %s.", mock_error.call_args_list[0][0][0])
+            self.assertEqual('file\\path', mock_error.call_args_list[0][0][1])
+            self.assertIsInstance(mock_error.call_args_list[0][0][2], json.decoder.JSONDecodeError)
 
     @patch.object(logging, 'error')
     def test_read_json_io_error(self, mock_error):
         """ Test there is no result if io error happens and it is logged. """
         with patch.object(pathlib.Path, 'read_text') as mock_read_text:
-            mock_read_text.return_value = None
             mock_read_text.side_effect = IOError
 
             self.assertEqual(None, FilePersister.read_json('file\\path'))
-            mock_error.assert_called_once_with('Error reading file %s.', 'file\\path')
+            self.assertEqual('Error reading file %s. Reason: %s.', mock_error.call_args_list[0][0][0])
+            self.assertEqual('file\\path', mock_error.call_args_list[0][0][1])
+            self.assertIsInstance(mock_error.call_args_list[0][0][2], IOError)
 
-    def test_read_json_file_not_found(self):
-        """ Test there is no result if file is not found. """
+    @patch.object(logging, 'error')
+    def test_read_json_file_not_found(self, mock_error):
+        """ Test there is no result if file error happens and it is logged. """
         with patch.object(pathlib.Path, 'read_text') as mock_read_text:
             mock_read_text.side_effect = FileNotFoundError
 
-            self.assertEqual(None, FilePersister.read_json('unimportant'))
+            self.assertEqual(None, FilePersister.read_json('file\\path'))
+            self.assertEqual('Error reading file %s. Reason: %s.', mock_error.call_args_list[0][0][0])
+            self.assertEqual('file\\path', mock_error.call_args_list[0][0][1])
+            self.assertIsInstance(mock_error.call_args_list[0][0][2], FileNotFoundError)
 
     def test_write(self):
         """ Test that a json is correctly written to a file. """
@@ -86,4 +95,6 @@ class FilePersisterTestCase(unittest.TestCase):
             FilePersister.write_json('unimportant', 'file\\path')
 
             mock_write_text.assert_called_once_with('"unimportant"', encoding='utf-8')
-            mock_error.assert_called_once_with('Error writing file %s.', 'file\\path')
+            self.assertEqual('Error writing file %s. Reason: %s.', mock_error.call_args_list[0][0][0])
+            self.assertEqual('file\\path', mock_error.call_args_list[0][0][1])
+            self.assertIsInstance(mock_error.call_args_list[0][0][2], IOError)

@@ -251,9 +251,13 @@ class ParseISODateTest(unittest.TestCase):
 
 class ParseISODateTimeTest(unittest.TestCase):
     """ Unit tests for the parse ISO date time method. """
-    def test_some_datetime(self):
+    def test_parse_iso_datetime(self):
         """ Test that parsing a random date time works. """
         self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1), utils.parse_iso_datetime('2015-10-06T15:00:01Z'))
+
+    def test_parse_iso_datetime_ignore_milliseconds(self):
+        """ Test that parsing a random date time works. """
+        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1), utils.parse_iso_datetime('2015-10-06T15:00:01.105Z'))
 
     def test_invalid(self):
         """ Test that parsing an invalid string throws an exception. """

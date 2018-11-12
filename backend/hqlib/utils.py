@@ -114,8 +114,8 @@ def parse_iso_date(date_string: str) -> DateTime:
 
 
 def parse_iso_datetime(datetime_string: str) -> DateTime:
-    """ Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. """
-    return datetime.datetime.strptime(datetime_string, '%Y-%m-%dT%H:%M:%SZ')
+    """ Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. Ignore milliseconds, if provided. """
+    return datetime.datetime.strptime(re.sub(r'\.\d+Z', 'Z', datetime_string), '%Y-%m-%dT%H:%M:%SZ')
 
 
 def parse_sql_datetime(datetime_string: str) -> DateTime:

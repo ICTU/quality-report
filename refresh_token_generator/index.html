@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Refresh Token Generator</title>
+    </head>
+    <body>
+        <h1>HQ Refresh Token Generator</h1>
+        <br/>
+        <p>Using this tool you will generate a <i>refresh token</i> for accessing azure Sharepoint services. Refresh token is long living token used to perpetually acquire authentication tokens and enable HQ to connect and fetch data from Sharepoint services.</p>
+        <p>First, you should register your application at <b>https://portal.azure.com</b>. You will need the <i>Application ID</i> and <i>ClientSecret</i> from there. Also, you have to set <i>Reply URL</i> to <b>http://localhost:5005/login/authorized</b>.</p>
+        <br/>
+        <form action = "/login" method = "post">
+            Organization ID (how is your organization registered by Azure):  <input type = "text" name = "org_id" value="ictu.nl"><br />
+            Client ID (<i>Application ID</i> in the app registration):  <input type = "text" name = "client_id"><br />
+            Client Secret (<i>ClientSecret</i> in the app registration):  <input type = "text" name = "client_secret" /><br/>
+            <br/>
+            <input type = "submit" value = "Submit" />
+        </form>
+    </body>
+</html>
+

@@ -57,6 +57,7 @@ from .test_report.testng_test_report import TestNGTestReport
 from .test_report.uft_test_report import UFTTestReport
 from .issue_log.trello import TrelloBoard
 from .issue_log.wekan import WekanBoard
+from .issue_log.sharepoint_planner import SharepointPlanner
 from .url_opener import UrlOpener
 from .user_story_points_predictor.gros_user_story_points_predictor import GROSUserStoryPointsPredictor
 from .version_control_system.git import Git
