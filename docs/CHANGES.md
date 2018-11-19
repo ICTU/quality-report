@@ -1,3 +1,8 @@
+2018-11-19  Unreleased
+
+  * Feature #555: Only interpret job names as regular expression if they clearly are regular expressions.
+  
+  
 2018-11-02  Release 2.78.0
 
   * Feature #334: Merge the metrics for SonarQube violation suppression (one was measuring the number of //NOSONAR

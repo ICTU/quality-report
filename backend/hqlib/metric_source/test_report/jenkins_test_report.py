@@ -48,7 +48,8 @@ class JenkinsTestReport(test_report.TestReport):
         """ Expand the metric source id if it is a regular expression. """
         if "/" in metric_source_id:
             return {metric_source_id}  # pipeline job
-        reg_exp = re.compile(metric_source_id)
+        reg_exp_string = metric_source_id if set(metric_source_id) & set("$^.*?[]") else f"^{metric_source_id}$"
+        reg_exp = re.compile(reg_exp_string)
         matching_job_names = set(filter(reg_exp.match, job_names))
         if matching_job_names:
             return matching_job_names

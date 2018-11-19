@@ -33,7 +33,7 @@ class JenkinsTestReportTest(unittest.TestCase):
     @patch.object(UrlOpener, "url_read")
     def test_testreport(self, mock_url_read, mock_jenkins_jobs):
         """ Test retrieving a Jenkins test report. """
-        mock_jenkins_jobs.return_value = [{"name": "job"}]
+        mock_jenkins_jobs.return_value = [{"name": "job"}, {"name": "job1"}]
         mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
                                      '"passCount":9, "skipCount":1, "totalCount":12}]}'
         jenkins = JenkinsTestReport(url="http://jenkins")
