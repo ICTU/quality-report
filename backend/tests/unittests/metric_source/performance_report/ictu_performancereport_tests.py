@@ -114,7 +114,7 @@ class ICTUPerformanceReportTest(unittest.TestCase):
 
 
 class ICTUPerformanceReportMultipleReportsTest(ICTUPerformanceReportTest):
-    """ Unit tests for the Silk Performer performance report metric source with multiple reports. """
+    """ Unit tests for the ICTU performance report metric source with multiple reports. """
 
     expected_queries = 2 * ICTUPerformanceReportTest.expected_queries
     expected_queries_violating_max = 2 * ICTUPerformanceReportTest.expected_queries_violating_max

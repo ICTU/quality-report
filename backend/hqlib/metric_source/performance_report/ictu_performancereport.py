@@ -141,15 +141,15 @@ class ICTUPerformanceReport(performance_report.PerformanceReport, beautifulsoup.
 
 
 class ICTUPerformanceLoadTestReport(ICTUPerformanceReport):
-    """ A performance load test done with Silk Performer. """
-    metric_source_name = 'Silk Performer performanceloadtestrapport'
+    """ An ICTU performance load test report. """
+    metric_source_name = 'ICTU performanceloadtestrapport'
 
 
 class ICTUPerformanceEnduranceTestReport(ICTUPerformanceReport):
-    """ A performance endurance test done with Silk Performer. """
-    metric_source_name = 'Silk Performer performanceduurtestrapport'
+    """ An ICTU performance endurance test report. """
+    metric_source_name = 'ICTU performanceduurtestrapport'
 
 
 class ICTUPerformanceScalabilityTestReport(ICTUPerformanceReport):
-    """ A performance scalability test done with Silk Performer. """
-    metric_source_name = 'Silk Performer performanceschaalbaarheidstestrapport'
+    """ An ICTU performance scalability test report. """
+    metric_source_name = 'ICTU performanceschaalbaarheidstestrapport'

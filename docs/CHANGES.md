@@ -1,3 +1,8 @@
+2018-11-21  Release 2.79.2
+
+  * Bug: SilkPerformer was still mentioned in urls to the ICTU performance reports.
+    
+    
 2018-11-21  Release 2.79.1
 
   * Bug #564: SilkPerformer performance reports aren't really SilkPerformer reports but a home grown ICTU format. 
