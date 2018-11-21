@@ -1,3 +1,8 @@
+2018-11-21  Release 2.79.3
+
+  * Bug #566: Sharepoint Planner metric source does not throw an exception when refresh token is an empty string.
+
+
 2018-11-21  Release 2.79.2
 
   * Bug: SilkPerformer was still mentioned in urls to the ICTU performance reports.

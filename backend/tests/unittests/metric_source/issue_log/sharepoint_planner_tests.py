@@ -121,6 +121,60 @@ class SharepointPlannerTest(unittest.TestCase):
         self.assertEqual('Error retrieving access token. reason: %s.', mock_error.call_args_list[0][0][0])
         self.assertIsInstance(mock_error.call_args_list[0][0][1], urllib.error.HTTPError)
 
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_http_error_tasks(self, mock_url_read, mock_write_json, mock_read_json):
+        """ Test that the last activity date is min date, when an http error occurs during tasks retrieval. """
+        mock_url_read.side_effect = [
+            '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
+            urllib.error.HTTPError(None, None, None, None, None)]
+        mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
+        planner = SharepointPlanner(url='/home', client_id='client_id_xx',
+                                    client_secret='client_secret_k=',
+                                    refresh_token_location='file_location_of_token.json')
+
+        last_activity_date = planner.datetime('plan_id_xx')
+
+        mock_write_json.assert_called_once()
+        self.assertEqual(last_activity_date, datetime.datetime.min)
+
+    @patch.object(logging, 'error')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_json_error_tasks(self, mock_url_read, mock_error, mock_write_json, mock_read_json):
+        """ Test that the last activity date is min date, when invalid json retrieved during tasks retrieval. """
+        mock_url_read.side_effect = [
+            '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
+            'non-json']
+        mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
+        planner = SharepointPlanner(url='/home', client_id='client_id_xx',
+                                    client_secret='client_secret_k=',
+                                    refresh_token_location='file_location_of_token.json')
+
+        last_activity_date = planner.datetime('plan_id_xx')
+
+        mock_write_json.assert_called_once()
+        self.assertEqual(last_activity_date, datetime.datetime.min)
+        self.assertEqual('Invalid json retrieved for tasks. Reason: %s.', mock_error.call_args_list[0][0][0])
+        self.assertIsInstance(mock_error.call_args_list[0][0][1], ValueError)
+
+    @patch.object(logging, 'error')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_datetime_json_key_error_tasks(self, mock_url_read, mock_error, mock_write_json, mock_read_json):
+        """ Test that the last activity date is min date, when invalid json retrieved during tasks retrieval. """
+        mock_url_read.side_effect = [
+            '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
+            '{}']
+        mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
+        planner = SharepointPlanner(url='/home', client_id='client_id_xx',
+                                    client_secret='client_secret_k=',
+                                    refresh_token_location='file_location_of_token.json')
+
+        last_activity_date = planner.datetime('plan_id_xx')
+
+        mock_write_json.assert_called_once()
+        self.assertEqual(last_activity_date, datetime.datetime.min)
+        self.assertEqual('Invalid json retrieved for tasks. Reason: %s.', mock_error.call_args_list[0][0][0])
+        self.assertIsInstance(mock_error.call_args_list[0][0][1], KeyError)
+
     @patch.object(logging, 'error')
     @patch.object(url_opener.UrlOpener, 'url_read')
     def test_init_json_error(self, mock_url_read, mock_error, mock_write_json, mock_read_json):
@@ -243,7 +297,7 @@ class SharepointPlannerTest(unittest.TestCase):
     @patch.object(logging, 'error')
     @patch.object(url_opener.UrlOpener, 'url_read')
     def test_nr_of_over_due_actions_invalid_json(self, mock_url_read, mock_error, mock_write_json, mock_read_json):
-        """ Test that the number of overdue tasks returns -1 when json is invalid. """
+        """ Test that the number of overdue tasks returns -1 when tasks json is invalid. """
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             'non-json']
@@ -256,6 +310,21 @@ class SharepointPlannerTest(unittest.TestCase):
         self.assertEqual(planner.nr_of_over_due_actions('plan_id_xx'), -1)
         self.assertEqual('Invalid json retrieved for tasks. Reason: %s.', mock_error.call_args_list[0][0][0])
         self.assertIsInstance(mock_error.call_args_list[0][0][1], ValueError)
+
+    @patch.object(logging, 'info')
+    @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_nr_of_over_due_actions_empty_refresh_json(self, mock_url_read, mock_info, mock_write_json, mock_read_json):
+        """ Test that the number of overdue tasks returns -1 when refresh token file is empty. """
+        mock_read_json.return_value = ''
+        planner = SharepointPlanner(url='/home', client_id='client_id_xx',
+                                    client_secret='client_secret_k=',
+                                    refresh_token_location='file_location_of_token.json')
+
+        mock_write_json.assert_not_called()
+        mock_info.assert_called_once_with(
+            'No refresh token could be loaded. Please, generate one using the script refresh_token_generator.py.')
+        self.assertEqual(planner.nr_of_over_due_actions('plan_id_xx'), -1)
+        mock_url_read.assert_not_called()
 
     @patch.object(logging, 'error')
     @patch.object(url_opener.UrlOpener, 'url_read')

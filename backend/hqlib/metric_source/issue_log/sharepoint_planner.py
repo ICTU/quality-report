@@ -96,12 +96,21 @@ class SharepointPlanner(domain.MetricSource):
         """ Return the date of the latest activity at this plan. """
         if not self.__access_token:
             return datetime.datetime.min
+        try:
+            return self.__get_max_activity_date(metric_source_ids)
+        except url_opener.UrlOpener.url_open_exceptions:
+            pass
+        except (KeyError, ValueError) as reason:
+            logging.error('Invalid json retrieved for tasks. Reason: %s.', reason)
+        return datetime.datetime.min
+
+    def __get_max_activity_date(self, metric_source_ids):
         last_activity_date = ''
         for plan_id in metric_source_ids:
             for task in self._retrieve_tasks(plan_id):
                 last_activity_date = \
                     max(last_activity_date, task['createdDateTime'], self._get_max_assignment_date(task))
-        return utils.parse_iso_datetime(last_activity_date)\
+        return utils.parse_iso_datetime(last_activity_date) \
             if last_activity_date else datetime.datetime.min
 
     @classmethod
@@ -124,18 +133,22 @@ class SharepointPlanner(domain.MetricSource):
 
     @functools.lru_cache(maxsize=4096)
     def _get_tasks_for_criterion(self, *metric_source_ids: str, criterion) -> List:
+        if self.__access_token:
+            try:
+                return self.__loop_through_sources_and_tasks(criterion, metric_source_ids)
+            except url_opener.UrlOpener.url_open_exceptions:
+                pass
+            except (KeyError, ValueError) as reason:
+                logging.error('Invalid json retrieved for tasks. Reason: %s.', reason)
+        return None
+
+    def __loop_through_sources_and_tasks(self, criterion, metric_source_ids):
         result = []
         dt_now = datetime.datetime.now()
-        try:
-            for plan_id in metric_source_ids:
-                for task in self._retrieve_tasks(plan_id):
-                    criterion(dt_now, result, task)
-            return result
-        except url_opener.UrlOpener.url_open_exceptions:
-            pass
-        except (KeyError, ValueError) as reason:
-            logging.error('Invalid json retrieved for tasks. Reason: %s.', reason)
-        return None
+        for plan_id in metric_source_ids:
+            for task in self._retrieve_tasks(plan_id):
+                criterion(dt_now, result, task)
+        return result
 
     @classmethod
     def _append_task_if_overdue(cls, dt_now, result, task):
