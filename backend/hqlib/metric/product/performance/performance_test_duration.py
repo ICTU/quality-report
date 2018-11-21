@@ -47,7 +47,7 @@ class PerformanceLoadTestDuration(PerformanceTestDuration):
                     'Minder dan {low_target} {unit} is rood.'
     template = 'De uitvoeringstijd van de performanceloadtest van {name} is {value} {unit}.'
     metric_source_class = metric_source.PerformanceLoadTestReport
-    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceLoadTestReport]
+    applicable_metric_source_classes = [metric_source.ICTUPerformanceLoadTestReport]
 
 
 class PerformanceEnduranceTestDuration(PerformanceTestDuration):
@@ -60,7 +60,7 @@ class PerformanceEnduranceTestDuration(PerformanceTestDuration):
                     'Minder dan {low_target} {unit} is rood.'
     template = 'De uitvoeringstijd van de performanceduurtest van {name} is {value} {unit}.'
     metric_source_class = metric_source.PerformanceEnduranceTestReport
-    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceEnduranceTestReport]
+    applicable_metric_source_classes = [metric_source.ICTUPerformanceEnduranceTestReport]
 
 
 class PerformanceScalabilityTestDuration(PerformanceTestDuration):
@@ -71,4 +71,4 @@ class PerformanceScalabilityTestDuration(PerformanceTestDuration):
                     'Minder dan {low_target} {unit} is rood.'
     template = 'De uitvoeringstijd van de performanceschaalbaarheidstest van {name} is {value} {unit}.'
     metric_source_class = metric_source.PerformanceScalabilityTestReport
-    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceScalabilityTestReport]
+    applicable_metric_source_classes = [metric_source.ICTUPerformanceScalabilityTestReport]

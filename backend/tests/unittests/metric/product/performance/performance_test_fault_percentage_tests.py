@@ -53,7 +53,7 @@ class FakeSubject:
 class PerformanceLoadTestFaultPercentageTest(unittest.TestCase):
     """ Unit tests for the performance load test fauly percentage metric. """
     metric_class: Type[PerformanceLoadTestAge] = metric.PerformanceLoadTestFaultPercentage
-    metric_source_class = metric_source.SilkPerformerPerformanceLoadTestReport
+    metric_source_class = metric_source.ICTUPerformanceLoadTestReport
     test_type = 'performanceloadtest'
 
     def setUp(self):
@@ -104,12 +104,12 @@ class PerformanceLoadTestFaultPercentageTest(unittest.TestCase):
 class PerformanceEnduranceTestFaultPercentageTest(PerformanceLoadTestFaultPercentageTest):
     """ Unit tests for the performance endurance test fault percentage metric. """
     metric_class = metric.PerformanceEnduranceTestFaultPercentage
-    metric_source_class = metric_source.SilkPerformerPerformanceEnduranceTestReport
+    metric_source_class = metric_source.ICTUPerformanceEnduranceTestReport
     test_type = 'performanceduurtest'
 
 
 class PerformanceScalabilityTestFaultPercentageTest(PerformanceLoadTestFaultPercentageTest):
     """ Unit tests for the performance scalability test fault percentage metric. """
     metric_class = metric.PerformanceScalabilityTestFaultPercentage
-    metric_source_class = metric_source.SilkPerformerPerformanceScalabilityTestReport
+    metric_source_class = metric_source.ICTUPerformanceScalabilityTestReport
     test_type = 'performanceschaalbaarheidstest'

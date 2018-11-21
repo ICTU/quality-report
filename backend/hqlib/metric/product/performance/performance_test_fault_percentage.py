@@ -46,7 +46,7 @@ class PerformanceLoadTestFaultPercentage(PerformanceTestFaultPercentage):
                     'Meer dan {low_target}{unit} is rood.'
     template = 'Het percentage gefaalde transacties in de performanceloadtest van {name} is {value}{unit}.'
     metric_source_class = metric_source.PerformanceLoadTestReport
-    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceLoadTestReport]
+    applicable_metric_source_classes = [metric_source.ICTUPerformanceLoadTestReport]
 
 
 class PerformanceEnduranceTestFaultPercentage(PerformanceTestFaultPercentage):
@@ -57,7 +57,7 @@ class PerformanceEnduranceTestFaultPercentage(PerformanceTestFaultPercentage):
                     'Meer dan {low_target}{unit} is rood.'
     template = 'Het percentage gefaalde transacties in de performanceduurtest van {name} is {value}{unit}.'
     metric_source_class = metric_source.PerformanceEnduranceTestReport
-    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceEnduranceTestReport]
+    applicable_metric_source_classes = [metric_source.ICTUPerformanceEnduranceTestReport]
 
 
 class PerformanceScalabilityTestFaultPercentage(PerformanceTestFaultPercentage):
@@ -68,4 +68,4 @@ class PerformanceScalabilityTestFaultPercentage(PerformanceTestFaultPercentage):
                     '{target}{unit}. Meer dan {low_target}{unit} is rood.'
     template = 'Het percentage gefaalde transacties in de performanceschaalbaarheidstest van {name} is {value}{unit}.'
     metric_source_class = metric_source.PerformanceScalabilityTestReport
-    applicable_metric_source_classes = [metric_source.SilkPerformerPerformanceScalabilityTestReport]
+    applicable_metric_source_classes = [metric_source.ICTUPerformanceScalabilityTestReport]

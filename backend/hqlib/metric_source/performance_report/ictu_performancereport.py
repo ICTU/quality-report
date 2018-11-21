@@ -26,8 +26,8 @@ from hqlib.metric_source import beautifulsoup, url_opener
 from ..abstract import performance_report
 
 
-class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
-    """ The Silk Performer performance report is a variant of a JMeter report. """
+class ICTUPerformanceReport(performance_report.PerformanceReport, beautifulsoup.BeautifulSoupOpener):
+    """ The ICTU Performer performance report is a home grown HTML + Javascript performance report. """
     COLUMN_SUCCESSFUL_TRANSACTIONS = 1
     COLUMN_90_PERC = 4
     COLUMN_FAILED_TRANSACTIONS = 7
@@ -140,16 +140,16 @@ class SilkPerformerPerformanceReport(performance_report.PerformanceReport, beaut
         return self.__report_urls or [self.url()]
 
 
-class SilkPerformerPerformanceLoadTestReport(SilkPerformerPerformanceReport):
+class ICTUPerformanceLoadTestReport(ICTUPerformanceReport):
     """ A performance load test done with Silk Performer. """
     metric_source_name = 'Silk Performer performanceloadtestrapport'
 
 
-class SilkPerformerPerformanceEnduranceTestReport(SilkPerformerPerformanceReport):
+class ICTUPerformanceEnduranceTestReport(ICTUPerformanceReport):
     """ A performance endurance test done with Silk Performer. """
     metric_source_name = 'Silk Performer performanceduurtestrapport'
 
 
-class SilkPerformerPerformanceScalabilityTestReport(SilkPerformerPerformanceReport):
+class ICTUPerformanceScalabilityTestReport(ICTUPerformanceReport):
     """ A performance scalability test done with Silk Performer. """
     metric_source_name = 'Silk Performer performanceschaalbaarheidstestrapport'

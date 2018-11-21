@@ -1,10 +1,12 @@
+2018-11-21  Release 2.79.1
+
+  * Bug #564: SilkPerformer performance reports aren't really SilkPerformer reports but a home grown ICTU format. 
+    Rename the SilkPerformer metric source accordingly.
+
+
 2018-11-21  Release 2.79.0
 
   * Feature #176: Sharepoint Planner added as a metric source for ActionLog metric.
-
-
-2018-11-19  Unreleased
-
   * Feature #555: Only interpret job names as regular expression if they clearly are regular expressions.
   
   

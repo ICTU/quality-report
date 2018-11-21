@@ -21,14 +21,14 @@ import unittest
 import urllib.error
 from typing import cast, IO
 
-from hqlib.metric_source import SilkPerformerPerformanceLoadTestReport
+from hqlib.metric_source import ICTUPerformanceLoadTestReport
 
 
-HTML = (pathlib.Path(__file__).resolve().parent / "silkperformer.html").read_text()
+HTML = (pathlib.Path(__file__).resolve().parent / "ictu_performancereport.html").read_text()
 
 
-class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
-    """ Override the Silk Performer performance report to return the url as report contents. """
+class ICTUPerformanceReportUnderTest(ICTUPerformanceLoadTestReport):  # pylint: disable=too-few-public-methods
+    """ Override the ICTU performance report to return the url as report contents. """
 
     def url_open(self, url: str, log_error: bool = True,
                  post_body: object = None) -> IO:  # pylint: disable=no-self-use,unused-argument
@@ -38,15 +38,15 @@ class SilkPerformerUnderTest(SilkPerformerPerformanceLoadTestReport):  # pylint:
         return cast(IO, io.StringIO("" if "invalid" in url else HTML))
 
 
-class SilkPerformerTest(unittest.TestCase):
-    """ Unit tests for the Silk Performer performance report metric source. """
+class ICTUPerformanceReportTest(unittest.TestCase):
+    """ Unit tests for the ICTU performance report metric source. """
     expected_queries = 18
     expected_queries_violating_max = 1
     expected_queries_violating_wished = expected_queries_violating_max + 1
 
     def setUp(self):
-        SilkPerformerUnderTest.queries.cache_clear()
-        self._performance_report = SilkPerformerUnderTest('http://report/')
+        ICTUPerformanceReportUnderTest.queries.cache_clear()
+        self._performance_report = ICTUPerformanceReportUnderTest('http://report/')
 
     def test_url(self):
         """ Test that the url is correct. """
@@ -77,12 +77,13 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_date_without_urls(self):
         """ Test that the min date is returned if there are no report urls to consult. """
-        class SilkPerformerWithoutUrls(SilkPerformerUnderTest):
+        class ICTUPerformanceReportWithoutUrls(ICTUPerformanceReportUnderTest):
             """ Simulate missing urls. """
             def urls(self, product):  # pylint: disable=unused-argument
                 return []
 
-        self.assertEqual(datetime.datetime.min, SilkPerformerWithoutUrls('http://report').datetime('.*[0-9][0-9].*'))
+        self.assertEqual(datetime.datetime.min,
+                         ICTUPerformanceReportWithoutUrls('http://report').datetime('.*[0-9][0-9].*'))
 
     def test_duration(self):
         """ Test tha the duration of the test is correct. """
@@ -90,12 +91,13 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_duration_without_urls(self):
         """ Test that the max duration is returned if there are no report urls to consult. """
-        class SilkPerformerWithoutUrls(SilkPerformerUnderTest):
+        class ICTUPerformanceReportWithoutUrls(ICTUPerformanceReportUnderTest):
             """ Simulate missing urls. """
             def urls(self, product):  # pylint: disable=unused-argument
                 return []
 
-        self.assertEqual(datetime.timedelta.max, SilkPerformerWithoutUrls('http://report').duration('.*[0-9][0-9].*'))
+        self.assertEqual(datetime.timedelta.max,
+                         ICTUPerformanceReportWithoutUrls('http://report').duration('.*[0-9][0-9].*'))
 
     def test_fault_percentage(self):
         """ Test that the percentage of failed transactions can be read from the report. """
@@ -103,77 +105,79 @@ class SilkPerformerTest(unittest.TestCase):
 
     def test_fault_percentage_without_urls(self):
         """ Test that - is returned if there are no report urls to consult. """
-        class SilkPerformerWithoutUrls(SilkPerformerUnderTest):
+        class ICTUPerformanceReportWithoutUrls(ICTUPerformanceReportUnderTest):
             """ Simulate missing urls. """
             def urls(self, product):  # pylint: disable=unused-argument
                 return []
 
-        self.assertEqual(-1, SilkPerformerWithoutUrls('http://report').fault_percentage('.*[0-9][0-9].*'))
+        self.assertEqual(-1, ICTUPerformanceReportWithoutUrls('http://report').fault_percentage('.*[0-9][0-9].*'))
 
 
-class SilkPerformerMultipleReportsTest(SilkPerformerTest):
+class ICTUPerformanceReportMultipleReportsTest(ICTUPerformanceReportTest):
     """ Unit tests for the Silk Performer performance report metric source with multiple reports. """
 
-    expected_queries = 2 * SilkPerformerTest.expected_queries
-    expected_queries_violating_max = 2 * SilkPerformerTest.expected_queries_violating_max
-    expected_queries_violating_wished = 2 * SilkPerformerTest.expected_queries_violating_wished
+    expected_queries = 2 * ICTUPerformanceReportTest.expected_queries
+    expected_queries_violating_max = 2 * ICTUPerformanceReportTest.expected_queries_violating_max
+    expected_queries_violating_wished = 2 * ICTUPerformanceReportTest.expected_queries_violating_wished
 
     def setUp(self):
-        self._performance_report = SilkPerformerUnderTest('http://report/',
-                                                          report_urls=['http://report/1', 'http://report/2'])
+        self._performance_report = ICTUPerformanceReportUnderTest('http://report/',
+                                                                  report_urls=['http://report/1', 'http://report/2'])
 
 
-class SilkPerformerInvalidReportTest(unittest.TestCase):
-    """ Unit tests for an invalid (missing Responsetimes header) Silk Performer performance report metric source. """
+class ICTUPerformanceReportInvalidTest(unittest.TestCase):
+    """ Unit tests for an invalid (missing Responsetimes header) ICTU performance report metric source. """
 
     def test_queries_with_invalid_report(self):
         """ Test that the value of an invalid report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').queries('p1'))
+        self.assertEqual(-1, ICTUPerformanceReportUnderTest('http://invalid/').queries('p1'))
 
     def test_queries_wished_responsetime_with_invalid_report(self):  # pylint: disable=invalid-name
         """ Test that the value of an invalid report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').queries_violating_wished_responsetime('p1'))
+        self.assertEqual(-1,
+                         ICTUPerformanceReportUnderTest('http://invalid/').queries_violating_wished_responsetime('p1'))
 
     def test_queries_max_responsetime_with_invalid_report(self):
         """ Test that the value of an invalid report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').queries_violating_max_responsetime('p2'))
+        self.assertEqual(-1, ICTUPerformanceReportUnderTest('http://invalid/').queries_violating_max_responsetime('p2'))
 
     def test_date_with_invalid_report(self):
         """ Test that the date of an invalid report is the min date. """
-        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://invalid/').datetime('p4'))
+        self.assertEqual(datetime.datetime.min, ICTUPerformanceReportUnderTest('http://invalid/').datetime('p4'))
 
     def test_duration_with_invalid_report(self):
         """ Test that the duration of an invalid report is the max duration. """
-        self.assertEqual(datetime.timedelta.max, SilkPerformerUnderTest('http://invalid/').duration('p5'))
+        self.assertEqual(datetime.timedelta.max, ICTUPerformanceReportUnderTest('http://invalid/').duration('p5'))
 
     def test_fault_percentage_with_invalid_report(self):
         """ Test that the fault percentage of an invalid report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://invalid/').fault_percentage('p5'))
+        self.assertEqual(-1, ICTUPerformanceReportUnderTest('http://invalid/').fault_percentage('p5'))
 
 
-class SilkPerformerMissingTest(unittest.TestCase):
-    """ Unit tests for a missing Silk Performer performance report metric source. """
+class ICTUPerformanceReportMissingTest(unittest.TestCase):
+    """ Unit tests for a missing ICTU performance report metric source. """
 
     def test_queries_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries('p1'))
+        self.assertEqual(-1, ICTUPerformanceReportUnderTest('http://error/').queries('p1'))
 
     def test_queries_max_responsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_max_responsetime('p2'))
+        self.assertEqual(-1, ICTUPerformanceReportUnderTest('http://error/').queries_violating_max_responsetime('p2'))
 
     def test_queries_wished_reponsetime_with_missing_report(self):
         """ Test that the value of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').queries_violating_wished_responsetime('p3'))
+        self.assertEqual(-1,
+                         ICTUPerformanceReportUnderTest('http://error/').queries_violating_wished_responsetime('p3'))
 
     def test_date_with_missing_report(self):
         """ Test that the date of a missing report is the min date. """
-        self.assertEqual(datetime.datetime.min, SilkPerformerUnderTest('http://error/').datetime('p4'))
+        self.assertEqual(datetime.datetime.min, ICTUPerformanceReportUnderTest('http://error/').datetime('p4'))
 
     def test_duration_with_missing_report(self):
         """ Test that the duration of a missing report is the max duration. """
-        self.assertEqual(datetime.timedelta.max, SilkPerformerUnderTest('http://error/').duration('p5'))
+        self.assertEqual(datetime.timedelta.max, ICTUPerformanceReportUnderTest('http://error/').duration('p5'))
 
     def test_fault_percentage_with_missing_report(self):
         """ Test that the fault percentage of a missing report is -1. """
-        self.assertEqual(-1, SilkPerformerUnderTest('http://error/').fault_percentage('p5'))
+        self.assertEqual(-1, ICTUPerformanceReportUnderTest('http://error/').fault_percentage('p5'))

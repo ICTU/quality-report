@@ -54,7 +54,7 @@ class FakeSubject:
 class PerformanceLoadTestDurationTest(unittest.TestCase):
     """ Unit tests for the performance load test duration metric. """
     metric_class: Type[PerformanceLoadTestAge] = metric.PerformanceLoadTestDuration
-    metric_source_class = metric_source.SilkPerformerPerformanceLoadTestReport
+    metric_source_class = metric_source.ICTUPerformanceLoadTestReport
     test_type = 'performanceloadtest'
 
     def setUp(self):
@@ -105,12 +105,12 @@ class PerformanceLoadTestDurationTest(unittest.TestCase):
 class PerformanceEnduranceTestDuration(PerformanceLoadTestDurationTest):
     """ Unit tests for the performance endurance test duration metric. """
     metric_class = metric.PerformanceEnduranceTestDuration
-    metric_source_class = metric_source.SilkPerformerPerformanceEnduranceTestReport
+    metric_source_class = metric_source.ICTUPerformanceEnduranceTestReport
     test_type = 'performanceduurtest'
 
 
 class PerformanceScalabilityTestDuration(PerformanceLoadTestDurationTest):
     """ Unit tests for the performance scalability test duration metric. """
     metric_class = metric.PerformanceScalabilityTestDuration
-    metric_source_class = metric_source.SilkPerformerPerformanceScalabilityTestReport
+    metric_source_class = metric_source.ICTUPerformanceScalabilityTestReport
     test_type = 'performanceschaalbaarheidstest'
