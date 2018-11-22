@@ -48,11 +48,12 @@ class VersionControlSystem(domain.MetricSource):
 
     metric_source_name = 'Version control system'
 
-    def __init__(self, username: str = '', password: str = '', url: str = '',
+    def __init__(self, username: str = '', password: str = '', url: str = '', timeout: int = 120,
                  run_shell_command=subprocess.check_output) -> None:
         self._username = username
         self._password = password
         self._shell_command = run_shell_command
+        self._timeout = timeout  # In seconds
         super().__init__(url=url)
 
     def last_changed_date(self, path: str) -> DateTime:
@@ -102,7 +103,7 @@ class VersionControlSystem(domain.MetricSource):
         if folder:
             os.chdir(folder)
         try:
-            return self._shell_command(shell_command, timeout=120, universal_newlines=True)
+            return self._shell_command(shell_command, timeout=self._timeout, universal_newlines=True)
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as reason:
             # No need to include the shell command in the log, because the reason contains the shell command.
             logging.log(log_level, 'Shell command in folder %s failed: %s', folder, reason)

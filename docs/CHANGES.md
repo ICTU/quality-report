@@ -1,3 +1,9 @@
+2018-11-22  Release 2.80.0
+
+  * Feature: Allow for increasing the timeout used when cloning repositories. 
+    See https://github.com/ICTU/quality-report/wiki/Git.
+    
+    
 2018-11-21  Release 2.79.3
 
   * Bug #566: Sharepoint Planner metric source does not throw an exception when refresh token is an empty string.
