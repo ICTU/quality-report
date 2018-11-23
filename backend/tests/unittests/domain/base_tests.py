@@ -16,13 +16,13 @@ limitations under the License.
 
 import unittest
 
-from hqlib import domain
+from hqlib.domain import DomainObject
 
 
 class DomainObjectTest(unittest.TestCase):
     """ Unit tests for the base domain object class. """
     def setUp(self):
-        self.__object = domain.DomainObject(name='Name', short_name='AC', url='http://url')
+        self.__object = DomainObject(name='Name', short_name='AC', url='http://url')
 
     def test_name(self):
         """ Test the name of the domain object. """
@@ -34,8 +34,18 @@ class DomainObjectTest(unittest.TestCase):
 
     def test_short_name_with_spaces(self):
         """ Test that the short name isn't allowed to contain spaces. """
-        self.assertRaises(ValueError, domain.DomainObject, name="Name", short_name="S p a c e s")
+        self.assertRaises(ValueError, DomainObject, name="Name", short_name="S p a c e s")
 
     def test_url(self):
         """ Test the url of the domain object. """
         self.assertEqual('http://url/', self.__object.url())
+
+    def test_compare(self):
+        """ Test that domain objects can be compared and sorted. """
+        self.assertEqual(DomainObject(name="Name"), DomainObject(name="Name"))
+        self.assertNotEqual(DomainObject(name="Name"), DomainObject(name="Other name"))
+        self.assertEqual(DomainObject(name="Name", short_name="N"), DomainObject(name="Name", short_name="N"))
+        self.assertNotEqual(DomainObject(name="Name", short_name="X"), DomainObject(name="Name", short_name="Y"))
+        self.assertEqual(DomainObject(name="Name", url="http://a"), DomainObject(name="Name", url="http://a"))
+        self.assertNotEqual(DomainObject(name="Name", url="http://a"), DomainObject(name="Name", url="http://b"))
+        self.assertTrue(DomainObject(name="AAA") < DomainObject(name="BBB"))

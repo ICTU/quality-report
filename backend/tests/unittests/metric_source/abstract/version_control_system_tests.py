@@ -14,12 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import logging
 import subprocess
 import unittest
 from unittest.mock import patch
 
-from hqlib.metric_source import VersionControlSystem
+from hqlib.metric_source import VersionControlSystem, Branch
+
+
+class BranchTests(unittest.TestCase):
+    """ Unit tests for the branch class. """
+
+    def test_repr(self):
+        """ Test the repr function. """
+        self.assertEqual("Branch(branch, None, 0001-01-01 00:00:00)", repr(Branch("branch")))
+
+    def test_equality(self):
+        """ Test the equality function. """
+        now = datetime.datetime.now()
+        self.assertEqual(Branch("branch"), Branch("branch"))
+        self.assertNotEqual(Branch("branch"), Branch("other branch"))
+        self.assertEqual(Branch("branch", 2), Branch("branch", 2))
+        self.assertNotEqual(Branch("branch", 2), Branch("branch", 3))
+        self.assertEqual(Branch("branch", 2, now), Branch("branch", 2, now))
+        self.assertNotEqual(Branch("branch", 2, now), Branch("branch", 2))
 
 
 class VersionControlSystemTests(unittest.TestCase):
@@ -43,28 +62,29 @@ class VersionControlSystemTests(unittest.TestCase):
 
     # pylint: disable=protected-access
 
-    def test_run_shell_command(self):
+    @patch.object(subprocess, "check_output")
+    def test_run_shell_command(self, mock_check_output):
         """ Test that the result of the shell command is returned. """
-        mock_shell_command = unittest.mock.Mock(return_value="success")
-        vcs = VersionControlSystem(run_shell_command=mock_shell_command)
-        self.assertEqual("success", vcs._run_shell_command(shell_command=("ls",)))
+        mock_check_output.return_value = "success"
+        self.assertEqual("success", VersionControlSystem()._run_shell_command(shell_command=("ls",)))
 
+    @patch.object(subprocess, "check_output")
     @patch("os.chdir")
-    def test_run_shell_command_chdir(self, mock_chdir):  # pylint: disable=no-self-use
+    def test_run_shell_command_chdir(self, mock_chdir, mock_check_output):  # pylint: disable=no-self-use
         """ Test that shell command is run in the correct folder. """
-        vcs = VersionControlSystem(run_shell_command=unittest.mock.Mock())
-        vcs._run_shell_command(shell_command=("ls",), folder="test")
+        mock_check_output.return_value = "success"
+        VersionControlSystem()._run_shell_command(shell_command=("ls",), folder="test")
         mock_chdir.assert_any_call("test")
 
-    def test_run_shell_command_exception(self):
+    @patch.object(subprocess, "check_output")
+    def test_run_shell_command_exception(self, mock_check_output):
         """ Test that the result is the empty string if an exception occurs. """
-        mock_shell_command = unittest.mock.Mock(side_effect=subprocess.CalledProcessError(1, "ls"))
-        vcs = VersionControlSystem(run_shell_command=mock_shell_command)
-        self.assertEqual("", vcs._run_shell_command(shell_command=("ls",)))
+        mock_check_output.side_effect = [subprocess.CalledProcessError(1, "ls")]
+        self.assertEqual("", VersionControlSystem()._run_shell_command(shell_command=("ls",)))
 
-    def test_run_shell_command_exception_reraise(self):
+    @patch.object(subprocess, "check_output")
+    def test_run_shell_command_exception_reraise(self, mock_check_output):
         """ Test that any exception is reraised if the log level is higher than warning. """
-        mock_shell_command = unittest.mock.Mock(side_effect=subprocess.CalledProcessError(1, "ls"))
-        vcs = VersionControlSystem(run_shell_command=mock_shell_command)
-        self.assertRaises(subprocess.CalledProcessError, vcs._run_shell_command, shell_command=("ls",),
-                          log_level=logging.ERROR)
+        mock_check_output.side_effect = [subprocess.CalledProcessError(1, "ls")]
+        self.assertRaises(subprocess.CalledProcessError, VersionControlSystem()._run_shell_command,
+                          shell_command=("ls",), log_level=logging.ERROR)

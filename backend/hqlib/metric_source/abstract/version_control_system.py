@@ -21,7 +21,7 @@ import logging
 import os
 import re
 import subprocess
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 from hqlib.typing import DateTime
 from hqlib import domain
@@ -36,7 +36,7 @@ class Branch:
         self.date_last_change = date_last_change
 
     def __repr__(self):
-        return "{0}({1}. {2}, {3})".format(self.__class__.__name__, self.name, self.nr_revisions, self.date_last_change)
+        return "{0}({1}, {2}, {3})".format(self.__class__.__name__, self.name, self.nr_revisions, self.date_last_change)
 
     def __eq__(self, other: "Branch") -> bool:
         return self.name == other.name and self.nr_revisions == other.nr_revisions and \
@@ -48,11 +48,9 @@ class VersionControlSystem(domain.MetricSource):
 
     metric_source_name = 'Version control system'
 
-    def __init__(self, username: str = '', password: str = '', url: str = '', timeout: int = 120,
-                 run_shell_command=subprocess.check_output) -> None:
+    def __init__(self, username: str = '', password: str = '', url: str = '', timeout: int = 120) -> None:
         self._username = username
         self._password = password
-        self._shell_command = run_shell_command
         self._timeout = timeout  # In seconds
         super().__init__(url=url)
 
@@ -65,7 +63,7 @@ class VersionControlSystem(domain.MetricSource):
         """ Return a normalized version of the path. """
         return path
 
-    def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
+    def branches(self, path: str) -> Optional[List[str]]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the specified path. """
         raise NotImplementedError
 
@@ -103,7 +101,7 @@ class VersionControlSystem(domain.MetricSource):
         if folder:
             os.chdir(folder)
         try:
-            return self._shell_command(shell_command, timeout=self._timeout, universal_newlines=True)
+            return subprocess.check_output(shell_command, timeout=self._timeout, universal_newlines=True)
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as reason:
             # No need to include the shell command in the log, because the reason contains the shell command.
             logging.log(log_level, 'Shell command in folder %s failed: %s', folder, reason)

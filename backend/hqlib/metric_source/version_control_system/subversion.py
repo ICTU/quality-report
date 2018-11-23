@@ -17,7 +17,7 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import List
+from typing import List, Optional
 
 import bs4
 
@@ -92,7 +92,7 @@ class Subversion(VersionControlSystem):
         svn_info_xml = str(self._run_shell_command(('svn', 'info', branch_url, '--xml', '-r', revision_number)))
         return bs4.BeautifulSoup(svn_info_xml, "lxml")('url')[0].string
 
-    def branches(self, path: str) -> List[str]:
+    def branches(self, path: str) -> Optional[List[str]]:
         """ Return a list of branch names for the specified path (trunk url). """
         return self.__svn_list(self.__branches_folder(path))
 

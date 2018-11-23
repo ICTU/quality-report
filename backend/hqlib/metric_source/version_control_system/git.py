@@ -21,7 +21,7 @@ import logging
 import os
 import pathlib
 import urllib.request
-from typing import Callable, List, Tuple
+from typing import Callable, List, Optional, Tuple
 from subprocess import CalledProcessError
 
 from hqlib.typing import DateTime
@@ -37,12 +37,12 @@ class Git(VersionControlSystem):
         self.__branch_to_checkout: str = kwargs.pop('branch', '')
         self.__chdir = kwargs.pop('chdir', os.chdir)
         super().__init__(*args, **kwargs)
-        self.__repo_folder: str = None
+        self.__repo_folder: pathlib.Path = None
 
     def __hash__(self) -> int:
         return hash(self.name() + self.short_name() + self.url() + self.__branch_to_checkout)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: "Git") -> bool:
         return super().__eq__(other) and self.branch() == other.branch()
 
     @functools.lru_cache(maxsize=1024)
@@ -59,9 +59,10 @@ class Git(VersionControlSystem):
         try:
             timestamp = self._run_shell_command(('git', 'log', '--format="%ct"', '-n', '1', path))
             if timestamp:
-                return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
-        except ValueError as reason:
-            logging.error("Couldn't convert timestamp %s to datetime for path %s: %s", timestamp, path, reason)
+                try:
+                    return datetime.datetime.fromtimestamp(float(timestamp.strip('"\n')))
+                except ValueError as reason:
+                    logging.error("Couldn't convert timestamp %s to datetime for path %s: %s", timestamp, path, reason)
         except CalledProcessError:
             pass
         return datetime.datetime.min
@@ -70,13 +71,12 @@ class Git(VersionControlSystem):
         """ Return the checked out branch. """
         return self.__branch_to_checkout
 
-    def branches(self, path: str) -> List[str]:  # pylint: disable=unused-argument
+    def branches(self, path: str) -> Optional[List[str]]:  # pylint: disable=unused-argument
         """ Return a list of branch names for the master branch. """
         try:
             return self._get_branches()
         except CalledProcessError:
             pass
-        return None
 
     def unmerged_branches(self, path: str, list_of_branches_to_ignore: List[str] = None,
                           re_of_branches_to_ignore: str = '',

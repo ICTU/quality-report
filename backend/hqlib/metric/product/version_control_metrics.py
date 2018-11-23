@@ -112,7 +112,7 @@ class UnmergedBranches(LowerIsBetterMetric):
             urls[branch] = self.__branch_folder_for_branch(self.__vcs_path(), branch)
         return urls
 
-    def __branches(self) -> List[str]:
+    def __branches(self) -> Optional[List[str]]:
         """ Return a list of branches for the product. """
         return self._metric_source.branches(self.__vcs_path()) if self._metric_source else None
 
