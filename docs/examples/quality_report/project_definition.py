@@ -8,7 +8,11 @@ import hqlib.metric_source.url_opener
 from tests.url_calls_mocker.url_calls_mocker import UrlOpenerMock
 hqlib.metric_source.url_opener.UrlOpener = UrlOpenerMock
 
+import subprocess
 from tests.check_output_mocker.check_output_mocker import CheckOutputMocker
+
+from unittest.mock import patch
+patch.object(subprocess, "check_output", new=CheckOutputMocker.check_output)
 ### END
 
 import pathlib
@@ -22,8 +26,7 @@ from hqlib.domain import Project, Environment, Application, Team, Document, Tech
 PROJECT_DIR = pathlib.Path(__file__).parent.parent.parent.parent
 
 JENKINS = metric_source.Jenkins(url='http://www.jenkins.proj.org:8080/')
-GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git',
-                        run_shell_command=CheckOutputMocker.check_output)
+GIT = metric_source.Git(url='https://github.com/ICTU/quality-report.git')
 SONAR = metric_source.Sonar('https://my.sonarqube.com/')
 JUNIT=metric_source.JunitTestReport()
 HISTORY = metric_source.CompactHistory(PROJECT_DIR / 'docs' / 'examples' / 'quality_report' / 'history.json')

@@ -28,10 +28,18 @@ class CIServer(domain.MetricSource):
         """ Return the total number of active CI jobs. """
         raise NotImplementedError
 
+    def number_of_failing_jobs(self) -> int:
+        """ Return the number of failing CI jobs. """
+        raise NotImplementedError
+
+    def number_of_unused_jobs(self) -> int:
+        """ Return the number of unused CI jobs. """
+        raise NotImplementedError
+
     def failing_jobs_url(self) -> Optional[Dict[str, str]]:
-        """ Return the urls for the failing Jenkins jobs. """
+        """ Return the urls for the failing CI jobs. """
         raise NotImplementedError
 
     def unused_jobs_url(self) -> Optional[Dict[str, str]]:
-        """ Return the urls for the unused Jenkins jobs. """
+        """ Return the urls for the unused CI jobs. """
         raise NotImplementedError

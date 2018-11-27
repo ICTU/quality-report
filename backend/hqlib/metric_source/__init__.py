@@ -36,6 +36,7 @@ from .coverage_report.lcov import LCOV
 from .file.file_with_date import FileWithDate
 from .history import History, CompactHistory
 from .ci_server.jenkins import Jenkins
+from .ci_server.gitlab import GitLabCI
 from .issue_tracker.jira_filter import JiraFilter
 from .jira import Jira
 from .open_vas_scan_report import OpenVASScanReport

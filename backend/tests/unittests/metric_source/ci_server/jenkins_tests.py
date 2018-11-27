@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import datetime
+import logging
 import urllib.error
 import unittest
 from unittest.mock import patch
@@ -61,7 +62,7 @@ class JenkinsTest(unittest.TestCase):
         """ Test the failing jobs with one failing job. """
         date_time = datetime.datetime(2013, 4, 1, 12, 0, 0)
         mock_url_read.side_effect = [
-            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            b'{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
             '{"jobs":[{"name":"job1","url":"http://jenkins/project-x/job/job1","buildable":True,"color":"red"}]}',
             '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
             '{"building":False,"result":"SUCCESS","timestamp":' + str(int(to_jenkins_timestamp(date_time))) + '}']
@@ -69,6 +70,47 @@ class JenkinsTest(unittest.TestCase):
         expected_days_ago = (datetime.datetime.utcnow() - date_time).days
         self.assertEqual([('project-x/job1', 'http://jenkins/project-x/job/job1', '{0:d}'.format(expected_days_ago))],
                          self.__jenkins.failing_jobs_url())
+
+    @patch.object(logging, 'error')
+    def test_failing_jobs_url_eval_error(self, mock_error, mock_url_read):
+        """ Test the failing jobs with one failing job. """
+        mock_url_read.side_effect = ['{ "jobs": ??? }']
+
+        self.assertRaises(SyntaxError, Jenkins('http://jenkins/', 'username', 'password').failing_jobs_url)
+        self.assertEqual("Couldn't evaluate %s from %s: %s", mock_error.call_args_list[0][0][0])
+        self.assertEqual('{ "jobs": ??? }', mock_error.call_args_list[0][0][1])
+
+    @patch.object(logging, 'warning')
+    def test_failing_jobs_url_key_error(self, mock_warning, mock_url_read):
+        """ Test that the failing job is returned if no timestamp key found. """
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/project-x/job/job1","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","x-timestamp": "x"}']
+
+        self.assertEqual([('project-x/job1', 'http://jenkins/project-x/job/job1', '?')],
+                         self.__jenkins.failing_jobs_url())
+        self.assertEqual("Couldn't get timestamp from %s: %s.", mock_warning.call_args_list[0][0][0])
+        self.assertEqual(
+            "http://jenkins/project-x/job/job1/lastStableBuild/api/python", mock_warning.call_args_list[0][0][1])
+        self.assertIsInstance(mock_warning.call_args_list[0][0][2], KeyError)
+
+    @patch.object(logging, 'warning')
+    def test_failing_jobs_url_value_error(self, mock_warning, mock_url_read):
+        """ Test that the failing job is returned if invalid timestamp key found. """
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"job1","url":"http://jenkins/project-x/job/job1","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp": "x-no-timestamp"}']
+
+        self.assertEqual([('project-x/job1', 'http://jenkins/project-x/job/job1', '?')],
+                         self.__jenkins.failing_jobs_url())
+        self.assertEqual("Couldn't get timestamp from %s: %s.", mock_warning.call_args_list[0][0][0])
+        self.assertEqual("http://jenkins/project-x/job/job1/lastStableBuild/api/python",
+                         mock_warning.call_args_list[0][0][1])
+        self.assertIsInstance(mock_warning.call_args_list[0][0][2], ValueError)
 
     def test_one_failing_job_url_ending_with_slash(self, mock_url_read):
         """ Test the failing jobs with one failing job. """
@@ -135,6 +177,17 @@ class JenkinsTest(unittest.TestCase):
 
         self.assertEqual([('jenkins/master', 'http://jenkins/job/master/', '100')], self.__jenkins.failing_jobs_url())
 
+    def test_failing_jobs_url_not_old_job(self, mock_url_read):
+        """ Test that a job failing for less than one day are not considered. """
+        timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(hours=23))
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"jobs":[{"name":"master","url":"http://jenkins/job/master/","buildable":True,"color":"red"}]}',
+            '{"builds":[{"result":"SUCCESS"},{"result":"FAILURE"}]}',
+            '{"building":False,"result":"SUCCESS","timestamp":' + str(int(timestamp)) + '}']
+
+        self.assertEqual([], self.__jenkins.failing_jobs_url())
+
     def test_failing_jobs_url(self, mock_url_read):
         """ Test that the failing jobs url dictionary contains the url for the failing job. """
         timestamp = to_jenkins_timestamp(datetime.datetime.utcnow() - datetime.timedelta(days=100))
@@ -181,6 +234,16 @@ class JenkinsTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
             '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","color":"red"}]}']
+        self.assertEqual([], self.__jenkins.unused_jobs_url())
+
+    def test_failing_jobs_url_http_error(self, mock_url_read):
+        """ Test the number of unused jobs when there are no unused jobs. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+        self.assertEqual([], self.__jenkins.failing_jobs_url())
+
+    def test_unused_jobs_url_http_error(self, mock_url_read):
+        """ Test the number of unused jobs when there are no unused jobs. """
+        mock_url_read.side_effect = urllib.error.HTTPError(None, None, None, None, None)
         self.assertEqual([], self.__jenkins.unused_jobs_url())
 
     def test_one_unused_job(self, mock_url_read):
@@ -237,6 +300,13 @@ class JenkinsTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
             '{"jobs":[{"name":"job1","url":"http://jenkins/job/job1/","color":"red"}]}']
+        self.assertEqual(0, self.__jenkins.number_of_active_jobs())
+
+    def test_nr_of_active_jobs_error_subjobs(self, mock_url_read):
+        """ Test the number of active jobs. """
+        mock_url_read.side_effect = [
+            '{"jobs":[{"description":"","name":"_","url":"http://jenkins/x/x/"}]}',
+            '{"invalid": "json"}']
         self.assertEqual(0, self.__jenkins.number_of_active_jobs())
 
     def test_nr_of_active_jobs_on_error(self, mock_url_read):
