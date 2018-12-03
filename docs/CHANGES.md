@@ -1,3 +1,8 @@
+2018-12-03  Release 2.80.1
+
+  * Bug fix: Better detail information of suppressed violations metric.
+
+
 2018-11-22  Release 2.80.0
 
   * Feature: Allow for increasing the timeout used when cloning repositories. 

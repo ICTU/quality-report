@@ -139,4 +139,4 @@ class ViolationSuppressions(SonarMetric, LowerIsBetterMetric):
             (sonar.wont_fix(sonar_id), sonar.wont_fix_url(sonar_id),
              "Gemarkeerd als won't fix in SonarQube"),
             (sonar.suppressions(sonar_id), sonar.suppressions_url(sonar_id),
-             "Commentaar (bijv. //NOSONAR) in de broncode")]
+             "Gemarkeerd in de broncode met annotatie, commentaar (bijv. //NOSONAR) of pragma")]

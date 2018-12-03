@@ -178,7 +178,8 @@ class ViolationSuppressionsTest(unittest.TestCase):
         self.assertEqual([
             ({'href': 'url_false_positives', 'text': "Gemarkeerd als false positive in SonarQube"}, 1),
             ({'href': 'url_wont_fix', 'text': "Gemarkeerd als won't fix in SonarQube"}, 3),
-            ({'href': 'url_no_sonar', 'text': "Commentaar (bijv. //NOSONAR) in de broncode"}, 5)
+            ({'href': 'url_no_sonar',
+              'text': "Gemarkeerd in de broncode met annotatie, commentaar (bijv. //NOSONAR) of pragma"}, 5)
         ], result)
 
     def test_extra_info_rows_without_metric_source(self):
