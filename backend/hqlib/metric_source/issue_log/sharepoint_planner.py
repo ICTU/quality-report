@@ -73,7 +73,8 @@ class SharepointPlanner(domain.MetricSource):
             self.__persister.write_json({'refresh_token': tokens_json['refresh_token']}, self.__refresh_token_location)
             return tokens_json['access_token']
         except urllib.error.HTTPError as reason:
-            logging.error('Error retrieving access token. reason: %s.', reason)
+            logging.error('Error retrieving access token. Reason: %s. Additional information: %s',
+                          reason, reason.read().decode('utf-8'))
         except json.decoder.JSONDecodeError as reason:
             logging.error('Invalid json retrieved for access token. Reason: %s.', reason)
         return ''

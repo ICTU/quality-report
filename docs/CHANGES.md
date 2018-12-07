@@ -1,3 +1,9 @@
+2018-12-14  Release 2.81.0
+
+  * Feature #537: Gitlab CI metric source implemented.
+  * Bug #577: when http error happens, the body of the response is added to the log.
+
+
 2018-12-03  Release 2.80.1
 
   * Bug fix: Better detail information of suppressed violations metric.

@@ -20,7 +20,7 @@ import logging
 import urllib.error
 from urllib import parse
 import unittest
-from unittest.mock import patch, call
+from unittest.mock import patch, call, MagicMock
 from dateutil.relativedelta import relativedelta
 from hqlib.metric_source import url_opener
 from hqlib.persistence import FilePersister
@@ -98,7 +98,9 @@ class SharepointPlannerTest(unittest.TestCase):
     @patch.object(url_opener.UrlOpener, 'url_read')
     def test_datetime_http_error(self, mock_url_read, mock_error, mock_write_json, mock_read_json):
         """ Test that the last activity date is min date, when an http error occurs. """
-        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None)]
+        file_object = MagicMock()
+        file_object.read = MagicMock(return_value=b'additional reason')
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, file_object)]
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -118,8 +120,10 @@ class SharepointPlannerTest(unittest.TestCase):
             }), 'ascii')
         )
         self.assertEqual(last_activity_date, datetime.datetime.min)
-        self.assertEqual('Error retrieving access token. reason: %s.', mock_error.call_args_list[0][0][0])
+        self.assertEqual(
+            'Error retrieving access token. Reason: %s. Additional information: %s', mock_error.call_args_list[0][0][0])
         self.assertIsInstance(mock_error.call_args_list[0][0][1], urllib.error.HTTPError)
+        self.assertEqual('additional reason', mock_error.call_args_list[0][0][2])
 
     @patch.object(url_opener.UrlOpener, 'url_read')
     def test_datetime_http_error_tasks(self, mock_url_read, mock_write_json, mock_read_json):
