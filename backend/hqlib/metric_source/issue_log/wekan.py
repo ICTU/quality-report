@@ -21,11 +21,12 @@ from typing import Dict, Iterator, List, Sequence, Tuple
 
 import wekanapi
 
-from hqlib import domain, utils
+from hqlib.metric_source.abstract.issue_log import ActionLog
+from hqlib import utils
 from hqlib.typing import DateTime
 
 
-class WekanBoard(domain.MetricSource):
+class WekanBoard(ActionLog):
     """ Wekan board used as action list and/or risk log. """
 
     metric_source_name = 'Wekan'
@@ -59,6 +60,7 @@ class WekanBoard(domain.MetricSource):
         """ Return the number of over due cards. """
         return len(list(self.__over_due_cards(*board_ids))) if self.__boards(*board_ids) else -1
 
+    # pylint: disable=arguments-differ
     def over_due_actions_url(self, *board_ids: str, now: DateTime = None) -> List[Tuple[str, str, str]]:
         """ Return the urls to the over due cards. """
         if not self.__boards(*board_ids):
@@ -73,10 +75,12 @@ class WekanBoard(domain.MetricSource):
             urls.append((self.__card_url(card), card.id, time_delta))
         return urls
 
+    # pylint: disable=arguments-differ
     def nr_of_inactive_actions(self, *board_ids: str, days: int = 14) -> int:
         """ Return the number of inactive cards. """
         return len(list(self.__inactive_cards(*board_ids, days=days))) if self.__boards(*board_ids) else -1
 
+    # pylint: disable=arguments-differ
     def inactive_actions_url(self, *board_ids: str, days: int = 14, now: DateTime = None) -> List[Tuple[str, str, str]]:
         """ Return the urls for the inactive cards. """
         if not self.__boards(*board_ids):

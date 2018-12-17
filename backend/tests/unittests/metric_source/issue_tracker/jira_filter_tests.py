@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
 import unittest
 from unittest.mock import patch, call
 
@@ -82,6 +83,96 @@ class JiraFilterTest(unittest.TestCase):
         self.assertTrue(query_sum_mock.has_calls([call('12345'), call('78910')]))
 
     @patch.object(Jira, 'get_query')
+    def test_issues_with_field_exceeding_value(self, get_query_url_mock):
+        """ Test that the issues are returned correctly with their field values. """
+        jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
+        get_query_url_mock.return_value = \
+            {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
+                {"key": "ISS-1", "fields": {"summary": "First Issue", "customfield_11700": 20.3}},
+                {"key": "ISS-2", "fields": {"summary": "2nd Issue", "customfield_11700": 100}},
+                {"key": "ISS-3", "fields": {"summary": "The Last Issue", "customfield_11700": None}}]}
+
+        issue_list = jira_filter.issues_with_field_exceeding_value('12345', limit_value=25)
+
+        get_query_url_mock.assert_called_once()
+        self.assertEqual([
+            ("http://jira/browse/ISS-1", "First Issue", 20.3)
+        ], issue_list)
+
+    @patch.object(logging, 'error')
+    @patch.object(Jira, 'get_query')
+    def test_issues_with_field_exceeding_value_invalid(self, get_query_url_mock, mock_error):
+        """ Test that the errors with issues having invalid data are logged. """
+        jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
+        get_query_url_mock.return_value = \
+            {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
+                {"key": "ISS-1", "fields": {"summary": "First Issue", "customfield_11700": 20.3}},
+                {"key": "ISS-1", "fields": ''}]}
+
+        issue_list = jira_filter.issues_with_field_exceeding_value('12345', limit_value=25)
+
+        get_query_url_mock.assert_called_once()
+        self.assertEqual([
+            ("http://jira/browse/ISS-1", "First Issue", 20.3)
+        ], issue_list)
+        self.assertEqual("Error processing jira issues: %s.", mock_error.call_args_list[0][0][0])
+        self.assertIsInstance(mock_error.call_args_list[0][0][1], AttributeError)
+
+    @patch.object(logging, 'error')
+    @patch.object(Jira, 'get_query')
+    def test_issues_with_field_exceeding_value_invalid2(self, get_query_url_mock, mock_error):
+        """ Test that the errors with issues having invalid data are logged. """
+        jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
+        get_query_url_mock.return_value = \
+            {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
+                {"key": "ISS-1", "no-fields": ''}]}
+
+        issue_list = jira_filter.issues_with_field_exceeding_value('12345', limit_value=25)
+
+        get_query_url_mock.assert_called_once()
+        self.assertEqual([], issue_list)
+        self.assertEqual("Error processing jira issues: %s.", mock_error.call_args_list[0][0][0])
+        self.assertIsInstance(mock_error.call_args_list[0][0][1], KeyError)
+
+    @patch.object(Jira, 'get_query')
+    def test_issues_with_field_exceeding_value_2_sources(self, get_query_url_mock):
+        """ Test that the issues are returned correctly with their field values. """
+        jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
+        get_query_url_mock.side_effect = [
+            {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
+                {"key": "ISS-1", "fields": {"summary": "First Issue", "customfield_11700": 20.3}}]},
+            {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
+                {"key": "ISS-11", "fields": {"summary": "Issue 11", "customfield_11700": 11}}]}]
+
+        issue_list = jira_filter.issues_with_field_exceeding_value('12345', '22345', limit_value=25)
+
+        self.assertTrue(get_query_url_mock.has_calls([call('12345'), call('22345')]))
+        self.assertEqual([
+            ("http://jira/browse/ISS-1", "First Issue", 20.3),
+            ("http://jira/browse/ISS-11", "Issue 11", 11)
+        ], issue_list)
+
+    @patch.object(Jira, 'get_query')
+    def test_issues_with_field_exceeding_value_date(self, get_query_url_mock):
+        """ Test that the issues are returned correctly with their field values. """
+        jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='duedate')
+        get_query_url_mock.return_value = \
+            {"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5", "issues": [
+                {"key": "ISS-1",
+                 "fields": {"summary": "First Issue", "custom": 20.3, "duedate": "2018-10-22T19:12:36.000+0100"}},
+                {"key": "ISS-2",
+                 "fields": {"summary": "2nd Issue", "custom": 100, "duedate": "2017-12-28T13:10:46.000+0100"}},
+                {"key": "ISS-3", "fields": {"summary": "The Last Issue", "custom": 55, "duedate": None}}]}
+
+        issue_list = jira_filter.issues_with_field_exceeding_value(
+            '12345', limit_value="2018-03-22T19:12", extra_fields=['custom', 'non-existent-field'])
+
+        get_query_url_mock.assert_called_once()
+        self.assertEqual([
+            ("http://jira/browse/ISS-2", "2nd Issue", "2017-12-28T13:10:46.000+0100", 100, None)
+        ], issue_list)
+
+    @patch.object(Jira, 'get_query')
     def test_issues_with_field(self, get_query_url_mock):
         """ Test that the issues are returned correctly with their field values. """
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
@@ -111,8 +202,9 @@ class JiraFilterTest(unittest.TestCase):
         get_query_url_mock.assert_called_once()
         self.assertEqual([], issue_list)
 
+    @patch.object(logging, 'error')
     @patch.object(Jira, 'get_query')
-    def test_issues_with_field_with_empty_jira_answer(self, get_query_url_mock):
+    def test_issues_with_field_with_empty_jira_answer(self, get_query_url_mock, mock_error):
         """ Test that the issue list is empty when jira returns empty json. """
         jira_filter = JiraFilter('http://jira/', 'username', 'password', field_name='customfield_11700')
         get_query_url_mock.return_value = []
@@ -121,6 +213,9 @@ class JiraFilterTest(unittest.TestCase):
 
         get_query_url_mock.assert_called_once()
         self.assertEqual([], issue_list)
+        self.assertEqual("Couldn't get issues from Jira filter %s: %s.", mock_error.call_args_list[0][0][0])
+        self.assertEqual("12345", mock_error.call_args_list[0][0][1])
+        self.assertIsInstance(mock_error.call_args_list[0][0][2], TypeError)
 
     @patch.object(Jira, 'get_query')
     def test_nr_issues_with_field_empty(self, get_query_url_mock):

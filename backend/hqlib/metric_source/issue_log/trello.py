@@ -21,13 +21,14 @@ import time
 
 from typing import List, Optional, Tuple
 
+from hqlib.metric_source.abstract.issue_log import ActionLog
 from ... import utils
-from ...domain import MetricSource
 from ...metric_source import url_opener
 from ...typing import DateTime, TimeDelta
 
 
-class TrelloBoard(MetricSource):
+# pylint: disable=too-many-instance-attributes
+class TrelloBoard(ActionLog):
     """ Class representing a Trello board. """
     metric_source_name = 'Trello'
     board_data_url = 'https://api.trello.com/1/boards/{object_id}/?fields=id,url,dateLastActivity&' \

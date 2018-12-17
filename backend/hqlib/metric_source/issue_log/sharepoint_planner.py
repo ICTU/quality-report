@@ -22,14 +22,16 @@ import functools
 import logging
 from typing import List, Tuple
 
-from hqlib import domain, utils
+from hqlib import utils
 from hqlib.persistence import JsonPersister, FilePersister
+from hqlib.metric_source.abstract.issue_log import ActionLog
 from hqlib.typing import DateTime
 
 from ...metric_source import url_opener
 
 
-class SharepointPlanner(domain.MetricSource):
+# pylint: disable=too-many-instance-attributes
+class SharepointPlanner(ActionLog):
     """ Sharepoint Planner used as action list and/or risk log. """
 
     metric_source_name = 'Sharepoint Planner'
@@ -38,9 +40,6 @@ class SharepointPlanner(domain.MetricSource):
 
     def __init__(self, url: str, client_id: str, client_secret: str,
                  refresh_token_location: str, *args, persister: JsonPersister = FilePersister, **kwargs) -> None:
-
-        # pylint: disable=too-many-instance-attributes
-
         self.__url = url.strip('/')
         self.__planner_url = self.__url + '/Home/Planner'
         self.__task_display_url = self.__url + '/Home/Task/{task_id}'

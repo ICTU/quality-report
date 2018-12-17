@@ -115,7 +115,7 @@ class JiraFilter(BugTracker):
 
     def get_issue_url(self, issue_key: str) -> str:
         """ Format Jira issue url for given issue id. """
-        return self.__url + 'browse/{key}'.format(key=issue_key)
+        return utils.url_join(self.__url, 'browse/{key}'.format(key=issue_key))
 
     def nr_issues_with_field_empty(self, *metric_source_ids: str) -> Tuple[int, List[str]]:
         """ Return the number of issues whose field has not been filled in. """
@@ -126,21 +126,58 @@ class JiraFilter(BugTracker):
 
     def issues_with_field(self, *metric_source_ids: str) -> List[Tuple[str, float]]:
         """ Return a list of issues links and values from the specified field. """
-        links_and_values = []
+        return self._get_issues_for_criterion(*metric_source_ids, append_function=self.__append_links)
+
+    def issues_with_field_exceeding_value(self, *metric_source_ids: str, compare: callable = lambda x, y: x < y,
+                                          limit_value, extra_fields: [str] = None) -> List[Tuple]:
+        """ Return a list of issues links and values where the value of the field exceeds given margin. """
+        return self._get_issues_for_criterion(*metric_source_ids,
+                                              append_function=self.__append_links_exceeding,
+                                              compare=compare,
+                                              limit_value=limit_value,
+                                              extra_fields=extra_fields)
+
+    def _get_issues_for_criterion(self, *metric_source_ids: str, append_function: callable, compare:
+                                  callable = None, limit_value=None, extra_fields=None) -> List:
+        result_list = []
         for query_id in metric_source_ids:
             query_result = self.__jira.get_query(query_id)
             try:
                 issues = query_result["issues"]
             except (ValueError, KeyError, TypeError) as reason:
-                logging.error("Couldn't get issues from Jira filter %s: %s", query_id, reason)
+                logging.error("Couldn't get issues from Jira filter %s: %s.", query_id, reason)
                 return []
-            for issue in issues:
-                fields = issue["fields"]
-                if not fields.get(self.__field_name):
-                    continue  # Skip issues that don't have a value for the field
-                link = utils.format_link_object(self.get_issue_url(issue["key"]), fields["summary"])
-                links_and_values.append((link, float(fields[self.__field_name])))
-        return links_and_values
+            try:
+                self.__get_links_and_values(issues, append_function, compare, limit_value, extra_fields, result_list)
+            except (KeyError, AttributeError) as reason:
+                logging.error("Error processing jira issues: %s.", reason)
+        return result_list
+
+    # pylint: disable=too-many-arguments
+    def __get_links_and_values(self, issues, append_function, compare: callable,
+                               limit_value, extra_fields, result_list):
+        for issue in issues:
+            fields = issue["fields"]
+            if not fields.get(self.__field_name):
+                continue  # Skip issues that don't have a value for the field
+            append_function(fields, issue, result_list, compare, limit_value, extra_fields if extra_fields else [])
+
+    # pylint: disable=too-many-arguments
+    def __append_links_exceeding(self, fields, issue, result_list: List[Tuple], compare: callable,
+                                 limit_value, extra_fields: [str]):
+        if compare(fields[self.__field_name], limit_value):
+            result_list.append((
+                self.get_issue_url(issue["key"]),
+                fields["summary"],
+                fields[self.__field_name],
+                *[fields[field_name] if field_name in fields else None for field_name in extra_fields]))
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=unused-argument
+    def __append_links(self, fields, issue, result_list: List[Tuple],
+                       compare=None, limit_value=None, extra_fields=None):
+        link = utils.format_link_object(self.get_issue_url(issue["key"]), fields["summary"])
+        result_list.append((link, float(fields[self.__field_name])))
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
         """ Return the url(s) to the metric source for the metric source id. """

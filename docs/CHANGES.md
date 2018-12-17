@@ -1,3 +1,8 @@
+2018-12-27  Release 2.82.0
+
+  * Feature #536: Implemented new action log metric source from Jira filter.
+
+
 2018-12-27  Release 2.81.2, 2.81.3
 
   * Bug #583: GitlabCI datetime reading format fixed.

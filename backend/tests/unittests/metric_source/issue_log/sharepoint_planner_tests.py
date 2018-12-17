@@ -44,6 +44,23 @@ class SharepointPlannerTest(unittest.TestCase):
         SharepointPlanner._get_tasks_for_criterion.cache_clear()
 
     @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_ignored_lists(self, mock_url_read, mock_write_json, mock_read_json):
+        """ Test that list of ignored buckets is returned as defined. """
+        mock_url_read.side_effect = [
+            '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
+            '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
+            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+        mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
+        planner = SharepointPlanner(url='/home', client_id='client_id_xx',
+                                    client_secret='client_secret_k=',
+                                    refresh_token_location='file_location_of_token.json',
+                                    lists_to_ignore=['bucket1'])
+
+        result = planner.ignored_lists()
+
+        self.assertEqual(['bucket1'], result)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
     def test_datetime(self, mock_url_read, mock_write_json, mock_read_json):
         """ Test the last activity date. """
         mock_url_read.side_effect = [
