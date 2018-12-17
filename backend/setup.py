@@ -63,9 +63,11 @@ possible, seeing how software development can go off the rails in so many ways.'
       include_package_data=True,
       cmdclass={"bundle": Bundle},
       install_requires=[
-          "beautifulsoup4>=4.6.0",
-          "lxml>=4.2.1",
-          "python-dateutil>=2.7.2",
+          "beautifulsoup4==4.6.3",
+          "lxml==4.2.5",
+          "python-dateutil==2.7.5",
+          "gitlab==1.0.2",
+          "python-gitlab==1.7.0",
           "pygal>=2.4.0",
           "wekanapi>=0.0.1"
       ],

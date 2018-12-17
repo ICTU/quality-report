@@ -1,3 +1,8 @@
+2018-12-14  Release 2.81.1
+
+  * Bug #582: gitlab dependencies added to the package setup requirements.
+
+
 2018-12-14  Release 2.81.0
 
   * Feature #537: Gitlab CI metric source implemented.
