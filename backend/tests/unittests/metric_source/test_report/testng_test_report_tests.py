@@ -17,6 +17,7 @@ limitations under the License.
 import datetime
 import unittest
 import urllib.error
+from dateutil.tz import tzutc, tzlocal
 
 from hqlib.metric_source import TestNGTestReport
 
@@ -100,7 +101,9 @@ class TestNGTestReportTest(unittest.TestCase):
 </test>
 </suite>
 </testng-results>'''
-        self.assertEqual(datetime.datetime(2017, 9, 5, 14, 18, 23), self.__testng.datetime('url'))
+        self.assertEqual(
+            datetime.datetime(2017, 9, 5, 14, 18, 23, tzinfo=tzutc()).astimezone(tzlocal()).replace(tzinfo=None),
+            self.__testng.datetime('url'))
 
     def test_missing_report_datetime(self):
         """ Test that the minimum datetime is returned if the url can't be opened. """

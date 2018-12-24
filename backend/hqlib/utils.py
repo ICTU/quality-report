@@ -20,6 +20,8 @@ import datetime
 import json
 import logging
 import re
+import dateutil.parser
+from dateutil.tz import tzlocal
 
 from hqlib.typing import DateTime, TimeDelta, Number
 
@@ -114,13 +116,13 @@ def parse_iso_date(date_string: str) -> DateTime:
 
 
 def parse_iso_datetime(datetime_string: str) -> DateTime:
-    """ Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. Ignore milliseconds, if provided. """
-    return datetime.datetime.strptime(re.sub(r'\.\d+Z', 'Z', datetime_string), '%Y-%m-%dT%H:%M:%SZ')
+    """ Parse an ISO format date time string of the form . Ignore milliseconds, if provided. """
+    return dateutil.parser.parse(re.sub(r'\.\d+', '', datetime_string))
 
 
-def parse_sql_datetime(datetime_string: str) -> DateTime:
-    """ Parse an ISO format date time string of the form '2015-10-06T15:00:01Z'. """
-    return datetime.datetime.strptime(datetime_string, '%Y-%m-%d %H:%M:%S')
+def parse_iso_datetime_local_naive(datetime_string: str) -> DateTime:
+    """ Parse an ISO format date time string to the local, time zone naive datetime. """
+    return dateutil.parser.parse(re.sub(r'\.\d+', '', datetime_string)).astimezone(tzlocal()).replace(tzinfo=None)
 
 
 def percentage(numerator: Number, denominator: Number, zero_divided_by_zero_is_zero: bool = False) -> int:

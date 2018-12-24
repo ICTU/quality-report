@@ -17,6 +17,8 @@ limitations under the License.
 import datetime
 import unittest
 
+from dateutil.tz import tzutc, tzlocal
+
 from hqlib import utils
 
 
@@ -252,20 +254,34 @@ class ParseISODateTest(unittest.TestCase):
 class ParseISODateTimeTest(unittest.TestCase):
     """ Unit tests for the parse ISO date time method. """
     def test_parse_iso_datetime(self):
-        """ Test that parsing a random date time works. """
-        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1), utils.parse_iso_datetime('2015-10-06T15:00:01Z'))
+        """ Test that parsing an ISO date given in utc time zone is done correctly. """
+        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1, tzinfo=tzutc()),
+                         utils.parse_iso_datetime('2015-10-06T15:00:01Z'))
 
     def test_parse_iso_datetime_ignore_milliseconds(self):
+        """ Test that it ignores fractions of second when parsing. """
+        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1, tzinfo=tzutc()),
+                         utils.parse_iso_datetime('2015-10-06T15:00:01.105Z'))
+
+    def test_parse_iso_datetime_with_time_zone_offset(self):
         """ Test that parsing a random date time works. """
-        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1), utils.parse_iso_datetime('2015-10-06T15:00:01.105Z'))
+        self.assertEqual(datetime.datetime(2009, 6, 15, 13 + 7, 45, 30, tzinfo=tzutc()),
+                         utils.parse_iso_datetime('2009-06-15T13:45:30.0000000-0700').astimezone(tz=tzutc()))
+
+    def test_parse_iso_datetime_zone_naive(self):
+        """ Test that parsing a time zone naive string gives tz naive datetime object. """
+        self.assertEqual(datetime.datetime(2009, 6, 15, 13, 45, 30),
+                         utils.parse_iso_datetime('2009-06-15T13:45:30.0000000'))
 
     def test_invalid(self):
         """ Test that parsing an invalid string throws an exception. """
-        self.assertRaises(ValueError, utils.parse_iso_datetime, 'Apr -1')
+        self.assertRaises(ValueError, utils.parse_iso_datetime, 'no whatsoever date here!')
 
-    def test_sql_datetime(self):
-        """ Test that parsing a date time in sql format works. """
-        self.assertEqual(datetime.datetime(2015, 10, 6, 15, 0, 1), utils.parse_sql_datetime('2015-10-06 15:00:01'))
+    def test_parse_iso_datetime_to_local_naive(self):
+        """ Test that parsing a datetime to local naive datetime works correctly. """
+        self.assertEqual(
+            datetime.datetime(2009, 6, 15, 3 + 7, 45, 30, tzinfo=tzutc()).astimezone(tz=tzlocal()).replace(tzinfo=None),
+            utils.parse_iso_datetime_local_naive('2009-06-15T03:45:30.0000000-0700'))
 
 
 class VersionNumberToNumericalTest(unittest.TestCase):

@@ -111,7 +111,7 @@ class SharepointPlanner(domain.MetricSource):
             for task in self._retrieve_tasks(plan_id):
                 last_activity_date = \
                     max(last_activity_date, task['createdDateTime'], self._get_max_assignment_date(task))
-        return utils.parse_iso_datetime(last_activity_date) \
+        return utils.parse_iso_datetime_local_naive(last_activity_date) \
             if last_activity_date else datetime.datetime.min
 
     @classmethod
@@ -180,7 +180,7 @@ class SharepointPlanner(domain.MetricSource):
 
     @classmethod
     def __is_task_inactive(cls, dt_now, task, nr_inactive_days: int = 14) -> bool:
-        return (not cls.__is_task_overdue(dt_now, task)) and (dt_now - utils.parse_iso_datetime(
+        return (not cls.__is_task_overdue(dt_now, task)) and (dt_now - utils.parse_iso_datetime_local_naive(
             cls.__get_last_activity_date(task)) > datetime.timedelta(
             days=nr_inactive_days))
 
@@ -188,7 +188,7 @@ class SharepointPlanner(domain.MetricSource):
     def __is_task_overdue(cls, dt_now, task) -> bool:
         return 'dueDateTime' in task \
                and task['dueDateTime'] \
-               and utils.parse_iso_datetime(task['dueDateTime']) < dt_now
+               and utils.parse_iso_datetime_local_naive(task['dueDateTime']) < dt_now
 
     def nr_of_inactive_actions(self, *metric_source_ids: str) -> int:
         """ Return the number of inactive tasks. """
@@ -210,6 +210,6 @@ class SharepointPlanner(domain.MetricSource):
             dt_now = datetime.datetime.now()
             for task in tasks:
                 time_delta = utils.format_timedelta(
-                    dt_now - utils.parse_iso_datetime(referent_date(task)))
+                    dt_now - utils.parse_iso_datetime_local_naive(referent_date(task)))
                 urls.append((self.__task_display_url.format(task_id=task['id']), task['title'], time_delta))
         return urls

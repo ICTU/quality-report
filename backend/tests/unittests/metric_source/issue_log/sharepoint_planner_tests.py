@@ -21,6 +21,7 @@ import urllib.error
 from urllib import parse
 import unittest
 from unittest.mock import patch, call, MagicMock
+from dateutil.tz import tzutc, tzlocal
 from dateutil.relativedelta import relativedelta
 from hqlib.metric_source import url_opener
 from hqlib.persistence import FilePersister
@@ -58,7 +59,9 @@ class SharepointPlannerTest(unittest.TestCase):
 
         mock_write_json.assert_called_once_with(
             {'refresh_token': 'new_refresh_token'}, 'file_location_of_token.json')
-        self.assertEqual(last_activity_date, datetime.datetime(2018, 2, 28, 13, 1, 8))
+        self.assertEqual(
+            last_activity_date,
+            datetime.datetime(2018, 2, 28, 13, 1, 8, tzinfo=tzutc()).astimezone(tzlocal()).replace(tzinfo=None))
         self.assertEqual(mock_url_read.call_args_list[0],
                          call(url='https://login.microsoftonline.com/common/oauth2/token',
                               post_body=bytes(parse.urlencode({
@@ -88,7 +91,9 @@ class SharepointPlannerTest(unittest.TestCase):
 
         mock_write_json.assert_called_once_with(
             {'refresh_token': 'new_refresh_token'}, 'file_location_of_token.json')
-        self.assertEqual(last_activity_date, datetime.datetime(2018, 3, 28, 11, 1, 8))
+        self.assertEqual(
+            last_activity_date,
+            datetime.datetime(2018, 3, 28, 11, 1, 8, tzinfo=tzutc()).astimezone(tzlocal()).replace(tzinfo=None))
         self.assertEqual(mock_url_read.call_args_list[1],
                          call(url='https://graph.microsoft.com/v1.0/planner/plans/plan_id_1/tasks'))
         self.assertEqual(mock_url_read.call_args_list[2],

@@ -1,3 +1,8 @@
+2018-12-27  Release 2.81.2
+
+  * Bug #583: GitlabCI datetime reading format fixed.
+
+
 2018-12-14  Release 2.81.1
 
   * Bug #582: gitlab dependencies added to the package setup requirements.

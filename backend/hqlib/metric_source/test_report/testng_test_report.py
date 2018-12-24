@@ -54,7 +54,7 @@ class TestNGTestReport(test_report.TestReport):
             return datetime.datetime.min
         if test_suites:
             timestamps = [test_suite.get('started-at') for test_suite in test_suites]
-            date_times = [utils.parse_iso_datetime(timestamp) for timestamp in timestamps if timestamp]
+            date_times = [utils.parse_iso_datetime_local_naive(timestamp) for timestamp in timestamps if timestamp]
             if date_times:
                 return min(date_times)
             logging.warning("Couldn't find timestamps in test suites in: %s", metric_source_id)

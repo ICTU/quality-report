@@ -72,7 +72,7 @@ class LCOV(HTMLCoverageReport):
     @staticmethod
     def __parse_element_text_for_date(header: str, tds: list, index: int) -> DateTime:
         try:
-            return utils.parse_sql_datetime(tds[index + 1].text)
+            return utils.parse_iso_datetime(tds[index + 1].text)
         except ValueError as reason:
             logging.error('Error parsing report for %s. Reason: %s', header.strip(':'), reason)
             return datetime.datetime.min

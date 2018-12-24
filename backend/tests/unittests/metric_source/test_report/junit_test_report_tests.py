@@ -18,6 +18,7 @@ import datetime
 import unittest
 from unittest.mock import Mock
 import urllib.error
+from dateutil.tz import tzutc, tzlocal
 
 from hqlib.metric_source import JunitTestReport
 
@@ -94,7 +95,9 @@ class JunitTestReportTest(unittest.TestCase):
                          '  <testsuite name="Art" timestamp="2016-07-07T12:26:44">'
                          '  </testsuite>'
                          '</testsuites>')
-        self.assertEqual(datetime.datetime(2016, 7, 7, 12, 26, 44), self.__junit.datetime('url'))
+        self.assertEqual(
+            datetime.datetime(2016, 7, 7, 12, 26, 44, tzinfo=tzutc()).astimezone(tzlocal()).replace(tzinfo=None),
+            self.__junit.datetime('url'))
 
     def test_missing_report_datetime(self):
         """ Test that the minimum datetime is returned if the url can't be opened. """

@@ -21,6 +21,7 @@ import re
 from typing import Dict, Optional, List
 import gitlab
 from gitlab.v4.objects import Project
+from dateutil.tz import tzlocal
 
 from hqlib import utils
 from hqlib.typing import TimeDelta
@@ -55,11 +56,11 @@ class GitLabCI(ci_server.CIServer):
 
     def _get_days_since_projects_last_success(self, project: Project) -> TimeDelta:
         last_success_date = self._get_last_successful_pipeline_date(project, 'success')
-        return datetime.datetime.now() - utils.parse_iso_datetime(last_success_date)
+        return datetime.datetime.now().astimezone(tz=tzlocal()) - utils.parse_iso_datetime(last_success_date)
 
     def _get_days_since_projects_last_completion(self, project: Project) -> TimeDelta:
         last_completion_date = self._get_last_successful_pipeline_date(project, 'success', 'failure')
-        return datetime.datetime.now() - utils.parse_iso_datetime(last_completion_date)
+        return datetime.datetime.now().astimezone(tz=tzlocal()) - utils.parse_iso_datetime(last_completion_date)
 
     @classmethod
     @functools.lru_cache(maxsize=2048)
