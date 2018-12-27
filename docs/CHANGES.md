@@ -1,4 +1,4 @@
-2018-12-27  Release 2.81.2
+2018-12-27  Release 2.81.2, 2.81.3
 
   * Bug #583: GitlabCI datetime reading format fixed.
 
