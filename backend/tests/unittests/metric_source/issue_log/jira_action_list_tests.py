@@ -86,7 +86,7 @@ class JiraActionListTest(unittest.TestCase):
         self.assertEqual([], result)
 
     @patch.object(Jira, 'get_query')
-    def test_inactive_actions_url_xxxx(self, get_query_url_mock):
+    def test_inactive_actions_url(self, get_query_url_mock):
         """ Test that an overdue action, inactive for 14 days or more is returned as inactive."""
         dt2 = (datetime.datetime.now().astimezone() - relativedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S%z")
         dt3 = (datetime.datetime.now().astimezone() - relativedelta(days=14, minutes=5)).strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -167,7 +167,7 @@ class JiraActionListTest(unittest.TestCase):
         self.assertIsInstance(mock_error.call_args_list[0][0][1], IndexError)
 
     @patch.object(JiraFilter, 'issues_with_field_exceeding_value')
-    def test_inactive_actions_url(self, mock_issues):
+    def test_inactive_actions_url_ok(self, mock_issues):
         """ Test that an overdue action, inactive for 14 days or more is returned as inactive."""
         dt2 = (datetime.datetime.now().astimezone() - relativedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S%z")
         dt3 = (datetime.datetime.now().astimezone() - relativedelta(days=14, minutes=5)).strftime("%Y-%m-%dT%H:%M:%S%z")

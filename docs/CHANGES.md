@@ -1,3 +1,8 @@
+2018-01-11  Release 2.82.1
+
+  * Tech #588: ART execution on example report included in the build.
+
+
 2018-12-27  Release 2.82.0
 
   * Feature #536: Implemented new action log metric source from Jira filter.

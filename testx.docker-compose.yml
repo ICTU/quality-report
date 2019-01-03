@@ -1,11 +1,30 @@
-www:
-  build: .
-  dockerfile: example_report.Dockerfile
-  ports:
-    - "2015:2015"
-test:
-  build: .
-  dockerfile: testx.Dockerfile
-  links:
-    - "www"
-  command: ["conf.coffee", "--baseUrl=http://www:2015"]
+version: '3'
+
+services:
+
+  report:
+    build:
+      context: .
+      dockerfile: example_report.Dockerfile
+    command: tail -f /dev/null
+    volumes:
+      - x_report:/root/x_report
+
+  www:
+    image: abiosoft/caddy
+    ports:
+      - "2015:2015"
+    command: ["-log", ""]
+    volumes:
+      - x_report:/srv
+
+  art:
+    build:
+      context: .
+      dockerfile: testx.Dockerfile
+    links:
+      - "www"
+    command: "conf.coffee --baseUrl=http://www:2015"
+
+volumes:
+  x_report:

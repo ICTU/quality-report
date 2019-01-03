@@ -40,6 +40,7 @@ def project(project_folder_or_filename: str) -> Project:
     # Import the project definition and get the project from it.
     module_name = project_definition_path.stem
     try:
+        logging.info("Want to import module %s...", module_name)
         return __import__(module_name).PROJECT
     except ModuleNotFoundError as reason:
         logging.critical("Couldn't open %s: %s.", module_name, reason)
