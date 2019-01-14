@@ -47,7 +47,8 @@ jobs:
       - nosetests --with-xunit tests/unittests/  # For SonarQube, see https://docs.sonarqube.org/display/PLUG/Python+Unit+Tests+Execution+Reports+Import
       - cd ..
       - sonar-scanner -Dsonar.login=$SONAR_TOKEN
-      - docker-compose -f testx.docker-compose.yml up --build --abort-on-container-exit
+      - docker-compose -f testx.docker-compose.yml up --abort-on-container-exit
+      - docker-compose -f testx.docker-compose.yml down --volumes
       after_script:
       - cd backend
       - ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
