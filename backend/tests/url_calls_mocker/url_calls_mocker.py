@@ -33,41 +33,41 @@ class UrlOpenerMock(UrlOpener):
         examples_metric_sources_path = self._dir_path / 'docs' / 'examples' / 'example_metric_sources'
         self._map = {
             # begin UserStoriesInProgress
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15208':
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15208?maxResults=1000':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_stories_in_progress.json'
                 ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters':
+            'https://jira.myorg.nl/jira/rest/api/2/search?maxResults=1000&filter_parameters':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_search_stories_in_progress.json'
                 ),
             # end UserStoriesInProgress
 
             # begin DurationOfManualLogicalTestCases
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15999':
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15999?maxResults=1000':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_manual_tests.json'
                 ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/search?filter_manual_tests':
+            'https://jira.myorg.nl/jira/rest/api/2/search?maxResults=1000&filter_manual_tests':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_search_manual_tests.json'
                 ),
             # end DurationOfManualLogicalTestCases
 
             # begin UserStoriesDuration
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15225':
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15225?maxResults=1000':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_stories_duration.json'
                 ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/search?filter_parameters_duration':
+            'https://jira.myorg.nl/jira/rest/api/2/search?maxResults=1000&filter_parameters_duration':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_search_stories_duration.json'
                 ),
 
-            'https://jira.myorg.nl/jira/rest/api/2/issue/ISS-1?expand=changelog&fields="*all,-comment"':
+            'https://jira.myorg.nl/jira/rest/api/2/issue/ISS-1?maxResults=1000&expand=changelog&fields="*all,-comment"':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_changelog_stories_duration.json'
                 ),

@@ -61,7 +61,7 @@ class JiraTest(unittest.TestCase):
         result = jira.get_issue_details('ISS-ID')
 
         url_read_mock.assert_called_once_with(
-            'http://jira/rest/api/2/issue/ISS-ID?expand=changelog&fields="*all,-comment"'
+            'http://jira/rest/api/2/issue/ISS-ID?maxResults=1000&expand=changelog&fields="*all,-comment"'
         )
         self.assertEqual({"x": "1"}, result)
 
@@ -73,7 +73,7 @@ class JiraTest(unittest.TestCase):
         result = jira.get_issue_details('ISS-ID')
 
         url_read_mock.assert_called_once_with(
-            'http://jira/rest/api/2/issue/ISS-ID?expand=changelog&fields="*all,-comment"'
+            'http://jira/rest/api/2/issue/ISS-ID?maxResults=1000&expand=changelog&fields="*all,-comment"'
         )
         self.assertEqual(None, result)
 
@@ -85,7 +85,7 @@ class JiraTest(unittest.TestCase):
         result = jira.get_issue_details('ISS-ID')
 
         url_read_mock.assert_called_once_with(
-            'http://jira/rest/api/2/issue/ISS-ID?expand=changelog&fields="*all,-comment"'
+            'http://jira/rest/api/2/issue/ISS-ID?maxResults=1000&expand=changelog&fields="*all,-comment"'
         )
         self.assertEqual(None, result)
 
@@ -96,7 +96,7 @@ class JiraTest(unittest.TestCase):
 
         result = jira.get_query_url('filter id', search=False)
 
-        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id')
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id?maxResults=1000')
         self.assertEqual("http://jira/view", result)
 
     def test_get_query_url_search(self, url_read_mock):
@@ -106,7 +106,7 @@ class JiraTest(unittest.TestCase):
 
         result = jira.get_query_url('filter id', search=True)
 
-        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id')
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id?maxResults=1000')
         self.assertEqual("http://jira/search", result)
 
     def test_get_query_url_empty_id(self, url_read_mock):
@@ -125,7 +125,7 @@ class JiraTest(unittest.TestCase):
 
         result = jira.get_query_url('filter id')
 
-        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id')
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id?maxResults=1000')
         self.assertEqual(None, result)
 
     @patch.object(Jira, 'get_query_url')
@@ -138,7 +138,7 @@ class JiraTest(unittest.TestCase):
         result = jira.get_query('filter id')
 
         get_query_url_mock.assert_called_once()
-        url_read_mock.assert_called_once_with('http://jira/what?that=1')
+        url_read_mock.assert_called_once_with('http://jira/what?maxResults=1000&that=1')
         self.assertEqual({"x": "y"}, result)
 
     @patch.object(Jira, 'get_query_url')
@@ -163,5 +163,5 @@ class JiraTest(unittest.TestCase):
         result = jira.get_query('filter id')
 
         get_query_url_mock.assert_called_once()
-        url_read_mock.assert_called_once_with('http://jira/what?that=1')
+        url_read_mock.assert_called_once_with('http://jira/what?maxResults=1000&that=1')
         self.assertEqual(None, result)

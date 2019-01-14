@@ -41,7 +41,8 @@ class Jira(object):
         # whatever Jira returns as scheme and netloc
         config_parts = urllib.parse.urlparse(self.__url)
         query_parts = urllib.parse.urlparse(query_url)
-        read_url = config_parts.scheme + '://' + config_parts.netloc + query_parts.path + '?' + query_parts.query
+        read_url = config_parts.scheme + '://' + config_parts.netloc + query_parts.path + \
+            '?maxResults=1000&' + query_parts.query
         try:
             return utils.eval_json(self.__url_opener.url_read(read_url))
         except url_opener.UrlOpener.url_open_exceptions:
@@ -51,7 +52,7 @@ class Jira(object):
         """ Get the query url based on the query id. """
         if not query_id:
             return None
-        url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)
+        url = self.__url + 'rest/api/2/filter/{qid}?maxResults=1000'.format(qid=query_id)
         try:
             json_string = self.__url_opener.url_read(url)
         except url_opener.UrlOpener.url_open_exceptions:
@@ -61,7 +62,7 @@ class Jira(object):
 
     def get_issue_details(self, issue_id: str):
         """ Get the JSON with the changelog of the issue. """
-        url = self.__url + 'rest/api/2/issue/{issue_id}?expand=changelog&fields="*all,-comment"' \
+        url = self.__url + 'rest/api/2/issue/{issue_id}?maxResults=1000&expand=changelog&fields="*all,-comment"' \
             .format(issue_id=issue_id)
         try:
             json_string = self.__url_opener.url_read(url)

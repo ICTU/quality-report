@@ -1,3 +1,8 @@
+2018-01-14  Release 2.82.2
+
+  * Bug #525: Total duration of manual logical test cases fixed.
+
+
 2018-01-11  Release 2.82.1
 
   * Tech #588: ART execution on example report included in the build.
