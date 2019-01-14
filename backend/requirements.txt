@@ -1,5 +1,5 @@
 # Required Python packages
-beautifulsoup4==4.7.0
+beautifulsoup4==4.7.1
 lxml==4.3.0
 python-dateutil==2.7.5
 gitlab==1.0.2
