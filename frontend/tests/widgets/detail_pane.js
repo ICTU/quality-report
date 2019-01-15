@@ -29,6 +29,7 @@ const doc = jsdom.jsdom('<!doctype html><html><head><script src=""></head><body>
 global.document = doc
 global.window = doc.defaultView
 
+const fetchMock = require('fetch-mock');
 
 test('detail pane renders headers of table panel with extra info', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
@@ -308,3 +309,45 @@ test('when clicked on the other header of the detail table, extra info is sorted
     t.end();
 });
 
+test('detail pane renders false positive panel', (t) => {
+    fetchMock.get('*', '{"a19fee1fb9fe0ecf8102af6d60d74d01":{"reason":"test123"}}');
+    fetchMock.post('*', 'ok');
+    fetchMock.delete('*', 'ok');
+    
+    const wrapper = mount(
+        <DetailPane has_extra_info={true} 
+            metric_detail = {{cells: ["cell 1"], extra_info: {
+                "headers": {"title": "Waarschuwing", "url": "Locatie", "warning_id": "False-positive"},
+                "data":[{"title": "test123", "url:": "http://127.0.0.1/", "warning_id": ["a19fee1fb9fe0ecf8102af6d60d74d01","True","test123","http://127.0.0.1:3000/"]}]}}}>
+        </DetailPane>)
+
+    t.equals(wrapper.find('FalsePositivePanel').exists(), true);
+    t.equals(wrapper.find('FalsePositivePanel').find('button').first().text(), "Tonen");
+    t.equals(wrapper.find('FalsePositivePanel').find('input').instance().value, "test123");
+
+    wrapper.find('FalsePositivePanel').find('button').simulate('click');
+    
+    fetchMock.reset();
+    fetchMock.post('*', 'ok');
+    fetchMock.delete('*', 'ok');
+    fetchMock.get('*', '{}');
+
+    const wrapper2 = mount(
+        <DetailPane has_extra_info={true} 
+            metric_detail = {{cells: ["cell 1"], extra_info: {
+                "headers": {"title": "Waarschuwing", "url": "Locatie", "warning_id": "False-positive"},
+                "data":[{"title": "test123", "url:": "http://127.0.0.1/", "warning_id": ["a19fee1fb9fe0ecf8102af6d60d74d01","","","http://127.0.0.1:3000/"]}]}}}>
+        </DetailPane>)
+    
+    t.equals(wrapper2.find('FalsePositivePanel').find('button').text(), "Verbergen");
+    t.equals(wrapper2.find('FalsePositivePanel').find('input').instance().value, "");
+
+    var reason = wrapper2.find('FalsePositivePanel').find('input').first();
+    reason.instance().value = 'test456';
+    reason.simulate('change');
+
+    wrapper2.find('FalsePositivePanel').find('button').simulate('click');
+
+    fetchMock.reset();
+    t.end();
+});

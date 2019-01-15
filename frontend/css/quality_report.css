@@ -132,6 +132,10 @@ div.meta_metrics_history_graph {
     border: solid 1px black;
 }
 
+.black_border {
+    border-color: black;
+}
+
 .panel-body .table-striped th {
     padding-bottom: 2px;
 }

@@ -1,3 +1,8 @@
+2019-03-29  Release 2.90.0
+
+  * Feature #653: False positive reduction feature implemented.
+
+
 2019-03-28  Release 2.89.2
 
   * Bug #651: Accessibility analysis is optionally available also for Product.
