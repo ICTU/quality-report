@@ -52,11 +52,20 @@ class Jira(object):
         """ Get the query url based on the query id. """
         if not query_id:
             return None
-        url = self.__url + 'rest/api/2/filter/{qid}?maxResults=1000'.format(qid=query_id)
+        if isinstance(query_id, int) or query_id.isdigit():
+            return self.__retrieve_issues_url(query_id, search)
+
+        url_part = 'rest/api/2/search?maxResults=1000&' if search else 'issues/?'
+        return self.__url + url_part + 'jql={qid}'.format(qid=query_id.replace(' ', '%20'))
+
+    def __retrieve_issues_url(self, query_id, search):
+        url = self.__url + 'rest/api/2/filter/{qid}'.format(qid=query_id)
+
         try:
             json_string = self.__url_opener.url_read(url)
         except url_opener.UrlOpener.url_open_exceptions:
             return None
+
         url_type = 'searchUrl' if search else 'viewUrl'
         return utils.eval_json(json_string)[url_type]
 

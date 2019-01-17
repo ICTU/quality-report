@@ -33,7 +33,7 @@ class UrlOpenerMock(UrlOpener):
         examples_metric_sources_path = self._dir_path / 'docs' / 'examples' / 'example_metric_sources'
         self._map = {
             # begin UserStoriesInProgress
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15208?maxResults=1000':
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15208':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_stories_in_progress.json'
                 ),
@@ -45,7 +45,7 @@ class UrlOpenerMock(UrlOpener):
             # end UserStoriesInProgress
 
             # begin DurationOfManualLogicalTestCases
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15999?maxResults=1000':
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15999':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_manual_tests.json'
                 ),
@@ -57,7 +57,7 @@ class UrlOpenerMock(UrlOpener):
             # end DurationOfManualLogicalTestCases
 
             # begin UserStoriesDuration
-            'https://jira.myorg.nl/jira/rest/api/2/filter/15225?maxResults=1000':
+            'https://jira.myorg.nl/jira/rest/api/2/filter/15225':
                 self._get_file_content(
                     examples_metric_sources_path / 'jira_filter_stories_duration.json'
                 ),

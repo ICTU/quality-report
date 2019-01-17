@@ -1,3 +1,8 @@
+2018-01-14  Release 2.83.0
+
+  * Feature #229: A possibility added to directly put jql in the report configuration instead of a Jira filter id.
+
+
 2018-01-14  Release 2.82.2
 
   * Bug #525: Total duration of manual logical test cases fixed.

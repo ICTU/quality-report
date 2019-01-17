@@ -289,7 +289,7 @@ class JiraFilterTest(unittest.TestCase):
         jira2 = 'http://jira2/view'
         get_query_url_mock.side_effect = [jira1, jira2]
 
-        result = JiraFilter('', '', '').metric_source_urls('123', '567')
+        result = JiraFilter('', '', '').metric_source_urls(123, 567)
 
         get_query_url_mock.assert_has_calls([call(123, search=False), call(567, search=False)])
         self.assertEqual([jira1, jira2], result)

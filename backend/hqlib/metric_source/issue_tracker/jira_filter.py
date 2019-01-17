@@ -67,7 +67,7 @@ class JiraFilter(BugTracker):
 
     def nr_issues(self, *metric_source_ids: str) -> Tuple[int, List[str]]:
         """ Return the number of issues in the filter. """
-        count, issues = zip(*[self._query_total(int(metric_source_id)) for metric_source_id in metric_source_ids])
+        count, issues = zip(*[self._query_total(metric_source_id) for metric_source_id in metric_source_ids])
         return -1 if -1 in count else sum(count), issues[0]
 
     @classmethod
@@ -181,5 +181,5 @@ class JiraFilter(BugTracker):
 
     def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
         """ Return the url(s) to the metric source for the metric source id. """
-        return [self.__jira.get_query_url(int(metric_source_id), search=False)
+        return [self.__jira.get_query_url(metric_source_id, search=False)
                 for metric_source_id in metric_source_ids]

@@ -94,19 +94,37 @@ class JiraTest(unittest.TestCase):
         jira = Jira('http://jira/', 'username', 'password')
         url_read_mock.return_value = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
 
-        result = jira.get_query_url('filter id', search=False)
+        result = jira.get_query_url('333', search=False)
 
-        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id?maxResults=1000')
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/333')
         self.assertEqual("http://jira/view", result)
+
+    def test_get_query_url_jql(self, url_read_mock):
+        """ Test that the jql filter url is correct. """
+        jira = Jira('http://jira/', 'username', 'password')
+
+        result = jira.get_query_url('jql query - not a number', search=True)
+
+        url_read_mock.assert_not_called()
+        self.assertEqual("http://jira/rest/api/2/search?maxResults=1000&jql=jql%20query%20-%20not%20a%20number", result)
+
+    def test_get_query_url_jql_display(self, url_read_mock):
+        """ Test that the display url of jql query is correct. """
+        jira = Jira('http://jira/', 'username', 'password')
+
+        result = jira.get_query_url('jql query - not a number', search=False)
+
+        url_read_mock.assert_not_called()
+        self.assertEqual("http://jira/issues/?jql=jql%20query%20-%20not%20a%20number", result)
 
     def test_get_query_url_search(self, url_read_mock):
         """ Test that the search url is correctly retrieved. """
         jira = Jira('http://jira/', 'username', 'password')
         url_read_mock.return_value = '{"searchUrl": "http://jira/search", "viewUrl": "http://jira/view", "total": "5"}'
 
-        result = jira.get_query_url('filter id', search=True)
+        result = jira.get_query_url('333', search=True)
 
-        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id?maxResults=1000')
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/333')
         self.assertEqual("http://jira/search", result)
 
     def test_get_query_url_empty_id(self, url_read_mock):
@@ -123,9 +141,9 @@ class JiraTest(unittest.TestCase):
         jira = Jira('http://jira/', 'username', 'password')
         url_read_mock.side_effect = urllib.error.HTTPError(None, None, None, None, None)
 
-        result = jira.get_query_url('filter id')
+        result = jira.get_query_url('333')
 
-        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/filter id?maxResults=1000')
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/333')
         self.assertEqual(None, result)
 
     @patch.object(Jira, 'get_query_url')
@@ -135,7 +153,7 @@ class JiraTest(unittest.TestCase):
         get_query_url_mock.return_value = "http://other/what?that=1"
         url_read_mock.return_value = '{"x": "y"}'
 
-        result = jira.get_query('filter id')
+        result = jira.get_query('333')
 
         get_query_url_mock.assert_called_once()
         url_read_mock.assert_called_once_with('http://jira/what?maxResults=1000&that=1')
@@ -147,7 +165,7 @@ class JiraTest(unittest.TestCase):
         jira = Jira('http://jira/', '', '')
         get_query_url_mock.return_value = ""
 
-        result = jira.get_query('filter id')
+        result = jira.get_query('333')
 
         get_query_url_mock.assert_called_once()
         url_read_mock.assert_not_called()
@@ -160,7 +178,7 @@ class JiraTest(unittest.TestCase):
         get_query_url_mock.return_value = "http://other/what?that=1"
         url_read_mock.side_effect = urllib.error.HTTPError(None, None, None, None, None)
 
-        result = jira.get_query('filter id')
+        result = jira.get_query('333')
 
         get_query_url_mock.assert_called_once()
         url_read_mock.assert_called_once_with('http://jira/what?maxResults=1000&that=1')
