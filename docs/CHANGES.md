@@ -1,14 +1,19 @@
-2018-01-14  Release 2.83.0
+2019-01-22  Release 2.83.1
+
+  * Add more logging to debug an issue where the time since last Checkmarx scan jumps around.
+  
+  
+2019-01-14  Release 2.83.0
 
   * Feature #229: A possibility added to directly put jql in the report configuration instead of a Jira filter id.
 
 
-2018-01-14  Release 2.82.2
+2019-01-14  Release 2.82.2
 
   * Bug #525: Total duration of manual logical test cases fixed.
 
 
-2018-01-11  Release 2.82.1
+2019-01-11  Release 2.82.1
 
   * Tech #588: ART execution on example report included in the build.
 

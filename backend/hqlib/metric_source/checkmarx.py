@@ -219,7 +219,10 @@ class Checkmarx(MetricSourceWithIssues):
             try:
                 project_id = self._fetch_project_id(project_name)
                 last_scan_json = self._fetch_last_scan(project_id)
-                dates.append(self.__parse_datetime(last_scan_json))
+                last_scan_date_time = self.__parse_datetime(last_scan_json)
+                dates.append(last_scan_date_time)
+                logging.info("Last scan date from Checkmarx for project %s, project id %s is: %s. JSON: %s",
+                             project_name, project_id, last_scan_date_time, last_scan_json)
             except url_opener.UrlOpener.url_open_exceptions:
                 return datetime.datetime.min
             except (KeyError, IndexError, ValueError, AttributeError) as reason:
