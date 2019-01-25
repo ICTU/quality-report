@@ -19,6 +19,7 @@ import datetime
 import functools
 import logging
 import json
+import re
 from typing import List, Dict, Optional, Union, Sequence
 from distutils.version import LooseVersion
 
@@ -672,12 +673,17 @@ class Sonar6(Sonar):
 
     @staticmethod
     def __add_effort(effort: str) -> int:
-        try:
-            return int(effort[:effort.find('h')] if effort.find('h') > 0 else 0) * 60 +\
-                int(effort[effort.find('h') + 1:effort.find('min')])
-        except ValueError:
+        # Use a regex pattern to capture days, hours and minutes
+        pattern = r'^((?P<days>\d+)d)? *((?P<hours>\d+)h)? *((?P<minutes>\d+)min)?$'
+        match = re.match(pattern, effort)
+        if not match:
             logging.warning('Invalid format of field effort: %s', effort)
-        return 0
+            return 0
+
+        multipliers = {'days': 24 * 60, 'hours': 60, 'minutes': 1}
+        match_dict = match.groupdict()
+        return sum([multipliers[key] * int(match_dict[key])
+                    for key in match_dict if match_dict[key]])
 
 
 class Sonar7(Sonar6):
