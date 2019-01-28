@@ -1,3 +1,8 @@
+2019-01-28  Release 2.83.2
+
+  * Bug #600: Accept more different time delta formats from SonarQube.
+  
+  
 2019-01-22  Release 2.83.1
 
   * Add more logging to debug an issue where the time since last Checkmarx scan jumps around.
