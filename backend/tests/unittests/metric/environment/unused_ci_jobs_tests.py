@@ -20,9 +20,9 @@ from hqlib import metric, domain, metric_source
 
 
 class UnusedCIJobsTests(unittest.TestCase):
-    """ Unit tests for the unused CI jobs metric. """
+    """ Unit tests for the unused CI builds metric. """
 
-    expected_report = '1 van de 2 actieve CI-jobs is ongebruikt.'
+    expected_report = '1 van de 2 actieve CI-builds is ongebruikt.'
 
     def setUp(self):
         """ Create the text fixture. """
@@ -36,7 +36,7 @@ class UnusedCIJobsTests(unittest.TestCase):
         self.assertTrue(metric.UnusedCIJobs.norm_template % metric.UnusedCIJobs.norm_template_default_values())
 
     def test_value(self):
-        """ Test that the value equals the number of failing jobs. """
+        """ Test that the value equals the number of failing builds. """
         self._jenkins.number_of_unused_jobs.return_value = 1
         self.assertEqual(1, self._metric.value())
 
@@ -48,7 +48,7 @@ class UnusedCIJobsTests(unittest.TestCase):
 
     def test_label(self):
         """ Test that the label to use in the HTML report is correct. """
-        self.assertEqual('Ongebruikte jobs', self._metric.url_label_text)
+        self.assertEqual('Ongebruikte builds', self._metric.url_label_text)
 
     def test_extra_info_urls(self):
         """ Test that the metric source method is called. """

@@ -35,11 +35,15 @@ class GitLabCI(ci_server.CIServer):
 
     # pylint: disable=too-many-arguments
 
-    def __init__(self, url: str, *projects: str, job_re: str = '', private_token: str = '') -> None:
+    def __init__(self, url: str, *projects: str, branch_re: str = '', private_token: str = '') -> None:
 
         self.__gitlab = gitlab.Gitlab(url, private_token=private_token)
-        self._job_re = re.compile(job_re) if job_re else ''
+        self.__private_token = private_token
+        self.__branch_re = re.compile(branch_re) if branch_re else ''
         self.__projects = projects
+        self.__url = url
+        self.__commit_display_url = utils.url_join(self.__url, '{project_name}/commit/{commit_id}')
+        self.__days_to_tolerate = 180
 
         super().__init__()
 
@@ -54,81 +58,116 @@ class GitLabCI(ci_server.CIServer):
             logging.error('Error retrieving project data. Reason: %s.', reason)
             return []
 
-    def _get_days_since_projects_last_success(self, project: Project) -> TimeDelta:
-        last_success_date = self._get_last_successful_pipeline_date(project, 'success')
-        return datetime.datetime.now().astimezone(tz=tzlocal()) - utils.parse_iso_datetime(last_success_date)
-
-    def _get_days_since_projects_last_completion(self, project: Project) -> TimeDelta:
-        last_completion_date = self._get_last_successful_pipeline_date(project, 'success', 'failure')
-        return datetime.datetime.now().astimezone(tz=tzlocal()) - utils.parse_iso_datetime(last_completion_date)
-
     @classmethod
-    @functools.lru_cache(maxsize=2048)
-    def _get_last_successful_pipeline_date(cls, project: Project, *statuses: str):
-        return max([
-            project.pipelines.get(pipe.attributes['id']).attributes['finished_at']
-            for pipe in project.pipelines.list() if pipe.attributes['status'] in statuses
-        ], default=datetime.datetime.max.strftime("%Y-%m-%dT%H:%M:%S.%fZ"))
+    def _get_time_since(cls, date: str) -> TimeDelta:
+        return datetime.datetime.now().astimezone(tz=tzlocal()) - utils.parse_iso_datetime(date)
 
     def number_of_failing_jobs(self) -> int:
         """ Return the number of failing CI jobs. """
-        return len(self._jobs_urls(self._get_days_since_projects_last_success, 1, 'failed'))
+        return len(self._builds_urls(True))
 
     def number_of_unused_jobs(self) -> int:
         """ Return the number of unused CI jobs. """
-        return len(self._jobs_urls(self._get_days_since_projects_last_completion, 180))
+        return len(self._builds_urls())
 
     def failing_jobs_url(self) -> Optional[List]:
         """ Return the urls for the failing Jenkins jobs. """
-        return self._jobs_urls(self._get_days_since_projects_last_success, 1, 'failed')
+        return self._builds_urls(True)
 
     def unused_jobs_url(self) -> Optional[List]:
         """ Return the urls for the unused CI jobs. """
-        return self._jobs_urls(self._get_days_since_projects_last_completion, 180)
+        return self._builds_urls()
 
     def number_of_active_jobs(self) -> int:
         """ Return the total number of active CI jobs. """
-        return len(self._all_jobs())
+        return len(self._all_builds())
 
-    def _jobs_urls(self, get_age, days_to_tolerate: int, *statuses: str) -> Optional[List]:
+    @functools.lru_cache(maxsize=2048)
+    def _builds_urls(self, only_failed: bool = False) -> Optional[List]:
         try:
             ret = []
             for project in self._get_projects():
-                age = get_age(project)
-                if age.days > days_to_tolerate:
-                    jobs = self.__get_jobs_list(project, statuses)
-                    self.__append_jobs(project, jobs, str(age.days), ret)
+                self._add_projects_builds(only_failed, project, ret)
             return ret
-        except (AttributeError, gitlab.GitlabError) as reason:
-            logging.error('Error retrieving pipeline data. Reason: %s.', reason)
+        except (gitlab.GitlabError, KeyError, TypeError) as reason:
+            logging.error('Error retrieving build data. Reason: %s.', reason)
         return []
 
-    @classmethod
-    def __append_jobs(cls, project, jobs, days, ret):
-        if jobs:
-            ret.append([(project.attributes['name_with_namespace'] + ' / ' + job.attributes['name'],
-                         job.attributes['web_url'], days) for job in jobs])
+    def _add_projects_builds(self, only_failed, project, ret):
+        build_pairs = self._get_builds_list(project, only_failed)
+        if build_pairs:
+            for commits_pair in build_pairs:
+                self.__add_build_if_applicable(commits_pair, only_failed, project, ret)
 
-    def __get_jobs_list(self, project, statuses):
-        if statuses:
-            jobs = [job for job in self._get_jobs_list(project) if job.attributes['status'] in statuses]
-        else:
-            jobs = self._get_jobs_list(project)
-        return jobs
+    def __add_build_if_applicable(self, commits_pair, only_failed, project, ret):
+        do_append, days_to_report = self.__get_build_criteria(commits_pair, only_failed)
+        if do_append:
+            ret.append(
+                (project.attributes['name'] + '/' + commits_pair[0].branch_name + ' - ' + commits_pair[0].comment,
+                 self.__commit_display_url.format(
+                     project_name=project.attributes['path_with_namespace'],
+                     commit_id=commits_pair[0].attributes['commit_id']),
+                 days_to_report))
+
+    def __get_build_criteria(self, commits_pair, failed):
+        age_completed = self._get_time_since(commits_pair[0].attributes['created_at'])
+        age_succeeded = self._get_time_since(commits_pair[1].attributes['created_at'])\
+            if failed and commits_pair[1] else age_completed
+        return self.__should_be_appended(age_completed, age_succeeded, failed), \
+            age_succeeded.days if failed else age_completed.days
+
+    def __should_be_appended(self, age_completed, age_succeeded, failed):
+        return failed and age_succeeded.days > 0 or not failed and age_completed.days > self.__days_to_tolerate
+
+    def _get_builds_list(self, project, only_failed: bool) -> List:
+        built_commits = self._get_built_commits(project)
+        return [cmt_pair for cmt_pair in built_commits if cmt_pair[0].attributes['status'] == 'failed']\
+            if only_failed else built_commits
 
     @functools.lru_cache(maxsize=2048)
-    def _get_jobs_list(self, project: Project):
-        if not self._job_re:
-            return project.jobs.list()
-        return [job for job in project.jobs.list() if self._job_re.match(job.attributes['name'])]
+    def _get_built_commits(self, project: Project):
+        last_finished_commits = \
+            [self.__get_last_finished_commit(project, br) for br in self.__get_applicable_branches(project)]
+        return [commits_pair for commits_pair in last_finished_commits if commits_pair[0]]
 
-    def _all_jobs(self) -> List[Dict]:
+    def __get_applicable_branches(self, project):
+        branches = project.branches.list()
+        if self.__branch_re:
+            branches = [br for br in branches if self.__branch_re.match(br.attributes['name'])]
+        return branches
+
+    def __get_last_finished_commit(self, project, branch):
+        commits = sorted(
+            project.commits.list(ref_name=branch.attributes['name']),
+            key=lambda cmt: cmt.attributes['created_at'], reverse=True)
+        last_completed = self.__get_status(commits, branch.attributes['name'], 'success', 'failed')
+        last_succeeded = self.__get_status(commits, branch.attributes['name'], 'success')
+        return last_completed, last_succeeded
+
+    @classmethod
+    def __get_status(cls, commits, branch_name: str, *statuses: str):
+        try:
+            for cmt in commits:
+                stat = cmt.statuses.list(ref=branch_name)
+                if stat and stat[0].attributes['status'] in statuses:
+                    stat[0].branch_name = branch_name
+                    stat[0].comment = cmt.attributes['title']
+                    return stat[0]
+        except KeyError as reason:
+            logging.error('Error retrieving commit status data. Reason: %s.', reason)
+        return None
+
+    def _all_builds(self) -> List[Dict]:
         """ Return the urls for all CI jobs. """
         try:
             ret = []
             for project in self._get_projects():
-                ret.extend(self._get_jobs_list(project))
+                ret.extend(self._get_built_commits(project))
             return ret
         except (AttributeError, gitlab.GitlabError) as reason:
-            logging.error('Error retrieving jobs data. Reason: %s.', reason)
+            logging.error('Error retrieving builds data. Reason: %s.', reason)
         return []
+
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:  # pylint: disable=no-self-use
+        """ Return the url(s) to the metric source for the metric source id. """
+        return [project.attributes['web_url'] for project in self._get_projects()]

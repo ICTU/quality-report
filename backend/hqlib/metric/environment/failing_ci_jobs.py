@@ -15,24 +15,23 @@ limitations under the License.
 """
 
 from typing import List, Tuple
-
 from . import CIJobs
 
 
 class FailingCIJobs(CIJobs):
     """ Metric for measuring the number of continuous integration jobs that fail. """
 
-    name = 'Hoeveelheid falende CI-jobs'
-    unit = 'CI-jobs'
+    name = 'Hoeveelheid falende CI-builds'
+    unit = 'CI-builds'
     norm_template = 'Maximaal {target} van de actieve {unit} ' \
-        'faalt. Meer dan {low_target} {unit} is rood. Een CI-job faalt als de ' \
+        'faalt. Meer dan {low_target} {unit} is rood. Een CI-build faalt als de ' \
         'laatste bouwpoging niet is geslaagd en er de afgelopen 24 uur geen ' \
         'geslaagde bouwpogingen zijn geweest. Inactieve jobs worden genegeerd.'
     template = '{value} van de {number_of_jobs} actieve {unit} faalt.'
-    url_label_text = 'Falende jobs'
+    url_label_text = 'Falende builds'
     target_value = 0
     low_target_value = 2
-    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen falen__detail-column-number"}
+    extra_info_headers = {"link": "Build", "comment": "Aantal dagen falen__detail-column-number"}
 
     def value(self):
         return self._metric_source.number_of_failing_jobs() if self._metric_source else -1

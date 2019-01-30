@@ -23,16 +23,16 @@ from . import CIJobs
 class UnusedCIJobs(CIJobs):
     """ Metric for measuring the number of continuous integration jobs that are not used. """
 
-    name = 'Hoeveelheid ongebruikte CI-jobs'
-    unit = 'CI-jobs'
+    name = 'Hoeveelheid ongebruikte CI-builds'
+    unit = 'CI-builds'
     norm_template = 'Maximaal {target} van de actieve {unit} is ongebruikt. Meer dan {low_target} {unit} is rood. ' \
-        'Een CI-job is ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn geweest. Inactieve ' \
+        'Een CI-build is ongebruikt als er de afgelopen 6 maanden geen bouwpogingen zijn geweest. Inactieve ' \
         '{unit} worden genegeerd.'
     template = '{value} van de {number_of_jobs} actieve {unit} is ongebruikt.'
-    url_label_text = 'Ongebruikte jobs'
+    url_label_text = 'Ongebruikte builds'
     target_value = 0
     low_target_value = 2
-    extra_info_headers = {"link": "Job naam", "comment": "Aantal dagen ongebruikt__detail-column-number"}
+    extra_info_headers = {"link": "Build", "comment": "Aantal dagen ongebruikt__detail-column-number"}
 
     def value(self):
         """ Return the number of unused jobs. """

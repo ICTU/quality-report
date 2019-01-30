@@ -1,3 +1,9 @@
+2019-02-04  Release 2.84.0
+
+  * Bug #605: GitLabCI link is corrected.
+  * Feature #609: CI metrics are not based on jobs any more, but on builds.
+
+
 2019-01-28  Release 2.83.2
 
   * Bug #600: Accept more different time delta formats from SonarQube.

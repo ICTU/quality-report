@@ -42,11 +42,11 @@ class FailingCIJobsTest(unittest.TestCase):
         """ Test the metric report. """
         self._jenkins.number_of_failing_jobs.return_value = 1
         self._jenkins.number_of_active_jobs.return_value = 2
-        self.assertEqual('1 van de 2 actieve CI-jobs faalt.', self._metric.report())
+        self.assertEqual('1 van de 2 actieve CI-builds faalt.', self._metric.report())
 
     def test_label(self):
         """ Test that the label to use in the HTML report is correct. """
-        self.assertEqual('Falende jobs', self._metric.url_label_text)
+        self.assertEqual('Falende builds', self._metric.url_label_text)
 
     def test_extra_info_urls(self):
         """ Test that the metric source method is called. """

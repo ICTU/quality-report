@@ -24,6 +24,9 @@ class CIJobs(LowerIsBetterMetric):
 
     metric_source_class = metric_source.CIServer
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
         parameters['number_of_jobs'] = str(self._metric_source.number_of_active_jobs()) if self._metric_source else '?'
@@ -34,8 +37,5 @@ class CIJobs(LowerIsBetterMetric):
         """ Item arguments url, text, nr_of_inactive_days convey as a link and a number  """
         return ({"href": item[1], "text": item[0]}, item[2]) if item else None
 
-    def _metric_source_urls(self) -> List[str]:
-        """ Return a list of metric source urls to be used to create the url dict. """
-        if self._metric_source:
-            return [self._metric_source.url()]
-        return []
+    def _get_display_urls(self) -> List[str]:
+        return ['dummy'] if self._metric_source.metric_source_name == 'GitLabCI' else []
