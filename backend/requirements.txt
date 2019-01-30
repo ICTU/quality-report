@@ -11,5 +11,5 @@ git+https://github.com/wekan/wekan-python-api-client.git#egg=wekanapi&subdirecto
 setuptools==40.7.1
 coverage==4.5.2
 xmlrunner==1.7.7
-pycodestyle==2.4.0
+pycodestyle==2.5.0
 pylint==2.2.2

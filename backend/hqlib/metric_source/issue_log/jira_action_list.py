@@ -87,7 +87,7 @@ class JiraActionList(ActionLog):
         return [(issue[0], issue[1], self.__get_formatted_time_delta(issue[3])) for issue in issue_list] \
             if issue_list is not None else []
 
-    def _get_issues_inactive_for(self, *metric_source_ids, delta: relativedelta = relativedelta(days = 14)):
+    def _get_issues_inactive_for(self, *metric_source_ids, delta: relativedelta = relativedelta(days=14)):
         try:
             overdue_issue_list = self._get_issues_older_than(*metric_source_ids, limit_date=datetime.datetime.now())
             return [issue for issue in overdue_issue_list if issue[3]
