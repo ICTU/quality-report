@@ -1,3 +1,8 @@
+2019-02-04  Release 2.84.1
+
+  * Bug fix: HQ would crash when using JQL for the manual-logical-test-cases-without-duration-metric.
+  
+  
 2019-02-04  Release 2.84.0
 
   * Bug #605: GitLabCI link is corrected.

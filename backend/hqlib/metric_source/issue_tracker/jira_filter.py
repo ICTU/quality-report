@@ -120,7 +120,7 @@ class JiraFilter(BugTracker):
     def nr_issues_with_field_empty(self, *metric_source_ids: str) -> Tuple[int, List[str]]:
         """ Return the number of issues whose field has not been filled in. """
         count, issues = zip(*[
-            self._query_field_empty(int(metric_source_id), self.__field_name)
+            self._query_field_empty(metric_source_id, self.__field_name)
             for metric_source_id in metric_source_ids])
         return -1 if -1 in count else sum(count), issues[0]
 
