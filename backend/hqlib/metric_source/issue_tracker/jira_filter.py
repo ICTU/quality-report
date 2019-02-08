@@ -68,7 +68,7 @@ class JiraFilter(BugTracker):
     def nr_issues(self, *metric_source_ids: str) -> Tuple[int, List[str]]:
         """ Return the number of issues in the filter. """
         count, issues = zip(*[self._query_total(metric_source_id) for metric_source_id in metric_source_ids])
-        return -1 if -1 in count else sum(count), issues[0]
+        return (-1, []) if -1 in count else (sum(count), issues[0])
 
     @classmethod
     def _get_create_date_from_json(cls, json: Dict, to_str: bool):

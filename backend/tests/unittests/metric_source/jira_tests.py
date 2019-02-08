@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
 import unittest
 from unittest.mock import patch
 import urllib.error
-from hqlib.metric_source import Jira, url_opener
+from hqlib.metric_source import url_opener, Jira
 
 
 @patch.object(url_opener.UrlOpener, '__init__')
@@ -144,6 +145,38 @@ class JiraTest(unittest.TestCase):
         result = jira.get_query_url('333')
 
         url_read_mock.assert_called_once_with('http://jira/rest/api/2/filter/333')
+        self.assertEqual(None, result)
+
+    def test_get_field_id(self, url_read_mock):
+        """ Test that the url is None when http error occurs. """
+        jira = Jira('http://jira/', 'username', 'password')
+        url_read_mock.return_value = '[{"id": "fn22", "name": "First Name"}]'
+
+        result = jira.get_field_id("First Name")
+
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/field')
+        self.assertEqual("fn22", result)
+
+    @patch.object(logging, 'error')
+    def test_get_field_id_not_exist(self, error_mock, url_read_mock):
+        """ Test that the url is None when http error occurs. """
+        jira = Jira('http://jira/', 'username', 'password')
+        url_read_mock.return_value = '[{"id": "fn22", "name": "First Name"}]'
+
+        result = jira.get_field_id("Some Other Name")
+
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/field')
+        error_mock.assert_called_once_with("Error retrieving id for the field with name %s.", "Some Other Name")
+        self.assertEqual(None, result)
+
+    def test_get_field_id_http_error(self, url_read_mock):
+        """ Test that the url is None when http error occurs. """
+        jira = Jira('http://jira/', 'username', 'password')
+        url_read_mock.side_effect = urllib.error.HTTPError(None, None, None, None, None)
+
+        result = jira.get_field_id("First Name")
+
+        url_read_mock.assert_called_once_with('http://jira/rest/api/2/field')
         self.assertEqual(None, result)
 
     @patch.object(Jira, 'get_query_url')

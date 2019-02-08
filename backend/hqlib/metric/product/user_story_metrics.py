@@ -15,31 +15,41 @@ limitations under the License.
 """
 
 
+from typing import List, Tuple
 from hqlib.typing import MetricParameters
-from ..metric_source_mixin import BirtTestDesignMetric
 from ...domain import LowerIsBetterMetric
+from ...metric_source.abstract.backlog import Backlog
 
 
-class UserStoryMetric(BirtTestDesignMetric, LowerIsBetterMetric):
+class UserStoryMetric(LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of user stories. """
     unit = 'user stories'
+    metric_source_class = Backlog
+    extra_info_headers = {"issue": "Issue"}
 
     def value(self):
-        nr_user_stories, nr_user_stories_ok = self._nr_user_stories(), self._nr_user_stories_ok()
-        return -1 if -1 in (nr_user_stories, nr_user_stories_ok) else nr_user_stories - nr_user_stories_ok
+        nr_ok_stories, ok_stories = self._nr_user_stories_ok()
+        nr_all_stories, all_stories = self._user_stories()
+        self._extra_info_data = [el for el in all_stories if el not in ok_stories]
+        self.__set_display_url()
+        return -1 if -1 in (nr_all_stories, nr_ok_stories) else nr_all_stories - nr_ok_stories
 
-    def _nr_user_stories_ok(self) -> int:
+    def __set_display_url(self):
+        if self._extra_info_data:
+            self._display_url = [issue['href'].rsplit('/', 1)[-1] for issue in self._extra_info_data]
+
+    def _nr_user_stories_ok(self) -> Tuple[int, List[str]]:
         """ Return the number of user stories whose quality is good. """
         raise NotImplementedError
 
-    def _nr_user_stories(self) -> int:
+    def _user_stories(self) -> Tuple[int, List[str]]:
         """ Return the total number of user stories. """
-        return self._metric_source.nr_user_stories() if self._metric_source else -1
+        return self._metric_source.nr_user_stories() if self._metric_source else (-1, [])
 
     def _parameters(self) -> MetricParameters:
         # pylint: disable=protected-access
         parameters = super()._parameters()
-        parameters['total'] = self._nr_user_stories()
+        parameters['total'] = self._user_stories()[0]
         return parameters
 
 
@@ -52,8 +62,8 @@ class UserStoriesNotReviewed(UserStoryMetric):
     target_value = 0
     low_target_value = 5
 
-    def _nr_user_stories_ok(self) -> int:
-        return self._metric_source.reviewed_user_stories() if self._metric_source else -1
+    def _nr_user_stories_ok(self) -> Tuple[int, List[str]]:
+        return self._metric_source.reviewed_user_stories() if self._metric_source else (-1, [])
 
 
 class UserStoriesNotApproved(UserStoryMetric):
@@ -65,12 +75,12 @@ class UserStoriesNotApproved(UserStoryMetric):
     target_value = 0
     low_target_value = 3
 
-    def _nr_user_stories_ok(self) -> int:
-        return self._metric_source.approved_user_stories() if self._metric_source else -1
+    def _nr_user_stories_ok(self) -> Tuple[int, List[str]]:
+        return self._metric_source.approved_user_stories() if self._metric_source else (-1, [])
 
-    def _nr_user_stories(self) -> int:
+    def _user_stories(self) -> Tuple[int, List[str]]:
         """ Override the total number of user stories. """
-        return self._metric_source.reviewed_user_stories() if self._metric_source else -1
+        return self._metric_source.reviewed_user_stories() if self._metric_source else (-1, [])
 
 
 class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
@@ -82,5 +92,5 @@ class UserStoriesWithTooFewLogicalTestCases(UserStoryMetric):
     target_value = 3
     low_target_value = 5
 
-    def _nr_user_stories_ok(self) -> int:
-        return self._metric_source.nr_user_stories_with_sufficient_ltcs() if self._metric_source else -1
+    def _nr_user_stories_ok(self) -> Tuple[int, List[str]]:
+        return self._metric_source.nr_user_stories_with_sufficient_ltcs() if self._metric_source else (-1, [])

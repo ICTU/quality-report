@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import functools
+import logging
 import urllib.parse
 from json import JSONDecodeError
 from typing import Optional, Mapping, Union
@@ -47,6 +49,19 @@ class Jira(object):
             return utils.eval_json(self.__url_opener.url_read(read_url))
         except url_opener.UrlOpener.url_open_exceptions:
             return None
+
+    @functools.lru_cache(maxsize=1024)
+    def get_field_id(self, filed_name: str) -> Optional[str]:
+        """ Retrieves the id of a field for a given name """
+        try:
+            json_string = self.__url_opener.url_read(self.__url + 'rest/api/2/field')
+        except url_opener.UrlOpener.url_open_exceptions:
+            return None
+        for field in utils.eval_json(json_string):
+            if field['name'] == filed_name:
+                return field['id']
+        logging.error("Error retrieving id for the field with name %s.", filed_name)
+        return None
 
     def get_query_url(self, query_id: QueryId, search: bool = True) -> Optional[str]:
         """ Get the query url based on the query id. """

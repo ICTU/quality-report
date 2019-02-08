@@ -30,6 +30,8 @@ from .abstract.test_report import TestReport, UnitTestReport, SystemTestReport
 from .abstract.user_story_points_predictor import UserStoryPointsPredictor
 from .abstract.version_control_system import VersionControlSystem, Branch
 from .birt import Birt
+from .jira_backlog import JiraBacklog
+from .abstract.backlog import Backlog
 from .coverage_report.jacoco import JaCoCo
 from .coverage_report.ncover import NCover
 from .coverage_report.lcov import LCOV

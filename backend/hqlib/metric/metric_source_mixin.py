@@ -56,21 +56,3 @@ class SonarViolationsMetric(SonarMetric):
     def _metric_source_urls(self) -> List[str]:
         """ Return the url to the Sonar violations. """
         return [self._metric_source.violations_url(self._sonar_id())] if self._metric_source else []
-
-
-class BirtTestDesignMetric(domain.Metric):
-    """ Class for metrics that use the Birt test design report. """
-
-    metric_source_class = metric_source.Birt
-
-    @functools.lru_cache(maxsize=1024)
-    def value(self):
-        return super().value()  # pylint: disable=useless-super-delegation
-
-    def _is_value_better_than(self, target) -> bool:
-        return super()._is_value_better_than(target)  # pylint: disable=useless-super-delegation
-
-    def _metric_source_urls(self) -> List[str]:
-        """ Return the url for the What's Missing report instead of the Birt test design report since the
-            What's Missing report allows users to click to the user stories and test cases in Jira. """
-        return [self._metric_source.whats_missing_url()] if self._metric_source else []

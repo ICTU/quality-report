@@ -18,32 +18,42 @@ limitations under the License.
 import functools
 import datetime
 
+from typing import List, Tuple
 from hqlib.typing import MetricParameters, MetricValue
-from ..metric_source_mixin import BirtTestDesignMetric
 from ... import metric_source, utils
 from ...domain import LowerIsBetterMetric
+from ...metric_source.abstract.backlog import Backlog
 
 
-class LogicalTestCaseMetric(BirtTestDesignMetric, LowerIsBetterMetric):
+class LogicalTestCaseMetric(LowerIsBetterMetric):
     """ Base class for metrics measuring the quality of logical test cases. """
     unit = 'logische testgevallen'
+    metric_source_class = Backlog
+    extra_info_headers = {"issue": "Issue"}
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
-        nr_ltcs, nr_ltcs_ok = self._nr_ltcs(), self._nr_ltcs_ok()
-        return -1 if -1 in (nr_ltcs_ok, nr_ltcs) else nr_ltcs - nr_ltcs_ok
+        nr_ok_ltcs, ok_ltcs = self._nr_ltcs_ok()
+        nr_all_ltcs, all_ltcs = self._nr_ltcs()
+        self._extra_info_data = [el for el in all_ltcs if el not in ok_ltcs]
+        self.__set_display_url()
+        return -1 if -1 in (nr_all_ltcs, nr_ok_ltcs) else nr_all_ltcs - nr_ok_ltcs
 
-    def _nr_ltcs_ok(self) -> int:
+    def __set_display_url(self):
+        if self._extra_info_data:
+            self._display_url = [issue['href'].rsplit('/', 1)[-1] for issue in self._extra_info_data]
+
+    def _nr_ltcs_ok(self) -> Tuple[int, List[str]]:
         """ Return the number of logical test cases whose quality is good. """
         raise NotImplementedError
 
-    def _nr_ltcs(self) -> int:
+    def _nr_ltcs(self) -> Tuple[int, List[str]]:
         """ Return the total number of logical test cases. """
         raise NotImplementedError
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()
-        parameters['total'] = str(self._nr_ltcs())
+        parameters['total'] = str(self._nr_ltcs()[0])
         return parameters
 
 
@@ -56,11 +66,11 @@ class LogicalTestCasesNotReviewed(LogicalTestCaseMetric):
     target_value = 0
     low_target_value = 15
 
-    def _nr_ltcs_ok(self) -> int:
-        return self._metric_source.reviewed_ltcs() if self._metric_source else -1
+    def _nr_ltcs_ok(self) -> Tuple[int, List[str]]:
+        return self._metric_source.reviewed_ltcs() if self._metric_source else (-1, [])
 
-    def _nr_ltcs(self) -> int:
-        return self._metric_source.nr_ltcs() if self._metric_source else -1
+    def _nr_ltcs(self) -> Tuple[int, List[str]]:
+        return self._metric_source.nr_ltcs() if self._metric_source else (-1, [])
 
 
 class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
@@ -72,11 +82,11 @@ class LogicalTestCasesNotApproved(LogicalTestCaseMetric):
     target_value = 0
     low_target_value = 10
 
-    def _nr_ltcs_ok(self) -> int:
-        return self._metric_source.approved_ltcs() if self._metric_source else -1
+    def _nr_ltcs_ok(self) -> Tuple[int, List[str]]:
+        return self._metric_source.approved_ltcs() if self._metric_source else (-1, [])
 
-    def _nr_ltcs(self) -> int:
-        return self._metric_source.reviewed_ltcs() if self._metric_source else -1
+    def _nr_ltcs(self) -> Tuple[int, List[str]]:
+        return self._metric_source.reviewed_ltcs() if self._metric_source else (-1, [])
 
 
 class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
@@ -89,11 +99,11 @@ class LogicalTestCasesNotAutomated(LogicalTestCaseMetric):
     target_value = 9
     low_target_value = 15
 
-    def _nr_ltcs_ok(self) -> int:
-        return self._metric_source.nr_automated_ltcs() if self._metric_source else -1
+    def _nr_ltcs_ok(self) -> Tuple[int, List[str]]:
+        return self._metric_source.nr_automated_ltcs() if self._metric_source else (-1, [])
 
-    def _nr_ltcs(self) -> int:
-        return self._metric_source.nr_ltcs_to_be_automated() if self._metric_source else -1
+    def _nr_ltcs(self) -> Tuple[int, List[str]]:
+        return self._metric_source.nr_ltcs_to_be_automated() if self._metric_source else (-1, [])
 
 
 class ManualLogicalTestCases(LowerIsBetterMetric):
@@ -109,13 +119,14 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
     no_manual_tests_template = 'Er zijn geen {unit}.'
     target_value = 21
     low_target_value = 28
-    metric_source_class = metric_source.Birt
+    metric_source_class = metric_source.Backlog
+    extra_info_headers = {"issue": "Issue"}
 
     @functools.lru_cache(maxsize=1024)
     def value(self):
         if self._missing():
             return -1
-        if self._metric_source.nr_manual_ltcs() == 0:
+        if self._metric_source.nr_manual_ltcs()[0] == 0:
             return 0
         return (datetime.datetime.now() - self._metric_source.date_of_last_manual_test()).days
 
@@ -126,7 +137,7 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
         parameters = super()._parameters()
         parameters['date'] = utils.format_date(self._metric_source.date_of_last_manual_test()) \
             if self._metric_source else '?'
-        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs() \
+        parameters['nr_manual_ltcs'] = self._metric_source.nr_manual_ltcs()[0] \
             if self._metric_source else '?'
         parameters['nr_manual_ltcs_too_old'] = self._metric_source.nr_manual_ltcs_too_old('trunk', self.target()) \
             if self._metric_source else '?'
@@ -134,9 +145,9 @@ class ManualLogicalTestCases(LowerIsBetterMetric):
 
     def _get_template(self) -> str:
         if self._metric_source:
-            if self._metric_source.nr_manual_ltcs() == 0:
+            if self._metric_source.nr_manual_ltcs()[0] == 0:
                 return self.no_manual_tests_template
-            elif self._metric_source.date_of_last_manual_test() == datetime.datetime.min:
+            if self._metric_source.date_of_last_manual_test() == datetime.datetime.min:
                 return self.never_template
         return super()._get_template()
 
@@ -153,13 +164,14 @@ class NumberOfManualLogicalTestCases(LogicalTestCaseMetric):
     target_value = 10
     low_target_value = 50
 
-    def _nr_ltcs_ok(self) -> int:
-        nr_ltcs = self._nr_ltcs()
-        nr_manual_ltcs = self._metric_source.nr_manual_ltcs() if self._metric_source else -1
-        return -1 if -1 in (nr_ltcs, nr_manual_ltcs) else nr_ltcs - nr_manual_ltcs
+    def _nr_ltcs_ok(self) -> Tuple[int, List[str]]:
+        nr_ltcs, all_ltcs = self._nr_ltcs()
+        nr_manual_ltcs, manual_ltcs = self._metric_source.nr_manual_ltcs() if self._metric_source else (-1, [])
+        return (-1 if -1 in (nr_ltcs, nr_manual_ltcs) else nr_ltcs - nr_manual_ltcs),\
+            [el for el in all_ltcs if el not in manual_ltcs]
 
-    def _nr_ltcs(self) -> int:
-        return self._metric_source.nr_ltcs() if self._metric_source else -1
+    def _nr_ltcs(self) -> Tuple[int, List[str]]:
+        return self._metric_source.nr_ltcs() if self._metric_source else (-1, [])
 
     def _metric_source_urls(self):
         return [self._metric_source.manual_test_execution_url()] if self._metric_source else []

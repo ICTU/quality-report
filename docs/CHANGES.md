@@ -1,3 +1,8 @@
+2019-05-03  Release 2.91.0
+
+  * Feature #610: JiraBacklog metric source implemented.
+
+
 2019-05-03  Release 2.90.3
 
   * Bug fix #665: OWASP dependency check XML reports changed their severity labels from capitalized to all-caps AND the XML structure.

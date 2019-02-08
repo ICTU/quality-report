@@ -17,14 +17,15 @@ limitations under the License.
 
 import datetime
 import logging
-from typing import List
+from typing import List, Tuple
 
 from hqlib.typing import DateTime
 from . import beautifulsoup, url_opener
-from .. import utils, domain
+from .. import utils
+from .abstract.backlog import Backlog
 
 
-class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
+class Birt(Backlog):
     """ Class representing the Birt report engine instance. """
 
     metric_source_name = 'Birt reports'
@@ -56,71 +57,75 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the What's missing report url for the product. """
         return self.__whats_missing_url
 
+    def metric_source_urls(self, *metric_source_ids: str) -> List[str]:
+        """ Return the What's missing report url for the product. """
+        return [self.__whats_missing_url]
+
     # Metrics calculated from other metrics:
 
-    def nr_user_stories_with_sufficient_ltcs(self) -> int:
+    def nr_user_stories_with_sufficient_ltcs(self) -> Tuple[int, List[str]]:
         """ Return the number of user stories that have a sufficient number of logical test cases."""
-        nr_user_stories = self.nr_user_stories()
+        nr_user_stories = self.nr_user_stories()[0]
         if nr_user_stories == -1:
-            return -1
-        return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs())
+            return -1, []
+        return int(nr_user_stories) - int(self.__nr_user_stories_with_too_few_ltcs()), []
 
-    def nr_automated_ltcs(self) -> int:
+    def nr_automated_ltcs(self) -> Tuple[int, List[str]]:
         """ Return the number of logical test cases that have been implemented as automated tests. """
-        nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated()
+        nr_ltcs_to_be_automated = self.nr_ltcs_to_be_automated()[0]
         if nr_ltcs_to_be_automated == -1:
-            return -1
-        return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs())
+            return -1, []
+        return int(nr_ltcs_to_be_automated) - int(self.__nr_missing_automated_ltcs()), []
 
     # Metrics available directly in Birt:
 
-    def nr_user_stories(self) -> int:
+    def nr_user_stories(self) -> Tuple[int, List[str]]:
         """ Return the number of user stories . """
-        return self.__test_design_metric(row_nr=0)
+        return self.__test_design_metric(row_nr=0), []
 
     def __nr_user_stories_with_too_few_ltcs(self) -> int:
         """ Return the number of user stories that have not enough logical test cases associated with them. """
         return self.__test_design_metric(row_nr=2)
 
-    def reviewed_user_stories(self) -> int:
+    def reviewed_user_stories(self) -> Tuple[int, List[str]]:
         """ Return the number of reviewed user stories. """
-        return self.__test_design_metric(row_nr=3)
+        return self.__test_design_metric(row_nr=3), []
 
-    def approved_user_stories(self) -> int:
+    def approved_user_stories(self) -> Tuple[int, List[str]]:
         """ Return the number of approved user stories. """
-        return self.__test_design_metric(row_nr=4)
+        return self.__test_design_metric(row_nr=4), []
 
     def not_approved_user_stories(self) -> int:
         """ Return the number of not approved user stories. """
         return self.__test_design_metric(row_nr=5)
 
-    def nr_ltcs(self) -> int:
+    def nr_ltcs(self) -> Tuple[int, List[str]]:
         """ Return the number of logical test cases. """
-        return self.__test_design_metric(row_nr=6)
+        return self.__test_design_metric(row_nr=6), []
 
-    def reviewed_ltcs(self) -> int:
+    def reviewed_ltcs(self) -> Tuple[int, List[str]]:
         """ Return the number of reviewed logical test cases for the product. """
-        return self.__test_design_metric(row_nr=7)
+        return self.__test_design_metric(row_nr=7), []
 
-    def approved_ltcs(self) -> int:
+    def approved_ltcs(self) -> Tuple[int, List[str]]:
         """ Return the number of approved logical test casess. """
-        return self.__test_design_metric(row_nr=8)
+        return self.__test_design_metric(row_nr=8), []
 
     def not_approved_ltcs(self) -> int:
         """ Return the number of disapproved logical test cases. """
         return self.__test_design_metric(row_nr=9)
 
-    def nr_ltcs_to_be_automated(self) -> int:
+    def nr_ltcs_to_be_automated(self) -> Tuple[int, List[str]]:
         """ Return the number of logical test cases for the product that have to be automated. """
-        return self.__test_design_metric(row_nr=10)
+        return self.__test_design_metric(row_nr=10), []
 
-    def nr_manual_ltcs(self, version: str = 'trunk') -> int:
+    def nr_manual_ltcs(self, version: str = 'trunk') -> Tuple[int, List[str]]:
         """ Return the number of logical test cases for the product that are executed manually. """
         try:
             test_dates = self.__manual_test_dates(version)
         except url_opener.UrlOpener.url_open_exceptions:
-            return -1
-        return len(test_dates)
+            return -1, []
+        return len(test_dates), []
 
     def nr_manual_ltcs_too_old(self, version: str, target: int) -> int:
         """ Return the number of manual logical test cases that have not been executed for target amount of days. """
@@ -151,7 +156,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
         """ Return the manual test cases. """
         url = self.__manual_test_execution_url.format(ver=version)
         try:
-            soup = self.soup(url)
+            soup = beautifulsoup.BeautifulSoupOpener().soup(url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Could not open manual test dates report at %s: %s", url, reason)
             raise
@@ -176,7 +181,7 @@ class Birt(domain.MetricSource, beautifulsoup.BeautifulSoupOpener):
     def __test_design_metric(self, row_nr: int) -> int:
         """ Get a metric from a specific row in the test design report."""
         try:
-            test_design_report = self.soup(self.__test_design_url)
+            test_design_report = beautifulsoup.BeautifulSoupOpener().soup(self.__test_design_url)
         except url_opener.UrlOpener.url_open_exceptions as reason:
             logging.warning("Could not open %s: %s", self.__test_design_url, reason)
             return -1

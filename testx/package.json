@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@ictu/testx": "^2.12.0"
+    "@ictu/testx": "^2.12.0",
+    "protractor": "^5.4.2"
   },
   "devDependencies": {},
   "scripts": {
