@@ -551,6 +551,13 @@ class UrlOpenerMock(UrlOpener):
                 ),
             # end LCOV coverage rapport
 
+            # begin aXe rapport
+            'http://my_project/axe_report':
+                self._get_file_content(
+                    examples_metric_sources_path / 'axe_report.csv'
+                ),
+            # end aXe rapport
+
             'https://last_security_date_url':
                 self._get_file_content(
                     examples_metric_sources_path / 'file_with_date.json'

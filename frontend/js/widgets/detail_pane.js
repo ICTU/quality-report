@@ -35,11 +35,13 @@ class DetailPane extends React.Component {
                                             report_dates={this.props.report_dates} 
                                             stable_metric_id = {stable_id}/>
                         </div>
-                        <div className="col-sm-1" />
-                        <div className="col-sm-4">
-                            {this.renderExtraInfoPanel(this.props.metric_detail['extra_info'])}
+                        <div className="col-sm-6 container">
+                            <div className="row">
+                                <div className="col-md-offset-2 mx-auto">
+                                    {this.renderExtraInfoPanel(this.props.metric_detail['extra_info'])}
+                                </div>
+                            </div>
                         </div>
-                        <div className="col-sm-1" />
                     </div>
                 </td>
             </tr>);
@@ -158,6 +160,11 @@ class TablePanel extends React.Component {
         if (cell_content.hasOwnProperty('href')) {
             return <a href={cell_content.href} target="_blank">{cell_content.text || cell_content.href}</a>
         }
+
+        if (cell_content.length > 80) {
+            return <div className="long_text" data-toggle="tooltip" title={cell_content}>{cell_content}</div>
+        }
+
         return cell_content;
     }
 

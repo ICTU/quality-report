@@ -1,3 +1,8 @@
+2019-03-18  Release 2.88.0
+
+  * Feature #618: Accessibility report metric implemented.
+
+
 2019-03-13  Release 2.87.2
 
   * Bug fix: Really don't crash on an empty OWASP dependency XML report.

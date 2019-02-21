@@ -122,6 +122,17 @@ test('detail pane renders rows of the table panel with extra info', (t) => {
     t.end();
 });
 
+test('detail pane renders a tooltip in the cell of the detail table if the content is longer than 80 characters', (t) => {
+    const wrapper = shallow(<DetailPane has_extra_info={true} 
+        metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"str": "String"},
+                                "data":[{"str": "81+ characters text of the First row! -=and some extra to make it 82 characters=-"}]}}}>
+    </DetailPane>)
+
+    var elipsisDiv = wrapper.find('TablePanel').dive().find('tbody tr div[className="long_text"][data-toggle="tooltip"]').first()
+    t.equals(elipsisDiv.contains('81+ characters text of the First row! -=and some extra to make it 82 characters=-'), true);
+    t.end();
+});
+
 test('detail pane renders rows of the table panel with array of values', (t) => {
     const wrapper = shallow(<DetailPane has_extra_info={true} 
         metric_detail = {{cells: ["cell 1"], extra_info: {"headers": {"csv": "CSV"},

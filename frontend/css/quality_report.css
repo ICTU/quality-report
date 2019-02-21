@@ -93,6 +93,17 @@ div.meta_metrics_history_graph {
     margin-left: 10px;
 }
 
+.no-wrap {
+    white-space: nowrap;
+}
+
+.long_text {
+    max-width:200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .report_cell {
     padding: 8px;
     line-height: 1.42857143;

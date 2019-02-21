@@ -106,6 +106,12 @@ class OJAuditViolations(Requirement):
     _metric_classes = (metric.OJAuditWarnings, metric.OJAuditErrors, metric.OJAuditExceptions)
 
 
+class Accessibility(Requirement):
+    """ Require accessibility violations of programming rules to be tracked. """
+    _name = 'Accessibility'
+    _metric_classes = (metric.AccessibilityMetric,)
+
+
 class PerformanceLoad(Requirement):
     """ Require a performance load test. """
     _name = 'Performance load'

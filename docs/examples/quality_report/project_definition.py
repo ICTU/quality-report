@@ -46,11 +46,14 @@ DURATION_MANUAL_TEST_CASES =  \
 
 TRELLO_BOARD = metric_source.TrelloBoard(appkey='2d3', token='57b')
 
+AXE = metric_source.AxeReport()
+
 # The project
 PROJECT = Project('Organization name', name='Quality Report',
                   metric_sources={
                       metric_source.VersionControlSystem: GIT,
                       metric_source.Sonar: SONAR,
+                      metric_source.AxeReport: AXE,
                       metric_source.SystemTestReport: JUNIT,
                       metric_source.ARTCoverageReport : LCOV,
                       metric_source.OWASPDependencyReport: OWASP_DEPENDENCY_REPORT,
@@ -74,8 +77,7 @@ PROJECT = Project('Organization name', name='Quality Report',
                   # Override the total LOC metric targets:
                   metric_options={
                       metric.TotalLOC: dict(target=1000000, low_target=2000000)},
-                  requirements=[requirement.TrustedProductMaintainability,
-                                requirement.TrackManualLTCs,
+                  requirements=[requirement.TrustedProductMaintainability, requirement.TrackManualLTCs,
                                 requirement.TrackSecurityAndPerformanceRisks, requirement.TrackActions])
 
 # Teams of the project.
@@ -100,6 +102,7 @@ QUALITY_REPORT = Application(
         JUNIT: "http://www.junit.report.url/junit.xml",
         LCOV: 'http://xxx.sourceforge.net/coverage/lcov/output/index.html',
         GIT: '.',
+        AXE: 'http://my_project/axe_report',
         OWASP_DEPENDENCY_REPORT: 'http://owasp.dependency/report.xml',
         ZAP_SCAN_REPORT: 'http://jenkins/job/zap_scan/ws/report.html'},
     added_requirements={requirement.ViolationsByType},

@@ -66,7 +66,7 @@ class ApplicationTest(unittest.TestCase):
         self.assertEqual((requirement.CodeQuality, requirement.ART, requirement.ViolationsBySeverity,
                           requirement.ARTCoverage, requirement.TrackBranches,
                           requirement.PerformanceLoad, requirement.PerformanceEndurance,
-                          requirement.OWASPDependencies, requirement.OWASPZAP,
+                          requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Accessibility,
                           requirement.Checkmarx), domain.Application.default_requirements())
 
     def test_optional_requirements(self):

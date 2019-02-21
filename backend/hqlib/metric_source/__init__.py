@@ -49,6 +49,7 @@ from .performance_report.ictu_performancereport import ICTUPerformanceLoadTestRe
 from .performance_report.spirit_splunk_csv import SpiritSplunkCSVPerformanceLoadTestReport, \
     SpiritSplunkCSVPerformanceEnduranceTestReport, SpiritSplunkCSVPerformanceScalabilityTestReport
 from .sonar import Sonar, Sonar6, Sonar7, extract_branch_decorator
+from .axe import AxeReport
 from .team_spirit.happiness import Happiness
 from .team_spirit.wiki import Wiki
 from .test_report.bamboo_test_report import BambooTestReport

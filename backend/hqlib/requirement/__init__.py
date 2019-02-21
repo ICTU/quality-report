@@ -19,7 +19,7 @@ limitations under the License.
 
 from .product_quality import TrustedProductMaintainability, OWASPDependencies, Checkmarx, OWASPZAP, UnitTests, \
     UnitTestCoverage, ART, ARTCoverage, AggregatedTestCoverage, CodeQuality, ViolationsBySeverity, ViolationsByType,\
-    OJAuditViolations, PerformanceLoad, PerformanceEndurance, PerformanceScalability, TrackBranches
+    OJAuditViolations, PerformanceLoad, PerformanceEndurance, PerformanceScalability, TrackBranches, Accessibility
 from .sonar import Java, CSharp, JavaScript, Web, Python, VisualBasic, TypeScript
 from .process_quality import UserStoriesAndLTCs, TrackManualLTCs, TrackBugs, TrackSecurityBugs, \
     TrackStaticSecurityBugs, TrackFindings, TrackTechnicalDebt, TrackQualityGate, TrackActions, TrackRisks, \

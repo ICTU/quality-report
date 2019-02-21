@@ -48,7 +48,7 @@ class QualityReport(domain.DomainObject):
                 requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.OpenVAS,
                 requirement.Java, requirement.CSharp, requirement.JavaScript, requirement.Web, requirement.VisualBasic,
                 requirement.Python, requirement.TypeScript, requirement.TrustedProductMaintainability,
-                requirement.TrackBranches)
+                requirement.TrackBranches, requirement.Accessibility)
 
     @classmethod
     def metric_classes(cls) -> Set[Type[domain.Metric]]:
@@ -211,9 +211,9 @@ class QualityReport(domain.DomainObject):
             requirement.ARTCoverage, requirement.AggregatedTestCoverage, requirement.UserStoriesAndLTCs,
             requirement.TrackReadyUS, requirement.TrackSecurityAndPerformanceRisks, requirement.CodeQuality,
             requirement.ViolationsBySeverity, requirement.ViolationsByType, requirement.OJAuditViolations,
-            requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
-            requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx,
-            requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
+            requirement.Accessibility, requirement.PerformanceLoad, requirement.PerformanceEndurance,
+            requirement.PerformanceScalability, requirement.OWASPDependencies, requirement.OWASPZAP,
+            requirement.Checkmarx, requirement.TrackDurationOfUserStories, requirement.TrackUserStoriesInProgress)
         metrics.extend(self.__art_metrics(product.art()))
         metrics.extend(self.__required_subject_metrics(product, requirement.TrackBranches))
         self.__metrics.extend(metrics)
