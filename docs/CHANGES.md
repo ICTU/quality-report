@@ -1,3 +1,9 @@
+2019-02-26  Release 2.84.2
+
+  * Bug fix: When counting the number of unmerged revisions in a Git repo, and a branch has been specified, 
+    compare against the specified branch.
+  
+  
 2019-02-04  Release 2.84.1
 
   * Bug fix: HQ would crash when using JQL for the manual-logical-test-cases-without-duration-metric.

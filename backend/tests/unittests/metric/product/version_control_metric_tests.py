@@ -74,7 +74,7 @@ class UnmergedBranchesTest(unittest.TestCase):
 
     def test_report(self):
         """ Test that the report is correct. """
-        self.assertEqual('1 van de 2 branches van Product hebben revisies die niet met de trunk zijn gemerged.',
+        self.assertEqual('1 van de 2 branches van Product hebben revisies die niet zijn gemerged.',
                          self.__metric.report())
 
     def test_report_without_metric_source(self):

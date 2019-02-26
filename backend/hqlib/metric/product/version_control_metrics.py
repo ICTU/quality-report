@@ -29,9 +29,9 @@ class UnmergedBranches(LowerIsBetterMetric):
     name = 'Hoeveelheid ongemergde branches'
     unit = 'branches'
     norm_template = 'Maximaal {target} {unit} met ongemergde code. Meer dan {low_target} {unit} is rood.'
-    perfect_template = 'Geen van de {nr_branches} {unit} van {name} heeft revisies die niet met de trunk zijn ' \
+    perfect_template = 'Geen van de {nr_branches} {unit} van {name} heeft revisies die niet zijn ' \
         'gemerged.'
-    template = '{value} van de {nr_branches} {unit} van {name} hebben revisies die niet met de trunk zijn gemerged.'
+    template = '{value} van de {nr_branches} {unit} van {name} hebben revisies die niet zijn gemerged.'
     url_label_text = 'Niet gemergde branches'
     comment_url_label_text = 'Genegeerde branches'
     target_value = 0

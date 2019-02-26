@@ -110,7 +110,7 @@ class Git(VersionControlSystem):
     def __nr_unmerged_commits(self, branch_name: str) -> int:
         """ Return whether the branch has unmerged commits. """
         logging.info('Checking for unmerged commits in branch %s.', branch_name)
-        command = ('git', 'cherry', 'origin/master', branch_name)
+        command = ('git', 'cherry', self.__branch_to_checkout or 'origin/master', branch_name)
         commits = self._run_shell_command(command)
         nr_commits = commits.count('\n')
         logging.info('Branch %s has %d unmerged commits.', branch_name, nr_commits)
