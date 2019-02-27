@@ -2,6 +2,7 @@
 
   * Bug fix: More flexible date parsing for new JaCoCo version.
   * Bug fix: Look for Jenkins jobs recursively instead of only one level deep.
+  * Bug fix: Use Jenkins testReport API to get test counts instead of relying on the job to have the correct counts.
   
   
 2019-02-26  Release 2.84.2

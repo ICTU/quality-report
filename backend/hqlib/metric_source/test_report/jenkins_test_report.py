@@ -82,11 +82,11 @@ class JenkinsTestReport(test_report.TestReport):
 
     def __test_count(self, metric_source_id: str, result_type: str) -> int:
         """ Return the number of tests with the specified result in the test report. """
-        json = self.__read_json(metric_source_id, "lastCompletedBuild/api/python")
+        json = self.__read_json(metric_source_id, "lastCompletedBuild/testReport/api/python")
         if not json:
             # Last completed build doesn't have the requested information, e.g. because it's aborted.
             # Fall back to last successful build.
-            json = self.__read_json(metric_source_id, "lastSuccessfulBuild/api/python")
+            json = self.__read_json(metric_source_id, "lastSuccessfulBuild/testReport/api/python")
         return int(json[result_type]) if json else -1
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:
