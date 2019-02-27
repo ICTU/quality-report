@@ -110,6 +110,18 @@ class UrlOpenerMock(UrlOpener):
                     examples_metric_sources_path / 'jenkins_unused_job_1029_last_complete.json'
                 ),
 
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/1029_Environemnt_van_elkaar_en_tekst/api/'
+            'python?tree=jobs[name,description,color,url,buildable]':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_unused_job_1029_last_complete.json'
+                ),
+
+            'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/api/'
+            'python?tree=jobs[name,description,color,url,buildable]':
+                self._get_file_content(
+                    examples_metric_sources_path / 'jenkins_unused_job_1029_last_complete.json'
+                ),
+
             'http://www.jenkins.proj.org:8080/job/proj-pipeline/job/5553_Iets_anders/lastCompletedBuild/api/python':
                 self._get_file_content(
                     examples_metric_sources_path / 'jenkins_failing_job_5553_last_complete.json'

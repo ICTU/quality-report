@@ -136,16 +136,20 @@ class Jenkins(ci_server.CIServer):
         all_jobs: Jobs = []
         jobs = self._api(self.__jobs_api_url)['jobs']
         all_jobs.extend(jobs)
-        for job in jobs:
-            all_jobs.extend(self.__subjobs(job))
+        all_jobs.extend(self.__subjobs(jobs))
         return [job for job in all_jobs if self.__job_re.match(job['name'])]
 
-    def __subjobs(self, job) -> Jobs:
+    def __subjobs(self, jobs) -> Jobs:
         """ Return the subjobs of a job. """
-        try:
-            return self._api(job["url"] + self.jobs_api_postfix)['jobs']
-        except KeyError:
-            return []
+        all_subjobs = []
+        for job in jobs:
+            try:
+                subjobs = self._api(job["url"] + self.jobs_api_postfix)['jobs']
+            except KeyError:
+                continue
+            all_subjobs.extend(subjobs)
+            all_subjobs.extend(self.__subjobs(subjobs))
+        return all_subjobs
 
     def __age_of_last_completed_build(self, job: Job) -> TimeDelta:
         """ Return the age of the last completed build of the job. """

@@ -1,6 +1,7 @@
 [TO BE RELEASED]  Release 2.84.3
 
   * Bug fix: More flexible date parsing for new JaCoCo version.
+  * Bug fix: Look for Jenkins jobs recursively instead of only one level deep.
   
   
 2019-02-26  Release 2.84.2
