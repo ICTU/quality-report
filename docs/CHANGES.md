@@ -1,3 +1,8 @@
+[TO BE RELEASED]  Release 2.84.3
+
+  * Bug fix: More flexible date parsing for new JaCoCo version.
+  
+  
 2019-02-26  Release 2.84.2
 
   * Bug fix: When counting the number of unmerged revisions in a Git repo, and a branch has been specified, 
