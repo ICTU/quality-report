@@ -67,7 +67,7 @@ _TIME_RE = "(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{2}):(?P<second>[0-9]{2})"
 _AM_PM_RE = "(?P<am_pm>[AP]M)"
 
 # US format: 'Apr 5, 2013 10:04:10 AM'
-_US_DATE_TIME_RE = _MONTHNAME_RE + r"\s+" + _DAY_RE + r",\s+" + _YEAR_RE + r"\s+" + _TIME_RE + r"\s+" + _AM_PM_RE
+_US_DATE_TIME_RE = _MONTHNAME_RE + r"\s+" + _DAY_RE + r",\s+" + _YEAR_RE + r",?\s+" + _TIME_RE + r"\s+" + _AM_PM_RE
 # ISO date: '2013-11-05'
 _ISO_DATE_RE = "-".join([_YEAR_RE, _MONTH_RE, _DAY_RE])
 
