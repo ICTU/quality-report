@@ -1,4 +1,4 @@
-[UNRELEASED]  Release 2.85.0
+2019-02-28  Release 2.85.0
 
   * Write measurement values in the metrics.json so HQ can function as metric source for Quality-time and thus
     ease future migration to Quality-time.
