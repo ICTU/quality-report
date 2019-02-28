@@ -59,7 +59,7 @@ class UserStoriesNotReviewed(UserStoryMetric):
 class UserStoriesNotApproved(UserStoryMetric):
     """ Metric for measuring the number of user stories that not have been approved. """
 
-    name = 'Goedgekeuring van user stories'
+    name = 'Goedkeuring van user stories'
     unit = "niet goedgekeurde " + UserStoryMetric.unit
     template = 'Er zijn {value} {unit}, van in totaal {total} gereviewde user stories.'
     target_value = 0

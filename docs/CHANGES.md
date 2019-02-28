@@ -1,3 +1,8 @@
+[UNRELEASED]  Release 2.85.1
+
+  * Bug fix: Fix spelling of the approved user stories metric.
+  
+  
 2019-02-28  Release 2.85.0
 
   * Write measurement values in the metrics.json so HQ can function as metric source for Quality-time and thus
