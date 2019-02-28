@@ -55,11 +55,6 @@ class Metric(object):
         return self.__id_string
 
     @staticmethod
-    def numerical_value():
-        """ Return the numerical value of the metric. """
-        return 15
-
-    @staticmethod
     def status():
         """ Return the status of the metric. """
         return 'red'
@@ -100,3 +95,13 @@ class Metric(object):
     def comment_urls():
         """ Return the urls for the comment. """
         return {}
+
+    @staticmethod
+    def value():
+        """ Return the value for the metric. """
+        return 42
+
+    @staticmethod
+    def numerical_value():
+        """ Return the numerical value for the metric. """
+        return 42

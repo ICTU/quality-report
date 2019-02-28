@@ -29,8 +29,8 @@ class JSONFormatterTest(unittest.TestCase):
     def test_process(self):
         """ Test that the report is processed correctly. """
         self.assertEqual(
-            '{"date": "2012-01-01 12:00:00", "metric_id": ("15", "red", "2012-01-01 12:00:00"), '
-            '"metric_id": ("15", "red", "2012-01-01 12:00:00"), }\n',
+            '{"date": "2012-01-01 12:00:00", "metric_id": ("42", "red", "2012-01-01 12:00:00"), '
+            '"metric_id": ("42", "red", "2012-01-01 12:00:00"), }\n',
             self.__formatter.process(fake_report.Report()))
 
     def test_prefix_no_products(self):
@@ -81,13 +81,13 @@ class MetricsFormatterTest(unittest.TestCase):
 "bgcolor": "lightsteelblue", "colspan": 1, "rowspan": 1}}]]}}, "metrics": [{{"id_value": "id_string-01", "id_format": \
 "id_string-1", "stable_metric_id": "metric_id", "name": "Metric Name", "unit": "unit of measure", \
 "section": "id_string", "status": "red", "status_value": "0", "status_start_date": [2012, 1, 1, 12, 0, 0], \
-"measurement": "report [{{'href': 'http://url', 'text': 'anchor'}}]", "norm": "norm", \
-"comment": "Comment with \\\\backslash", "metric_class": "Metric", \
+"value": "42", "numerical_value": "42", "measurement": "report [{{'href': 'http://url', 'text': 'anchor'}}]", \
+"norm": "norm", "comment": "Comment with \\\\backslash", "metric_class": "Metric", \
 "extra_info": {{"headers": {{"col1": "C1", "col2": "C2"}}, "title": "Fake title", "data": [{{"col1": "yes", "col2": \
 {{"href": "this", "text": "that"}}}}]}}}}, {{"id_value": "id_string-01", "id_format": "id_string-1", \
 "stable_metric_id": "metric_id", "name": "Metric Name", "unit": "unit of measure", "section": \
-"id_string", "status": "red", "status_value": "0", "status_start_date": [2012, 1, 1, 12, 0, 0], \
-"measurement": "report [{{'href': 'http://url', 'text': 'anchor'}}]", "norm": "norm", \
+"id_string", "status": "red", "status_value": "0", "status_start_date": [2012, 1, 1, 12, 0, 0], "value": "42", \
+"numerical_value": "42", "measurement": "report [{{'href': 'http://url', 'text': 'anchor'}}]", "norm": "norm", \
 "comment": "Comment with \\\\backslash", "metric_class": "Metric", "extra_info": {{"headers": \
 {{"col1": "C1", "col2": "C2"}}, "title": "Fake title", "data": [{{"col1": "yes", "col2": \
 {{"href": "this", "text": "that"}}}}]}}}}]}}\n'''.format(VERSION), self.__formatter.process(fake_report.Report()))
