@@ -1,6 +1,7 @@
 [UNRELEASED]  Release 2.84.4
 
   * Bug fix: Clearer measurement description of failed regression test metric.
+  * Bug fix: Strip slashes from Jenkins job names before matching with regular expressions.
   
   
 2019-02-27  Release 2.84.3

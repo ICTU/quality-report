@@ -36,7 +36,7 @@ class JenkinsTestReport(test_report.TestReport):
     def _expand_metric_source_id_reg_exps(self, *metric_source_ids: str) -> Sequence[str]:
         """ Expand regular expressions. """
         try:
-            job_urls = [job["url"] for job in Jenkins(self.url(), self._username, self._password).jobs()]
+            job_urls = [job["url"].strip("/") for job in Jenkins(self.url(), self._username, self._password).jobs()]
         except UrlOpener.url_open_exceptions:
             return metric_source_ids
         job_names = [url.split("/job/", 1)[1] for url in job_urls]
