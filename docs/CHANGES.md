@@ -2,6 +2,7 @@
 
   * Bug fix: Clearer measurement description of failed regression test metric.
   * Bug fix: Strip slashes from Jenkins job names before matching with regular expressions.
+  * Bug fix: Properly use the Jenkins testReport API.
   
   
 2019-02-27  Release 2.84.3

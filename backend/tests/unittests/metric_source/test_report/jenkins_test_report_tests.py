@@ -34,8 +34,8 @@ class JenkinsTestReportTest(unittest.TestCase):
     def test_testreport(self, mock_url_read, mock_jenkins_jobs):
         """ Test retrieving a Jenkins test report. """
         mock_jenkins_jobs.return_value = [{"url": "http://jenkins/job/job"}, {"url": "http://jenkins/job/job1"}]
-        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
-                                     '"passCount":9, "skipCount":1, "totalCount":12}]}'
+        mock_url_read.return_value = '{"timestamp":1467929105000, "failCount":2, ' \
+                                     '"passCount":9, "skipCount":1, "totalCount":12}'
         jenkins = JenkinsTestReport(url="http://jenkins")
         self.assertEqual(2, jenkins.failed_tests('job'))
         self.assertEqual(9, jenkins.passed_tests('job'))
@@ -47,8 +47,8 @@ class JenkinsTestReportTest(unittest.TestCase):
         """ Test retrieving a Jenkins test report. """
         mock_jenkins_jobs.return_value = [{"url": "http://jenkins/job/job1"}, {"url": "http://jenkins/job/job2"},
                                           {"url": "http://jenkins/job/ignore"}]
-        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", "failCount":2, ' \
-                                     '"passCount":9, "skipCount":1, "totalCount":12}]}'
+        mock_url_read.return_value = '{"timestamp":1467929105000, "failCount":2, "passCount":9, "skipCount":1, ' \
+                                     '"totalCount":12}'
         jenkins = JenkinsTestReport(url="http://jenkins")
         self.assertEqual(4, jenkins.failed_tests('job?'))
         self.assertEqual(18, jenkins.passed_tests('job?'))
@@ -60,8 +60,7 @@ class JenkinsTestReportTest(unittest.TestCase):
         """ Test retrieving a Jenkins test report that has no pass count. Apparently that field is not present when
             there are no tests. """
         mock_jenkins_jobs.return_value = [{"url": "http://jenkins/job/job"}]
-        mock_url_read.return_value = '{"timestamp":1467929105000, "actions":[{"urlName":"testReport", ' \
-                                     '"failCount":0, "skipCount":0, "totalCount":8}]}'
+        mock_url_read.return_value = '{"timestamp":1467929105000, "failCount":0, "skipCount":0, "totalCount":8}'
         jenkins = JenkinsTestReport(url="http://jenkins")
         self.assertEqual(0, jenkins.failed_tests('job'))
         self.assertEqual(8, jenkins.passed_tests('job'))
@@ -74,8 +73,8 @@ class JenkinsTestReportTest(unittest.TestCase):
             aborted. """
         mock_jenkins_jobs.return_value = [{"url": "http://jenkins/job/job"}]
         mock_url_read.side_effect = [
-            '{"timestamp": 1467929105000, "actions":[]}',
-            '{"timestamp": 1467929105000, "actions":[{}, {"totalCount":10, "failCount":1}]}']
+            '',
+            '{"timestamp": 1467929105000, "totalCount":10, "failCount":1}']
         jenkins = JenkinsTestReport(url="http://jenkins")
         self.assertEqual(1, jenkins.failed_tests("job"))
 
@@ -114,8 +113,8 @@ class JenkinsTestReportTest(unittest.TestCase):
         """ Test that the date and time of the test suite is returned, even when the last completed build has no
             test results. """
         mock_jenkins_jobs.return_value = [{"url": "http://jenkins/job/job"}]
-        mock_url_read.side_effect = ['{"timestamp":"this build should be ignored"}',
-                                     '{"actions":[{"totalCount":10,"failCount":0}], "timestamp":1467929105000}']
+        mock_url_read.side_effect = ['',
+                                     '{"totalCount":10,"failCount":0, "timestamp":1467929105000}']
         jenkins = JenkinsTestReport(url="http://jenkins")
         self.assertEqual(datetime.datetime.fromtimestamp(1467929105000 / 1000.), jenkins.datetime('job'))
 

@@ -110,15 +110,4 @@ class JenkinsTestReport(test_report.TestReport):
         except (SyntaxError, NameError, TypeError) as reason:
             logging.error("Couldn't eval %s: %s\nData received: %s", api_url, reason, contents)
             return None
-        return self.__test_data(build)
-
-    @staticmethod
-    def __test_data(build: Dict) -> Optional[Dict[str, Union[int, str]]]:
-        """ Return the test data from the build json. """
-        actions = build.get("actions", [])
-        for action in actions:
-            if "totalCount" in action and "failCount" in action:
-                # Assume this is the test action dictionary. Include the timestamp of the build in the dictionary.
-                action["timestamp"] = build["timestamp"]
-                return action
-        return None
+        return build
