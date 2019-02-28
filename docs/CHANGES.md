@@ -1,3 +1,8 @@
+[UNRELEASED]  Release 2.84.4
+
+  * Bug fix: Clearer measurement description of failed regression test metric.
+  
+  
 2019-02-27  Release 2.84.3
 
   * Bug fix: More flexible date parsing for new JaCoCo version.

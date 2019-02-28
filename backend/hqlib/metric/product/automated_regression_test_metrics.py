@@ -27,7 +27,8 @@ class FailingRegressionTests(LowerIsBetterMetric):
     unit = 'regressietesten'
     norm_template = 'Alle {unit} slagen.'
     perfect_template = 'Alle {tests} {unit} van {name} slagen en geen van de {unit} is overgeslagen.'
-    template = 'Van de {tests} {name} {unit} zijn er {value} niet geslaagd en zijn er {skipped} overgeslagen.'
+    template = 'Van de {tests} {name} {unit} zijn er {value} niet geslaagd ' \
+               '(waarvan {failed} gefaald en {skipped} overgeslagen).'
     target_value = 0
     low_target_value = 0
     metric_source_class = metric_source.SystemTestReport
@@ -53,6 +54,7 @@ class FailingRegressionTests(LowerIsBetterMetric):
         ids = self._get_metric_source_ids()
         parameters['tests'] = '?' if self._missing() else self.value() + self._metric_source.passed_tests(*ids)
         parameters['skipped'] = '?' if self._missing() else self._metric_source.skipped_tests(*ids)
+        parameters['failed'] = '?' if self._missing() else self._metric_source.failed_tests(*ids)
         return parameters
 
 
