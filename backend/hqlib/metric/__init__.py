@@ -47,7 +47,8 @@ from .product.unittest_coverage_metrics import UnittestLineCoverage, UnittestBra
 from .product.user_story_metrics import (
     UserStoriesNotReviewed, UserStoriesNotApproved, UserStoriesWithTooFewLogicalTestCases)
 from .product.version_control_metrics import UnmergedBranches
-from .product.violation_metrics import BlockerViolations, CriticalViolations, MajorViolations, ViolationSuppressions
+from .product.violation_metrics import BlockerViolations, CriticalViolations, MajorViolations, ViolationSuppressions, \
+    OJAuditWarnings, OJAuditErrors, OJAuditExceptions
 from .product.code_maintainability_metrics import MaintainabilityBugs, Vulnerabilities, CodeSmells
 from .product.zap_scan_metrics import HighRiskZAPScanAlertsMetric, MediumRiskZAPScanAlertsMetric
 from .product.checkmarx_metrics import HighRiskCheckmarxAlertsMetric, MediumRiskCheckmarxAlertsMetric

@@ -106,7 +106,7 @@ class MetaDataFormatterTest(unittest.TestCase):
                          '["Track the last security test date"]}, {"included": true, "name": "Product", "id": '
                          '"Product", "default_requirements": [], "optional_requirements": '
                          '["Aggregated test coverage", "Automated regression test coverage", '
-                         '"Automated regression tests", "Checkmarx SCA", "Code quality", '
+                         '"Automated regression tests", "Checkmarx SCA", "Code quality", "OJAudit violations", '
                          '"OWASP Top 10 2013 Dependencies", "OWASP Top 10 2013 ZAP", "Performance endurance", '
                          '"Performance load", "Performance scalability", "Track branches", "Track open bug reports", '
                          '"Track open findings", "Track open security bug reports", "Track open static security '

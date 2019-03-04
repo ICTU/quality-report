@@ -21,6 +21,7 @@ from hqlib import utils
 from hqlib.typing import MetricParameters, MetricValue
 from ..metric_source_mixin import SonarDashboardMetric, SonarMetric
 from ...domain import LowerIsBetterMetric
+from ...metric_source import OJAuditReport
 
 
 class Violations(SonarDashboardMetric, LowerIsBetterMetric):
@@ -140,3 +141,53 @@ class ViolationSuppressions(SonarMetric, LowerIsBetterMetric):
              "Gemarkeerd als won't fix in SonarQube"),
             (sonar.suppressions(sonar_id), sonar.suppressions_url(sonar_id),
              "Gemarkeerd in de broncode met annotatie, commentaar (bijv. //NOSONAR) of pragma")]
+
+
+class OJAuditViolations(LowerIsBetterMetric):
+    """ Base class for OJAudit metrics. """
+    unit = 'violations'
+    norm_template = 'Maximaal {target} {violation_type} {unit}. ' \
+        'Meer dan {low_target} {violation_type} {unit} is rood.'
+    template = '{name} heeft {value} {violation_type} {unit}.'
+    violation_type = 'Subclass responsibility'
+    metric_source_class = OJAuditReport
+
+    @classmethod
+    def norm_template_default_values(cls):
+        values = super(OJAuditViolations, cls).norm_template_default_values()
+        values['violation_type'] = cls.violation_type
+        return values
+
+    def value(self) -> MetricValue:
+        return self._metric_source.violations(self.violation_type, *self._get_metric_source_ids()) \
+            if self._metric_source else -1
+
+    def _parameters(self) -> MetricParameters:
+        # pylint: disable=protected-access
+        parameters = super()._parameters()
+        parameters['violation_type'] = self.violation_type
+        return parameters
+
+
+class OJAuditWarnings(OJAuditViolations):
+    """ OJ Audit warnings metric. """
+    name = 'Hoeveelheid OJ Audit warnings'
+    violation_type = 'warning'
+    target_value = 10
+    low_target_value = 50
+
+
+class OJAuditErrors(OJAuditViolations):
+    """ OJ Audit errors metric. """
+    name = 'Hoeveelheid OJ Audit errors'
+    violation_type = 'error'
+    target_value = 0
+    low_target_value = 10
+
+
+class OJAuditExceptions(OJAuditViolations):
+    """ OJ Audit exceptions metric. """
+    name = 'Hoeveelheid OJ Audit exceptions'
+    violation_type = 'exception'
+    target_value = 0
+    low_target_value = 0

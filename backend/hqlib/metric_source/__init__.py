@@ -39,6 +39,7 @@ from .ci_server.jenkins import Jenkins
 from .ci_server.gitlab import GitLabCI
 from .issue_tracker.jira_filter import JiraFilter
 from .jira import Jira
+from .ojaudit import OJAuditReport
 from .open_vas_scan_report import OpenVASScanReport
 from .owasp_dependency_report.jenkins_owasp_dependency_plugin import JenkinsOWASPDependencyReport
 from .owasp_dependency_report.owasp_dependency_xml_report import OWASPDependencyXMLReport

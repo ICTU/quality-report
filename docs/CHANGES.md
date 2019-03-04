@@ -1,5 +1,7 @@
-[UNRELEASED]  Release 2.85.1
+2019-03-04  Release 2.86.0
 
+  * Feature: Add support for OJ Audit reports as metric source for OJ Audit violations. 
+    See https://github.com/ICTU/quality-report/wiki/OJ-Audit.
   * Bug fix: Fix spelling of the approved user stories metric.
   
   

@@ -37,8 +37,8 @@ class Product(RequirementSubject, MeasurableObject):
                 requirement.TrackDurationOfUserStories, requirement.TrackSecurityAndPerformanceRisks,
                 requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.UnitTestCoverage,
                 requirement.AggregatedTestCoverage, requirement.CodeQuality, requirement.ViolationsBySeverity,
-                requirement.ViolationsByType, requirement.TrackBranches, requirement.OWASPDependencies,
-                requirement.OWASPZAP, requirement.Checkmarx, requirement.PerformanceLoad,
+                requirement.ViolationsByType, requirement.OJAuditViolations, requirement.TrackBranches,
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.PerformanceLoad,
                 requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackBugs,
                 requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate,
                 requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate)

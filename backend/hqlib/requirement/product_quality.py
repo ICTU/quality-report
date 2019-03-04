@@ -100,6 +100,12 @@ class ViolationsByType(Requirement):
     _metric_classes = (metric.MaintainabilityBugs, metric.Vulnerabilities, metric.CodeSmells)
 
 
+class OJAuditViolations(Requirement):
+    """ Require OJ Audit violations to be tracked. """
+    _name = 'OJAudit violations'
+    _metric_classes = (metric.OJAuditWarnings, metric.OJAuditErrors, metric.OJAuditExceptions)
+
+
 class PerformanceLoad(Requirement):
     """ Require a performance load test. """
     _name = 'Performance load'
