@@ -1,3 +1,9 @@
+2019-03-05  Release 2.86.1
+
+  * 
+  Bug fix: The metrics.json format was invalid, causing the automatic regression test and thus the releases of 
+    HQ to fail.
+  
 2019-03-04  Release 2.86.0
 
   * Feature: Add support for OJ Audit reports as metric source for OJ Audit violations. 

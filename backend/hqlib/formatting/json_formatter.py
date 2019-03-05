@@ -145,7 +145,7 @@ class MetricsFormatter(base_formatter.Formatter):
         kwargs['unit'] = metric.unit
         kwargs['section'] = metric.id_string().split('-')[0]
         kwargs['norm'] = metric.norm()
-        kwargs['measurement_value'] = metric.value()
+        kwargs['measurement_value'] = str(metric.value()).strip()
         kwargs['measurement_numerical_value'] = metric.numerical_value()
         kwargs['text'] = metric.format_text_with_links(metric.report())
         kwargs['comment'] = Metric.format_comment_with_links(metric.comment(), metric.comment_urls(),
