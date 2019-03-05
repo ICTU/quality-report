@@ -2,7 +2,7 @@ exclude:
 - /docs/examples/.*
 - /backend/hqlib/app/.*
 - /frontend/node_modules/.*
-component_depth: 2
+component_depth: 3
 languages:
 - javascript
 - python
