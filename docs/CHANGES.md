@@ -1,4 +1,4 @@
-[UNRELEASED]  Release 2.87.0
+2019-03-07  Release 2.87.0
 
   * Changed the minimum SonarQube version number to 6.7.0 (the current Long Term Support version).
   * Bug fix: Correctly process the new JaCoCo date format.
