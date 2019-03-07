@@ -1,7 +1,11 @@
+[UNRELEASED]  Release 2.87.0
+
+  * Changed the minimum SonarQube version number to 6.7.0 (the current Long Term Support version).
+  
+  
 2019-03-05  Release 2.86.1
 
-  * 
-  Bug fix: The metrics.json format was invalid, causing the automatic regression test and thus the releases of 
+  * Bug fix: The metrics.json format was invalid, causing the automatic regression test and thus the releases of 
     HQ to fail.
   
 2019-03-04  Release 2.86.0
