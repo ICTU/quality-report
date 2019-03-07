@@ -113,6 +113,15 @@ class JacocoTest(unittest.TestCase):
             '10:34:55</td></tr></tbody>'
         self.assertEqual(datetime.datetime(2013, 4, 5, 10, 34, 55), self.__jacoco.datetime('http://jacoco'))
 
+    def test_coverage_date_non_us2(self, mock_url_read):
+        """ Test the date of the coverage report when it's not a US date/time. """
+        mock_url_read.return_value = '<tbody><tr><td><span class="el_session">na-node1-reg-' \
+                                     '1196e1b5</span></td><td>4 mrt. 2013 16:41:29</td><td>5 mrt. 2013 ' \
+                                     '10:34:54</td></tr><tr><td><span class="el_session">na-node2-reg-' \
+                                     '1f82fbab</span></td><td>4 mrt. 2013 16:43:39</td><td>5 mrt. 2013 ' \
+                                     '10:34:55</td></tr></tbody>'
+        self.assertEqual(datetime.datetime(2013, 3, 5, 10, 34, 55), self.__jacoco.datetime('http://jacoco'))
+
     def test_coverage_date_on_error(self, mock_url_read):
         """ Test that the date is the minimum date when JaCoCo can't be reached. """
         mock_url_read.side_effect = urllib.error.HTTPError('', None, None, None, None)
