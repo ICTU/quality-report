@@ -121,6 +121,9 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             root, namespace = self.__report_root(metric_source_id)
         except url_opener.UrlOpener.url_open_exceptions:
             return datetime.datetime.min
+        except xml.etree.ElementTree.ParseError as reason:
+            logging.error('Error parsing returned xml: %s.', reason)
+            return datetime.datetime.min
         datetime_node = root.find(".//{{{ns}}}projectInfo/{{{ns}}}reportDate".format(ns=namespace))
         return datetime.datetime.strptime(datetime_node.text.split('.')[0], "%Y-%m-%dT%H:%M:%S")
 
