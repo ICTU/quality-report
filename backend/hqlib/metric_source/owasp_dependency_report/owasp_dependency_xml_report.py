@@ -41,6 +41,9 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         except url_opener.UrlOpener.url_open_exceptions:
             logging.error('Error retrieving dependencies information for %s, priority %s.', metric_source_id, priority)
             return []
+        except xml.etree.ElementTree.ParseError as reason:
+            logging.error('Error parsing returned xml: %s.', reason)
+            return []
         dependencies = root.findall(
             ".//{{{ns}}}dependency[{{{ns}}}vulnerabilities]".format(ns=namespace))
 

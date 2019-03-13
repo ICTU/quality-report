@@ -1,3 +1,8 @@
+2019-03-13  Release 2.87.2
+
+  * Bug fix: Really don't crash on an empty OWASP dependency XML report.
+  
+  
 2019-03-13  Release 2.87.1
 
   * Bug fix: Don't crash on an empty OWASP dependency XML report.
