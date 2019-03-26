@@ -32,7 +32,7 @@ class OJAuditReport(domain.MetricSource):
         self.__metric_source_url_re = kwargs.pop("metric_source_url_re", r"\.xml$")
         self.__metric_source_url_repl = kwargs.pop("metric_source_url_repl", ".html")
         self._url_read = url_opener.UrlOpener(**kwargs).url_read
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
     def violations(self, violation_type: str, *metric_source_ids) -> int:
         """ Return the number of violations reported by OJAudit. """
