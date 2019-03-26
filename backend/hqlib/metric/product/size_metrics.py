@@ -26,8 +26,8 @@ class ProductLOC(SonarDashboardMetric, LowerIsBetterMetric):
 
     name = 'Component omvang'
     unit = 'regels code'
-    target_value = 50000
-    low_target_value = 100000
+    target_value = 5000
+    low_target_value = 6000
 
     def value(self) -> MetricValue:
         return self._metric_source.ncloc(self._sonar_id()) if self._metric_source else -1
@@ -39,11 +39,11 @@ class TotalLOC(SonarMetric, LowerIsBetterMetric):
     name = 'Totale omvang'
     unit = 'regels code'
     template = 'Het totaal aantal {unit} voor de producten {products} is {value} {unit}.'
-    target_value = 160000
-    # Maximum number of LOC Java to be eligible for 4 stars, see
-    # https://www.sig.eu/wp-content/uploads/2016/10/
-    # SIG-TUViT_Evaluation_Criteria_Trusted_Product_Maintainability-Guidance_for_producers.pdf
-    low_target_value = 175000
+    target_value = 30000
+    # Maximum number of LOC to be eligible for 4 stars, see
+    # https://www.softwareimprovementgroup.com/wp-content/uploads/2018/05/20180509-SIG-TUViT-Evaluation-Criteria-Trusted-Product-Maintainability-Guidance-for-producers.pdf
+    # We use the lowest number (Python; 122000 LOC in 20 years = 30500 in 5 years)
+    low_target_value = 30500
 
     def _parameters(self) -> MetricParameters:
         parameters = super()._parameters()

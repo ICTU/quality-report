@@ -1,3 +1,10 @@
+2019-03-26  Release 2.89.0
+
+  * Lowered the targets for application and component size in accordance with the SIG/TUV evaluation criteria. 
+    Note: the maximum volumes to be eligible for four stars were lowered considerably. See
+    https://www.softwareimprovementgroup.com/wp-content/uploads/2018/05/20180509-SIG-TUViT-Evaluation-Criteria-Trusted-Product-Maintainability-Guidance-for-producers.pdf
+  
+  
 2019-03-26  Release 2.88.1
 
   * Bug fix: Allow for passing credentials to OJAudit reports.

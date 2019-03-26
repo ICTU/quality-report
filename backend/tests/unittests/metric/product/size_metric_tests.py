@@ -35,7 +35,7 @@ class ProductLOCTest(unittest.TestCase):
     def test_norm(self, mock_ncloc):
         """ Test that the norm is correct. """
         mock_ncloc.return_value = 123
-        self.assertEqual("Maximaal 50000 regels code. Meer dan 100000 regels code is rood.", self._metric.norm())
+        self.assertEqual("Maximaal 5000 regels code. Meer dan 6000 regels code is rood.", self._metric.norm())
 
     @patch.object(metric_source.Sonar6, 'ncloc')
     def test_value(self, mock_ncloc):
