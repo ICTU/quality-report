@@ -1,3 +1,8 @@
+2019-03-26  Release 2.88.1
+
+  * Bug fix: Allow for passing credentials to OJAudit reports.
+  
+  
 2019-03-18  Release 2.88.0
 
   * Feature #618: Accessibility report metric implemented.

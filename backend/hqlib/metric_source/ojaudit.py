@@ -31,15 +31,15 @@ class OJAuditReport(domain.MetricSource):
     def __init__(self, *args, **kwargs) -> None:
         self.__metric_source_url_re = kwargs.pop("metric_source_url_re", r"\.xml$")
         self.__metric_source_url_repl = kwargs.pop("metric_source_url_repl", ".html")
+        self._url_read = url_opener.UrlOpener(**kwargs).url_read
         super().__init__(*args, **kwargs)
 
-    @staticmethod
-    def violations(violation_type: str, *metric_source_ids) -> int:
+    def violations(self, violation_type: str, *metric_source_ids) -> int:
         """ Return the number of violations reported by OJAudit. """
         violations = 0
         for metric_source_id in metric_source_ids:
             try:
-                contents = url_opener.UrlOpener().url_read(metric_source_id)
+                contents = self._url_read(metric_source_id)
             except url_opener.UrlOpener.url_open_exceptions:
                 return -1
             try:
