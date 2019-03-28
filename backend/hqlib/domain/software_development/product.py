@@ -38,10 +38,11 @@ class Product(RequirementSubject, MeasurableObject):
                 requirement.ARTCoverage, requirement.ART, requirement.UnitTests, requirement.UnitTestCoverage,
                 requirement.AggregatedTestCoverage, requirement.CodeQuality, requirement.ViolationsBySeverity,
                 requirement.ViolationsByType, requirement.OJAuditViolations, requirement.TrackBranches,
-                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Checkmarx, requirement.PerformanceLoad,
-                requirement.PerformanceEndurance, requirement.PerformanceScalability, requirement.TrackBugs,
-                requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs, requirement.TrackSecurityTestDate,
-                requirement.TrackTechnicalDebt, requirement.TrackFindings, requirement.TrackQualityGate)
+                requirement.OWASPDependencies, requirement.OWASPZAP, requirement.Accessibility, requirement.Checkmarx,
+                requirement.PerformanceLoad, requirement.PerformanceEndurance, requirement.PerformanceScalability,
+                requirement.TrackBugs, requirement.TrackSecurityBugs, requirement.TrackStaticSecurityBugs,
+                requirement.TrackSecurityTestDate, requirement.TrackTechnicalDebt, requirement.TrackFindings,
+                requirement.TrackQualityGate)
 
     def __eq__(self, other):
         return self.name() == other.name()

@@ -1,3 +1,8 @@
+2019-03-28  Release 2.89.2
+
+  * Bug #651: Accessibility analysis is optionally available also for Product.
+
+
 2019-03-26  Release 2.89.1
 
   * Bug fix: Don't crash when initializing OJAudit report.
