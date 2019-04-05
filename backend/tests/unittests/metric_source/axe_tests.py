@@ -20,8 +20,24 @@ from unittest.mock import patch
 from hqlib.metric_source import AxeReport, url_opener
 
 
-AXE_CSV = 'URL,Violation Type,Impact,Help,HTML Element,Messages,DOM Element\n' \
-          'http://url:222/page/with/error,image-alt,critical,https://explanation,unimppoprtant,Description,dom-element'
+AXE_CSV_GENERAL = 'URL,Violation Type,Impact,Help,HTML Element,Messages,DOM Element{new_line_char}' \
+    'http://url:222/page/with/error,image-alt,critical,https://explanation,unimppoprtant,Description,dom-element'
+
+AXE_CSV = AXE_CSV_GENERAL.format(new_line_char='\r')
+
+
+class AxeReportInitTest(unittest.TestCase):
+    """ Unit tests for initialisation of AxeReport class. """
+
+    @patch.object(url_opener.UrlOpener, '__init__')
+    def test_url_opener_init(self, url_opener_init__mock):
+        """ Test that the url opener is initialized with the same arguments as AxeReport. """
+
+        url_opener_init__mock.return_value = None
+        axe = AxeReport(username='un', password='pwd', or_whatever_it_might_be='x')
+
+        self.assertIsNotNone(axe)
+        url_opener_init__mock.assert_called_once_with(username='un', password='pwd', or_whatever_it_might_be='x')
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
@@ -31,6 +47,16 @@ class AxeReportTest(unittest.TestCase):
     def test_nr_violations(self, url_read_mock):
         """ Test that the number of violations is correct """
         url_read_mock.return_value = AXE_CSV
+        axe = AxeReport()
+
+        result = axe.nr_violations('url')
+
+        self.assertEqual(result, 1)
+        url_read_mock.assert_called_once_with('url')
+
+    def test_nr_violations_with_cr(self, url_read_mock):
+        """ Test that the number of violations is correct """
+        url_read_mock.return_value = AXE_CSV_GENERAL.format(new_line_char='\r')
         axe = AxeReport()
 
         result = axe.nr_violations('url')

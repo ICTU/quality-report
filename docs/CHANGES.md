@@ -1,3 +1,8 @@
+2019-04-05  Release 2.90.1
+
+  * Feature #653: False positive reduction feature implemented.
+
+
 2019-03-29  Release 2.90.0
 
   * Feature #653: False positive reduction feature implemented.

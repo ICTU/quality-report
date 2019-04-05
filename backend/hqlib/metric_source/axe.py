@@ -45,7 +45,7 @@ class AxeReport(domain.MetricSource):
     def _get_csv_dict(self, url) -> List:
         return [(row['Impact'], row['Violation Type'], row['Help'], re.sub(r'http[s]?://[^/]+', '', row['URL']),
                  row['DOM Element'], row['Messages'])
-                for row in csv.DictReader(StringIO(self._url_read(url)))]
+                for row in csv.DictReader(StringIO(self._url_read(url), newline=None))]
 
     def violations(self, url: str) -> List:
         """ Return the list of fields violations """
