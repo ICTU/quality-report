@@ -43,7 +43,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                 <vulnerabilities>
                   <vulnerability>
                     <name>CVE-123</name>
-                    <severity>Medium</severity>
+                    <severity>MEDIUM</severity>
                     <references>
                       <reference><url>http://www.securityfocus.com/bid/123</url></reference>
                     </references>

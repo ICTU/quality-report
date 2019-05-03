@@ -1,3 +1,8 @@
+2019-05-03  Release 2.90.2
+
+  * Bug fix #665: OWASP dependency check XML reports changed their severity labels from capitalized to all-caps. Be prepared.
+  
+  
 2019-04-05  Release 2.90.1
 
   * Feature #653: False positive reduction feature implemented.

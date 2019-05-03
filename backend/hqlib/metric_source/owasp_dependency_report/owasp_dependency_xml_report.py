@@ -33,7 +33,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
         self._url_opener = url_opener.UrlOpener(**kwargs)
         super().__init__()
 
-    def get_dependencies_info(self, metric_source_id: str, priority: str) -> list:
+    def get_dependencies_info(self, metric_source_id: str, priority: str) -> List:
         """ Extracts info of dependencies with vulnerabilities of given priority. """
         priority = 'Medium' if priority == 'normal' else 'High'
         try:
@@ -49,15 +49,23 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
 
         dependencies_info = []
         for dependency in dependencies:
-            vulnerabilities = dependency.findall(
-                "{{{ns}}}vulnerabilities/{{{ns}}}vulnerability[{{{ns}}}severity='{priority}']"
-                .format(ns=namespace, priority=priority))
+            vulnerabilities = self.__vulnerabilities(dependency, namespace, priority)
             if vulnerabilities:
                 file_name = self.__get_text_from_node(dependency, "{{{ns}}}fileName", namespace)
                 dependency_info = self.__create_dependency_info(namespace, vulnerabilities)
                 dependency_info.file_name = file_name
                 dependencies_info.append(dependency_info)
         return dependencies_info
+
+    @staticmethod
+    def __vulnerabilities(dependency, namespace, priority: str):
+        """Return all vulnerabilities in the dependency."""
+        vulnerabilities = []
+        for priority_by_case in [priority.lower(), priority.capitalize(), priority.upper()]:
+            vulnerabilities.extend(dependency.findall(
+                "{{{ns}}}vulnerabilities/{{{ns}}}vulnerability[{{{ns}}}severity='{priority}']".format(
+                    ns=namespace, priority=priority_by_case)))
+        return vulnerabilities
 
     def __create_dependency_info(self, nsp: str, vulnerabilities) -> owasp_dependency_report.Dependency:
         count_vulnerabilities = len(vulnerabilities)
@@ -66,7 +74,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             name = self.__get_text_from_node(vulnerability, "{{{ns}}}name", nsp)
             url = self.__get_text_from_node(vulnerability, "{{{ns}}}references/{{{ns}}}reference[1]/{{{ns}}}url", nsp)
             cves.append((name, url))
-        return owasp_dependency_report.Dependency('', count_vulnerabilities, cves)
+        return owasp_dependency_report.Dependency('', count_vulnerabilities, sorted(cves))
 
     @classmethod
     def __get_text_from_node(cls, node, xpath: str, namespace: str):
@@ -102,7 +110,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             # Collect severity nodes matching 'priority'
             relevant_severities = []
             for severity in severities:
-                if severity.text == priority.capitalize():
+                if severity.text.lower() == priority.lower():
                     relevant_severities.append(severity.text)
 
             # For nodes matching 'priority'; append filePath to vulnerable_dependencies
