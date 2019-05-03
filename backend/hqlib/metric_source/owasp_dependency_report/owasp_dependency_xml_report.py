@@ -65,6 +65,9 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             vulnerabilities.extend(dependency.findall(
                 "{{{ns}}}vulnerabilities/{{{ns}}}vulnerability[{{{ns}}}severity='{priority}']".format(
                     ns=namespace, priority=priority_by_case)))
+            vulnerabilities.extend(dependency.findall(
+                "{{{ns}}}vulnerabilities/{{{ns}}}vulnerability/{{{ns}}}cvssV2[{{{ns}}}severity='{priority}']/..".format(
+                    ns=namespace, priority=priority_by_case)))
         return vulnerabilities
 
     def __create_dependency_info(self, nsp: str, vulnerabilities) -> owasp_dependency_report.Dependency:
@@ -99,7 +102,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
     @staticmethod
     def __vulnerable_dependencies(dependencies, priority, namespace):
         """ Return the vulnerable dependencies. """
-        severity_xpath = ".//{{{ns}}}vulnerability/{{{ns}}}severity".format(ns=namespace)
+        severity_xpath = ".//{{{ns}}}vulnerability//{{{ns}}}severity".format(ns=namespace)
         file_path_xpath = "./{{{ns}}}filePath".format(ns=namespace)
 
         vulnerable_dependencies: List = []

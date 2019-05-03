@@ -134,7 +134,6 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                             </identifier>
                          </relatedDependency>
                     </relatedDependencies>
-
                 </dependency>
             </dependencies>
         </analysis>
@@ -144,7 +143,7 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
     def test_normal_priority_warnings(self, mock_url_read):
         """ Test retrieving normal priority warnings. """
         mock_url_read.return_value = '''<?xml version="1.0"?>
-        <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.1.3.xsd">
+        <analysis xmlns="https://jeremylong.github.io/DependencyCheck/dependency-check.2.0.xsd">
             <dependencies>
                 <dependency>
                 <relatedDependencies>
@@ -160,13 +159,19 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                 <filePath>testNormal</filePath>
                     <vulnerabilities>
                         <vulnerability>
-                            <severity>High</severity>
+                            <cvssV2>
+                                <severity>HIGH</severity>
+                            </cvssV2>
                         </vulnerability>
                          <vulnerability>
-                            <severity>Medium</severity>
+                            <cvssV2>
+                                <severity>MEDIUM</severity>
+                            </cvssV2>
                         </vulnerability>
                          <vulnerability>
-                            <severity>Medium</severity>
+                            <cvssV2>
+                                <severity>MEDIUM</severity>
+                            </cvssV2>
                         </vulnerability>
                     </vulnerabilities>
                 </dependency>
@@ -174,10 +179,14 @@ class OWASPDependencyXMLReportTest(unittest.TestCase):
                 <filePath>testNormal2</filePath>
                     <vulnerabilities>
                         <vulnerability>
-                            <severity>High</severity>
+                            <cvssV2>
+                                <severity>HIGH</severity>
+                            </cvssV2>
                         </vulnerability>
                          <vulnerability>
-                            <severity>Medium</severity>
+                            <cvssV2>
+                                <severity>MEDIUM</severity>
+                            </cvssV2>
                         </vulnerability>
                     </vulnerabilities>
                     <relatedDependencies>
