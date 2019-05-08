@@ -47,12 +47,12 @@ table.dashboard > tbody > tr > td {
     margin: 0;
 }
 
-p span.old {
+span.old {
     color: orange;
     font-weight: bold;
 }
 
-p span.very_old {
+span.very_old {
     color: red;
     font-weight: bold;
 }
