@@ -1,3 +1,8 @@
+2019-05-16  Release 2.91.1
+
+  * Bug #225: target and low target value adjusted.
+
+
 2019-05-03  Release 2.91.0
 
   * Feature #610: JiraBacklog metric source implemented.

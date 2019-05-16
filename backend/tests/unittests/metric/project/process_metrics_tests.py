@@ -45,12 +45,12 @@ class ReadyUserStoryPointsTest(unittest.TestCase):
 
     def test_norm(self):
         """ Test that the norm is correct. """
-        self.__subject.target.return_value = 20
-        self.__subject.low_target.return_value = 10
+        self.__subject.target.return_value = metric.ReadyUserStoryPoints.target_value
+        self.__subject.low_target.return_value = metric.ReadyUserStoryPoints.low_target_value
         duration_metric = metric.ReadyUserStoryPoints(project=self.__project, subject=self.__subject)
 
-        self.assertEqual("Minimaal 20 ready user story punten. "
-                         "Minder dan 10 ready user story punten is rood.", duration_metric.norm())
+        self.assertEqual("Minimaal 30 ready user story punten. "
+                         "Minder dan 15 ready user story punten is rood.", duration_metric.norm())
 
     @patch.object(metric_source.JiraFilter, 'issues_with_field')
     def test_value(self, issues_with_field_mock):
@@ -559,12 +559,12 @@ class UserStoriesDurationTest(unittest.TestCase):
 
     def test_norm(self):
         """ Test that the norm is correct. """
-        self.__subject.target.return_value = 5
-        self.__subject.low_target.return_value = 7
+        self.__subject.target.return_value = metric.UserStoriesDuration.target_value
+        self.__subject.low_target.return_value = metric.UserStoriesDuration.low_target_value
         duration_metric = metric.UserStoriesDuration(project=self.__project, subject=self.__subject)
 
         self.assertEqual("User stories zijn maximaal 5 dagen gemiddeld in progress. "
-                         "Meer dan 7 dagen gemiddeld in progress is rood.", duration_metric.norm())
+                         "Meer dan 10 dagen gemiddeld in progress is rood.", duration_metric.norm())
 
     def test_extra_info_no_metric_source(self):
         """ Test that the None is returned as extra info if there is no metric source. """
@@ -590,11 +590,11 @@ class UserStoriesInProgressTest(unittest.TestCase):
 
     def test_norm(self):
         """ Test that the norm is correct. """
-        self.__subject.target.return_value = 5
-        self.__subject.low_target.return_value = 7
+        self.__subject.target.return_value = metric.UserStoriesInProgress.target_value
+        self.__subject.low_target.return_value = metric.UserStoriesInProgress.low_target_value
         progress_metric = metric.UserStoriesInProgress(project=self.__project, subject=self.__subject)
 
-        self.assertEqual("Maximaal 5 stories in progress. Meer dan 7 stories in progress is rood.",
+        self.assertEqual("Maximaal 3 stories in progress. Meer dan 5 stories in progress is rood.",
                          progress_metric.norm())
 
     def test_value(self):

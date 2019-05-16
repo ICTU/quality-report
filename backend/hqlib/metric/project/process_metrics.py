@@ -49,8 +49,8 @@ class UserStoriesDuration(LowerIsBetterMetric):
     norm_template = "User stories zijn " +\
                     LowerIsBetterMetric.norm_template[0].lower() + LowerIsBetterMetric.norm_template[1:]
     template = '{total} user stories waren {value} {unit}.'
-    target_value = 7
-    low_target_value = 14
+    target_value = 5
+    low_target_value = 10
     metric_source_class = metric_source.UserStoriesDurationTracker
     url_label_text = 'Gemiddelde looptijd van user stories'
     extra_info_headers = {"story": "Story", "day_in": "Begin uitvoering", "day_out": "Einde uitvoering",
