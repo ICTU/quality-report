@@ -97,7 +97,7 @@ class ViolationsBySeverity(Requirement):
 class ViolationsByType(Requirement):
     """ Require violations of programming rules to be tracked. """
     _name = 'Violations by type'
-    _metric_classes = (metric.MaintainabilityBugs, metric.Vulnerabilities, metric.CodeSmells)
+    _metric_classes = (metric.MaintainabilityBugs, metric.Vulnerabilities, metric.CodeSmells, metric.SecurityHotspots)
 
 
 class OJAuditViolations(Requirement):

@@ -15,10 +15,11 @@ limitations under the License.
 """
 
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import patch, MagicMock
 
 from hqlib import domain, metric_source
-from hqlib.metric import MaintainabilityBugs, Vulnerabilities, CodeSmells
+from hqlib.metric import MaintainabilityBugs, Vulnerabilities, CodeSmells, SecurityHotspots
+from hqlib.metric.product.code_maintainability_metrics import CodeMaintainabilityMetric
 
 
 class CodeMaintainabilityMetricTest(unittest.TestCase):
@@ -132,3 +133,55 @@ class CodeSmellsTest(unittest.TestCase):
         self.assertEqual(25, metric.target_value)
         self.assertEqual(50, metric.low_target_value)
         sonar.code_smells.assert_called_once_with('sonar_id')
+
+
+class SecurityHotspotsTest(unittest.TestCase):
+    """ Unit tests for the CodeSmells metric class. """
+    def test_value(self):
+        """ Test that the value is equal to the number reported by Sonar. """
+        sonar = MagicMock()
+        sonar.security_hotspots = MagicMock(return_value=99)
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='sonar_id')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        metric = SecurityHotspots(subject=subject, project=project)
+
+        result = metric.value()
+
+        self.assertEqual(99, result)
+        self.assertEqual('Hoeveelheid security hotspots', metric.name)
+        self.assertEqual('security hotspots', metric.unit)
+        self.assertEqual(25, metric.target_value)
+        self.assertEqual(50, metric.low_target_value)
+        sonar.security_hotspots.assert_called_once_with('sonar_id')
+
+    @patch.object(CodeMaintainabilityMetric, 'extra_info_rows')
+    def test_extra_info_rows(self, super_extra_info_rows):
+        """ Test if function correctly calls metric source function and formats the result. """
+        sonar = MagicMock()
+        sonar.is_security_hotspots_available = MagicMock(return_value=False)
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='sonar_id')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        metric = SecurityHotspots(subject=subject, project=project)
+
+        result = metric.extra_info_rows()
+
+        super_extra_info_rows.assert_not_called()
+        self.assertEqual([], result)
+
+    @patch.object(CodeMaintainabilityMetric, 'extra_info_rows')
+    def test_extra_info_rows_super(self, super_extra_info_rows):
+        """ Test if function correctly calls metric source function and formats the result. """
+        sonar = MagicMock()
+        sonar.is_security_hotspots_available = MagicMock(return_value=True)
+        subject = MagicMock()
+        subject.metric_source_id = MagicMock(return_value='sonar_id')
+        project = domain.Project(metric_sources={metric_source.Sonar: sonar})
+        metric = SecurityHotspots(subject=subject, project=project)
+        super_extra_info_rows.return_value = 'super return value'
+
+        result = metric.extra_info_rows()
+
+        super_extra_info_rows.assert_called_once()
+        self.assertEqual('super return value', result)

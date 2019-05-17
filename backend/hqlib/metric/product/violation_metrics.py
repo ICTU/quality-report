@@ -38,12 +38,10 @@ class Violations(SonarDashboardMetric, LowerIsBetterMetric):
 
     def extra_info_rows(self) -> List:
         """ Returns formatted rows of extra info table for code maintainability metrics. """
-        violation_sorts = [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell')]
         ret = list()
-        for sort in violation_sorts:
+        for sort in self._metric_source.violation_sorts():
             url, count, effort = \
                 self._metric_source.violations_type_severity(self._metric_source_id, sort[0], self.violation_type)
-
             ret.append((utils.format_link_object(url, sort[1]), count, effort))
         return ret
 

@@ -20,7 +20,7 @@ import functools
 import logging
 import json
 import re
-from typing import List, Dict, Optional, Union, Sequence
+from typing import List, Tuple, Dict, Optional, Union, Sequence
 from distutils.version import LooseVersion
 
 from . import url_opener
@@ -102,6 +102,19 @@ class Sonar(metric_source.TestReport):
         except self._url_opener.url_open_exceptions:
             logging.warning("Error retrieving Sonar Qube server version!")
             return None
+
+    @functools.lru_cache(maxsize=1024)
+    def violation_sorts(self) -> List[Tuple]:
+        """ Returns violation sorts, depending on sonar version """
+        sorts = [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell')]
+        if self.is_security_hotspots_available():
+            sorts.append(('SECURITY_HOTSPOT', 'Security Hotspot'))
+        return sorts
+
+    @functools.lru_cache(maxsize=1024)
+    def is_security_hotspots_available(self):
+        """ Returns if the security hotspot violations are available, based on sonar version """
+        return self.version_number() >= LooseVersion('7.3')
 
     def _report_datetime(self, metric_source_id: str) -> DateTime:  # pragma: no cover
         """ Formal overriding of an abstract method. It is never used."""
@@ -191,6 +204,12 @@ class Sonar6(Sonar):
         return self.__number_of_issues(product, branch,
                                        self._issues_by_type_api_url.format(component=product, type='CODE_SMELL'), 0)
 
+    @extract_branch_decorator
+    def security_hotspots(self, product: str, branch: str) -> int:
+        """ Return the number of code smells detected by sonar, for the product. """
+        return self.__number_of_issues(
+            product, branch, self._issues_by_type_api_url.format(component=product, type='SECURITY_HOTSPOT'), 0)
+
     def has_branch_coverage(self, metric_source_id: str) -> bool:
         """ Determines if the branch coverage is defined on Sonar. """
         # pylint: disable=no-value-for-parameter
@@ -276,7 +295,7 @@ class Sonar6(Sonar):
         url = self._quality_profiles_api_url
         try:
             profiles = self._get_json(url)['profiles']
-        except self._url_opener.url_open_exceptions + (KeyError, TypeError):
+        except self._url_opener.url_open_exceptions + (KeyError, TypeError):  # pylint: wrong-exception-operation
             # Try old API
             url = self._old_quality_profiles_api_url
             try:
@@ -341,6 +360,7 @@ class Sonar6(Sonar):
             url = self._add_branch_param_to_url(self._components_search_api_url.format(component=project), branch)
             try:
                 return self._has_paging_total(project, url)
+            # pylint: wrong-exception-operation
             except self._url_opener.url_open_exceptions + (KeyError, IndexError, TypeError, ValueError) as reason:
                 logging.warning("Sonar has no analysis of %s: %s", project, reason)
                 return False
@@ -772,6 +792,7 @@ class Sonar7(Sonar6):
             url = self._add_branch_param_to_url(self._components_search_api_url.format(component=project), branch)
             try:
                 return self._has_paging_total(project, url)
+            # pylint: wrong-exception-operation
             except self._url_opener.url_open_exceptions + (KeyError, IndexError, TypeError, ValueError) as reason:
                 logging.warning("Sonar has no analysis of %s: %s", project, reason)
         return False
@@ -849,7 +870,7 @@ class Sonar7(Sonar6):
         url = self._quality_profiles_api_url
         try:
             profiles = self._get_json(url)['profiles']
-        except self._url_opener.url_open_exceptions + (KeyError, TypeError):
+        except self._url_opener.url_open_exceptions + (KeyError, TypeError):  # pylint: wrong-exception-operation
             return ''  # Give up
 
         for profile in profiles:

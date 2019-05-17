@@ -1,3 +1,8 @@
+2019-05-20  Release 2.92.0
+
+  * Feature #598: Security Hotspot SonarQube issue type added to violation metrics.
+
+
 2019-05-16  Release 2.91.1
 
   * Bug #225: target and low target value adjusted.

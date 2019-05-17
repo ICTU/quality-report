@@ -28,6 +28,8 @@ class ViolationsTestMixin(object):
         self.__sonar.major_violations = MagicMock(return_value=self.__nr_violations)
         self.__sonar.critical_violations = MagicMock(return_value=self.__nr_violations)
         self.__sonar.blocker_violations = MagicMock(return_value=self.__nr_violations)
+        self.__sonar.violation_sorts = MagicMock(
+            return_value=[('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell')])
 
         project = domain.Project(metric_sources={metric_source.Sonar: self.__sonar})
         self.__subject = domain.Product(short_name='PR', name='FakeSubject',

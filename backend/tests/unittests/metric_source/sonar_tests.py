@@ -51,6 +51,25 @@ class SonarFacadeTest(unittest.TestCase):
         self.assertIsInstance(sonar, Sonar6)
 
     @patch.object(Sonar, 'version_number')
+    def test_violation_sorts(self, mock_version_number):
+        """ Test if violation sorts are correct for versions prior to 7.3. """
+        mock_version_number.return_value = '6.6'
+
+        sonar = Sonar('unimportant')
+        self.assertEqual(sonar.violation_sorts(), [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'),
+                                                   ('CODE_SMELL', 'Code Smell')])
+
+    @patch.object(Sonar, 'version_number')
+    def test_violation_sorts_with_hotspots(self, mock_version_number):
+        """ Test if violation sorts are correct for versions prior 7.3 and higher. """
+        mock_version_number.return_value = '7.3'
+
+        sonar = Sonar('unimportant')
+        self.assertEqual(sonar.violation_sorts(),
+                         [('BUG', 'Bugs'), ('VULNERABILITY', 'Vulnerabilities'), ('CODE_SMELL', 'Code Smell'),
+                          ('SECURITY_HOTSPOT', 'Security Hotspot')])
+
+    @patch.object(Sonar, 'version_number')
     @patch.object(logging, 'warning')
     def test_version_not_supported(self, mock_log_warning, mock_version_number):
         """ Test that the error is logged when Sonar version is not supported. """
@@ -182,6 +201,12 @@ class Sonar6Test(Sonar6TestCase):
         """ Test that the retrieval of code smells. """
         mock_url_read.side_effect = ["6.5", '{"paging": {"total": "1"}}', '{"total": "99", "issues": []}']
         result = self._sonar.code_smells('product')
+        self.assertEqual(99, result)
+
+    def test_security_hotspots(self, mock_url_read):
+        """ Test that the retrieval of security hotspots. """
+        mock_url_read.side_effect = ["6.5", '{"paging": {"total": "1"}}', '{"total": "99", "issues": []}']
+        result = self._sonar.security_hotspots('product')
         self.assertEqual(99, result)
 
     def test_is_branch_plugin_installed(self, mock_url_read):
@@ -2379,6 +2404,11 @@ class Sonar7Test(Sonar7TestCase):
     """ Unit tests for the Sonar class. """
 
     # pylint: disable=no-member
+
+    def test_analysis_datetime_7_4_missing_product(self, mock_url_read):
+        """ Test the analysis date and time using SonarQube >= 6.4. """
+        mock_url_read.side_effect = ["7.4", '{"component": {}}']
+        self.assertEqual(datetime.datetime.min, self._sonar.datetime())
 
     @patch.object(Sonar7, 'is_branch_plugin_installed')
     def test_version_with_branch_without_plugin(self, mock_is_branch_plugin_installed, mock_url_read):

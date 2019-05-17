@@ -96,3 +96,27 @@ class CodeSmells(CodeMaintainabilityMetric):
         super().__init__(*args, **kwargs)
         if self._metric_source:
             self._metric_source_number_of_issues = self._metric_source.code_smells
+
+
+class SecurityHotspots(CodeMaintainabilityMetric):
+    """ Metric for measuring the amount of code smells reported by Sonar. """
+    name = 'Hoeveelheid security hotspots'
+    unit = 'security hotspots'
+    target_value = 25
+    low_target_value = 50
+    violation_type = 'SECURITY_HOTSPOT'
+    url_label_text = 'Security hotspot per severity'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self._metric_source:
+            self._metric_source_number_of_issues = self._metric_source.security_hotspots
+
+    def extra_info_rows(self) -> list((object, int)):
+        """ Returns formatted rows of extra info table for code maintainability metrics. """
+        return super().extra_info_rows() \
+            if self._metric_source and self._metric_source.is_security_hotspots_available() else []
+
+    def value(self):
+        """ Retrieves the number of issues detected by sonar. """
+        return super().value() if self._metric_source and self._metric_source.is_security_hotspots_available() else -1
