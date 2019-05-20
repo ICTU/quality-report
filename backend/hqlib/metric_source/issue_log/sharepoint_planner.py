@@ -38,17 +38,18 @@ class SharepointPlanner(ActionLog):
 
     # pylint: disable=too-many-arguments
 
-    def __init__(self, url: str, client_id: str, client_secret: str,
-                 refresh_token_location: str, *args, persister: JsonPersister = FilePersister, **kwargs) -> None:
+    def __init__(self, url: str, client_id: str, client_secret: str, refresh_token_location: str, *args,
+                 lists_to_ignore=None, persister: JsonPersister = FilePersister, **kwargs) -> None:
         self.__url = url.strip('/')
         self.__planner_url = self.__url + '/Home/Planner'
         self.__task_display_url = self.__url + '/Home/Task/{task_id}'
-        self._lists_to_ignore = kwargs.pop('lists_to_ignore', [])
         self.__client_id = client_id
         self.__client_secret = client_secret
+        self.__lists_to_ignore = lists_to_ignore or []
         self.__persister = persister
         self.__refresh_token_location = refresh_token_location
         self.__tasks_url = 'https://graph.microsoft.com/v1.0/planner/plans/{plan_id}/tasks'
+        self.__buckets_url = 'https://graph.microsoft.com/v1.0/planner/plans/{plan_id}/buckets'
         self.__token_url = 'https://login.microsoftonline.com/common/oauth2/token'
         self.__access_token = self._get_access_token()
         if self.__access_token:
@@ -87,10 +88,16 @@ class SharepointPlanner(ActionLog):
             'No refresh token could be loaded. Please, generate one using the script refresh_token_generator.py.')
         return ''
 
-    @functools.lru_cache(maxsize=8192)
-    def _retrieve_tasks(self, plan_id: str) -> List:
+    def _retrieve_tasks(self, plan_id: str, ignored_buckets: List[str]) -> List:
         tasks = json.loads(self.__url_opener.url_read(url=self.__tasks_url.format(plan_id=plan_id)))['value']
-        return [task for task in tasks if not task['completedDateTime']]
+        return [task for task in tasks if not task['completedDateTime'] and not task['bucketId'] in ignored_buckets]
+
+    @functools.lru_cache(maxsize=2048)
+    def _retrieve_ignored_buckets(self, plan_id: str) -> List:
+        if not self.__lists_to_ignore:
+            return []
+        buckets = json.loads(self.__url_opener.url_read(url=self.__buckets_url.format(plan_id=plan_id)))['value']
+        return [bucket['id'] for bucket in buckets if bucket['name'] in self.__lists_to_ignore]
 
     def datetime(self, *metric_source_ids: str) -> DateTime:  # pylint: disable=unused-argument
         """ Return the date of the latest activity at this plan. """
@@ -107,7 +114,7 @@ class SharepointPlanner(ActionLog):
     def __get_max_activity_date(self, metric_source_ids):
         last_activity_date = ''
         for plan_id in metric_source_ids:
-            for task in self._retrieve_tasks(plan_id):
+            for task in self._retrieve_tasks(plan_id, self._retrieve_ignored_buckets(plan_id)):
                 last_activity_date = \
                     max(last_activity_date, task['createdDateTime'], self._get_max_assignment_date(task))
         return utils.parse_iso_datetime_local_naive(last_activity_date) \
@@ -126,7 +133,7 @@ class SharepointPlanner(ActionLog):
 
     def ignored_lists(self) -> List[str]:
         """ Return the ignored lists. """
-        return self._lists_to_ignore
+        return self.__lists_to_ignore
 
     def _get_overdue_tasks(self, *metric_source_ids: str) -> List:
         return self._get_tasks_for_criterion(*metric_source_ids, criterion=self._append_task_if_overdue)
@@ -146,7 +153,7 @@ class SharepointPlanner(ActionLog):
         result = []
         dt_now = datetime.datetime.now()
         for plan_id in metric_source_ids:
-            for task in self._retrieve_tasks(plan_id):
+            for task in self._retrieve_tasks(plan_id, self._retrieve_ignored_buckets(plan_id)):
                 criterion(dt_now, result, task)
         return result
 

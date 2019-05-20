@@ -1,5 +1,10 @@
-2019-05-20  Release 2.92.1
+2019-05-20  Release 2.93.0
 
+  * Feature #569: bucket ignore list for SarePoint Planner added.
+
+
+2019-05-20  Release 2.92.1
+  
   * Bug fix #293: Not all ZAP Scan alerts were reported.
   
   

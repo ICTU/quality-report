@@ -39,8 +39,6 @@ class SharepointPlannerTest(unittest.TestCase):
     def setUp(self):
 
         # pylint: disable=protected-access
-
-        SharepointPlanner._retrieve_tasks.cache_clear()
         SharepointPlanner._get_tasks_for_criterion.cache_clear()
 
     @patch.object(url_opener.UrlOpener, 'url_read')
@@ -49,7 +47,7 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -66,7 +64,7 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -97,8 +95,9 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T11:01:08.8386828Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}',
-            '{"value": [{"completedDateTime": null, "createdDateTime":"2018-03-28T11:01:08.88Z", "assignments": {}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}',
+            '{"value": [{"completedDateTime": null, "createdDateTime":"2018-03-28T11:01:08.88Z",'
+            '"bucketId": "2b", "assignments": {}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -267,7 +266,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
             '"dueDateTime": "2018-07-28T10:00:00.2Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -282,7 +281,7 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": "2018-09-28T10:00:00.2Z", "createdDateTime":"2018-02-28T13:01:08.8328Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -297,7 +296,7 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -376,7 +375,7 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.838Z", "dueDateTime": null,'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -392,7 +391,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.828Z", "dueDateTime": "' + (
                 datetime.datetime.utcnow() + relativedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ") + '",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -409,7 +408,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.828Z", "id": "id_VbPAGNM", '
             '"title": "Title!", "dueDateTime": "' + (datetime.datetime.utcnow() - relativedelta(days=7)
                                                      ).strftime("%Y-%m-%dT%H:%M:%S.%fZ") + '",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='https://planner_home/', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -439,7 +438,7 @@ class SharepointPlannerTest(unittest.TestCase):
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -449,12 +448,28 @@ class SharepointPlannerTest(unittest.TestCase):
         self.assertEqual(planner.nr_of_inactive_actions('plan_id_xx'), 1)
 
     @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_nr_of_inactive_actions_ignore_list(self, mock_url_read, mock_write_json, mock_read_json):
+        """ Test that the number of inactive tasks matches. """
+        mock_url_read.side_effect = [
+            '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
+            '{"value": [{"name": "ToDo", "planId": "plan_id_xx", "id": "1a"}]}',
+            '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+        mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
+        planner = SharepointPlanner(url='/home', client_id='client_id_xx',
+                                    client_secret='client_secret_k=', lists_to_ignore=['ToDo'],
+                                    refresh_token_location='file_location_of_token.json')
+
+        mock_write_json.assert_called_once_with({'refresh_token': 'new_refresh_token'}, 'file_location_of_token.json')
+        self.assertEqual(planner.nr_of_inactive_actions('plan_id_xx'), 0)
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
     def test_nr_of_inactive_actions_due_null(self, mock_url_read, mock_write_json, mock_read_json):
         """ Test that the task without due date is counted as inactive. """
         mock_url_read.side_effect = [
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.828Z", "dueDateTime": null,'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -470,7 +485,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.838Z", "dueDateTime": "' + (
                 datetime.datetime.utcnow() + relativedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ") + '",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -486,7 +501,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z",'
             '"dueDateTime": "2018-07-28T10:00:00.2Z",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -502,7 +517,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"' + (
                 datetime.datetime.utcnow() - relativedelta(days=13)).strftime("%Y-%m-%dT%H:%M:%S.%fZ") + '",'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "2018-02-28T13:01:08.8386828Z"}}}]}']
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
         planner = SharepointPlanner(url='/home', client_id='client_id_xx',
                                     client_secret='client_secret_k=',
@@ -576,7 +591,7 @@ class SharepointPlannerTest(unittest.TestCase):
             '{"access_token": "ey_xx", "refresh_token": "new_refresh_token"}',
             '{"value": [{"completedDateTime": null, "createdDateTime":"2018-02-28T13:01:08.8386828Z", '
             '"id": "id_VbPAGNM", "title": "Title!", "dueDateTime": null,'
-            '"assignments": {"ecf0xx": {"assignedDateTime": "' + (
+            '"bucketId": "1a", "assignments": {"ecf0xx": {"assignedDateTime": "' + (
                 datetime.datetime.utcnow() - relativedelta(days=19)).strftime("%Y-%m-%dT%H:%M:%S.%fZ") + '"}}}]}']
 
         mock_read_json.return_value = {'refresh_token': 'refresh_token_content_xx'}
