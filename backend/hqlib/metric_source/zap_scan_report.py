@@ -52,8 +52,8 @@ class ZAPScanReport(domain.MetricSource):
             warnings += self.__parse_warnings(url, risk_level, True)
         return warnings
 
-    def __get_false_positives(self) -> str:
-        """ Return a list with false-positives from the False Postive API. """
+    def __get_false_positives(self):
+        """ Return a list with false-positives from the False Positive API. """
         try:
             if not self.false_positive_api_url:
                 logging.info("No false-positive API URL specified")
@@ -79,7 +79,7 @@ class ZAPScanReport(domain.MetricSource):
             for risk_header in risk_headers:
                 risk_name = risk_header.find_all('th')[1].string
                 risk_instances = self.__get_risk_instances(risk_header)
-                warnings = self.__get_warnings(risk_instances, risk_name, report_url, include_false_positives)
+                warnings.extend(self.__get_warnings(risk_instances, risk_name, report_url, include_false_positives))
             if not warnings:
                 logging.warning("Couldn't find any entries with %s risk level.", risk_level)
             return warnings
@@ -101,7 +101,7 @@ class ZAPScanReport(domain.MetricSource):
         instance_url = risk_instance.find_next_sibling().get_text()
 
         if not self.false_positive_api_url:
-            return (risk_name, instance_url, 'Not available')
+            return risk_name, instance_url, 'Not available'
 
         warning_hash = self.__get_warning_hash(risk_instance, risk_name, report_url, instance_url)
         is_false_positive = warning_hash in self.false_positives_list
@@ -118,20 +118,18 @@ class ZAPScanReport(domain.MetricSource):
         return None
 
     @staticmethod
-    @functools.lru_cache(maxsize=1024)
     def __get_report_headers(soup, risk_level):
         return soup.find_all('tr', attrs={"class": "risk-{level}".format(level=risk_level)})
 
     @staticmethod
-    @functools.lru_cache(maxsize=1024)
     def __get_risk_instances(risk_header):
         return risk_header.findParent('table').find_all('td', attrs={"class": "indent1"})
 
     def __get_warning_hash(self, risk_instance, risk_name, report_url, instance_url):
         # Create a unique hash for this warning to use as an identifier in False-Positive suppression
         property_hash = ''
-        location_propteries = risk_instance.parent.find_next_siblings('tr')
-        for location_property in location_propteries:
+        location_properties = risk_instance.parent.find_next_siblings('tr')
+        for location_property in location_properties:
             property_title = location_property.find('td', attrs={"class": "indent2"})
             if not property_title:
                 break

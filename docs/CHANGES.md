@@ -1,3 +1,8 @@
+2019-05-20  Release 2.92.1
+
+  * Bug fix #293: Not all ZAP Scan alerts were reported.
+  
+  
 2019-05-20  Release 2.92.0
 
   * Feature #598: Security Hotspot SonarQube issue type added to violation metrics.
