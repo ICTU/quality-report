@@ -21,6 +21,8 @@ import re
 import xml.etree.cElementTree
 from typing import List, Tuple, Any
 
+from dateutil.parser import parse
+
 from .. import url_opener
 from ..abstract import owasp_dependency_report
 from ...typing import DateTime
@@ -139,7 +141,7 @@ class OWASPDependencyXMLReport(owasp_dependency_report.OWASPDependencyReport):
             logging.error('Error parsing returned xml: %s.', reason)
             return datetime.datetime.min
         datetime_node = root.find(".//{{{ns}}}projectInfo/{{{ns}}}reportDate".format(ns=namespace))
-        return datetime.datetime.strptime(datetime_node.text.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+        return parse(datetime_node.text).replace(microsecond=0, tzinfo=None)
 
     @functools.lru_cache(maxsize=1024)
     def __report_root(self, report_url: str) -> Tuple[Any, str]:

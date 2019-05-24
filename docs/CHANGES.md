@@ -1,3 +1,8 @@
+2019-05-24  Release 2.93.1
+
+  * Bug fix: Correctly process changed datetime format in OWASP Dependency Check XML reports.
+  
+  
 2019-05-20  Release 2.93.0
 
   * Feature #569: bucket ignore list for SarePoint Planner added.
