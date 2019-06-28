@@ -1,7 +1,7 @@
 ANNOUNCEMENT
 ============
 
-**HQ will be replaced by *Quality-time*[https://github.com/ICTU/quality-report]. As of July 1st 2019, HQ is in maintenance mode. Only critical bugs will be fixed. No new features are planned.**
+**HQ will be replaced by [*Quality-time*](https://github.com/ICTU/quality-time). As of July 1st 2019, HQ is in maintenance mode. Only critical bugs will be fixed. No new features are planned for HQ.**
 
 ---
 
@@ -109,7 +109,7 @@ $ docker pull ictu/quality-report
 HQ can now be started from the command line. Adding the `--help` parameter should show a brief help message:
 
 ```console
-$ docker run --rm -u `id -u`:`id -g` -v /etc/localtime:/etc/localtime:ro -v `pwd`:/work -w /work ictu/quality-report --help 
+$ docker run --rm -u `id -u`:`id -g` -v /etc/localtime:/etc/localtime:ro -v `pwd`:/work -w /work ictu/quality-report --help
 ```
 
 See the [HQ Wiki](https://github.com/ICTU/quality-report/wiki) for more information on how to configure quality reports.
