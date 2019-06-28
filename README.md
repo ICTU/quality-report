@@ -1,3 +1,9 @@
+ATTENTION
+=========
+
+**HQ will be replaced by *Quality-time*[https://github.com/ICTU/quality-report]. As of July 1st 2019, HQ is in maintenance mode. Only critical bugs will be fixed. No new features are planned.**
+
+
 [![PyPI](https://img.shields.io/pypi/v/quality_report.svg)](https://pypi.python.org/pypi/quality_report)
 [![Build Status](https://travis-ci.org/ICTU/quality-report.png?branch=master)](https://travis-ci.org/ICTU/quality-report)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=nl.ictu%3Ahq&metric=alert_status)](https://sonarcloud.io/dashboard?id=nl.ictu%3Ahq)
