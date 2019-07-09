@@ -50,7 +50,7 @@ class Checkmarx(MetricSourceWithIssues):
 
     def __init__(self, url: str, username: str, password: str, *args, **kwargs) -> None:
         self._projects_url = urllib.parse.urljoin(url, 'CxRestAPI/projects')
-        self._scan_url = urllib.parse.urljoin(url, '/CxRestAPI/sast/scans?projectId={project_id}&last=1')
+        self._scan_url = urllib.parse.urljoin(url, '/CxRestAPI/sast/scans?projectId={project_id}&last=1&scanStatus=7')
         self._statistics_url = urllib.parse.urljoin(url, '/CxRestAPI/sast/scans/{id}/resultsStatistics')
 
         self._generate_report_post_url = urllib.parse.urljoin(url, '/CxRestAPI/reports/sastScan')
