@@ -44,8 +44,8 @@ class OWASPZAP(Requirement):
 
 class TrustedProductMaintainability(Requirement):
     """ Require the total size of the source code to be tracked. """
-    _name = 'Trusted Product Maintainability, version 6.1'
-    _url = 'http://www.sig.eu/nl/diensten/Software%20Product%20Certificering/Evaluation%20Criteria/'
+    _name = 'Trusted Product Maintainability, version 10.0'
+    _url = 'https://www.softwareimprovementgroup.com/news-knowledge/sig-models/'
     _metric_classes = (metric.TotalLOC,)
 
 

@@ -78,7 +78,7 @@ class Help extends React.Component {
                     </h3>
                     <p>
                         De metingen en de normen voor de metingen zijn deels gebaseerd op de <a
-                        href="http://www.sig.eu/en/Services/Software%%20Product%%20Certification/Evaluation%%20Criteria/" target="_blank">
+                        href="https://www.softwareimprovementgroup.com/news-knowledge/sig-models/" target="_blank">
                         SIG-TUViT Evaluation Criteria for Trusted Product Maintainability</a>. Daarnaast zijn de
                         metingen en de normen gebaseerd op het Scrumproces.
                         Welke metingen in een rapportage zijn opgenomen hangt af van de eisen die voor het project

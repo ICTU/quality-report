@@ -1,5 +1,6 @@
 2019-07-18  Release 2.93.2
 
+  * Bug fix #674: Fix broken link to maintainability criteria.
   * Bug fix #676: Don't assume Jacoco urls have no parameters after index.html.
   
   
