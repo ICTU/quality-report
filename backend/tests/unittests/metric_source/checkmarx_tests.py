@@ -158,7 +158,8 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(4, self.__report.nr_warnings(['metric_source_id'], 'high'))
 
         self.assertEqual(mock_url_read.call_args_list[0][0][0], 'http://url/CxRestAPI/projects')
-        self.assertEqual(mock_url_read.call_args_list[1][0][0], 'http://url/CxRestAPI/sast/scans?projectId=11&last=1')
+        self.assertEqual(mock_url_read.call_args_list[1][0][0],
+                         'http://url/CxRestAPI/sast/scans?projectId=11&last=1&scanStatus=7')
         self.assertEqual(mock_url_read.call_args_list[2][0][0],
                          'http://url/CxRestAPI/sast/scans/10111/resultsStatistics')
 
@@ -186,7 +187,8 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(1, issues[0].count)
         self.assertEqual("Recurrent", issues[0].status)
         self.assertEqual(mock_url_read.call_args_list[0][0][0], 'http://url/CxRestAPI/projects')
-        self.assertEqual(mock_url_read.call_args_list[1][0][0], 'http://url/CxRestAPI/sast/scans?projectId=11&last=1')
+        self.assertEqual(mock_url_read.call_args_list[1][0][0],
+                         'http://url/CxRestAPI/sast/scans?projectId=11&last=1&scanStatus=7')
         self.assertEqual(mock_url_read.call_args_list[2][0][0], 'http://url/CxRestAPI/reports/sastScan')
         self.assertEqual(mock_url_read.call_args_list[3][0][0], 'http://url/CxRestAPI/reports/sastScan/22/status')
         self.assertEqual(mock_url_read.call_args_list[4][0][0], 'http://url/CxRestAPI/reports/sastScan/22')
@@ -306,10 +308,10 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(14, self.__report.nr_warnings(['metric_source_id', 'id2'], 'medium'))
         self.assertEqual([
             call('http://url/CxRestAPI/projects'),
-            call('http://url/CxRestAPI/sast/scans?projectId=11&last=1'),
+            call('http://url/CxRestAPI/sast/scans?projectId=11&last=1&scanStatus=7'),
             call('http://url/CxRestAPI/sast/scans/10111/resultsStatistics'),
             call('http://url/CxRestAPI/projects'),
-            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1'),
+            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7'),
             call('http://url/CxRestAPI/sast/scans/202222/resultsStatistics')
         ], mock_url_read.call_args_list)
 
@@ -349,7 +351,7 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(["http://url/"], self.__report.metric_source_urls('id2'))
         self.assertEqual([
             call('http://url/CxRestAPI/projects'),
-            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1')
+            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7')
         ], mock_url_read.call_args_list)
 
     def test_url(self, mock_url_read):
@@ -363,7 +365,7 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(datetime.datetime(2017, 10, 24, 20, 0, 47), self.__report.datetime('id2'))
         self.assertEqual([
             call('http://url/CxRestAPI/projects'),
-            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1')
+            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7')
         ], mock_url_read.call_args_list)
 
     def test_datetime_http_error(self, mock_url_read):
@@ -372,7 +374,7 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(datetime.datetime.min, self.__report.datetime('id2'))
         self.assertEqual([
             call('http://url/CxRestAPI/projects'),
-            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1')
+            call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7')
         ], mock_url_read.call_args_list)
 
     @patch.object(logging, 'error')
