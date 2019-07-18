@@ -31,8 +31,8 @@ class JaCoCo(HTMLCoverageReport):
 
     @staticmethod
     def _get_coverage_date_urls(coverage_url: str) -> List[str]:
-        base_url = coverage_url[:-len('index.html')]
-        return [base_url + 'jacoco-sessions.html', base_url + '.sessions.html']
+        return [coverage_url.replace('index.html', 'jacoco-sessions.html'),
+                coverage_url.replace('index.html', '.sessions.html')]
 
     def _parse_statement_coverage_percentage(self, soup) -> float:
         return self.__parse_coverage_percentage(soup, 1)

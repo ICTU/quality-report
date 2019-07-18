@@ -1,3 +1,8 @@
+2019-07-18  Release 2.93.2
+
+  * Bug fix #676: Don't assume Jacoco urls have no parameters after index.html.
+  
+  
 2019-05-24  Release 2.93.1
 
   * Bug fix: Correctly process changed datetime format in OWASP Dependency Check XML reports.
