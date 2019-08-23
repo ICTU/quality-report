@@ -191,6 +191,8 @@ class Checkmarx(MetricSourceWithIssues):
                 pass
             except ValueError as reason:
                 logging.error("Error loading json: %s.", reason)
+            except IndexError:
+                logging.error("There are still no scans for project %s.", project_name)
             except KeyError as reason:
                 logging.error("Tag %s could not be found.", reason)
             except xml.etree.ElementTree.ParseError as reason:

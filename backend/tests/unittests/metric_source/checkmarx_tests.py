@@ -281,6 +281,16 @@ class CheckmarxTest(unittest.TestCase):
         self.assertIsInstance(mock_error.call_args[0][1], ValueError)
 
     @patch.object(logging, 'error')
+    def test_obtain_issues_index_error(self, mock_error, mock_url_read):
+        """ Test that issues are omitted when json contains nothing. """
+        mock_url_read.side_effect = [PROJECTS, '[]']
+        self.__report.obtain_issues(['metric_source_id'], 'high')
+        issues = self.__report.issues()
+        self.assertIsInstance(issues, List)
+        self.assertEqual(len(issues), 0)
+        self.assertEqual(mock_error.call_args[0], ("There are still no scans for project %s.", 'metric_source_id'))
+
+    @patch.object(logging, 'error')
     def test_obtain_issues_json_error(self, mock_error, mock_url_read):
         """ Test that issues are omitted when json error occurs. """
         mock_url_read.side_effect = [PROJECTS, '{}']

@@ -1,3 +1,8 @@
+2019-08-23  Release 2.93.3
+
+  * Bug fix #690: Index error fixed in checkmarx, when there is no scan.
+
+
 2019-07-18  Release 2.93.2
 
   * Bug fix #674: Fix broken link to maintainability criteria.
