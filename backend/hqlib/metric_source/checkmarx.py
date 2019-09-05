@@ -23,6 +23,7 @@ import logging
 import urllib.parse
 import xml.etree.cElementTree
 from typing import Dict, List, Iterable
+import requests
 
 import dateutil.parser
 
@@ -66,8 +67,8 @@ class Checkmarx(MetricSourceWithIssues):
             'username={username}&password={password}&scope=sast_rest_api&grant_type=password' \
             '&client_id=resource_owner_client&client_secret=014DF517-39D1-4453-B7B3-9930C563627C' \
             .format(username=username, password=password)
-        self._url_open = url_opener.UrlOpener(
-            authorization_token=self.__retrieve_access_token(token_url, token_post_body))
+        self._auth_token = self.__retrieve_access_token(token_url, token_post_body)
+        self._url_open = url_opener.UrlOpener(authorization_token=self._auth_token)
         super().__init__(url=url, *args, **kwargs)
 
     @staticmethod
@@ -145,6 +146,8 @@ class Checkmarx(MetricSourceWithIssues):
 
     def _get_issues_from_report(self, sast_report_id: int, priority: str) -> List:
         sast_report = self._url_open.url_read(self._sast_scan_url.format(scan_id=sast_report_id))
+        requests.delete(self._sast_scan_url.format(scan_id=sast_report_id),
+                        headers=dict(Authorization=f"Bearer {self._auth_token}"))
         root = xml.etree.cElementTree.fromstring(sast_report)
         issues = []
         queries = root.findall(".//Query")

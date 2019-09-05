@@ -1,3 +1,8 @@
+2019-09-26  Release 2.93.4
+
+  * Bug fix #692: checkmarx server error fixed
+
+
 2019-08-23  Release 2.93.3
 
   * Bug fix #690: Index error fixed in checkmarx, when there is no scan.

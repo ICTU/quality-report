@@ -23,6 +23,7 @@ import urllib.error
 from typing import List
 import unittest
 from unittest.mock import patch, call, MagicMock
+import requests
 
 from hqlib.metric_source import Checkmarx, url_opener
 
@@ -140,6 +141,7 @@ class CheckmarxConstructorTest(unittest.TestCase):
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')
+@patch.object(requests, 'delete')
 class CheckmarxTest(unittest.TestCase):
     """ Unit tests for the Checkmarx class. """
 
@@ -152,11 +154,12 @@ class CheckmarxTest(unittest.TestCase):
         with patch.object(url_opener.UrlOpener, 'url_read', return_value='{"access_token": "abc123"}'):
             self.__report = Checkmarx('http://url', 'username', 'password')
 
-    def test_high_risk_warnings(self, mock_url_read):
+    def test_high_risk_warnings(self, mock_delete, mock_url_read):
         """ Test the number of high risk warnings. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, STATISTICS]
         self.assertEqual(4, self.__report.nr_warnings(['metric_source_id'], 'high'))
 
+        mock_delete.assert_not_called()
         self.assertEqual(mock_url_read.call_args_list[0][0][0], 'http://url/CxRestAPI/projects')
         self.assertEqual(mock_url_read.call_args_list[1][0][0],
                          'http://url/CxRestAPI/sast/scans?projectId=11&last=1&scanStatus=7')
@@ -164,13 +167,14 @@ class CheckmarxTest(unittest.TestCase):
                          'http://url/CxRestAPI/sast/scans/10111/resultsStatistics')
 
     @patch.object(logging, 'error')
-    def test_nr_warnings_no_project(self, mock_error, mock_url_read):
+    def test_nr_warnings_no_project(self, mock_error, mock_delete, mock_url_read):
         """ Test the number of high risk warnings. """
         mock_url_read.return_value = PROJECTS
         self.assertEqual(-1, self.__report.nr_warnings(['unknown_proj_id'], 'high'))
+        mock_delete.assert_not_called()
         mock_error.assert_called_once_with("Error: no project id found for project with name '%s'.", 'unknown_proj_id')
 
-    def test_obtain_issues(self, mock_url_read):
+    def test_obtain_issues(self, mock_delete, mock_url_read):
         """ Test that issues are correctly obtained. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
                                      SAST_REPORT.format(false_positive=False, severity='High')]
@@ -184,6 +188,8 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual('Reflected XSS', issues[0].title)
         self.assertEqual('http://url/CxWebClient/ScanQueryDescription.aspx?queryID=789&'
                          'queryVersionCode=842956&queryTitle=Reflected_XSS', issues[0].display_url)
+        mock_delete.assert_called_once_with('http://url/CxRestAPI/reports/sastScan/22',
+                                            headers={'Authorization': 'Bearer abc123'})
         self.assertEqual(1, issues[0].count)
         self.assertEqual("Recurrent", issues[0].status)
         self.assertEqual(mock_url_read.call_args_list[0][0][0], 'http://url/CxRestAPI/projects')
@@ -194,7 +200,7 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(mock_url_read.call_args_list[4][0][0], 'http://url/CxRestAPI/reports/sastScan/22')
 
     @patch.object(logging, 'error')
-    def test_obtain_issues_xml_error(self, mock_error, mock_url_read):
+    def test_obtain_issues_xml_error(self, mock_error, mock_delete, mock_url_read):
         """ Test that issues are correctly obtained. """
         mock_url_read.side_effect = \
             [PROJECTS, LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}', 'not-an-xml']
@@ -202,13 +208,15 @@ class CheckmarxTest(unittest.TestCase):
 
         issues = self.__report.issues()
 
+        mock_delete.assert_called_once_with('http://url/CxRestAPI/reports/sastScan/22',
+                                            headers={'Authorization': 'Bearer abc123'})
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
         self.assertEqual(mock_error.call_args[0][0], "Error in checkmarx report xml: %s.")
         self.assertIsInstance(mock_error.call_args[0][1], xml.etree.ElementTree.ParseError)
 
     @patch.object(logging, 'error')
-    def test_obtain_issue_ssast_report_not_created(self, mock_error, mock_url_read):
+    def test_obtain_issue_ssast_report_not_created(self, mock_error, mock_delete, mock_url_read):
         """ Test that issues are correctly obtained. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, '{"reportId": 22}'] + \
                                     ['{"status": {"value": "InProgress"}}'] * 10
@@ -216,12 +224,13 @@ class CheckmarxTest(unittest.TestCase):
 
         issues = self.__report.issues()
 
+        mock_delete.assert_not_called()
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
         mock_error.assert_called_once_with("SAST report is not created on the Checkmarx server!")
 
     @patch.object(logging, 'error')
-    def test_obtain_issues_xml_tag_error(self, mock_error, mock_url_read):
+    def test_obtain_issues_xml_tag_error(self, mock_error, mock_delete, mock_url_read):
         """ Test that issues are correctly obtained. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
                                      '<CxXMLResults><Query /></CxXMLResults>']
@@ -229,90 +238,111 @@ class CheckmarxTest(unittest.TestCase):
 
         issues = self.__report.issues()
 
+        mock_delete.assert_called_once_with('http://url/CxRestAPI/reports/sastScan/22',
+                                            headers={'Authorization': 'Bearer abc123'})
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
         self.assertEqual(mock_error.call_args[0][0], "Tag %s could not be found.")
         self.assertIsInstance(mock_error.call_args[0][1], KeyError)
 
-    def test_obtain_issues_exclude_false_positives(self, mock_url_read):
+    def test_obtain_issues_exclude_false_positives(self, mock_delete, mock_url_read):
         """ Test that issues are omitted when false positive. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
                                      SAST_REPORT.format(false_positive=True, severity='High')]
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_called_once_with('http://url/CxRestAPI/reports/sastScan/22',
+                                            headers={'Authorization': 'Bearer abc123'})
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
 
-    def test_obtain_issues_exclude_wrong_severity(self, mock_url_read):
+    def test_obtain_issues_exclude_wrong_severity(self, mock_delete, mock_url_read):
         """ Test that issues are omitted when severity does not match. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}',
                                      SAST_REPORT.format(false_positive=False, severity='Low')]
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_called_once_with('http://url/CxRestAPI/reports/sastScan/22',
+                                            headers={'Authorization': 'Bearer abc123'})
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
 
-    def test_obtain_issues_no_query(self, mock_url_read):
+    def test_obtain_issues_no_query(self, mock_delete, mock_url_read):
         """ Test that issues are omitted when there is no query. """
         mock_url_read.side_effect = \
             [PROJECTS, LAST_SCAN, '{"reportId": 22}', '{"status": {"value": "Created"}}', '<CxXMLResults />']
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_called_once_with('http://url/CxRestAPI/reports/sastScan/22',
+                                            headers={'Authorization': 'Bearer abc123'})
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
 
-    def test_obtain_issues_http_error(self, mock_url_read):
+    def test_obtain_issues_http_error(self, mock_delete, mock_url_read):
         """ Test that issues are omitted when http error occurs. """
         mock_url_read.side_effect = urllib.error.HTTPError('raise', None, None, None, None)
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_not_called()
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
 
     @patch.object(logging, 'error')
-    def test_obtain_issues_response_error(self, mock_error, mock_url_read):
+    def test_obtain_issues_response_error(self, mock_error, mock_delete, mock_url_read):
         """ Test that issues are omitted when json error occurs. """
         mock_url_read.return_value = 'non-json'
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_not_called()
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
         self.assertEqual(mock_error.call_args[0][0], "Error loading json: %s.")
         self.assertIsInstance(mock_error.call_args[0][1], ValueError)
 
     @patch.object(logging, 'error')
-    def test_obtain_issues_index_error(self, mock_error, mock_url_read):
+    def test_obtain_issues_index_error(self, mock_error, mock_delete, mock_url_read):
         """ Test that issues are omitted when json contains nothing. """
         mock_url_read.side_effect = [PROJECTS, '[]']
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_not_called()
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
         self.assertEqual(mock_error.call_args[0], ("There are still no scans for project %s.", 'metric_source_id'))
 
     @patch.object(logging, 'error')
-    def test_obtain_issues_json_error(self, mock_error, mock_url_read):
+    def test_obtain_issues_json_error(self, mock_error, mock_delete, mock_url_read):
         """ Test that issues are omitted when json error occurs. """
         mock_url_read.side_effect = [PROJECTS, '{}']
         self.__report.obtain_issues(['metric_source_id'], 'high')
         issues = self.__report.issues()
+
+        mock_delete.assert_not_called()
         self.assertIsInstance(issues, List)
         self.assertEqual(len(issues), 0)
         self.assertEqual(mock_error.call_args[0][0], "Tag %s could not be found.")
         self.assertIsInstance(mock_error.call_args[0][1], KeyError)
 
-    def test_medium_risk_warnings(self, mock_url_read):
+    def test_medium_risk_warnings(self, mock_delete, mock_url_read):
         """ Test the number of medium risk warnings. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, STATISTICS]
         self.assertEqual(7, self.__report.nr_warnings(['metric_source_id'], 'medium'))
+        mock_delete.assert_not_called()
 
-    def test_passed_raise(self, mock_url_read):
+    def test_passed_raise(self, mock_delete, mock_url_read):
         """ Test that the value is -1 when the report can't be opened. """
         mock_url_read.side_effect = urllib.error.HTTPError('raise', None, None, None, None)
         self.assertEqual(-1, self.__report.nr_warnings(['raise'], 'high'))
         mock_url_read.assert_called_once_with('http://url/CxRestAPI/projects')
+        mock_delete.assert_not_called()
 
-    def test_multiple_urls(self, mock_url_read):
+    def test_multiple_urls(self, mock_delete, mock_url_read):
         """ Test the number of alerts for multiple urls. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN, STATISTICS, PROJECTS, '[{"id": 202222}]', STATISTICS]
         self.assertEqual(14, self.__report.nr_warnings(['metric_source_id', 'id2'], 'medium'))
@@ -324,29 +354,33 @@ class CheckmarxTest(unittest.TestCase):
             call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7'),
             call('http://url/CxRestAPI/sast/scans/202222/resultsStatistics')
         ], mock_url_read.call_args_list)
+        mock_delete.assert_not_called()
 
-    def test_metric_source_urls_without_report(self, mock_url_read):
+    def test_metric_source_urls_without_report(self, mock_delete, mock_url_read):
         """ Test the metric source urls without metric ids. """
         mock_url_read.return_value = None
         self.assertEqual([], self.__report.metric_source_urls())
+        mock_delete.assert_not_called()
 
-    def test_metric_source_urls(self, mock_url_read):
+    def test_metric_source_urls(self, mock_delete, mock_url_read):
         """ Test the metric source urls with one metric id. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN]
         self.assertEqual(['http://url/CxWebClient/ViewerMain.aspx?scanId=10111&ProjectID=22'],
                          self.__report.metric_source_urls('id2'))
+        mock_delete.assert_not_called()
 
     @patch.object(logging, 'error')
-    def test_metric_source_urls_key_error(self, mock_error, mock_url_read):
+    def test_metric_source_urls_key_error(self, mock_error, mock_delete, mock_url_read):
         """ Test the metric source urls with empty scan response.. """
         mock_url_read.side_effect = [PROJECTS, '{}']
         self.assertEqual(["http://url/"], self.__report.metric_source_urls('id2'))
         self.assertEqual(mock_error.call_args_list[0][0][0], "Couldn't load values from json: %s - %s")
         self.assertEqual(mock_error.call_args_list[0][0][1], 'id2')
         self.assertIsInstance(mock_error.call_args_list[0][0][2], KeyError)
+        mock_delete.assert_not_called()
 
     @patch.object(logging, 'error')
-    def test_metric_source_urls_index_error(self, mock_error, mock_url_read):
+    def test_metric_source_urls_index_error(self, mock_error, mock_delete, mock_url_read):
         """ Test the metric source urls with empty scan response.. """
         mock_url_read.side_effect = [PROJECTS, '[]']
         self.assertEqual(["http://url/"], self.__report.metric_source_urls('id2'))
@@ -354,8 +388,9 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(mock_error.call_args_list[0][0][0], "Couldn't load values from json: %s - %s")
         self.assertEqual(mock_error.call_args_list[0][0][1], 'id2')
         self.assertIsInstance(mock_error.call_args_list[0][0][2], IndexError)
+        mock_delete.assert_not_called()
 
-    def test_metric_source_urls_on_error(self, mock_url_read):
+    def test_metric_source_urls_on_error(self, mock_delete, mock_url_read):
         """ Test the metric source urls when an error occurs. """
         mock_url_read.side_effect = [PROJECTS, urllib.error.HTTPError(None, None, None, None, None)]
         self.assertEqual(["http://url/"], self.__report.metric_source_urls('id2'))
@@ -363,13 +398,15 @@ class CheckmarxTest(unittest.TestCase):
             call('http://url/CxRestAPI/projects'),
             call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7')
         ], mock_url_read.call_args_list)
+        mock_delete.assert_not_called()
 
-    def test_url(self, mock_url_read):
+    def test_url(self, mock_delete, mock_url_read):
         """ Test the metric source base url. """
         mock_url_read.return_value = LAST_SCAN
         self.assertEqual("http://url/", self.__report.url())
+        mock_delete.assert_not_called()
 
-    def test_datetime(self, mock_url_read):
+    def test_datetime(self, mock_delete, mock_url_read):
         """ Test the date and time of the report. """
         mock_url_read.side_effect = [PROJECTS, LAST_SCAN]
         self.assertEqual(datetime.datetime(2017, 10, 24, 20, 0, 47), self.__report.datetime('id2'))
@@ -377,8 +414,9 @@ class CheckmarxTest(unittest.TestCase):
             call('http://url/CxRestAPI/projects'),
             call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7')
         ], mock_url_read.call_args_list)
+        mock_delete.assert_not_called()
 
-    def test_datetime_http_error(self, mock_url_read):
+    def test_datetime_http_error(self, mock_delete, mock_url_read):
         """ Test the date and time of the report. """
         mock_url_read.side_effect = [PROJECTS, urllib.error.HTTPError(None, None, None, None, None)]
         self.assertEqual(datetime.datetime.min, self.__report.datetime('id2'))
@@ -386,9 +424,10 @@ class CheckmarxTest(unittest.TestCase):
             call('http://url/CxRestAPI/projects'),
             call('http://url/CxRestAPI/sast/scans?projectId=22&last=1&scanStatus=7')
         ], mock_url_read.call_args_list)
+        mock_delete.assert_not_called()
 
     @patch.object(logging, 'error')
-    def test_datetime_missing(self, mock_error, mock_url_read):
+    def test_datetime_missing(self, mock_error, mock_delete, mock_url_read):
         """ Test a missing date and time of the report. """
         mock_url_read.side_effect = [PROJECTS, '[{"id": 202222}]']
         self.assertEqual(datetime.datetime.min, self.__report.datetime('id2'))
@@ -396,9 +435,10 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(mock_error.call_args_list[0][0][1], 'id2')
         self.assertEqual(mock_error.call_args_list[0][0][2], 'http://url/')
         self.assertIsInstance(mock_error.call_args_list[0][0][3], KeyError)
+        mock_delete.assert_not_called()
 
     @patch.object(logging, 'error')
-    def test_datetime_empty_scan(self, mock_error, mock_url_read):
+    def test_datetime_empty_scan(self, mock_error, mock_delete, mock_url_read):
         """ Test a missing scan data. """
         mock_url_read.side_effect = [PROJECTS, '[]']
         self.assertEqual(datetime.datetime.min, self.__report.datetime('id2'))
@@ -406,9 +446,10 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(mock_error.call_args_list[0][0][1], 'id2')
         self.assertEqual(mock_error.call_args_list[0][0][2], 'http://url/')
         self.assertIsInstance(mock_error.call_args_list[0][0][3], IndexError)
+        mock_delete.assert_not_called()
 
     @patch.object(logging, 'error')
-    def test_datetime_format_error(self, mock_error, mock_url_read):
+    def test_datetime_format_error(self, mock_error, mock_delete, mock_url_read):
         """ Test a invalid date and time of the report. """
         mock_url_read.side_effect = [PROJECTS, '[{"id": 3, "dateAndTime": {"finishedOn": "2017-40-24T20:00:47.553"}}]']
         self.assertEqual(datetime.datetime.min, self.__report.datetime('id2'))
@@ -416,9 +457,10 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(mock_error.call_args_list[0][0][1], 'id2')
         self.assertEqual(mock_error.call_args_list[0][0][2], 'http://url/')
         self.assertIsInstance(mock_error.call_args_list[0][0][3], ValueError)
+        mock_delete.assert_not_called()
 
     @patch.object(logging, 'error')
-    def test_nr_warnings_on_missing_values(self, mock_error, mock_url_read):
+    def test_nr_warnings_on_missing_values(self, mock_error, mock_delete, mock_url_read):
         """ Test dealing with empty list of values. """
         mock_url_read.side_effect = [PROJECTS, '{}']
         self.assertEqual(-1, self.__report.nr_warnings(['id2'], 'medium'))
@@ -428,3 +470,4 @@ class CheckmarxTest(unittest.TestCase):
         self.assertEqual(mock_error.call_args_list[0][0][2], 'medium')
         self.assertEqual(mock_error.call_args_list[0][0][3], 'http://url/')
         self.assertIsInstance(mock_error.call_args_list[0][0][4], KeyError)
+        mock_delete.assert_not_called()
