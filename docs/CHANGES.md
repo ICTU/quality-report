@@ -1,3 +1,8 @@
+2019-11-22  Release 2.93.5
+
+  * Bug #714: fixed a problem with branch analysis of commercially licensed products.
+
+
 2019-09-26  Release 2.93.4
 
   * Bug fix #692: checkmarx server error fixed

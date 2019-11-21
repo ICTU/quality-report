@@ -2414,7 +2414,7 @@ class Sonar7Test(Sonar7TestCase):
     def test_version_with_branch_without_plugin(self, mock_is_branch_plugin_installed, mock_url_read):
         """ Test that the version of a product is equal to the version returned by the dashboard of that product. """
         mock_is_branch_plugin_installed.return_value = False
-        mock_url_read.side_effect = ['{"analyses": [{"events": [{"name": "4.2"}]}]}']
+        mock_url_read.side_effect = ['{ "isValidLicense": true }', '{"analyses": [{"events": [{"name": "4.2"}]}]}']
         self.assertEqual('4.2', self._sonar.version('product:branch'))
 
     @patch.object(logging, 'warning')
@@ -2757,6 +2757,50 @@ class Sonar7PluginTest(Sonar7TestCase):
 
         mock_info.assert_called_once_with("Branch plugin not installed.")
         self.assertFalse(result)
+
+    def test_is_branch_name_included(self, mock_url_read):
+        """ Test that the licensed edition acts like the branch module is present. """
+        mock_url_read.return_value = '{ "isValidLicense": true }'
+
+        self.assertTrue(self._sonar.is_branch_name_included('product_1'))
+        mock_url_read.assert_called_once_with('http://sonar/api/editions/is_valid_license')
+
+    @patch.object(logging, 'warning')
+    def test_is_branch_name_included_http_error(self, mock_warning, mock_url_read):
+        """ Test that the error in retrieving license acts like the branch module is not present. """
+        mock_url_read.side_effect = [urllib.error.HTTPError(None, None, None, None, None),
+                                     '{"plugins":[{"key":"x","name":"X"}]}']
+
+        self.assertFalse(self._sonar.is_branch_name_included('product_1'))
+        self.assertEqual(call('http://sonar/api/editions/is_valid_license'), mock_url_read.call_args_list[0])
+        self.assertEqual(call('http://sonar/api/plugins/installed'), mock_url_read.call_args_list[1])
+        mock_warning.assert_called_once_with("Error retrieving commercial license information.")
+
+    @patch.object(logging, 'warning')
+    def test_is_branch_name_included_no_license(self, mock_warning, mock_url_read):
+        """ Test that the error in retrieving license acts like the branch module is not present. """
+        mock_url_read.side_effect = ['{"something": "x"}', '{"plugins":[{"key":"x","name":"X"}]}']
+
+        self.assertFalse(self._sonar.is_branch_name_included('product_1'))
+        self.assertEqual(call('http://sonar/api/editions/is_valid_license'), mock_url_read.call_args_list[0])
+        self.assertEqual(call('http://sonar/api/plugins/installed'), mock_url_read.call_args_list[1])
+        self.assertEqual('Error parsing json license information response: %s.', mock_warning.call_args[0][0])
+        self.assertIsInstance(mock_warning.call_args[0][1], KeyError)
+
+    def test_is_branch_name_included_bad_license(self, mock_url_read):
+        """ Test that the the license is not ok, the branch plugin is checked. """
+        mock_url_read.side_effect = ['{ "isValidLicense": false }', '{"plugins":[{"key":"x","name":"X"}]}']
+
+        self.assertFalse(self._sonar.is_branch_name_included('product_1'))
+        self.assertEqual(call('http://sonar/api/editions/is_valid_license'), mock_url_read.call_args_list[0])
+
+    def test_is_branch_name_included_low_version(self, mock_url_read):
+        """ Test that if the version is too low, it is not checked for the license. """
+        mock_url_read.side_effect = ['{"plugins":[{"key":"x","name":"X"}]}']
+        self._sonar.version_number.return_value = '7.0'
+
+        self.assertFalse(self._sonar.is_branch_name_included('product_1'))
+        mock_url_read.assert_called_once_with('http://sonar/api/plugins/installed')
 
 
 @patch.object(url_opener.UrlOpener, 'url_read')

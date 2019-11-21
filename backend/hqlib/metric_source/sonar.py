@@ -277,6 +277,17 @@ class Sonar6(Sonar):
             return version_parts[0].strip() + '.' + version_parts[1].split(")")[0].strip()
         return version
 
+    def _is_commercialy_licensed(self) -> bool:
+        try:
+            return LooseVersion(self.version_number()) >= LooseVersion('7.3')\
+                and self._get_valid_license_json()["isValidLicense"]
+        except KeyError as reason:
+            logging.warning('Error parsing json license information response: %s.', reason)
+            return False
+        except self._url_opener.url_open_exceptions:
+            logging.warning('Error retrieving commercial license information.')
+            return False
+
     def plugin_version(self, plugin: str) -> str:
         """ Return the version of the SonarQube plugin. """
         try:
@@ -332,6 +343,9 @@ class Sonar6(Sonar):
 
     def _get_plugins_json(self):
         return self._get_json(self._plugin_api_url)
+
+    def _get_valid_license_json(self):
+        return self._get_json(self._is_valid_license_api_url)
 
     @functools.lru_cache(maxsize=4096)
     def is_component_absent(self, product: str) -> bool:
@@ -740,12 +754,14 @@ class Sonar7(Sonar6):
         self._wont_fix_api_url = sonar_url + 'api/issues/search?resolutions=WONTFIX&componentKeys={resource}'
         self._wont_fix_url = sonar_url + 'project/issues?id={resource}&resolutions=WONTFIX'
         self._plugin_api_url = sonar_url + 'api/plugins/installed'
+        self._is_valid_license_api_url = sonar_url + 'api/editions/is_valid_license'
         self._quality_profiles_api_url = sonar_url + 'api/qualityprofiles/search?format=json'
         logging.info("Sonar class instantiated as Sonar7.")
 
     def is_branch_name_included(self, product: str) -> bool:
         """ Checks if the component name includes the branch name. """
-        return self.is_branch_plugin_installed() and self.is_component_absent(product)
+        return self._is_commercialy_licensed() or\
+            (self.is_branch_plugin_installed() and self.is_component_absent(product))
 
     def _get_plugins_json(self):
         return self._get_json(self._plugin_api_url)['plugins']
