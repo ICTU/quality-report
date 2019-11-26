@@ -277,6 +277,7 @@ class Sonar6(Sonar):
             return version_parts[0].strip() + '.' + version_parts[1].split(")")[0].strip()
         return version
 
+    @functools.lru_cache(maxsize=4096)
     def _is_commercialy_licensed(self) -> bool:
         try:
             return LooseVersion(self.version_number()) >= LooseVersion('7.3')\

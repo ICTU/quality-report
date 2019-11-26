@@ -1,11 +1,16 @@
+2019-11-26  Release 2.93.6
+
+  * Bug fix #718: Checking the SonarQube license is slow, cache results.
+
+
 2019-11-22  Release 2.93.5
 
-  * Bug #714: fixed a problem with branch analysis of commercially licensed products.
+  * Bug fix #714: Fixed a problem with branch analysis of commercially licensed products.
 
 
 2019-09-26  Release 2.93.4
 
-  * Bug fix #692: checkmarx server error fixed
+  * Bug fix #692: Checkmarx server error fixed
 
 
 2019-08-23  Release 2.93.3
