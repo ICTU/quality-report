@@ -3,7 +3,7 @@ beautifulsoup4==4.8.1
 lxml==4.4.2
 python-dateutil==2.8.1
 gitlab==1.0.2
-python-gitlab==1.13.0
+python-gitlab==1.14.0
 pygal==2.4.0
 git+https://github.com/wekan/wekan-python-api-client.git#egg=wekanapi&subdirectory=src
 
