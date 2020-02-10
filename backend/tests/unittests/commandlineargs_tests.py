@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
 import unittest
 from unittest.mock import call, patch
 import sys
@@ -28,6 +29,7 @@ class ParseTest(unittest.TestCase):
     @patch.object(sys.stderr, "write")
     def test_missing_all(self, mock_write):
         """ Test missing all required values. """
+        os.environ['COLUMNS'] = "80"
         self.assertRaises(SystemExit, commandlineargs.parse)
         self.assertEqual(
             [

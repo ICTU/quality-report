@@ -1,3 +1,8 @@
+2020-02-10  Release 2.93.7
+
+  * Bug fix: Correctly process changed performance test report headers.
+  
+  
 2019-11-26  Release 2.93.6
 
   * Bug fix #718: Checking the SonarQube license is slow, cache results.
