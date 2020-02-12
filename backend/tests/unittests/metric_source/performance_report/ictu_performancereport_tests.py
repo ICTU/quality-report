@@ -40,9 +40,9 @@ class ICTUPerformanceReportUnderTest(ICTUPerformanceLoadTestReport):  # pylint: 
 
 class ICTUPerformanceReportTest(unittest.TestCase):
     """ Unit tests for the ICTU performance report metric source. """
-    expected_queries = 18
-    expected_queries_violating_max = 1
-    expected_queries_violating_wished = expected_queries_violating_max + 1
+    expected_queries = 142
+    expected_queries_violating_max = 11
+    expected_queries_violating_wished = expected_queries_violating_max + 22
 
     def setUp(self):
         ICTUPerformanceReportUnderTest.queries.cache_clear()
@@ -72,7 +72,7 @@ class ICTUPerformanceReportTest(unittest.TestCase):
 
     def test_date_of_last_measurement(self):
         """ Test that the date of the last measurement is correctly parsed from the report. """
-        self.assertEqual(datetime.datetime(2018, 10, 21, 1, 47, 19),
+        self.assertEqual(datetime.datetime(2020, 2, 12, 14, 42, 34),
                          self._performance_report.datetime('.*[0-9][0-9].*'))
 
     def test_date_without_urls(self):
@@ -87,7 +87,8 @@ class ICTUPerformanceReportTest(unittest.TestCase):
 
     def test_duration(self):
         """ Test tha the duration of the test is correct. """
-        self.assertEqual(datetime.timedelta(seconds=3704), self._performance_report.duration('.*[0-9][0-9].*'))
+        self.assertEqual(
+            datetime.timedelta(days=14, seconds=42717), self._performance_report.duration('.*[0-9][0-9].*'))
 
     def test_duration_without_urls(self):
         """ Test that the max duration is returned if there are no report urls to consult. """
@@ -101,7 +102,7 @@ class ICTUPerformanceReportTest(unittest.TestCase):
 
     def test_fault_percentage(self):
         """ Test that the percentage of failed transactions can be read from the report. """
-        self.assertEqual(11, self._performance_report.fault_percentage('.*[0-9][0-9].*'))
+        self.assertEqual(0, self._performance_report.fault_percentage('.*[0-9][0-9].*'))
 
     def test_fault_percentage_without_urls(self):
         """ Test that - is returned if there are no report urls to consult. """
