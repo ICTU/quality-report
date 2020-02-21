@@ -43,11 +43,10 @@ class ICTUPerformanceReport(performance_report.PerformanceReport, beautifulsoup.
         urls = self.urls(product)
         for url in urls:
             soup = self.soup(url)
-            resp_times_header = soup.find(
-                'h2', string=["Responsetimes (ms)", "Response times (ms)", "Response times (s)", "Responsetimes (s)"])
-            if resp_times_header is None:
-                raise ValueError('Invalid report: header "Responsetimes" not found.')
-            table = resp_times_header.findNext('table')
+            table = soup.find('table', id='responsetimestable_begin') or \
+                soup.find('table', id='responsetimestable_start')
+            if table is None:
+                raise ValueError('Invalid report: response times table not found.')
             for row in table('tr'):
                 query_names = row('td', attrs={'class': ['name']})
                 if not query_names:

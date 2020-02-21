@@ -1,3 +1,8 @@
+2020-02-21  Release 2.93.8
+
+  * Bug fix: Performance test report table id changed, again.
+
+
 2020-02-10  Release 2.93.7
 
   * Bug fix: Correctly process changed performance test report headers.
