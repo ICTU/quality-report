@@ -10,7 +10,6 @@ install:
 - pip install -r backend/requirements.txt
 - pip install nose
 - pip install codacy-coverage
-- pip install coveralls
 - pip install codecov
 jobs:
   include:
@@ -35,14 +34,12 @@ jobs:
       - npm run build
       - npm run cover
       - cat coverage/lcov.info | ./node_modules/.bin/codacy-coverage
-      - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
       - cd ../backend
       - coverage run --parallel-mode --branch --source=hqlib,tests tests/run_unittests.py
       - coverage run --parallel-mode --branch --source=hqlib,tests tests/run_integrationtests.py
       - coverage combine
       - coverage xml
       - python-codacy-coverage -r coverage.xml
-      - coveralls
       - codecov
       - nosetests --with-xunit tests/unittests/  # For SonarQube, see https://docs.sonarqube.org/display/PLUG/Python+Unit+Tests+Execution+Reports+Import
       - cd ..
