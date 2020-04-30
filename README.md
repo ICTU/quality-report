@@ -10,7 +10,6 @@ ANNOUNCEMENT
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=nl.ictu%3Ahq&metric=alert_status)](https://sonarcloud.io/dashboard?id=nl.ictu%3Ahq)
 [![BCH compliance](https://bettercodehub.com/edge/badge/ICTU/quality-report?branch=master)](https://bettercodehub.com/)
 [![Test Coverage](https://codeclimate.com/github/ICTU/quality-report/badges/coverage.svg)](https://codeclimate.com/github/ICTU/quality-report/coverage)
-[![Coverage Status](https://coveralls.io/repos/github/ICTU/quality-report/badge.png?branch=master)](https://coveralls.io/github/ICTU/quality-report?branch=master)
 [![codecov](https://codecov.io/gh/ICTU/quality-report/branch/master/graph/badge.svg)](https://codecov.io/gh/ICTU/quality-report)
 [![Code Climate](https://codeclimate.com/github/ICTU/quality-report/badges/gpa.svg)](https://codeclimate.com/github/ICTU/quality-report)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/90b2d74043284cdda06aecc442182946)](https://www.codacy.com/app/frank_10/quality-report?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ICTU/quality-report&amp;utm_campaign=Badge_Grade)
