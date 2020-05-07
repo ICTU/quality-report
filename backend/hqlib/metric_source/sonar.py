@@ -97,6 +97,7 @@ class Sonar(metric_source.TestReport):
         """ Return the version number of Sonar. """
         try:
             version_number = self._url_opener.url_read(self._version_number_url)
+            version_number = version_number.rstrip() if version_number is not None else None
             logging.info("Sonar Qube server version retrieved: %s", version_number)
             return version_number
         except self._url_opener.url_open_exceptions:
