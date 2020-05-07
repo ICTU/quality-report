@@ -123,6 +123,12 @@ class SonarFacadeTest(unittest.TestCase):
         self.assertEqual(call('Sonar class instantiated as Sonar6.'), mock_info.call_args_list[1])
 
     @patch.object(url_opener.UrlOpener, 'url_read')
+    def test_version_number_n(self, mock_url_read):
+        """ Test that the version number is correct even if returned with an extra new line character. """
+        mock_url_read.return_value = "5.6\n"
+        self.assertEqual('5.6', Sonar('unimportant').version_number())
+
+    @patch.object(url_opener.UrlOpener, 'url_read')
     @patch.object(logging, 'warning')
     def test_version_number_none(self, mock_warning, mock_url_read):
         """ Test that the version number is correct. """

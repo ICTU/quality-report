@@ -99,13 +99,13 @@ test('metrics table rendered correctly with links in texts', (t) => {
         "norm": "Norm message", "comment": "Comment!", "extra_info":{}}]
     } />)
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).text(), "Measurement links: Measurement!, Link! <-");
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).type(), 'a');
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).text(), 'Measurement!');
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).prop('href'), 'http://measurement.com');
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(0).prop('target'), '_blank');
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).type(), 'a');
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).text(), 'Link!');
-    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('href'), 'http://link with spaces.com');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).text(), 'Measurement!');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('href'), 'http://measurement.com');
     t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(1).prop('target'), '_blank');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(3).type(), 'a');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(3).text(), 'Link!');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(3).prop('href'), 'http://link with spaces.com');
+    t.equal(wrapper.find('BootstrapTableRow').first('tr').find('td').at(4).childAt(3).prop('target'), '_blank');
     t.end();
 });

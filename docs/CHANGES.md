@@ -1,3 +1,8 @@
+2020-05-07  Release 2.93.9
+
+  * Bug fix: A problem that appeared  after upgrade of jquery fixed. (#756)
+
+
 2020-02-21  Release 2.93.8
 
   * Bug fix: Performance test report table id changed, again.
