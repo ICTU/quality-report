@@ -47,7 +47,7 @@ class TrelloBoard(ActionLog):
         super().__init__(*args, **kwargs)
 
     def _list_ids_to_ignore(self, lists_names_to_ignore) -> List[str]:
-        return [l['id'] for l in self._lists if l['name'] in lists_names_to_ignore]
+        return [lst['id'] for lst in self._lists if lst['name'] in lists_names_to_ignore]
 
     def ignored_lists(self) -> List[str]:
         """ Return the ignored lists. """
