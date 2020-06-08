@@ -13,4 +13,4 @@ coverage==5.1
 xmlrunner==1.7.7
 pip==20.1.1
 pycodestyle==2.6.0
-pylint==2.5.2
+pylint==2.5.3
