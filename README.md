@@ -1,7 +1,7 @@
 ANNOUNCEMENT
 ============
 
-**HQ will be replaced by [*Quality-time*](https://github.com/ICTU/quality-time). As of July 1st 2019, HQ is in maintenance mode. Only critical bugs will be fixed. No new features are planned for HQ.**
+**HQ has been replaced by [*Quality-time*](https://github.com/ICTU/quality-time). As of January 1st, 2021, HQ is no longer maintained. No bugs will be fixed. No new features will be developed.**
 
 ---
 
